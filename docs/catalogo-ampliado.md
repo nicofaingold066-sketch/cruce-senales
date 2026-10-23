@@ -1,6 +1,6 @@
 # Catálogo ampliado (enmienda 10, Parte B): filas exactas
 
-Dueño: apertura. Pedido #95. Para backend (migración de la Parte B, corte 23:00 del viernes 23 oct). Todo ficticio: ningún lugar, comuna-con-dirección ni nombre existe; cada `lugar_nombre` termina en ` (Simulación)`.
+Dueño: apertura. Pedido #95. Para backend (migración de la Parte B, corte 23:00 del viernes 23 oct). Todo ficticio: ningún lugar ni nombre es real; cada `lugar_nombre` termina en ` (Simulación)`.
 
 Base: forma de `cruce.catalogo_agente` de `0014_enmienda4_esquema.sql` (columnas `id, orden, actividad, actividad_etiqueta, lugar_nombre, precio, techado, energia, ambiente, titulo_plantilla, sab_inicio, sab_fin, dom_inicio, dom_fin`) más la columna `zona` de la Parte A.
 
@@ -58,7 +58,7 @@ insert into cruce.catalogo_agente
 La Parte A pide `zona` en toda fila. Para que la equidad de viaje tenga con qué comparar, conviene repartirlas distinto de las nuevas: `lugar-sim-01` asado → `nunoa`; `lugar-sim-02` pádel → `las_condes`; `lugar-sim-03` fútbol → `maipu`; `lugar-sim-04` parque → `providencia`; `evento-sim-01` fiesta → `santiago_centro`. (El asado del demo sigue siendo "Quincho de Tomi (Simulación)"; la zona es de simulación, no de nadie.)
 
 ## Efectos que backend y el resto del equipo deberían revisar
-1. **Chips de "Me gustaria"**: ya se arman con `opciones.actividades` que devuelve el servidor (`src/agente/AgentePanel.tsx`), así que las ocho nuevas aparecen solas. El tope de la columna es de 6 marcas por persona; con 13 opciones conviene dejarlo en 6.
+1. **Chips de "Me gustaría"**: ya se arman con `opciones.actividades` que devuelve el servidor (`src/agente/AgentePanel.tsx`), así que las ocho nuevas aparecen solas. El tope de la columna es de 6 marcas por persona; con 13 opciones conviene dejarlo en 6.
 2. **Dependen de los nombres de actividad** (no hay que tocarlos, solo no romperlos): `src/agente/canchas.ts` (`padel`, `futbol`, `tenis`: las nuevas no tienen enlace de canchas, y está bien); el panel de gustos usa `actividad_etiqueta`.
 3. **Pruebas**: la prueba 8 de la enmienda ("las actividades nuevas se pueden marcar y aparecen como candidatas") pasa con estas filas. Para cada una, una persona que la marque junto con otra (el mínimo de 2 gustos) debería ver la actividad entre las candidatas, salvo que el presupuesto o el techo la descarten: `cerro` cae si alguien pide bajo techo con lluvia; `cena`, `bar` y `juegos_salida` caen con "ojalá gratis"; `cine`, `juegos_casa` y `cafe` caen con "ojalá gratis" pero entran con "algo barato".
 4. **Cobertura de privacidad**: ninguna fila nombra a una persona real ni a una dirección. Los nombres de lugar son genéricos y llevan la etiqueta de simulación.
