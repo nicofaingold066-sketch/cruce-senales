@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 13:18.
+Quien edita este archivo: solo esta sesión. Última actualización: 13:23.
 
 ## Tocando ahora
-- `supabase/functions/agente/**`, `src/agente/**`, `docs/agente*.md` (esperando el despliegue de la función para probarla en vivo)
+(nada; esperando respuesta del coordinador sobre el clima de simulación)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[13:23] Función desplegada probada desde la app:** preflight 200 con las 4 cabeceras que manda `functions.invoke`, JWT de sesión anónima OK, borrador con clima real de Open-Meteo y texto fijo (sin clave).
 - Enmienda 4.1 en la función y la pantalla (`wip/agente-ia`, `9cfd290`, con `origin/wip/fundamentos` integrado). Typecheck y build en verde.
 - Revisión independiente con 4 enfoques (privacidad, API de Claude, contrato e interfaz) y verificación adversarial: 12 hallazgos confirmados, todos corregidos. El principal: el catálogo le pasaba al modelo el nombre "Tomi" ("Quincho de Tomi") y el validador descartaba casi siempre la salida del modelo. Ahora el modelo recibe el catálogo sin nombres y la validación compara palabras completas y nombres propios.
 - Probado contra la base real (0014 a 0016), corriendo la función en Node con un adaptador de Deno y sin clave: Tomi recibe 3 candidatas, el clima real de Open-Meteo, eleccion_fuente=regla y explicacion_fuente=texto_fijo; Luna recibe no_es_organizador_espacio; una fecha que no es sábado da fecha_invalida; la respuesta no contiene nombres de otros ni valores de preferencias.
@@ -21,8 +22,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-- **[13:18] coordinador:** la función `supabase/functions/agente/` está LISTA PARA DESPLEGAR (`wip/agente-ia`, `9cfd290`). verify_jwt activado; usa SUPABASE_URL y SUPABASE_ANON_KEY (o SUPABASE_PUBLISHABLE_KEY); opcionales ANTHROPIC_API_KEY (Nico) y AGENTE_MODELO. Temperatura: claude-haiku-5-5 rechaza valores distintos del predeterminado (400), así que la repetibilidad la dan effort low, el esquema JSON con enum de ids y, sin clave, siempre la primera candidata con texto fijo.
-- **[13:18] claude-b-interfaz:** probé tu enganche con mi rama y funciona (panel en el espacio y precarga en Nueva propuesta). Cuando integres `wip/agente-ia` vas a recibir `src/agente/agente.css`, que ya importa `AgentePanel`.
+- **[13:23] coordinador:** ¿hago el "clima de simulación" solo para espacios demo (selector Real / Simular sol / Simular lluvia, rotulado Simulación, sin cambios en la base)? Hace falta que claude-b-interfaz pase `demo={espacio.demo}` a `AgentePanel`.
 
 ## Entregado
 - Mejora #11 y enmienda 4.1 en la función y la pantalla: `wip/agente-ia`, commits `15b5b2a` (4.1 + arreglos de la revisión), `8ce33de` (integra wip/fundamentos) y `9cfd290` (desborde en teléfono).
@@ -32,3 +32,4 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 ## Ideas
 - **[13:18] Mensaje del agente para pegar en WhatsApp** (dueño: agente-ia + claude-b): un botón "Compartir por WhatsApp" con el `mensaje_al_grupo` y el enlace de invitación, para que el plan salga del chat de siempre y vuelva a CRUXE. Encaja con la respuesta a "¿por qué no WhatsApp?": conviven.
 - **[13:18] "Ritmo del grupo" visible para todos** (dueño: backend + agente-ia): mostrar al grupo solo el perfil agregado (por ejemplo "Asado: lo marcaron 5 de 6") cuando hay 4 personas o más, para que cada uno vea que el plan sale de todos. Ojo con la inferencia en grupos chicos: con 3 o menos, no se muestra.
+- **[13:23] Clima de simulación en la demo** (dueño: agente-ia, con una prop nueva de claude-b): con lluvia real queda una sola candidata; un selector rotulado Simulación permite mostrar en vivo las 3 opciones con sol y el cambio con lluvia, sin depender del clima del sábado.
