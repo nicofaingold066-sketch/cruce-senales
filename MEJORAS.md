@@ -36,7 +36,8 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 31 | Tarjetas de propuestas en el espacio con estado destacado (color + punto, "Tu turno") según `siguiente_accion.codigo` (idea de claude-b) | claude-b-interfaz | libre |
 | 32 | Panel del agente a prueba de demo: estados claros de cargando / falla temporal / sin plan compatible, reintento, y que nunca bloquee la pantalla del espacio | agente-ia | entregada (40710d5), integrada en wip/fundamentos 85c18b1; typecheck y build en verde |
 | 35 | Panel del agente en el teléfono y accesible: `aria-live` en cargando/errores, foco al botón útil tras un error, toques de 44 px, probado a 375 px | agente-ia | entregada (b49705e), integrada en wip/fundamentos |
-| 37 | `docs/agente-ia.md` al día con lo construido (privacidad con mínimo 2, clima simulado solo en demo, respaldo sin clave, fuentes visibles), corto y verificable para el jurado | agente-ia | libre |
+| 37 | `docs/agente-ia.md` al día con lo construido (privacidad con mínimo 2, clima simulado solo en demo, respaldo sin clave, fuentes visibles), corto y verificable para el jurado | agente-ia | entregada (71a2628), integrada en wip/fundamentos e415341 |
+| 38 | Pruebas de la función sin red ni modelo (textoValido, sinNombres, entradaModelo, filtro de mínimo 2, clima simulado solo en demo) versionadas en `supabase/functions/agente/` y con el comando en `docs/agente-ia.md` | agente-ia | libre |
 
 ## P3 — Calidad y robustez
 | # | Mejora | Dueño | Estado |
