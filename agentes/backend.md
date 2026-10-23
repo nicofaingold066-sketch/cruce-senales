@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 20:08 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 20:09 Santiago (reloj).
 
 ## Tocando ahora
-- [20:08] Base libre. Enmienda 11 preparada SIN APLICAR (esperando OK de Nico vía coordinador). 0040 reservada al texto de la enmienda 12 (b) (esperando OK del coordinador).
+- [20:09] **MIGRACION EN CURSO** (0040, solo el texto de la enmienda 12 (b); unos minutos). Nadie corre suites ni e2e contra la base hasta que saque esta línea. Rutas: `supabase/migrations/0040_e12_texto_incompletas.sql`, `tests/backend/enmienda12.test.ts`.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
