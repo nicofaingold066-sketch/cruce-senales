@@ -35,7 +35,9 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
     const mia = ++secLista.current
     const gen = generacion.current
     const r = await api.listProposals(espacioId)
-    if (mia < aplLista.current || gen !== generacion.current) return
+    // #52 (F1 de revision-codex-6): en la carga inicial la lista sale antes de conocer la generación (null).
+    // Si get_space responde primero, esa lista no es de una generación anterior: se aplica igual, sin otra petición.
+    if (mia < aplLista.current || (gen !== null && gen !== generacion.current)) return
     aplLista.current = mia
     if (r.ok) {
       const nuevas = r.data.propuestas
