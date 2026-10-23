@@ -253,7 +253,12 @@ function ReiniciarDemo({
   const { ocupado, error, ejecutar } = useAccion()
   const [hecho, setHecho] = useState<string | null>(null)
   async function hacer() {
-    const r = await ejecutar(`reset:${espacio.id}`, () => api.resetDemo(espacio.id))
+    // El intento se genera por acción y se reutiliza en los reintentos del mismo clic (useAccion); un reintento
+    // con el mismo id no borra nada nuevo.
+    const r = await ejecutar(`reset:${espacio.id}`, (intentoId) => api.resetDemo(espacio.id, intentoId))
+    if (r && !r.ok && (r.error.resultadoIncierto || r.error.codigo === 'intento_obsoleto')) {
+      await onCambio() // refresca el estado real; el intento original se conserva para reintentar
+    }
     if (r?.ok) {
       setConfirmar(false)
       setHecho(`Demo reiniciada: se eliminaron ${r.data.resultado.propuestas_eliminadas} propuesta(s). Las personas del espacio se conservan.`)

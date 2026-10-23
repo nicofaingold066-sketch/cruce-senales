@@ -2,8 +2,8 @@
 // validaciones de creación e idempotencia de create_proposal. Espacios propios con prefijo "t-".
 import { beforeAll, describe, expect, it } from 'vitest'
 import {
-  clienteSinSesion, crearEspacioPrueba, crearPropuesta, err, FRANJAS, intento, nuevaSesion, ok, PLAZO, rpc,
-  simulado, type Json, type Sesion,
+  clienteSinSesion, CONTRATO, crearEspacioPrueba, crearPropuesta, err, FRANJAS, intento, nuevaSesion, ok, PLAZO, rpc,
+  rpcCrudo, simulado, type Json, type Sesion,
 } from './helpers'
 
 describe('privacidad y audiencia', { timeout: 60_000 }, () => {
@@ -23,16 +23,20 @@ describe('privacidad y audiencia', { timeout: 60_000 }, () => {
     matiId = await simulado(T, esp.espacioId, 'Mati t')
   }, 60_000)
 
-  it('C0: server_info, sesión inválida sin sesión y tablas inaccesibles', async () => {
+  it('C0: server_info, sin sesión rechazado por permisos (A5) y tablas inaccesibles', async () => {
     const info = await ok(T, 'server_info')
-    expect(info.contrato).toBe(1)
+    expect(info.contrato).toBe(CONTRATO)
     expect(info.sesion.autenticada).toBe(true)
     expect(info.servidor_ahora.utc).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/)
 
+    // Enmienda 2 (A5): sin sesión la llamada no llega a ejecutarse (anon sin EXECUTE).
     const anon = clienteSinSesion()
-    const r = await rpc(anon, 'create_space', { p_nombre: 't-x', p_tipo: 'amigos', p_nombre_visible: 'x' })
-    expect(err(r)).toBe('sesion_invalida/sin_sesion')
-    expect(r.state_rev).toBeNull()
+    const r = await rpcCrudo(anon, 'create_space', { p_nombre: 't-x', p_tipo: 'amigos', p_nombre_visible: 'x' })
+    expect(r.data).toBeNull()
+    expect(r.error?.code).toBe('42501')
+    // Los errores de negocio también llevan contrato 2.
+    const e = await rpc(T, 'get_space', { p_espacio_id: intento() })
+    expect(e).toMatchObject({ ok: false, contrato: CONTRATO, state_rev: null })
 
     // Consulta directa a tablas desde el cliente: error o 0 filas.
     for (const c of [anon, L.c]) {

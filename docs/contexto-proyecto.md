@@ -1,6 +1,6 @@
 # Contexto del proyecto CRUCE (para Codex, Juan y cualquier agente)
 
-Última actualización: viernes 23 oct 2026, ~10:30 hora de Santiago. Este archivo describe el estado real; si algo no está acá, no está hecho.
+Última actualización: viernes 23 oct 2026. Este archivo describe el estado real; si algo no está acá, no está hecho.
 
 ## 1. Qué es esto
 Hackatón Señales de Makana (23 y 24 oct 2026, Las Condes). Equipo: Nico Faingold (`nicofaingold066-sketch`) y Juan Morales (`JuanMorales10`, llega al mediodía). Un jurado de producto puntúa de 1 a 7 tres criterios iguales: Problema, Solución, Convicción. La demo en vivo pesa mucho más que las láminas. Entrega: sábado 24 a las 13:00, se guarda el último commit de `main`. Pitch: 5 minutos con demo en vivo y 3 de preguntas.

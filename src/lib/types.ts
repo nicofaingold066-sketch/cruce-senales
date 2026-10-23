@@ -1,4 +1,4 @@
-// Tipos del contrato backend-interfaz v1 (docs/contrato.md). Todo dato es ficticio.
+// Tipos del contrato backend-interfaz (docs/contrato.md + docs/contrato-enmienda-2.md; la enmienda prevalece). Todo dato es ficticio.
 
 export interface Momento {
   utc: string
@@ -66,6 +66,10 @@ export interface Cupos {
   faltan_para_minimo: number
   imprescindible_acepto: boolean
   pendientes: number
+  /** Enmienda 2 (A1): mientras el imprescindible no acepte, se le reserva un cupo. */
+  reservado_imprescindible: boolean
+  /** Enmienda 2 (A1): cupos que el servidor deja libres para quienes no son el imprescindible. */
+  libres_para_otros: number
 }
 
 export interface Aceptacion {
@@ -127,6 +131,8 @@ export interface MiSituacion {
   retirado: boolean
   elegible_en_version: boolean | null
   acepte_version: boolean
+  /** Enmienda 2 (A1): por qué `puede.aceptar` es false; "cupo_reservado" si el último cupo es del imprescindible. */
+  motivo_aceptar?: string | null
   puede: Puede
 }
 
@@ -196,6 +202,8 @@ export interface Espacio {
   codigo_invitacion: string
   creado_en: Momento
   ultimo_reinicio: Momento | null
+  /** Enmienda 2 (A3): sube con cada reinicio real de la demo. */
+  generacion: number
   mi_miembro_id: string
   mi_rol: 'organizador' | 'miembro'
   miembros: MiembroEspacio[]
@@ -210,6 +218,8 @@ export interface EspacioResumen {
   mi_miembro_id: string
   mi_rol: 'organizador' | 'miembro'
   cantidad_miembros: number
+  /** Enmienda 2 (A3). */
+  generacion: number
 }
 
 export interface Condiciones {
@@ -250,6 +260,8 @@ export type ErrorCodigo =
   | 'sin_alternativa'
   | 'no_autorizado'
   | 'fallo_temporal'
+  | 'asiento_en_uso'
+  | 'intento_obsoleto'
   // Errores propios de la interfaz (no vienen del servidor):
   | 'contrato_incompatible'
 
@@ -262,6 +274,11 @@ export interface ApiError {
   state_rev: number | null
   /** true cuando no hubo conexión con el servidor (la acción no quedó registrada). */
   sinConexion?: boolean
+  /**
+   * true cuando la llamada ya se había enviado y no pudimos confirmar el resultado (puede haberse registrado o no).
+   * Se refresca el estado y se conserva el intento original para reintentar.
+   */
+  resultadoIncierto?: boolean
 }
 
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; error: ApiError }

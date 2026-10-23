@@ -124,6 +124,9 @@ function razonNoAceptar(p: EstadoPropuesta): string {
   if (s.acepte_version) return `Ya confirmaste la versión ${v}. Tu confirmación vale solo para esa versión.`
   if (p.plazo_vencido) return 'El plazo de aceptación ya cerró.'
   if (s.elegible_en_version === false) return 'No formas parte de las personas que pueden aceptar esta versión.'
+  if (s.motivo_aceptar === 'cupo_reservado') {
+    return 'El último cupo está reservado para el anfitrión. Podrás confirmar cuando él confirme o se libere un cupo.'
+  }
   if (p.opcion && p.opcion.cupos.disponibles <= 0) return 'Ya se completaron los cupos de esta versión.'
   return 'Ahora no puedes confirmar esta versión.'
 }
@@ -171,6 +174,14 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
         </dd>
         <dt>Faltan por responder</dt>
         <dd>{o.cupos.pendientes} persona(s)</dd>
+        {o.cupos.reservado_imprescindible ? (
+          <>
+            <dt>Cupo del anfitrión</dt>
+            <dd>
+              Reservado hasta que confirme. Cupos libres para el resto: {o.cupos.libres_para_otros}.
+            </dd>
+          </>
+        ) : null}
       </dl>
 
       <h3>Quién confirmó esta versión</h3>

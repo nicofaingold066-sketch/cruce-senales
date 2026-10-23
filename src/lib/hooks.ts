@@ -238,7 +238,14 @@ export function usePropuestaViva(propuestaId: string): PropuestaViva {
         setFuera(true)
       } else if (r.error.state_rev != null && r.error.state_rev > rev.current) {
         void refrescar()
-      } else if (r.error.codigo === 'opcion_desactualizada' || r.error.codigo === 'cupo_completo' || r.error.codigo === 'plazo_vencido') {
+      } else if (
+        r.error.resultadoIncierto ||
+        r.error.codigo === 'intento_obsoleto' ||
+        r.error.codigo === 'opcion_desactualizada' ||
+        r.error.codigo === 'cupo_completo' ||
+        r.error.codigo === 'plazo_vencido'
+      ) {
+        // Resultado incierto: se refresca el estado; el intento original se conserva (useAccion) para reintentar.
         void refrescar()
       }
     },

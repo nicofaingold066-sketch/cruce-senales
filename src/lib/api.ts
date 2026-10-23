@@ -1,4 +1,4 @@
-// Envoltorios tipados de las 25 operaciones del contrato v1 (docs/contrato.md).
+// Envoltorios tipados de las 25 operaciones del contrato (docs/contrato.md + docs/contrato-enmienda-2.md).
 // La API es solo supabase.rpc. Nunca supabase.from ni Realtime.
 import { supabase } from './supabase'
 import type {
@@ -15,7 +15,7 @@ import type {
   TipoEspacio,
 } from './types'
 
-export const CONTRATO_ESPERADO = 1
+export const CONTRATO_ESPERADO = 2
 
 // ---- Sobre de respuesta ----
 
@@ -41,7 +41,7 @@ export type ListaEspaciosOk = OkBase & { espacios: EspacioResumen[] }
 export type VerEspacioOk = OkBase & { espacio: Espacio }
 export type SembrarDemoOk = EspacioOk<{ espacio_id: string; creado: boolean; repetido: boolean }>
 export type AgregarSimuladoOk = EspacioOk<{ miembro_id: string }>
-export type ReiniciarDemoOk = EspacioOk<{ propuestas_eliminadas: number }>
+export type ReiniciarDemoOk = EspacioOk<{ propuestas_eliminadas: number; generacion: number }>
 export type CrearPropuestaOk = PropuestaOk<{ propuesta_id: string; repetido: boolean }>
 export type RepetidoOk = PropuestaOk<{ repetido: boolean }>
 export type ListaPropuestasOk = OkBase & { propuestas: PropuestaResumen[] }
@@ -91,8 +91,12 @@ export function alIncompatible(fn: () => void): () => void {
   }
 }
 
+// Detectada ANTES de enviar: la acción no salió del dispositivo y no quedó registrada.
 const MENSAJE_SIN_CONEXION =
   'Sin conexión con el servidor. La acción no quedó registrada. Lo que escribiste se conserva; reintenta cuando vuelva la conexión.'
+// Cortada DESPUÉS de enviar: no sabemos si el servidor la registró.
+const MENSAJE_RESULTADO_INCIERTO =
+  'No pudimos confirmar el resultado. Tu acción pudo haberse registrado o no. Actualizamos el estado; si sigue sin aparecer, reintenta (se reutiliza el mismo intento, no se duplica).'
 
 export function nuevoIntento(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID()
@@ -113,6 +117,13 @@ function fallo(
     ok: false,
     error: { codigo: 'fallo_temporal', detalle, mensaje, reintentable: true, state_rev: null, ...extra },
   }
+}
+
+/** Falla de red con la llamada ya enviada. En escrituras el resultado es incierto; en lecturas no hay nada que registrar. */
+function falloDeRed(escritura: boolean) {
+  return escritura
+    ? fallo('resultado_incierto', MENSAJE_RESULTADO_INCIERTO, { resultadoIncierto: true })
+    : fallo('sin_conexion', MENSAJE_SIN_CONEXION, { sinConexion: true })
 }
 
 function esErrorDeRed(msg: string): boolean {
@@ -144,12 +155,12 @@ async function llamar<T extends OkBase>(
     res = (await supabase.rpc(fn as never, args as never)) as typeof res
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
-    if (esErrorDeRed(msg)) return fallo('sin_conexion', MENSAJE_SIN_CONEXION, { sinConexion: true })
+    if (esErrorDeRed(msg)) return falloDeRed(escritura)
     return fallo('reintentar', 'Falla temporal. Intenta de nuevo.')
   }
   if (res.error) {
     const msg = res.error.message ?? ''
-    if (esErrorDeRed(msg)) return fallo('sin_conexion', MENSAJE_SIN_CONEXION, { sinConexion: true })
+    if (esErrorDeRed(msg)) return falloDeRed(escritura)
     if (res.error.code === 'PGRST202') {
       // Operación aún no publicada en la base: se trata como falla temporal (contrato 0.3).
       return fallo(
@@ -236,7 +247,8 @@ export const api = {
       { p_espacio_id: espacioId, p_nombre_visible: nombreVisible },
       true,
     ),
-  resetDemo: (espacioId: string) => llamar<ReiniciarDemoOk>('reset_demo', { p_espacio_id: espacioId }, true),
+  resetDemo: (espacioId: string, intentoId: string) =>
+    llamar<ReiniciarDemoOk>('reset_demo', { p_espacio_id: espacioId, p_intento_id: intentoId }, true),
 
   // 1.8 - 1.14 Propuesta, interés y condiciones
   createProposal: (p: CrearPropuestaParams) =>
@@ -316,4 +328,18 @@ export const api = {
 /** Texto para mostrar al usuario. Los mensajes del servidor ya son exactos (contrato 0.5). */
 export function textoError(e: ApiError): string {
   return e.mensaje
+}
+
+/** Orientación adicional para el usuario según el error (enmienda 2). No calcula nada: solo explica. */
+export function ayudaError(e: ApiError): string | null {
+  if (e.codigo === 'cupo_completo' && e.detalle === 'reservado_imprescindible') {
+    return 'El último cupo está reservado para el anfitrión. Podrás confirmar si el anfitrión confirma primero o si se libera un cupo.'
+  }
+  if (e.codigo === 'asiento_en_uso') {
+    return 'Ese lugar ya tiene actividad en el espacio. Entra con otro nombre visible: serás una persona nueva, sin compromisos heredados.'
+  }
+  if (e.codigo === 'intento_obsoleto') {
+    return 'Esa acción corresponde a una versión anterior de la demo (se reinició desde entonces). No se aplicó; actualizamos la pantalla.'
+  }
+  return null
 }

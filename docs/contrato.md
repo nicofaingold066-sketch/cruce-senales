@@ -1,6 +1,6 @@
 # Contrato backend-interfaz de CRUCE (caso "Los del asado")
 
-> **Aviso (23 oct, 10:40): este contrato v1 queda ENMENDADO por `docs/contrato-enmienda-2.md` (correcciones A1-A5). Donde haya conflicto, manda la enmienda. El campo `contrato` de las respuestas pasa a 2.**
+> **Aviso (23 oct): este contrato v1 queda ENMENDADO por `docs/contrato-enmienda-2.md` (correcciones A1-A5). Donde haya conflicto, manda la enmienda. El campo `contrato` de las respuestas pasa a 2.**
 
 Versión del contrato: **1**. Dueño: Operador 1 (coordinador). Fuente del caso: `docs/caso-canonico.md`.
 Backend e interfaz se implementan en paralelo contra este documento. Nadie cambia un nombre, un tipo o un significado por su cuenta: todo cambio se propone al coordinador, que sube la versión del contrato.

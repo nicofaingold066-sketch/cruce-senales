@@ -54,6 +54,11 @@ Decisión:
 ## Cómo se da por corregido
 Un hallazgo solo cuenta como corregido cuando la prueba de regresión correspondiente se ejecutó contra el proyecto real y pasó, con la salida registrada en `docs/correcciones-altas-1.md`. Actualizar este documento o pasar las pruebas de andamiaje no cuenta.
 
-## Aclaraciones del coordinador (viernes 11:30)
+## Aclaraciones del coordinador
 - **Ubicación del motivo (A1):** el motivo por el que `aceptar` es false vive en `mi_situacion.motivo_aceptar` (string o null; valor `"cupo_reservado"` cuando el último cupo está reservado al imprescindible). `puede` sigue siendo un mapa de booleanos y NO lleva `motivo`. La interfaz lee `mi_situacion.motivo_aceptar`.
 - **Pares código/detalle confirmados:** `asiento_en_uso` / `asiento_en_uso`; `intento_obsoleto` / `intento_obsoleto`; `cupo_completo` / `reservado_imprescindible`. Los textos son los que quedaron en la tabla de mensajes del backend (migración 0008).
+
+## Decisiones del coordinador tras la revisión de Codex (O1, O2 y A2 ampliado)
+- **O1, `reset_demo` repetido con el MISMO `p_intento_id`:** devuelve la respuesta ORIGINAL de ese reinicio (idempotencia). Por eso el campo `generacion` de la raíz y de `resultado` es la generación que produjo ESE reinicio (foto del momento), mientras que `espacio.generacion` es la generación ACTUAL del espacio. Ejemplo: reinicio R1, luego R2, luego repetir R1: raíz y `resultado.generacion` = la de R1; `espacio.generacion` = la de R2. **La interfaz usa siempre `espacio.generacion` para saber el estado actual** y trata la raíz como el eco de esa acción. No se cambia el backend.
+- **O2, `server_info`:** no lleva guard de sesión dentro del cuerpo. La protección es el privilegio: `EXECUTE` solo para `authenticated` (A5 verificado: sin sesión se rechaza con 42501). Las sesiones anónimas de Supabase tienen `auth.uid()` y rol `authenticated`, así que no existe una llamada ejecutable sin identidad. Se declara como excepción diagnóstica aceptada: devuelve `autenticada` y la versión del contrato.
+- **A2, restricción adicional:** el backend también rechaza reclamar un asiento simulado que se RETIRÓ de alguna propuesta (aunque no tenga condiciones, elegibilidad ni aceptaciones). Se acepta y queda como parte de la enmienda: es más estricta, no contradice el objetivo (nadie hereda historia que no hizo) y no rompe el recorrido canónico, donde el reclamante entra a un asiento limpio.
