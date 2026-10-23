@@ -40,7 +40,54 @@ export async function ok(s: Sesion | SupabaseClient, fn: string, args: Record<st
   return r
 }
 
+/** Llamada sin interpretar (para probar permisos): data, error de PostgREST y estado HTTP. */
+export async function rpcCrudo(s: Sesion | SupabaseClient, fn: string, args: Record<string, unknown> = {}) {
+  const c = 'c' in s ? s.c : s
+  const { data, error, status } = await c.rpc(fn, args)
+  return { data: data as Json, error, status }
+}
+
+/** Versión del contrato vigente (enmienda 2). */
+export const CONTRATO = 2
+
 export const intento = () => randomUUID()
+
+const Z = '00000000-0000-4000-8000-000000000000'
+/**
+ * Lista permitida de entradas públicas (A5) con argumentos inofensivos: con una sesión válida cada
+ * llamada termina en un sobre de error de negocio (o en una lectura vacía) y no escribe nada.
+ * seed_demo_space es la excepción (crea el demo propio de esa sesión) y se prueba aparte.
+ */
+export const PERMITIDAS: Record<string, () => Record<string, unknown>> = {
+  server_info: () => ({}),
+  create_space: () => ({ p_nombre: '', p_tipo: 'amigos', p_nombre_visible: 'x' }),
+  join_space: () => ({ p_codigo: 'ZZZZZZZZ', p_nombre_visible: 'x' }),
+  list_my_spaces: () => ({}),
+  get_space: () => ({ p_espacio_id: Z }),
+  seed_demo_space: () => ({}),
+  add_simulated_member: () => ({ p_espacio_id: Z, p_nombre_visible: 'x' }),
+  reset_demo: () => ({ p_espacio_id: Z, p_intento_id: randomUUID() }),
+  create_proposal: () => ({
+    p_espacio_id: Z, p_titulo: '', p_franjas: [], p_minimo: 2, p_maximo: 2, p_imprescindible_id: Z,
+    p_plazo: '2026-12-01T20:00', p_zona_horaria: 'America/Santiago', p_intento_id: randomUUID(),
+  }),
+  open_proposal: () => ({ p_propuesta_id: Z }),
+  list_proposals: () => ({ p_espacio_id: Z }),
+  get_proposal_state: () => ({ p_propuesta_id: Z }),
+  mark_interest: () => ({ p_propuesta_id: Z, p_interesado: true }),
+  save_my_conditions: () => ({ p_propuesta_id: Z, p_disponibilidad: { A: 'si' } }),
+  get_my_conditions: () => ({ p_propuesta_id: Z }),
+  evaluate_and_publish: () => ({ p_propuesta_id: Z, p_intento_id: randomUUID() }),
+  accept_version: () => ({ p_propuesta_id: Z, p_version: 1, p_intento_id: randomUUID() }),
+  withdraw_commitment: () => ({ p_propuesta_id: Z }),
+  propose_repair: () => ({ p_propuesta_id: Z, p_intento_id: randomUUID() }),
+  cancel_proposal: () => ({ p_propuesta_id: Z }),
+  simulate_mark_interest: () => ({ p_propuesta_id: Z, p_miembro_id: Z, p_interesado: true }),
+  simulate_save_conditions: () => ({ p_propuesta_id: Z, p_miembro_id: Z, p_disponibilidad: { A: 'si' } }),
+  simulate_accept: () => ({ p_propuesta_id: Z, p_miembro_id: Z, p_version: 1, p_intento_id: randomUUID() }),
+  simulate_withdraw: () => ({ p_propuesta_id: Z, p_miembro_id: Z }),
+  get_simulation_panel: () => ({ p_propuesta_id: Z }),
+}
 
 export function sufijo(): string {
   return randomUUID().slice(0, 6)

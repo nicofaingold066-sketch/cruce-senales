@@ -69,17 +69,21 @@ describe('seed y reinicio de demo', { timeout: 60_000 }, () => {
     const p1 = listado1.propuestas[0].id
 
     // Luna no es organizadora: rechazado y sin efectos.
-    const rl = await rpc(L, 'reset_demo', { p_espacio_id: esp1.id })
+    const rl = await rpc(L, 'reset_demo', { p_espacio_id: esp1.id, p_intento_id: intento() })
     expect(err(rl)).toBe('no_autorizado/no_es_organizador_espacio')
     expect(rl.state_rev).toBeNull()
     // Espacio no demo: rechazado.
     const noDemo = await crearEspacioPrueba(T1, 'no-demo', 'Org t')
-    expect(err(await rpc(T1, 'reset_demo', { p_espacio_id: noDemo.espacioId }))).toBe('no_autorizado/espacio_no_demo')
+    expect(err(await rpc(T1, 'reset_demo', { p_espacio_id: noDemo.espacioId, p_intento_id: intento() }))).toBe('no_autorizado/espacio_no_demo')
     // T2 sobre el demo de T1: no es miembro.
-    expect(err(await rpc(T2, 'reset_demo', { p_espacio_id: esp1.id }))).toBe('fuera_de_audiencia/no_miembro')
+    expect(err(await rpc(T2, 'reset_demo', { p_espacio_id: esp1.id, p_intento_id: intento() }))).toBe('fuera_de_audiencia/no_miembro')
 
-    const r = await ok(T1, 'reset_demo', { p_espacio_id: esp1.id })
+    expect(esp1.generacion).toBe(1)
+    const r = await ok(T1, 'reset_demo', { p_espacio_id: esp1.id, p_intento_id: intento() })
     expect(r.resultado.propuestas_eliminadas).toBe(1)
+    expect(r.resultado.generacion).toBe(2)
+    expect(r.generacion).toBe(2)
+    expect(r.espacio.generacion).toBe(2)
     expect(r.espacio.ultimo_reinicio).not.toBeNull()
     expect(r.espacio.codigo_invitacion).toBe(esp1.codigo_invitacion)
     expect(r.espacio.miembros.map((m: Json) => [m.miembro_id, m.simulado])).toEqual(
@@ -92,7 +96,9 @@ describe('seed y reinicio de demo', { timeout: 60_000 }, () => {
     const despues2 = (await ok(T2, 'get_proposal_state', { p_propuesta_id: p2 })).propuesta
     expect(despues2.state_rev).toBe(antes2.state_rev)
     expect(despues2.interesados.cantidad).toBe(1)
-    expect((await ok(T2, 'get_space', { p_espacio_id: esp2.id })).espacio.ultimo_reinicio).toBeNull()
+    const e2 = (await ok(T2, 'get_space', { p_espacio_id: esp2.id })).espacio
+    expect(e2.ultimo_reinicio).toBeNull()
+    expect(e2.generacion).toBe(1)
 
     // Después del reinicio se puede volver a crear la propuesta (intento nuevo).
     const again = await ok(T1, 'create_proposal', {
