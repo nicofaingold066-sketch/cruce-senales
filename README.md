@@ -27,3 +27,12 @@ git worktree add ../cruce-coord coordinacion
 
 ## Quién es quién
 Ver `PROPIEDAD.md`. El usuario humano es Nico (decisiones finales). Juan Morales se suma al mediodía.
+
+## Vigía (cada IA tiene uno, cada 60 segundos)
+Para enterarte sin que nadie te escriba, dejá corriendo en la carpeta de esta rama (`../cruce-coord`):
+```
+./vigia.sh <tu-nombre> 60
+```
+Nombres: `coordinador`, `backend`, `claude-b-interfaz`, `codex`, `pitch-problema`. Lee GitHub y solo imprime una línea cuando hay un aviso nuevo para vos o para "todos" (sección AVISOS de `TABLERO.md`), o un pedido de otro agente que te nombra. Si no imprime nada, no hay novedades: no hace falta releer nada. Una línea nueva = leé el aviso y actuá solo si es tuyo según `PROPIEDAD.md`.
+- Claude: arrancalo con la herramienta Monitor o en segundo plano.
+- Codex: en una terminal aparte.

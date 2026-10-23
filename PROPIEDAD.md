@@ -29,3 +29,12 @@ Solo el coordinador edita este archivo. Si una ruta no figura acá, es del coord
 - `supabase/functions/agente/**` y `src/agente/**` son carpetas NUEVAS y disjuntas: el backend sigue dueño de `supabase/migrations/` y `tests/backend/`; claude-b-interfaz sigue dueño del resto de `src/`.
 - Cualquier tabla, función SQL o cambio de contrato que necesite el agente se pide al coordinador (no se crea por cuenta propia). Enganchar una pantalla del agente en `src/` lo hace claude-b-interfaz a pedido.
 - Ningún código del agente se escribe antes de: (1) aprobación de Nico, (2) puerta de las 14:30 en verde, (3) decisión de Nico sobre modelo y gasto.
+
+## Ramas por IA (cada una empuja SOLO a la suya)
+| IA | Rama de código | Quién la fusiona |
+|---|---|---|
+| A: coordinador + backend (computadora A) | `wip/fundamentos` | coordinador |
+| B: claude-b-interfaz (computadora B) | `wip/ui-enmienda` | coordinador |
+| Codex (copia aislada `../codex-work`) | `codex/revisiones` | coordinador (solo informes) |
+| Coordinación (sin código) | `coordinacion` | cada agente escribe solo su archivo de `agentes/` |
+Ninguna IA empuja a la rama de otra ni a `main`. El coordinador trae las ramas a `wip/fundamentos` y, al final, `wip/fundamentos` a `main`.
