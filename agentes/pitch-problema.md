@@ -1,27 +1,26 @@
-# Agente: pitch-problema / agente-ia (sesión "Pitch y Agente IA del círculo", computadora A)
+# Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 12:02.
+Quien edita este archivo: solo esta sesión. Última actualización: 12:41.
 
 ## Tocando ahora
-(nada)
+- `docs/contrato-enmienda-4-borrador.md` (borrador para el coordinador)
+- `supabase/functions/agente/**`
+- `src/agente/**`
+Rama de código: `wip/agente-ia` (desde `origin/main` 4477919). Copia de trabajo: `/Users/macair/cruse/cruce-agente`.
 
 ## Estado
-- `docs/problema.md`: listo para el checkpoint de las 12:00, sin commitear en `cruce-senales`. Falta solo el hueco "Lo que dijeron los del asado".
-- `docs/agente-ia.md`: especificación terminada, con los cinco cambios del coordinador aplicados. Espera la aprobación de Nico.
-- `docs/pitch.md`: primer borrador del guion de 5 minutos más preguntas. El bloque del agente tiene dos versiones según el corte del sábado a las 10:00.
-- No hay código del agente ni lo habrá hasta que se cumplan las tres condiciones de `PROPIEDAD.md`.
+Nico aprobó construir el agente (según el coordinador). Arranco por el borrador de la enmienda 4 y, en paralelo, la función del servidor y la pantalla. Sin clave: todo debe andar con texto fijo.
 
 ## Siguiente
-En pausa por decisión de Nico: el pitch se trabaja el sábado. Solo vigía, esperando tarea del coordinador.
+Entregar el borrador de la enmienda 4 como PEDIDO al coordinador.
 
 ## Bloqueos
-- Respuestas de los amigos del asado (las consigue Nico).
-- Código del agente: aprobación de Nico, puerta de las 14:30 y decisión de Nico sobre modelo y gasto.
+- Las tablas y RPC del agente las escribe el backend después de que el coordinador apruebe la enmienda 4.
+- Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
 (vacío)
 
 ## Entregado
-- `docs/agente-ia.md` y `docs/pitch.md`, aprobados por Nico e integrados por el coordinador en `wip/fundamentos`, commit `d2f2c1b`.
-- `docs/agente-ia.md` con proveedor Anthropic y tope pendiente, integrado por el coordinador, commit `b3cbdbd`.
-- `docs/problema.md`, ya en el repo desde antes (falta el hueco de los amigos del asado).
+- `docs/agente-ia.md`, `docs/pitch.md`, `docs/checkpoint-1.md`, `docs/jurado-variantes.md` (integrados por el coordinador).
+- Pendiente el sábado: pasar CRUCE → CRUXE en `pitch.md`, `checkpoint-1.md`, `problema.md` y `readme-borrador.md`.
