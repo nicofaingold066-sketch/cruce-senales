@@ -50,7 +50,9 @@ function entrarAlEspacio(r: UnirseOk['resultado'], espacio: string, nombre: stri
   } else {
     dejarAviso(`Te uniste a «${espacio}» como ${nombre}. Cuando haya un plan, marca si te interesa y carga en privado cuándo puedes.`)
   }
-  irA(rutas.espacio(r.espacio_id))
+  // #88: quien eligió su nombre de la lista va directo a responder la propuesta abierta (un toque). Si no hay una sola
+  // propuesta por responder, esa pantalla lo deja en el espacio. Por el formulario se sigue entrando al espacio.
+  irA(porLista ? rutas.responder(r.espacio_id) : rutas.espacio(r.espacio_id))
 }
 
 /**
@@ -157,7 +159,7 @@ function AvisoYaMiembro({ ya, unirse, cerrar }: { ya: YaMiembro; unirse: (i: Int
             {ya.nombreActual}.
           </p>
           <div className="fila-botones">
-            <Boton autoFocus onClick={() => irA(rutas.espacio(ya.espacioId))}>
+            <Boton autoFocus onClick={() => irA(ya.intento.origen === 'lista' ? rutas.responder(ya.espacioId) : rutas.espacio(ya.espacioId))}>
               Seguir como {ya.nombreActual}
             </Boton>
             <Boton variante="secundario" onClick={() => setConfirmar(true)}>

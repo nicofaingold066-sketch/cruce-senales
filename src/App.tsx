@@ -12,6 +12,7 @@ import { lazy, Suspense, useEffect } from 'react'
 import Inicio from './screens/Inicio'
 import { QuienEres } from './login/QuienEres'
 import { fuenteReal } from './login/fuente'
+import { Responder } from './friccion/Responder'
 
 // Mejora #14: la primera pantalla carga sola; las demás van en partes aparte (dividen el paquete de > 500 KB)
 // y se precargan en segundo plano apenas hay sesión, para que en la demo navegar no espere a la red.
@@ -176,6 +177,8 @@ function PantallaRuta({ ruta }: { ruta: Ruta }) {
   switch (ruta.nombre) {
     case 'espacio':
       return <Espacio key={ruta.espacioId} espacioId={ruta.espacioId} />
+    case 'responder':
+      return <Responder key={ruta.espacioId} espacioId={ruta.espacioId} />
     case 'nueva':
       return <NuevaPropuesta key={ruta.espacioId} espacioId={ruta.espacioId} />
     case 'propuesta':
