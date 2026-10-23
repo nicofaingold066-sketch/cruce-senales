@@ -187,8 +187,8 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
     }
   })
 
-  it('7. lista permitida: 29 para authenticated, 0 para anon, agente_insumos no existe', async () => {
-    expect(Object.keys(PERMITIDAS)).toHaveLength(29)
+  it('7. lista permitida: 30 para authenticated (29 de la enmienda 4 + 1 de la 5), 0 para anon, agente_insumos no existe', async () => {
+    expect(Object.keys(PERMITIDAS)).toHaveLength(30)
     for (const fn of ['save_my_preferences', 'get_my_preferences', 'proponer_plan_borrador']) {
       const a = await rpcCrudo(clienteSinSesion(), fn, PERMITIDAS[fn]())
       expect(a.error?.code, fn).toBe('42501')

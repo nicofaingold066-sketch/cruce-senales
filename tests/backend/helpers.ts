@@ -95,6 +95,11 @@ export const PERMITIDAS: Record<string, () => Record<string, unknown>> = {
   }),
   get_my_preferences: () => ({ p_espacio_id: Z }),
   proponer_plan_borrador: () => ({ p_espacio_id: Z, p_sabado: '2026-10-31', p_clima: { sabado: 'desconocido', domingo: 'desconocido' } }),
+  // enmienda 5
+  simulate_save_preferences: () => ({
+    p_espacio_id: Z, p_miembro_id: Z,
+    p_preferencias: { presupuesto: 'da_igual', energia: 'con_todo', ambiente: 'da_igual', lugar: 'da_igual', me_gustaria: ['asado'] },
+  }),
 }
 
 /** Lista cerrada de siguiente_accion.codigo (enmienda 3). */
