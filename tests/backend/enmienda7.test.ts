@@ -279,3 +279,89 @@ describe('E7.5: puede.simular solo en demo y mensaje general de espacio_no_demo'
     for (const p of [prop, pd]) await ok(A, 'cancel_proposal', { p_propuesta_id: p })
   })
 })
+
+describe('mejora #59: el texto de esperando_compromisos no dice "5 de 4"', { timeout: 90_000 }, () => {
+  it('mínimo 4, cinco confirmados sin el anfitrión: "confirmaron 5 (mínimo 4)"; con 3 y 4 sigue "X de 4 necesarias"', async () => {
+    const [A, B] = await sesiones()
+    const demo = (await ok(A, 'seed_demo_space')).espacio
+    const id: Record<string, string> = Object.fromEntries(demo.miembros.map((m: Json) => [m.nombre, m.miembro_id]))
+    // B mira desde el demo sin cargar condiciones: no es elegible, así que ve el texto general del estado.
+    await ok(B, 'join_space', { p_codigo: demo.codigo_invitacion, p_nombre_visible: 'Mira t' })
+    const prop = await crearPropuesta(A, demo.id, demo.mi_miembro_id, { minimo: 4, maximo: 6, titulo: 't-mejora-59' })
+    await ok(A, 'save_my_conditions', { p_propuesta_id: prop, p_disponibilidad: { A: 'si', B: 'si' } })
+    const sims = ['Luna', 'Mati', 'Caro', 'Fede', 'Sofi']
+    for (const n of sims) {
+      await ok(A, 'simulate_save_conditions', { p_propuesta_id: prop, p_miembro_id: id[n], p_disponibilidad: { A: 'si', B: 'si' } })
+    }
+    expect((await ok(A, 'evaluate_and_publish', { p_propuesta_id: prop, p_intento_id: intento() })).resultado.version).toBe(1)
+    const texto = async () => {
+      const s = (await ok(B, 'get_proposal_state', { p_propuesta_id: prop })).propuesta.siguiente_accion
+      expect(s.codigo).toBe('aceptar_version')
+      return s.texto as string
+    }
+    for (const [i, n] of sims.entries()) {
+      await ok(A, 'simulate_accept', { p_propuesta_id: prop, p_miembro_id: id[n], p_version: 1, p_intento_id: intento() })
+      if (i === 2) expect(await texto()).toBe('Versión 1: confirmaron 3 de 4 necesarias. Falta la aceptación de Tomi.')
+      if (i === 3) expect(await texto()).toBe('Versión 1: confirmaron 4 de 4 necesarias. Falta la aceptación de Tomi.')
+    }
+    const cinco = (await ok(B, 'get_proposal_state', { p_propuesta_id: prop })).propuesta
+    expect(cinco.estado).toBe('esperando_compromisos')
+    expect(cinco.confirmados).toBe(5)
+    expect(cinco.siguiente_accion).toEqual({
+      codigo: 'aceptar_version', texto: 'Versión 1: confirmaron 5 (mínimo 4). Falta la aceptación de Tomi.',
+    })
+    const fin = await ok(A, 'accept_version', { p_propuesta_id: prop, p_version: 1, p_intento_id: intento() })
+    expect(fin.propuesta.estado).toBe('grupo_confirmado')
+    await ok(A, 'cancel_proposal', { p_propuesta_id: prop })
+  })
+})
+
+describe('mejora #54: ritmo_del_grupo usa la mayoría de los demás, como el perfil (E7.4)', { timeout: 90_000 }, () => {
+  it('el voto de quien pide no hace aparecer ni desaparecer la frase; coincide siempre con el perfil', async () => {
+    const [A] = await sesiones()
+    const demo = (await ok(A, 'seed_demo_space')).espacio
+    const id: Record<string, string> = Object.fromEntries(demo.miembros.map((m: Json) => [m.nombre, m.miembro_id]))
+    const sabado = await proximoSabado(A)
+    // Energía y ambiente de cada actividad del catálogo (cruce.catalogo_agente).
+    const CAT: Record<string, [string, string]> = {
+      asado: ['algo_tranquilo', 'tranquilo'], padel: ['con_todo', 'tranquilo'], futbol: ['con_todo', 'fiesta'],
+      parque: ['algo_tranquilo', 'tranquilo'], fiesta: ['con_todo', 'fiesta'],
+    }
+    const pref = (energia: string, ambiente: string, me_gustaria: string[], presupuesto = 'da_igual', lugar = 'da_igual'): Pref =>
+      ({ presupuesto, energia, ambiente, lugar, me_gustaria })
+    const simular = (nombre: string, p: Pref) =>
+      ok(A, 'simulate_save_preferences', { p_espacio_id: demo.id, p_miembro_id: id[nombre], p_preferencias: p })
+    const tomi = (ambiente: string) =>
+      ok(A, 'save_my_preferences', { p_espacio_id: demo.id, p_preferencias: pref('algo_tranquilo', ambiente, ['asado']) })
+    const plan = async () => {
+      const r = (await ok(A, 'proponer_plan_borrador', { p_espacio_id: demo.id, p_sabado: sabado, p_clima: SECO })).resultado
+      // Coherencia: la frase sale si y solo si la actividad va con la energía y el ambiente mayoritarios del perfil.
+      for (const c of r.candidatas) {
+        const [e, a] = CAT[c.actividad]
+        const esperada = r.perfil_grupo.personas > 3 && e === r.perfil_grupo.energia_mayoritaria && a === r.perfil_grupo.ambiente_mayoritario
+        expect(c.frases_grupo.includes('ritmo_del_grupo'), c.actividad).toBe(esperada)
+      }
+      return r
+    }
+    // Los demás (5 simulados): energía 3 algo tranquilo contra 2 con todo; ambiente empatado (Caro tranquilo, Fede fiesta).
+    await simular('Luna', pref('algo_tranquilo', 'da_igual', ['parque']))
+    await simular('Mati', pref('con_todo', 'da_igual', ['asado', 'futbol'], 'algo_barato'))
+    await simular('Caro', pref('algo_tranquilo', 'tranquilo', ['asado', 'parque'], 'da_igual', 'bajo_techo'))
+    await simular('Fede', pref('con_todo', 'fiesta', ['futbol', 'fiesta']))
+    await simular('Sofi', pref('algo_tranquilo', 'da_igual', ['asado'], 'algo_barato'))
+
+    // Tomi "tranquilo": con su voto el ambiente de todos sería tranquilo y el asado llevaba la frase; ahora no.
+    await tomi('tranquilo')
+    const r1 = await plan()
+    expect(r1.perfil_grupo).toMatchObject({ personas: 5, energia_mayoritaria: 'algo_tranquilo', ambiente_mayoritario: null })
+    expect(JSON.stringify(r1.candidatas)).not.toContain('ritmo_del_grupo')
+
+    // Luna pasa a "tranquilo": los demás tienen mayoría y el asado lleva la frase, aunque Tomi vote "fiesta"
+    // (con su voto el ambiente de todos quedaría empatado y antes la frase no salía).
+    await simular('Luna', pref('algo_tranquilo', 'tranquilo', ['parque']))
+    await tomi('fiesta')
+    const r2 = await plan()
+    expect(r2.perfil_grupo).toMatchObject({ personas: 5, energia_mayoritaria: 'algo_tranquilo', ambiente_mayoritario: 'tranquilo' })
+    expect(r2.candidatas.find((c: Json) => c.actividad === 'asado').frases_grupo).toContain('ritmo_del_grupo')
+  })
+})

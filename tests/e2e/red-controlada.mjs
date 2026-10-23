@@ -218,28 +218,28 @@ try {
     assert.equal(await page.getByText('No hay personas simuladas', { exact: true }).count(), 1)
   }, 'simulacion')
 
-  let primerasListas = 0
-  await caso('F1 REPRODUCIDO: primera lista válida se descarta hasta el próximo refresco', async ({ route, fn }) => {
-    if (fn === 'get_space') { await esperar(20); return fulfill(route, espacio(1)) }
+  // #53: F1 pasó de reproducción a regresión positiva cuando #52 lo arregló (Espacio.tsx, cargarTodo).
+  // Mismas demoras que la reproducción: get_space llega primero y fija la generación.
+  let espacios = 0, listas = 0
+  await caso('F1 primera lista válida aparece sin refresco ni sondeo', async ({ route, fn }) => {
+    if (fn === 'get_space') { espacios++; await esperar(20); return fulfill(route, espacio(1)) }
     if (fn === 'list_proposals') {
-      primerasListas++
+      listas++
       await esperar(180)
       return fulfill(route, sobre({ propuestas: [propuesta(5, 'LISTA_INICIAL_VALIDA')] }))
     }
     throw new Error(`RPC inesperada ${fn}`)
   }, async page => {
     await page.getByRole('heading', { name: 'ESPACIO_GEN_1' }).waitFor()
-    await hasta(() => primerasListas === 1, 'No pidió la lista inicial')
-    await esperar(450) // Ambas respuestas terminaron; todavía faltan ~9 s para el siguiente sondeo.
-    assert.equal(await page.getByText('LISTA_INICIAL_VALIDA', { exact: true }).count(), 0)
-    assert.equal(await page.getByText('Cargando propuestas…', { exact: true }).count(), 1,
-      'El defecto ya no se reproduce: retirar esta reproducción y agregar una regresión positiva')
-    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')))
-    await page.getByText('LISTA_INICIAL_VALIDA', { exact: true }).waitFor()
+    // El sondeo es de 10 s: si la lista aparece antes de 2 s, no hizo falta refrescar.
+    await page.getByText('LISTA_INICIAL_VALIDA', { exact: true }).waitFor({ timeout: 2000 })
+    assert.equal(await page.getByText('Cargando propuestas…', { exact: true }).count(), 0)
+    await esperar(300)
+    assert.deepEqual({ espacios, listas }, { espacios: 1, listas: 1 }, 'Una lectura de cada una, sin refresco ni sondeo')
   }, 'espacio')
 
 } finally {
   await browser.close(); await server.close()
-  console.log(`#34: ${aprobadas} PASS, ${fallidas} FAIL. Incluye 8 regresiones y una reproducción de defecto F1 (PASS significa defecto reproducido). Red externa interceptada; cero llamadas reales a Supabase.`)
+  console.log(`#34: ${aprobadas} PASS, ${fallidas} FAIL. Incluye 9 regresiones: N1 a N8 y F1 (desde #53, regresión positiva del arreglo #52). Red externa interceptada; cero llamadas reales a Supabase.`)
 }
 if (fallidas) process.exitCode = 1

@@ -65,3 +65,6 @@ Aprobada por el coordinador el 23 oct 2026, a partir de `docs/agente-revision-pr
   - `cruce.situacion` agrega la condición "espacio demo" a `puede.simular`. Las propuestas activas de espacios no demo que tenían simulados de antes pasaron de `true` a `false` (comprobado en la base, antes y después).
   - `cruce.mensaje` devuelve el texto general para `no_autorizado/espacio_no_demo`.
   - Prueba: `describe('E7.5')` en `tests/backend/enmienda7.test.ts`. En un espacio no demo nuevo, `puede.simular` ya era `false` porque no puede tener simulados; el caso de los simulados de antes se comprobó con la consulta directa.
+- **Después de la enmienda, sin cambio de contrato (16:04 a 16:06):**
+  - `0029_texto_confirmaron_minimo` (#59): el texto de `esperando_compromisos` con más confirmaciones que el mínimo pasa a decir "Versión N: confirmaron X (mínimo MIN)." en lugar de "X de MIN necesarias". En la base no hay otro texto con el patrón "X de MIN".
+  - `0030_ritmo_sin_quien_llama` (#54): `ritmo_del_grupo` usa la misma mayoría de energía y ambiente que el perfil, sin quien pide. Si los demás empatan en ambiente, la frase no sale. El puntaje y el orden no cambian.
