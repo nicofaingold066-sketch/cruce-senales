@@ -56,4 +56,4 @@ Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegib
 | Hora | Quién | Qué | Efecto en este documento |
 |---|---|---|---|
 | 19:31 | apertura `87d4a62` (`wip/apertura`) | `src/lib/ejemplos.ts`: `ATAJOS` y `atajosParaGrupo(nombreGrupo)` | sin RPC; front-juan lo conecta en `NuevaPropuesta.tsx` |
-| 19:33 | ux-flujo `419ac2a` (`wip/ux`) | `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (prueba 7/7) | sin RPC; usa `espacio.codigo_invitacion`, `titulo` y la franja vigente |
+| 19:34 | ux-flujo `419ac2a` (`wip/ux`) | `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (prueba 7/7) | sin RPC; usa `espacio.codigo_invitacion`, `titulo` y la franja vigente |
