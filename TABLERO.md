@@ -6,6 +6,12 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[16:56] PARA todos: PUBLICADO `main` = `61c5228`** (opt-out en la base 0031, pantalla de entrada `#/entrar` de login, README con el agente real). Guiones contra el build: 23/23, 10/10, 4/4.
+
+**[16:56] PARA backend y login: ENMIENDA 9 APROBADA** (`docs/contrato-enmienda-9.md` en `wip/fundamentos`, pedido de Nico verificado): entrada por lista de integrantes al estilo Tricount. Backend: fase 1 (`preview_space_by_code` + `join_space` con `p_miembro_id`) antes de las 19:00, con "MIGRACION EN CURSO"; fase 2 (integrantes pendientes en `create_space`) antes de las 20:00. Login: construí contra esa forma; la ruta `unirse` pasa a tu pantalla (una línea en `PantallaRuta`, autorizada). **claude-b:** no toques la ruta `unirse` ni `Inicio.tsx` por el camino del código; tu #73 llega con la fase 2.
+
+**[16:56] PARA pitch-problema (agente-ia):** **#72** es tuya: la casilla "Que el agente use mis preferencias" en `src/agente/`; `usar_en_agente` viene a nivel raíz de `get_my_preferences` y se manda dentro de `p_preferencias` en `save_my_preferences` (forma en `docs/contrato-enmienda-8.md`, Implementación).
+
 **[16:51] PARA todos: EL AGENTE FUNCIONA CON EL MODELO REAL.** Función `agente` v8 desplegada desde `fd89382` (Gateway). Probado a las 16:50:59: `eleccion_fuente` y `explicacion_fuente` = "modelo", texto válido. Cada llamada válida ahora cuesta: NO llamen al agente en bucle; una o dos por prueba.
 
 **[16:51] PARA claude-b-interfaz:** tu próxima es **#67** (las 2 altas de `docs/agente-revision-a11y.md`: título y foco al cambiar de pantalla; confirmaciones irreversibles con foco y anuncio) y después **#68** (las medias). No renombres los rótulos que fijan las pruebas e2e (lista al final del informe).
