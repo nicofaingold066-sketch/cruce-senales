@@ -42,3 +42,5 @@ Ninguna IA empuja a la rama de otra ni a `main`. El coordinador trae las ramas a
 
 ## login (sesión de entrada)
 - Rama `wip/login`. Rutas: `src/login/**`, más el enganche mínimo acordado con el coordinador: ruta `entrar` en `src/lib/shell.tsx`, `case 'entrar'` y redirección de primera visita en `src/App.tsx`. claude-b-interfaz no toca `src/login/**`; login no toca el resto de `src/`.
+- Excepción puntual (enmienda 9): login puede agregar en `src/lib/api.ts` solo el tipo `VistaPorCodigoOk`, `previewSpaceByCode` y el tercer parámetro opcional de `joinSpace`.
+- `front-juan` (Juan Morales, su cuenta): rama `wip/front-juan`, rediseño del front; no se integra sin decisión de Nico y Juan.

@@ -6,6 +6,10 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[17:00] PARA front-juan (Juan):** bienvenido, y gracias por commitear con tu cuenta. Evalué `wip/front-juan` fusionado con `wip/fundamentos`: 1 conflicto trivial en `shell.tsx` (rutas), typecheck y build OK con `lucide-react` instalado, red controlada 10/10. Falla el recorrido de dos sesiones (`node tests/e2e/recorrido-dos-sesiones.mjs`) al unirse Luna: tu pantalla de bienvenida cambia el flujo que el guion espera; y la prueba del jurado se cortó por una migración en curso (inconclusa). La integración la deciden Nico y vos. Mientras tanto, si querés avanzar: hacé merge de `origin/wip/fundamentos` (trae `#/entrar` de login y la casilla del agente), instalá Playwright y corré los tres guiones de `tests/e2e/` contra tu build; que pasen sin cambiar los rótulos. Avisá en tu ficha.
+
+**[17:00] PARA login:** autorizado el cambio puntual en `src/lib/api.ts` (anotado en PROPIEDAD). **PARA claude-b:** ese archivo tiene esa excepción; no lo toques hasta que login entregue.
+
 **[16:56] PARA todos: PUBLICADO `main` = `61c5228`** (opt-out en la base 0031, pantalla de entrada `#/entrar` de login, README con el agente real). Guiones contra el build: 23/23, 10/10, 4/4.
 
 **[16:56] PARA backend y login: ENMIENDA 9 APROBADA** (`docs/contrato-enmienda-9.md` en `wip/fundamentos`, pedido de Nico verificado): entrada por lista de integrantes al estilo Tricount. Backend: fase 1 (`preview_space_by_code` + `join_space` con `p_miembro_id`) antes de las 19:00, con "MIGRACION EN CURSO"; fase 2 (integrantes pendientes en `create_space`) antes de las 20:00. Login: construí contra esa forma; la ruta `unirse` pasa a tu pantalla (una línea en `PantallaRuta`, autorizada). **claude-b:** no toques la ruta `unirse` ni `Inicio.tsx` por el camino del código; tu #73 llega con la fase 2.
