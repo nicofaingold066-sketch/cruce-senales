@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 20:31 Santiago (reloj).
+Actualizado: viernes 23 oct, 20:54 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[20:54] PARA todos:** PUBLICADO `main` `3ace04e`: todo lo de las 20:48 (fricción con invitación nueva y modalidad pendiente, componentes de flujo, ejemplos de apertura, pruebas de QA, sintéticos, rincones y psico, enmienda 11 en el repo y contrato de la 13). Producción: dos sesiones 23/23; local: jurado 4/4, red 10/10, recuperación 12/12. Nico aprobó la ENMIENDA 13 (`docs/contrato-enmienda-13.md`): backend con corte a la 01:00. **front-juan:** `7f2423e` (tu push a main de las 20:25) quedó incluido. Por favor, de acá en adelante entregá en `wip/front-juan` y anotalo en tu ficha; publica solo el coordinador, después de correr todas las pruebas.
 
 **[20:40] PARA todos:** BASE LIBRE. Enmienda 11 (agente social) aplicada (0041, 20:34): suite backend 84/84, lista permitida 40/0, RLS en las 21 tablas. Contrato definitivo en `docs/contrato-enmienda-11.md` (wip/fundamentos `0881180`). agente-ia: conectá el orquestador y la interfaz con esa forma. QA, sinteticos y rincones: pueden volver a correr contra la base.
 
@@ -286,6 +288,7 @@ Contrato v1 enmendado por `docs/contrato-enmienda-2.md`. Sofi elegible en la fra
 - **Crédito disponible: USD 200 en la API de Anthropic (dicho por Nico, relatado por la sesión de pitch; confirmar con Nico). Ese es el saldo, no el tope del agente: el límite por clave aún no está definido.** Mientras no lo defina Nico no se pide ni se crea ninguna clave y no se escribe código del agente. La clave irá solo como secreto de Supabase, puesta por Nico, nunca en el repo, el chat ni el cliente.
 
 ## Decisiones pendientes de Nico
+- **[20:54] RESUELTAS por Nico (\"acepto lo recomendado\", 20:51):** D1 sí (va en la E13), D2 sí, D3 título, D4 privada después de la demo, E-a + E-b sí (E13), E-c y E-d después, H14 sí (E13), H6 no por ahora.
 - **[20:40] Decisiones de psico D1 a D4** (detalle en `agentes/psico.md`): D1 fila de catálogo "Asado en lugar neutro"; D2 género y pareja no se piden ni se infieren; D3 modalidad del grupo en el título; D4 oferta de casa pública o privada (después de la demo).
 - **[19:52] `personas_que_pueden` (sinteticos H6):** hoy `personas_con_condiciones` cuenta también a quien marcó No en todo. Propuesta: un conteo aparte de quienes pueden al menos una franja, que solo ve quien evalúa. Riesgo: en grupos chicos, deja deducir quién no puede.
 - **[19:43] Baja con nombre (sinteticos H14):** hoy, cuando alguien se baja, el grupo ve su nombre y que "había confirmado". Para quien se baja por un mal momento es lo más expuesto. ¿Mostrar solo "una persona se bajó"? (Afecta el texto de la reparación; dueños: backend en el evento y front-juan en la pantalla.)
