@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../lib/api'
+import { supabase } from '../lib/supabase'
 import type { ApiError, EspacioResumen, PropuestaResumen, TipoEspacio } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
@@ -204,25 +205,72 @@ function irAUnirse() {
   form?.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true })
 }
 
+/**
+ * Cierra la sesión anónima de este navegador y abre una nueva (hallazgo 8 de la revisión de privacidad, mejora #47).
+ * Borra también lo que la app guardó en sessionStorage (por ejemplo, el borrador del agente).
+ */
+async function sesionNueva(): Promise<boolean> {
+  await supabase.auth.signOut({ scope: 'local' })
+  try {
+    for (const k of Object.keys(sessionStorage)) if (k.startsWith('cruxe:')) sessionStorage.removeItem(k)
+  } catch {
+    // Sin almacenamiento: no hay nada que borrar.
+  }
+  const r = await supabase.auth.signInAnonymously()
+  return !r.error
+}
+
 function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: boolean; codigoInicial?: string }) {
   const [codigo, setCodigo] = useState(codigoInicial ?? '')
   const [nombre, setNombre] = useState('')
   const { ocupado, error, ejecutar } = useAccion()
+  // Navegador compartido: la sesión guardada ya es miembro de este espacio con otro nombre.
+  const [yaMiembro, setYaMiembro] = useState<{ espacioId: string; nombreActual: string } | null>(null)
+  const [confirmar, setConfirmar] = useState(false)
+  const [cambiando, setCambiando] = useState(false)
+  const [errorCambio, setErrorCambio] = useState<string | null>(null)
   const faltan = codigo.trim() === '' || nombre.trim() === ''
+
+  function entrar(r: { espacio_id: string; reclamo_asiento_simulado: boolean }) {
+    if (r.reclamo_asiento_simulado) {
+      dejarAviso(`Reclamaste el lugar de ${nombre.trim()}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.`)
+    }
+    irA(rutas.espacio(r.espacio_id))
+  }
+
   async function hacer(e: FormEvent) {
     e.preventDefault()
     if (faltan) return
+    setYaMiembro(null)
+    setConfirmar(false)
+    setErrorCambio(null)
     const r = await ejecutar(`join:${codigo.trim()}:${nombre.trim()}`, () =>
       api.joinSpace(codigo.trim(), nombre.trim()),
     )
-    if (r?.ok) {
-      if (r.data.resultado.reclamo_asiento_simulado) {
-        dejarAviso(`Reclamaste el lugar de ${nombre.trim()}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.`)
-      } else if (r.data.resultado.ya_era_miembro) {
-        // Esta sesión ya estaba en el espacio: el servidor no cambia el nombre. Se avisa en vez de entrar en silencio.
-        dejarAviso('Este teléfono ya estaba en este espacio: sigues con tu nombre de antes (lo ves arriba). Para entrar como otra persona, usa otro teléfono o una ventana privada.')
+    if (!r?.ok) return
+    if (r.data.resultado.ya_era_miembro) {
+      // El servidor no cambia el nombre ni crea a otra persona: no se entra en silencio como quien estaba antes.
+      const yo = r.data.espacio.miembros.find((m) => m.es_yo)
+      setYaMiembro({ espacioId: r.data.resultado.espacio_id, nombreActual: yo?.nombre ?? 'otra persona' })
+      return
+    }
+    entrar(r.data.resultado)
+  }
+
+  async function entrarComoOtra() {
+    setCambiando(true)
+    setErrorCambio(null)
+    try {
+      if (!(await sesionNueva())) {
+        setErrorCambio('No se pudo abrir una sesión nueva. Revisa tu conexión e intenta de nuevo.')
+        return
       }
-      irA(rutas.espacio(r.data.resultado.espacio_id))
+      setYaMiembro(null)
+      setConfirmar(false)
+      const r = await ejecutar(`join-nueva:${codigo.trim()}:${nombre.trim()}`, () => api.joinSpace(codigo.trim(), nombre.trim()))
+      if (r?.ok) entrar(r.data.resultado)
+    } finally {
+      setCambiando(false)
     }
   }
   return (
@@ -252,10 +300,44 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
         />
         <small>Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.</small>
       </label>
-      <Boton type="submit" ocupado={ocupado} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado}>
+      <Boton type="submit" ocupado={ocupado} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado || cambiando}>
         Unirme
       </Boton>
       {error ? <ErrorCaja error={error} enfocar /> : null}
+      {yaMiembro ? (
+        <Aviso tono="aviso" titulo={`Este navegador ya está en este espacio como ${yaMiembro.nombreActual}`}>
+          {confirmar ? (
+            <>
+              <p>
+                Se va a cerrar la sesión de {yaMiembro.nombreActual} en este navegador. Esa sesión no tiene contraseña: desde acá no se
+                puede volver a entrar como {yaMiembro.nombreActual}. Para no perderla, abre el enlace en una ventana privada u otro teléfono.
+              </p>
+              <div className="fila-botones">
+                <Boton variante="peligro" onClick={() => void entrarComoOtra()} ocupado={cambiando} ocupadoTexto="Cambiando de persona…">
+                  Sí, entrar como {nombre.trim() || 'otra persona'}
+                </Boton>
+                <Boton variante="secundario" onClick={() => setConfirmar(false)} disabled={cambiando}>
+                  Cancelar
+                </Boton>
+              </div>
+            </>
+          ) : (
+            <>
+              <p>
+                Si eres {yaMiembro.nombreActual}, sigue. Si eres otra persona, entra con una sesión nueva: así no ves ni cambias lo que
+                cargó {yaMiembro.nombreActual}.
+              </p>
+              <div className="fila-botones">
+                <Boton onClick={() => irA(rutas.espacio(yaMiembro.espacioId))}>Seguir como {yaMiembro.nombreActual}</Boton>
+                <Boton variante="secundario" onClick={() => setConfirmar(true)}>
+                  Entrar como otra persona
+                </Boton>
+              </div>
+            </>
+          )}
+          {errorCambio ? <p role="alert">{errorCambio}</p> : null}
+        </Aviso>
+      ) : null}
     </form>
   )
 }
