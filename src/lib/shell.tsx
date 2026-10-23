@@ -53,6 +53,9 @@ export function tomarAviso(): string | null {
 
 export type Ruta =
   | { nombre: 'inicio' }
+  | { nombre: 'planes' }
+  | { nombre: 'perfil' }
+  | { nombre: 'crear' }
   | { nombre: 'espacio'; espacioId: string }
   | { nombre: 'nueva'; espacioId: string }
   | { nombre: 'propuesta'; espacioId: string; propuestaId: string }
@@ -72,6 +75,9 @@ function rutaUnirse(crudo: string): Ruta {
 export function parseRuta(hash: string): Ruta {
   const partes = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
   if (partes[0] === 'unirse' && partes[1]) return rutaUnirse(partes[1])
+  if (partes[0] === 'planes') return { nombre: 'planes' }
+  if (partes[0] === 'perfil') return { nombre: 'perfil' }
+  if (partes[0] === 'crear') return { nombre: 'crear' }
   if (partes[0] === 'e' && partes[1]) {
     if (partes[2] === 'nueva') return { nombre: 'nueva', espacioId: partes[1] }
     if (partes[2] === 'p' && partes[3]) return { nombre: 'propuesta', espacioId: partes[1], propuestaId: partes[3] }
@@ -82,6 +88,9 @@ export function parseRuta(hash: string): Ruta {
 
 export const rutas = {
   inicio: () => '#/',
+  planes: () => '#/planes',
+  perfil: () => '#/perfil',
+  crear: () => '#/crear',
   espacio: (id: string) => `#/e/${id}`,
   nueva: (id: string) => `#/e/${id}/nueva`,
   propuesta: (e: string, p: string) => `#/e/${e}/p/${p}`,

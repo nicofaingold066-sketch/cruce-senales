@@ -5,8 +5,11 @@ import type { UnirseOk } from '../lib/api'
 import type { ApiError, EspacioResumen, PropuestaResumen, TipoEspacio } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
-import { entrarComoOtraPersona, leerGuardada, olvidarGuardada, volverAGuardada } from '../lib/sesiones'
-import { Aviso, Boton, Cargando, ErrorCaja, InsigniaEstado, colorAvatar, iniciales } from '../components/ui'
+import { entrarComoOtraPersona, leerGuardada } from '../lib/sesiones'
+import { OtraSesion } from '../components/Sesiones'
+import { guardarPerfil, leerPerfil, recordarNombreSiFalta, usePerfil } from '../lib/perfil'
+import { Aviso, Boton, Cargando, ErrorCaja, colorAvatar, iniciales } from '../components/ui'
+import { PlanVivo, esTurno } from '../components/PlanVivo'
 import { Marca } from '../components/Marca'
 import { Icono } from '../components/Icono'
 import { ArteCruce } from '../components/Cruce'
@@ -45,19 +48,70 @@ export default function Inicio({
   // Mejora #30: con espacios, el plan activo se mantiene al día (mismo ritmo que la lista del espacio).
   useSondeo(cargar, 10000, (espacios?.length ?? 0) > 0)
   const conPlan = activas.length > 0
+  const perfil = usePerfil()
+  // Primera vez en este navegador: sin nombre guardado y sin grupos. Se muestra el ingreso.
+  const nuevo = !perfil && espacios !== null && espacios.length === 0
+
+  if (codigoInvitacion) {
+    return (
+      <div className="vista">
+        <section className="escena escena-invitacion" aria-labelledby="invitacion-titulo">
+          <span className="escena-eyebrow">Invitación a CRUXE</span>
+          <h1 id="invitacion-titulo">Te invitaron a un plan</h1>
+          <p className="escena-sub">
+            Súmate al grupo con tu nombre. Después marcas en privado cuándo puedes y confirmas el plan que salga.
+          </p>
+          <div className="invitar">
+            <div className="invitar-codigo">
+              <span>Código de la invitación</span>
+              <span className="codigo invitacion-codigo">{codigoInvitacion}</span>
+            </div>
+          </div>
+          <div className="solo-ancho">
+            <ArteCruce />
+          </div>
+        </section>
+        <div className="hoja">
+          <UnirsePorCodigo deshabilitado={soloLectura} codigoInicial={codigoInvitacion} />
+          <div className="privado" role="note">
+            <span className="privado-icono" aria-hidden="true">
+              <Icono n="candado" tam={20} />
+            </span>
+            <div>
+              <strong>Sin contraseña ni correo</strong>
+              <p>Tu sesión queda guardada en este teléfono. Lo que marques sobre cuándo puedes lo ve solo el servidor.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="vista">
-      <section className="escena escena-portada" aria-labelledby="portada-titulo">
-        <Marca grande />
-        <h1 id="portada-titulo" className="portada-lema">
-          Del «nos juntamos» al <em>encuentro que ocurre</em>.
-        </h1>
-        <p className="portada-sub">
-          Cada uno dice en privado cuándo puede. CRUXE propone <strong>un solo plan</strong> y cada uno lo confirma.
-        </p>
-        <ArteCruce />
-      </section>
+      {nuevo || espacios === null ? (
+        <section className="escena escena-portada" aria-labelledby="portada-titulo">
+          <Marca grande />
+          <h1 id="portada-titulo" className="portada-lema">
+            Del «nos juntamos» al <em>encuentro que ocurre</em>.
+          </h1>
+          <p className="portada-sub">
+            Cada uno dice en privado cuándo puede. CRUXE propone <strong>un solo plan</strong> y cada uno lo confirma.
+          </p>
+          <div className={nuevo ? 'solo-ancho' : undefined}>
+            <ArteCruce />
+          </div>
+        </section>
+      ) : (
+        <section className="escena escena-portada" aria-labelledby="portada-titulo">
+          <span className="escena-eyebrow">CRUXE</span>
+          <h1 id="portada-titulo" className="portada-lema">
+            {perfil ? `Hola, ${perfil.nombre}.` : 'Hola.'} <em>¿Qué plan armamos?</em>
+          </h1>
+          <p className="portada-sub">Del «nos juntamos» al encuentro que ocurre.</p>
+          <ArteCruce />
+        </section>
+      )}
 
       <div className="hoja">
         {invitacionInvalida ? (
@@ -65,34 +119,77 @@ export default function Inicio({
             Puede haberse copiado mal. Pide uno nuevo o escribe el código a mano en "Unirme con un código", más abajo.
           </Aviso>
         ) : null}
-        {codigoInvitacion ? (
-          <div className="invitacion">
-            <Aviso tono="info" titulo="Te invitaron a un plan">
-              El código ya está cargado. Escribe tu nombre y únete: lo que marques después es privado.
-            </Aviso>
-            <UnirsePorCodigo deshabilitado={soloLectura} codigoInicial={codigoInvitacion} />
-          </div>
-        ) : null}
-        {codigoInvitacion ? null : <OtraSesion />}
-        {conPlan && !codigoInvitacion ? <TuPlan activas={activas} /> : null}
+        <OtraSesion />
+        {nuevo ? <Ingreso /> : null}
+        {conPlan ? <TuPlan activas={activas} /> : null}
 
-        {/* Con un plan activo, lo principal es el plan: sin accesos grandes que creen otra demo por error. */}
-        {codigoInvitacion || conPlan ? null : (
-          <div className="accesos">
+        {nuevo ? <div className="separador">o prueba sin crear nada</div> : null}
+        <div className="accesos">
+          {/* Con un plan activo, lo principal es el plan: sin acceso grande que cree otra demo por error. */}
+          {conPlan ? null : (
             <CargarDemo deshabilitado={soloLectura} yaCargada={espacios?.some((e) => e.demo && e.mi_rol === 'organizador') ?? false} />
-            <button type="button" className="acceso" onClick={irAUnirse}>
+          )}
+          {nuevo ? null : (
+            <a className="acceso" href={rutas.crear()}>
               <span className="acceso-icono" aria-hidden="true">
-                <Icono n="llave" />
+                <Icono n="grupo" />
               </span>
               <span className="acceso-texto">
-                <span className="acceso-titulo">Tengo un código de invitación</span>
+                <span className="acceso-titulo">Crear un grupo</span>
                 <span className="acceso-sub" aria-hidden="true">
-                  Súmate al plan de tu grupo
+                  Para tus amigos de verdad: invitas con un enlace
                 </span>
               </span>
-            </button>
-          </div>
-        )}
+            </a>
+          )}
+          <button type="button" className="acceso" onClick={irAUnirse}>
+            <span className="acceso-icono" aria-hidden="true">
+              <Icono n="llave" />
+            </span>
+            <span className="acceso-texto">
+              <span className="acceso-titulo">Tengo un código de invitación</span>
+              <span className="acceso-sub" aria-hidden="true">
+                Súmate al plan de tu grupo
+              </span>
+            </span>
+          </button>
+        </div>
+
+        {espacios === null && !error ? <Cargando texto="Buscando tus espacios…" /> : null}
+        {error && espacios === null ? <ErrorCaja error={error} onReintentar={cargar} /> : null}
+        {error && espacios !== null ? <ErrorCaja error={error} onReintentar={cargar} titulo="No se pudo actualizar" /> : null}
+
+        {espacios && espacios.length > 0 ? (
+          <section aria-labelledby="mis-espacios">
+            <div className="seccion-titulo">
+              <h2 id="mis-espacios">Tus grupos</h2>
+            </div>
+            <ul className="filas">
+              {espacios.map((e) => (
+                <li key={e.id}>
+                  <a className="fila" href={rutas.espacio(e.id)}>
+                    <span className="fila-icono" style={{ background: colorAvatar(e.nombre), color: '#fff', fontWeight: 800 }} aria-hidden="true">
+                      {iniciales(e.nombre)}
+                    </span>
+                    <span className="fila-texto">
+                      <span className="fila-titulo">{e.nombre}</span>
+                      <span className="fila-meta">
+                        {TIPO[e.tipo]} · {e.cantidad_miembros} personas · Tú: {e.mi_rol === 'organizador' ? 'organizador' : 'miembro'}
+                        {e.demo ? ' · Demo' : ''}
+                      </span>
+                    </span>
+                    <span className="visualmente-oculto">Abrir espacio</span>
+                    <span className="fila-chevron" aria-hidden="true">
+                      <Icono n="chevron" />
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        <UnirsePorCodigo deshabilitado={soloLectura} />
 
         {conPlan ? null : (
           <section aria-labelledby="como-titulo">
@@ -121,45 +218,33 @@ export default function Inicio({
             </ol>
           </section>
         )}
-
-        {espacios === null && !error ? <Cargando texto="Buscando tus espacios…" /> : null}
-        {error && espacios === null ? <ErrorCaja error={error} onReintentar={cargar} /> : null}
-        {error && espacios !== null ? <ErrorCaja error={error} onReintentar={cargar} titulo="No se pudo actualizar" /> : null}
-
-        {espacios && espacios.length > 0 ? (
-          <section aria-labelledby="mis-espacios">
-            <div className="seccion-titulo">
-              <h2 id="mis-espacios">Tus espacios</h2>
-            </div>
-            <ul className="filas">
-              {espacios.map((e) => (
-                <li key={e.id}>
-                  <a className="fila" href={rutas.espacio(e.id)}>
-                    <span className="fila-icono" style={{ background: colorAvatar(e.nombre), color: '#fff', fontWeight: 800 }} aria-hidden="true">
-                      {iniciales(e.nombre)}
-                    </span>
-                    <span className="fila-texto">
-                      <span className="fila-titulo">{e.nombre}</span>
-                      <span className="fila-meta">
-                        {TIPO[e.tipo]} · {e.cantidad_miembros} personas · Tú: {e.mi_rol === 'organizador' ? 'organizador' : 'miembro'}
-                        {e.demo ? ' · Demo' : ''}
-                      </span>
-                    </span>
-                    <span className="visualmente-oculto">Abrir espacio</span>
-                    <span className="fila-chevron" aria-hidden="true">
-                      <Icono n="chevron" />
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        {codigoInvitacion ? null : <UnirsePorCodigo deshabilitado={soloLectura} />}
-        <CrearEspacio deshabilitado={soloLectura} />
       </div>
     </div>
+  )
+}
+
+/** Ingreso: no hay cuenta ni contraseña (sesión anónima, contrato 0.1). Solo el nombre, guardado en este teléfono. */
+function Ingreso() {
+  const [nombre, setNombre] = useState('')
+  const [aviso, setAviso] = useState<string | null>(null)
+  function entrar(e: FormEvent) {
+    e.preventDefault()
+    if (!nombre.trim()) return
+    if (!guardarPerfil(nombre)) setAviso('Este navegador no deja guardar datos: vas a escribir tu nombre al unirte a cada grupo.')
+  }
+  return (
+    <form className="tarjeta ingreso" onSubmit={entrar} noValidate aria-labelledby="ingreso-titulo">
+      <h2 id="ingreso-titulo">Entrar a CRUXE</h2>
+      <p className="suave">Sin contraseña ni correo: tu sesión queda guardada en este teléfono.</p>
+      <label className="campo">
+        <span>¿Cómo te llaman tus amigos?</span>
+        <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={30} autoComplete="nickname" placeholder="Tu nombre" />
+      </label>
+      <Boton type="submit" className="btn-bloque" disabled={!nombre.trim()}>
+        Entrar
+      </Boton>
+      {aviso ? <p role="status">{aviso}</p> : null}
+    </form>
   )
 }
 
@@ -178,7 +263,7 @@ async function planesActivos(espacios: EspacioResumen[]): Promise<PlanActivo[]> 
       return r.ok ? r.data.propuestas.filter((p) => ESTADOS_ACTIVOS.has(p.estado)).map((p) => ({ espacio: e, p })) : []
     }),
   )
-  const turno = (x: PlanActivo) => x.p.siguiente_accion.codigo === 'te_toca_aceptar' || x.p.mi_situacion.puede_aceptar
+  const turno = (x: PlanActivo) => esTurno(x.p)
   return listas
     .flat()
     .sort((a, b) => Number(turno(b)) - Number(turno(a)))
@@ -191,34 +276,16 @@ function TuPlan({ activas }: { activas: PlanActivo[] }) {
     <section className="tu-plan" aria-labelledby="tu-plan-titulo">
       <div className="seccion-titulo" style={{ marginTop: 4 }}>
         <h2 id="tu-plan-titulo">{activas.length === 1 ? 'Tu plan' : 'Tus planes'}</h2>
-        <span className="etiqueta etiqueta-destacada">En curso</span>
+        <a className="enlace" href={rutas.planes()}>
+          Ver todos
+        </a>
       </div>
       <ul className="lista-planes">
-        {activas.map(({ espacio, p }) => {
-          const turno = p.siguiente_accion.codigo === 'te_toca_aceptar' || p.mi_situacion.puede_aceptar
-          return (
-            <li key={p.id}>
-              <a className={`plan-vivo plan-vivo-${p.estado} ${turno ? 'plan-vivo-turno' : ''}`} href={rutas.propuesta(espacio.id, p.id)}>
-                <span className="pv-arriba">
-                  <span className="pv-espacio">{espacio.nombre}</span>
-                  {p.version != null ? <span className="etiqueta num">Versión {p.version}</span> : null}
-                </span>
-                <span className="pv-titulo">{p.titulo}</span>
-                <span className="pv-estado">
-                  <InsigniaEstado estado={p.estado} etiqueta={p.estado_etiqueta} />
-                  {turno && p.siguiente_accion.codigo !== 'te_toca_aceptar' ? <span className="pastilla pastilla-turno">Te toca confirmar</span> : null}
-                </span>
-                <span className={`pv-siguiente ${turno ? 'pv-siguiente-turno' : ''}`}>{p.siguiente_accion.texto}</span>
-                <span className="pv-meta">
-                  <span />
-                  <span className="pv-abrir">
-                    Abrir el plan <Icono n="chevron" tam={14} />
-                  </span>
-                </span>
-              </a>
-            </li>
-          )
-        })}
+        {activas.map(({ espacio, p }) => (
+          <li key={p.id}>
+            <PlanVivo p={p} espacioId={espacio.id} espacioNombre={espacio.nombre} />
+          </li>
+        ))}
       </ul>
     </section>
   )
@@ -262,72 +329,6 @@ function irAUnirse() {
   form?.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true })
 }
 
-/** Mejora #47: si alguien entró como otra persona en este navegador, la sesión anterior se puede retomar. */
-function OtraSesion() {
-  const [guardada, setGuardada] = useState(() => leerGuardada())
-  const [confirmarOlvido, setConfirmarOlvido] = useState(false)
-  const [ocupado, setOcupado] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const enVuelo = useRef(false)
-
-  async function volver() {
-    if (enVuelo.current || !guardada) return
-    enVuelo.current = true
-    setOcupado(true)
-    setError(null)
-    const r = await volverAGuardada(guardada)
-    if (r.ok) {
-      // Todo lo que está en pantalla es de la sesión de ahora: se empieza de cero con la recuperada.
-      window.location.reload()
-      return
-    }
-    enVuelo.current = false
-    setOcupado(false)
-    setError(r.mensaje)
-    setGuardada(leerGuardada())
-  }
-
-  if (!guardada) return error ? <Aviso tono="error" titulo="No se pudo volver a la otra sesión">{error}</Aviso> : null
-  return (
-    <Aviso
-      tono="info"
-      titulo={`Este navegador guarda otra sesión: ${guardada.etiqueta}`}
-      accion={
-        confirmarOlvido ? (
-          <div className="fila-botones">
-            <Boton
-              variante="peligro"
-              onClick={() => {
-                olvidarGuardada()
-                setGuardada(null)
-              }}
-            >
-              Sí, olvidarla
-            </Boton>
-            <Boton variante="secundario" onClick={() => setConfirmarOlvido(false)}>
-              Cancelar
-            </Boton>
-          </div>
-        ) : (
-          <div className="fila-botones">
-            <Boton onClick={volver} ocupado={ocupado} ocupadoTexto="Volviendo…">
-              Volver a esa sesión
-            </Boton>
-            <Boton variante="secundario" onClick={() => setConfirmarOlvido(true)} disabled={ocupado}>
-              Olvidarla
-            </Boton>
-          </div>
-        )
-      }
-    >
-      {confirmarOlvido
-        ? `Si la olvidas, este navegador ya no podrá volver a ser ${guardada.etiqueta}.`
-        : 'Alguien entró como otra persona en este navegador. Al volver, la sesión abierta ahora deja de estar en este navegador.'}
-      {error ? <p className="suave">{error}</p> : null}
-    </Aviso>
-  )
-}
-
 function errorLocal(mensaje: string): ApiError {
   return { codigo: 'fallo_temporal', detalle: 'sesion_nueva', mensaje, reintentable: false, state_rev: null }
 }
@@ -336,7 +337,12 @@ const mismoNombre = (a: string, b: string) => a.trim().toLocaleLowerCase('es') =
 
 function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: boolean; codigoInicial?: string }) {
   const [codigo, setCodigo] = useState(codigoInicial ?? '')
-  const [nombre, setNombre] = useState('')
+  const [nombre, setNombre] = useState(() => leerPerfil()?.nombre ?? '')
+  const perfil = usePerfil()
+  // Si la persona escribe su nombre en el ingreso con este formulario ya en pantalla, se completa solo.
+  useEffect(() => {
+    if (perfil) setNombre((n) => n || perfil.nombre)
+  }, [perfil])
   const { ocupado, error, ejecutar } = useAccion()
   const cambio = useAccion()
   // Mejora #47: el servidor dice que esta sesión ya era miembro (e ignora el nombre). No se entra en silencio
@@ -350,6 +356,7 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
   }, [yaEra])
 
   function entrar(r: UnirseOk, nom: string, sesionNueva?: string) {
+    recordarNombreSiFalta(nom)
     if (r.resultado.reclamo_asiento_simulado) {
       dejarAviso(`Reclamaste el lugar de ${nom}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.${sesionNueva ? ` ${sesionNueva}` : ''}`)
     } else if (sesionNueva) {
@@ -465,40 +472,5 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
       ) : null}
       {errorVisible ? <ErrorCaja error={errorVisible} enfocar /> : null}
     </form>
-  )
-}
-
-function CrearEspacio({ deshabilitado }: { deshabilitado: boolean }) {
-  const [nombre, setNombre] = useState('')
-  // Solo lo social (decisión de Nico y Juan, 11:51): el tipo queda fijo en "amigos".
-  const tipo: TipoEspacio = 'amigos'
-  const [visible, setVisible] = useState('')
-  const { ocupado, error, ejecutar } = useAccion()
-  const faltan = nombre.trim() === '' || visible.trim() === ''
-  async function hacer(e: FormEvent) {
-    e.preventDefault()
-    if (faltan) return
-    const r = await ejecutar(`crear:${nombre}:${tipo}:${visible}`, () => api.createSpace(nombre.trim(), tipo, visible.trim()))
-    if (r?.ok) irA(rutas.espacio(r.data.resultado.espacio_id))
-  }
-  return (
-    <details className="tarjeta plegable">
-      <summary>Crear un espacio de prueba</summary>
-      <form onSubmit={hacer} noValidate>
-        <Aviso tono="info">Sirve para un grupo de verdad: invitas con el código y cada persona responde desde su teléfono. La Simulación (personas ficticias) es solo para la demo.</Aviso>
-        <label className="campo">
-          <span>Nombre del espacio</span>
-          <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} />
-        </label>
-        <label className="campo">
-          <span>Tu nombre en el espacio</span>
-          <input value={visible} onChange={(e) => setVisible(e.target.value)} maxLength={30} />
-        </label>
-        <Boton type="submit" ocupado={ocupado} ocupadoTexto="Creando…" disabled={faltan || deshabilitado}>
-          Crear espacio
-        </Boton>
-        {error ? <ErrorCaja error={error} enfocar /> : null}
-      </form>
-    </details>
   )
 }

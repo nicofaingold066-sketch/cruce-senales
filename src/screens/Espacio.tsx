@@ -2,12 +2,12 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../lib/api'
 import type { ApiError, Espacio as EspacioT, PropuestaResumen } from '../lib/types'
-import { CODIGOS_SIGUIENTE } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
 import { rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { momentoCorto } from '../lib/format'
-import { Avatar, AvatarPila, Aviso, Boton, Cargando, ErrorCaja, InsigniaEstado, Nombre, Progreso, Vacio } from '../components/ui'
+import { Avatar, AvatarPila, Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
 import { Icono } from '../components/Icono'
+import { PlanVivo } from '../components/PlanVivo'
 // El panel del agente va en su propia parte del paquete (mejora #14): se descarga solo al abrir el bloque.
 const AgentePanel = lazy(() => import('../agente/AgentePanel').then((m) => ({ default: m.AgentePanel })))
 
@@ -173,7 +173,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
               <ul className="lista-planes">
                 {propuestas.map((p) => (
                   <li key={p.id}>
-                    <TarjetaPropuesta p={p} espacioId={espacioId} />
+                    <PlanVivo p={p} espacioId={espacioId} />
                   </li>
                 ))}
               </ul>
@@ -268,51 +268,6 @@ function CopiarCodigo({ codigo }: { codigo: string }) {
       {copiado === 'no' ? <span role="status">No se pudo copiar; selecciónalo a mano.</span> : null}
       {copiado === 'enlace' ? <span role="status">Enlace copiado: ábrelo en otro teléfono.</span> : null}
     </>
-  )
-}
-
-function TarjetaPropuesta({ p, espacioId }: { p: PropuestaResumen; espacioId: string }) {
-  // Mejora #31: el estado destacado (color + punto) y "Tu turno" salen del servidor:
-  // estado de la propuesta y siguiente_accion.codigo (enmienda 3); el booleano solo como respaldo.
-  const cod = p.siguiente_accion.codigo
-  const conocido = (CODIGOS_SIGUIENTE as readonly string[]).includes(cod)
-  const turno = cod === 'te_toca_aceptar' || (!conocido && p.mi_situacion.puede_aceptar)
-  const conVersion = p.version != null
-  return (
-    <a className={`plan-vivo plan-vivo-${p.estado} ${turno ? 'plan-vivo-turno' : ''}`} href={rutas.propuesta(espacioId, p.id)}>
-      <span className="pv-arriba">
-        <InsigniaEstado estado={p.estado} etiqueta={p.estado_etiqueta} />
-        {conVersion ? <span className="etiqueta num">Versión {p.version}</span> : null}
-      </span>
-      <span className="pv-titulo">{p.titulo}</span>
-      {turno || p.mi_situacion?.retirado ? (
-        <span className="pv-estado">
-          {turno ? <span className="pastilla pastilla-turno">Tu turno</span> : null}
-          {p.mi_situacion?.retirado ? <span className="etiqueta">Te retiraste</span> : null}
-        </span>
-      ) : null}
-      <span className={`pv-siguiente ${turno ? 'pv-siguiente-turno' : ''}`}>{p.siguiente_accion.texto}</span>
-      {conVersion ? (
-        <span className="pv-progreso" style={{ display: 'block' }}>
-          <Progreso
-            valor={p.confirmados}
-            minimo={p.minimo}
-            maximo={p.maximo}
-            ok={p.estado === 'grupo_confirmado'}
-            etiqueta={`${p.confirmados} de ${p.minimo} confirmaron`}
-          />
-        </span>
-      ) : null}
-      <span className="pv-meta">
-        <span className="num">
-          {conVersion ? `${p.confirmados} de ${p.minimo} confirmaron · máx. ${p.maximo}` : `Mínimo ${p.minimo}, máximo ${p.maximo}`} ·{' '}
-          {p.plazo_vencido ? 'plazo cerrado' : `cierre ${momentoCorto(p.plazo)}`}
-        </span>
-        <span className="pv-abrir" aria-hidden="true">
-          Abrir <Icono n="chevron" tam={14} />
-        </span>
-      </span>
-    </a>
   )
 }
 

@@ -2,19 +2,29 @@
 // Se importan uno por uno para que el paquete solo lleve los que se usan.
 import {
   CalendarDays,
+  CalendarPlus,
   Check,
+  CircleUserRound,
   ChevronLeft,
   ChevronRight,
   Clock,
   Copy,
+  House,
   KeyRound,
+  Link,
   Lock,
+  MessageCircle,
   Minus,
+  PartyPopper,
   Play,
   Plus,
+  Repeat2,
   Share,
+  ShieldCheck,
   Sparkles,
+  UserRoundPlus,
   Users,
+  UsersRound,
   Zap,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -35,6 +45,16 @@ const ICONOS = {
   play: Play,
   reloj: Clock,
   rayo: Zap,
+  casa: House,
+  persona: CircleUserRound,
+  whatsapp: MessageCircle,
+  agendar: CalendarPlus,
+  invitar: UserRoundPlus,
+  grupo: UsersRound,
+  privado: ShieldCheck,
+  fiesta: PartyPopper,
+  cambiar: Repeat2,
+  enlace: Link,
 } satisfies Record<string, LucideIcon>
 
 export type NombreIcono = keyof typeof ICONOS

@@ -3,6 +3,9 @@ import type { FaseSesion } from './lib/hooks'
 import { rutas, ShellProvider, useRuta, useShell } from './lib/shell'
 import type { Ruta } from './lib/shell'
 import { Avatar, Aviso, Boton, Cargando } from './components/ui'
+import { Icono } from './components/Icono'
+import type { NombreIcono } from './components/Icono'
+import { usePerfil } from './lib/perfil'
 import { Marca } from './components/Marca'
 import { lazy, Suspense, useEffect } from 'react'
 import Inicio from './screens/Inicio'
@@ -15,6 +18,9 @@ const cargarPropuesta = () => import('./screens/Propuesta')
 const Espacio = lazy(cargarEspacio)
 const NuevaPropuesta = lazy(cargarNuevaPropuesta)
 const Propuesta = lazy(cargarPropuesta)
+const Planes = lazy(() => import('./screens/Planes'))
+const Perfil = lazy(() => import('./screens/Perfil'))
+const CrearGrupo = lazy(() => import('./screens/CrearGrupo'))
 
 function usePrecargaPantallas(activa: boolean) {
   useEffect(() => {
@@ -50,6 +56,12 @@ function Marco({
   const { identidad } = useShell()
   const online = useOnline()
   const ruta = useRuta()
+  const perfil = usePerfil()
+  // Navegación inferior solo en las pantallas principales; en un plan o un formulario se oculta, como durante un viaje.
+  // En el ingreso (portada sin nombre) tampoco: la pantalla tiene una sola tarea.
+  const conNav =
+    sesion.fase === 'lista' && ((ruta.nombre === 'inicio' && perfil != null) || ruta.nombre === 'planes' || ruta.nombre === 'perfil')
+  const quien = identidad.yo ?? perfil?.nombre ?? null
 
   return (
     <>
@@ -64,23 +76,27 @@ function Marco({
           {identidad.espacio ? <span className="barra-espacio">{identidad.espacio}</span> : null}
           <span className="chip-ficticio">Datos ficticios</span>
         </div>
-        <div className="barra-identidad" aria-live="polite">
-          {identidad.yo ? (
+        <a className="barra-identidad" href={rutas.perfil()} aria-live="polite">
+          {quien ? (
             <>
-              <Avatar nombre={identidad.yo} tam={30} />
+              <Avatar nombre={quien} tam={30} />
               <span className="barra-identidad-texto">
                 <span className="visualmente-oculto">Sesión activa: </span>
-                <strong>{identidad.yo}</strong>
-                {identidad.rol ? <span className="barra-rol">{identidad.rol}</span> : null}
+                <strong>{quien}</strong>
+                {identidad.yo && identidad.rol ? <span className="barra-rol">{identidad.rol}</span> : null}
+                <span className="visualmente-oculto">. Ver tu perfil</span>
               </span>
             </>
           ) : (
-            <span className="visualmente-oculto">Sesión anónima{identidad.espacio ? '' : ': aún sin nombre en un espacio'}</span>
+            <>
+              <Icono n="persona" tam={26} />
+              <span className="visualmente-oculto">Sesión anónima{identidad.espacio ? '' : ': aún sin nombre en un espacio'}. Ver tu perfil</span>
+            </>
           )}
-        </div>
+        </a>
       </header>
 
-      <main id="contenido" className="contenido" tabIndex={-1}>
+      <main id="contenido" className={`contenido ${conNav ? 'con-nav' : ''}`} tabIndex={-1}>
         <div className="avisos-globales">
           {!online ? (
             <Aviso tono="aviso" titulo="Sin conexión">
@@ -125,6 +141,7 @@ function Marco({
         ) : null}
         {sesion.fase === 'lista' ? <Pantalla ruta={ruta} /> : null}
       </main>
+      {conNav ? <NavInferior ruta={ruta} /> : null}
     </>
   )
 }
@@ -157,6 +174,12 @@ function PantallaRuta({ ruta }: { ruta: Ruta }) {
       return <NuevaPropuesta key={ruta.espacioId} espacioId={ruta.espacioId} />
     case 'propuesta':
       return <Propuesta espacioId={ruta.espacioId} propuestaId={ruta.propuestaId} />
+    case 'planes':
+      return <Planes />
+    case 'perfil':
+      return <Perfil />
+    case 'crear':
+      return <CrearGrupo />
     case 'unirse':
       return ruta.invalida ? <Inicio key="invitacion-invalida" invitacionInvalida /> : <Inicio key={ruta.codigo} codigoInvitacion={ruta.codigo} />
     default:
@@ -170,4 +193,27 @@ function saltarAlContenido(e: React.MouseEvent<HTMLAnchorElement>) {
   const main = document.getElementById('contenido')
   main?.focus()
   main?.scrollIntoView({ block: 'start' })
+}
+
+const SECCIONES: { nombre: 'inicio' | 'planes' | 'perfil'; texto: string; icono: NombreIcono; href: string }[] = [
+  { nombre: 'inicio', texto: 'Inicio', icono: 'casa', href: rutas.inicio() },
+  { nombre: 'planes', texto: 'Planes', icono: 'calendario', href: rutas.planes() },
+  { nombre: 'perfil', texto: 'Perfil', icono: 'persona', href: rutas.perfil() },
+]
+
+/** Barra de secciones al alcance del pulgar (Inicio, Planes, Perfil). */
+function NavInferior({ ruta }: { ruta: Ruta }) {
+  return (
+    <nav className="nav-inferior" aria-label="Secciones">
+      {SECCIONES.map((s) => {
+        const activa = ruta.nombre === s.nombre
+        return (
+          <a key={s.nombre} href={s.href} className={`nav-item ${activa ? 'nav-activa' : ''}`} aria-current={activa ? 'page' : undefined}>
+            <Icono n={s.icono} tam={22} />
+            <span>{s.texto}</span>
+          </a>
+        )
+      })}
+    </nav>
+  )
 }
