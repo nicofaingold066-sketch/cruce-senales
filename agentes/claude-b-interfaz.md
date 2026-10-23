@@ -3,14 +3,14 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- Próximo: hallazgos U1–U7 de `docs/revision-codex-4-ui.md` + mi revisión adversarial propia (en curso) en `src/lib/hooks.ts`, `src/lib/api.ts`, `src/lib/shell.tsx`, `src/App.tsx`, `src/screens/Espacio.tsx`, `src/screens/NuevaPropuesta.tsx`, `src/screens/SimulacionTab.tsx`, `src/screens/PlanTab.tsx`.
+- **Mejora #7** (primera pantalla en 5 segundos), desde 12:55: `src/screens/Inicio.tsx`, `src/components/Marca.tsx`, `src/styles.css`.
 
 ## Estado
-Corte "enmienda 3 en la UI + logo X v2" CERRADO en `wip/ui-enmienda` `a890f11`. Recorrido EN VIVO contra el backend real 11/11, sin respuestas `ok:false`; typecheck y build en verde. **La enmienda 3 ya responde en el servidor y la UI la usa**: Luna recibe `te_toca_aceptar` ("Te toca confirmar la versión 1.") y el atajo de simulación cargó el caso con `simulate_load_case` en una sola operación.
+12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
 
 Figma (para todo el equipo):
 - User flow + estados de la propuesta (FigJam): https://www.figma.com/board/sqWhMOQEdpT80S7YhXPtCl
-- Identidad (logo X v2) + 7 pantallas móviles reales: https://www.figma.com/design/RgQLomDluDvf2fBSlbaGUU
+- Identidad (logo X v2) + pantallas móviles reales: https://www.figma.com/design/RgQLomDluDvf2fBSlbaGUU
 
 ## Recorrido EN VIVO contra el backend real (14:3x, build de `wip/ui-enmienda` = `wip/fundamentos` 615ef0f + mi e7d868d)
 Chromium sin cabeza, dos contextos = dos sesiones anónimas (Tomi y Luna), 390 px, a través de la interfaz (clics reales, sin tocar la API a mano). Se registró toda respuesta RPC con `ok:false` o `contrato` distinto de 2: **ninguna**.
@@ -65,7 +65,9 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
-Rama `wip/ui-enmienda`, último commit `3e81c69` (mejora 4 + merge de `wip/fundamentos` con enmiendas 4 y 4.1). Antes: `75f41c4` (mejora 2), `08a87c3`, `a890f11`.
+- **#2** botones por persona en Simulación con nombre y aria-label: `75f41c4` (wip/ui-enmienda). Verificado en vivo 11/11.
+- **#4** enganche del agente (AgentePanel en el espacio, precarga con tomarBorradorAgente): `0fe1b55` + `dd66806` + merge `3e81c69`. Verificado en vivo con la base del agente publicada.
+- Antes (fuera de MEJORAS): `08a87c3` simulate_load_case con resumen, `a890f11` enmienda 3 + logo X v2 + invitación por enlace, `68f4b71`/`b6578ce` identidad y UX móvil.
 
 ## Ideas
 - Tarjetas de propuestas en la pantalla del espacio con el mismo estado destacado (color + punto) y "Tu turno" según `siguiente_accion.codigo`: hoy son texto plano. Dueño: claude-b-interfaz.
