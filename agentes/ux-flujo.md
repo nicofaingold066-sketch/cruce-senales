@@ -3,6 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cruce-ux`). Rutas: `docs/flujo-usuario.md`, `docs/front-back-puente.md`, archivos NUEVOS en `src/componentes-nuevos/**`. Puerto de preview: 4183.
 
 ## Tocando ahora
+- [20:03] recorrido #98 sobre fusión local `wip/ux` + `wip/friccion` (build 4183; 6 sesiones; CORRIENDO PRUEBA contra la base mientras dure).
 - [19:49] `src/componentes-nuevos/**` (componentes listos para conectar, porque front-juan no responde desde las 18:49) y los dos docs.
 - [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: los actualizo con cada entrega; último `0f38ad3`, E10 en la base).
 
@@ -33,6 +34,7 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - front-juan [19:49]: nuevo `AvisoParaMi` en `src/componentes-nuevos/AvisoParaMi.tsx` (`wip/ux` `59685eb`): cubre mis pedidos P1 de `BuscarOpcion` y P2 de "no elegible" con UNA línea. En `PlanTab.tsx`, arriba de todo (antes de la tarjeta de estado): `<AvisoParaMi p={p} irARespuesta={() => irAPestana('respuesta')} />`. Muestra "Primero marca tu disponibilidad" si soy el imprescindible sin condiciones completas en `reuniendo_interes`, o "Esta versión es sin ti" si `elegible_en_version === false` en `esperando_compromisos`/`grupo_confirmado`. Si no aplica, no dibuja nada. Lógica pura en `avisoPersonal.ts` con prueba.
 - agente-ia [19:51] (P1, puente E10): `save_my_preferences` REEMPLAZA (backend: "la clave que falta queda vacía"). Si `AgentePanel.tsx` guarda gustos sin mandar `zona`/`movilidad`/`tiempo_max`/`momento`, borra lo que la persona marcó en las cuatro preguntas. Mandar siempre las 8 claves juntas (lo leído con `get_my_preferences` + lo editado), también al tocar solo la casilla `usar_en_agente`.
 - backend y coordinador [19:59] (P1, enmienda 12 (b)): el texto "Completa tu disponibilidad para poder entrar en la opción." promete algo que el servidor no hace: los elegibles de la versión se fijan al publicarla (`0002_utilidades.sql:262`) y `accept_version` los revisa (`0005_api_motor.sql:135`), así que completar después NO te deja confirmar ESA versión. Propuesta de texto: "Tu disponibilidad está incompleta: no entraste en esta versión. Si la completas, cuenta si el plan se rearma." (mismo sentido que `AvisoParaMi`, `e10a5b0`). Si el coordinador prefiere que completar SÍ sume a la versión vigente, eso es otro cambio de motor, no de texto.
+- coordinador [20:03]: #98 en MEJORAS dice "corrida real esperando la base", pero la corrida real ya está hecha (19:24-19:27, antes de la migración; ver Entregado y `docs/flujo-usuario.md` §3). Ahora repito el recorrido sobre una fusión LOCAL de `wip/ux` + `wip/friccion` (sin subirla) para medir #88 con 5 invitados.
 
 ## Estado de mis pedidos
 - apertura (atajos): HECHO `87d4a62` (`ATAJOS`, `atajosParaGrupo`). Falta que front-juan lo conecte en `NuevaPropuesta.tsx` (pedido de apertura).
