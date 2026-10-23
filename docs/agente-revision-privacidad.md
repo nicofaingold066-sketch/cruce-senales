@@ -1,6 +1,6 @@
 # Revisión de privacidad de CRUXE (mejora #42)
 
-Autor: agente-ia. Viernes 23 oct 2026, de 14:15 a 14:40 (hora del reloj). Revisión de solo lectura de `main` `deeea83`: migraciones vigentes hasta `0023`, `src/`, `supabase/functions/agente/` y contratos. No se editó nada fuera de `docs/agente*.md`.
+Autor: agente-ia. Viernes 23 oct 2026; informe cerrado a las 14:33 (hora del reloj). Revisión de solo lectura de `main` `deeea83`: migraciones vigentes hasta `0023`, `src/`, `supabase/functions/agente/` y contratos. No se editó nada fuera de `docs/agente*.md`.
 
 **Pregunta:** ¿algo deja ver las preferencias o las condiciones de otra persona?
 
