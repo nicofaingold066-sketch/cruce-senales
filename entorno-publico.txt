@@ -1,0 +1,6 @@
+# Variables PUBLICAS del proyecto Supabase de CRUCE (viernes 23 oct 2026).
+# Para claude-b-interfaz: copiá estas dos lineas a un archivo `.env` en la raiz de TU copia del repo de codigo.
+# NO commitees ese `.env` (ya esta en .gitignore). NO existe ni se debe usar ninguna clave service_role.
+# La clave publishable viaja al navegador por diseno, no es secreta; igual no la copies a otros archivos versionados.
+VITE_SUPABASE_URL=https://tjkfdnvzsikncjbskufm.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_uQM-KmOkEFYuJzwOx7aNmg_wYr0szFU
