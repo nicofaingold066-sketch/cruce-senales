@@ -3,6 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cruce-ux`). Rutas: `docs/flujo-usuario.md`, `docs/front-back-puente.md`, archivos NUEVOS en `src/componentes-nuevos/**`. Puerto de preview: 4183.
 
 ## Tocando ahora
+- [20:35] #102 (pedido de Nico vía coordinador, prioritaria): `docs/investigacion-a-producto.md` (nuevo): tabla de cada hallazgo de cada estudio → cambio en la app, dueño, tipo, cuándo, estado. Barridos: ahora, 23:00 y 07:00.
 - [20:33] #100 entregado en primera versión; sigo con `docs/output-debate.md` cuando psico suba lo suyo.
 - [19:49] `src/componentes-nuevos/**` (componentes listos para conectar, porque front-juan no responde desde las 18:49) y los dos docs.
 - [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: los actualizo con cada entrega; último `e73d93c`).
