@@ -23,9 +23,9 @@ describe('enmienda 2: regresiones A1 a A5', { timeout: 120_000 }, () => {
   }, 60_000)
 
   // ---------------------------------------------------------------------------------------------
-  it('A5: sin sesión ninguna de las 25 RPC se ejecuta; con sesión las 25 se ejecutan; helpers inaccesibles', async () => {
+  it('A5: sin sesión ninguna de las 26 RPC se ejecuta; con sesión las 26 se ejecutan; helpers inaccesibles', async () => {
     const nombres = Object.keys(PERMITIDAS)
-    expect(nombres).toHaveLength(25)
+    expect(nombres).toHaveLength(26) // 25 de la enmienda 2 + simulate_load_case (enmienda 3)
     const anon = clienteSinSesion()
     const sinSesion = await Promise.all(nombres.map(async (n) => [n, await rpcCrudo(anon, n, PERMITIDAS[n]())] as const))
     for (const [n, r] of sinSesion) {

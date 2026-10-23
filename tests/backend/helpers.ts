@@ -87,7 +87,14 @@ export const PERMITIDAS: Record<string, () => Record<string, unknown>> = {
   simulate_accept: () => ({ p_propuesta_id: Z, p_miembro_id: Z, p_version: 1, p_intento_id: randomUUID() }),
   simulate_withdraw: () => ({ p_propuesta_id: Z, p_miembro_id: Z }),
   get_simulation_panel: () => ({ p_propuesta_id: Z }),
+  simulate_load_case: () => ({ p_propuesta_id: Z, p_intento_id: randomUUID() }), // enmienda 3
 }
+
+/** Lista cerrada de siguiente_accion.codigo (enmienda 3). */
+export const CODIGOS_SIGUIENTE = [
+  'abrir_propuesta', 'reunir_condiciones', 'buscar_opcion', 'sin_opcion', 'aceptar_version', 'te_toca_aceptar',
+  'ya_aceptaste', 'grupo_confirmado', 'buscar_alternativa', 'sin_alternativa', 'expirado', 'cancelado',
+]
 
 export function sufijo(): string {
   return randomUUID().slice(0, 6)

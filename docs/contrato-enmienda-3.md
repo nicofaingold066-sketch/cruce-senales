@@ -13,3 +13,13 @@ Prevalece sobre `docs/contrato.md` y la enmienda 2 donde haya conflicto. Agrega 
 
 ## Descartado
 - Mostrar el motivo de "Sin opción": rompe la privacidad.
+
+## Códigos de `siguiente_accion` (lista cerrada, implementada en la migración 0012)
+- `abrir_propuesta`: borrador.
+- `reunir_condiciones`: reuniendo interés.
+- `buscar_opcion`: solo el organizador, cuando puede evaluar y las personas con condiciones alcanzan el mínimo.
+- `sin_opcion`: la última evaluación no encontró opción.
+- `aceptar_version`: esperando compromisos, para quien no puede aceptar y no aceptó.
+- `te_toca_aceptar`: `puede.aceptar` es true (esperando compromisos, o grupo confirmado con cupo).
+- `ya_aceptaste`: aceptó y la propuesta sigue esperando compromisos; si ya se alcanzó el mínimo, el texto nombra al imprescindible que falta.
+- `grupo_confirmado`, `buscar_alternativa`, `sin_alternativa`, `expirado`, `cancelado`: según el estado.
