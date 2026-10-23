@@ -3,8 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- `src/screens/Espacio.tsx`, `src/screens/NuevaPropuesta.tsx`, `src/styles.css` (aviso 12:47: enganche de `AgentePanel` y `tomarBorradorAgente`; NO toco `src/agente/**`)
-- Merge de `origin/wip/agente-ia` en `wip/ui-enmienda`
+- Próximo: hallazgos U1–U7 de `docs/revision-codex-4-ui.md` + mi revisión adversarial propia (en curso) en `src/lib/hooks.ts`, `src/lib/api.ts`, `src/lib/shell.tsx`, `src/App.tsx`, `src/screens/Espacio.tsx`, `src/screens/NuevaPropuesta.tsx`, `src/screens/SimulacionTab.tsx`, `src/screens/PlanTab.tsx`.
 
 ## Estado
 Corte "enmienda 3 en la UI + logo X v2" CERRADO en `wip/ui-enmienda` `a890f11`. Recorrido EN VIVO contra el backend real 11/11, sin respuestas `ok:false`; typecheck y build en verde. **La enmienda 3 ya responde en el servidor y la UI la usa**: Luna recibe `te_toca_aceptar` ("Te toca confirmar la versión 1.") y el atajo de simulación cargó el caso con `simulate_load_case` en una sola operación.
@@ -29,6 +28,7 @@ Chromium sin cabeza, dos contextos = dos sesiones anónimas (Tomi y Luna), 390 p
 Además: `NODE_USE_ENV_PROXY=1 npm run test:backend` → 10 archivos, 100 pruebas pasan.
 
 ## Hecho
+- **Mejora 4 entregada** (aviso 12:47 y 12:51), commits `0fe1b55` + `dd66806` + merge `3e81c69`: `AgentePanel` montado en el espacio dentro de un bloque plegable ("Agente del círculo (opcional)"), que se monta solo al abrir (plegado no hace llamadas); `tomarBorradorAgente` precarga título y franjas en Nueva propuesta (una sola vez, a prueba del doble efecto de StrictMode) con aviso "el agente no crea ni confirma nada". **Probado en vivo con la base del agente ya publicada**: preferencias → "Que el agente proponga" → borrador ("Asado en casa de Tomi", sáb/dom 14-17, texto fijo) → "Usar este borrador" → Nueva propuesta precargada. Recorrido canónico 11/11. No toqué `src/agente/**`. La pantalla de candidatas (4.1) llega cuando agente-ia la publique en `wip/agente-ia`; la traigo apenas esté.
 - (pedido de Nico + aviso 12:42) Simulación compacta para la demo, commit `75f41c4`: tarjeta por persona con estado de un vistazo (Puede confirmar / Confirmó vN / Se bajó / No forma parte), solo acciones posibles, edición plegada; **todos los botones por persona dicen de quién son y tienen aria-label** ("Se baja: Caro", "Sí, Caro se baja", "Aceptar versión N por Mati", "Editar interés y condiciones de Fede"…); atajo nuevo "Aceptar versión N por <las que el servidor habilita>" (una llamada por persona, el servidor revalida cada una). En revisión ya no muestra "Ya confirmaste" (el acento usa solo los códigos de la enmienda 3). Pantalla de ~4700 px a ~1700 px en 375 px. Recorrido en vivo 11/11.
 - (aviso 12:28) Atajo de simulación: UNA llamada a `simulate_load_case`, resumen con los nombres de `cargados` y `omitidos` (con motivo). Sin respaldo persona por persona. En vivo: "En una sola operación: cargadas las condiciones de Mati, Caro, Fede, Sofi." Commit `08a87c3`.
 - Logo X v2 (pedido de Nico: "una X copada, inspirada en la de X con toque propio"): trazo grueso brasa (el plan) y trazo fino partido en dos personas que llegan al cruce desde lados opuestos y se encuentran en su borde. CRU✕E en el nombre; ícono `src/assets/cruxe-icono.svg`.
@@ -65,5 +65,10 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
-Rama `wip/ui-enmienda`, último commit `75f41c4` (Simulación compacta + botones con nombre). Recorrido en vivo 11/11; typecheck y build en verde.
+Rama `wip/ui-enmienda`, último commit `3e81c69` (mejora 4 + merge de `wip/fundamentos` con enmiendas 4 y 4.1). Antes: `75f41c4` (mejora 2), `08a87c3`, `a890f11`.
+
+## Ideas
+- Tarjetas de propuestas en la pantalla del espacio con el mismo estado destacado (color + punto) y "Tu turno" según `siguiente_accion.codigo`: hoy son texto plano. Dueño: claude-b-interfaz.
+- Actualizar el archivo de Figma con la Simulación compacta y el agente plegado, para el pitch. Dueño: claude-b-interfaz.
+- Timeout de RPC en el cliente (U3 de Codex): una llamada colgada congela botones y sondeo durante la demo. Dueño: claude-b-interfaz (lo tomo con U1–U7).
 
