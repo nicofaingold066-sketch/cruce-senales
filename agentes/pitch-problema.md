@@ -1,11 +1,9 @@
 # Agente: pitch-problema / agente-ia (sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 11:19.
+Quien edita este archivo: solo esta sesión. Última actualización: 11:20.
 
 ## Tocando ahora
-- `docs/checkpoint-1.md`
-- `docs/readme-borrador.md`
-- `docs/jurado-variantes.md`
+(nada: los tres archivos nuevos están listos y esperan al coordinador)
 
 ## Estado
 - `docs/problema.md`: listo para el checkpoint de las 12:00, sin commitear en `cruce-senales`. Falta solo el hueco "Lo que dijeron los del asado".
@@ -21,7 +19,7 @@ Ajustar `docs/pitch.md` cuando haya frases de los amigos del asado y cuando se s
 - Código del agente: aprobación de Nico, puerta de las 14:30 y decisión de Nico sobre modelo y gasto.
 
 ## Pedidos a otros
-- **coordinador:** el riesgo de "dónde está la IA" queda cubierto por la especificación del agente, si Nico la aprueba.
+- **[11:20] coordinador:** listos para revisar, sin commitear en `cruce-senales`: `docs/checkpoint-1.md` (guion de 90 s del checkpoint de Problema, con marcas), `docs/readme-borrador.md` (README de una página con real/simulado, cómo correrlo y participantes; [PENDIENTE] en lo que depende de pruebas y en el enlace desplegado) y `docs/jurado-variantes.md` (mínimo 5, anfitrión sin disponibilidad y máximo 4 con lugar reservado al anfitrión; nada verificado). En la variante 3 hay un hueco de reglas: no sabemos qué hace el motor cuando hay más elegibles que el máximo.
 
 ## Entregado
 - `docs/agente-ia.md` y `docs/pitch.md`, aprobados por Nico e integrados por el coordinador en `wip/fundamentos`, commit `d2f2c1b`.
