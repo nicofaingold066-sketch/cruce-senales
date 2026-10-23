@@ -53,3 +53,7 @@ Aprobada por el coordinador el 23 oct 2026, a partir de `docs/agente-revision-pr
   - **E7.2: el organizador sigue viendo `pendientes` con las bajas descontadas**, como hasta ahora.
   - **E7.2: `siguiente_accion` se arma antes de ocultar los conteos.** El único texto que usa el conteo es "buscar_opcion", y solo lo recibe quien puede evaluar.
 - **Pruebas existentes adaptadas a E7.3:** las que creaban simulados en espacios no demo ahora usan el demo propio de su sesión (`demoPrueba` en `tests/backend/helpers.ts`, y `a1CrearEspacio` en `tests/verificacion-altas`). En `a2-reclamo` ya no se puede armar desde la API el caso "simulado en espacio no demo que alguien reclama". La prueba ahora verifica que no se puede crear y que quien entra con ese nombre no reclama nada.
+- **Pruebas existentes adaptadas a E7.2:**
+  - `privacidad-audiencia`: Luna recibe `null` en `personas_con_condiciones` y Tomi recibe 3.
+  - `tests/e2e/recorrido-canonico` y `jurado-variantes`: la opción de Luna y la de Tomi se siguen exigiendo idénticas salvo `cupos.pendientes`, que en Luna es `null` y en Tomi un número.
+- **Pruebas existentes adaptadas a E7.4** (`enmienda4`): los perfiles esperados ya no cuentan a quien pide. La prueba de #28 suma un cuarto miembro, y Pádel recién aparece con dos personas además del organizador.
