@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la computadora de Nico, Mac-mini-de-Felix). Última actualización: viernes 23 oct, 16:40 Santiago (reloj).
 
 ## Tocando ahora
-- CORRIENDO PRUEBA (17:34): e2e-recorrido (11) y recorrido-invitacion (9) con main 30e4c76 fusionado en wip/front-juan. Demos y propuestas propias, datos ficticios, cero llamadas al agente.
+(vacío. CORRIENDO PRUEBA terminado a las 17:36: e2e-recorrido 11/11 y recorrido-invitacion 9/9 con main 30e4c76 fusionado, sin ok:false.)
 
 ## Entregado: `wip/front-juan` = `a7b56ed`, lista para integrar
 Pedido de Juan: rehacer todo el front, mobile-first, con estilo de app de viaje en curso (Uber), y el flujo completo desde el ingreso hasta el final de una invitación. Ya trae fusionado `main` `7b0335b`: #47, #52, #56 y #51 de `main` quedaron adentro del rediseño (se descartaron las versiones locales viejas de #47 y #52).
