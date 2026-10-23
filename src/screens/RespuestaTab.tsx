@@ -70,7 +70,7 @@ function Interes({ p, viva, soloLectura }: VivaProps) {
       </div>
       {!s.puede.marcar_interes ? <p className="suave">Ahora no puedes cambiar tu interés en esta propuesta.</p> : null}
       {nota ? <p role="status">{nota}</p> : null}
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }
@@ -147,7 +147,7 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
           {guardado && !b.sucio ? <p role="status">Guardado. Solo tú ves estas condiciones.</p> : null}
         </>
       ) : null}
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }
@@ -195,7 +195,7 @@ function Retiro({ p, viva, soloLectura }: VivaProps) {
           </div>
         </Aviso>
       )}
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }

@@ -150,6 +150,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
           data-codigo={cod}
           role="status"
           aria-live="polite"
+          aria-atomic="true"
         >
           <div className="estado-hero-fila">
             <span className="estado-hero-punto" aria-hidden="true" />

@@ -318,7 +318,7 @@ function TarjetaSimulado({
           )}
         </details>
       ) : null}
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }

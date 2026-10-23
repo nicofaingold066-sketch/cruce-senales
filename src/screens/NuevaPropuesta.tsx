@@ -231,7 +231,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
             </Aviso>
           ) : null}
           {faltantes ? <Aviso tono="error">Completa todos los campos antes de revisar.</Aviso> : null}
-          {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} /> : null}
+          {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} enfocar /> : null}
 
           <label className="campo">
             <span>Propósito de la propuesta</span>
@@ -332,7 +332,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
               <dd>{momentoCorto(form.plazo)}</dd>
             </dl>
           </section>
-          {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} /> : null}
+          {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} enfocar /> : null}
           <div className="fila-botones">
             <Boton onClick={() => void crear(true)} ocupado={ocupado || enCurso} ocupadoTexto="Creando…" disabled={soloLectura}>
               Crear y abrir al grupo

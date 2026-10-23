@@ -225,7 +225,7 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
       ) : (
         <Aviso tono="info">{razonNoAceptar(p)}</Aviso>
       )}
-      {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} /> : null}
+      {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }
@@ -353,7 +353,7 @@ function AlternativaOrganizador({ p, viva, soloLectura, sinAlternativa }: VivaPr
       ) : (
         <p className="suave">El organizador ({p.organizador.nombre}) debe buscar una alternativa. Mientras tanto puedes actualizar tus condiciones en "Mi respuesta".</p>
       )}
-      {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} /> : null}
+      {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }
@@ -454,7 +454,7 @@ function AbrirPropuesta({ p, viva, soloLectura }: VivaProps) {
       ) : (
         <p className="suave">Solo el organizador puede abrirla.</p>
       )}
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }
@@ -484,7 +484,7 @@ function BuscarOpcion({ p, viva, soloLectura, sinOpcion }: VivaProps & { sinOpci
           {error?.reintentable ? 'Reintentar búsqueda' : sinOpcion ? 'Volver a buscar opción' : 'Buscar opción compatible'}
         </Boton>
       ) : null}
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }
@@ -516,7 +516,7 @@ function Cancelar({ p, viva, soloLectura }: VivaProps) {
           </div>
         </Aviso>
       )}
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }

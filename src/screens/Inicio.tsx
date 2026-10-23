@@ -192,7 +192,7 @@ function CargarDemo({ deshabilitado, yaCargada }: { deshabilitado: boolean; yaCa
         {yaCargada ? 'Abrir la demo «Los del asado»' : 'Probar la demo «Los del asado»'}
       </Boton>
       <p className="suave">Serás Tomi, quien organiza. Las otras cinco personas son simuladas (datos ficticios).</p>
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </div>
   )
 }
@@ -255,7 +255,7 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
       <Boton type="submit" ocupado={ocupado} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado}>
         Unirme
       </Boton>
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </form>
   )
 }
@@ -289,7 +289,7 @@ function CrearEspacio({ deshabilitado }: { deshabilitado: boolean }) {
         <Boton type="submit" ocupado={ocupado} ocupadoTexto="Creando…" disabled={faltan || deshabilitado}>
           Crear espacio
         </Boton>
-        {error ? <ErrorCaja error={error} /> : null}
+        {error ? <ErrorCaja error={error} enfocar /> : null}
       </form>
     </details>
   )

@@ -382,6 +382,14 @@ a {
   padding: 10px 12px;
   margin: 12px 0;
 }
+/* El aviso de error recibe el foco tras una acción fallida si el botón desapareció (mejora #44). */
+.aviso:focus {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+.aviso:focus:not(:focus-visible) {
+  outline: none;
+}
 .aviso-ok {
   border-color: var(--ok-borde);
   background: var(--ok-fondo);
@@ -466,7 +474,8 @@ a {
   color: #fff;
 }
 .btn-chico {
-  min-height: 36px;
+  /* Mejora #44: 44 px de toque en toda la app, como el panel del agente (#35). */
+  min-height: 44px;
   padding: 4px 10px;
   font-size: 0.9rem;
 }
@@ -920,6 +929,10 @@ input[aria-invalid='true'],
   }
   .contenido:has(.cta-fija) {
     padding-bottom: 150px;
+  }
+  /* Lo que recibe foco o se desplaza a la vista no queda tapado por la barra fija (mejora #44). */
+  html:has(.cta-fija) {
+    scroll-padding-bottom: 150px;
   }
 }
 
