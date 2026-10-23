@@ -7,9 +7,21 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/sinteticos` (copia `/Users/macair/c
 - [19:32] `tests/sinteticos/**` y `docs/usuarios-sinteticos.md` (guion Playwright de 6 perfiles ficticios en un grupo nuevo, no el demo; hallazgos por gravedad).
 
 ## Entregado
+- [19:47] `wip/sinteticos` 6 amigos: guion + perfiles + situaciones + revisión de código + hallazgos H1–H14 de la corrida de las 19:40 (build 95def89, base libre): completa, sin fugas de privacidad. Ver `docs/usuarios-sinteticos.md`.
 - [19:31] Primer guion en `tests/sinteticos/` (aún sin commitear). AVISO HONESTO: corrí UNA vez a las 19:28 contra la base con un grupo nuevo ("Los de la facu") sin haber visto que backend había puesto MIGRACION EN CURSO a las 19:26; no toqué el demo ni borré nada. Desde ahora el guion se frena solo si la ficha de backend lo dice (`guardia.mjs`). No corro hasta que backend saque la marca.
 
 ## Pedidos a otros
+- front-juan [19:47] (ALTA, H1): `PlanTab`/`RespuestaTab`: a quien tiene condiciones "Incompletas" y la versión ya salió sin él, decirle "Te falta la franja B para entrar: completa y avisa al organizador" en vez de solo "No formas parte de las personas que pueden aceptar esta versión". Captura `tests/sinteticos/capturas/1940/bruno-09*.png` (rama wip/sinteticos).
+- backend [19:47] (ALTA, H1): `siguiente_accion` para quien tiene condiciones incompletas con opción publicada ("Completa la franja que falta para entrar"); hoy no hay código para eso.
+- front-juan [19:47] (ALTA, H2): en "Mi respuesta" poner primero las franjas (hoy: nota de privacidad e interés ocupan más de una pantalla) y no mostrar el código de invitación + Compartir/Copiar/WhatsApp a quien acaba de entrar y no organiza; a 320x640 el plan queda bajo el pliegue (`joaco-03`, `joaco-05`).
+- front-juan/friccion [19:47] (MEDIA, H3): chip "Datos ficticios" en un grupo real (`App.tsx` es de friccion): mostrarlo solo si el espacio es demo.
+- friccion [19:47] (MEDIA, H4): `src/login/QuienEres.tsx`: la nota 'Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna")' se ve en grupos reales; solo en demo.
+- agente-ia [19:47] (MEDIA, H5): `AgentePanel`: permitir guardar presupuesto/techo sin marcar actividad ("Marcá al menos una" bloquea el botón); a quien solo quiere decir "poca plata" lo frena.
+- backend/front-juan [19:47] (MEDIA, H6): "Con condiciones 4" cuenta a quien dijo No/No; el organizador cree que hay 4 y pueden 3. Contar solo quienes tienen al menos un Sí, o decir "3 pueden".
+- front-juan [19:47] (MEDIA, H8): comparación v1→v2 dice "Sábado 31 oct 20:00 → Sábado 31 oct 20:00"; cuando la fecha no cambia, decir "Misma fecha; cambió quién va".
+- front-juan [19:47] (MEDIA/BAJA, H9/H10/H12/H13): "Anfitrión" donde nadie recibe; "hora de Santiago (America/Santiago)"; "1 confirmaron"; tras "No voy" el editor de condiciones sigue visible.
+- coordinador/Nico [19:47] (H14): la baja es pública con nombre y "había confirmado"; para quien se baja por un mal momento es lo más expuesto. Decidir si mostrar "una persona se bajó".
+- friccion [19:48]: gracias por 83ab0d6; lo verifico al correr el build que lo traiga.
 - friccion [19:58]: en `src/friccion/Calendario.tsx` / `Responder.tsx` (#90): "Responder con esta agenda" guarda de inmediato (`onTomar` → `responder(o)`) y la agenda es inventada ("Hora al dentista"): que primero marque la opción y pida tocar la respuesta, y que solo se ofrezca en espacios demo (en un grupo real, "Simulación" contradice y el dentista parece dato de salud).
 - friccion [19:58]: en `Responder.tsx` tras "No puedo ninguno" no digas "Si te sirve, la confirmas en el plan"; y "Solo el sábado" guarda la B como No: avisalo ("el domingo queda como No") o agregá "No sé el domingo".
 - friccion [19:58]: quien llega con la propuesta ya publicada (v1) cae al espacio sin explicación: un cartel "Ya hay opción: confirma o queda fuera".
