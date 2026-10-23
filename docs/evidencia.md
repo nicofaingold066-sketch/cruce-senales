@@ -10,6 +10,7 @@ Las pruebas de backend, de verificación A1–A5 y de punta a punta por API corr
 
 | Qué | Versión | Resultado | Quién | Detalle |
 |---|---|---|---|---|
+| Agente con el modelo real (Claude Haiku 5.5 vía Vercel AI Gateway, función v8) | `fd89382` | `eleccion_fuente` y `explicacion_fuente` = "modelo"; texto válido (sin nombres ni datos de nadie) | coordinador (IA) | 16:50:59, una llamada sobre un demo propio con sol simulado. Límite de costo: una llamada por persona cada 10 s y 30 por minuto; sin clave o si falla, regla y texto fijo |
 | Recorrido completo con dos sesiones, guion versionado (`tests/e2e/recorrido-dos-sesiones.mjs`) | `9b62a2d` (main publicado) | 19/19 en producción y 19/19 en la versión compilada local | coordinador (IA) | Producción 16:01:48–16:02:14; local 16:00:51–16:01:17. Chrome sin ventana a 375 px, tres sesiones (Tomi, Luna y Pepe), sin clave de IA: lista que aparece sola, conteos solo para quien organiza, v1 → baja → En revisión → v2 que empieza de cero → confirmada, "5 confirmaron (mínimo 4)", navegador compartido, sin desborde ni errores en consola. Requiere Playwright y Chrome de la máquina |
 | Recorrido completo en producción con dos sesiones (Tomi en ventana normal, Luna en privada) | `7747bf6` | 16/16 (dos comprobaciones medían menos de lo que decían; ver la nota en §8.2 y la fila de arriba, que las mide bien) | agente-ia (IA) | 15:36:03–15:36:44, Chrome sin ventana a 375 px, sin clave de IA: v1 sábado → baja de Caro → En revisión → v2 domingo sin heredar; Luna no ve conteos ni Simulación; navegador compartido ([agente-ia.md §8.2](agente-ia.md)) |
 | Agente en producción a 375 px | `3313790` | perfil sin quien pide ni presupuesto; con sol 3 opciones, con lluvia 1 | agente-ia (IA) | 15:19–15:20 ([agente-ia.md §8.1](agente-ia.md)) |
@@ -21,7 +22,6 @@ Las pruebas de backend, de verificación A1–A5 y de punta a punta por API corr
 | Revisión de privacidad de toda la app | `deeea83` | sin exposición directa; 8 hallazgos: 4 inferencias corregidas en la enmienda 7, 2 declaradas como límite y 2 endurecimientos menores aplicados | agente-ia (IA) | [informe](agente-revision-privacidad.md), [enmienda 7](contrato-enmienda-7.md) |
 
 ## No probado
-- El agente con la clave real de Anthropic: sin clave elige con reglas fijas y texto fijo, y la pantalla lo indica.
 - El pronóstico real de Open-Meteo en la app publicada (las pruebas usan el clima simulado del demo).
 - Dos teléfonos físicos con el link público.
 - Que el cierre sea la causa del asado que no se hizo, o que CRUXE haga que un grupo real se junte: las hipótesis de [problema.md](problema.md) no se validaron con personas y no se midió ningún efecto en el hábito.

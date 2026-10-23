@@ -12,7 +12,7 @@ Conversar ya lo resuelve el chat; cerrar y sostener el plan, no. Es una fricció
 - **Condiciones privadas:** nadie ve las de otro.
 - **Una opción, una versión:** la app propone una opción que llega al mínimo de personas e incluye al anfitrión; cada uno confirma esa versión. Interesarse no es confirmar.
 - **Reparación:** si una baja deja el plan bajo el mínimo, pasa a "En revisión" y la alternativa empieza sin confirmaciones. Si no hay opción, lo dice sin bajar el mínimo.
-- **Agente del círculo (opcional):** con preferencias privadas y el clima, propone hasta tres planes de un catálogo ficticio que le sirven a todos; quien organiza solo ve totales. La app publicada corre sin clave de IA (regla fija y "Texto fijo"); elegir y redactar con un modelo de Anthropic está programado pero no probado. Nunca crea ni confirma nada.
+- **Agente del círculo (opcional):** con preferencias privadas y el clima, propone hasta tres planes de un catálogo ficticio que le sirven a todos; quien organiza solo ve totales. Un modelo de Anthropic (Claude Haiku, vía Vercel AI Gateway) elige entre esas opciones y redacta el porqué y un mensaje para el grupo; sin clave o si falla, va una regla fija y un texto fijo, y la pantalla dice cuál. Probado en vivo el viernes a las 16:50. Nunca crea ni confirma nada.
 
 ## Qué dejamos fuera y por qué
 Chat, pagos, reservas, calendarios y notificaciones: queríamos probar el cierre y la reparación, no integrar servicios. Tampoco empresas ni métricas por persona: el foco es social y la privacidad importa. No prometemos privacidad perfecta; los límites que quedan están en [la enmienda 7](docs/contrato-enmienda-7.md).
