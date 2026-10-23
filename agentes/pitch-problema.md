@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 19:05.
+Quien edita este archivo: solo esta sesión. Última actualización: 19:06.
 
 ## Tocando ahora
-- **[19:05] CORRIENDO PRUEBA:** botones de posibles canchas en PRODUCCIÓN (demo propio, UNA llamada al modelo). Aviso al terminar.
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[19:06] Posibles canchas probado en producción** (`64baaef`): 19:05-19:06, una llamada al modelo, 13/14. Funciona todo; la que falló fue "sin errores de consola" por un corte de red local (`ERR_NETWORK_CHANGED`) que hizo fallar la precarga de NuevaPropuesta. **CORRIENDO PRUEBA terminado.**
 - **[17:57] Posibles canchas entregado** (`70d7fdd`, pedido y aprobado por Nico; `src/agente/canchas.ts` nuevo, `src/agente/AgentePanel.tsx`, `docs/agente-ia.md`). En la opción de pádel, fútbol o tenis: "Canchas … cerca de ti (Google Maps)" (búsqueda sin ubicación, sin clave), "Buscar y reservar en EasyCancha (Santiago)" y "Ver turnos en ATC (Mendoza)" con deporte, día y hora de la franja A. Rotulado "Posibles canchas reales" (el club de la opción es de simulación; CRUXE no reserva). Probado 17:56-17:57 a 375 px contra la base real con una llamada al modelo: 13/13; ATC abre 13 clubes de fútbol 5 en Mendoza para el 31/10 a las 11:00. Typecheck y build en verde. **CORRIENDO PRUEBA terminado.**
 - **[17:39] Barrido entregado** (`a7fedff`, `docs/agente-barrido.md`, pedido de Nico): actividades para grupos de amigos, variables del agente (actuales y propuestas con privacidad) y fuentes reales en Santiago y Mendoza. Canchas: no hay API pública (enlace a ATC en Mendoza, EasyCancha en Santiago con acuerdo; EasyCancha prohíbe raspar). Eventos: Chile Cultura sin clave para Santiago, API-Football. Lugares con ambiente: Google Places (1.000 gratis al mes). Contexto: Open-Meteo ampliado (OJO: plan gratis no comercial y atribución con enlace), alertas DMC/SMN, feriados Boostr/ArgentinaDatos. Para la demo no se toca nada.
 - **[17:26] Mejora #77 entregada** (`06a9bfc`, `docs/agente-qa-enmienda9.md`): QA en vivo de la enmienda 9 por RPC, 40/40 (17:26:09 a 17:26:12; una corrida previa 38/38 a las 17:25). Espacio propio con 3 integrantes pendientes y 4 sesiones: errores de `create_space`, claves de `get_space` y `preview_space_by_code`, reclamo con `p_miembro_id` (mismo id, pasa a real), doble reclamo concurrente (uno gana, otro `miembro_ya_reclamado`), y los pendientes no cuentan en interés, condiciones, quórum ni cupos (con Caro todavía pendiente al publicar). **CORRIENDO PRUEBA terminado.**
@@ -56,6 +57,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
+- **[19:06] claude-b o front-juan (vía coordinador), resistencia en la demo:** si la red se corta justo cuando se precarga una pantalla (`usePrecargaPantallas`, `App.tsx`), Chrome suele guardar el import fallido y esa pantalla no abre hasta recargar. Lo vi en producción a las 19:06 ("Failed to fetch dynamically imported module … NuevaPropuesta" por `ERR_NETWORK_CHANGED`). Sugerencia: reintentar el import una vez con otra URL (`?r=1`) o un aviso "Recargar" en la barrera de errores. No lo confirmé navegando después del fallo.
 - **[16:00] backend (vía coordinador), resto de #56:** `siguiente_accion.texto` de `esperando_compromisos` arma "Versión N: confirmaron X de MIN necesarias." (`0027_e7_conteos_solo_organizador.sql:104`). Con el anfitrión sin confirmar, X puede pasar el mínimo (5 sin el anfitrión con máximo 6) y se lee "confirmaron 5 de 4 necesarias. Falta la aceptación de Tomi." en la tarjeta del espacio, en el encabezado de la propuesta y en Inicio. Sugerencia: con X > MIN, "confirmaron X (mínimo MIN)". No se llega con el caso canónico (en B hay 5 elegibles y sin el anfitrión quedan 4). La interfaz no lo reescribe porque es texto del servidor.
 - **[15:37] claude-b-interfaz (vía coordinador):** "5 de 4 confirmaron" (tarjeta del espacio) y "Confirmaron 5 de 4" (versión vigente) se leen raro cuando se supera el mínimo; sugerencia: "5 confirmaron (mínimo 4)".
 - **[15:37] coordinador:** el guion del recorrido (Playwright, dos contextos, 16 comprobaciones) está en mi carpeta temporal; si lo querés como prueba versionada en `tests/e2e/`, te lo paso.
