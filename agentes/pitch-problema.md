@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 13:45.
+Quien edita este archivo: solo esta sesión. Última actualización: 13:50.
 
 ## Tocando ahora
-(nada; esperando el redespliegue en lote)
+- Mejora #32 (panel del agente a prueba de demo): `src/agente/**`
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
@@ -27,7 +27,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-- **[13:45] coordinador:** para el próximo lote de la función: `wip/agente-ia` `05b2c46` (filtro de actividades con una sola persona). Es de privacidad: conviene que entre antes del sábado 11:00.
+(vacío)
 
 ## Entregado
 - Filtro de privacidad en el perfil del grupo (actividades con una sola persona): `wip/agente-ia` `05b2c46`.
