@@ -106,7 +106,19 @@ Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y
 
 **Nota:** la frase del ritmo del grupo (`ritmo_del_grupo`) sale del puntaje, que cuenta a todos los que cargaron preferencias, incluido quien pide (`0026:123-124` y `148`). En el último caso, Tomi había cambiado su ambiente a "fiesta" en el paso anterior, así que el ambiente general quedó empatado y la frase no aparece. Es el diseño de la enmienda 7 y no tiene que ver con privacidad.
 
-**[PENDIENTE]** La parte de pantalla en producción: la app publicada está caída (Vercel de Nico bloqueado) y se repite cuando esté la URL nueva de Juan.
+**Pantalla en producción, viernes 23 oct 2026, de 15:19 a 15:20 (hora del reloj).** https://cruce-senales.vercel.app, `main` `3313790` (publicado a las 15:17 según el coordinador), función v6, vista de teléfono de 375 × 812 en el navegador del panel (no un teléfono físico), sin clave.
+
+| Paso | Observado |
+|---|---|
+| "Simular sol" → "Que el agente proponga" (15:19) | 3 opciones: Asado (Recomendada), Fútbol y Parque, con rótulo Simulación |
+| Perfil del grupo | "Lo que eligió el grupo (4 personas): Asado 3 de 4 · Fútbol 2 de 4. La mayoría prefiere algo tranquilo." Sin Tomi (E7.4) y sin ambiente, que está empatado |
+| Por qué | "…es lo que más eligieron (3 de 4) y va con lo que prefiere la mayoría: un plan algo tranquilo." Marcado "Texto fijo" |
+| Respuesta de la función, leída en el navegador | `perfil_grupo` sin `presupuesto_grupo`; `clima.fuente` = simulacion; `eleccion_fuente` = regla; `explicacion_fuente` = texto_fijo. En la pantalla no aparece ningún dato de presupuesto |
+| "Simular lluvia" (15:19) | Una sola opción, el asado; clima de prueba con lluvia |
+| WhatsApp y "Usar esta opción" (15:19) | El enlace mide 44 px y abre en una pestaña nueva. "Nueva propuesta" llega con el título y las franjas del sábado 31 y el domingo 1 de 14:00 a 17:00, y con el aviso de que el agente no crea ni confirma nada |
+| Consola y diseño | Sin errores; sin desborde horizontal |
+
+No se probó: la IA con clave real, un teléfono físico ni crear la propuesta (para no tocar el plan confirmado de ese demo).
 
 ## Historia
 Idea de Nico. Diseño de privacidad del coordinador: el servidor elige y la IA solo ve totales. Enmienda 4 (preferencias, catálogo y elección por reglas), 4.1 (candidatas, perfil del grupo y la IA como coordinadora, pedido de Nico) y 5 (preferencias simuladas). Mejoras #11, #23, #25, #26, #28, #32 y #35.
