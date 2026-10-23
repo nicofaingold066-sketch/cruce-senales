@@ -6,6 +6,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `
 - [20:26] (nada en edición) `f72e4af` está en main `fae49fa` (coordinador, 20:25). Mis OBSERVADO de rincones están todos hechos. Atento a pedidos; próxima idea en "Ideas".
 
 ## Entregado
+- [20:27] **Verificado en producción** (https://cruce-senales.vercel.app, main `fae49fa`): guion friccion **27/27** y medición **4 toques** (5,1 s) del enlace a la primera respuesta, con grupos ficticios nuevos.
 - [20:24] Revisión visual de "¿Cuándo puedes?" a 320 px con `67b11b9`: 4 toques, sin desborde ni errores; los textos largos ("Solo el viernes 30 oct · el jueves queda como No") pasan a dos líneas sin cortarse.
 - [20:23] `67b11b9`: merge de `wip/fundamentos` (b8e19ae: enmienda 12, RecordarFaltan, ejemplos) sin conflictos. Typecheck y build OK; con la base libre: guion friccion **27/27** y `recorrido-dos-sesiones` **23/23**.
 - [20:16] **Pruebas de `f72e4af` con la base libre, contra mi build (20:13–20:16):** guion friccion **27/27** · `recorrido-dos-sesiones` **23/23** · `jurado-navegador` **4 PASS, 0 FAIL** · `red-controlada` 10/10 · `sesiones-recuperacion` (versión de `wip/qa`) 12/12 · typecheck y build OK.
