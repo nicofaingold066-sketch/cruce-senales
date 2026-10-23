@@ -6,7 +6,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cru
 - [19:49] `src/componentes-nuevos/**` (componentes listos para conectar, porque front-juan no responde desde las 18:49) y los dos docs.
 - [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: los actualizo con cada entrega; último `e73d93c`).
 
-## Entregado (rama `wip/ux`, último `e73d93c`)
+## Entregado (rama `wip/ux`, último `49ab5ea`)
 - #98 + #91 `a3797af` (19:31): `docs/flujo-usuario.md` reescrito con el recorrido REAL "convencer a uno" (build propio 4183, 375 px, 19:24-19:27): organizador 21 toques (19 sin el tropiezo), cada invitado 8 toques y 4 vistas hasta la primera respuesta, +2 para confirmar. Marcas [visto]/[leído], 9 dudas vistas en pantalla, recortes con dueño, mapa input → servidor → output en mermaid con la enmienda 10 (pendiente) y tabla "quién ve qué".
 - #94 `bfa6218` (19:32): `docs/front-back-puente.md`: RPC y campos por pantalla, lo que el back expone y el front no usa (E10 incluida), lo que falta de cada lado, registro de entregas.
 - #89 `419ac2a` (19:34) + `ede33ca` (19:36, nota según el motivo y banco sin base `src/componentes-nuevos/prueba/recordar.html`, revisado a 375 y 320 px sin desborde): `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (lógica pura) + `recordar.test.mjs`. `node --test "src/componentes-nuevos/*.test.mjs"` 7/7; `npm run typecheck` y `npm run build` en verde (19:34).
@@ -14,6 +14,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cru
 
 - `59685eb` (19:49): `AvisoParaMi` + `avisoPersonal.ts` + prueba; `node --test "src/componentes-nuevos/*.test.mjs"` 12/12, typecheck verde, banco a 375 y 320 px sin desborde. `7347913`: texto de RecordarFaltan para quien ya respondió (sinteticos).
 - `49f803a` (20:06): #98 segunda corrida REAL sobre fusión local `wip/ux` + `wip/friccion` (`05e148d`, sin subir), 20:04-20:05, 6 sesiones: los 5 invitados llegan a la primera respuesta en **4 toques** (verifica el #88 de friccion); Ema ya no queda fuera por "Pendiente" y confirmó. Organizador sin cambios (21). Detalle en `docs/flujo-usuario.md` §3.5. Sin errores de la app en consola.
+- `49ab5ea` (20:28): #98 tercera corrida, EN PRODUCCIÓN (`main` `fae49fa`, 20:26-20:28, 6 sesiones, sin errores): invitados 4 toques, 4 confirman; E12 (a) verificada en el texto, pero el botón "Buscar opción compatible" sigue activo y da "Sin opción" si el imprescindible no respondió; Coni sin aviso de "versión sin ti"; 0 WhatsApp al publicar. Los tres se arreglan conectando `AvisoParaMi` y `RecordarFaltan` (pedido al coordinador arriba). `docs/flujo-usuario.md` §3.6.
 
 ## Pedidos a otros
 Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo ficticio "Los del pádel": Vale organiza, Ana, Beto, Coni, Diego y Ema entran por el enlace). Detalle en `docs/flujo-usuario.md` §3 (rama `wip/ux`).
