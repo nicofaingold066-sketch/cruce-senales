@@ -123,7 +123,7 @@ function razonNoAceptar(p: EstadoPropuesta): string {
   if (p.plazo_vencido) return 'El plazo de aceptación ya cerró.'
   if (s.elegible_en_version === false) return 'No formas parte de las personas que pueden aceptar esta versión.'
   if (s.motivo_aceptar === 'cupo_reservado') {
-    return 'El último cupo está reservado para el anfitrión. Podrás confirmar cuando él confirme o se libere un cupo.'
+    return 'El último cupo está reservado para el anfitrión. Podrás confirmar si se libera un cupo para otros.'
   }
   if (p.opcion && p.opcion.cupos.disponibles <= 0) return 'Ya se completaron los cupos de esta versión.'
   return 'Ahora no puedes confirmar esta versión.'

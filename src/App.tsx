@@ -34,7 +34,7 @@ function Marco({
 
   return (
     <>
-      <a className="saltar" href="#contenido">
+      <a className="saltar" href="#contenido" onClick={saltarAlContenido}>
         Saltar al contenido
       </a>
       <header className="encabezado">
@@ -113,8 +113,16 @@ function Pantalla({ ruta }: { ruta: Ruta }) {
     case 'propuesta':
       return <Propuesta espacioId={ruta.espacioId} propuestaId={ruta.propuestaId} />
     case 'unirse':
-      return <Inicio key={ruta.codigo} codigoInvitacion={ruta.codigo} />
+      return ruta.invalida ? <Inicio key="invitacion-invalida" invitacionInvalida /> : <Inicio key={ruta.codigo} codigoInvitacion={ruta.codigo} />
     default:
       return <Inicio />
   }
+}
+
+/** U5 (revisión de Codex): la navegación usa el hash, así que el enlace no puede cambiarlo; solo mueve el foco. */
+function saltarAlContenido(e: React.MouseEvent<HTMLAnchorElement>) {
+  e.preventDefault()
+  const main = document.getElementById('contenido')
+  main?.focus()
+  main?.scrollIntoView({ block: 'start' })
 }
