@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la computadora de Nico, Mac-mini-de-Felix). Última actualización: viernes 23 oct, 17:38 Santiago (reloj).
 
 ## Tocando ahora
-(vacío. CORRIENDO PRUEBA terminado a las 17:46: capturas a 375 px listas.)
+[17:52] Acuso el aviso de las 17:35. En `wip/front-juan`: merge de `origin/wip/fundamentos` (sin pisar `src/login/**` ni la lista de integrantes de `CrearGrupo.tsx`) y pasada estética mobile en `src/styles.css`, `src/screens/{PlanTab,Propuesta,Espacio,RespuestaTab,Planes,Inicio}.tsx`, `src/components/{PlanVivo,ui}.tsx`. Después corro los tres guiones de `tests/e2e/` contra mi build y aviso qué rótulos o campos cambiaron.
 
 ## Entregado: `wip/front-juan` = `91e9f9a` (sobre `main` `30e4c76`, ya fusionado)
 Nuevo desde lo que integraste (`9269e8e`), pedido por Juan:
