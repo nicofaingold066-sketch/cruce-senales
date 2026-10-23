@@ -221,6 +221,8 @@ export interface MiembroEspacio {
   rol: 'organizador' | 'miembro'
   simulado: boolean
   es_yo: boolean
+  /** Enmienda 9 (fase 2): integrante que el organizador anotó y que todavía no entró (sin sesión). */
+  pendiente?: boolean
 }
 
 export interface Espacio {

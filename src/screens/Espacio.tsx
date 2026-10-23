@@ -224,11 +224,13 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
           </div>
           <ul className="chips-personas">
             {espacio.miembros.map((m) => (
-              <li key={m.miembro_id}>
+              <li key={m.miembro_id} className={m.pendiente ? 'persona-por-entrar' : undefined}>
                 <Avatar nombre={m.nombre} simulado={m.simulado} yo={m.es_yo} tam={26} />
                 <span className="chip-texto">
                   <Nombre m={m} yo={m.es_yo} />
                   {m.rol === 'organizador' ? <span className="chip-nota">organizador</span> : null}
+                  {/* #73: lo anotó el organizador y todavía no entró con el enlace (enmienda 9, `pendiente` de get_space). */}
+                  {m.pendiente ? <span className="chip-nota">por entrar</span> : null}
                 </span>
               </li>
             ))}
