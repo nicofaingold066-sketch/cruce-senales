@@ -1,9 +1,10 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: 16:30 Santiago (reloj). Prueba de carga #45 terminada.
+Quien edita este archivo: solo el backend. Última actualización: 16:36 Santiago (reloj). Enmienda 7 en curso.
 
 ## Tocando ahora
-(vacío. Prueba de carga #45 terminada (16:30). Ninguna migración en curso. Última aplicada: 0030. La base queda libre para pruebas.)
+- #62 (enmienda 8, opt-out del agente): supabase/migrations/0031 y tests/backend/enmienda8.test.ts escritos, sin aplicar. Se aplica a las 16:55 por pedido del coordinador; hasta entonces no hay ninguna migración en curso y no toco la base.
+- Rutas: supabase/migrations/0031, tests/backend/enmienda8.test.ts, sección Implementación de docs/contrato-enmienda-8.md.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
