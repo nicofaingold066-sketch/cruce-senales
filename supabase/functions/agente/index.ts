@@ -228,7 +228,9 @@ Deno.serve(async (req) => {
       // Solo totales del grupo; con 3 personas o menos, solo la cantidad (mejora #26).
       perfil_grupo: perfilParaRespuesta(perfil),
       clima: { fuente: clima.fuente, resumen, sabado: clima.sabado.estado, domingo: clima.domingo.estado },
-      explicacion: delModelo?.explicacion ?? unirFrases(elegida.frases_grupo, simulado),
+      explicacion:
+        delModelo?.explicacion ??
+        unirFrases(elegida.frases_grupo, simulado, { perfil: perfilParaRespuesta(perfil), actividad: elegida.actividad_etiqueta }),
       mensaje_al_grupo: delModelo?.mensaje ?? mensajeFijo(elegida),
       eleccion_fuente: delModelo ? 'modelo' : 'regla',
       explicacion_fuente: delModelo ? 'modelo' : 'texto_fijo',

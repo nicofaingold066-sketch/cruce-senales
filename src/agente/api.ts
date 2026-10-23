@@ -83,14 +83,41 @@ const FRASES: Record<string, string> = {
   ritmo_del_grupo: 'va con el ritmo que prefiere el grupo',
 }
 
+const ENERGIA_PLAN: Record<string, string> = { con_todo: 'un plan con todo', algo_tranquilo: 'un plan algo tranquilo' }
+const AMBIENTE_PLAN: Record<string, string> = { fiesta: 'con ambiente de fiesta', tranquilo: 'con ambiente tranquilo' }
+
+/** Misma regla que la función (logica.ts, textoFrase): con 3 personas o menos, sin detalles del grupo. */
+function frase(codigo: string, simulado: boolean, perfil: PerfilGrupo | null | undefined, actividad: string | undefined): string | undefined {
+  if (simulado && codigo === 'al_aire_libre_con_buen_tiempo') return 'es al aire libre con el sol de la simulación'
+  const p = perfil && perfil.personas > 3 ? perfil : null
+  if (p && codigo === 'ritmo_del_grupo') {
+    const partes = [
+      p.energia_mayoritaria ? ENERGIA_PLAN[p.energia_mayoritaria] : undefined,
+      p.ambiente_mayoritario ? AMBIENTE_PLAN[p.ambiente_mayoritario] : undefined,
+    ].filter((t): t is string => Boolean(t))
+    if (partes.length === 2) return `va con lo que prefiere la mayoría: ${partes[0]} y ${partes[1]}`
+    if (partes.length === 1) return `va con lo que prefiere la mayoría: ${partes[0]}`
+  }
+  if (p && codigo === 'el_mas_elegido' && actividad) {
+    const g = p.gustos?.find((x) => x.actividad_etiqueta === actividad && x.cuantos >= 2)
+    if (g) return `es lo que más eligieron (${g.cuantos} de ${p.personas})`
+  }
+  return FRASES[codigo]
+}
+
 /**
  * Texto fijo de "por qué". `destacada` = la opción recomendada; las demás no dicen que son "la mejor".
- * `simulado` = clima de simulación: no se habla de pronóstico.
+ * `simulado` = clima de simulación: no se habla de pronóstico. Con `perfil` (solo totales, 4 personas
+ * o más) y la etiqueta de la actividad, el texto nombra el ritmo, el ambiente y cuántos la eligieron (mejora #40).
  */
-export function textoFijo(codigos: string[], destacada = true, simulado = false): string {
-  const partes = codigos
-    .map((c) => (simulado && c === 'al_aire_libre_con_buen_tiempo' ? 'es al aire libre con el sol de la simulación' : FRASES[c]))
-    .filter((t): t is string => Boolean(t))
+export function textoFijo(
+  codigos: string[],
+  destacada = true,
+  simulado = false,
+  perfil?: PerfilGrupo | null,
+  actividad?: string,
+): string {
+  const partes = codigos.map((c) => frase(c, simulado, perfil, actividad)).filter((t): t is string => Boolean(t))
   if (partes.length === 0) {
     return destacada
       ? 'Es la opción que mejor le sirve al grupo con lo que cargaron.'
@@ -137,7 +164,7 @@ function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
     clima: sinFuncion || !r.clima
       ? { fuente: 'sin_pronostico', resumen: 'Sin pronóstico disponible.', sabado: 'desconocido', domingo: 'desconocido' }
       : r.clima,
-    explicacion: fijo ? textoFijo(elegida.frases_grupo) : (r.explicacion as string),
+    explicacion: fijo ? textoFijo(elegida.frases_grupo, true, false, r.perfil_grupo, elegida.actividad_etiqueta) : (r.explicacion as string),
     mensaje_al_grupo: fijo || !r.mensaje_al_grupo ? mensajeFijo(elegida) : r.mensaje_al_grupo,
     perfil_grupo: r.perfil_grupo ? (r.perfil_grupo.personas > 3 ? r.perfil_grupo : { personas: r.perfil_grupo.personas }) : null,
     eleccion_fuente: !sinFuncion && r.eleccion_fuente === 'modelo' ? 'modelo' : 'regla',
