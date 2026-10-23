@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api, nuevoIntento } from '../lib/api'
+import type { CargarCasoOk } from '../lib/api'
 import type { ApiError, Disponibilidad, EstadoPropuesta, MiembroPanel } from '../lib/types'
-import { normalizar, useBorradorCondiciones, useMutacion, useSondeo } from '../lib/hooks'
+import { useBorradorCondiciones, useMutacion, useSondeo } from '../lib/hooks'
 import { Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
 import { EditorCondiciones, ETIQUETA_VALOR } from '../components/Condiciones'
 import type { PestanaProps } from './tabs'
@@ -38,7 +39,7 @@ export default function SimulacionTab({ p, viva, soloLectura }: PestanaProps) {
   }, [cargar, p.state_rev])
   useSondeo(cargar, 3000)
 
-  const guardarTodos = useGuardarTodos(p, miembros, cargar, viva)
+  const guardarTodos = useGuardarTodos(p, cargar, viva)
 
   return (
     <div className="panel-sim">
@@ -89,52 +90,39 @@ export default function SimulacionTab({ p, viva, soloLectura }: PestanaProps) {
   )
 }
 
-function useGuardarTodos(
-  p: EstadoPropuesta,
-  miembros: MiembroPanel[] | null,
-  recargar: () => Promise<void>,
-  viva: PestanaProps['viva'],
-) {
+const MOTIVO_OMITIDO: Record<string, string> = {
+  fuera_del_caso: 'no está en el caso',
+  retirado: 'se retiró',
+  condiciones_congeladas: 'forma parte de la versión vigente',
+}
+
+/** Resumen de simulate_load_case con los nombres que devuelve el servidor. */
+function resumenCarga(r: CargarCasoOk['resultado']): string {
+  const cargados = r.cargados.map((m) => m.nombre).join(', ')
+  const omitidos = r.omitidos.map((o) => `${o.miembro.nombre} (${MOTIVO_OMITIDO[o.motivo] ?? o.motivo})`).join(', ')
+  return [
+    `En una sola operación: ${cargados ? `cargadas las condiciones de ${cargados}` : 'nadie para cargar'}.`,
+    omitidos ? `Sin cambios: ${omitidos}.` : '',
+    r.repetido ? 'Era un reintento: no se repitió nada.' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+}
+
+function useGuardarTodos(p: EstadoPropuesta, recargar: () => Promise<void>, viva: PestanaProps['viva']) {
   const [ocupado, setOcupado] = useState(false)
   const [resumen, setResumen] = useState<string | null>(null)
   const intento = useRef<string | null>(null)
   async function ejecutar() {
-    if (!miembros || ocupado) return
+    if (ocupado) return
     setOcupado(true)
     setResumen(null)
-    // Enmienda 3: una sola operación atómica. El intento se reutiliza si hay que reintentar el mismo clic.
+    // Enmienda 3: una sola operación atómica (un solo state_rev). El intento se reutiliza al reintentar el mismo clic.
     intento.current ??= nuevoIntento()
-    const atomica = await api.simulateLoadCase(p.id, intento.current)
-    if (atomica.ok || !atomica.error.reintentable) intento.current = null
-    if (atomica.ok || atomica.error.detalle !== 'operacion_no_publicada') {
-      viva.aplicarResultado(atomica)
-      setResumen(
-        atomica.ok
-          ? 'Condiciones del caso cargadas a las personas simuladas, en una sola operación.'
-          : atomica.error.mensaje,
-      )
-      setOcupado(false)
-      await recargar()
-      return
-    }
-    // El servidor todavía no publicó simulate_load_case: se guarda persona por persona, como antes.
-    intento.current = null
-    let ok = 0
-    let omitidos = 0
-    let fallos = 0
-    for (const m of miembros) {
-      const caso = CASO[m.miembro.nombre.trim().toLowerCase()]
-      if (!caso || !m.puede.guardar_condiciones) {
-        omitidos++
-        continue
-      }
-      const r = await api.simulateSaveConditions(p.id, m.miembro.miembro_id, normalizar(caso, p.franjas.map((f) => f.clave)))
-      if (r.ok) {
-        ok++
-        viva.aplicarResultado(r)
-      } else fallos++
-    }
-    setResumen(`Guardadas: ${ok}. Omitidas (sin valores del caso o sin permiso ahora): ${omitidos}. Con error: ${fallos}.`)
+    const r = await api.simulateLoadCase(p.id, intento.current)
+    if (r.ok || !r.error.reintentable) intento.current = null
+    viva.aplicarResultado(r)
+    setResumen(r.ok ? resumenCarga(r.data.resultado) : r.error.mensaje)
     setOcupado(false)
     await recargar()
   }

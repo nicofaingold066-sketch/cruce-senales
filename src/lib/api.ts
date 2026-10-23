@@ -9,6 +9,7 @@ import type {
   Espacio,
   EspacioResumen,
   EstadoPropuesta,
+  MiembroRef,
   Momento,
   PanelSimulacion,
   PropuestaResumen,
@@ -44,6 +45,13 @@ export type AgregarSimuladoOk = EspacioOk<{ miembro_id: string }>
 export type ReiniciarDemoOk = EspacioOk<{ propuestas_eliminadas: number; generacion: number }>
 export type CrearPropuestaOk = PropuestaOk<{ propuesta_id: string; repetido: boolean }>
 export type RepetidoOk = PropuestaOk<{ repetido: boolean }>
+/** Enmienda 3 (migración 0012): quiénes recibieron las condiciones del caso y quiénes no, con motivo. */
+export type CargarCasoOk = PropuestaOk<{
+  cargados: MiembroRef[]
+  omitidos: { miembro: MiembroRef; motivo: 'fuera_del_caso' | 'retirado' | 'condiciones_congeladas' | (string & {}) }[]
+  simulado: boolean
+  repetido: boolean
+}>
 export type ListaPropuestasOk = OkBase & { propuestas: PropuestaResumen[] }
 export type VerPropuestaOk = OkBase & { propuesta: EstadoPropuesta }
 export type InteresOk = PropuestaOk<{ interesado: boolean; repetido: boolean; simulado?: boolean }>
@@ -323,7 +331,7 @@ export const api = {
     llamar<BajaOk>('simulate_withdraw', { p_propuesta_id: propuestaId, p_miembro_id: miembroId }, true),
   // Enmienda 3: carga en UNA transacción las condiciones del caso a todos los simulados que puedan cambiarlas.
   simulateLoadCase: (propuestaId: string, intentoId: string) =>
-    llamar<RepetidoOk>('simulate_load_case', { p_propuesta_id: propuestaId, p_intento_id: intentoId }, true),
+    llamar<CargarCasoOk>('simulate_load_case', { p_propuesta_id: propuestaId, p_intento_id: intentoId }, true),
   getSimulationPanel: (propuestaId: string) =>
     llamar<PanelOk>('get_simulation_panel', { p_propuesta_id: propuestaId }, false),
 }
