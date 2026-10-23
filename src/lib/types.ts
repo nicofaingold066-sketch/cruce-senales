@@ -83,7 +83,8 @@ export interface Cupos {
   disponibles: number
   faltan_para_minimo: number
   imprescindible_acepto: boolean
-  pendientes: number
+  /** Enmienda 7 (E7.2): null para quien no es organizador de la propuesta. */
+  pendientes: number | null
   /** Enmienda 2 (A1): mientras el imprescindible no acepte, se le reserva un cupo. */
   reservado_imprescindible: boolean
   /** Enmienda 2 (A1): cupos que el servidor deja libres para quienes no son el imprescindible. */
@@ -183,7 +184,8 @@ export interface EstadoPropuesta {
   opcion_anterior?: OpcionAnterior | null
   ultima_evaluacion: UltimaEvaluacion | null
   interesados: { cantidad: number; miembros: MiembroRef[] }
-  personas_con_condiciones: number
+  /** Enmienda 7 (E7.2): null para quien no es organizador de la propuesta; no descuenta bajas. */
+  personas_con_condiciones: number | null
   bajas: Baja[]
   siguiente_accion: SiguienteAccion
   mi_situacion: MiSituacion

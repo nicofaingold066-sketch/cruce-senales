@@ -178,7 +178,8 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
         ) : null}
       </details>
 
-      {esOrganizador ? (
+      {/* Enmienda 7 (E7.3): agregar simulados y reiniciar solo existen en espacios demo. */}
+      {esOrganizador && espacio.demo ? (
         <HerramientasOrganizador espacio={espacio} deshabilitado={soloLectura} onCambio={cargarTodo} />
       ) : null}
     </div>
@@ -266,7 +267,7 @@ function HerramientasOrganizador({
       </h2>
       <p className="suave">Solo las ves tú, como organizador del espacio.</p>
       <AgregarSimulado espacioId={espacio.id} deshabilitado={deshabilitado} onCambio={onCambio} />
-      {espacio.demo ? <ReiniciarDemo espacio={espacio} deshabilitado={deshabilitado} onCambio={onCambio} /> : null}
+      <ReiniciarDemo espacio={espacio} deshabilitado={deshabilitado} onCambio={onCambio} />
     </section>
   )
 }
