@@ -8,10 +8,15 @@
 // - Quien puede confirmar: "Tu confirmación solo vale si llegan N; si no, nadie queda comprometido" (psico §8.9,
 //   causa 5: nadie quiere ir primero; el mínimo ya funciona como contrato de aseguramiento, hay que decirlo).
 // - Organizador, cerca del cierre: "Hoy conviene recordar…" (psico §8.9). No envía nada: lo envía una persona.
+// - Enmienda 13: quien marcó "Así no puedo, pero sigo" ve que sigue en el plan; la baja se dice "Una persona se
+//   retiró", sin nombre ni motivo (13 (c)). Ningún aviso nombra a nadie: ni a quien consulta ni a los demás.
 // Solo mira datos de quien consulta (mi_situacion), el imprescindible y los cupos públicos: nunca de otra persona.
 import type { EstadoPropuesta } from '../lib/types'
 
-export type DatosAvisoParaMi = Pick<EstadoPropuesta, 'estado' | 'imprescindible' | 'mi_situacion'> &
+/** `mi_opinion` llega con la enmienda 13 (a); opcional para que funcione con o sin ella. */
+export type MiSituacionE13 = EstadoPropuesta['mi_situacion'] & { mi_opinion?: 'asi_no_puedo' | null }
+
+export type DatosAvisoParaMi = Pick<EstadoPropuesta, 'estado' | 'imprescindible'> & { mi_situacion: MiSituacionE13 } &
   Partial<Pick<EstadoPropuesta, 'opcion' | 'minimo'>>
 
 /** Lo que la pantalla ya sabe y formatea: el cierre en texto y cuántas horas faltan según la hora del servidor. */
@@ -31,6 +36,7 @@ export interface AvisoParaMi {
     | 'gracias_por_moverlo'
     | 'solo_vale_si_llegan'
     | 'hoy_conviene_recordar'
+    | 'marcaste_asi_no_puedo'
   tono: 'info' | 'aviso' | 'ok'
   titulo: string
   texto: string
@@ -59,14 +65,14 @@ export function avisoParaMi(
           clave: 'cambio_el_plan',
           tono: 'aviso',
           titulo: 'Cambió el plan',
-          texto: `${cuantos} Puedes buscar otra fecha o ver otra forma de juntarse.`.trim(),
+          texto: `Una persona se retiró. ${cuantos} Puedes buscar otra fecha o ver otra forma de juntarse.`.replace(/\s+/g, ' ').trim(),
           irARespuesta: false,
         }
       : {
           clave: 'cambio_el_plan',
           tono: 'info',
           titulo: 'Cambió el plan',
-          texto: `${cuantos} Si sale una versión nueva, las confirmaciones anteriores no cuentan: confírmala de nuevo si te sirve.`.trim(),
+          texto: `Una persona se retiró. ${cuantos} Si sale una versión nueva, las confirmaciones anteriores no cuentan: confírmala de nuevo si te sirve.`.replace(/\s+/g, ' ').trim(),
           irARespuesta: false,
         }
   }
@@ -104,6 +110,16 @@ export function avisoParaMi(
         texto: `Faltan ${pendientes} por confirmar${plazoTexto ? ` y se cierra ${plazoTexto}` : ''}. CRUXE no manda avisos solo: el recordatorio lo mandas tú.`,
         irARespuesta: false,
       }
+    }
+  }
+  if (estado === 'esperando_compromisos' && yo.mi_opinion === 'asi_no_puedo' && !yo.acepte_version) {
+    return {
+      clave: 'marcaste_asi_no_puedo',
+      tono: 'info',
+      titulo: 'Marcaste que así no puedes',
+      texto:
+        'Sigues en el plan. Actualiza tu disponibilidad: si el plan se rearma, cuenta lo que marques ahora. Si al final puedes, confirma esta versión.',
+      irARespuesta: yo.puede.guardar_condiciones === true,
     }
   }
   if (estado === 'esperando_compromisos' && yo.elegible_en_version === true && !yo.acepte_version && typeof minimo === 'number') {
