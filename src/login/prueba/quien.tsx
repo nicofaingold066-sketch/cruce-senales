@@ -30,6 +30,10 @@ const fuente: FuenteEntrada = {
   async unirse(codigo, nombre, miembroId) {
     llamadas.push(`unirse:${codigo}:${nombre}:${miembroId}`)
     await espera(300)
+    if (miembroId === 'm5' || nombre === 'Pepe') {
+      // Navegador compartido: esta sesión ya es Tomi en el espacio.
+      return { ok: true, data: { ok: true, contrato: 2, servidor_ahora: {} as never, resultado: { espacio_id: 'e1', miembro_id: 'm1', reclamo_asiento_simulado: false, ya_era_miembro: true, repetido: false }, espacio: { nombre: 'Los del asado', miembros: [{ miembro_id: 'm1', nombre: 'Tomi', es_yo: true }] } as never } }
+    }
     if (miembroId === 'm3') {
       miembros[2].libre = false
       return { ok: false, error: fallo('miembro_ya_reclamado', 'Esa persona ya entró desde otro teléfono. Elige otro nombre.') }
