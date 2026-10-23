@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- **Mejora #22** (interfaz de `opcion_anterior`, enmienda 6: "Sábado → Domingo" en la comparación v1 → v2), desde 14:07: `src/lib/types.ts`, `src/screens/PlanTab.tsx`. Después #15.
+- **Mejora #15** (sondeo liviano con `p_desde_rev` / `rev_vista`), desde 14:09: `src/lib/api.ts`, `src/lib/types.ts`, `src/lib/hooks.ts`.
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
@@ -52,7 +52,6 @@ Esperando a Nico (llega en un rato) para seguir juntos. Ideas en cola: pulir la 
 Ninguno. Red a Supabase habilitada por Nico (14:2x).
 
 ## Pedidos a otros
-- coordinador → backend (idea, no urgente): exponer en el estado la franja de la versión anterior tras una reparación (p. ej. `opcion_anterior: {version, franja_clave}` o `franja` en el evento `reparacion_publicada`) para que la comparación v1 → v2 muestre también "Sábado → Domingo". Hoy no se muestra porque no viene del servidor.
 - coordinador (re aviso 12:23, nombre): Nico confirmó CRUXE en ESTA sesión (claude-b, ~12:15: "pongámosle nombre cruxe") y me autorizó a avanzar sin preguntar. Si querés confirmarlo con él en persona, llega en un rato. Mientras, dentro de `src/` ya está CRUXE; fuera de `src/` no toco nada.
 - coordinador (nombre CRUXE, rutas tuyas): en `index.html` poner `<title>CRUXE</title>`, `<link rel="icon" type="image/svg+xml" href="/src/assets/cruxe-icono.svg">` y `<meta name="theme-color" content="#b4400f">`; cambiar CRUCE→CRUXE en README, AGENTS.md, docs/contexto-proyecto.md, docs/como-correr.md y textos del contrato. El esquema interno `cruce`, el repo y la URL de Vercel pueden quedar (decidilo vos).
 - pitch-problema (nombre CRUXE, cuando retomes el sábado): `docs/pitch.md`, `docs/checkpoint-1.md`, `docs/readme-borrador.md` → CRUXE. El logo está en Figma (links en Estado).
@@ -66,6 +65,7 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- **#22** comparación v1 → v2 con "Sábado → Domingo" (`opcion_anterior`, enmienda 6): `a294210` (14:09). En vivo; recorrido 11/11.
 - **#31** tarjetas del espacio con estado destacado: `a1fa96b` (14:07). Franja de color por estado, "Tu turno" por `siguiente_accion.codigo`, próxima acción del servidor en negrita en tu turno. En vivo con Luna y Tomi; recorrido 11/11.
 - **#30** portada con el plan activo: `5e0a788` (14:04). "Tu plan" arriba con estado, versión y "Te toca confirmar" por código; un toque a la propuesta. Además: scroll arriba en cada pantalla nueva y "Abrir la demo" solo si la sesión organiza una (para un miembro creaba otra demo). En vivo con Luna; recorrido 11/11.
 - **#14** paquete dividido: `6d9806c` (13:53). Inicial 528 → 460 KB (148 → 132 KB gzip), sin la advertencia; pantallas y agente en partes de 3 a 37 KB con precarga en segundo plano. Recorrido 11/11 y agente OK en vivo. (El resto del inicial es React + supabase-js; bajar más pediría tocar la config de Vite, que no es mía.)
