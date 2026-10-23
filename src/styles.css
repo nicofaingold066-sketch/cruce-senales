@@ -4200,3 +4200,317 @@ fieldset:disabled .opcion-radio {
     display: none;
   }
 }
+
+/* ------------------------------------------------------------------ Nueva propuesta simple: día + hora + duración */
+
+.escena-compacta {
+  padding-bottom: 44px;
+}
+.escena-compacta h1 {
+  font-size: clamp(1.6rem, 7vw, 2.1rem);
+}
+.form-compacto > * + * {
+  margin-top: 12px;
+}
+.form-compacto .form-seccion {
+  margin: 0;
+  padding: 14px;
+}
+.form-compacto .form-seccion > legend {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+.form-compacto .campo {
+  margin: 10px 0 0;
+}
+.nota-seccion {
+  margin: 8px 0 0 !important;
+  font-size: 0.85rem !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nota-caso {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--tinta-2);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+}
+.nota-caso .enlace {
+  min-height: 32px;
+  font-size: 0.88rem;
+}
+
+/* Tiras deslizables (días, horas, actividades, personas): se ven completas al deslizar con el dedo */
+.carrusel {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  margin: 0 -14px;
+  padding: 2px 14px 6px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.carrusel::-webkit-scrollbar {
+  display: none;
+}
+.carrusel > * {
+  scroll-snap-align: start;
+  flex: none;
+}
+
+.chip-actividad,
+.chip-hora,
+.chip-persona {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--relleno);
+  color: var(--tinta);
+  font: inherit;
+  font-weight: 650;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.12s var(--curva-entrar);
+}
+.chip-actividad:active,
+.chip-hora:active,
+.chip-persona:active,
+.chip-dia:active {
+  transform: scale(0.95);
+}
+.chip-activo {
+  background: var(--tinta) !important;
+  color: var(--hoja) !important;
+  animation: elegir 0.3s var(--curva-resorte);
+}
+.chip-hora input,
+.chip-persona input,
+.chip-dia input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.chip-hora:has(input:focus-visible),
+.chip-persona:has(input:focus-visible),
+.chip-dia:has(input:focus-visible) {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+.chip-hora {
+  font-variant-numeric: tabular-nums;
+  padding: 8px 12px;
+}
+/* "Otra hora": el selector nativo de hora queda visible dentro del chip */
+.chip-hora-otra {
+  padding: 4px 8px;
+}
+.chip-hora-otra input {
+  position: static;
+  opacity: 1;
+  width: auto;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 650;
+}
+.chip-persona {
+  padding: 6px 14px 6px 6px;
+}
+
+.chip-dia {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  width: 54px;
+  padding: 6px 0 8px;
+  border-radius: 14px;
+  background: var(--relleno);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.12s var(--curva-entrar);
+}
+.chip-dia-sem {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--tinta-2);
+  text-transform: uppercase;
+}
+.chip-dia-num {
+  font-size: 1.3rem;
+  font-weight: 850;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+.chip-dia-mes {
+  font-size: 0.72rem;
+  font-weight: 650;
+  color: var(--tinta-2);
+}
+.chip-dia.chip-activo .chip-dia-sem,
+.chip-dia.chip-activo .chip-dia-mes {
+  color: inherit;
+  opacity: 0.8;
+}
+
+.momento {
+  padding: 12px 0 4px;
+}
+.momento + .momento {
+  border-top: 1px solid var(--linea);
+}
+.momento-cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-bottom: 8px;
+}
+.momento-resumen {
+  flex-basis: 100%;
+  font-size: 0.86rem;
+  font-weight: 650;
+  color: var(--brasa);
+}
+.carrusel-dias + .carrusel-horas {
+  margin-top: 4px;
+}
+
+.duracion,
+.anfitrion-elegir {
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--linea);
+}
+.duracion-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--tinta-2);
+}
+.opciones-compactas {
+  gap: 6px;
+}
+.opciones-compactas .opcion-radio {
+  min-height: 44px;
+  padding: 8px 14px;
+  font-size: 0.92rem;
+}
+
+/* Cupos: mínimo y máximo siempre en la misma fila */
+.form-compacto .cupos-fila {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.cupo-etiqueta {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+  font-size: 0.86rem;
+}
+.form-compacto .contador {
+  width: 100%;
+  justify-content: space-between;
+  gap: 2px;
+  padding: 3px;
+}
+.form-compacto .contador input {
+  flex: 1;
+  min-width: 24px;
+  width: auto;
+}
+@media (max-width: 359px) {
+  .form-compacto .form-seccion {
+    padding: 12px;
+  }
+  .carrusel {
+    margin: 0 -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* Formulario más compacto en el teléfono */
+.chip-dia {
+  width: 48px;
+  padding: 5px 0 6px;
+  border-radius: 12px;
+}
+.chip-dia-sem {
+  font-size: 0.66rem;
+}
+.chip-dia-num {
+  font-size: 1.15rem;
+}
+.chip-actividad,
+.chip-hora,
+.chip-persona,
+.opciones-compactas .opcion-radio {
+  font-size: 0.88rem;
+}
+.chip-hora {
+  padding: 8px 11px;
+}
+.carrusel {
+  gap: 6px;
+}
+.momento {
+  padding: 10px 0 2px;
+}
+.momento-cabeza {
+  margin-bottom: 6px;
+}
+.momento-cabeza strong {
+  font-size: 0.95rem;
+}
+.form-compacto .form-seccion > legend {
+  margin-bottom: 8px;
+}
+.duracion,
+.anfitrion-elegir {
+  margin-top: 8px;
+  padding-top: 10px;
+}
+.duracion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+.duracion .duracion-etiqueta {
+  margin-bottom: 0;
+}
+.form-compacto .contador {
+  padding: 2px;
+}
+.form-compacto .contador input {
+  font-size: 1.2rem;
+  min-height: 40px;
+}
+.form-compacto .contador button {
+  height: 44px;
+}
