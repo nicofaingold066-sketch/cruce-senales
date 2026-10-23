@@ -2,7 +2,7 @@
 // que llegan al cruce desde lados opuestos y se encuentran en su borde. Dibujo propio en SVG, sin dependencias.
 // El trazo grueso usa el color de la marca (currentColor); el fino y los puntos, el de --punto.
 
-function Trazos() {
+export function Trazos() {
   return (
     <>
       <path d="M9 6 L35 6 L91 94 L65 94 Z" fill="currentColor" />

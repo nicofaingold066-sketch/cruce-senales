@@ -2,7 +2,7 @@ import { useContratoIncompatible, useOnline, useSesion } from './lib/hooks'
 import type { FaseSesion } from './lib/hooks'
 import { rutas, ShellProvider, useRuta, useShell } from './lib/shell'
 import type { Ruta } from './lib/shell'
-import { Aviso, Boton, Cargando } from './components/ui'
+import { Avatar, Aviso, Boton, Cargando } from './components/ui'
 import { Marca } from './components/Marca'
 import { lazy, Suspense, useEffect } from 'react'
 import Inicio from './screens/Inicio'
@@ -56,66 +56,72 @@ function Marco({
       <a className="saltar" href="#contenido" onClick={saltarAlContenido}>
         Saltar al contenido
       </a>
-      <header className="encabezado">
-        <div className="encabezado-linea">
-          <a className="marca" href={rutas.inicio()} aria-label="CRUXE, ir a tus espacios">
-            <Marca />
-          </a>
-          <span className="sep" aria-hidden="true">
-            /
-          </span>
-          <span className="encabezado-espacio">{identidad.espacio ?? 'Sin espacio'}</span>
-          <span className="sep" aria-hidden="true">
-            /
-          </span>
-          <span className="datos-ficticios">Datos ficticios</span>
+      <header className="barra">
+        <a className="barra-marca" href={rutas.inicio()} aria-label="CRUXE, ir a tus espacios">
+          <Marca />
+        </a>
+        <div className="barra-centro">
+          {identidad.espacio ? <span className="barra-espacio">{identidad.espacio}</span> : null}
+          <span className="chip-ficticio">Datos ficticios</span>
         </div>
-        <div className="encabezado-identidad" aria-live="polite">
+        <div className="barra-identidad" aria-live="polite">
           {identidad.yo ? (
             <>
-              Sesión activa: <strong>{identidad.yo}</strong>
-              {identidad.rol ? <span className="etiqueta"> {identidad.rol}</span> : null}
+              <Avatar nombre={identidad.yo} tam={30} />
+              <span className="barra-identidad-texto">
+                <span className="visualmente-oculto">Sesión activa: </span>
+                <strong>{identidad.yo}</strong>
+                {identidad.rol ? <span className="barra-rol">{identidad.rol}</span> : null}
+              </span>
             </>
           ) : (
-            <>Sesión anónima{identidad.espacio ? '' : ': aún sin nombre en un espacio'}</>
+            <span className="visualmente-oculto">Sesión anónima{identidad.espacio ? '' : ': aún sin nombre en un espacio'}</span>
           )}
         </div>
       </header>
 
       <main id="contenido" className="contenido" tabIndex={-1}>
-        {!online ? (
-          <Aviso tono="aviso" titulo="Sin conexión">
-            Las acciones que hagas ahora no se registrarán. Lo que escribiste se conserva; reintenta cuando vuelva la
-            conexión.
-          </Aviso>
-        ) : null}
-        {incompatible ? (
-          <Aviso
-            tono="error"
-            titulo="Versión incompatible"
-            accion={
-              <Boton variante="secundario" onClick={() => window.location.reload()}>
-                Recargar la aplicación
-              </Boton>
-            }
-          >
-            Versión incompatible: recarga la aplicación. Mientras tanto no se pueden registrar acciones.
-          </Aviso>
-        ) : null}
+        <div className="avisos-globales">
+          {!online ? (
+            <Aviso tono="aviso" titulo="Sin conexión">
+              Las acciones que hagas ahora no se registrarán. Lo que escribiste se conserva; reintenta cuando vuelva la
+              conexión.
+            </Aviso>
+          ) : null}
+          {incompatible ? (
+            <Aviso
+              tono="error"
+              titulo="Versión incompatible"
+              accion={
+                <Boton variante="secundario" onClick={() => window.location.reload()}>
+                  Recargar la aplicación
+                </Boton>
+              }
+            >
+              Versión incompatible: recarga la aplicación. Mientras tanto no se pueden registrar acciones.
+            </Aviso>
+          ) : null}
+        </div>
 
-        {sesion.fase === 'cargando' ? <Cargando texto="Iniciando tu sesión…" /> : null}
+        {sesion.fase === 'cargando' ? (
+          <div className="pantalla">
+            <Cargando texto="Iniciando tu sesión…" esqueleto />
+          </div>
+        ) : null}
         {sesion.fase === 'error' ? (
-          <Aviso
-            tono="error"
-            titulo="No se pudo iniciar la sesión"
-            accion={
-              <Boton variante="secundario" onClick={reintentar}>
-                Reintentar
-              </Boton>
-            }
-          >
-            {sesion.mensaje}
-          </Aviso>
+          <div className="pantalla">
+            <Aviso
+              tono="error"
+              titulo="No se pudo iniciar la sesión"
+              accion={
+                <Boton variante="secundario" onClick={reintentar}>
+                  Reintentar
+                </Boton>
+              }
+            >
+              {sesion.mensaje}
+            </Aviso>
+          </div>
         ) : null}
         {sesion.fase === 'lista' ? <Pantalla ruta={ruta} /> : null}
       </main>
@@ -131,7 +137,13 @@ function Pantalla({ ruta }: { ruta: Ruta }) {
     window.scrollTo(0, 0)
   }, [claveRuta])
   return (
-    <Suspense fallback={<Cargando texto="Cargando…" />}>
+    <Suspense
+      fallback={
+        <div className="pantalla">
+          <Cargando texto="Cargando…" esqueleto />
+        </div>
+      }
+    >
       <PantallaRuta ruta={ruta} />
     </Suspense>
   )

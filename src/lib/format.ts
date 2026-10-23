@@ -122,3 +122,10 @@ export function describirEvento(e: Evento): string {
       return e.tipo
   }
 }
+
+/** Partes para la hoja de calendario: { mes: "oct", num: 31, dia: "sáb" }. Sin convertir zonas. */
+export function hojaCalendario(local: string): { mes: string; num: number; dia: string } | null {
+  const p = partes(local)
+  if (!p) return null
+  return { mes: MESES[p.mo - 1], num: p.d, dia: diaSemana(p).slice(0, 3) }
+}

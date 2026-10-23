@@ -6,8 +6,10 @@ import type { ApiError, EspacioResumen, PropuestaResumen, TipoEspacio } from '..
 import { useAccion, useSondeo } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { entrarComoOtraPersona, leerGuardada, olvidarGuardada, volverAGuardada } from '../lib/sesiones'
-import { Aviso, Boton, Cargando, ErrorCaja, InsigniaEstado } from '../components/ui'
+import { Aviso, Boton, Cargando, ErrorCaja, InsigniaEstado, colorAvatar, iniciales } from '../components/ui'
 import { Marca } from '../components/Marca'
+import { Icono } from '../components/Icono'
+import { ArteCruce } from '../components/Cruce'
 
 const TIPO: Record<TipoEspacio, string> = { amigos: 'Amigos', empresa: 'Empresa' }
 
@@ -45,89 +47,118 @@ export default function Inicio({
   const conPlan = activas.length > 0
 
   return (
-    <div className="pantalla">
-      {invitacionInvalida ? (
-        <Aviso tono="aviso" titulo="Ese enlace de invitación no es válido">
-          Puede haberse copiado mal. Pide uno nuevo o escribe el código a mano en "Unirme con un código", más abajo.
-        </Aviso>
-      ) : null}
-      {codigoInvitacion ? (
-        <div className="invitacion">
-          <Aviso tono="info" titulo="Te invitaron a un plan">
-            El código ya está cargado. Escribe tu nombre y únete: lo que marques después es privado.
-          </Aviso>
-          <UnirsePorCodigo deshabilitado={soloLectura} codigoInicial={codigoInvitacion} />
-        </div>
-      ) : null}
-      {codigoInvitacion ? null : <OtraSesion />}
-      {conPlan && !codigoInvitacion ? <TuPlan activas={activas} /> : null}
-      <section className={`portada ${conPlan ? 'portada-compacta' : ''}`} aria-labelledby="portada-titulo">
+    <div className="vista">
+      <section className="escena escena-portada" aria-labelledby="portada-titulo">
         <Marca grande />
         <h1 id="portada-titulo" className="portada-lema">
-          Del «nos juntamos» al encuentro que ocurre.
+          Del «nos juntamos» al <em>encuentro que ocurre</em>.
         </h1>
         <p className="portada-sub">
           Cada uno dice en privado cuándo puede. CRUXE propone <strong>un solo plan</strong> y cada uno lo confirma.
         </p>
-        {/* Con un plan activo, lo principal es el plan: sin botones grandes que creen otra demo por error. */}
+        <ArteCruce />
+      </section>
+
+      <div className="hoja">
+        {invitacionInvalida ? (
+          <Aviso tono="aviso" titulo="Ese enlace de invitación no es válido">
+            Puede haberse copiado mal. Pide uno nuevo o escribe el código a mano en "Unirme con un código", más abajo.
+          </Aviso>
+        ) : null}
+        {codigoInvitacion ? (
+          <div className="invitacion">
+            <Aviso tono="info" titulo="Te invitaron a un plan">
+              El código ya está cargado. Escribe tu nombre y únete: lo que marques después es privado.
+            </Aviso>
+            <UnirsePorCodigo deshabilitado={soloLectura} codigoInicial={codigoInvitacion} />
+          </div>
+        ) : null}
+        {codigoInvitacion ? null : <OtraSesion />}
+        {conPlan && !codigoInvitacion ? <TuPlan activas={activas} /> : null}
+
+        {/* Con un plan activo, lo principal es el plan: sin accesos grandes que creen otra demo por error. */}
         {codigoInvitacion || conPlan ? null : (
-          <div className="portada-acciones">
+          <div className="accesos">
             <CargarDemo deshabilitado={soloLectura} yaCargada={espacios?.some((e) => e.demo && e.mi_rol === 'organizador') ?? false} />
-            <button type="button" className="btn btn-secundario" onClick={irAUnirse}>
-              Tengo un código de invitación
+            <button type="button" className="acceso" onClick={irAUnirse}>
+              <span className="acceso-icono" aria-hidden="true">
+                <Icono n="llave" />
+              </span>
+              <span className="acceso-texto">
+                <span className="acceso-titulo">Tengo un código de invitación</span>
+                <span className="acceso-sub" aria-hidden="true">
+                  Súmate al plan de tu grupo
+                </span>
+              </span>
             </button>
           </div>
         )}
+
         {conPlan ? null : (
-          <ol className="portada-pasos" aria-label="Cómo funciona">
-            <li>
-              <span className="paso-num" aria-hidden="true">1</span>
-              <span>
-                <strong>Cada uno</strong> marca en privado cuándo puede.
-              </span>
-            </li>
-            <li>
-              <span className="paso-num" aria-hidden="true">2</span>
-              <span>
-                <strong>El servidor</strong> propone una sola opción compatible.
-              </span>
-            </li>
-            <li>
-              <span className="paso-num" aria-hidden="true">3</span>
-              <span>
-                <strong>Confirmas</strong> esa versión. Si alguien se baja, se repara y se vuelve a confirmar.
-              </span>
-            </li>
-          </ol>
-        )}
-      </section>
-
-      {espacios === null && !error ? <Cargando texto="Buscando tus espacios…" /> : null}
-      {error && espacios === null ? <ErrorCaja error={error} onReintentar={cargar} /> : null}
-      {error && espacios !== null ? <ErrorCaja error={error} onReintentar={cargar} titulo="No se pudo actualizar" /> : null}
-
-      {espacios && espacios.length > 0 ? (
-        <section aria-labelledby="mis-espacios">
-          <h2 id="mis-espacios">Tus espacios</h2>
-          <ul className="lista-tarjetas">
-            {espacios.map((e) => (
-              <li key={e.id}>
-                <a className="tarjeta tarjeta-enlace" href={rutas.espacio(e.id)}>
-                  <span className="tarjeta-titulo">{e.nombre}</span>
-                  <span className="tarjeta-meta">
-                    {TIPO[e.tipo]} · {e.cantidad_miembros} personas · Tú: {e.mi_rol === 'organizador' ? 'organizador' : 'miembro'}
-                    {e.demo ? ' · Demo' : ''}
-                  </span>
-                  <span className="tarjeta-accion">Abrir espacio</span>
-                </a>
+          <section aria-labelledby="como-titulo">
+            <div className="seccion-titulo">
+              <h2 id="como-titulo">Cómo funciona</h2>
+            </div>
+            <ol className="como tarjeta">
+              <li>
+                <span className="como-num" aria-hidden="true">1</span>
+                <p>
+                  <strong>Cada uno</strong> marca en privado cuándo puede.
+                </p>
               </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+              <li>
+                <span className="como-num" aria-hidden="true">2</span>
+                <p>
+                  <strong>El servidor</strong> propone una sola opción compatible.
+                </p>
+              </li>
+              <li>
+                <span className="como-num" aria-hidden="true">3</span>
+                <p>
+                  <strong>Confirmas</strong> esa versión. Si alguien se baja, se repara y se vuelve a confirmar.
+                </p>
+              </li>
+            </ol>
+          </section>
+        )}
 
-      {codigoInvitacion ? null : <UnirsePorCodigo deshabilitado={soloLectura} />}
-      <CrearEspacio deshabilitado={soloLectura} />
+        {espacios === null && !error ? <Cargando texto="Buscando tus espacios…" /> : null}
+        {error && espacios === null ? <ErrorCaja error={error} onReintentar={cargar} /> : null}
+        {error && espacios !== null ? <ErrorCaja error={error} onReintentar={cargar} titulo="No se pudo actualizar" /> : null}
+
+        {espacios && espacios.length > 0 ? (
+          <section aria-labelledby="mis-espacios">
+            <div className="seccion-titulo">
+              <h2 id="mis-espacios">Tus espacios</h2>
+            </div>
+            <ul className="filas">
+              {espacios.map((e) => (
+                <li key={e.id}>
+                  <a className="fila" href={rutas.espacio(e.id)}>
+                    <span className="fila-icono" style={{ background: colorAvatar(e.nombre), color: '#fff', fontWeight: 800 }} aria-hidden="true">
+                      {iniciales(e.nombre)}
+                    </span>
+                    <span className="fila-texto">
+                      <span className="fila-titulo">{e.nombre}</span>
+                      <span className="fila-meta">
+                        {TIPO[e.tipo]} · {e.cantidad_miembros} personas · Tú: {e.mi_rol === 'organizador' ? 'organizador' : 'miembro'}
+                        {e.demo ? ' · Demo' : ''}
+                      </span>
+                    </span>
+                    <span className="visualmente-oculto">Abrir espacio</span>
+                    <span className="fila-chevron" aria-hidden="true">
+                      <Icono n="chevron" />
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {codigoInvitacion ? null : <UnirsePorCodigo deshabilitado={soloLectura} />}
+        <CrearEspacio deshabilitado={soloLectura} />
+      </div>
     </div>
   )
 }
@@ -158,22 +189,32 @@ async function planesActivos(espacios: EspacioResumen[]): Promise<PlanActivo[]> 
 function TuPlan({ activas }: { activas: PlanActivo[] }) {
   return (
     <section className="tu-plan" aria-labelledby="tu-plan-titulo">
-      <h2 id="tu-plan-titulo">{activas.length === 1 ? 'Tu plan' : 'Tus planes'}</h2>
-      <ul className="lista-tarjetas">
+      <div className="seccion-titulo" style={{ marginTop: 4 }}>
+        <h2 id="tu-plan-titulo">{activas.length === 1 ? 'Tu plan' : 'Tus planes'}</h2>
+        <span className="etiqueta etiqueta-destacada">En curso</span>
+      </div>
+      <ul className="lista-planes">
         {activas.map(({ espacio, p }) => {
           const turno = p.siguiente_accion.codigo === 'te_toca_aceptar' || p.mi_situacion.puede_aceptar
           return (
             <li key={p.id}>
-              <a className={`tarjeta tarjeta-enlace plan-activo ${turno ? 'plan-activo-turno' : ''}`} href={rutas.propuesta(espacio.id, p.id)}>
-                <span className="suave">{espacio.nombre}</span>
-                <span className="tarjeta-titulo">{p.titulo}</span>
-                <span className="tarjeta-fila">
-                  <InsigniaEstado estado={p.estado} etiqueta={p.estado_etiqueta} />
-                  {p.version != null ? <span className="etiqueta">Versión {p.version}</span> : null}
+              <a className={`plan-vivo plan-vivo-${p.estado} ${turno ? 'plan-vivo-turno' : ''}`} href={rutas.propuesta(espacio.id, p.id)}>
+                <span className="pv-arriba">
+                  <span className="pv-espacio">{espacio.nombre}</span>
+                  {p.version != null ? <span className="etiqueta num">Versión {p.version}</span> : null}
                 </span>
-                {turno && p.siguiente_accion.codigo !== 'te_toca_aceptar' ? <span className="pastilla pastilla-turno">Te toca confirmar</span> : null}
-                <span className="tarjeta-meta">{p.siguiente_accion.texto}</span>
-                <span className="tarjeta-accion">Abrir el plan</span>
+                <span className="pv-titulo">{p.titulo}</span>
+                <span className="pv-estado">
+                  <InsigniaEstado estado={p.estado} etiqueta={p.estado_etiqueta} />
+                  {turno && p.siguiente_accion.codigo !== 'te_toca_aceptar' ? <span className="pastilla pastilla-turno">Te toca confirmar</span> : null}
+                </span>
+                <span className={`pv-siguiente ${turno ? 'pv-siguiente-turno' : ''}`}>{p.siguiente_accion.texto}</span>
+                <span className="pv-meta">
+                  <span />
+                  <span className="pv-abrir">
+                    Abrir el plan <Icono n="chevron" tam={14} />
+                  </span>
+                </span>
               </a>
             </li>
           )
@@ -191,10 +232,24 @@ function CargarDemo({ deshabilitado, yaCargada }: { deshabilitado: boolean; yaCa
   }
   return (
     <div className="portada-demo">
-      <Boton onClick={hacer} ocupado={ocupado} ocupadoTexto="Preparando la demo…" disabled={deshabilitado}>
-        {yaCargada ? 'Abrir la demo «Los del asado»' : 'Probar la demo «Los del asado»'}
+      <Boton
+        className="acceso acceso-principal"
+        onClick={hacer}
+        ocupado={ocupado}
+        ocupadoTexto="Preparando la demo…"
+        disabled={deshabilitado}
+        aria-describedby="demo-detalle"
+      >
+        <span className="acceso-icono" aria-hidden="true">
+          <Icono n="play" />
+        </span>
+        <span className="acceso-texto">
+          <span className="acceso-titulo">{yaCargada ? 'Abrir la demo «Los del asado»' : 'Probar la demo «Los del asado»'}</span>
+          <span className="acceso-sub" id="demo-detalle" aria-hidden="true">
+            Serás Tomi, quien organiza. Las otras cinco personas son simuladas (datos ficticios).
+          </span>
+        </span>
       </Boton>
-      <p className="suave">Serás Tomi, quien organiza. Las otras cinco personas son simuladas (datos ficticios).</p>
       {error ? <ErrorCaja error={error} enfocar /> : null}
     </div>
   )
@@ -367,9 +422,9 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
   const errorVisible = cambio.error ?? error
 
   return (
-    <form id="unirse" className="tarjeta" onSubmit={hacer} noValidate>
+    <form id="unirse" className="tarjeta unirse" onSubmit={hacer} noValidate>
       <h2>Unirme con un código</h2>
-      <label className="campo">
+      <label className="campo campo-codigo">
         <span>Código de invitación</span>
         <input
           value={codigo}
@@ -393,7 +448,7 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
         />
         <small>Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.</small>
       </label>
-      <Boton type="submit" ocupado={ocupado} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado || cambio.ocupado}>
+      <Boton type="submit" className="btn-bloque" ocupado={ocupado} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado || cambio.ocupado}>
         Unirme
       </Boton>
       {yaEra ? (

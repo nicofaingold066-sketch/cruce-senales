@@ -1,5 +1,6 @@
 import type { Disponibilidad, Franja, Valor } from '../lib/types'
 import { franjaTexto } from '../lib/format'
+import { DiaTile } from './ui'
 
 const OPCIONES: { v: Valor; texto: string }[] = [
   { v: 'si', texto: 'Sí puedo' },
@@ -26,13 +27,22 @@ export function EditorCondiciones({
       {franjas.map((f) => (
         <fieldset key={f.clave} className="franja-cond" disabled={deshabilitado}>
           <legend>
-            Franja {f.clave}: {franjaTexto(f.inicio, f.fin)}
+            <span className="franja-cond-cabeza">
+              <DiaTile local={f.inicio.local} />
+              <span className="franja-cond-texto">
+                <span className="franja-cond-clave">Franja {f.clave}:</span> <span>{franjaTexto(f.inicio, f.fin)}</span>
+              </span>
+            </span>
           </legend>
           <div className="opciones">
             {OPCIONES.map((o) => {
               const id = `${prefijo}-${f.clave}-${o.v}`
               return (
-                <label key={o.v} htmlFor={id} className={`opcion-radio ${valor[f.clave] === o.v ? 'opcion-activa' : ''}`}>
+                <label
+                  key={o.v}
+                  htmlFor={id}
+                  className={`opcion-radio opcion-${o.v} ${valor[f.clave] === o.v ? 'opcion-activa' : ''}`}
+                >
                   <input
                     id={id}
                     type="radio"

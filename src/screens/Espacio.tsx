@@ -6,7 +6,8 @@ import { CODIGOS_SIGUIENTE } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
 import { rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { momentoCorto } from '../lib/format'
-import { Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
+import { Avatar, AvatarPila, Aviso, Boton, Cargando, ErrorCaja, InsigniaEstado, Nombre, Progreso, Vacio } from '../components/ui'
+import { Icono } from '../components/Icono'
 // El panel del agente va en su propia parte del paquete (mejora #14): se descarga solo al abrir el bloque.
 const AgentePanel = lazy(() => import('../agente/AgentePanel').then((m) => ({ default: m.AgentePanel })))
 
@@ -98,92 +99,134 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
   }
   if (!espacio) {
     return (
-      <div className="pantalla">
-        <Cargando texto="Cargando el espacio…" />
+      <div className="vista">
+        <section className="escena">
+          <a className="escena-volver" href={rutas.inicio()}>
+            <Icono n="atras" tam={20} /> Tus espacios
+          </a>
+        </section>
+        <div className="hoja">
+          <Cargando texto="Cargando el espacio…" esqueleto />
+        </div>
       </div>
     )
   }
 
   const esOrganizador = espacio.mi_rol === 'organizador'
 
+  const yoEnEspacio = espacio.miembros.find((m) => m.es_yo)
+
   return (
-    <div className="pantalla">
-      <p>
-        <a href={rutas.inicio()}>← Tus espacios</a>
-      </p>
-      {aviso ? (
-        <Aviso tono="ok" accion={<button type="button" className="btn btn-secundario" onClick={() => setAviso(null)}>Entendido</button>}>
-          {aviso}
-        </Aviso>
-      ) : null}
-
-      <h1>{espacio.nombre}</h1>
-
-      <section className="tarjeta">
-        <h2>Propuestas</h2>
-        {errorLista && propuestas === null ? <ErrorCaja error={errorLista} onReintentar={cargarLista} /> : null}
-        {errorLista && propuestas !== null ? (
-          <Aviso tono="aviso">No pudimos actualizar la lista. Se muestra la última información recibida.</Aviso>
-        ) : null}
-        {propuestas === null && !errorLista ? <Cargando texto="Cargando propuestas…" /> : null}
-        {propuestas && propuestas.length === 0 ? (
-          <Vacio
-            titulo="Todavía no hay propuestas"
-            texto="Crea la primera: eliges las franjas, los cupos y la persona imprescindible."
-            accion={
-              <a className="btn btn-primario" href={rutas.nueva(espacioId)} aria-disabled={soloLectura}>
-                Crear propuesta
-              </a>
-            }
-          />
-        ) : null}
-        {propuestas && propuestas.length > 0 ? (
-          <>
-            <ul className="lista-tarjetas">
-              {propuestas.map((p) => (
-                <li key={p.id}>
-                  <TarjetaPropuesta p={p} espacioId={espacioId} />
-                </li>
-              ))}
-            </ul>
-            <a className="btn btn-primario" href={rutas.nueva(espacioId)}>
-              Nueva propuesta
-            </a>
-          </>
-        ) : null}
+    <div className="vista">
+      <section className="escena" aria-labelledby="espacio-titulo">
+        <a className="escena-volver" href={rutas.inicio()}>
+          <Icono n="atras" tam={20} /> Tus espacios
+        </a>
+        <span className="escena-eyebrow">{espacio.demo ? 'Espacio demo · datos ficticios' : 'Tu grupo'}</span>
+        <h1 id="espacio-titulo">{espacio.nombre}</h1>
+        <div className="espacio-cabeza">
+          <AvatarPila personas={espacio.miembros} max={6} />
+          <span className="suave">
+            {espacio.miembros.length} {espacio.miembros.length === 1 ? 'persona' : 'personas'}
+            {yoEnEspacio ? ` · tú: ${esOrganizador ? 'organizador' : 'miembro'}` : ''}
+          </span>
+        </div>
+        <div className="invitar">
+          <div className="invitar-codigo">
+            <span>Código de invitación</span>
+            <strong className="codigo">{espacio.codigo_invitacion}</strong>
+          </div>
+          <CopiarCodigo codigo={espacio.codigo_invitacion} />
+        </div>
       </section>
 
-      <section className="tarjeta">
-        <h2>Personas del espacio</h2>
-        <ul className="miembros">
-          {espacio.miembros.map((m) => (
-            <li key={m.miembro_id}>
-              <Nombre m={m} yo={m.es_yo} />
-              {m.rol === 'organizador' ? <span className="etiqueta">organizador</span> : null}
-            </li>
-          ))}
-        </ul>
-        <p className="suave">
-          Código de invitación: <strong className="codigo">{espacio.codigo_invitacion}</strong> <CopiarCodigo codigo={espacio.codigo_invitacion} />
-        </p>
-        {espacio.demo ? <p className="suave">Espacio de demostración con datos ficticios.</p> : null}
-      </section>
-
-      {/* Agente del círculo (enmienda 4): plegado para no estorbar el recorrido de la demo. */}
-      <details className="tarjeta plegable agente-plegable" onToggle={(e) => setAgenteAbierto(e.currentTarget.open)}>
-        <summary>Agente del círculo (opcional): tus preferencias y una idea de plan</summary>
-        {/* Se monta solo al abrir: plegado no hace llamadas al servidor. */}
-        {agenteAbierto ? (
-          <Suspense fallback={<Cargando texto="Cargando el agente…" />}>
-            <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} demo={espacio.demo} />
-          </Suspense>
+      <div className="hoja">
+        {aviso ? (
+          <Aviso tono="ok" accion={<button type="button" className="btn btn-secundario btn-chico" onClick={() => setAviso(null)}>Entendido</button>}>
+            {aviso}
+          </Aviso>
         ) : null}
-      </details>
 
-      {/* Enmienda 7 (E7.3): agregar simulados y reiniciar solo existen en espacios demo. */}
-      {esOrganizador && espacio.demo ? (
-        <HerramientasOrganizador espacio={espacio} deshabilitado={soloLectura} onCambio={cargarTodo} />
-      ) : null}
+        <section aria-labelledby="propuestas-titulo">
+          <div className="seccion-titulo" style={{ marginTop: 4 }}>
+            <h2 id="propuestas-titulo">Propuestas</h2>
+            {propuestas && propuestas.length > 0 ? <span className="etiqueta num">{propuestas.length}</span> : null}
+          </div>
+          {errorLista && propuestas === null ? <ErrorCaja error={errorLista} onReintentar={cargarLista} /> : null}
+          {errorLista && propuestas !== null ? (
+            <Aviso tono="aviso">No pudimos actualizar la lista. Se muestra la última información recibida.</Aviso>
+          ) : null}
+          {propuestas === null && !errorLista ? <Cargando texto="Cargando propuestas…" esqueleto /> : null}
+          {propuestas && propuestas.length === 0 ? (
+            <Vacio
+              titulo="Todavía no hay propuestas"
+              texto="Crea la primera: eliges las franjas, los cupos y la persona imprescindible."
+              accion={
+                <a className="btn btn-primario" href={rutas.nueva(espacioId)} aria-disabled={soloLectura}>
+                  <Icono n="mas" tam={20} /> Crear propuesta
+                </a>
+              }
+            />
+          ) : null}
+          {propuestas && propuestas.length > 0 ? (
+            <>
+              <ul className="lista-planes">
+                {propuestas.map((p) => (
+                  <li key={p.id}>
+                    <TarjetaPropuesta p={p} espacioId={espacioId} />
+                  </li>
+                ))}
+              </ul>
+              <div className="barra-accion">
+                <a className="btn btn-primario" href={rutas.nueva(espacioId)}>
+                  <Icono n="mas" tam={20} /> Nueva propuesta
+                </a>
+              </div>
+            </>
+          ) : null}
+        </section>
+
+        <section className="tarjeta" aria-labelledby="personas-titulo">
+          <div className="tarjeta-cabeza">
+            <h2 id="personas-titulo">Personas del espacio</h2>
+            <span className="etiqueta num">{espacio.miembros.length}</span>
+          </div>
+          <ul className="miembros">
+            {espacio.miembros.map((m) => (
+              <li key={m.miembro_id}>
+                <Avatar nombre={m.nombre} simulado={m.simulado} yo={m.es_yo} />
+                <Nombre m={m} yo={m.es_yo} />
+                {m.rol === 'organizador' ? <span className="etiqueta">organizador</span> : null}
+              </li>
+            ))}
+          </ul>
+          {espacio.demo ? <p className="suave">Espacio de demostración con datos ficticios.</p> : null}
+        </section>
+
+        {/* Agente del círculo (enmienda 4): plegado para no estorbar el recorrido de la demo. */}
+        <details className="tarjeta plegable agente-plegable" onToggle={(e) => setAgenteAbierto(e.currentTarget.open)}>
+          <summary>
+            <span className="agente-icono" aria-hidden="true">
+              <Icono n="chispa" tam={22} />
+            </span>
+            <span className="summary-texto">
+              <span>Agente del círculo</span>
+              <small>Opcional: tus preferencias y una idea de plan</small>
+            </span>
+          </summary>
+          {/* Se monta solo al abrir: plegado no hace llamadas al servidor. */}
+          {agenteAbierto ? (
+            <Suspense fallback={<Cargando texto="Cargando el agente…" />}>
+              <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} demo={espacio.demo} />
+            </Suspense>
+          ) : null}
+        </details>
+
+        {/* Enmienda 7 (E7.3): agregar simulados y reiniciar solo existen en espacios demo. */}
+        {esOrganizador && espacio.demo ? (
+          <HerramientasOrganizador espacio={espacio} deshabilitado={soloLectura} onCambio={cargarTodo} />
+        ) : null}
+      </div>
     </div>
   )
 }
@@ -213,15 +256,17 @@ function CopiarCodigo({ codigo }: { codigo: string }) {
   }
   return (
     <>
-      <button type="button" className="btn btn-secundario btn-chico" onClick={copiar}>
-        Copiar código
-      </button>{' '}
-      <button type="button" className="btn btn-primario btn-chico" onClick={() => void compartir()}>
-        Compartir enlace
-      </button>
-      {copiado === 'si' ? <span role="status"> Copiado.</span> : null}
-      {copiado === 'no' ? <span role="status"> No se pudo copiar; selecciónalo a mano.</span> : null}
-      {copiado === 'enlace' ? <span role="status"> Enlace copiado: ábrelo en otro teléfono.</span> : null}
+      <div className="invitar-botones">
+        <button type="button" className="btn btn-claro btn-chico" onClick={copiar}>
+          <Icono n="copiar" tam={18} /> Copiar código
+        </button>
+        <button type="button" className="btn btn-blanco btn-chico" onClick={() => void compartir()}>
+          <Icono n="compartir" tam={18} /> Compartir enlace
+        </button>
+      </div>
+      {copiado === 'si' ? <span role="status">Copiado.</span> : null}
+      {copiado === 'no' ? <span role="status">No se pudo copiar; selecciónalo a mano.</span> : null}
+      {copiado === 'enlace' ? <span role="status">Enlace copiado: ábrelo en otro teléfono.</span> : null}
     </>
   )
 }
@@ -232,22 +277,40 @@ function TarjetaPropuesta({ p, espacioId }: { p: PropuestaResumen; espacioId: st
   const cod = p.siguiente_accion.codigo
   const conocido = (CODIGOS_SIGUIENTE as readonly string[]).includes(cod)
   const turno = cod === 'te_toca_aceptar' || (!conocido && p.mi_situacion.puede_aceptar)
+  const conVersion = p.version != null
   return (
-    <a className={`tarjeta tarjeta-enlace tarjeta-prop tarjeta-prop-${p.estado} ${turno ? 'tarjeta-prop-turno' : ''}`} href={rutas.propuesta(espacioId, p.id)}>
-      <span className="tarjeta-fila">
-        <span className="tarjeta-titulo">{p.titulo}</span>
-        {p.version != null ? <span className="etiqueta">Versión {p.version}</span> : null}
+    <a className={`plan-vivo plan-vivo-${p.estado} ${turno ? 'plan-vivo-turno' : ''}`} href={rutas.propuesta(espacioId, p.id)}>
+      <span className="pv-arriba">
+        <InsigniaEstado estado={p.estado} etiqueta={p.estado_etiqueta} />
+        {conVersion ? <span className="etiqueta num">Versión {p.version}</span> : null}
       </span>
-      <span className="tp-estado">
-        <span className="estado-hero-punto" aria-hidden="true" />
-        <strong>{p.estado_etiqueta}</strong>
-        {turno ? <span className="pastilla pastilla-turno">Tu turno</span> : null}
-        {p.mi_situacion.retirado ? <span className="etiqueta">Te retiraste</span> : null}
-      </span>
-      <span className={`tarjeta-siguiente ${turno ? 'tp-siguiente-turno' : ''}`}>{p.siguiente_accion.texto}</span>
-      <span className="tarjeta-meta">
-        {p.version != null ? `${p.confirmados} de ${p.minimo} confirmaron · máx. ${p.maximo}` : `Mínimo ${p.minimo}, máximo ${p.maximo}`} ·{' '}
-        {p.plazo_vencido ? 'plazo cerrado' : `cierre ${momentoCorto(p.plazo)}`}
+      <span className="pv-titulo">{p.titulo}</span>
+      {turno || p.mi_situacion?.retirado ? (
+        <span className="pv-estado">
+          {turno ? <span className="pastilla pastilla-turno">Tu turno</span> : null}
+          {p.mi_situacion?.retirado ? <span className="etiqueta">Te retiraste</span> : null}
+        </span>
+      ) : null}
+      <span className={`pv-siguiente ${turno ? 'pv-siguiente-turno' : ''}`}>{p.siguiente_accion.texto}</span>
+      {conVersion ? (
+        <span className="pv-progreso" style={{ display: 'block' }}>
+          <Progreso
+            valor={p.confirmados}
+            minimo={p.minimo}
+            maximo={p.maximo}
+            ok={p.estado === 'grupo_confirmado'}
+            etiqueta={`${p.confirmados} de ${p.minimo} confirmaron`}
+          />
+        </span>
+      ) : null}
+      <span className="pv-meta">
+        <span className="num">
+          {conVersion ? `${p.confirmados} de ${p.minimo} confirmaron · máx. ${p.maximo}` : `Mínimo ${p.minimo}, máximo ${p.maximo}`} ·{' '}
+          {p.plazo_vencido ? 'plazo cerrado' : `cierre ${momentoCorto(p.plazo)}`}
+        </span>
+        <span className="pv-abrir" aria-hidden="true">
+          Abrir <Icono n="chevron" tam={14} />
+        </span>
       </span>
     </a>
   )
@@ -263,14 +326,21 @@ function HerramientasOrganizador({
   onCambio: () => Promise<void>
 }) {
   return (
-    <section className="tarjeta tarjeta-sim">
-      <h2>
-        Herramientas del organizador <span className="rotulo-sim">Simulación</span>
-      </h2>
-      <p className="suave">Solo las ves tú, como organizador del espacio.</p>
+    <details className="tarjeta tarjeta-sim plegable">
+      <summary>
+        <span className="fila-icono" aria-hidden="true">
+          <Icono n="llave" tam={20} />
+        </span>
+        <span className="summary-texto">
+          <span>
+            Herramientas del organizador <span className="rotulo-sim">Simulación</span>
+          </span>
+          <small>Solo las ves tú, como organizador del espacio.</small>
+        </span>
+      </summary>
       <AgregarSimulado espacioId={espacio.id} deshabilitado={deshabilitado} onCambio={onCambio} />
       <ReiniciarDemo espacio={espacio} deshabilitado={deshabilitado} onCambio={onCambio} />
-    </section>
+    </details>
   )
 }
 

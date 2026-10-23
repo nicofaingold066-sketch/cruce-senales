@@ -3,6 +3,7 @@ import { api } from '../lib/api'
 import type { ApiError, Condiciones, EstadoPropuesta } from '../lib/types'
 import { useBorradorCondiciones, useMutacion } from '../lib/hooks'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
+import { Icono } from '../components/Icono'
 import { EditorCondiciones } from '../components/Condiciones'
 import type { PestanaProps } from './tabs'
 
@@ -16,10 +17,18 @@ export default function RespuestaTab({ p, viva, soloLectura }: PestanaProps) {
   const s = p.mi_situacion
   return (
     <div>
-      <Aviso tono="info" titulo="Tus condiciones no se muestran al grupo">
-        Lo que marques aquí lo ve solo el servidor para armar la opción. El grupo solo ve cuántas personas cargaron
-        condiciones, nunca cuáles son.
-      </Aviso>
+      <div className="privado" role="note">
+        <span className="privado-icono" aria-hidden="true">
+          <Icono n="candado" tam={20} />
+        </span>
+        <div>
+          <strong>Tus condiciones no se muestran al grupo</strong>
+          <p>
+            Lo que marques aquí lo ve solo el servidor para armar la opción. El grupo solo ve cuántas personas cargaron
+            condiciones, nunca cuáles son.
+          </p>
+        </div>
+      </div>
       {s.retirado ? (
         <Aviso tono="aviso" titulo="Te retiraste de esta propuesta">
           Ya no puedes participar en ella.
@@ -45,18 +54,22 @@ function Interes({ p, viva, soloLectura }: VivaProps) {
   }
   return (
     <section className="tarjeta">
-      <h2>Tu interés</h2>
-      <p>
-        Estado: <strong>{s.interesado ? 'Me interesa' : 'Sin interés marcado'}</strong>
-      </p>
+      <div className="tarjeta-cabeza">
+        <h2>Tu interés</h2>
+        <span className={`etiqueta ${s.interesado ? 'etiqueta-ok' : ''}`}>
+          <span className="visualmente-oculto">Estado: </span>
+          {s.interesado ? 'Me interesa' : 'Sin interés marcado'}
+        </span>
+      </div>
       <p className="suave">Interés no es confirmación: no suma confirmados. Tampoco el silencio.</p>
-      <div className="fila-botones">
+      <div className="interes-botones">
         <Boton
           onClick={() => void marcar(true)}
           ocupado={ocupado}
           disabled={!s.puede.marcar_interes || s.interesado || soloLectura}
           aria-pressed={s.interesado}
         >
+          {s.interesado ? <Icono n="check" tam={18} /> : null}
           Me interesa
         </Boton>
         <Boton
@@ -108,10 +121,13 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
 
   return (
     <section className="tarjeta">
-      <h2>Tus condiciones</h2>
-      <p>
-        Estado de tus condiciones: <strong>{ESTADO_COND[s.condiciones]}</strong>
-      </p>
+      <div className="tarjeta-cabeza">
+        <h2>Tus condiciones</h2>
+        <span className={`etiqueta ${s.condiciones === 'completas' ? 'etiqueta-ok' : s.condiciones === 'incompletas' ? 'etiqueta-pendiente' : ''}`}>
+          <span className="visualmente-oculto">Estado de tus condiciones: </span>
+          {ESTADO_COND[s.condiciones]}
+        </span>
+      </div>
       {cond === null && !errorCarga ? <Cargando texto="Cargando tus condiciones…" /> : null}
       {errorCarga && cond === null ? <ErrorCaja error={errorCarga} onReintentar={cargar} /> : null}
       {cond !== null ? (
@@ -128,7 +144,7 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
           />
           <p className="suave">"Pendiente" significa que aún no lo sabes. Con alguna franja pendiente tus condiciones quedan incompletas.</p>
           {!s.puede.guardar_condiciones ? <p className="aviso-linea">{razonSinGuardar(p)}</p> : null}
-          <div className="fila-botones">
+          <div className={`fila-botones ${b.sucio ? 'barra-accion' : ''}`}>
             <Boton
               onClick={guardar}
               ocupado={ocupado}
@@ -172,7 +188,7 @@ function Retiro({ p, viva, soloLectura }: VivaProps) {
     if (r?.ok) setConfirmar(false)
   }
   return (
-    <section className="tarjeta">
+    <section className="tarjeta zona-peligro">
       <h2>No voy</h2>
       <p className="suave">
         Si ya no puedes, retirarte avisa al grupo. Es definitivo en esta propuesta: no podrás volver a participar en ella.
