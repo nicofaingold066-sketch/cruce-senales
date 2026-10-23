@@ -3,16 +3,20 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- `src/styles.css`, `src/components/**`, `src/screens/**`, `src/App.tsx`, `src/lib/shell.tsx` (plan sin red del aviso 11:21: teléfono 320-430 px, estados de carga/vacío/error/sin conexión, accesibilidad, textos del caso canónico)
-- No toco `src/lib/api.ts` ni `src/lib/types.ts` salvo que haga falta (aviso antes).
+(vacío)
 
 ## Estado
 11:2x: trabajando el plan sin red (aviso 11:21). Integrada mi rama en wip/fundamentos por el coordinador; yo traje `origin/wip/fundamentos` a `wip/ui-enmienda`.
 Corte "interfaz enmienda 2" (rama de código `wip/ui-enmienda`): los 7 puntos hechos. Ajuste de `mi_situacion.motivo_aceptar` hecho. `npm run typecheck` y `npm run build` pasan. Traída `origin/wip/fundamentos` (AGENTS.md actualizado) a mi rama.
 
 ## Hecho
-- Commits en `wip/ui-enmienda`: contrato 2; `reset_demo` con `p_intento_id`; `generacion` en espacio; cupos con `reservado_imprescindible` y `libres_para_otros`; errores `asiento_en_uso` e `intento_obsoleto` con ayuda; `cupo_completo`/`reservado_imprescindible`; distinción de falla antes/después de enviar con refresco y conservación del intento.
-- Merge de `origin/wip/fundamentos` en `wip/ui-enmienda`.
+- Corte enmienda 2 (rama `wip/ui-enmienda`): contrato 2, `reset_demo` con intento, cupos reservados (`mi_situacion.motivo_aceptar`), errores `asiento_en_uso`/`intento_obsoleto`/`cupo_completo` con ayuda, falla antes/después de enviar.
+- Plan sin red (aviso 11:21), verificado con un banco descartable (fuera del repo) que intercepta la red con datos ficticios del caso y abre las 4 pantallas a 320, 390 y 430 px en escenarios normal / cupo reservado / en revisión:
+  1. Teléfono: sin desborde horizontal en ningún caso. Único hallazgo: enlaces de texto (logo, "Restablecer valores del caso", "Ver historial completo") con 24 px de alto; arreglado con zona tocable de 44 px (commit `e7d868d`).
+  2. Estados vacío / error del servidor / sin conexión / sin opción: presentes y con texto en inicio, espacio, nueva propuesta y propuesta (ErrorCaja con Reintentar, banner "Sin conexión", "Sin opción compatible").
+  3. Accesibilidad: foco visible (outline 3 px), enlace "Saltar al contenido", 0 botones sin texto.
+  4. Textos del caso: Tomi, Luna, Mati, Caro, Fede, Sofi, franjas A y B 14:00 a 17:00, America/Santiago presentes.
+- LÍMITE: todo eso con respuestas ficticias interceptadas, NO contra el servidor real. El recorrido en vivo sigue bloqueado por la red (ver Bloqueos).
 
 ## Siguiente
 Esperar indicaciones del coordinador (probar contra el backend con migraciones 0008-0011 requiere `.env`).
