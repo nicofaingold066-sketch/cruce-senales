@@ -36,7 +36,7 @@ describe('recorrido canónico real · dos sesiones · contrato 2/enmienda 3', ()
         expect(['sin_cargar', 'incompletas', 'completas']).toContain(v)
         continue
       }
-      expect(['disponibilidad', 'condiciones', 'elegibles', 'user_id', 'p_intento_id',
+      expect(['disponibilidad', 'condiciones', 'preferencias', 'elegibles', 'user_id', 'p_intento_id',
         'access_token', 'refresh_token'].includes(k), `${ruta}.${k}: campo privado expuesto`).toBe(false)
       privadaAusente(v, `${ruta}.${k}`)
     }
