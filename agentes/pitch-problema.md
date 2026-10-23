@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 14:05.
+Quien edita este archivo: solo esta sesión. Última actualización: 14:06.
 
 ## Tocando ahora
-- Mejora #40 (texto fijo del "por qué" con ritmo y ambiente del grupo): `supabase/functions/agente/**`, `src/agente/**`
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[14:06] Mejora #40 entregada** (`487d2fc`): sin clave, el "por qué" fijo dice, por ejemplo: "…es lo que más eligieron (5 de 6) y va con lo que prefiere la mayoría: un plan algo tranquilo y con ambiente tranquilo." Solo totales y con 4 personas o más; con 3 o menos, o si la actividad la eligió una sola persona, vuelve al texto general. Está en la función (`logica.ts`) y en el respaldo de la pantalla. `logica.test.ts` 16/16; función contra la base real OK.
 - **[14:04] Mejora #38 entregada** (`837a126`): `supabase/functions/agente/logica.ts` (lógica pura, la importa `index.ts`) y `logica.test.ts` con `node:test`: 14/14 en verde con `node --test "supabase/functions/agente/*.test.ts"`, sin red, base ni modelo, y sin dependencias. Tipos estrictos con `tsc --ignoreConfig --strict`. Las pruebas encontraron que "Lo reservamos…" pasaba la validación: ahora se rechaza `reserv*` y `agend*`. La función completa, corrida en Node contra la base real, sigue igual (clima 5/5, perfil 2/2, Luna no organizadora, fecha inválida).
 - **[14:00] Mejora #37 entregada** (`71a2628`): `docs/agente-ia.md` reescrito con lo construido (cómo funciona, qué ve cada uno, real y simulado, cómo verificarlo en la app y con `tests/backend/enmienda4.test.ts` y `enmienda5.test.ts`, dónde está, cómo se cuida la demo, lo que falta). El enlace publicado queda [PENDIENTE] hasta que Vercel tenga cupo. Mi rama ya tiene `origin/wip/fundamentos` integrado (`184046a`).
 - **[13:56] Mejora #35 entregada** (`b49705e`, solo `src/agente/`): a 375 px, 0 elementos tocables de menos de 44 px en el panel (antes "Copiar mensaje" y "Compartir por WhatsApp" medían 36) y sin desborde; regiones `aria-live` que siempre existen ("El agente está buscando opciones…", "Guardando tus preferencias…", "Faltan preferencias…" y el resultado); con una falla simulada, el foco cae en "Reintentar" (44 px) y el aviso sale con `role=alert`.
@@ -31,9 +32,10 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-(vacío)
+- **[14:06] coordinador:** sumar `487d2fc` al lote #39 de la función (cambia el texto fijo del "por qué").
 
 ## Entregado
+- Mejora #40 (texto fijo con ritmo y ambiente del grupo): `wip/agente-ia` `487d2fc`.
 - Mejora #38 (pruebas de la función sin red ni modelo): `wip/agente-ia` `837a126`.
 - Mejora #37 (`docs/agente-ia.md` al día): `wip/agente-ia` `71a2628`.
 - Mejora #35 (panel accesible en el teléfono): `wip/agente-ia` `b49705e`.
