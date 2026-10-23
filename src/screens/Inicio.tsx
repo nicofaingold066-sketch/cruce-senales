@@ -89,7 +89,7 @@ export default function Inicio({
 
   return (
     <div className="vista">
-      {nuevo || espacios === null ? (
+      {nuevo || (espacios === null && !perfil) ? (
         <section className="escena escena-portada" aria-labelledby="portada-titulo">
           <Marca grande />
           <h1 id="portada-titulo" className="portada-lema">
@@ -361,6 +361,8 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
       dejarAviso(`Reclamaste el lugar de ${nom}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.${sesionNueva ? ` ${sesionNueva}` : ''}`)
     } else if (sesionNueva) {
       dejarAviso(`Entraste como ${nom}. ${sesionNueva}`)
+    } else if (!r.resultado.ya_era_miembro) {
+      dejarAviso(`Te uniste a «${r.espacio.nombre}» como ${nom}. Cuando haya un plan, marca si te interesa y carga en privado cuándo puedes.`)
     }
     irA(rutas.espacio(r.resultado.espacio_id))
   }

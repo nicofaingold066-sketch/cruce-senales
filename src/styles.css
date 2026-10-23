@@ -3231,3 +3231,19 @@ fieldset:disabled .opcion-radio {
 .cierre .fila-botones {
   justify-content: center;
 }
+@media (min-width: 960px) {
+  .con-nav {
+    padding-bottom: 96px;
+  }
+}
+.grupo-error > legend + * {
+  clear: both;
+}
+.invitar-botones {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.invitar-botones .btn-blanco {
+  grid-column: 1 / -1;
+  order: -1;
+}
