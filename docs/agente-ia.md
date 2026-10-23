@@ -21,7 +21,12 @@ Dueño: agente-ia. Estado al viernes 23 oct 2026: **construido, integrado y prob
 
 Para que no se pueda adivinar quién eligió qué:
 - con 3 personas o menos, el perfil del grupo trae solo la cantidad de personas;
-- una actividad que eligió una sola persona no se muestra ni se le manda al modelo.
+- una actividad que eligió una sola persona no se muestra ni se le manda al modelo;
+- "es lo que más eligieron" solo se dice con 4 personas o más y si la actividad la eligieron 2 o más;
+- el presupuesto del grupo no sale de la función ni de la pantalla, y tampoco se le manda al modelo. La base deja de mandarlo con la enmienda 7 (E7.4); hasta entonces, la función y la pantalla lo descartan;
+- el modelo no puede escribir palabras sobre presupuesto ("gratis", "barato", "económico").
+
+Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y `docs/contrato-enmienda-7.md`.
 
 **Límite honesto:** el plan elegido también informa algo. Si sale un plan gratis, el grupo sabe que alguien lo pidió. **No se promete ausencia total de inferencia en grupos chicos.**
 

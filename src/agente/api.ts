@@ -98,9 +98,10 @@ function frase(codigo: string, simulado: boolean, perfil: PerfilGrupo | null | u
     if (partes.length === 2) return `va con lo que prefiere la mayoría: ${partes[0]} y ${partes[1]}`
     if (partes.length === 1) return `va con lo que prefiere la mayoría: ${partes[0]}`
   }
-  if (p && codigo === 'el_mas_elegido' && actividad) {
-    const g = p.gustos?.find((x) => x.actividad_etiqueta === actividad && x.cuantos >= 2)
-    if (g) return `es lo que más eligieron (${g.cuantos} de ${p.personas})`
+  if (codigo === 'el_mas_elegido') {
+    // Solo con 4 o más personas y si la actividad la eligieron 2 o más; si no, la frase no se dice (hallazgo 5).
+    const g = p && actividad ? p.gustos?.find((x) => x.actividad_etiqueta === actividad && x.cuantos >= 2) : undefined
+    return g && p ? `es lo que más eligieron (${g.cuantos} de ${p.personas})` : undefined
   }
   return FRASES[codigo]
 }
@@ -147,6 +148,21 @@ export function mensajeFijo(c: CandidataAgente): string {
 
 type Crudo = Partial<BorradorAgente> & CandidataAgente & { tipo: 'borrador' }
 
+/**
+ * Mismo filtro que la función: con 3 personas o menos solo la cantidad, sin actividades de una sola persona
+ * y nunca el presupuesto del grupo (hallazgo 7). Anda con y sin ese campo (enmienda 7).
+ */
+function perfilSeguro(perfil: PerfilGrupo | null | undefined): PerfilGrupo | null {
+  if (!perfil) return null
+  if (perfil.personas <= 3) return { personas: perfil.personas }
+  return {
+    personas: perfil.personas,
+    gustos: perfil.gustos?.filter((g) => g.cuantos >= 2) ?? [],
+    energia_mayoritaria: perfil.energia_mayoritaria ?? null,
+    ambiente_mayoritario: perfil.ambiente_mayoritario ?? null,
+  }
+}
+
 /** Completa una respuesta que no trae los campos de la 4.1 (función vieja o RPC directa sin función). */
 function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
   // Sin la 4.1 la única opción es la del servidor; su id es el del catálogo.
@@ -166,7 +182,7 @@ function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
       : r.clima,
     explicacion: fijo ? textoFijo(elegida.frases_grupo, true, false, r.perfil_grupo, elegida.actividad_etiqueta) : (r.explicacion as string),
     mensaje_al_grupo: fijo || !r.mensaje_al_grupo ? mensajeFijo(elegida) : r.mensaje_al_grupo,
-    perfil_grupo: r.perfil_grupo ? (r.perfil_grupo.personas > 3 ? r.perfil_grupo : { personas: r.perfil_grupo.personas }) : null,
+    perfil_grupo: perfilSeguro(r.perfil_grupo),
     eleccion_fuente: !sinFuncion && r.eleccion_fuente === 'modelo' ? 'modelo' : 'regla',
     explicacion_fuente: !fijo && r.explicacion_fuente === 'modelo' ? 'modelo' : 'texto_fijo',
   }
