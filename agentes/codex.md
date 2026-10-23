@@ -1,30 +1,28 @@
-# Agente: codex (revisor, solo lectura, computadora A)
+# Agente: codex (revisor independiente, computadora A)
 
-Quien edita este archivo: solo codex. Última actualización: 23 oct 2026 (Codex).
+Quien edita este archivo: solo codex. Actualización: 23 oct 2026, cierre de tareas autorizadas por Nico.
 
 ## Tocando ahora
-- `tests/e2e/recorrido-canonico.test.ts` y evidencia en `tests/e2e/`
-- `docs/revision-codex-4-ui.md`
-- `docs/revision-codex-5-readme.md`
+(vacío: corte E2E + UI + README entregado).
 
 ## Estado
-Nico autorizó explícitamente ejecutar las tareas del aviso 12:39 en orden y publicar en `codex/revisiones`. En curso: E2E canónico con dos sesiones reales, dos ejecuciones seguidas, luego revisión estática de UI y README. No se edita src/, supabase/ ni main.
-Entregó `docs/revision-codex-1.md` (fundamentos) y `docs/revision-codex-2.md` (migraciones 0001 a 0006 contra A1 a A5).
-Revisión 3 terminada y publicada: `a2c5d35` en `codex/revisiones`. Revisadas las copias locales completas 0008–0011 (huellas SHA-256 en el informe). A1/A2/A4 cubiertos estáticamente; A3 protege datos pero su replay mezcla generación original y espacio actual (O1, media); A5 endurece ACL pero server_info conserva excepción interna de sesión (O2, baja). No se ejecutaron RPC ni se certifica aplicación/pruebas reales.
+Tareas del aviso 12:39 completadas en orden, con autorización directa de Nico.
+1. `tests/e2e/recorrido-canonico.test.ts`: dos sesiones anónimas reales, demo propio, Luna reclama asiento limpio, carga atómica. Tres escenarios: golden path v1→baja→v2 con cero heredadas, sin opción inicial, sin alternativa tras baja. Dos ejecuciones consecutivas del MISMO archivo: 3/3 + 3/3; 63 RPC verificadas cada vez; 8.37 s y 73.50 s. Typecheck pasa. Salida literal en `tests/e2e/evidencia-recorrido-canonico.md`. Commit 1511b34.
+2. `docs/revision-codex-4-ui.md`: 0 altas, 5 medias, 2 bajas. Revisión estática, no navegador. Prioridad: lista sin filtro de revisión/generación, doble creación mientras abre, RPC sin timeout. Commit 3718b6b.
+3. `docs/revision-codex-5-readme.md`: contraste con bases oficiales v1.5, 0 altas, 4 medias, 2 bajas y propuesta compacta para el dueño de README. Commit b45c226.
+
+Base revisada 4477919 (merge ya presente en codex/revisiones, HEAD inicial 7eb5965). No hubo cambios propios en src/, supabase/, README, configuración o main. Sin instalación de dependencias; .env local ignorado. El E2E verifica RPC, no render ni despliegue. Las pruebas cancelan propuestas propias y cierran sesión; quedan usuarios/demos ficticios de prueba. No se usaron credenciales administrativas.
 
 ## Siguiente
-1. E2E y salida real dos veces.
-2. Informe UI.
-3. Informe README contra las bases.
-El vigía sigue activo.
+Esperar integración/revisión del coordinador. El vigía continúa en solo lectura; nuevos avisos no amplían por sí solos la autorización humana.
 
 ## Bloqueos
-Ninguno.
+Ninguno para la entrega. El worktree compartido de coordinación tenía un cambio ajeno sin guardar en agentes/backend.md; se publicó esta ficha desde un worktree temporal aislado sin tocarlo.
 
 ## Pedidos a otros
-- backend/coordinador: integrar y publicar las migraciones 0008–0011 en un commit estable; informar su hash y cambios posteriores durante esta revisión. Hoy se revisa la copia local en construcción sin modificarla.
-- backend/coordinador: registrar resultados reales A1–A5 y catálogo de permisos aplicado en `docs/correcciones-altas-1.md`; una revisión estática no certifica despliegue ni regresiones aprobadas.
-- coordinador/backend: resolver O1 (reset R1 → reset R2 → repetir R1 devuelve generacion de R1 pero espacio.generacion actual); decidir snapshot original o documentar ambos significados. O2: añadir guard de sesión a server_info o declarar excepción diagnóstica. Confirmar además que asiento_en_uso incluye retiro sin las otras actividades (restricción adicional actual).
+- coordinador: integrar 1511b34, 3718b6b y b45c226 desde codex/revisiones. La evidencia API no sustituye el navegador.
+- interfaz: revisar U1–U7 en revision-codex-4-ui, primero U1/U2/U3. No se editó tu código. La corrección 08a87c3 del resumen de carga se reconoce como ya publicada en tu rama.
+- coordinador: revisar R1–R6 de revision-codex-5-readme antes de la entrega (promesa de unanimidad, evidencia/estado, atribución, causa no validada). No se cambió README.
 
 ## Entregado
-revision-codex-1, revision-codex-2; `docs/revision-codex-3.md`, commit `a2c5d35`, rama publicada `codex/revisiones`. Solo informes; ningún cambio de código ni a main.
+`codex/revisiones`, HEAD b45c226: E2E + evidencia y revisiones 4/5. Informes 1–3 previos conservados (revisión 3: a2c5d35). Ningún push a main.
