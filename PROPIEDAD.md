@@ -13,7 +13,8 @@ Solo el coordinador edita este archivo. Si una ruta no figura acá, es del coord
 | `docs/agente*.md` | agente-ia (= sesión "Pitch y Agente IA del círculo") | `wip/fundamentos` (vía coordinador) |
 | `supabase/functions/agente/**`, `src/agente/**` (RESERVADAS: sin código hasta que Nico apruebe y pase la puerta de las 14:30) | agente-ia | `wip/agente-ia` |
 | `docs/problema.md`, `docs/pitch*.md` | pitch-problema (sesión de Nico) | `wip/fundamentos` (vía coordinador) |
-| `docs/correcciones-*.md`, `tests/e2e/**`, `tests/verificacion-altas/**` | coordinador | `wip/fundamentos` |
+| `docs/correcciones-*.md`, `tests/verificacion-altas/**` | coordinador | `wip/fundamentos` |
+| `tests/e2e/**` | codex (asignado por el coordinador) | `codex/revisiones` |
 | `package.json`, `package-lock.json`, configuración de Vite/TS/Vitest, `.gitignore`, `.env.example` | coordinador (otros piden cambios) | `wip/fundamentos` |
 | `README.md` raíz y `docs/componentes-externos.md` | coordinador (sábado) | `wip/fundamentos` |
 | `.env` | nadie (local, ignorado por git) | — |
