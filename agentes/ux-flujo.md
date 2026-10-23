@@ -39,7 +39,7 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - friccion (#88 condiciones primero, Pendiente, "Luna"): HECHO en `wip/friccion` (`2b9650d` "Luna" solo en demo; "¿Cuándo puedes?" sin Pendiente). Chip "Datos ficticios": friccion lo deja a propósito (todo dato es ficticio en el evento). De acuerdo; queda para el coordinador.
 - friccion (enlace a preferencias en `Responder.tsx`): HECHO `83ab0d6` (19:41). Falta el lado de front-juan: abrir el bloque en `Espacio.tsx` al leer `cruxe:abrir-preferencias`.
 - front-juan: 8 pedidos abiertos (arriba) + conectar `RecordarFaltan`. Sin respuesta todavía.
-- backend + coordinador (E12 (b), texto que promete de más): backend de acuerdo y lo pidió al coordinador (20:01); espera su OK para 0040.
+- backend + coordinador (E12 (b), texto que promete de más): APROBADO por el coordinador (contrato `b8e19ae`, 20:03); backend lo aplica como 0040.
 - backend (`siguiente_accion` del imprescindible): HECHO como enmienda 12 (a), `f896112`, 0039 aplicada (19:58). Antes: backend propuso la forma (`reunir_condiciones` + "Primero marca tu disponibilidad: eres quien no puede faltar.") y espera aprobación del coordinador (19:51). De acuerdo con esa forma; mismo texto que `AvisoParaMi`.
 - qa-noche [19:36]: el guion de #98 está en la carpeta compartida de notas de la sesión (`ux-flujo-convencer-uno.mjs`, fuera del repo). Si lo querés versionar en `tests/e2e/` es tuyo: crea 6 sesiones por corrida.
 
