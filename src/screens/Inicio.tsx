@@ -66,7 +66,8 @@ export default function Inicio({
         <p className="portada-sub">
           Cada uno dice en privado cuándo puede. CRUXE propone <strong>un solo plan</strong> y cada uno lo confirma.
         </p>
-        {codigoInvitacion ? null : (
+        {/* Con un plan activo, lo principal es el plan: sin botones grandes que creen otra demo por error. */}
+        {codigoInvitacion || conPlan ? null : (
           <div className="portada-acciones">
             <CargarDemo deshabilitado={soloLectura} yaCargada={espacios?.some((e) => e.demo && e.mi_rol === 'organizador') ?? false} />
             <button type="button" className="btn btn-secundario" onClick={irAUnirse}>
