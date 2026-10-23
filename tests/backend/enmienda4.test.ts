@@ -132,10 +132,10 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
     const [primera] = seco.candidatas
     expect(primera).toEqual({
       id: seco.lugar.id, actividad: seco.actividad, actividad_etiqueta: seco.actividad_etiqueta, lugar: seco.lugar,
-      titulo: seco.titulo, franjas: seco.franjas, frases_grupo: seco.frases_grupo,
+      titulo: seco.titulo, franjas: seco.franjas, frases_grupo: seco.frases_grupo, viaje: seco.viaje, // E10: viaje en cada candidata
     })
     expect(seco.candidatas[1].frases_grupo).toEqual(['presupuesto_todos', 'al_aire_libre_con_buen_tiempo']) // #54: sin ritmo_del_grupo
-    for (const c of seco.candidatas) expect(Object.keys(c).sort()).toEqual(['actividad', 'actividad_etiqueta', 'franjas', 'frases_grupo', 'id', 'lugar', 'titulo'])
+    for (const c of seco.candidatas) expect(Object.keys(c).sort()).toEqual(['actividad', 'actividad_etiqueta', 'franjas', 'frases_grupo', 'id', 'lugar', 'titulo', 'viaje'])
     expect(JSON.stringify(seco)).not.toMatch(/lugar-sim-02|evento-sim-01|puntaje/)
     // Mejora #28: Fiesta (1 persona) no sale en gustos. Enmienda 7 (E7.4): el perfil no cuenta a quien lo pide
     // (Tomi): 5 personas, Asado 4, Pádel 0 (solo Tomi); ambiente sin mayoría (Caro tranquilo, Fede fiesta);

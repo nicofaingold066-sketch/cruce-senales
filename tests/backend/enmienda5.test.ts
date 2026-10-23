@@ -43,7 +43,8 @@ describe('enmienda 5: preferencias simuladas en vivo', { timeout: 90_000 }, () =
     const a = await ok(O, 'simulate_save_preferences', { p_espacio_id: demo.id, p_miembro_id: id.Sofi, p_preferencias: SOFI_GRATIS })
     expect(a.resultado).toEqual({ repetido: false, simulado: true })
     expect(a.miembro).toMatchObject({ miembro_id: id.Sofi, nombre: 'Sofi', simulado: true })
-    expect(a.preferencias).toEqual(SOFI_GRATIS)
+    // E10: simulate conserva la semilla de viaje y momento de Sofi (las claves que no se mandan).
+    expect(a.preferencias).toEqual({ ...SOFI_GRATIS, zona: 'santiago_centro', movilidad: 'me_llevan', tiempo_max: '45', momento: 'da_igual' })
     // Con Sofi en "ojalá gratis" solo queda el parque.
     const p = await plan()
     expect(p).toMatchObject({ actividad: 'parque', lugar: { id: 'lugar-sim-04' } })
