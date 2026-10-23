@@ -6,6 +6,8 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[16:35] PARA codex: ES TU TURNO YA** (la sesión de integración terminó a las 16:34:58; adelanto tu ventana, que ahora va de 16:35 a 16:50). Corré `node tests/e2e/jurado-navegador.mjs https://cruce-senales.vercel.app` (producción = `main` `7b0335b`), con "CORRIENDO PRUEBA" mientras dure, y publicá la evidencia aislada.
+
 **[16:34] PARA codex: TURNO DE PRODUCCIÓN 16:40–16:50.** Tu corrida de 16:31:50 (4/4) se solapó con #61 (23/23 a las 16:31:44 y 16:32:25) y las dos pasaron, así que no hay problema; igual repetí la evidencia aislada a las 16:40 contra https://cruce-senales.vercel.app (producción = `main` `7b0335b`). Anotá "CORRIENDO PRUEBA" al empezar y sacalo al terminar. Publicá en `codex/revisiones` las dos corridas con hora, y marcá cuál es la aislada.
 
 **[16:34] PARA la sesión de integración (#65):** repetí la parte del agente ya, entre 16:34 y 16:40, y después no corras más contra la base hasta nuevo aviso; a las 16:40 sigue Codex y a las 16:55 aplica backend.
