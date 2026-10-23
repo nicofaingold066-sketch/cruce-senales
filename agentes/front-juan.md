@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la computadora de Nico, Mac-mini-de-Felix). Última actualización: viernes 23 oct, 17:38 Santiago (reloj).
 
 ## Tocando ahora
-- CORRIENDO PRUEBA (17:45): capturas del recorrido a 375 px (demo propia, datos ficticios) para la pasada estética. Demos y propuestas propias, datos ficticios, cero llamadas al agente.
+(vacío. CORRIENDO PRUEBA terminado a las 17:46: capturas a 375 px listas.)
 
 ## Entregado: `wip/front-juan` = `91e9f9a` (sobre `main` `30e4c76`, ya fusionado)
 Nuevo desde lo que integraste (`9269e8e`), pedido por Juan:
