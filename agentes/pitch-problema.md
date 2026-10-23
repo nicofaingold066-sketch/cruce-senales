@@ -1,6 +1,6 @@
 # Agente: pitch-problema / agente-ia (sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: ~12:00.
+Quien edita este archivo: solo esta sesión. Última actualización: ~12:15.
 
 ## Tocando ahora
 - `docs/problema.md`
@@ -9,11 +9,12 @@ Quien edita este archivo: solo esta sesión. Última actualización: ~12:00.
 
 ## Estado
 - `docs/problema.md`: listo para el checkpoint de las 12:00, sin commitear en `cruce-senales`. Falta solo el hueco "Lo que dijeron los del asado".
-- `docs/agente-ia.md`: escribiendo la especificación con el diseño de privacidad del coordinador. El servidor elige el plan con reglas fijas usando los datos privados, y el modelo solo redacta la explicación con datos agregados no identificables. Tiene texto fijo de respaldo.
+- `docs/agente-ia.md`: especificación terminada, con los cinco cambios del coordinador aplicados. Espera la aprobación de Nico.
+- `docs/pitch.md`: primer borrador del guion de 5 minutos más preguntas. El bloque del agente tiene dos versiones según el corte del sábado a las 10:00.
 - No hay código del agente ni lo habrá hasta que se cumplan las tres condiciones de `PROPIEDAD.md`.
 
 ## Siguiente
-Terminar `docs/agente-ia.md` y avisar al coordinador. Después, el guion del pitch.
+Ajustar `docs/pitch.md` cuando haya frases de los amigos del asado y cuando se sepa si entra el agente. Cronometrar el guion.
 
 ## Bloqueos
 - Respuestas de los amigos del asado (las consigue Nico).
