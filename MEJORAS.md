@@ -12,7 +12,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 3 | Base del agente (enmienda 4: preferencias, catálogo, proponer_plan_borrador) con pruebas | backend | verificada (0014-0016, 36 pruebas) |
 | 4 | Enganche de la pantalla del agente en el espacio y precarga del borrador en Nueva propuesta | claude-b-interfaz | entregada (dd66806), probada en vivo por agente-ia |
 | 5 | Desplegar la función del agente en Supabase y probarla en vivo (con y sin clave) | coordinador + agente-ia | función v4 desplegada y verificada SIN clave; falta con clave (decisión de Nico) |
-| 6 | Recorrido completo en DOS teléfonos reales con el link público | Nico + Juan + coordinador | libre (después de publicar main en Vercel) |
+| 6 | Recorrido completo en DOS teléfonos reales con el link público | Nico + Juan + coordinador | libre: la versión nueva ya está publicada (14:06) |
 | 18 | U2: "Crear y abrir" permite crear dos propuestas (doble envío) | claude-b-interfaz | entregada (a4b1e30), en main |
 | 19 | U3: tope de tiempo para peticiones que no terminan | claude-b-interfaz | entregada (10b014d), en main |
 | 23 | Clima de simulación en espacios demo (rotulado Simulación; la función lo acepta solo si get_space dice demo) | agente-ia | verificada (función v4) |
@@ -32,14 +32,14 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 25 | "Compartir por WhatsApp" con el mensaje del agente (enlace wa.me, sin integraciones) | agente-ia | entregada (ffcc186), en main |
 | 26 | Perfil agregado visible al grupo ("Asado: 5 de 6") solo con 4 o más personas | agente-ia | verificada: 71a0cff + filtro de una sola persona 05b2c46, función v4 |
 | 27 | Redesplegar la función del agente en lote | coordinador | hecha: v4 desplegada desde 05b2c46 y probada en vivo |
-| 30 | Portada: si la sesión ya tiene la demo, mostrar la propuesta activa con su estado ("Te toca confirmar") para llegar en un toque desde el segundo teléfono (idea de claude-b) | claude-b-interfaz | entregada (5e0a788) |
+| 30 | Portada: si la sesión ya tiene la demo, mostrar la propuesta activa con su estado ("Te toca confirmar") para llegar en un toque desde el segundo teléfono (idea de claude-b) | claude-b-interfaz | entregada (5e0a788), publicada en Vercel 14:06 |
 | 31 | Tarjetas de propuestas en el espacio con estado destacado (color + punto, "Tu turno") según `siguiente_accion.codigo` (idea de claude-b) | claude-b-interfaz | libre |
 | 32 | Panel del agente a prueba de demo: estados claros de cargando / falla temporal / sin plan compatible, reintento, y que nunca bloquee la pantalla del espacio | agente-ia | entregada (40710d5), integrada en wip/fundamentos 85c18b1; typecheck y build en verde |
 | 35 | Panel del agente en el teléfono y accesible: `aria-live` en cargando/errores, foco al botón útil tras un error, toques de 44 px, probado a 375 px | agente-ia | entregada (b49705e), integrada en wip/fundamentos |
 | 37 | `docs/agente-ia.md` al día con lo construido (privacidad con mínimo 2, clima simulado solo en demo, respaldo sin clave, fuentes visibles), corto y verificable para el jurado | agente-ia | entregada (71a2628), integrada en wip/fundamentos e415341 |
 | 38 | Pruebas de la función sin red ni modelo (textoValido, sinNombres, entradaModelo, filtro de mínimo 2, clima simulado solo en demo) versionadas en `supabase/functions/agente/` y con el comando en `docs/agente-ia.md` | agente-ia | verificada (837a126): 14/14 con `node --test "supabase/functions/agente/*.test.ts"`, integrada 8d2b8be |
-| 39 | Redesplegar la función `agente` v5 en lote (index.ts + logica.ts; bloquea "reserv*" y "agend*"). Antes del sábado 10:00 | coordinador | pendiente |
-| 40 | Sin clave de modelo, que el "por qué" con texto fijo use también el ritmo y el ambiente del grupo (solo totales, nunca de una persona), para que la demo sin IA no suene genérica | agente-ia | libre |
+| 39 | Redesplegar la función `agente` v5 en lote (index.ts + logica.ts; bloquea "reserv*" y "agend*"). Antes del sábado 10:00 | coordinador | hecha: función v5 desplegada (index.ts + logica.ts de 487d2fc) y probada en vivo |
+| 40 | Sin clave de modelo, que el "por qué" con texto fijo use también el ritmo y el ambiente del grupo (solo totales, nunca de una persona), para que la demo sin IA no suene genérica | agente-ia | verificada (487d2fc): 16/16 y en vivo "es lo que más eligieron (3 de 4)"; pantalla en main, se publica en el próximo lote de Vercel |
 
 ## P3 — Calidad y robustez
 | # | Mejora | Dueño | Estado |
@@ -57,7 +57,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 36 | `candidatas` sin señal individual: hoy una actividad elegida por una sola persona puede aparecer como candidata (sin conteo). Evaluar si conviene exigir 2 o completar con catálogo; decidir con el coordinador antes de migrar | backend | descartada: las candidatas también pueden ser actividades que nadie eligió (puntaje por ritmo, ambiente y clima) y no traen conteo; el límite honesto ya está en docs/agente-ia.md |
 
 ## Para Nico (no las toma un agente)
-- DECIDIR cómo publicamos `main` en Vercel: el plan gratis agotó los 100 despliegues del día (Vercel Pro de Juan o esperar a que se libere el cupo).
+- Vercel: el cupo volvió a las 14:06 y `main` se publicó. Desplegamos solo en lote y por CLI (GitHub sigue desconectado).
 - Crear la clave de la API de Anthropic con límite de gasto y cargarla como secreto de la función `agente` en Supabase.
 - Elegir el modelo del agente (por defecto `claude-haiku-5-5`; Juan pidió calidad).
 - Rotar la clave publishable de Supabase después del evento.
