@@ -1026,3 +1026,11 @@ input[aria-invalid='true'],
   font-weight: 600;
   color: var(--primario);
 }
+
+/* ---- Agente del círculo plegado en el espacio ---- */
+.agente-plegable > .tarjeta {
+  border: 0;
+  padding: 0;
+  margin: 12px 0 0;
+  box-shadow: none;
+}

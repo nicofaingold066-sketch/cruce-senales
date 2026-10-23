@@ -6,6 +6,7 @@ import { useAccion, useSondeo } from '../lib/hooks'
 import { rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { momentoCorto } from '../lib/format'
 import { Aviso, Boton, Cargando, ErrorCaja, InsigniaEstado, Nombre, Vacio } from '../components/ui'
+import { AgentePanel } from '../agente/AgentePanel'
 
 export default function Espacio({ espacioId }: { espacioId: string }) {
   const { soloLectura } = useShell()
@@ -129,6 +130,12 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
         </p>
         {espacio.demo ? <p className="suave">Espacio de demostración con datos ficticios.</p> : null}
       </section>
+
+      {/* Agente del círculo (enmienda 4): plegado para no estorbar el recorrido de la demo. */}
+      <details className="tarjeta plegable agente-plegable">
+        <summary>Agente del círculo (opcional): tus preferencias y una idea de plan</summary>
+        <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} />
+      </details>
 
       {esOrganizador ? (
         <HerramientasOrganizador espacio={espacio} deshabilitado={soloLectura} onCambio={cargarTodo} />

@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../lib/api'
 import type { ApiError, Espacio } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto, momentoCorto, ZONA_VISIBLE } from '../lib/format'
 import { irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
+import { tomarBorradorAgente } from '../agente/api'
 
 interface Formulario {
   titulo: string
@@ -61,6 +62,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const { ocupado, error, ejecutar, limpiarError } = useAccion()
   const [faltantes, setFaltantes] = useState(false)
   const [abrirUltimo, setAbrirUltimo] = useState(true)
+  const [desdeAgente, setDesdeAgente] = useState(false)
 
   const yo = espacio?.miembros.find((m) => m.es_yo) ?? null
   useIdentidad(espacio?.nombre ?? null, yo?.nombre ?? null, espacio ? (espacio.mi_rol === 'organizador' ? 'organizador' : 'miembro') : null)
@@ -78,25 +80,24 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   }, [cargar])
 
   // Precarga solo una vez que se conoce el espacio. En el espacio demo se usan los valores del caso.
+  // Si el agente dejó un borrador (se lee una sola vez), su título y sus dos franjas reemplazan esos valores.
+  const precargado = useRef(false)
   useEffect(() => {
-    if (!espacio || f) return
+    if (!espacio || f || precargado.current) return
+    precargado.current = true
     const yoM = espacio.miembros.find((m) => m.es_yo)
     const tomi = espacio.miembros.find((m) => m.nombre.toLowerCase() === 'tomi')
-    if (espacio.demo) {
-      setF({ ...CASO, imprescindibleId: (tomi ?? yoM)?.miembro_id ?? '' })
-    } else {
-      setF({
-        titulo: '',
-        aInicio: '',
-        aFin: '',
-        bInicio: '',
-        bFin: '',
-        minimo: '2',
-        maximo: '6',
-        imprescindibleId: yoM?.miembro_id ?? '',
-        plazo: '',
-      })
+    const borrador = tomarBorradorAgente(espacio.id)
+    const base: Formulario = espacio.demo
+      ? { ...CASO, imprescindibleId: (tomi ?? yoM)?.miembro_id ?? '' }
+      : { titulo: '', aInicio: '', aFin: '', bInicio: '', bFin: '', minimo: '2', maximo: '6', imprescindibleId: yoM?.miembro_id ?? '', plazo: '' }
+    if (borrador) {
+      const [a, b] = borrador.franjas
+      setDesdeAgente(true)
+      setF({ ...base, titulo: borrador.titulo, aInicio: a.inicio, aFin: a.fin, bInicio: b.inicio, bFin: b.fin })
+      return
     }
+    setF(base)
   }, [espacio, f])
 
   if (errorEspacio && !espacio) {
@@ -190,7 +191,13 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
           }}
           noValidate
         >
-          {espacio.demo ? (
+          {desdeAgente ? (
+            <Aviso tono="info" titulo="Borrador del agente">
+              Título y franjas vienen del borrador que propuso el agente. Revisa mínimo, máximo, persona imprescindible y
+              cierre antes de crear: el agente no crea ni confirma nada.
+            </Aviso>
+          ) : null}
+          {espacio.demo && !desdeAgente ? (
             <Aviso tono="info">
               Valores precargados del caso "Los del asado". Puedes cambiarlos antes de revisar.{' '}
               <button
