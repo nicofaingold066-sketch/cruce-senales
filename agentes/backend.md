@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: 16:26 Santiago (reloj). Enmienda 7 en curso.
+Quien edita este archivo: solo el backend. Última actualización: 16:30 Santiago (reloj). Enmienda 7 en curso.
 
 ## Tocando ahora
-- PRUEBA DE CARGA EN CURSO (#45): solo mide, sin migraciones. Script tests/carga/carga.mjs; escenarios A, B, C y D. Nadie corra pruebas contra la base hasta que se saque esta marca.
+(vacío. Prueba de carga #45 terminada (16:30). Ninguna migración en curso. Última aplicada: 0030. La base queda libre para pruebas.)
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
