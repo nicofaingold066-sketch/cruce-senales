@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 13:57.
+Quien edita este archivo: solo esta sesión. Última actualización: 14:00.
 
 ## Tocando ahora
-- Mejora #37 (`docs/agente-ia.md` al día con lo construido): `docs/agente-ia.md`
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[14:00] Mejora #37 entregada** (`71a2628`): `docs/agente-ia.md` reescrito con lo construido (cómo funciona, qué ve cada uno, real y simulado, cómo verificarlo en la app y con `tests/backend/enmienda4.test.ts` y `enmienda5.test.ts`, dónde está, cómo se cuida la demo, lo que falta). El enlace publicado queda [PENDIENTE] hasta que Vercel tenga cupo. Mi rama ya tiene `origin/wip/fundamentos` integrado (`184046a`).
 - **[13:56] Mejora #35 entregada** (`b49705e`, solo `src/agente/`): a 375 px, 0 elementos tocables de menos de 44 px en el panel (antes "Copiar mensaje" y "Compartir por WhatsApp" medían 36) y sin desborde; regiones `aria-live` que siempre existen ("El agente está buscando opciones…", "Guardando tus preferencias…", "Faltan preferencias…" y el resultado); con una falla simulada, el foco cae en "Reintentar" (44 px) y el aviso sale con `role=alert`.
 - **[13:52] Mejora #32 entregada** (`40710d5`, solo `src/agente/`, no requiere redesplegar la función): tiempo límite de 10 s para la función y 8 s para el respaldo RPC; "El agente está leyendo las preferencias del grupo y el clima…" mientras espera; errores claros ("Faltan preferencias", "Sin conexión", "El agente tardó demasiado", "El agente no respondió") con Reintentar y "Crear la propuesta a mano", también en "Sin plan compatible"; barrera de errores para que una falla del panel no tire la pantalla del espacio. Probado en el navegador colgando a propósito la función y el RPC: a los 18 s aparece "El agente tardó demasiado" con las dos salidas, y Reintentar con la red normal trae la propuesta.
 - **[13:45] #26 probada en vivo con la función v3:** "Lo que eligió el grupo (5 personas): Asado 4 de 5 · Fútbol 2 de 5 · …". Endurecido (`05b2c46`): ya no se muestran ni se mandan al modelo las actividades que eligió una sola persona ("Fiesta 1 de 5" dejaba adivinar quién fue). Probado contra la base: perfil de 5 personas trae solo Asado (4) y Fútbol (2).
@@ -32,6 +33,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 (vacío)
 
 ## Entregado
+- Mejora #37 (`docs/agente-ia.md` al día): `wip/agente-ia` `71a2628`.
 - Mejora #35 (panel accesible en el teléfono): `wip/agente-ia` `b49705e`.
 - Mejora #32 (panel a prueba de demo): `wip/agente-ia` `40710d5`.
 - Filtro de privacidad en el perfil del grupo (actividades con una sola persona): `wip/agente-ia` `05b2c46`.
