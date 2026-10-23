@@ -23,6 +23,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
   - L3 verifica que, con HTTP 503, la copia sigue ofrecida (volver / olvidarla).
   - Se quitó la comprobación de **foco** tras el error (antes en `#/entrar`); la portada nueva no maneja foco al fallar el retorno. Idea para friccion/Juan: mover el foco al aviso de error. No se baja lo demás.
 - 19:28 `recorrido-dos-sesiones.mjs` ahora también respeta `MIGRACION EN CURSO` (antes corría igual).
+- 20:28 Enmienda 10: `jurado-navegador.mjs` revisa en toda respuesta compartida (todas menos get/save/simulate_save_preferences) que no aparezcan las claves `movilidad`, `tiempo_max`, `minutos_por_persona` ni los valores de movilidad (`me_llevan`, `auto_con_lugar`…) ni las 8 zonas. Pasa contra producción con la enmienda 10 publicada (main fae49fa).
 
 ## Registro de corridas
 | Hora | Qué | Contra | Resultado |
@@ -44,6 +45,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 20:07 | `wip/ux` 715ec27: typecheck, build, recorrido 23/23, jurado 4/4, red 10/10 | localhost, base | verde |
 | 20:09 | `wip/agente-ia` ddcce58: typecheck, build, recorrido 23/23; jurado cortado a mitad por una MIGRACION EN CURSO nueva de backend (no es regresión) | localhost, base | jurado y red se reintentan al salir la migración |
 | 20:14 | `wip/agente-ia` ddcce58: jurado 4/4 (privacidad de sobres sin hallazgos) y red 10/10 (reintento) | localhost, base | verde |
+| 20:28 | main `fae49fa` publicado (enmienda 10/12, fricción): recorrido 23/23, jurado 4/4 con la revisión nueva de privacidad E10 | producción | verde |
 
 ## Regresiones abiertas
 (ninguna)

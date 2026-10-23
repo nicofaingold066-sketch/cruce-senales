@@ -51,6 +51,21 @@ function sinPrivados(v, ruta = 'propuesta') {
     sinPrivados(x, `${ruta}.${k}`)
   }
 }
+// Enmienda 10: zona, movilidad, tiempo máximo y momento son privados. Ninguna respuesta compartida los trae
+// (solo las RPC de las propias preferencias de quien llama). Las claves de lista cerrada se buscan como claves y como valores.
+const PROPIAS = ['get_my_preferences', 'save_my_preferences', 'simulate_save_preferences']
+const CLAVES_E10 = ['movilidad', 'tiempo_max', 'minutos_por_persona', 'minutos_persona']
+const VALORES_E10 = ['me_llevan', 'auto_con_lugar', 'auto_sin_lugar', 'transporte_publico', 'bici_o_pie',
+  'providencia', 'nunoa', 'las_condes', 'santiago_centro', 'maipu', 'la_florida', 'puente_alto', 'vitacura']
+function sinE10(v, ruta) {
+  if (Array.isArray(v)) return v.forEach((x, i) => sinE10(x, `${ruta}[${i}]`))
+  if (v && typeof v === 'object') {
+    for (const [k, x] of Object.entries(v)) {
+      if (CLAVES_E10.includes(k)) privados.push(`E10 ${ruta}.${k}`)
+      sinE10(x, `${ruta}.${k}`)
+    }
+  } else if (typeof v === 'string' && VALORES_E10.includes(v)) privados.push(`E10 ${ruta}=valor privado`)
+}
 async function observar(p, nombre) {
   p.setDefaultTimeout(15000)
   p.on('pageerror', e => jsErrores.push(`${nombre}: ${e.name}`))
@@ -73,6 +88,7 @@ async function observar(p, nombre) {
       }
       rpcObservadas++
       if (r.contrato !== 2) privados.push('respuesta sin contrato 2')
+      if (!PROPIAS.includes(u.pathname.split('/').at(-1))) sinE10(r, u.pathname.split('/').at(-1))
       if (r.propuesta) {
         sinPrivados(r.propuesta)
         if (nombre === 'Luna') {
