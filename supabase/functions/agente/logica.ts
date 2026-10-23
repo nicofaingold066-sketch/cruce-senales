@@ -59,11 +59,6 @@ export const FRASES: Record<string, string> = {
 
 const ENERGIA_TEXTO: Record<string, string> = { con_todo: 'con todo', algo_tranquilo: 'algo tranquilo' }
 const AMBIENTE_TEXTO: Record<string, string> = { fiesta: 'de fiesta', tranquilo: 'tranquilo' }
-const PRESUPUESTO_TEXTO: Record<string, string> = {
-  cualquiera: 'sin límite de presupuesto',
-  moderado: 'algo económico',
-  bajo: 'gratis o casi gratis',
-}
 
 /** Una actividad con menos de esta cantidad de personas no se muestra ni se le manda al modelo (mejora #26). */
 export const MINIMO_POR_GUSTO = 2
@@ -75,6 +70,8 @@ const PROHIBIDAS = [
   'plata', 'dinero', 'pobre*', 'caro para', 'no le alcanza', 'no les alcanza', 'no puede pagar', 'no pueden pagar',
   'no puede ir', 'no pueden ir', 'enferm*', 'problemas de salud', 'su salud', 'tu salud', 'ánimo', 'animo', 'triste*',
   'cansad*', 'deprim*', 'restricci*', 'confirmad*', 'reserv*', 'agend*', 'ya está listo',
+  // Presupuesto (hallazgo 7 de la revisión de privacidad): el servidor ya descarta por precio; el texto no lo menciona.
+  'gratis', 'barat*', 'económic*', 'economic*', 'poco presupuesto', 'presupuesto bajo', 'presupuesto ajustado', 'presupuesto limitado',
 ]
 const LETRA = '\\p{L}'
 
@@ -168,9 +165,11 @@ export function textoFrase(codigo: string, simulado: boolean, contexto: Contexto
     if (partes.length === 2) return `va con lo que prefiere la mayoría: ${partes[0]} y ${partes[1]}`
     if (partes.length === 1) return `va con lo que prefiere la mayoría: ${partes[0]}`
   }
-  if (p && codigo === 'el_mas_elegido' && contexto.actividad) {
-    const g = gustosVisibles(p).find((x) => x.actividad_etiqueta === contexto.actividad)
-    if (g) return `es lo que más eligieron (${g.cuantos} de ${p.personas})`
+  if (codigo === 'el_mas_elegido') {
+    // Solo si se puede mostrar sin delatar a nadie: grupo de 4 o más y actividad elegida por 2 o más
+    // (hallazgo 5). Si no, la frase no se dice, aunque la base la mande.
+    const g = p && contexto.actividad ? gustoVisible(p, contexto.actividad) : undefined
+    return g && p ? `es lo que más eligieron (${g.cuantos} de ${p.personas})` : undefined
   }
   return FRASES[codigo]
 }
@@ -228,15 +227,24 @@ export function textoValido(texto: unknown, max: number, nombres: string[]): tex
   })
 }
 
+function gustoVisible(perfil: PerfilGrupo, actividad: string): { actividad_etiqueta: string; cuantos: number } | undefined {
+  return perfil.personas > 3 ? gustosVisibles(perfil).find((g) => g.actividad_etiqueta === actividad) : undefined
+}
+
 /** Gustos que se pueden mostrar o mandar: solo los que eligieron al menos MINIMO_POR_GUSTO personas. */
 export function gustosVisibles(perfil: PerfilGrupo | null | undefined): { actividad_etiqueta: string; cuantos: number }[] {
   return perfil?.gustos?.filter((g) => g.cuantos >= MINIMO_POR_GUSTO) ?? []
 }
 
-/** Perfil para la respuesta de la función: con 3 personas o menos, solo la cantidad (mejora #26). */
+/**
+ * Perfil para la respuesta de la función: con 3 personas o menos, solo la cantidad (mejora #26), y nunca
+ * el presupuesto del grupo (hallazgo 7). Anda igual si la base todavía lo manda o si ya no (enmienda 7, E7.4).
+ */
 export function perfilParaRespuesta(perfil: PerfilGrupo | null | undefined): PerfilGrupo | null {
   if (!perfil) return null
-  return perfil.personas > 3 ? { ...perfil, gustos: gustosVisibles(perfil) } : { personas: perfil.personas }
+  if (perfil.personas <= 3) return { personas: perfil.personas }
+  const { presupuesto_grupo: _presupuesto, ...sinPresupuesto } = perfil
+  return { ...sinPresupuesto, gustos: gustosVisibles(perfil) }
 }
 
 /** Lo único que ve el modelo: opciones ya validadas, clima y totales del grupo. Sin nombres ni ids de miembros. */
@@ -250,7 +258,6 @@ export function entradaModelo(candidatas: Candidata[], perfil: PerfilGrupo | nul
       gustos: p ? gustosVisibles(p).map((g) => `${g.actividad_etiqueta}: ${g.cuantos} de ${p.personas}`) : [],
       ritmo: p?.energia_mayoritaria ? ENERGIA_TEXTO[p.energia_mayoritaria] ?? null : null,
       ambiente: p?.ambiente_mayoritario ? AMBIENTE_TEXTO[p.ambiente_mayoritario] ?? null : null,
-      presupuesto: p?.presupuesto_grupo ? PRESUPUESTO_TEXTO[p.presupuesto_grupo] ?? null : null,
     },
     opciones: candidatas.map((c) => ({
       id: c.id,
@@ -259,7 +266,8 @@ export function entradaModelo(candidatas: Candidata[], perfil: PerfilGrupo | nul
       actividad: c.actividad_etiqueta,
       lugar: sinNombres(c.lugar.nombre.replace(' (Simulación)', ''), nombres),
       dias: c.franjas.map(franjaCorta),
-      razones: c.frases_grupo.map((f) => textoFrase(f, simulado)).filter(Boolean),
+      // Mismas frases que el texto fijo: "lo que más eligieron" solo si no delata a nadie (hallazgo 5).
+      razones: c.frases_grupo.map((f) => textoFrase(f, simulado, { perfil, actividad: c.actividad_etiqueta })).filter(Boolean),
     })),
   }
 }
