@@ -68,14 +68,19 @@ export type ClimaSimulado = 'seco' | 'lluvia'
 const FRASES: Record<string, string> = {
   presupuesto_todos: 'le sirve al presupuesto de todos',
   bajo_techo: 'es bajo techo por si cambia el tiempo',
-  al_aire_libre_con_buen_tiempo: 'es al aire libre y se espera buen tiempo',
+  al_aire_libre_con_buen_tiempo: 'es al aire libre con buen pronóstico',
   el_mas_elegido: 'es lo que más eligieron',
   ritmo_del_grupo: 'va con el ritmo que prefiere el grupo',
 }
 
-/** Texto fijo de "por qué". `destacada` = la opción recomendada; las demás no dicen que son "la mejor". */
-export function textoFijo(codigos: string[], destacada = true): string {
-  const partes = codigos.map((c) => FRASES[c]).filter((t): t is string => Boolean(t))
+/**
+ * Texto fijo de "por qué". `destacada` = la opción recomendada; las demás no dicen que son "la mejor".
+ * `simulado` = clima de simulación: no se habla de pronóstico.
+ */
+export function textoFijo(codigos: string[], destacada = true, simulado = false): string {
+  const partes = codigos
+    .map((c) => (simulado && c === 'al_aire_libre_con_buen_tiempo' ? 'es al aire libre con el sol de la simulación' : FRASES[c]))
+    .filter((t): t is string => Boolean(t))
   if (partes.length === 0) {
     return destacada
       ? 'Es la opción que mejor le sirve al grupo con lo que cargaron.'

@@ -208,7 +208,7 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
   useEffect(() => setTitulo(elegida.titulo), [elegida.titulo])
   const tituloValido = titulo.trim().length >= 1 && titulo.trim().length <= 80
   // La explicación y el mensaje del modelo son de la opción que destacó; para otra, el texto fijo.
-  const explicacion = esLaDestacada ? b.explicacion : textoFijo(elegida.frases_grupo, false)
+  const explicacion = esLaDestacada ? b.explicacion : textoFijo(elegida.frases_grupo, false, b.clima.fuente === 'simulacion')
   const mensaje = esLaDestacada ? b.mensaje_al_grupo : mensajeFijo(elegida)
   const deModelo = esLaDestacada && b.explicacion_fuente === 'modelo'
 
