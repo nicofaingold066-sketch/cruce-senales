@@ -36,7 +36,7 @@ Para que no se pueda adivinar quién eligió qué:
 | Búsqueda de eventos en internet, reservas, pagos | **Fuera** de este corte |
 
 ## 4. Cómo verificarlo
-**En la app** **[PENDIENTE]** confirmar que la versión publicada en https://cruce-senales.vercel.app ya incluye el agente:
+**En la app** (https://cruce-senales.vercel.app; evidencia en la sección 8):
 1. "Probar la demo «Los del asado»" → abrir "Agente del círculo (opcional)".
 2. Cargar las preferencias de Tomi y guardar: "Guardado. Nadie más ve tus preferencias."
 3. Elegir "Simular sol" → "Que el agente proponga": aparecen 3 opciones (asado, fútbol y parque), el asado como "Recomendada" y el perfil del grupo sin actividades de una sola persona.
@@ -68,6 +68,26 @@ Para que no se pueda adivinar quién eligió qué:
 - **Clave de Anthropic.** La crea Nico con un límite de gasto y la carga como secreto `ANTHROPIC_API_KEY` de la función. El modelo por defecto es `claude-haiku-5-5` y se cambia con `AGENTE_MODELO`. Hasta entonces, la elección y la redacción de la IA no están probadas con el modelo real.
 - **Temperatura.** `claude-haiku-5-5` no acepta una temperatura distinta de la predeterminada. La repetibilidad la dan el esfuerzo bajo, la salida con esquema fijo y la lista cerrada de candidatas.
 - **Corte duro:** sábado 10:00. Si algo del agente no está estable, sale de la demo y se cuenta como siguiente paso.
+
+## 8. Evidencia en producción
+**Viernes 23 oct 2026, de 14:09 a 14:11 (hora del reloj, Santiago).** App publicada en https://cruce-senales.vercel.app: `main` `614b2c8`, publicado a las 14:06 según el coordinador. Función `agente` v5, desplegada desde `487d2fc`. Navegador del panel de la app con la vista de teléfono de 375 × 812, que emula un teléfono pero no es uno físico. Sin clave de Anthropic. Datos ficticios del espacio demo "Los del asado".
+
+| Paso | Observado |
+|---|---|
+| Abrir la demo y el panel "Agente del círculo" | Se ven "Mis preferencias" y "Agente del círculo", con el selector de clima de la demo |
+| Cargar y guardar las preferencias de Tomi | "Guardado. Nadie más ve tus preferencias." |
+| "Simular sol" → "Que el agente proponga" (14:10) | "El agente encontró 3 opciones. Recomendada: Asado en casa de Tomi." Opciones: Asado (Recomendada), Fútbol y Parque, las tres con rótulo Simulación. Clima: "Clima de prueba Simulación: sábado y domingo con sol. No es un pronóstico real." |
+| Perfil del grupo | "Lo que eligió el grupo (5 personas): Asado 4 de 5 · Fútbol 2 de 5. La mayoría prefiere algo tranquilo. Ambiente tranquilo." Sin actividades de una sola persona |
+| Por qué | "Le sirve al presupuesto de todos, es bajo techo por si cambia el tiempo, es lo que más eligieron (4 de 5) y va con lo que prefiere la mayoría: un plan algo tranquilo y con ambiente tranquilo." Marcado "Texto fijo" |
+| "Simular lluvia" (14:11) | Una sola opción: Asado, porque alguien pidió techo |
+| "Compartir por WhatsApp" (enlace revisado, no abierto) | `wa.me` con el mensaje y el enlace `#/unirse/<código>` del espacio; nueva pestaña, `noopener noreferrer`, 44 px de alto |
+| "Usar esta opción" (14:11) | "Nueva propuesta" con "Asado en casa de Tomi" y las franjas sábado 31 y domingo 1 de 14:00 a 17:00, más el aviso "el agente no crea ni confirma nada" |
+| Consola y diseño | Sin errores de la app ni del agente; sin desborde horizontal a 375 px |
+
+**No probado en esta corrida:**
+- La IA con clave real: no hay clave.
+- Un teléfono físico.
+- Crear la propuesta: para no tocar el plan confirmado que había en ese espacio demo.
 
 ## Historia
 Idea de Nico. Diseño de privacidad del coordinador: el servidor elige y la IA solo ve totales. Enmienda 4 (preferencias, catálogo y elección por reglas), 4.1 (candidatas, perfil del grupo y la IA como coordinadora, pedido de Nico) y 5 (preferencias simuladas). Mejoras #11, #23, #25, #26, #28, #32 y #35.
