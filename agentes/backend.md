@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 19:26 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 19:39 Santiago (reloj).
 
 ## Tocando ahora
-- [19:26] **MIGRACION EN CURSO** (0035, enmienda 10 Parte A). Nadie corre suites ni e2e contra la base hasta que saque esta línea. Rutas: `supabase/migrations/0035_e10_zona_movilidad_tiempo_momento.sql`, `tests/backend/enmienda10.test.ts`, `tests/backend/enmienda4.test.ts` (clave `viaje` nueva en candidatas).
+- [19:39] Nada en la base: MIGRACION TERMINADA (0035, 0036, 0037 aplicadas). La base queda libre para pruebas. Sigo con #86 (Parte B, será la migración 0038) leyendo `docs/catalogo-ampliado.md` de apertura; aviso antes de aplicar.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -32,12 +32,17 @@ Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 Ninguno.
 
 ## Pedidos a otros
+- agente-ia [19:39]: enmienda 10 Parte A APLICADA en la base (0035–0037), MIGRACION terminada: ya podés probar tu interfaz contra la base. Forma exacta en "Entregado" (#85). Ojo: `tiempo_max` va como texto; las cuatro claves vuelven en `preferencias` solo si tienen valor; `viaje` está en cada candidata y arriba (= el de la primera). Con la semilla del demo el asado sale con `viaje.max_minutos = 25`.
+- coordinador [19:39]: #85 entregado (`c63200d`, 74/74). Números: la Parte A usó 0035, 0036 y 0037 (dos correcciones chicas), así que la Parte B (#86) será **0038**. Una decisión de forma que no fija el contrato está en "Entregado" (simulate conserva las claves que no se mandan); si preferís otra, la cambio.
 - coordinador (15:06): E7.2 ya está en la base y `main` todavía no tiene b2adc4d (#48): hasta que llegue, la interfaz publicada muestra "persona(s)" sin número a quien no organiza.
 - claude-b-interfaz (15:14): hecho tu pedido de las 14:50, `mi_situacion.puede.simular` es false fuera del demo (0028).
 - coordinador: agregar al final de docs/contrato-enmienda-3.md (es tuyo) la lista cerrada de códigos y sus disparadores (texto en mi reporte). Commit de 0012_enmienda3.sql y de tests/backend.
 - coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
+- #85 enmienda 10 Parte A (19:39): commit `c63200d` en `wip/backend` (push hecho). Migraciones aplicadas en tjkfdnvzsikncjbskufm: 0035 (19:28, todo lo de la Parte A), 0036 (19:33, las cuatro claves nuevas salen dentro de `preferencias` solo cuando tienen valor: misma forma de antes para quien no las usa) y 0037 (19:35, corrección: `save_my_preferences` con solo `usar_en_agente` volvía a dar `preferencias_invalidas` y no `fallo_temporal`). Pruebas: `tests/backend/enmienda10.test.ts` 8/8 (las 7 de la enmienda + validación); suite `npx vitest run tests/backend --no-file-parallelism` **74/74** (12 archivos, 19:36:06 a 19:38:54). Catálogo 31/0, una firma por nombre, `search_path=''`, `cruce.verificar_privilegios()` sin hallazgos (corre al final de cada migración). Advisors de seguridad: solo los esperados (RLS sin políticas = deny-all en las 17 tablas de `cruce`, incluida la nueva `tiempos_zona`; las 31 RPC SECURITY DEFINER de la lista permitida).
+  Forma: `p_preferencias` acepta `zona`, `movilidad`, `tiempo_max` (texto "15"|"30"|"45"|"60") y `momento`, opcionales. `get_my_preferences.preferencias` y la respuesta de `save_my_preferences` las traen solo si tienen valor. `proponer_plan_borrador`: `resultado.viaje` y `candidatas[i].viaje` = `{max_minutos, estimado: true}` o `null` (menos de 4 personas con zona y movilidad); sin candidatas por viaje: `{tipo: "sin_plan_compatible", motivo: "sin_lugar_cerca_para_todos"}`. Demo: Mati (Ñuñoa, auto con lugar, 45, tarde), Caro (Providencia, transporte público, 45, tarde), Fede (Las Condes, auto sin lugar, 60, noche), Sofi (Santiago centro, me llevan, 45, da igual); con la semilla el asado da "menos de 25 minutos". `reset_demo` los repone.
+  Decisión de forma (no la fija el contrato, la anoto para el coordinador): en `simulate_save_preferences` una clave de viaje/momento que no se manda CONSERVA lo guardado (así cambiar los gustos de un simulado en vivo no borra su semilla de viaje); en `save_my_preferences` guardar es reemplazar (la que falta queda vacía), como `usar_en_agente`.
 - #70 enmienda 9 (17:12): fase 1 0032 (17:00, commit 1e349e0), fase 2 0033 + corrección 0034 (17:06 y 17:07, commit en `wip/fundamentos` con merge de origin), sin push. tests/backend 66/66 (11 archivos, 17:08 a 17:11). Catálogo 31/0, una firma por nombre, verificar_privilegios sin hallazgos. Forma exacta de las respuestas en docs/contrato-enmienda-9.md, Implementación.
 - #62 enmienda 8 (16:51): 0031_e8_usar_en_agente aplicada 16:47, commit en `wip/fundamentos` (con merge de origin), sin push. tests/backend 60/60 (10 archivos, 16:48 a 16:50), e2e 12/12. Lista permitida 30/0, verificar_privilegios sin hallazgos. Forma: `usar_en_agente` a nivel raíz de get/save_my_preferences (detalle en docs/contrato-enmienda-8.md).
 - #45 prueba de carga (16:30): tests/carga/carga.mjs, commit 02efa2d en `wip/fundamentos`, sin push; corrida 16:26:40 a 16:29:51, sin migraciones. A p95 270 ms y 0 errores (988 llamadas); B p95 230 ms (1811); C invariantes ok (11 aceptaciones vigentes, 11 personas, 11 eventos); D p95 225 ms (30). 0 errores 57014/55P03/fallo_temporal; cruce.errores_internos sin filas nuevas (max id 17 antes y después). Los 4 criterios cumplen.
