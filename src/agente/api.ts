@@ -46,6 +46,15 @@ export interface CandidataAgente {
   frases_grupo: string[]
 }
 
+/** Totales del grupo (enmienda 4.1). Con 3 personas o menos solo trae `personas`. */
+export interface PerfilGrupo {
+  personas: number
+  gustos?: { actividad_etiqueta: string; cuantos: number }[]
+  energia_mayoritaria?: string | null
+  ambiente_mayoritario?: string | null
+  presupuesto_grupo?: string | null
+}
+
 export interface BorradorAgente extends CandidataAgente {
   tipo: 'borrador'
   personas_consideradas: number
@@ -57,22 +66,31 @@ export interface BorradorAgente extends CandidataAgente {
   mensaje_al_grupo: string
   eleccion_fuente: 'modelo' | 'regla'
   explicacion_fuente: 'modelo' | 'texto_fijo'
+  perfil_grupo?: PerfilGrupo | null
 }
 
 export type ResultadoAgente = BorradorAgente | { tipo: 'sin_plan_compatible' }
+
+/** Clima de simulación para la demo (mejora #23). */
+export type ClimaSimulado = 'seco' | 'lluvia'
 
 // Mismos textos que la función del servidor, para el respaldo sin función.
 const FRASES: Record<string, string> = {
   presupuesto_todos: 'le sirve al presupuesto de todos',
   bajo_techo: 'es bajo techo por si cambia el tiempo',
-  al_aire_libre_con_buen_tiempo: 'es al aire libre y se espera buen tiempo',
+  al_aire_libre_con_buen_tiempo: 'es al aire libre con buen pronóstico',
   el_mas_elegido: 'es lo que más eligieron',
   ritmo_del_grupo: 'va con el ritmo que prefiere el grupo',
 }
 
-/** Texto fijo de "por qué". `destacada` = la opción recomendada; las demás no dicen que son "la mejor". */
-export function textoFijo(codigos: string[], destacada = true): string {
-  const partes = codigos.map((c) => FRASES[c]).filter((t): t is string => Boolean(t))
+/**
+ * Texto fijo de "por qué". `destacada` = la opción recomendada; las demás no dicen que son "la mejor".
+ * `simulado` = clima de simulación: no se habla de pronóstico.
+ */
+export function textoFijo(codigos: string[], destacada = true, simulado = false): string {
+  const partes = codigos
+    .map((c) => (simulado && c === 'al_aire_libre_con_buen_tiempo' ? 'es al aire libre con el sol de la simulación' : FRASES[c]))
+    .filter((t): t is string => Boolean(t))
   if (partes.length === 0) {
     return destacada
       ? 'Es la opción que mejor le sirve al grupo con lo que cargaron.'
@@ -121,6 +139,7 @@ function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
       : r.clima,
     explicacion: fijo ? textoFijo(elegida.frases_grupo) : (r.explicacion as string),
     mensaje_al_grupo: fijo || !r.mensaje_al_grupo ? mensajeFijo(elegida) : r.mensaje_al_grupo,
+    perfil_grupo: r.perfil_grupo ? (r.perfil_grupo.personas > 3 ? r.perfil_grupo : { personas: r.perfil_grupo.personas }) : null,
     eleccion_fuente: !sinFuncion && r.eleccion_fuente === 'modelo' ? 'modelo' : 'regla',
     explicacion_fuente: !fijo && r.explicacion_fuente === 'modelo' ? 'modelo' : 'texto_fijo',
   }
@@ -196,9 +215,15 @@ export const agenteApi = {
     ),
 
   /** Pide el borrador al agente. Si la función del servidor no responde, usa la RPC directa sin clima. */
-  async proponer(espacioId: string, sabado: string): Promise<ApiResult<ResultadoAgente>> {
+  /**
+   * Pide el borrador al agente. `climaSimulado` solo lo acepta la función en espacios demo (lo comprueba ella).
+   * El respaldo sin función nunca simula clima: va como "desconocido".
+   */
+  async proponer(espacioId: string, sabado: string, climaSimulado?: ClimaSimulado): Promise<ApiResult<ResultadoAgente>> {
     try {
-      const { data, error } = await supabase.functions.invoke('agente', { body: { espacio_id: espacioId, sabado } })
+      const body: Record<string, unknown> = { espacio_id: espacioId, sabado }
+      if (climaSimulado) body.clima_simulado = climaSimulado
+      const { data, error } = await supabase.functions.invoke('agente', { body })
       if (!error && data) {
         const r = leerSobre(data, (c) => {
           const res = c.resultado as ResultadoAgente

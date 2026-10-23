@@ -64,7 +64,7 @@ interface ResultadoPlan extends Candidata {
 const FRASES: Record<string, string> = {
   presupuesto_todos: 'le sirve al presupuesto de todos',
   bajo_techo: 'es bajo techo por si cambia el tiempo',
-  al_aire_libre_con_buen_tiempo: 'es al aire libre y se espera buen tiempo',
+  al_aire_libre_con_buen_tiempo: 'es al aire libre con buen pronóstico',
   el_mas_elegido: 'es lo que más eligieron',
   ritmo_del_grupo: 'va con el ritmo que prefiere el grupo',
 }
@@ -101,7 +101,7 @@ const SISTEMA = [
   'Reglas que no se rompen: no nombres a ninguna persona; no hables de la situación de nadie en particular (dinero, salud, ánimo,',
   'disponibilidad); no uses las palabras "alguien", "plata", "dinero", "confirmado", "reservado" ni "agendado"; no inventes datos',
   'que no te dieron; no digas que algo está confirmado, reservado o agendado: el grupo todavía tiene que aceptarlo, y los lugares',
-  'son de simulación.',
+  'son de simulación. Si el clima empieza con "Simulación", es un clima de prueba: no lo presentes como pronóstico real.',
   'explicacion: una o dos frases, máximo 240 caracteres, sobre por qué esa opción le sirve al grupo.',
   'mensaje_al_grupo: una invitación de máximo 320 caracteres, en una sola línea, que proponga el plan con sus dos opciones de día',
   'e invite a cada uno a marcar si le interesa y cargar su disponibilidad.',
@@ -172,7 +172,16 @@ async function traerClima(sabado: string): Promise<{ sabado: ClimaDia; domingo: 
   }
 }
 
+/** Clima de simulación (mejora #23): solo en espacios demo, para que la demo no dependa del clima real. */
+function climaSimulado(estado: 'seco' | 'lluvia'): { sabado: ClimaDia; domingo: ClimaDia; fuente: string } {
+  const dia = { estado, maxima: null }
+  return { sabado: dia, domingo: dia, fuente: 'simulacion' }
+}
+
 function resumenClima(c: { sabado: ClimaDia; domingo: ClimaDia; fuente: string }): string {
+  if (c.fuente === 'simulacion') {
+    return c.sabado.estado === 'lluvia' ? 'Simulación: sábado y domingo con lluvia.' : 'Simulación: sábado y domingo con sol.'
+  }
   if (c.fuente !== 'open-meteo') return 'Sin pronóstico disponible.'
   const dia = (nombre: string, d: ClimaDia) => {
     const estado = d.estado === 'lluvia' ? 'con lluvia' : d.estado === 'seco' ? 'sin lluvia' : 'sin pronóstico'
@@ -181,8 +190,15 @@ function resumenClima(c: { sabado: ClimaDia; domingo: ClimaDia; fuente: string }
   return `${dia('Sábado', c.sabado)}. ${dia('Domingo', c.domingo)}.`
 }
 
-function unirFrases(codigos: string[]): string {
-  const partes = codigos.map((c) => FRASES[c]).filter((t): t is string => Boolean(t))
+// Con clima de simulación no se habla de pronóstico: es un clima de prueba.
+const FRASE_SOL_SIMULADO = 'es al aire libre con el sol de la simulación'
+
+function textoFrase(codigo: string, simulado: boolean): string | undefined {
+  return simulado && codigo === 'al_aire_libre_con_buen_tiempo' ? FRASE_SOL_SIMULADO : FRASES[codigo]
+}
+
+function unirFrases(codigos: string[], simulado = false): string {
+  const partes = codigos.map((c) => textoFrase(c, simulado)).filter((t): t is string => Boolean(t))
   if (partes.length === 0) return 'Es la opción que mejor le sirve al grupo con lo que cargaron.'
   const texto = partes.length === 1 ? partes[0] : `${partes.slice(0, -1).join(', ')} y ${partes[partes.length - 1]}`
   return `${texto.charAt(0).toUpperCase()}${texto.slice(1)}.`
@@ -239,7 +255,7 @@ export function textoValido(texto: unknown, max: number, nombres: string[]): tex
 }
 
 /** Lo único que ve el modelo: opciones ya validadas, clima y totales del grupo. Sin nombres ni ids de miembros. */
-export function entradaModelo(candidatas: Candidata[], perfil: PerfilGrupo | null, clima: string, nombres: string[]) {
+export function entradaModelo(candidatas: Candidata[], perfil: PerfilGrupo | null, clima: string, nombres: string[], simulado = false) {
   const p = perfil && perfil.personas > 3 ? perfil : null
   return {
     clima,
@@ -257,7 +273,7 @@ export function entradaModelo(candidatas: Candidata[], perfil: PerfilGrupo | nul
       actividad: c.actividad_etiqueta,
       lugar: sinNombres(c.lugar.nombre.replace(' (Simulación)', ''), nombres),
       dias: c.franjas.map(franjaCorta),
-      razones: c.frases_grupo.map((f) => FRASES[f]).filter(Boolean),
+      razones: c.frases_grupo.map((f) => textoFrase(f, simulado)).filter(Boolean),
     })),
   }
 }
@@ -268,6 +284,7 @@ async function coordinarConModelo(
   clima: string,
   nombres: string[],
   restanteMs: number,
+  simulado: boolean,
 ): Promise<{ eleccion: Candidata; explicacion: string; mensaje: string } | null> {
   const clave = Deno.env.get('ANTHROPIC_API_KEY')
   if (!clave || restanteMs < 1500 || candidatas.length === 0 || candidatas.some((c) => typeof c.id !== 'string')) return null
@@ -294,7 +311,7 @@ async function coordinarConModelo(
           },
         },
       },
-      messages: [{ role: 'user', content: JSON.stringify(entradaModelo(candidatas, perfil, clima, nombres)) }],
+      messages: [{ role: 'user', content: JSON.stringify(entradaModelo(candidatas, perfil, clima, nombres, simulado)) }],
     })
     if (respuesta.stop_reason !== 'end_turn') return null
     const texto = respuesta.content.map((b) => (b.type === 'text' ? b.text : '')).join('')
@@ -326,7 +343,7 @@ Deno.serve(async (req) => {
     })
   }
 
-  let entrada: { espacio_id?: unknown; sabado?: unknown }
+  let entrada: { espacio_id?: unknown; sabado?: unknown; clima_simulado?: unknown }
   try {
     entrada = await req.json()
   } catch {
@@ -346,7 +363,21 @@ Deno.serve(async (req) => {
     auth: { persistSession: false, autoRefreshToken: false },
   })
 
-  const clima = await traerClima(sabado)
+  // Nombres visibles del espacio (no son privados): solo para rechazar un texto que nombre a alguien.
+  // get_space, con el JWT de quien llama, también dice si el espacio es demo: el cliente no lo decide.
+  let nombres: string[] = []
+  let esDemo = false
+  const { data: espacio } = await supabase.rpc('get_space', { p_espacio_id: espacioId })
+  if (espacio?.ok && espacio.espacio) {
+    esDemo = espacio.espacio.demo === true
+    if (Array.isArray(espacio.espacio.miembros)) {
+      nombres = espacio.espacio.miembros.map((m: { nombre?: string }) => m.nombre ?? '').filter(Boolean)
+    }
+  }
+
+  // Clima simulado solo en un espacio demo; en cualquier otro caso se ignora y va el clima real.
+  const pedido = entrada.clima_simulado
+  const clima = esDemo && (pedido === 'seco' || pedido === 'lluvia') ? climaSimulado(pedido) : await traerClima(sabado)
   const { data: plan, error: errorPlan } = await supabase.rpc('proponer_plan_borrador', {
     p_espacio_id: espacioId,
     p_sabado: sabado,
@@ -363,14 +394,8 @@ Deno.serve(async (req) => {
   const perfil = base.perfil_grupo ?? null
   const resumen = resumenClima(clima)
 
-  // Nombres visibles del espacio (no son privados): solo para rechazar un texto que nombre a alguien.
-  let nombres: string[] = []
-  const { data: espacio } = await supabase.rpc('get_space', { p_espacio_id: espacioId })
-  if (espacio?.ok && Array.isArray(espacio.espacio?.miembros)) {
-    nombres = espacio.espacio.miembros.map((m: { nombre?: string }) => m.nombre ?? '').filter(Boolean)
-  }
-
-  const delModelo = await coordinarConModelo(candidatas, perfil, resumen, nombres, PLAZO_TOTAL_MS - (Date.now() - inicio))
+  const simulado = clima.fuente === 'simulacion'
+  const delModelo = await coordinarConModelo(candidatas, perfil, resumen, nombres, PLAZO_TOTAL_MS - (Date.now() - inicio), simulado)
   const elegida = delModelo?.eleccion ?? candidatas[0]
 
   // Los campos de primer nivel describen la opción destacada; `candidatas` trae todas para que el
@@ -388,8 +413,10 @@ Deno.serve(async (req) => {
       personas_consideradas: base.personas_consideradas,
       candidatas,
       elegida_id: elegida.id,
+      // Solo totales del grupo; con 3 personas o menos, solo la cantidad (mejora #26).
+      perfil_grupo: perfil ? (perfil.personas > 3 ? perfil : { personas: perfil.personas }) : null,
       clima: { fuente: clima.fuente, resumen, sabado: clima.sabado.estado, domingo: clima.domingo.estado },
-      explicacion: delModelo?.explicacion ?? unirFrases(elegida.frases_grupo),
+      explicacion: delModelo?.explicacion ?? unirFrases(elegida.frases_grupo, simulado),
       mensaje_al_grupo: delModelo?.mensaje ?? mensajeFijo(elegida),
       eleccion_fuente: delModelo ? 'modelo' : 'regla',
       explicacion_fuente: delModelo ? 'modelo' : 'texto_fijo',

@@ -11,3 +11,9 @@
   flex-wrap: wrap;
   width: 100%;
 }
+
+/* Copiar y Compartir por WhatsApp, separados y tocables en el teléfono. */
+.agente-compartir {
+  gap: 8px;
+  align-items: center;
+}

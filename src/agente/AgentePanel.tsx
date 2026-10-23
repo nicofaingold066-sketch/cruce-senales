@@ -4,6 +4,7 @@
 //    si quiere, lo lleva a la pantalla de nueva propuesta. El agente nunca crea ni confirma nada.
 // Para engancharla: <AgentePanel espacioId={...} esOrganizador={...} soloLectura={...} />.
 import { useCallback, useEffect, useState } from 'react'
+import { api } from '../lib/api'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto } from '../lib/format'
 import { irA, rutas } from '../lib/shell'
@@ -19,6 +20,8 @@ import {
   type Ambiente,
   type BorradorAgente,
   type CandidataAgente,
+  type ClimaSimulado,
+  type PerfilGrupo,
   type Energia,
   type LugarPref,
   type Preferencias,
@@ -195,11 +198,54 @@ function CopiarMensaje({ texto }: { texto: string }) {
   )
 }
 
+/**
+ * Enlace wa.me con el mensaje del agente y el enlace de invitación (mejora #25). No es una integración:
+ * abre WhatsApp con el texto escrito y la persona decide si lo manda. El texto solo trae el plan, nada privado.
+ */
+function enlaceWhatsApp(mensaje: string, invitacion: string | null): string {
+  const texto = invitacion ? `${mensaje} ${invitacion}` : mensaje
+  return `https://wa.me/?text=${encodeURIComponent(texto)}`
+}
+
+const RITMO: Record<string, string> = { con_todo: 'con todo', algo_tranquilo: 'algo tranquilo' }
+const AMBIENTE_GRUPO: Record<string, string> = { fiesta: 'de fiesta', tranquilo: 'tranquilo' }
+
+/**
+ * Lo que eligió el grupo, solo en totales (mejora #26). Con 3 personas o menos no se muestra nada,
+ * para que no se pueda adivinar quién eligió qué. El presupuesto no se muestra nunca.
+ */
+function PerfilDelGrupo({ perfil }: { perfil: PerfilGrupo | null | undefined }) {
+  if (!perfil || perfil.personas <= 3 || !perfil.gustos?.length) return null
+  const ritmo = perfil.energia_mayoritaria ? RITMO[perfil.energia_mayoritaria] : null
+  const ambiente = perfil.ambiente_mayoritario ? AMBIENTE_GRUPO[perfil.ambiente_mayoritario] : null
+  return (
+    <div className="bloque">
+      <p>
+        <strong>Lo que eligió el grupo ({perfil.personas} personas): </strong>
+        {perfil.gustos.map((g) => `${g.actividad_etiqueta} ${g.cuantos} de ${perfil.personas}`).join(' · ')}.
+        {ritmo ? ` La mayoría prefiere ${ritmo === 'con todo' ? 'ir con todo' : 'algo tranquilo'}.` : ''}
+        {ambiente ? ` Ambiente ${ambiente}.` : ''}
+      </p>
+      <p className="suave">Son totales del grupo: nadie ve lo que eligió cada uno.</p>
+    </div>
+  )
+}
+
 function etiquetaOpcion(c: CandidataAgente): string {
   return `${c.actividad_etiqueta} · ${c.lugar.nombre.replace(' (Simulación)', '')}`
 }
 
-function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: BorradorAgente; soloLectura?: boolean }) {
+function BorradorTarjeta({
+  espacioId,
+  b,
+  soloLectura,
+  invitacion,
+}: {
+  espacioId: string
+  b: BorradorAgente
+  soloLectura?: boolean
+  invitacion: string | null
+}) {
   const [seleccion, setSeleccion] = useState(b.elegida_id)
   const elegida = b.candidatas.find((c) => c.id === seleccion) ?? b.candidatas[0]
   const esLaDestacada = elegida.id === b.elegida_id
@@ -207,7 +253,7 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
   useEffect(() => setTitulo(elegida.titulo), [elegida.titulo])
   const tituloValido = titulo.trim().length >= 1 && titulo.trim().length <= 80
   // La explicación y el mensaje del modelo son de la opción que destacó; para otra, el texto fijo.
-  const explicacion = esLaDestacada ? b.explicacion : textoFijo(elegida.frases_grupo, false)
+  const explicacion = esLaDestacada ? b.explicacion : textoFijo(elegida.frases_grupo, false, b.clima.fuente === 'simulacion')
   const mensaje = esLaDestacada ? b.mensaje_al_grupo : mensajeFijo(elegida)
   const deModelo = esLaDestacada && b.explicacion_fuente === 'modelo'
 
@@ -243,6 +289,7 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
           })}
         </div>
       </fieldset>
+      <PerfilDelGrupo perfil={b.perfil_grupo} />
       <label className={`campo ${tituloValido ? '' : 'campo-error'}`}>
         <span>Título</span>
         <input value={titulo} maxLength={80} onChange={(e) => setTitulo(e.target.value)} disabled={soloLectura} />
@@ -258,10 +305,16 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
           </li>
         ))}
       </ul>
-      <p className="suave">
-        Clima: {b.clima.resumen}
-        {b.clima.fuente === 'open-meteo' ? ' (pronóstico de Open-Meteo)' : ''}
-      </p>
+      {b.clima.fuente === 'simulacion' ? (
+        <p className="suave">
+          Clima de prueba <RotuloSimulacion />: {b.clima.resumen.replace('Simulación: ', '')} No es un pronóstico real.
+        </p>
+      ) : (
+        <p className="suave">
+          Clima: {b.clima.resumen}
+          {b.clima.fuente === 'open-meteo' ? ' (pronóstico de Open-Meteo)' : ''}
+        </p>
+      )}
       <p>
         <strong>Por qué: </strong>
         {explicacion}
@@ -271,7 +324,15 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
           <strong>Mensaje para el grupo: </strong>
           {mensaje}
         </p>
-        <CopiarMensaje key={mensaje} texto={mensaje} />
+        <div className="fila-botones agente-compartir">
+          <CopiarMensaje key={mensaje} texto={mensaje} />
+          {soloLectura ? null : (
+            <a className="btn btn-primario btn-chico" href={enlaceWhatsApp(mensaje, invitacion)} target="_blank" rel="noopener noreferrer">
+              Compartir por WhatsApp
+            </a>
+          )}
+        </div>
+        <small>WhatsApp sirve para avisar; las respuestas y la confirmación se hacen en CRUXE.</small>
       </div>
       <p className="suave">
         {deModelo
@@ -286,8 +347,27 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
   )
 }
 
-function ProponerPlan({ espacioId, soloLectura }: { espacioId: string; soloLectura?: boolean }) {
+type ClimaElegido = 'real' | ClimaSimulado
+
+const CLIMA_DEMO: { v: ClimaElegido; texto: string }[] = [
+  { v: 'real', texto: 'Clima real' },
+  { v: 'seco', texto: 'Simular sol' },
+  { v: 'lluvia', texto: 'Simular lluvia' },
+]
+
+function ProponerPlan({
+  espacioId,
+  soloLectura,
+  demo,
+  invitacion,
+}: {
+  espacioId: string
+  soloLectura?: boolean
+  demo?: boolean
+  invitacion: string | null
+}) {
   const [sabado, setSabado] = useState(SABADO_DEL_CASO)
+  const [clima, setClima] = useState<ClimaElegido>('real')
   const [resultado, setResultado] = useState<ResultadoAgente | null>(null)
   const { ocupado, error, ejecutar, limpiarError } = useAccion()
 
@@ -298,6 +378,14 @@ function ProponerPlan({ espacioId, soloLectura }: { espacioId: string; soloLectu
     limpiarError()
   }
 
+  function cambiarClima(v: ClimaElegido) {
+    setClima(v)
+    setResultado(null)
+    limpiarError()
+  }
+
+  const climaPedido = demo && clima !== 'real' ? clima : undefined
+
   const anuncio =
     resultado?.tipo === 'borrador'
       ? `El agente encontró ${resultado.candidatas.length === 1 ? 'una opción' : `${resultado.candidatas.length} opciones`}. Recomendada: ${resultado.titulo}.`
@@ -307,7 +395,9 @@ function ProponerPlan({ espacioId, soloLectura }: { espacioId: string; soloLectu
 
   async function proponer() {
     setResultado(null)
-    const r = await ejecutar(`agente:${espacioId}:${sabado}`, () => agenteApi.proponer(espacioId, sabado))
+    const r = await ejecutar(`agente:${espacioId}:${sabado}:${climaPedido ?? 'real'}`, () =>
+      agenteApi.proponer(espacioId, sabado, climaPedido),
+    )
     if (r?.ok) setResultado(r.data)
   }
 
@@ -318,6 +408,25 @@ function ProponerPlan({ espacioId, soloLectura }: { espacioId: string; soloLectu
         <input type="date" value={sabado} onChange={(e) => cambiarSabado(e.target.value)} disabled={soloLectura || ocupado} />
         <small>El agente propone dos franjas: ese sábado y el domingo siguiente.</small>
       </label>
+      {demo ? (
+        <fieldset className="grupo" disabled={soloLectura || ocupado}>
+          <legend>
+            Clima para la demo <RotuloSimulacion />
+          </legend>
+          <div className="opciones">
+            {CLIMA_DEMO.map((o) => {
+              const id = `agente-clima-${o.v}`
+              return (
+                <label key={o.v} htmlFor={id} className={`opcion-radio ${clima === o.v ? 'opcion-activa' : ''}`}>
+                  <input id={id} type="radio" name="agente-clima" checked={clima === o.v} onChange={() => cambiarClima(o.v)} />
+                  {o.texto}
+                </label>
+              )
+            })}
+          </div>
+          <small>Solo en el espacio de demostración. Con sol o lluvia simulados, el pronóstico no es real.</small>
+        </fieldset>
+      ) : null}
       <Boton onClick={() => void proponer()} ocupado={ocupado} ocupadoTexto="El agente está pensando…" disabled={soloLectura || !sabado}>
         Que el agente proponga
       </Boton>
@@ -330,7 +439,7 @@ function ProponerPlan({ espacioId, soloLectura }: { espacioId: string; soloLectu
           Con las preferencias cargadas no hay un plan del catálogo que le sirva a todos. Por privacidad no se muestran los motivos.
         </Aviso>
       ) : null}
-      {resultado?.tipo === 'borrador' ? <BorradorTarjeta espacioId={espacioId} b={resultado} soloLectura={soloLectura} /> : null}
+      {resultado?.tipo === 'borrador' ? <BorradorTarjeta espacioId={espacioId} b={resultado} soloLectura={soloLectura} invitacion={invitacion} /> : null}
     </div>
   )
 }
@@ -339,11 +448,29 @@ export function AgentePanel({
   espacioId,
   esOrganizador,
   soloLectura,
+  demo,
 }: {
   espacioId: string
   esOrganizador: boolean
   soloLectura?: boolean
+  /** Espacio de demostración: muestra el selector de clima de simulación (la función igual lo comprueba). */
+  demo?: boolean
 }) {
+  // Enlace de invitación del espacio, para sumarlo al mensaje de WhatsApp. Si no se puede leer, va sin enlace.
+  const [invitacion, setInvitacion] = useState<string | null>(null)
+  useEffect(() => {
+    if (!esOrganizador) return
+    let vivo = true
+    void api.getSpace(espacioId).then((r) => {
+      if (vivo && r.ok) {
+        setInvitacion(`${window.location.origin}${window.location.pathname}${rutas.unirse(r.data.espacio.codigo_invitacion)}`)
+      }
+    })
+    return () => {
+      vivo = false
+    }
+  }, [espacioId, esOrganizador])
+
   return (
     <>
       <section className="tarjeta">
@@ -356,7 +483,7 @@ export function AgentePanel({
           <p className="suave">
             Lee las preferencias de todo el grupo, mira el clima y un catálogo de lugares (de Simulación) y te propone opciones que le sirven a todos. Propone, pero no decide por nadie.
           </p>
-          <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} />
+          <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} invitacion={invitacion} />
         </section>
       ) : null}
     </>
