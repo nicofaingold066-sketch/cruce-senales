@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 19:58 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 19:59 Santiago (reloj).
 
 ## Tocando ahora
-- [19:58] MIGRACION TERMINADA (0039 aplicada). La base queda libre para pruebas. Ahora: `src/lib/api.ts` (pedido O-06 de rincones, sin base).
+- [19:59] Nada en edición. Base libre. Atiendo pedidos que me nombren; si no hay, sigo con Ideas.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -32,6 +32,7 @@ Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 Ninguno.
 
 ## Pedidos a otros
+- rincones [19:59]: hecho O-06 en el cliente (`dc26ba4`, `src/lib/api.ts`): un id que no es uuid no llega a la función (PostgREST lo corta con 22P02), así que no se puede responder desde el servidor sin cambiar la firma; el cliente lo traduce a `fuera_de_audiencia/no_miembro` no reintentable, igual que un id que no existe. No usé `no_encontrado` porque no está en la lista de códigos del contrato.
 - ux-flujo [19:58]: hecho tu P2 (enmienda 12 (a)), commit `f896112`, aplicado en la base.
 - sinteticos [19:58]: hecho H1 (enmienda 12 (b)), commit `f896112`, aplicado en la base. H6 (`personas_que_pueden`) queda para Nico según el coordinador.
 - front-juan [19:51]: nuevo (enmienda 10, ya en la base): en `src/lib/types.ts` los tipos y etiquetas de zona, movilidad, tiempo máximo y momento del día (`ZONA_ETIQUETA`, `MOVILIDAD_ETIQUETA`, `TIEMPO_MAX_ETIQUETA`, `MOMENTO_DIA_ETIQUETA`, `TEXTO_PRIVACIDAD_VIAJE`) y `textoViaje(viaje)` → "Queda a menos de N minutos para todos (estimado)"; en `src/lib/api.ts` `api.getMyPreferences(espacioId)` y `api.saveMyPreferences(espacioId, prefs)`. Úsalos si una pantalla tuya muestra preferencias o el borrador del agente (la interfaz del agente es de agente-ia en `src/agente/**`). Rama `wip/backend`, commit `ce6fea9`.
@@ -53,6 +54,7 @@ Ninguno.
 - coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
+- O-06 de rincones (19:59): commit `dc26ba4` en `wip/backend`. `src/lib/api.ts`: si PostgREST rechaza un id que no es uuid (22P02, HTTP 400), el cliente responde `fuera_de_audiencia/no_miembro`, no reintentable, con el mismo mensaje que el servidor da para un id inexistente ("No perteneces a este espacio o el elemento no existe."). Antes salía como falla temporal. Sin base; typecheck y build ok. `docs/seguridad-final.md` repasado con 0039 (`f0b9138`).
 - Enmienda 12 (19:58): commit `f896112` en `wip/backend`. 0039 aplicada 19:54: `cruce.siguiente_accion_personal` con (a) organizador imprescindible sin condiciones completas → `reunir_condiciones` "Primero marca tu disponibilidad: eres quien no puede faltar." (en vez de `buscar_opcion` o del texto general; si la última evaluación fue `sin_opcion`, sigue `sin_opcion`) y (b) opción publicada y condiciones incompletas (y todavía puede guardarlas) → `reunir_condiciones` "Completa tu disponibilidad para poder entrar en la opción.". Sin códigos ni RPC nuevas. Pruebas: `tests/backend/enmienda12.test.ts` 3/3; actualicé `enmienda3.test.ts` (Tomi sin condiciones ahora recibe el aviso personal; con ellas, `buscar_opcion`). Suite **78/78** (13 archivos, 19:55:16 a 19:57:45; antes, un 57014 en `seed_demo_space` reintentado y pasado). `tests/e2e/recorrido-canonico.test.ts` no cambia: Tomi guarda sus condiciones antes de `buscar_opcion`.
 - #81 informe de seguridad (19:53): `docs/seguridad-final.md`, commit `188fa66`. Catálogo 31/0, 31 nombres, 31 SECURITY DEFINER con `search_path=''`, 0 internas expuestas, RLS deny-all en las 17 tablas, advisors explicados (solo INFO/WARN esperados), `verificar_privilegios` sin hallazgos, errores internos y la consulta para repetirlo.
 - #93 puente front-back de la enmienda 10 (19:51): commit `ce6fea9` en `wip/backend`. `src/lib/types.ts`: `PreferenciasPropias` (con `zona?`, `movilidad?`, `tiempo_max?`, `momento?`), `Zona`, `Movilidad`, `TiempoMax`, `MomentoDia`, `ViajeEstimado`, `MotivoSinPlan`, etiquetas (`ZONA_ETIQUETA`, `MOVILIDAD_ETIQUETA`, `TIEMPO_MAX_ETIQUETA`, `MOMENTO_DIA_ETIQUETA`), `TEXTO_PRIVACIDAD_VIAJE`, `textoViaje(v)` y `MOTIVO_SIN_PLAN_TEXTO`. `src/lib/api.ts`: `api.getMyPreferences(espacioId)` y `api.saveMyPreferences(espacioId, prefs, usarEnAgente?)`. Aditivo. typecheck y build ok.
