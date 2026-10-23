@@ -35,10 +35,10 @@ Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegib
 | Preferencias `zona`, `movilidad`, `tiempo_max` (texto), `momento` **[E10: en la base, sin pantalla]** | 0035 | las cuatro preguntas en "Mis preferencias" | agente-ia #87: hecho en `wip/agente-ia` `1eaf510`, sin integrar. Leído: el panel manda las ocho claves juntas en un solo formulario, así que guardar no borra las de viaje (el riesgo de "reemplazar" queda cubierto) |
 | Actividades nuevas en `me_gustaria` (cena, bar, juegos_casa, cine, cultura, juegos_salida, cerro, cafe) **[E10 parte B: en la base, sin pantalla]** | 0036 (backend #86) | chips nuevos en preferencias | agente-ia; apertura propone el catálogo (#95) |
 
-| `opinar_version(p_propuesta_id, p_version, p_opinion 'asi_no_puedo' / 'retirar_opinion', p_intento_id)` **[E13, pendiente de aplicar; corte 01:00]** | 0042 (backend) | botón "Así no puedo, pero sigo" junto a confirmar | componente de friccion (por armar); conecta front-juan |
-| `mi_situacion.mi_opinion` y, solo al organizador, `opiniones_totales.asi_no_puedo` (null con menos de 2) **[E13]** | 0042 | aviso "Marcaste que así no puedes" y texto de "Rearmar con lo nuevo" | `AvisoParaMi` y `RearmarConLoNuevo` HECHOS (`40481b6`), sin conectar |
-| `propose_repair` desde `esperando_compromisos` (con `puede.proponer_reparacion`), tope de 3 versiones (`sin_alternativa/tope_versiones`) **[E13]** | 0042 | "Rearmar con lo nuevo" del organizador | `RearmarConLoNuevo` HECHO, sin conectar. Forma pedida a backend 20:53 (si `puede.proponer_reparacion` refleja la condición) |
-| Baja sin nombre en respuestas compartidas ("Una persona se retiró") **[E13]** | 0042 | `PlanTab.tsx` "Bajas registradas" e Historial sin nombres | pedido a front-juan |
+| `opinar_version(p_propuesta_id, p_version, p_opinion 'asi_no_puedo' / 'retirar_opinion', p_intento_id)` **[E13, pendiente de aplicar; corte 01:00]** | migración de backend (número a confirmar) | botón "Así no puedo, pero sigo" junto a confirmar | componente de friccion (por armar); conecta front-juan |
+| `mi_situacion.mi_opinion` y, solo al organizador, `opiniones_totales.asi_no_puedo` (null con menos de 2) **[E13]** | misma migración | aviso "Marcaste que así no puedes" y texto de "Rearmar con lo nuevo" | `AvisoParaMi` y `RearmarConLoNuevo` HECHOS (`40481b6`), sin conectar |
+| `propose_repair` desde `esperando_compromisos` (con `puede.proponer_reparacion`), tope de 3 versiones (`sin_alternativa/tope_versiones`) **[E13]** | misma migración | "Rearmar con lo nuevo" del organizador | `RearmarConLoNuevo` HECHO, sin conectar. Forma pedida a backend 20:53 (si `puede.proponer_reparacion` refleja la condición) |
+| Baja sin nombre en respuestas compartidas ("Una persona se retiró") **[E13]** | misma migración | `PlanTab.tsx` "Bajas registradas" e Historial sin nombres | pedido a front-juan |
 
 ## 3. Lo que le falta al front y habría que pedir al back
 
