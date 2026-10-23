@@ -3,6 +3,15 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { CODIGOS_SIGUIENTE, intento, nuevaSesion, rpc, type Json, type Sesion } from '../backend/helpers'
 
+// Enmienda 7 (E7.2): `cupos.pendientes` solo lo ve el organizador (Tomi); Luna recibe null y el resto de la
+// opción es idéntico para los dos.
+function mismaOpcion(deLuna: Json, deTomi: Json) {
+  expect(deLuna.cupos.pendientes).toBeNull()
+  expect(deTomi.cupos.pendientes).toEqual(expect.any(Number))
+  const sin = (o: Json) => ({ ...o, cupos: { ...o.cupos, pendientes: 'solo_organizador' } })
+  expect(sin(deLuna)).toEqual(sin(deTomi))
+}
+
 describe('variantes del jurado · datos ficticios · dos sesiones propias', () => {
   let T: Sesion
   let L: Sesion
@@ -102,7 +111,7 @@ describe('variantes del jurado · datos ficticios · dos sesiones propias', () =
     }
     const fin = (await aceptar(p, 'Tomi')).propuesta
     expect(fin).toMatchObject({ estado: 'grupo_confirmado', confirmados: 5, minimo: 5, maximo: 6 })
-    expect((await estado(L, p)).opcion).toEqual(fin.opcion)
+    mismaOpcion((await estado(L, p)).opcion, fin.opcion)
     console.log('PASÓ V1: mínimo 5 → B/v1; espera con cuatro; confirma al quinto con Tomi.')
   }, 120_000)
 
@@ -150,7 +159,7 @@ describe('variantes del jurado · datos ficticios · dos sesiones propias', () =
     const fin = (await aceptar(p, 'Tomi')).propuesta
     expect(fin).toMatchObject({ estado: 'grupo_confirmado', minimo: 4, maximo: 4, confirmados: 4 })
     expect(fin.opcion.cupos.disponibles).toBe(0)
-    expect((await estado(L, p)).opcion).toEqual(fin.opcion)
+    mismaOpcion((await estado(L, p)).opcion, fin.opcion)
     console.log('PASÓ V3: cinco elegibles/máximo cuatro; Sofi rechazada por reserva; Tomi entra último.')
   }, 120_000)
 })

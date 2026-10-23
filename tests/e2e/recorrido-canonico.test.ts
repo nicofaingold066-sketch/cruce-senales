@@ -6,6 +6,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 // JSON de frontera: las formas y valores importantes se verifican en ejecución.
 type Json = Record<string, any>
+// Enmienda 7 (E7.2): la opción sin `cupos.pendientes`, que solo recibe el organizador de la propuesta.
+const sinPendientes = (o: Json) => ({ ...o, cupos: { ...o.cupos, pendientes: 'solo_organizador' } })
 const CODIGOS = ['abrir_propuesta', 'reunir_condiciones', 'buscar_opcion', 'sin_opcion',
   'aceptar_version', 'te_toca_aceptar', 'ya_aceptaste', 'grupo_confirmado',
   'buscar_alternativa', 'sin_alternativa', 'expirado', 'cancelado']
@@ -181,7 +183,11 @@ describe('recorrido canónico real · dos sesiones · contrato 2/enmienda 3', ()
     const segundaSesion = await mirar(luna, id)
     paso(segundaSesion, 'grupo_confirmado', 'grupo_confirmado', 4)
     expect(segundaSesion.state_rev).toBe(fin.state_rev)
-    expect(segundaSesion.opcion).toEqual(fin.opcion)
+    // Enmienda 7 (E7.2): `cupos.pendientes` solo lo ve el organizador (Tomi); Luna recibe null y el resto de la
+    // opción es idéntico en las dos sesiones.
+    expect(segundaSesion.opcion.cupos.pendientes).toBeNull()
+    expect(fin.opcion.cupos.pendientes).toEqual(expect.any(Number))
+    expect(sinPendientes(segundaSesion.opcion)).toEqual(sinPendientes(fin.opcion))
     expect(fin.opcion.aceptaron.map((a: Json) => a.miembro.nombre).sort()).toEqual(['Fede', 'Luna', 'Mati', 'Tomi'])
     await llamar(luna, 'list_proposals', { p_espacio_id: espacio.id })
     console.log('PASÓ: A/v1 confirmada en ambas sesiones; baja; B/v2 cero heredadas; v1 rechazada; v2 confirmada.')
