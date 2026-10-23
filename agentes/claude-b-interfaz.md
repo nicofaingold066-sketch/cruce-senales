@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-(vacío)
+- **#43** (textos que prometen unanimidad), desde 14:22: `src/screens/PlanTab.tsx`, `src/screens/Propuesta.tsx`, `src/screens/RespuestaTab.tsx`, `src/lib/format.ts`. Después **#44** (toda la app a 375 px): `src/styles.css` y pantallas.
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
