@@ -46,6 +46,9 @@ create table cruce.ejecuciones_agente (
   opcion_ref text,
   texto text,
   borrador_hash text,
+  -- Lo que la interfaz muestra antes de aprobar (sin destinatarios individuales): título, lugar, franjas, mínimo,
+  -- máximo, plazo, imprescindible y cuántos invitados. Todo esto entra en el hash.
+  plan jsonb,
   aprobado_hash text,
   aprobado_por uuid references cruce.miembros (id) on delete set null,
   aprobado_en timestamptz,
@@ -96,7 +99,7 @@ language sql stable set search_path = '' as $$
     'id', e.id, 'estado', e.estado, 'oportunidad', e.oportunidad,
     'propuesta_id', e.propuesta_id,
     'borrador', case when e.borrador_hash is null then null else
-      jsonb_build_object('hash', e.borrador_hash, 'opcion_ref', e.opcion_ref, 'texto', e.texto) end,
+      jsonb_build_object('hash', e.borrador_hash, 'opcion_ref', e.opcion_ref, 'texto', e.texto, 'plan', e.plan) end,
     'aprobacion', case when e.aprobado_hash is null then null else
       jsonb_build_object('hash', e.aprobado_hash, 'aprobado_en', cruce.momento(e.aprobado_en)) end,
     'motivo', e.motivo)
@@ -126,14 +129,25 @@ begin
   select coalesce(jsonb_agg(m.id order by m.id), '[]'::jsonb) into v_dest
   from cruce.miembros m
   where m.espacio_id = p_esp and m.recibir_invitaciones_agente and m.id <> p_org and m.user_id is not null;
+  -- Capacidad: el máximo cuenta a todas las personas del espacio (reales, simuladas y pendientes). Los pendientes
+  -- (sin sesión) nunca son destinatarios ni suman nada: solo ocupan lugar posible.
   v_plan := jsonb_build_object(
     'espacio_id', p_esp, 'sabado', p_sabado, 'opcion_ref', p_ref, 'catalogo_id', o.catalogo_id,
-    'clima', o.clima, 'titulo', c.titulo_plantilla, 'franjas', v_franjas,
-    'minimo', least(3, greatest(v_max, 2)), 'maximo', greatest(v_max, 2), 'imprescindible_id', p_org,
+    'clima', o.clima, 'titulo', c.titulo_plantilla, 'lugar', jsonb_build_object('nombre', c.lugar_nombre, 'simulado', true),
+    'franjas', v_franjas,
+    'minimo', least(3, greatest(v_max, 2)), 'maximo', greatest(v_max, 2),
+    'imprescindible', cruce.miembro_ref(p_org),
     'plazo', to_char(v_plazo at time zone 'America/Santiago', 'YYYY-MM-DD"T"HH24:MI'),
     'texto', p_texto, 'destinatarios', v_dest);
-  return v_plan || jsonb_build_object('hash', encode(sha256(convert_to(v_plan::text, 'UTF8')), 'hex'),
-                                      'plazo_ts', v_plazo);
+  return v_plan || jsonb_build_object(
+    'hash', encode(sha256(convert_to(v_plan::text, 'UTF8')), 'hex'),
+    'plazo_ts', v_plazo,
+    -- Lo visible para quien aprueba: sin ids de destinatarios, solo cuántos.
+    'visible', jsonb_build_object(
+      'titulo', v_plan -> 'titulo', 'lugar', v_plan -> 'lugar', 'franjas', v_franjas,
+      'minimo', v_plan -> 'minimo', 'maximo', v_plan -> 'maximo', 'plazo', v_plan -> 'plazo',
+      'imprescindible', jsonb_build_object('nombre', v_plan #> '{imprescindible,nombre}'),
+      'invitados', jsonb_array_length(v_dest)));
 end
 $$;
 
@@ -470,7 +484,8 @@ begin
   -- B: inmutable. Lo mismo otra vez → repetido; otro contenido → rechazo, también después de publicar.
   if e.borrador_hash is not null then
     if e.opcion_ref = p_opcion_ref and e.texto = btrim(p_texto) then
-      return cruce.ok(jsonb_build_object('borrador', jsonb_build_object('hash', e.borrador_hash, 'opcion_ref', e.opcion_ref),
+      return cruce.ok(jsonb_build_object('borrador', jsonb_build_object('hash', e.borrador_hash, 'opcion_ref', e.opcion_ref,
+                                                                         'plan', e.plan),
                                          'repetido', true));
     end if;
     return cruce.err('opcion_desactualizada', 'borrador_cambiado', null);
@@ -484,9 +499,10 @@ begin
   end if;
   update cruce.ejecuciones_agente x
   set estado = 'borrador', opcion_ref = p_opcion_ref, texto = btrim(p_texto), borrador_hash = v_plan ->> 'hash',
-      actualizada_en = cruce.ahora()
+      plan = v_plan -> 'visible', actualizada_en = cruce.ahora()
   where x.id = p_ejecucion_id;
-  return cruce.ok(jsonb_build_object('borrador', jsonb_build_object('hash', v_plan ->> 'hash', 'opcion_ref', p_opcion_ref),
+  return cruce.ok(jsonb_build_object('borrador', jsonb_build_object('hash', v_plan ->> 'hash', 'opcion_ref', p_opcion_ref,
+                                                                     'plan', v_plan -> 'visible'),
                                      'repetido', false));
 exception when others then
   get stacked diagnostics v_ctx = pg_exception_context;

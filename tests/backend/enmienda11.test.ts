@@ -129,6 +129,11 @@ describe.skipIf(!aplicada)('enmienda 11: agente social', { timeout: 180_000 }, (
     const [op, op2] = await candidatos(sab)
     const g = await guardar(id, op.opcion_ref)
     expect(g.borrador.hash).toMatch(/^[0-9a-f]{64}$/)
+    // Lo que fija el servidor se muestra antes de aprobar (nada en silencio).
+    expect(Object.keys(g.borrador.plan).sort()).toEqual(['franjas', 'imprescindible', 'invitados', 'lugar', 'maximo', 'minimo', 'plazo', 'titulo'])
+    expect(g.borrador.plan).toMatchObject({ imprescindible: { nombre: 'Tomi' }, invitados: 1, minimo: 3 })
+    expect(g.borrador.plan.lugar.nombre).toMatch(/ \(Simulación\)$/)
+    expect(JSON.stringify(g.borrador.plan)).not.toMatch(/Uno t|Dos t/)
     expect((await guardar(id, op.opcion_ref)).repetido).toBe(true)
     if (op2) expect(err(await guardar(id, op2.opcion_ref))).toBe('opcion_desactualizada/borrador_cambiado')
     expect(err(await guardar(id, op.opcion_ref, 'otro texto'))).toBe('opcion_desactualizada/borrador_cambiado')
@@ -200,5 +205,14 @@ describe.skipIf(!aplicada)('enmienda 11: agente social', { timeout: 180_000 }, (
     await ok(O, 'set_politica_agente_social', { p_espacio_id: demo.espacioId, p_modo: 'aprobacion', p_intento_id: intento() })
     expect(err(await aprobar(c.id, c.hash))).toBe('ok')
     expect(err(await publicar(c.id, c.hash))).toBe('sin_alternativa/sin_destinatarios')
+
+    // Un valor fijado por el servidor cambia entre la aprobación y la publicación (entra alguien al espacio y
+    // sube el máximo): la aprobación ya no vale.
+    await recibir(U, true)
+    await ok(O, 'cerrar_ejecucion_agente', { p_ejecucion_id: c.id, p_estado: 'fallida', p_motivo: 'reemplazada' })
+    const d = await hastaBorrador(sabados[1])
+    expect(err(await aprobar(d.id, d.hash))).toBe('ok')
+    await ok(O, 'add_simulated_member', { p_espacio_id: demo.espacioId, p_nombre_visible: 'Nuevo t' })
+    expect(err(await publicar(d.id, d.hash))).toBe('opcion_desactualizada/borrador_cambiado')
   })
 })

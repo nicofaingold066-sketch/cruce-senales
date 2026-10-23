@@ -13,7 +13,7 @@ Autor: backend, viernes 23 oct 2026, 20:10 (Santiago), a pedido de Nico vía coo
 ### Qué falta (y qué NO existe en ninguna rama de origin)
 - Ninguna de las 9 funciones del agente social existe. `wip/agente-social` no está en origin (el módulo está solo en la Mac mini).
 - No hay: consentimiento para recibir invitaciones, política del espacio, ejecuciones con recibo, borrador inmutable con aprobación por hash, invitaciones, localidad del espacio.
-- **Disponibilidad previa**: no existe y esta enmienda NO la inventa. La disponibilidad sigue cargándose por propuesta (condiciones privadas) después de publicar. El agente propone con preferencias autorizadas y clima; quién puede, lo decide el circuito existente.
+- **Límite declarado (confirmado por el coordinador, 20:05): disponibilidad previa NO modelada.** No existe y esta enmienda NO la inventa ni la deduce de los gustos. La disponibilidad sigue cargándose por propuesta (condiciones privadas) después de publicar. El agente propone con preferencias autorizadas y clima; quién puede, lo decide el circuito existente.
 - **Reparación automática**: queda fuera (decisión D). Se conserva la reparación humana (`propose_repair`).
 
 ### Archivos que toma backend
@@ -44,7 +44,7 @@ Autor: backend, viernes 23 oct 2026, 20:10 (Santiago), a pedido de Nico vía coo
 - `aprobar`, `publicar` y `set_politica` llevan `p_intento_id` en `cruce.intentos`. **Ojo**: `cruce.intentos` es por usuario e intento para TODAS las operaciones (verificado en `cruce.intento_previo`): el mismo uuid en otra operación da `entrada_incompleta/intento_reutilizado`. Usar el id de la ejecución como `p_intento_id` de `publicar` es válido (`iniciar` no usa `cruce.intentos`), pero `aprobar` tiene que usar OTRO uuid. Además, `publicar` sobre una ejecución ya publicada con el mismo hash devuelve la misma propuesta aunque el intento sea otro (respuesta perdida).
 
 ### C. Continuación después de la aprobación
-- El servidor calcula el hash (sha256, hex) sobre JSON canónico de: espacio, oportunidad, entrada del catálogo, título, franjas, mínimo, máximo, imprescindible, plazo, **texto** y **lista ordenada de destinatarios** (ids de miembros reales con invitaciones activadas). El hash identifica contenido; no da autoridad.
+- El servidor calcula el hash (sha256, hex) sobre JSON canónico de: espacio, sábado, referencia, entrada del catálogo, clima, título, lugar, franjas, mínimo, máximo, imprescindible, plazo, **texto** y **lista ordenada de destinatarios** (ids de miembros reales con invitaciones activadas). El hash identifica contenido; no da autoridad.
 - `aprobar_borrador_agente(p_ejecucion_id, p_borrador_hash, p_intento_id)`: solo el organizador del espacio (sesión). Recalcula el hash con los datos actuales; si no coincide → `opcion_desactualizada/borrador_cambiado`. Persiste `{hash, aprobado_por, aprobado_en}`.
 - `publicar_borrador_agente`: en UNA transacción revalida sesión, rol, pertenencia, política actual, que la opción siga entre las candidatas actuales, opt-ins actuales y, si la política es `aprobacion` (o cambió de versión desde `iniciar`), que exista aprobación del hash recalculado. Cualquier cambio relevante (alguien revocó invitaciones o `usar_en_agente`, cambió una preferencia que saca la opción, cambió la política) invalida la aprobación: `no_autorizado/sin_aprobacion` u `opcion_desactualizada/opcion_vencida`. No regenera opciones ni texto.
 
@@ -69,7 +69,7 @@ Todas: `SECURITY DEFINER`, `search_path = ''`, sobre `{ok, contrato, servidor_ah
 | `set_recibir_invitaciones_agente` | `p_espacio_id`, `p_recibir boolean` | `recibir_invitaciones_agente` persistido | cada persona, solo lo suyo |
 | `set_politica_agente_social` | `p_espacio_id`, `p_modo` (`aprobacion`/`autonoma`), `p_intento_id` | `politica {modo, version}` | organizador |
 | `iniciar_ejecucion_agente` | `p_espacio_id`, `p_ejecucion_id uuid`, `p_oportunidad text`, `p_parametros_hash text` (≤ 128) | `ejecucion` (recibo), `repetido`, `propia` | organizador |
-| `guardar_borrador_agente` | `p_ejecucion_id`, `p_opcion_ref`, `p_texto` (1 a 280, sin controles) | `borrador {hash, opcion_ref}`, `repetido` | organizador, ejecución propia `en_curso` |
+| `guardar_borrador_agente` | `p_ejecucion_id`, `p_opcion_ref`, `p_texto` (1 a 280, sin controles) | `borrador {hash, opcion_ref, plan}`, `repetido`. `plan` = `{titulo, lugar {nombre, simulado}, franjas, minimo, maximo, plazo, imprescindible {nombre}, invitados}` para mostrar ANTES de aprobar | organizador, ejecución propia `en_curso` |
 | `aprobar_borrador_agente` | `p_ejecucion_id`, `p_borrador_hash`, `p_intento_id` | `aprobacion {hash, aprobado_en}` | organizador (humano, desde la interfaz) |
 | `publicar_borrador_agente` | `p_ejecucion_id`, `p_borrador_hash`, `p_intento_id` | `propuesta {id}`, `invitados` (cuántos), `repetido` | organizador |
 | `cerrar_ejecucion_agente` | `p_ejecucion_id`, `p_estado` (`fallida`), `p_motivo` (`sin_plan`, `candidatos_rechazados`, `modelo_fallo`, `reemplazada`) | `ejecucion` | organizador |
@@ -83,9 +83,10 @@ Todas: `SECURITY DEFINER`, `search_path = ''`, sobre `{ok, contrato, servidor_ah
 4. Actividades: las 13 del catálogo (E10 Parte B), no 5.
 5. Motivos de `cerrar`: se suman `modelo_fallo` y `reemplazada`; `sin_plan` cierra como `fallida` con motivo (no hay estado aparte).
 
-### Lo que fija el servidor al publicar (no viene del cliente ni del modelo)
+### Lo que fija el servidor al publicar (no viene del cliente ni del modelo; confirmado por el coordinador 20:05)
+Nada se completa en silencio: estos valores entran en el hash que se aprueba y vuelven en `borrador.plan` (en `guardar` y en el recibo de `iniciar`) para que la interfaz los muestre, por ejemplo "Mínimo 3 · Máximo 6 · Se cierra el sáb 11:00 · No puede faltar: Tomi". Si cambian entre la aprobación y la publicación (por ejemplo, entra alguien al espacio y cambia el máximo), `publicar` falla con `opcion_desactualizada/borrador_cambiado`.
 - Título y franjas: los de la entrada del catálogo para ese sábado. Lugar: el nombre de simulación del catálogo; nunca una dirección.
-- Imprescindible: el organizador que publica. Mínimo: `least(3, máximo)`. Máximo: personas del espacio (reales, simuladas y pendientes), tope 20. Plazo: 3 horas antes de la primera franja; si ya pasó o queda a menos de 1 hora, `opcion_desactualizada/opcion_vencida`.
+- Imprescindible: el organizador que publica. Mínimo: `least(3, máximo)`. Máximo: personas del espacio (reales, simuladas y pendientes), tope 20. Los pendientes cuentan solo como capacidad: nunca son destinatarios ni suman interés, condiciones ni aceptaciones. Plazo: 3 horas antes de la primera franja; si ya pasó o queda a menos de 1 hora, `opcion_desactualizada/opcion_vencida`.
 - La propuesta se crea y se abre (`reuniendo_interes`) como una humana; la audiencia es el espacio, como siempre. Las invitaciones van a las personas reales (con sesión) que tienen `recibir_invitaciones_agente` en ese momento, sin el organizador. `usar_en_agente` no hace falta para recibir invitaciones ni las habilita: son permisos separados. Sin destinatarios: `sin_alternativa/sin_destinatarios`.
 - **Una invitación no es interés ni asistencia**: no toca participaciones, condiciones ni aceptaciones. Solo `accept_version` humano suma.
 
