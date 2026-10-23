@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 17:13.
+Quien edita este archivo: solo esta sesión. Última actualización: 17:15.
 
 ## Tocando ahora
-- **[17:13] CORRIENDO PRUEBA:** panel del agente en `wip/front-juan` (servidor local), un demo propio y UNA llamada al modelo. Aviso al terminar.
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[17:15] Panel del agente probado en vivo en `wip/front-juan`** (`10df3d3`, §5 de `docs/agente-revision-front-juan.md`): 17:14, servidor local contra la base real, 375 px, una sola llamada al modelo (4345 ms, fuente `modelo`): 11/11. Candidatas bien en la píldora nueva; "Usar esta opción" precarga Nueva propuesta. **CORRIENDO PRUEBA terminado.**
 - **[17:11] Revisión de `wip/front-juan` entregada** (`41eb765`, `docs/agente-revision-front-juan.md`, solo lectura): el panel del agente sigue montado igual que en main; sin exposición de condiciones ni de conteos E7.2. P1: el nombre guardado (`cruxe:perfil`) no se borra al entrar como otra persona (vuelve el hallazgo 8). P2: precarga del nombre en la invitación y "Sin respuesta" en el cruce. Fuera de privacidad: "Encuentro" marcado como hecho (contra caso-canónico:31). Pendiente: prueba en vivo del panel cuando backend saque la marca de la 0032.
 - **[16:59] Mejora #72 entregada** (`5ab6cc4`, solo `src/agente/api.ts`, `AgentePanel.tsx`, `agente.css` y `docs/agente-ia.md`): casilla "Que el agente use mis preferencias", marcada por defecto, con la ayuda de la enmienda 8 como descripción accesible y zona tocable de 44 px. `usar_en_agente` se lee a nivel raíz de `get_my_preferences` y va dentro de `p_preferencias` en `save_my_preferences`. Probado a 375 px contra la base real (16:58, demo propio, sin llamar al agente): guardar desmarcada da `usar_en_agente=false`; al recargar sigue desmarcada; `personas_con_preferencias` no la cuenta (4, no 5); volver a marcar da `true` y `repetido=false`; sin desborde ni errores. Typecheck y build en verde. No probé que `proponer_plan_borrador` la ignore: lo cubren las pruebas de backend de la enmienda 8 y evité gastar llamadas al modelo.
 - **[16:53] #64, dos llamadas más en vivo** (sesión de integración, 16:51:54 sol 3116 ms y 16:52:09 lluvia 3806 ms, fuente `modelo` en ambas, textos válidos): anotadas en `docs/agente-ia.md` §8.3 (`fefffb5`). La IA tarda 3 a 4 s. Sin probar: el límite con clave real y la lectura de los registros de la función.
