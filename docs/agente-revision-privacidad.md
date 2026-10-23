@@ -122,7 +122,7 @@ Autor: agente-ia. Viernes 23 oct 2026; informe cerrado a las 14:33 (hora del rel
 Lo demás es del backend (hallazgos 1 a 6, con enmienda) o de claude-b-interfaz (1, en la pantalla, y 8).
 
 ## Anexo: cambios de interfaz de claude-b (c95952d, #43 y #44 parte 1)
-Revisión de solo lectura de `git diff c95952d^ 23331e2` (rama `wip/ui-enmienda`), con el mismo método: dos revisores (exposición directa e inferencias) y un verificador. Cerrada el viernes 23 oct 2026 a las 14:54 (hora del reloj).
+Revisión de solo lectura de `git diff c95952d^ 23331e2` (rama `wip/ui-enmienda`), con el mismo método: dos revisores (exposición directa e inferencias) y un verificador. Cerrada el viernes 23 oct 2026 a las 14:45 (hora del reloj).
 
 **Resultado: sin problemas nuevos de privacidad.** Se revisó:
 - **El aviso "sigues con tu nombre de antes"** (`src/screens/Inicio.tsx:221-224`): no lleva datos y vive solo en memoria.
