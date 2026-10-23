@@ -1,6 +1,6 @@
 // Mejoras de la bola de nieve (MEJORAS.md en la rama coordinacion), contra la base real.
 import { beforeAll, describe, expect, it } from 'vitest'
-import { err, nuevaSesion, ok, rpc, simulado, type Json, type Sesion } from './helpers'
+import { crearEspacioPrueba, crearPropuesta, err, intento, nuevaSesion, ok, rpc, simulado, type Json, type Sesion } from './helpers'
 
 describe('mejora #12: nombres y código normalizados', { timeout: 60_000 }, () => {
   let O: Sesion
@@ -102,5 +102,91 @@ describe('mejora #15: sondeo liviano de get_proposal_state', { timeout: 60_000 }
     // Errores de siempre, también con p_desde_rev.
     const x = await nuevaSesion()
     expect(err(await rpc(x, 'get_proposal_state', { p_propuesta_id: prop, p_desde_rev: e.rev_vista }))).toBe('fuera_de_audiencia/no_miembro')
+  })
+})
+
+describe('mejora #22: opcion_anterior en EstadoPropuesta', { timeout: 90_000 }, () => {
+  it('null en v1; tras baja y reparación, v2 trae la franja de v1, igual para todos y sin condiciones', async () => {
+    const [O, U] = await Promise.all([nuevaSesion(), nuevaSesion()]) // O organiza y es imprescindible
+    const respuestas: Json[] = []
+    const guardar = <T>(r: T): T => (respuestas.push(r), r)
+
+    const esp = await crearEspacioPrueba(O, 'e22-anterior', 'Org t')
+    await ok(U, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Uno t' })
+    const [s1, s2] = await Promise.all(['S1 t', 'S2 t'].map((n) => simulado(O, esp.espacioId, n)))
+    const prop = await crearPropuesta(O, esp.espacioId, esp.miembroId, { minimo: 3, maximo: 6, titulo: 't-e22' })
+
+    // Sin opción todavía: la clave existe y vale null.
+    const g0 = guardar(await ok(O, 'get_proposal_state', { p_propuesta_id: prop })).propuesta
+    expect(g0.opcion).toBeNull()
+    expect(g0).toHaveProperty('opcion_anterior', null)
+
+    // A: O, U, S1 (3, viable y más temprana) → v1 en A. B: O, U, S2.
+    guardar(await ok(O, 'save_my_conditions', { p_propuesta_id: prop, p_disponibilidad: { A: 'si', B: 'si' } }))
+    guardar(await ok(U, 'save_my_conditions', { p_propuesta_id: prop, p_disponibilidad: { A: 'si', B: 'si' } }))
+    guardar(await ok(O, 'simulate_save_conditions', { p_propuesta_id: prop, p_miembro_id: s1, p_disponibilidad: { A: 'si', B: 'no' } }))
+    guardar(await ok(O, 'simulate_save_conditions', { p_propuesta_id: prop, p_miembro_id: s2, p_disponibilidad: { A: 'no', B: 'si' } }))
+    const ev = guardar(await ok(O, 'evaluate_and_publish', { p_propuesta_id: prop, p_intento_id: intento() }))
+    expect(ev.resultado).toMatchObject({ tipo: 'opcion_publicada', version: 1, franja: 'A' })
+    const franjaV1 = ev.propuesta.opcion.franja
+    expect(ev.propuesta.opcion_anterior).toBeNull()
+
+    // v1 publicada: opcion_anterior null en la respuesta completa.
+    const g1 = guardar(await ok(O, 'get_proposal_state', { p_propuesta_id: prop }))
+    expect(g1.propuesta.opcion.version).toBe(1)
+    expect(g1.propuesta).toHaveProperty('opcion_anterior', null)
+
+    // S1 se baja: A queda con 2 < 3 → en revisión. Todavía no hay versión anterior.
+    const baja = guardar(await ok(O, 'simulate_withdraw', { p_propuesta_id: prop, p_miembro_id: s1 }))
+    expect(baja.resultado.efecto).toBe('pasa_a_revision')
+    expect(baja.propuesta.opcion_anterior).toBeNull()
+    const g2 = guardar(await ok(O, 'get_proposal_state', { p_propuesta_id: prop }))
+    expect(g2.propuesta.estado).toBe('en_revision')
+    expect(g2.propuesta.opcion_anterior).toBeNull()
+
+    // Reparación: v2 en B; opcion_anterior = la franja de v1, mismo formato y zona que opcion.franja.
+    const rep = guardar(await ok(O, 'propose_repair', { p_propuesta_id: prop, p_intento_id: intento() }))
+    expect(rep.resultado).toMatchObject({ tipo: 'reparacion_publicada', version: 2, franja: 'B' })
+    const esperado = { version: 1, franja_clave: 'A', inicio: franjaV1.inicio, fin: franjaV1.fin }
+    expect(rep.propuesta.opcion_anterior).toEqual(esperado)
+
+    const g3 = guardar(await ok(O, 'get_proposal_state', { p_propuesta_id: prop, p_desde_rev: g2.rev_vista }))
+    expect(g3.sin_cambios).toBe(false)
+    expect(g3.rev_vista).not.toBe(g2.rev_vista)
+    expect(g3.propuesta.opcion.version).toBe(2)
+    expect(g3.propuesta.opcion.franja.clave).toBe('B')
+    expect(g3.propuesta.opcion_anterior).toEqual(esperado)
+    expect(Object.keys(g3.propuesta.opcion_anterior).sort()).toEqual(['fin', 'franja_clave', 'inicio', 'version'])
+    expect(g3.propuesta.opcion_anterior.inicio).toEqual(g3.propuesta.franjas.find((f: Json) => f.clave === 'A').inicio)
+    expect(g3.propuesta.opcion_anterior.inicio.local).toBe('2026-12-05T14:00:00')
+    // Sondeo estable con la vista nueva.
+    const g4 = await ok(O, 'get_proposal_state', { p_propuesta_id: prop, p_desde_rev: g3.rev_vista })
+    expect(g4.sin_cambios).toBe(true)
+    expect(g4.propuesta).toBeUndefined()
+
+    // Un miembro común ve exactamente lo mismo.
+    const gu = guardar(await ok(U, 'get_proposal_state', { p_propuesta_id: prop }))
+    expect(gu.propuesta.opcion_anterior).toEqual(esperado)
+
+    // PropuestaResumen no cambia.
+    const lista = guardar(await ok(U, 'list_proposals', { p_espacio_id: esp.espacioId }))
+    expect(lista.propuestas).toHaveLength(1)
+    expect(lista.propuestas[0].version).toBe(2)
+    expect(lista.propuestas[0]).not.toHaveProperty('opcion_anterior')
+
+    // Ninguna respuesta compartida trae condiciones ni preferencias (save_my_conditions trae las propias
+    // fuera de `propuesta`, en `condiciones`); opcion_anterior es solo plan: versión, franja y horas.
+    expect(respuestas.length).toBe(13)
+    for (const r of respuestas) {
+      const vista = JSON.stringify(r.propuesta ?? r)
+      expect(vista).not.toContain('"disponibilidad"')
+      expect(vista).not.toContain('"preferencias"')
+      const ant = r.propuesta?.opcion_anterior
+      if (ant) {
+        expect(Object.keys(ant).sort()).toEqual(['fin', 'franja_clave', 'inicio', 'version'])
+        expect(Object.keys(ant.inicio).sort()).toEqual(['local', 'utc'])
+        expect(Object.keys(ant.fin).sort()).toEqual(['local', 'utc'])
+      }
+    }
   })
 })
