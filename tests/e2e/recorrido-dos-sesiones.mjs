@@ -14,6 +14,8 @@
 // capturas pedidas.
 import { createRequire } from 'node:module'
 import { mkdirSync } from 'node:fs'
+import { baseLibre } from './base-libre.mjs'
+baseLibre()
 const require = createRequire(import.meta.url)
 let pw
 try { pw = require('playwright') } catch {
