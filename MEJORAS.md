@@ -70,7 +70,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 14 | Paquete > 500 KB: dividir el código para que cargue más rápido en el teléfono | claude-b-interfaz | verificada (6d9806c): build en partes, recorrido demo → agente → propuesta probado con la versión compilada |
 | 15 | Sondeo liviano (`p_desde_rev`) para no bajar el estado completo cada 3 s | backend + claude-b-interfaz | entregada en ambos lados (0021 + 6df9595), publicada 14:20 |
 | 16 | README contra las bases (3 preguntas, componentes, participantes) | codex | verificada (b45c226): README compacto adoptado |
-| 17 | Variantes del jurado (`docs/jurado-variantes.md`) verificadas con pruebas reales | codex | verificada en el navegador local con backend real (0e4ba7f, 4/4 y 23 comprobaciones, 16:16); no certifica producción ni teléfonos físicos; docs/jurado-variantes.md actualizado (16:28) |
+| 17 | Variantes del jurado (`docs/jurado-variantes.md`) verificadas con pruebas reales | codex | verificada también EN PRODUCCIÓN (d3e687a, Codex): 4/4 y 23 comprobaciones, corrida aislada 16:3x contra main 7b0335b; evidencia en tests/e2e/evidencia-jurado-produccion.md; sin teléfonos físicos |
 | 21 | `simulate_save_preferences` para variantes del jurado en vivo (enmienda 5) | backend | verificada (0019 y 0020, en main) |
 | 22 | `opcion_anterior` {version, franja_clave, inicio, fin} en el estado tras una reparación ("Sábado → Domingo" en v1 → v2) | backend, luego claude-b-interfaz | verificada en el navegador (a294210): "Sábado 31 oct 14:00 → Domingo 1 nov 14:00", v2 desde cero; publicada 14:20 |
 | 33 | `cruce.verificar_privilegios()` como paso fijo después de cada migración (idea de backend) | coordinador | libre |
