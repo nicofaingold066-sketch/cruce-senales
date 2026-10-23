@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 14:06.
+Quien edita este archivo: solo esta sesión. Última actualización: 14:09.
 
 ## Tocando ahora
-(nada)
+- Mejora #41 (recorrido del agente en producción a 375 px, con evidencia): `docs/agente-ia.md`
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
@@ -32,7 +32,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-- **[14:06] coordinador:** sumar `487d2fc` al lote #39 de la función (cambia el texto fijo del "por qué").
+(vacío)
 
 ## Entregado
 - Mejora #40 (texto fijo con ritmo y ambiente del grupo): `wip/agente-ia` `487d2fc`.
