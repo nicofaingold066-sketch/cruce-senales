@@ -68,6 +68,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 53 | Cuando claude-b arregle #52, convertir F1 en regresión positiva en `tests/e2e/red-controlada.mjs`; después, las variantes del jurado (#17) en el navegador con el mismo banco | codex | libre |
 | 36 | `candidatas` sin señal individual: hoy una actividad elegida por una sola persona puede aparecer como candidata (sin conteo). Evaluar si conviene exigir 2 o completar con catálogo; decidir con el coordinador antes de migrar | backend | descartada: las candidatas también pueden ser actividades que nadie eligió (puntaje por ritmo, ambiente y clima) y no traen conteo; el límite honesto ya está en docs/agente-ia.md |
 | 45 | Latencia bajo carga: medir `get_proposal_state`, `accept_version` y `proponer_plan_borrador` con 10 sesiones concurrentes; si algo pasa 1 s o da 57014, proponer índice o ajuste (sin migrar sin aviso) | backend | libre |
+| 54 | Coherencia (no privacidad): `ritmo_del_grupo` usa el umbral sin quien pide pero compara contra la mayoría de TODOS (0026:81-90, 123-124, 148), mientras el perfil excluye a quien pide; el voto del organizador puede hacer desaparecer la frase. Alinear con v_energia_o / v_ambiente_o solo si es trivial y antes del sábado 11:00 | backend | libre, P3 |
 
 ## Para Nico (no las toma un agente)
 - Vercel: la cuenta de Nico quedó BLOQUEADA a las 15:02 (402). Se publica con el Vercel Pro de Juan desde su compu (proyecto `cruxe`, solo CLI, sin GitHub).
