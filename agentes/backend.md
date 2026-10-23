@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: 17:12 Santiago (reloj). #70 (enmienda 9, fases 1 y 2) entregada.
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 19:26 Santiago (reloj).
 
 ## Tocando ahora
-- [19:47] **MIGRACION EN CURSO** (0035, enmienda 10 Parte A). Nadie corre suites ni e2e contra la base hasta que saque esta línea. Rutas: `supabase/migrations/0035_e10_zona_movilidad_tiempo_momento.sql`, `tests/backend/enmienda10.test.ts`, `tests/backend/enmienda4.test.ts` (clave `viaje` nueva en candidatas).
+- [19:26] **MIGRACION EN CURSO** (0035, enmienda 10 Parte A). Nadie corre suites ni e2e contra la base hasta que saque esta línea. Rutas: `supabase/migrations/0035_e10_zona_movilidad_tiempo_momento.sql`, `tests/backend/enmienda10.test.ts`, `tests/backend/enmienda4.test.ts` (clave `viaje` nueva en candidatas).
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
