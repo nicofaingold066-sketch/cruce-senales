@@ -226,8 +226,10 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
             {espacio.miembros.map((m) => (
               <li key={m.miembro_id}>
                 <Avatar nombre={m.nombre} simulado={m.simulado} yo={m.es_yo} tam={26} />
-                <Nombre m={m} yo={m.es_yo} />
-                {m.rol === 'organizador' ? <span className="etiqueta">organizador</span> : null}
+                <span className="chip-texto">
+                  <Nombre m={m} yo={m.es_yo} />
+                  {m.rol === 'organizador' ? <span className="chip-nota">organizador</span> : null}
+                </span>
               </li>
             ))}
           </ul>

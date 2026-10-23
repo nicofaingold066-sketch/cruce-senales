@@ -5192,3 +5192,260 @@ fieldset:disabled .opcion-radio {
   animation: none;
   transform: rotateZ(calc(var(--a) * -1 - var(--orbita-ang))) rotateX(calc(var(--inclinacion) * -1));
 }
+
+/* ------------------------------------------------------------------ pulido mobile (375 px primero) */
+
+/* Cifras de la opción: número arriba, rótulo abajo, todas en una fila. Los rótulos largos bajan de línea sin desalinear los números. */
+.cifras {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 8px;
+  margin: 14px 0 0;
+}
+.cifra {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 10px 11px;
+  border-radius: 12px;
+  background: var(--relleno);
+  min-width: 0;
+}
+.cifra dd {
+  order: -1;
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  margin: 0;
+}
+.cifra dd strong {
+  font-size: 1.3rem;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.cifra dt {
+  font-size: 0.74rem;
+  font-weight: 650;
+  line-height: 1.25;
+  color: var(--tinta-2);
+}
+.cifra .etiqueta {
+  padding: 3px 8px;
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+@media (max-width: 359px) {
+  .cifras {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.nota-reserva svg {
+  color: var(--tinta-2);
+}
+
+/* Interés del grupo: mismo patrón (número arriba) para que "Con condiciones" en dos líneas no baje su número. */
+.stat-valor {
+  order: -1;
+}
+
+/* Tarjeta de estado: el título y la versión comparten fila; la versión es una pastilla corta ("v1"). */
+.estado-hero-fila {
+  flex-wrap: nowrap;
+}
+.estado-hero-etiqueta {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.15;
+}
+.estado-hero-version {
+  flex: none;
+  padding: 4px 9px;
+  font-size: 0.78rem;
+}
+
+/* "Me interesa" con su check entra en una línea */
+.interes-botones .btn {
+  padding-left: 10px;
+  padding-right: 10px;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* Chips de personas: "Tomi (tú)" en una línea; Simulación u "organizador" debajo, chicos */
+.chips-personas .nombre {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.chips-personas .rotulo-sim {
+  display: table;
+  margin-top: 1px;
+}
+.chips-personas .chip-nota {
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+
+/* Historial resumido: hora en su columna, como en el historial completo */
+.linea-resumen {
+  gap: 10px;
+  margin-top: 10px;
+}
+.linea-resumen > li {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+}
+.linea-hora {
+  font-size: 0.8rem;
+  font-weight: 750;
+  color: var(--tinta-2);
+}
+.linea-texto {
+  min-width: 0;
+  line-height: 1.35;
+}
+
+/* Cancelar: una fila tranquila al pie, sin título y botón que repiten lo mismo */
+.zona-peligro-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+}
+.zona-peligro-texto {
+  flex: 1 1 150px;
+  min-width: 0;
+}
+.zona-peligro-texto h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+.zona-peligro-texto p {
+  margin: 2px 0 0;
+  font-size: 0.86rem;
+}
+.zona-peligro-fila > .btn {
+  flex: none;
+  min-height: 44px;
+  padding: 10px 14px;
+  font-size: 0.92rem;
+  color: var(--error);
+}
+
+/* "Te toca" en la tarjeta del plan: una sola señal (rayo + texto en brasa) */
+.pv-siguiente-turno {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+.pv-siguiente-turno svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+/* Comparación v1 → v2: el rótulo es un antetítulo (no pastilla), así "Versión 1 · ya no vale" entra en la columna angosta */
+.cv-rotulo {
+  display: block;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: var(--tinta-2);
+}
+.cv-nueva .cv-rotulo {
+  background: none;
+  color: var(--brasa);
+}
+.cv-franja {
+  margin-top: 6px;
+  line-height: 1.3;
+}
+.cv-personas {
+  gap: 2px;
+}
+.cv-personas li {
+  line-height: 1.3;
+}
+
+/* El título del estado entra en una línea a 375 px; en pantallas más angostas baja con gracia */
+.estado-hero-etiqueta {
+  font-size: clamp(1.05rem, 4.6vw, 1.22rem);
+}
+
+/* Tarjeta del plan: cupos en una línea, cierre en la siguiente; "Abrir" queda abajo a la derecha */
+.pv-meta {
+  align-items: flex-end;
+  flex-wrap: nowrap;
+}
+.pv-cierre {
+  display: block;
+}
+.pv-abrir {
+  flex: none;
+}
+
+/* Horas: el chip "Otra hora" (con su selector nativo) ya no estira a todos a 52 px; quedan de 44 como los demás toques */
+.carrusel-horas {
+  align-items: center;
+}
+.chip-hora-otra input {
+  min-height: 0;
+  padding: 0;
+}
+.chip-hora.chip-hora-otra {
+  padding: 4px 10px;
+}
+.pv-meta > .num {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Mínimo legible (~12 px) en los rótulos nuevos */
+.cifra dt,
+.cifra .etiqueta,
+.chips-personas .chip-nota {
+  font-size: 0.75rem;
+}
+.cv-rotulo {
+  font-size: 0.7rem;
+}
+
+/* Teléfonos angostos (320 px): la barra no se amontona, los pasos entran enteros y los íconos de invitar son parejos */
+@media (max-width: 359px) {
+  .barra-rol {
+    display: none;
+  }
+  .pasos {
+    gap: 4px;
+  }
+  .paso {
+    font-size: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+  .invitar-fila3 .btn svg {
+    display: none;
+  }
+}
+.invitar-fila3 .btn svg {
+  flex: none;
+}
+
+/* En el teléfono el nombre del grupo ya está en el enlace "< Los del asado"; en la barra solo sobraba, cortado */
+@media (max-width: 719px) {
+  .barra-espacio {
+    display: none;
+  }
+}

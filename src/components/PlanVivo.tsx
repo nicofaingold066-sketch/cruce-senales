@@ -33,13 +33,16 @@ export function PlanVivo({ p, espacioId, espacioNombre }: { p: PropuestaResumen;
       <span className="pv-titulo" style={{ viewTransitionName: `plan-${p.id}` }}>
         {p.titulo}
       </span>
-      {turno || p.mi_situacion?.retirado ? (
+      {p.mi_situacion?.retirado ? (
         <span className="pv-estado">
-          {turno ? <span className="pastilla pastilla-turno">Tu turno</span> : null}
-          {p.mi_situacion?.retirado ? <span className="etiqueta">Te retiraste</span> : null}
+          <span className="etiqueta">Te retiraste</span>
         </span>
       ) : null}
-      <span className={`pv-siguiente ${turno ? 'pv-siguiente-turno' : ''}`}>{p.siguiente_accion.texto}</span>
+      {/* "Tu turno" ya lo dicen el borde y el texto en brasa; una sola señal en vez de tres. */}
+      <span className={`pv-siguiente ${turno ? 'pv-siguiente-turno' : ''}`}>
+        {turno ? <Icono n="rayo" tam={16} /> : null}
+        {p.siguiente_accion.texto}
+      </span>
       {conVersion ? (
         <span className="pv-progreso" style={{ display: 'block' }}>
           <Progreso
@@ -53,8 +56,8 @@ export function PlanVivo({ p, espacioId, espacioNombre }: { p: PropuestaResumen;
       ) : null}
       <span className="pv-meta">
         <span className="num">
-          {conVersion ? `${cuenta} · máx. ${p.maximo}` : `Mínimo ${p.minimo}, máximo ${p.maximo}`} ·{' '}
-          {p.plazo_vencido ? 'plazo cerrado' : `cierre ${momentoCorto(p.plazo)}`}
+          {conVersion ? `${cuenta} · máx. ${p.maximo}` : `Mínimo ${p.minimo}, máximo ${p.maximo}`}
+          <span className="pv-cierre">{p.plazo_vencido ? 'Plazo cerrado' : `Cierre ${momentoCorto(p.plazo)}`}</span>
         </span>
         <span className="pv-abrir" aria-hidden="true">
           Abrir <Icono n="chevron" tam={14} />
