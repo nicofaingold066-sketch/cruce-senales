@@ -17,7 +17,7 @@ import './login.css'
 export interface MiembroPorReclamar {
   miembro_id: string
   nombre: string
-  /** false: ya hay una persona en ese lugar ("ya entró"). Lo decide el servidor. */
+  /** false: ese lugar no se puede reclamar (ya tiene persona o actividad simulada). Lo decide el servidor. */
   libre: boolean
 }
 
@@ -265,13 +265,13 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
                 </button>
                 {m.libre ? null : (
                   <span id={`ya-${m.miembro_id}`} className="suave quien-tomado">
-                    ya entró
+                    no disponible
                   </span>
                 )}
               </li>
             ))}
           </ul>
-          {vista.miembros.every((m) => !m.libre) ? <p className="suave">Ya entraron todas las personas de la lista.</p> : null}
+          {vista.miembros.every((m) => !m.libre) ? <p className="suave">Ya no queda ningún nombre libre en la lista.</p> : null}
           <button
             type="button"
             className="btn btn-secundario entrada-enlace"
