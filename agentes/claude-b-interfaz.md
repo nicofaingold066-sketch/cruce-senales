@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- `src/styles.css` (barra de pestañas: "Simulación" queda cortada a 390 px)
+(vacío)
 
 ## Estado
 11:2x: trabajando el plan sin red (aviso 11:21). Integrada mi rama en wip/fundamentos por el coordinador; yo traje `origin/wip/fundamentos` a `wip/ui-enmienda`.
@@ -43,4 +43,4 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
 (vacío)
 
 ## Entregado
-Rama `wip/ui-enmienda`: 4 commits de código + merge de `origin/wip/fundamentos` (ver `git log`).
+Rama `wip/ui-enmienda`, último commit `1624b4f` (pestañas sin cortar en teléfono, solo CSS; typecheck y build pasan). Incluye merge de `origin/wip/fundamentos` 615ef0f. Recorrido en vivo 11/11 más arriba.
