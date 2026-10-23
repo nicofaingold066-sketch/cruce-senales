@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 19:51 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 19:53 Santiago (reloj).
 
 ## Tocando ahora
-- [19:51] Base libre (sin migración en curso). Haciendo #81 (`docs/seguridad-final.md`, archivo nuevo; pido la ruta abajo). Esperando decisión del coordinador sobre 3 pedidos que cambian contrato.
+- [19:53] **MIGRACION EN CURSO** (0039, enmienda 12: avisos personales de siguiente_accion; solo reemplaza una función interna, unos minutos). Nadie corre suites ni e2e contra la base hasta que saque esta línea. Rutas: `supabase/migrations/0039_e12_avisos_personales.sql`, `tests/backend/enmienda12.test.ts`.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
