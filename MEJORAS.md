@@ -11,7 +11,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 2 | Botones repetidos por persona en Simulación con nombre ("Se baja: Caro") y aria-label | claude-b-interfaz | tomada por claude-b-interfaz |
 | 3 | Base del agente (enmienda 4: preferencias, catálogo, proponer_plan_borrador) con pruebas | backend | verificada (0014-0016, 36 pruebas) |
 | 4 | Enganche de la pantalla del agente en el espacio y precarga del borrador en Nueva propuesta | claude-b-interfaz | tomada por claude-b-interfaz |
-| 5 | Desplegar la función del agente en Supabase y probarla en vivo (con y sin clave) | coordinador + agente-ia | libre (espera a 3) |
+| 5 | Desplegar la función del agente en Supabase y probarla en vivo (con y sin clave) | coordinador + agente-ia | desplegada y verificada SIN clave (2,3 s); falta con clave |
 | 6 | Recorrido completo en DOS teléfonos reales con el link público | Nico + Juan + coordinador | libre |
 
 | 18 | U2: "Crear y abrir" permite crear dos propuestas (doble envío) | claude-b-interfaz | libre |
@@ -25,7 +25,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 8 | Pantalla de reparación: que la "versión 2 con cero heredadas" se vea obvia (comparación v1 → v2) | claude-b-interfaz | libre |
 | 9 | Historial legible para el jurado: quién hizo qué, en qué versión y a qué hora, marcando Simulación | claude-b-interfaz | libre |
 | 10 | Revisión de la interfaz (autoridad en el cliente, textos prematuros, respuestas viejas, datos privados) | codex | entregada (3718b6b): hallazgos U1-U7 pasados a claude-b |
-| 11 | Explicación del agente: que diga por qué ese plan sin revelar a nadie, con la fuente (modelo o texto fijo) visible | agente-ia | libre |
+| 11 | Explicación del agente: que diga por qué ese plan sin revelar a nadie, con la fuente (modelo o texto fijo) visible | agente-ia | entregada (9cfd290), verificada sin clave |
 
 ## P3 — Calidad y robustez
 | # | Mejora | Dueño | Estado |
