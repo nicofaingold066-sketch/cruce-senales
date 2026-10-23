@@ -1,9 +1,10 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 14:37.
+Quien edita este archivo: solo esta sesión. Última actualización: 14:40.
 
 ## Tocando ahora
-(nada)
+- Revisión de privacidad de solo lectura de los cambios de claude-b (c95952d, #43, #44 parte 1): `docs/agente-revision-privacidad.md` (anexo)
+- Mejora #50 en espera: comprobar en vivo E7.1 y E7.4 cuando el backend los entregue.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
@@ -35,7 +36,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-- **[14:37] coordinador:** redesplegar la función `agente` desde `wip/agente-ia` `c5b0085` (v6: respaldo de los hallazgos 5 y 7). La pantalla entra en el próximo lote de Vercel.
+(vacío)
 
 ## Entregado
 - Mejora #49 (respaldo de privacidad 5 y 7): `wip/agente-ia` `c5b0085`.
