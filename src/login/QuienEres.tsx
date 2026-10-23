@@ -294,7 +294,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
           </section>
         ) : null}
 
-        <UnirseConNombre codigoInicial={codigo} u={u} campoNombre={campoNombre} deshabilitado={soloLectura} />
+        <UnirseConNombre codigoInicial={codigo} u={u} campoNombre={campoNombre} deshabilitado={soloLectura} demo={vista?.espacio.demo === true} />
         <div className="privado" role="note">
           <span className="privado-icono" aria-hidden="true">
             <Icono n="candado" tam={20} />
@@ -315,11 +315,14 @@ function UnirseConNombre({
   u,
   campoNombre,
   deshabilitado,
+  demo,
 }: {
   codigoInicial: string
   u: ReturnType<typeof useUnirse>
   campoNombre: React.RefObject<HTMLInputElement | null>
   deshabilitado: boolean
+  /** La ayuda de "reclamar a una persona simulada" solo tiene sentido en la demo (en un grupo real confunde). */
+  demo: boolean
 }) {
   const [codigo, setCodigo] = useState(codigoInicial)
   const [nombre, setNombre] = useState(() => leerPerfil()?.nombre ?? '')
@@ -369,7 +372,7 @@ function UnirseConNombre({
           maxLength={30}
           aria-invalid={nombreMal || undefined}
         />
-        <small>Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.</small>
+        {demo ? <small>Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.</small> : null}
       </label>
       <Boton type="submit" variante="secundario" ocupado={u.ocupado && u.origen === 'formulario'} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado}>
         Unirme
