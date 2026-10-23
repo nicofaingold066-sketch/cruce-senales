@@ -11,3 +11,28 @@
   flex-wrap: wrap;
   width: 100%;
 }
+
+/* Copiar y Compartir por WhatsApp, separados y tocables en el teléfono. */
+.agente-compartir {
+  gap: 8px;
+  align-items: center;
+}
+
+/* Toques de al menos 44 px en el teléfono, también en los botones chicos del panel (mejora #35). */
+.agente-panel .btn-chico {
+  min-height: 44px;
+  padding: 8px 14px;
+}
+
+/* Solo para lectores de pantalla: anuncia cambios sin repetir texto en la pantalla. */
+.agente-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

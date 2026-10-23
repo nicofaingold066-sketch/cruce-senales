@@ -132,18 +132,51 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
     expect(seco.candidatas[1].frases_grupo).toEqual(['presupuesto_todos', 'al_aire_libre_con_buen_tiempo', 'ritmo_del_grupo'])
     for (const c of seco.candidatas) expect(Object.keys(c).sort()).toEqual(['actividad', 'actividad_etiqueta', 'franjas', 'frases_grupo', 'id', 'lugar', 'titulo'])
     expect(JSON.stringify(seco)).not.toMatch(/lugar-sim-02|evento-sim-01|puntaje/)
+    // Mejora #28: Pádel y Fiesta (1 persona cada una) no salen en gustos.
     expect(seco.perfil_grupo).toEqual({
       personas: 6,
       gustos: [
         { actividad_etiqueta: 'Asado', cuantos: 5 }, { actividad_etiqueta: 'Fútbol', cuantos: 2 },
-        { actividad_etiqueta: 'Parque', cuantos: 2 }, { actividad_etiqueta: 'Pádel', cuantos: 1 },
-        { actividad_etiqueta: 'Fiesta', cuantos: 1 },
+        { actividad_etiqueta: 'Parque', cuantos: 2 },
       ],
       energia_mayoritaria: 'algo_tranquilo', ambiente_mayoritario: 'tranquilo', presupuesto_grupo: 'moderado',
     })
     // Con lluvia, Caro pidió techo: la cancha y el parque quedan fuera.
     const lluvia = (await ok(O, 'proponer_plan_borrador', { p_espacio_id: demo.id, p_sabado: sabado, p_clima: LLUVIA })).resultado
     expect(lluvia.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-01'])
+  })
+
+  it('mejora #28: con 4 personas, una actividad elegida por una sola no aparece en perfil_grupo.gustos', async () => {
+    const Y = await nuevaSesion()
+    const esp = await crearEspacioPrueba(O, 'e28-gustos', 'Org t')
+    await ok(L, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Uno t' })
+    await ok(X, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Dos t' })
+    await ok(Y, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Tres t' })
+    const pref = (me_gustaria: string[]) => ({ presupuesto: 'da_igual', energia: 'algo_tranquilo', ambiente: 'tranquilo', lugar: 'da_igual', me_gustaria })
+    // Asado 3, Parque 2; Pádel solo O y Fútbol solo Y.
+    await ok(O, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['asado', 'padel']) })
+    await ok(L, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['asado', 'parque']) })
+    await ok(X, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['asado', 'parque']) })
+    await ok(Y, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['futbol']) })
+
+    const r = await ok(O, 'proponer_plan_borrador', { p_espacio_id: esp.espacioId, p_sabado: sabado, p_clima: SECO })
+    expect(r.resultado.personas_consideradas).toBe(4)
+    expect(r.resultado.perfil_grupo).toEqual({
+      personas: 4,
+      gustos: [{ actividad_etiqueta: 'Asado', cuantos: 3 }, { actividad_etiqueta: 'Parque', cuantos: 2 }],
+      energia_mayoritaria: 'algo_tranquilo', ambiente_mayoritario: 'tranquilo', presupuesto_grupo: 'cualquiera',
+    })
+    const perfil = JSON.stringify(r.resultado.perfil_grupo)
+    expect(perfil).not.toMatch(/Pádel|Fútbol|padel|futbol|"cuantos":1\b/)
+
+    // Con una segunda persona, Pádel aparece (2, antes que Parque por orden del catálogo); Fútbol sigue fuera.
+    await ok(Y, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['futbol', 'padel']) })
+    const r2 = await ok(O, 'proponer_plan_borrador', { p_espacio_id: esp.espacioId, p_sabado: sabado, p_clima: SECO })
+    expect(r2.resultado.perfil_grupo.gustos).toEqual([
+      { actividad_etiqueta: 'Asado', cuantos: 3 }, { actividad_etiqueta: 'Pádel', cuantos: 2 },
+      { actividad_etiqueta: 'Parque', cuantos: 2 },
+    ])
+    for (const g of r2.resultado.perfil_grupo.gustos) expect(g.cuantos).toBeGreaterThanOrEqual(2)
   })
 
   it('5. rol y fecha: solo el organizador; sábado futuro dentro de 16 días; clima con formato', async () => {
@@ -187,8 +220,8 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
     }
   })
 
-  it('7. lista permitida: 29 para authenticated, 0 para anon, agente_insumos no existe', async () => {
-    expect(Object.keys(PERMITIDAS)).toHaveLength(29)
+  it('7. lista permitida: 30 para authenticated (29 de la enmienda 4 + 1 de la 5), 0 para anon, agente_insumos no existe', async () => {
+    expect(Object.keys(PERMITIDAS)).toHaveLength(30)
     for (const fn of ['save_my_preferences', 'get_my_preferences', 'proponer_plan_borrador']) {
       const a = await rpcCrudo(clienteSinSesion(), fn, PERMITIDAS[fn]())
       expect(a.error?.code, fn).toBe('42501')

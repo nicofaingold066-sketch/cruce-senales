@@ -46,6 +46,15 @@ export interface CandidataAgente {
   frases_grupo: string[]
 }
 
+/** Totales del grupo (enmienda 4.1). Con 3 personas o menos solo trae `personas`. */
+export interface PerfilGrupo {
+  personas: number
+  gustos?: { actividad_etiqueta: string; cuantos: number }[]
+  energia_mayoritaria?: string | null
+  ambiente_mayoritario?: string | null
+  presupuesto_grupo?: string | null
+}
+
 export interface BorradorAgente extends CandidataAgente {
   tipo: 'borrador'
   personas_consideradas: number
@@ -57,6 +66,7 @@ export interface BorradorAgente extends CandidataAgente {
   mensaje_al_grupo: string
   eleccion_fuente: 'modelo' | 'regla'
   explicacion_fuente: 'modelo' | 'texto_fijo'
+  perfil_grupo?: PerfilGrupo | null
 }
 
 export type ResultadoAgente = BorradorAgente | { tipo: 'sin_plan_compatible' }
@@ -68,14 +78,19 @@ export type ClimaSimulado = 'seco' | 'lluvia'
 const FRASES: Record<string, string> = {
   presupuesto_todos: 'le sirve al presupuesto de todos',
   bajo_techo: 'es bajo techo por si cambia el tiempo',
-  al_aire_libre_con_buen_tiempo: 'es al aire libre y se espera buen tiempo',
+  al_aire_libre_con_buen_tiempo: 'es al aire libre con buen pronóstico',
   el_mas_elegido: 'es lo que más eligieron',
   ritmo_del_grupo: 'va con el ritmo que prefiere el grupo',
 }
 
-/** Texto fijo de "por qué". `destacada` = la opción recomendada; las demás no dicen que son "la mejor". */
-export function textoFijo(codigos: string[], destacada = true): string {
-  const partes = codigos.map((c) => FRASES[c]).filter((t): t is string => Boolean(t))
+/**
+ * Texto fijo de "por qué". `destacada` = la opción recomendada; las demás no dicen que son "la mejor".
+ * `simulado` = clima de simulación: no se habla de pronóstico.
+ */
+export function textoFijo(codigos: string[], destacada = true, simulado = false): string {
+  const partes = codigos
+    .map((c) => (simulado && c === 'al_aire_libre_con_buen_tiempo' ? 'es al aire libre con el sol de la simulación' : FRASES[c]))
+    .filter((t): t is string => Boolean(t))
   if (partes.length === 0) {
     return destacada
       ? 'Es la opción que mejor le sirve al grupo con lo que cargaron.'
@@ -124,9 +139,25 @@ function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
       : r.clima,
     explicacion: fijo ? textoFijo(elegida.frases_grupo) : (r.explicacion as string),
     mensaje_al_grupo: fijo || !r.mensaje_al_grupo ? mensajeFijo(elegida) : r.mensaje_al_grupo,
+    perfil_grupo: r.perfil_grupo ? (r.perfil_grupo.personas > 3 ? r.perfil_grupo : { personas: r.perfil_grupo.personas }) : null,
     eleccion_fuente: !sinFuncion && r.eleccion_fuente === 'modelo' ? 'modelo' : 'regla',
     explicacion_fuente: !fijo && r.explicacion_fuente === 'modelo' ? 'modelo' : 'texto_fijo',
   }
+}
+
+// Tiempos límite del cliente (mejora #32): la demo nunca queda esperando para siempre.
+// La función del servidor corta sola a los ~8 s; si igual tarda más, se usa el respaldo por RPC.
+const TIEMPO_FUNCION_MS = 10000
+const TIEMPO_RPC_MS = 8000
+
+function tiempoAgotado(): { ok: false; error: ApiError } {
+  return falloTemporal('tiempo_agotado', 'El servidor tardó demasiado en responder. Intenta de nuevo.')
+}
+
+function esAborto(e: unknown): boolean {
+  const nombre = (e as { name?: string } | null)?.name ?? ''
+  const mensaje = (e as { message?: string } | null)?.message ?? ''
+  return nombre === 'AbortError' || nombre === 'TimeoutError' || /abort/i.test(mensaje)
 }
 
 function incompatibleError(): { ok: false; error: ApiError } {
@@ -168,16 +199,16 @@ async function rpc<T>(
     return { ok: false, error: { ...falloTemporal('sin_conexion', 'Sin conexión con el servidor. Reintenta cuando vuelva la conexión.').error, sinConexion: true } }
   }
   try {
-    const { data, error } = await supabase.rpc(fn as never, args as never)
+    const { data, error } = await supabase.rpc(fn as never, args as never).abortSignal(AbortSignal.timeout(TIEMPO_RPC_MS))
     if (error) {
       if ((error as { code?: string }).code === 'PGRST202') {
         return falloTemporal('operacion_no_publicada', 'El agente todavía no está disponible en el servidor.')
       }
-      return falloTemporal()
+      return esAborto(error) ? tiempoAgotado() : falloTemporal()
     }
     return leerSobre(data, tomar)
-  } catch {
-    return falloTemporal()
+  } catch (e) {
+    return esAborto(e) ? tiempoAgotado() : falloTemporal()
   }
 }
 
@@ -207,7 +238,7 @@ export const agenteApi = {
     try {
       const body: Record<string, unknown> = { espacio_id: espacioId, sabado }
       if (climaSimulado) body.clima_simulado = climaSimulado
-      const { data, error } = await supabase.functions.invoke('agente', { body })
+      const { data, error } = await supabase.functions.invoke('agente', { body, timeout: TIEMPO_FUNCION_MS })
       if (!error && data) {
         const r = leerSobre(data, (c) => {
           const res = c.resultado as ResultadoAgente

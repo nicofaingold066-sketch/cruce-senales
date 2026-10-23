@@ -3,7 +3,8 @@
 // 2) "Que el agente proponga": solo el organizador. Muestra el borrador que eligió el servidor y,
 //    si quiere, lo lleva a la pantalla de nueva propuesta. El agente nunca crea ni confirma nada.
 // Para engancharla: <AgentePanel espacioId={...} esOrganizador={...} soloLectura={...} />.
-import { useCallback, useEffect, useState } from 'react'
+import { Component, useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
+import { api } from '../lib/api'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto } from '../lib/format'
 import { irA, rutas } from '../lib/shell'
@@ -20,6 +21,7 @@ import {
   type BorradorAgente,
   type CandidataAgente,
   type ClimaSimulado,
+  type PerfilGrupo,
   type Energia,
   type LugarPref,
   type Preferencias,
@@ -98,6 +100,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   const [guardadas, setGuardadas] = useState(false)
   const [aviso, setAviso] = useState<string | null>(null)
   const { ocupado, error, ejecutar } = useAccion()
+  const refError = useFocoEnError(error)
 
   const cargar = useCallback(async () => {
     setCargando(true)
@@ -162,8 +165,11 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
         </div>
         {sinActividades ? <small>Marcá al menos una.</small> : null}
       </fieldset>
-      {error ? <ErrorCaja error={error} onReintentar={() => void guardar()} /> : null}
+      <div ref={refError}>{error ? <ErrorCaja error={error} onReintentar={() => void guardar()} /> : null}</div>
       {aviso ? <Aviso tono="ok">{aviso}</Aviso> : null}
+      <p className="agente-sr" aria-live="polite">
+        {ocupado ? 'Guardando tus preferencias…' : aviso ?? ''}
+      </p>
       <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura || sinActividades}>
         {guardadas ? 'Actualizar mis preferencias' : 'Guardar mis preferencias'}
       </Boton>
@@ -196,11 +202,56 @@ function CopiarMensaje({ texto }: { texto: string }) {
   )
 }
 
+/**
+ * Enlace wa.me con el mensaje del agente y el enlace de invitación (mejora #25). No es una integración:
+ * abre WhatsApp con el texto escrito y la persona decide si lo manda. El texto solo trae el plan, nada privado.
+ */
+function enlaceWhatsApp(mensaje: string, invitacion: string | null): string {
+  const texto = invitacion ? `${mensaje} ${invitacion}` : mensaje
+  return `https://wa.me/?text=${encodeURIComponent(texto)}`
+}
+
+const RITMO: Record<string, string> = { con_todo: 'con todo', algo_tranquilo: 'algo tranquilo' }
+const AMBIENTE_GRUPO: Record<string, string> = { fiesta: 'de fiesta', tranquilo: 'tranquilo' }
+
+/**
+ * Lo que eligió el grupo, solo en totales (mejora #26). Con 3 personas o menos no se muestra nada, y una
+ * actividad que eligió una sola persona tampoco: en ambos casos se podría adivinar quién fue.
+ * El presupuesto no se muestra nunca.
+ */
+function PerfilDelGrupo({ perfil }: { perfil: PerfilGrupo | null | undefined }) {
+  const gustos = perfil?.gustos?.filter((g) => g.cuantos >= 2) ?? []
+  if (!perfil || perfil.personas <= 3 || gustos.length === 0) return null
+  const ritmo = perfil.energia_mayoritaria ? RITMO[perfil.energia_mayoritaria] : null
+  const ambiente = perfil.ambiente_mayoritario ? AMBIENTE_GRUPO[perfil.ambiente_mayoritario] : null
+  return (
+    <div className="bloque">
+      <p>
+        <strong>Lo que eligió el grupo ({perfil.personas} personas): </strong>
+        {gustos.map((g) => `${g.actividad_etiqueta} ${g.cuantos} de ${perfil.personas}`).join(' · ')}.
+        {ritmo ? ` La mayoría prefiere ${ritmo === 'con todo' ? 'ir con todo' : 'algo tranquilo'}.` : ''}
+        {ambiente ? ` Ambiente ${ambiente}.` : ''}
+      </p>
+      <p className="suave">Son totales del grupo: nadie ve lo que eligió cada uno.</p>
+    </div>
+  )
+}
+
 function etiquetaOpcion(c: CandidataAgente): string {
   return `${c.actividad_etiqueta} · ${c.lugar.nombre.replace(' (Simulación)', '')}`
 }
 
-function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: BorradorAgente; soloLectura?: boolean }) {
+function BorradorTarjeta({
+  espacioId,
+  b,
+  soloLectura,
+  invitacion,
+}: {
+  espacioId: string
+  b: BorradorAgente
+  soloLectura?: boolean
+  invitacion: string | null
+}) {
   const [seleccion, setSeleccion] = useState(b.elegida_id)
   const elegida = b.candidatas.find((c) => c.id === seleccion) ?? b.candidatas[0]
   const esLaDestacada = elegida.id === b.elegida_id
@@ -208,7 +259,7 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
   useEffect(() => setTitulo(elegida.titulo), [elegida.titulo])
   const tituloValido = titulo.trim().length >= 1 && titulo.trim().length <= 80
   // La explicación y el mensaje del modelo son de la opción que destacó; para otra, el texto fijo.
-  const explicacion = esLaDestacada ? b.explicacion : textoFijo(elegida.frases_grupo, false)
+  const explicacion = esLaDestacada ? b.explicacion : textoFijo(elegida.frases_grupo, false, b.clima.fuente === 'simulacion')
   const mensaje = esLaDestacada ? b.mensaje_al_grupo : mensajeFijo(elegida)
   const deModelo = esLaDestacada && b.explicacion_fuente === 'modelo'
 
@@ -244,6 +295,7 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
           })}
         </div>
       </fieldset>
+      <PerfilDelGrupo perfil={b.perfil_grupo} />
       <label className={`campo ${tituloValido ? '' : 'campo-error'}`}>
         <span>Título</span>
         <input value={titulo} maxLength={80} onChange={(e) => setTitulo(e.target.value)} disabled={soloLectura} />
@@ -278,7 +330,15 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
           <strong>Mensaje para el grupo: </strong>
           {mensaje}
         </p>
-        <CopiarMensaje key={mensaje} texto={mensaje} />
+        <div className="fila-botones agente-compartir">
+          <CopiarMensaje key={mensaje} texto={mensaje} />
+          {soloLectura ? null : (
+            <a className="btn btn-primario btn-chico" href={enlaceWhatsApp(mensaje, invitacion)} target="_blank" rel="noopener noreferrer">
+              Compartir por WhatsApp
+            </a>
+          )}
+        </div>
+        <small>WhatsApp sirve para avisar; las respuestas y la confirmación se hacen en CRUXE.</small>
       </div>
       <p className="suave">
         {deModelo
@@ -293,6 +353,61 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
   )
 }
 
+/**
+ * Cuando aparece un error, lleva el foco al primer botón o enlace útil del aviso (mejora #35),
+ * para que con lector de pantalla o teclado no haya que buscar cómo seguir.
+ */
+function useFocoEnError(error: ApiError | null): RefObject<HTMLDivElement | null> {
+  const ref = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (!error) return
+    ref.current?.querySelector<HTMLElement>('button, a[href]')?.focus()
+  }, [error])
+  return ref
+}
+
+/** Salida que nunca falla: crear la propuesta a mano, como siempre. */
+function PropuestaAMano({ espacioId }: { espacioId: string }) {
+  return (
+    <a className="btn btn-secundario btn-chico" href={rutas.nueva(espacioId)}>
+      Crear la propuesta a mano
+    </a>
+  )
+}
+
+/** Errores del agente con texto claro para la demo y siempre una salida (mejora #32). */
+function ErrorAgente({ error, espacioId, onReintentar }: { error: ApiError; espacioId: string; onReintentar: () => void }) {
+  if (error.codigo === 'entrada_incompleta' && error.detalle === 'pocas_preferencias') {
+    return (
+      <Aviso tono="aviso" titulo="Faltan preferencias" accion={<PropuestaAMano espacioId={espacioId} />}>
+        El agente necesita las preferencias de al menos 2 personas. Pedile al grupo que las cargue, o creá la propuesta a mano.
+      </Aviso>
+    )
+  }
+  if (error.codigo === 'fallo_temporal' || error.codigo === 'contrato_incompatible') {
+    const titulo = error.sinConexion ? 'Sin conexión' : error.detalle === 'tiempo_agotado' ? 'El agente tardó demasiado' : 'El agente no respondió'
+    return (
+      <Aviso
+        tono="error"
+        titulo={titulo}
+        accion={
+          <div className="fila-botones agente-compartir">
+            {error.reintentable ? (
+              <button type="button" className="btn btn-secundario btn-chico" onClick={onReintentar}>
+                Reintentar
+              </button>
+            ) : null}
+            <PropuestaAMano espacioId={espacioId} />
+          </div>
+        }
+      >
+        {error.mensaje} No se creó nada; podés reintentar o crear la propuesta a mano.
+      </Aviso>
+    )
+  }
+  return <ErrorCaja error={error} onReintentar={onReintentar} />
+}
+
 type ClimaElegido = 'real' | ClimaSimulado
 
 const CLIMA_DEMO: { v: ClimaElegido; texto: string }[] = [
@@ -301,7 +416,17 @@ const CLIMA_DEMO: { v: ClimaElegido; texto: string }[] = [
   { v: 'lluvia', texto: 'Simular lluvia' },
 ]
 
-function ProponerPlan({ espacioId, soloLectura, demo }: { espacioId: string; soloLectura?: boolean; demo?: boolean }) {
+function ProponerPlan({
+  espacioId,
+  soloLectura,
+  demo,
+  invitacion,
+}: {
+  espacioId: string
+  soloLectura?: boolean
+  demo?: boolean
+  invitacion: string | null
+}) {
   const [sabado, setSabado] = useState(SABADO_DEL_CASO)
   const [clima, setClima] = useState<ClimaElegido>('real')
   const [resultado, setResultado] = useState<ResultadoAgente | null>(null)
@@ -322,8 +447,14 @@ function ProponerPlan({ espacioId, soloLectura, demo }: { espacioId: string; sol
 
   const climaPedido = demo && clima !== 'real' ? clima : undefined
 
-  const anuncio =
-    resultado?.tipo === 'borrador'
+  const refError = useFocoEnError(error)
+
+  // Región que siempre existe y anuncia los cambios (mejora #35). Los errores graves ya se anuncian solos (role="alert").
+  const anuncio = ocupado
+    ? 'El agente está buscando opciones para el grupo.'
+    : error?.codigo === 'entrada_incompleta' && error.detalle === 'pocas_preferencias'
+      ? 'Faltan preferencias: el agente necesita las de al menos 2 personas.'
+      : resultado?.tipo === 'borrador'
       ? `El agente encontró ${resultado.candidatas.length === 1 ? 'una opción' : `${resultado.candidatas.length} opciones`}. Recomendada: ${resultado.titulo}.`
       : resultado?.tipo === 'sin_plan_compatible'
         ? 'Sin plan compatible.'
@@ -366,21 +497,72 @@ function ProponerPlan({ espacioId, soloLectura, demo }: { espacioId: string; sol
       <Boton onClick={() => void proponer()} ocupado={ocupado} ocupadoTexto="El agente está pensando…" disabled={soloLectura || !sabado}>
         Que el agente proponga
       </Boton>
-      {error ? <ErrorCaja error={error} onReintentar={() => void proponer()} /> : null}
+      {ocupado ? <Cargando texto="El agente está leyendo las preferencias del grupo y el clima…" /> : null}
+      <div ref={refError}>
+        {error ? <ErrorAgente error={error} espacioId={espacioId} onReintentar={() => void proponer()} /> : null}
+      </div>
       <p className="suave" aria-live="polite">
         {anuncio}
       </p>
       {resultado?.tipo === 'sin_plan_compatible' ? (
-        <Aviso tono="aviso" titulo="Sin plan compatible">
+        <Aviso tono="aviso" titulo="Sin plan compatible" accion={<PropuestaAMano espacioId={espacioId} />}>
           Con las preferencias cargadas no hay un plan del catálogo que le sirva a todos. Por privacidad no se muestran los motivos.
         </Aviso>
       ) : null}
-      {resultado?.tipo === 'borrador' ? <BorradorTarjeta espacioId={espacioId} b={resultado} soloLectura={soloLectura} /> : null}
+      {resultado?.tipo === 'borrador' ? <BorradorTarjeta espacioId={espacioId} b={resultado} soloLectura={soloLectura} invitacion={invitacion} /> : null}
     </div>
   )
 }
 
-export function AgentePanel({
+/**
+ * Barrera de errores: si algo del agente falla al dibujarse, se ve un aviso y el resto del espacio
+ * sigue funcionando (mejora #32). La demo nunca depende de este panel.
+ */
+class BarreraAgente extends Component<{ children: ReactNode }, { fallo: boolean }> {
+  state = { fallo: false }
+  static getDerivedStateFromError() {
+    return { fallo: true }
+  }
+  componentDidCatch(e: unknown) {
+    // Solo el tipo de error, nunca datos del grupo.
+    console.error('agente: el panel falló al dibujarse', e instanceof Error ? e.name : 'desconocido')
+  }
+  render() {
+    if (this.state.fallo) {
+      return (
+        <div className="agente-panel">
+          <Aviso
+            tono="aviso"
+            titulo="El agente no está disponible ahora"
+            accion={
+              <button type="button" className="btn btn-secundario btn-chico" onClick={() => this.setState({ fallo: false })}>
+                Reintentar
+              </button>
+            }
+          >
+            El resto del espacio funciona igual: podés crear la propuesta a mano.
+          </Aviso>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
+export function AgentePanel(props: {
+  espacioId: string
+  esOrganizador: boolean
+  soloLectura?: boolean
+  demo?: boolean
+}) {
+  return (
+    <BarreraAgente>
+      <PanelAgente {...props} />
+    </BarreraAgente>
+  )
+}
+
+function PanelAgente({
   espacioId,
   esOrganizador,
   soloLectura,
@@ -392,19 +574,34 @@ export function AgentePanel({
   /** Espacio de demostración: muestra el selector de clima de simulación (la función igual lo comprueba). */
   demo?: boolean
 }) {
+  // Enlace de invitación del espacio, para sumarlo al mensaje de WhatsApp. Si no se puede leer, va sin enlace.
+  const [invitacion, setInvitacion] = useState<string | null>(null)
+  useEffect(() => {
+    if (!esOrganizador) return
+    let vivo = true
+    void api.getSpace(espacioId).then((r) => {
+      if (vivo && r.ok) {
+        setInvitacion(`${window.location.origin}${window.location.pathname}${rutas.unirse(r.data.espacio.codigo_invitacion)}`)
+      }
+    })
+    return () => {
+      vivo = false
+    }
+  }, [espacioId, esOrganizador])
+
   return (
     <>
-      <section className="tarjeta">
+      <section className="tarjeta agente-panel">
         <h2>Mis preferencias</h2>
         <MisPreferencias espacioId={espacioId} soloLectura={soloLectura} />
       </section>
       {esOrganizador ? (
-        <section className="tarjeta">
+        <section className="tarjeta agente-panel">
           <h2>Agente del círculo</h2>
           <p className="suave">
             Lee las preferencias de todo el grupo, mira el clima y un catálogo de lugares (de Simulación) y te propone opciones que le sirven a todos. Propone, pero no decide por nadie.
           </p>
-          <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} />
+          <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} invitacion={invitacion} />
         </section>
       ) : null}
     </>
