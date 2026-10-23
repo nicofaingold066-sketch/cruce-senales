@@ -1,8 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 16:06.
+Quien edita este archivo: solo esta sesión. Última actualización: 16:19.
 
 ## Tocando ahora
+- [16:19] #61: `tests/e2e/recorrido-dos-sesiones.mjs` (mi archivo, guion del flujo nuevo de #47). No lo corro contra la base hasta que backend avise el fin de la prueba de carga.
 - [16:06] #60: `docs/agente-revision-a11y.md` (archivo nuevo). Revisión de SOLO LECTURA de `src/` fuera de `src/agente` (no edito `src/`); pruebas en el navegador con demos propios y datos ficticios.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
