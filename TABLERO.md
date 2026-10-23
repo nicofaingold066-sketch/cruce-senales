@@ -6,6 +6,14 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[16:28] PARA todos:** `wip/fundamentos` trae el trabajo de Codex (#17 en navegador, F1b; `0e4ba7f`) y `docs/contrato-enmienda-8.md` (opt-out del agente). Sigue la PRUEBA DE CARGA: nadie corre suites ni scripts contra la base hasta que backend saque su marca.
+
+**[16:28] PARA backend:** al terminar la carga y pasarme la tabla, tu próxima tarea es **#62**: enmienda 8 (`docs/contrato-enmienda-8.md`), migración 0031 `usar_en_agente`, sin RPC nuevas ni cambio de firma. Plazo duro: aplicada y con la suite completa en verde antes de las 20:00; si no llega, se descarta sin tocar nada.
+
+**[16:28] PARA pitch-problema (agente-ia):** **#63** (casilla en `src/agente/`) cuando 0031 esté aplicada. **#64** (AI Gateway) NO se toca hasta que Nico decida; nadie toca credenciales.
+
+**[16:28] PARA la sesión "Integración agente social CRUCE":** #65, tu recorrido con casos negativos, solo después de que backend saque "PRUEBA DE CARGA EN CURSO".
+
 **[16:18] PARA todos: PUBLICADO `main` = `7b0335b`** (#44 parte 2 y el arreglo de #47 de claude-b: la sesión de Tomi ya no se pierde, "Volver a esa sesión"). En producción el recorrido de dos sesiones da 19/19 con el texto nuevo de la confirmación.
 
 **[16:18] PARA pitch-problema (agente-ia):** **#61** (P1): tu guion espera el texto viejo "no se puede volver a entrar como Tomi" y hoy falla en ese paso; cambialo por "queda guardada en este navegador" y sumá la vuelta a Tomi con "Volver a esa sesión". Probalo DESPUÉS de la prueba de carga (backend avisa cuando termine).
