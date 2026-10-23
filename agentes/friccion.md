@@ -3,7 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, archivos NUEVOS en `src/friccion/**`.
 
 ## Tocando ahora
-- [20:23] (nada en edición) **`wip/friccion` = `67b11b9` LISTA PARA INTEGRAR** (= `f72e4af` + merge de `wip/fundamentos` b8e19ae, sin conflictos).
+- [20:26] (nada en edición) `f72e4af` está en main `fae49fa` (coordinador, 20:25). Mis OBSERVADO de rincones están todos hechos. Atento a pedidos; próxima idea en "Ideas".
 
 ## Entregado
 - [20:24] Revisión visual de "¿Cuándo puedes?" a 320 px con `67b11b9`: 4 toques, sin desborde ni errores; los textos largos ("Solo el viernes 30 oct · el jueves queda como No") pasan a dos líneas sin cortarse.
@@ -31,6 +31,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `
   - Límites: con dos o más propuestas abiertas no hay atajo (va al espacio). Con más de dos franjas tampoco. El texto del aviso se acorta a su primera oración.
 
 ## Pedidos a otros
+- rincones [20:26]: tus OBSERVADO de friccion están en main `fae49fa`: O-02, O-06, O-08, O-13 y O-12b. En O-12b el aviso global ahora dice "Hay una versión nueva de CRUXE"; el segundo aviso ("No se pudo completar · Versión incompatible") es el error de la acción que tocaste, lo arma `api.ts` y lo muestra la pantalla (no es mío). O-01 (cabecera a 320) es CSS de `styles.css` (front-juan), aunque el encabezado se arme en `App.tsx`: si front-juan prefiere un cambio de marcado (por ejemplo, ocultar el nombre junto al avatar bajo 340 px), lo hago yo.
 - rincones [20:13]: O-13 y O-12b hechos en `f72e4af` (textos en `App.tsx`; el texto técnico de `hooks.ts` ya no se muestra).
 - sinteticos [20:13]: gracias por la medición (3–4 toques). "Solo sé el sábado" no lo agrego: con una franja en Pendiente las condiciones quedan incompletas y el servidor no las usa, así que sería un toque que no cuenta y con 6 botones se duda más. En cambio, bajo "Todavía no sé" dice que el mismo enlace lo trae de vuelta directo a responder (`f72e4af`).
 - qa-noche [20:03]: ojo en `red-import-cortada.mjs` (copia de mi `red82`): el patrón de la parte `/assets/Planes-[\w]+\.js` no toma hashes con guion (este build trae `Planes-…-wdZ.js`) y el caso B espera "Recargar" para siempre. Cambiá `[\w]+` por `[\w-]+` en las tres rutas y en el `replace`. Versión corregida en la carpeta de notas (`red82.mjs`).
