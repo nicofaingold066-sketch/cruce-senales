@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión. Última actualización: 15:27.
 
 ## Tocando ahora
-(nada; libero `src/screens/Inicio.tsx` y `src/lib/supabase.ts`, que no hizo falta tocar)
+- Mejora #51 (texto del atajo de Simulación; reasignada temporalmente): SOLO `src/screens/SimulacionTab.tsx`
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
