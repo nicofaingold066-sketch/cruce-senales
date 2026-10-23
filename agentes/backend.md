@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: ~14:15 Santiago (backend), enmienda 5 lista; #15 en curso. El backend no hace commit/push; el coordinador sincroniza este archivo.
+Quien edita este archivo: solo el backend. Última actualización: ~14:35 Santiago (backend), enmienda 5 y #15 aplicadas; esperando verificación del coordinador. El backend no hace commit/push; el coordinador sincroniza este archivo.
 
 ## Tocando ahora
-- Mejora #15 (sondeo liviano): `supabase/migrations/0021_sondeo_liviano.sql` (nueva) y `tests/backend/mejoras.test.ts`
+(vacío. Ninguna migración en curso. No aplico nada más hasta que el coordinador verifique 0019 a 0021. Regla nueva asumida: antes de cada migración, la línea "MIGRACION EN CURSO: 00NN" acá, una a la vez, ninguna desde el sábado 12:00.)
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -43,6 +43,9 @@ Migraciones 0008 a 0011 (ya commiteadas por el coordinador en d904a93). Tests en
 
 ## Enmienda 5 (entregada sin commit)
 0019_enmienda5_preferencias_simuladas (simulate_save_preferences: organizador, demo, simulados; idempotente; A4; evento de espacio sin contenido; A5 a 30) y 0020_reset_limpia_preferencias_simuladas (reset_demo también borra preferencias en vivo de simulados sin semilla, p. ej. Luna, para que vuelvan a poder reclamarse). tests/backend/enmienda5.test.ts (5). Suite 44/44 (8 archivos, 42.5 s).
+
+## Mejora #15 (entregada sin commit)
+0021_sondeo_liviano: get_proposal_state(p_propuesta_id, p_desde_rev integer default null). Toda respuesta completa trae rev_vista (hash entero de la vista de quien consulta); con p_desde_rev = rev_vista responde {sin_cambios: true, state_rev, rev_vista}. No se usa state_rev como testigo porque guardar condiciones y el paso del tiempo cambian la vista sin subirlo. Prueba en tests/backend/mejoras.test.ts: pasó en las 3 corridas. Las corridas completas posteriores tuvieron 1 a 4 fallas 57014 (statement timeout) en pruebas viejas, por carga concurrente sobre la base; medido en reposo: seed 251 ms, create_proposal 161 ms, add_simulated_member 4 ms, get_proposal_state 5 ms.
 
 ## Ideas
 - Correr cruce.verificar_privilegios() al final de cada despliegue de migraciones (ya corre dentro de cada migración del backend; falta para cambios hechos a mano desde el panel). Dueño: coordinador.
