@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../lib/api'
-import type { ApiError, EspacioResumen, TipoEspacio } from '../lib/types'
-import { useAccion } from '../lib/hooks'
+import type { ApiError, EspacioResumen, PropuestaResumen, TipoEspacio } from '../lib/types'
+import { useAccion, useSondeo } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
-import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
+import { Aviso, Boton, Cargando, ErrorCaja, InsigniaEstado } from '../components/ui'
 import { Marca } from '../components/Marca'
 
 const TIPO: Record<TipoEspacio, string> = { amigos: 'Amigos', empresa: 'Empresa' }
@@ -18,11 +18,18 @@ export default function Inicio({
   const [espacios, setEspacios] = useState<EspacioResumen[] | null>(null)
   const [error, setError] = useState<ApiError | null>(null)
 
+  const [activas, setActivas] = useState<PlanActivo[]>([])
+  const secuencia = useRef(0)
+
   const cargar = useCallback(async () => {
+    const mia = ++secuencia.current
     const r = await api.listMySpaces()
+    if (mia !== secuencia.current) return
     if (r.ok) {
       setEspacios(r.data.espacios)
       setError(null)
+      const planes = await planesActivos(r.data.espacios)
+      if (mia === secuencia.current) setActivas(planes)
     } else {
       setError(r.error)
     }
@@ -31,6 +38,9 @@ export default function Inicio({
   useEffect(() => {
     void cargar()
   }, [cargar])
+  // Mejora #30: con espacios, el plan activo se mantiene al día (mismo ritmo que la lista del espacio).
+  useSondeo(cargar, 10000, (espacios?.length ?? 0) > 0)
+  const conPlan = activas.length > 0
 
   return (
     <div className="pantalla">
@@ -47,7 +57,8 @@ export default function Inicio({
           <UnirsePorCodigo deshabilitado={soloLectura} codigoInicial={codigoInvitacion} />
         </div>
       ) : null}
-      <section className="portada" aria-labelledby="portada-titulo">
+      {conPlan && !codigoInvitacion ? <TuPlan activas={activas} /> : null}
+      <section className={`portada ${conPlan ? 'portada-compacta' : ''}`} aria-labelledby="portada-titulo">
         <Marca grande />
         <h1 id="portada-titulo" className="portada-lema">
           Del «nos juntamos» al encuentro que ocurre.
@@ -57,32 +68,34 @@ export default function Inicio({
         </p>
         {codigoInvitacion ? null : (
           <div className="portada-acciones">
-            <CargarDemo deshabilitado={soloLectura} yaCargada={espacios?.some((e) => e.demo) ?? false} />
+            <CargarDemo deshabilitado={soloLectura} yaCargada={espacios?.some((e) => e.demo && e.mi_rol === 'organizador') ?? false} />
             <button type="button" className="btn btn-secundario" onClick={irAUnirse}>
               Tengo un código de invitación
             </button>
           </div>
         )}
-        <ol className="portada-pasos" aria-label="Cómo funciona">
-          <li>
-            <span className="paso-num" aria-hidden="true">1</span>
-            <span>
-              <strong>Cada uno</strong> marca en privado cuándo puede.
-            </span>
-          </li>
-          <li>
-            <span className="paso-num" aria-hidden="true">2</span>
-            <span>
-              <strong>El servidor</strong> propone una sola opción compatible.
-            </span>
-          </li>
-          <li>
-            <span className="paso-num" aria-hidden="true">3</span>
-            <span>
-              <strong>Confirmas</strong> esa versión. Si alguien se baja, se repara y se vuelve a confirmar.
-            </span>
-          </li>
-        </ol>
+        {conPlan ? null : (
+          <ol className="portada-pasos" aria-label="Cómo funciona">
+            <li>
+              <span className="paso-num" aria-hidden="true">1</span>
+              <span>
+                <strong>Cada uno</strong> marca en privado cuándo puede.
+              </span>
+            </li>
+            <li>
+              <span className="paso-num" aria-hidden="true">2</span>
+              <span>
+                <strong>El servidor</strong> propone una sola opción compatible.
+              </span>
+            </li>
+            <li>
+              <span className="paso-num" aria-hidden="true">3</span>
+              <span>
+                <strong>Confirmas</strong> esa versión. Si alguien se baja, se repara y se vuelve a confirmar.
+              </span>
+            </li>
+          </ol>
+        )}
       </section>
 
       {espacios === null && !error ? <Cargando texto="Buscando tus espacios…" /> : null}
@@ -112,6 +125,57 @@ export default function Inicio({
       {codigoInvitacion ? null : <UnirsePorCodigo deshabilitado={soloLectura} />}
       <CrearEspacio deshabilitado={soloLectura} />
     </div>
+  )
+}
+
+interface PlanActivo {
+  espacio: EspacioResumen
+  p: PropuestaResumen
+}
+
+const ESTADOS_ACTIVOS = new Set(['borrador', 'reuniendo_interes', 'esperando_compromisos', 'grupo_confirmado', 'en_revision'])
+
+/** Propuestas vigentes de mis espacios (hasta 4 espacios). El orden y "Te toca" salen del servidor. */
+async function planesActivos(espacios: EspacioResumen[]): Promise<PlanActivo[]> {
+  const listas = await Promise.all(
+    espacios.slice(0, 4).map(async (e) => {
+      const r = await api.listProposals(e.id)
+      return r.ok ? r.data.propuestas.filter((p) => ESTADOS_ACTIVOS.has(p.estado)).map((p) => ({ espacio: e, p })) : []
+    }),
+  )
+  const turno = (x: PlanActivo) => x.p.siguiente_accion.codigo === 'te_toca_aceptar' || x.p.mi_situacion.puede_aceptar
+  return listas
+    .flat()
+    .sort((a, b) => Number(turno(b)) - Number(turno(a)))
+    .slice(0, 3)
+}
+
+/** Mejora #30: el plan activo arriba de todo, para llegar en un toque (por ejemplo, desde el segundo teléfono). */
+function TuPlan({ activas }: { activas: PlanActivo[] }) {
+  return (
+    <section className="tu-plan" aria-labelledby="tu-plan-titulo">
+      <h2 id="tu-plan-titulo">{activas.length === 1 ? 'Tu plan' : 'Tus planes'}</h2>
+      <ul className="lista-tarjetas">
+        {activas.map(({ espacio, p }) => {
+          const turno = p.siguiente_accion.codigo === 'te_toca_aceptar' || p.mi_situacion.puede_aceptar
+          return (
+            <li key={p.id}>
+              <a className={`tarjeta tarjeta-enlace plan-activo ${turno ? 'plan-activo-turno' : ''}`} href={rutas.propuesta(espacio.id, p.id)}>
+                <span className="suave">{espacio.nombre}</span>
+                <span className="tarjeta-titulo">{p.titulo}</span>
+                <span className="tarjeta-fila">
+                  <InsigniaEstado estado={p.estado} etiqueta={p.estado_etiqueta} />
+                  {p.version != null ? <span className="etiqueta">Versión {p.version}</span> : null}
+                </span>
+                {turno && p.siguiente_accion.codigo !== 'te_toca_aceptar' ? <span className="pastilla pastilla-turno">Te toca confirmar</span> : null}
+                <span className="tarjeta-meta">{p.siguiente_accion.texto}</span>
+                <span className="tarjeta-accion">Abrir el plan</span>
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
   )
 }
 
