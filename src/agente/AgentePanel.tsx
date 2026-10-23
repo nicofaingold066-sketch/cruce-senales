@@ -28,6 +28,7 @@ import {
   type Presupuesto,
   type ResultadoAgente,
 } from './api'
+import { enlacesCanchas } from './canchas'
 
 // Fin de semana del caso canónico: franjas A y B del sábado 31 oct y domingo 1 nov 2026.
 const SABADO_DEL_CASO = '2026-10-31'
@@ -285,6 +286,7 @@ function BorradorTarjeta({
     : textoFijo(elegida.frases_grupo, false, b.clima.fuente === 'simulacion', b.perfil_grupo, elegida.actividad_etiqueta)
   const mensaje = esLaDestacada ? b.mensaje_al_grupo : mensajeFijo(elegida)
   const deModelo = esLaDestacada && b.explicacion_fuente === 'modelo'
+  const canchas = enlacesCanchas(elegida.actividad, elegida.franjas[0])
 
   function usar() {
     guardarBorradorAgente(espacioId, { titulo: titulo.trim(), franjas: elegida.franjas })
@@ -334,6 +336,23 @@ function BorradorTarjeta({
           </li>
         ))}
       </ul>
+      {canchas.length > 0 ? (
+        <div className="bloque agente-canchas">
+          <p>
+            <strong>Posibles canchas reales: </strong>
+            {elegida.lugar.simulado ? 'el club de esta opción es de simulación, pero estos enlaces son reales. ' : ''}
+            La disponibilidad se ve en cada sitio: CRUXE no reserva ni confirma nada.
+          </p>
+          <div className="fila-botones agente-compartir">
+            {canchas.map((e) => (
+              <a key={e.clave} className="btn btn-secundario btn-chico" href={e.url} target="_blank" rel="noopener noreferrer">
+                {e.texto}
+              </a>
+            ))}
+          </div>
+          <small>Google Maps muestra lo que está cerca de quien toca el enlace: CRUXE no conoce la ubicación de nadie.</small>
+        </div>
+      ) : null}
       {b.clima.fuente === 'simulacion' ? (
         <p className="suave">
           Clima de prueba <RotuloSimulacion />: {b.clima.resumen.replace('Simulación: ', '')} No es un pronóstico real.
