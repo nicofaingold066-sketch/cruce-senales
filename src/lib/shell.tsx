@@ -56,11 +56,22 @@ export type Ruta =
   | { nombre: 'espacio'; espacioId: string }
   | { nombre: 'nueva'; espacioId: string }
   | { nombre: 'propuesta'; espacioId: string; propuestaId: string }
-  | { nombre: 'unirse'; codigo: string }
+  | { nombre: 'unirse'; codigo: string; invalida?: boolean }
+
+/** U6 (revisión de Codex): un enlace mal copiado no puede romper la app; se avisa y se ofrece escribir el código. */
+function rutaUnirse(crudo: string): Ruta {
+  try {
+    const codigo = decodeURIComponent(crudo).trim()
+    if (/^[A-Za-z0-9]{4,16}$/.test(codigo)) return { nombre: 'unirse', codigo }
+  } catch {
+    // Escape inválido (por ejemplo "%"): se trata como invitación inválida.
+  }
+  return { nombre: 'unirse', codigo: '', invalida: true }
+}
 
 export function parseRuta(hash: string): Ruta {
   const partes = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
-  if (partes[0] === 'unirse' && partes[1]) return { nombre: 'unirse', codigo: decodeURIComponent(partes[1]) }
+  if (partes[0] === 'unirse' && partes[1]) return rutaUnirse(partes[1])
   if (partes[0] === 'e' && partes[1]) {
     if (partes[2] === 'nueva') return { nombre: 'nueva', espacioId: partes[1] }
     if (partes[2] === 'p' && partes[3]) return { nombre: 'propuesta', espacioId: partes[1], propuestaId: partes[3] }

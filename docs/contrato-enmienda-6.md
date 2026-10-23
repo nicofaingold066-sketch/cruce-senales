@@ -16,3 +16,6 @@ Aprobada por el coordinador. Cambio aditivo: no cambia ninguna operación ni cam
 2. Baja que rompe + `propose_repair` → v2 en B con `opcion_anterior = { version: 1, franja_clave: "A", inicio, fin }` iguales a la franja de v1.
 3. `rev_vista` cambia con la reparación; el sondeo con el `rev_vista` nuevo responde `sin_cambios: true`.
 4. Un miembro común ve el mismo `opcion_anterior`; ninguna respuesta compartida trae condiciones ni preferencias.
+
+## Mejora #28 (privacidad): `proponer_plan_borrador` → `perfil_grupo.gustos` solo con `cuantos >= 2`
+Una actividad elegida por una sola persona no aparece en `gustos` (ni sumada en otro total); `cuantos` cuenta personas distintas. Lo demás de `perfil_grupo` no cambia (con `personas <= 3`, solo `personas`). Migración `0023_gustos_minimo_dos`; prueba "mejora #28" en `tests/backend/enmienda4.test.ts`.

@@ -4,10 +4,29 @@ import { rutas, ShellProvider, useRuta, useShell } from './lib/shell'
 import type { Ruta } from './lib/shell'
 import { Aviso, Boton, Cargando } from './components/ui'
 import { Marca } from './components/Marca'
+import { lazy, Suspense, useEffect } from 'react'
 import Inicio from './screens/Inicio'
-import Espacio from './screens/Espacio'
-import NuevaPropuesta from './screens/NuevaPropuesta'
-import Propuesta from './screens/Propuesta'
+
+// Mejora #14: la primera pantalla carga sola; las demás van en partes aparte (dividen el paquete de > 500 KB)
+// y se precargan en segundo plano apenas hay sesión, para que en la demo navegar no espere a la red.
+const cargarEspacio = () => import('./screens/Espacio')
+const cargarNuevaPropuesta = () => import('./screens/NuevaPropuesta')
+const cargarPropuesta = () => import('./screens/Propuesta')
+const Espacio = lazy(cargarEspacio)
+const NuevaPropuesta = lazy(cargarNuevaPropuesta)
+const Propuesta = lazy(cargarPropuesta)
+
+function usePrecargaPantallas(activa: boolean) {
+  useEffect(() => {
+    if (!activa) return
+    const t = setTimeout(() => {
+      void cargarEspacio()
+      void cargarPropuesta()
+      void cargarNuevaPropuesta()
+    }, 800)
+    return () => clearTimeout(t)
+  }, [activa])
+}
 
 export default function App() {
   const { sesion, reintentar } = useSesion()
@@ -34,7 +53,7 @@ function Marco({
 
   return (
     <>
-      <a className="saltar" href="#contenido">
+      <a className="saltar" href="#contenido" onClick={saltarAlContenido}>
         Saltar al contenido
       </a>
       <header className="encabezado">
@@ -105,6 +124,15 @@ function Marco({
 }
 
 function Pantalla({ ruta }: { ruta: Ruta }) {
+  usePrecargaPantallas(true)
+  return (
+    <Suspense fallback={<Cargando texto="Cargando…" />}>
+      <PantallaRuta ruta={ruta} />
+    </Suspense>
+  )
+}
+
+function PantallaRuta({ ruta }: { ruta: Ruta }) {
   switch (ruta.nombre) {
     case 'espacio':
       return <Espacio key={ruta.espacioId} espacioId={ruta.espacioId} />
@@ -113,8 +141,16 @@ function Pantalla({ ruta }: { ruta: Ruta }) {
     case 'propuesta':
       return <Propuesta espacioId={ruta.espacioId} propuestaId={ruta.propuestaId} />
     case 'unirse':
-      return <Inicio key={ruta.codigo} codigoInvitacion={ruta.codigo} />
+      return ruta.invalida ? <Inicio key="invitacion-invalida" invitacionInvalida /> : <Inicio key={ruta.codigo} codigoInvitacion={ruta.codigo} />
     default:
       return <Inicio />
   }
+}
+
+/** U5 (revisión de Codex): la navegación usa el hash, así que el enlace no puede cambiarlo; solo mueve el foco. */
+function saltarAlContenido(e: React.MouseEvent<HTMLAnchorElement>) {
+  e.preventDefault()
+  const main = document.getElementById('contenido')
+  main?.focus()
+  main?.scrollIntoView({ block: 'start' })
 }

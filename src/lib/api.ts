@@ -360,7 +360,7 @@ export function textoError(e: ApiError): string {
 /** Orientación adicional para el usuario según el error (enmienda 2). No calcula nada: solo explica. */
 export function ayudaError(e: ApiError): string | null {
   if (e.codigo === 'cupo_completo' && e.detalle === 'reservado_imprescindible') {
-    return 'El último cupo está reservado para el anfitrión. Podrás confirmar si el anfitrión confirma primero o si se libera un cupo.'
+    return 'El último cupo está reservado para el anfitrión. Podrás confirmar si se libera un cupo para otros.'
   }
   if (e.codigo === 'asiento_en_uso') {
     return 'Ese lugar ya tiene actividad en el espacio. Entra con otro nombre visible: serás una persona nueva, sin compromisos heredados.'
