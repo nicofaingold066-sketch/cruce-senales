@@ -46,3 +46,51 @@
   font-size: 1.1rem;
   margin: 0 0 6px;
 }
+
+/* #90 Tomar de mi calendario (Simulación) */
+.calendario-sim {
+  margin: 0 0 12px;
+}
+.btn.calendario-sim-abrir {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  white-space: normal;
+  text-align: left;
+}
+.calendario-sim-abrir .rotulo-sim {
+  margin-left: auto;
+}
+.calendario-sim-cuerpo > p {
+  margin: 10px 0;
+  font-size: 0.88rem;
+}
+.calendario-sim-dias {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.calendario-sim-dias li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+.calendario-sim-dia {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+}
+.calendario-sim-choque {
+  font-weight: 600;
+}
+.calendario-sim-cuerpo .btn {
+  width: 100%;
+}

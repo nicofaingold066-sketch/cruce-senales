@@ -12,6 +12,7 @@ import { diaDe, hora } from '../lib/format'
 import { vibrar } from '../lib/tacto'
 import { Aviso, Boton, Cargando, DiaTile, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
+import { TomarDeCalendario } from './Calendario'
 import './friccion.css'
 
 interface Opcion {
@@ -211,6 +212,16 @@ export function Responder({ espacioId }: { espacioId: string }) {
               ))}
             </ul>
             {guardar.ocupado ? <p role="status" className="suave">Guardando…</p> : null}
+            <TomarDeCalendario
+              franjas={p.franjas}
+              semilla={s.miembro_id}
+              deshabilitado={soloLectura || guardar.ocupado}
+              textoUsar="Responder con esta agenda"
+              onTomar={(d) => {
+                const o = opciones.find((x) => p.franjas.every((f) => x.disponibilidad[f.clave] === d[f.clave]))
+                if (o) void responder(o)
+              }}
+            />
             {guardar.error ? <ErrorCaja error={guardar.error} enfocar /> : null}
             <a className="btn btn-secundario entrada-enlace" href={verPlan}>
               Todavía no sé: ver el plan
