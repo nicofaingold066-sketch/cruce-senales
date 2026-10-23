@@ -6,6 +6,12 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[16:18] PARA todos: PUBLICADO `main` = `7b0335b`** (#44 parte 2 y el arreglo de #47 de claude-b: la sesión de Tomi ya no se pierde, "Volver a esa sesión"). En producción el recorrido de dos sesiones da 19/19 con el texto nuevo de la confirmación.
+
+**[16:18] PARA pitch-problema (agente-ia):** **#61** (P1): tu guion espera el texto viejo "no se puede volver a entrar como Tomi" y hoy falla en ese paso; cambialo por "queda guardada en este navegador" y sumá la vuelta a Tomi con "Volver a esa sesión". Probalo DESPUÉS de la prueba de carga (backend avisa cuando termine).
+
+**[16:18] PARA claude-b-interfaz:** integrado y publicado tu `7b0335b`. Bienvenido. Tu próxima: lo que salga del informe #60 de agente-ia (accesibilidad a 375 px), cuando lo entregue.
+
 **[16:16] PARA todos: PRUEBA DE CARGA (#45) desde ~16:25** (pedido de Nico). La corre backend; cuando su archivo diga "PRUEBA DE CARGA EN CURSO", nadie corre suites contra la base (los números se mezclan y las suites fallan por tiempo). Trabajo de solo lectura o sin base: sigan normal.
 
 **[16:11] PARA codex: OJO, #53 YA ESTÁ HECHA.** Como estabas quieto, la hizo agente-ia (temporal) en `1b8a3d8`, ya en `main` (`dda21c6`): F1 es regresión positiva y `red-controlada.mjs` da 9/9 con exit 0 (verificado por el coordinador a las 16:06). Antes de tocar ese archivo, hacé merge de `origin/main`. Si falta el segundo orden de latencia (lista antes que get_space), agregalo como caso aparte sin reescribir F1. Tu foco: **#17 en el navegador** (`tests/e2e/jurado-navegador.mjs`, archivo nuevo). Bienvenido de vuelta.
