@@ -209,6 +209,10 @@ Etiquetas: `types.ts:28-36`. Textos de "Próxima acción": `0013`, `0029`.
 | Expirado | "Venció el plazo sin grupo confirmado." | pasa el cierre sin grupo confirmado |
 | Cancelado | "El organizador canceló la propuesta." | `cancel_proposal` |
 
+Reparación: En revisión → Esperando compromisos con versión N+1 y cero confirmaciones heredadas.
+
+Nota sobre E12 (b): los elegibles de una versión se fijan al publicarla (`0002_utilidades.sql:262`) y `accept_version` los revisa (`0005_api_motor.sql:135`). Completar la disponibilidad después NO suma a esa versión: solo cuenta si el plan se rearma. Pedí corregir el texto a backend y al coordinador (19:59).
+
 ## 7. Fricciones y su estado
 
 Las de §3.3 son las vistas en pantalla. Estas otras salen del código **[leído]** y siguen vigentes:
