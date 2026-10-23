@@ -72,7 +72,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 54 | Coherencia (no privacidad): `ritmo_del_grupo` usa el umbral sin quien pide pero compara contra la mayoría de TODOS (0026:81-90, 123-124, 148), mientras el perfil excluye a quien pide; el voto del organizador puede hacer desaparecer la frase. Alinear con v_energia_o / v_ambiente_o solo si es trivial y antes del sábado 11:00 | backend | libre, P3 |
 
 ## Para Nico (no las toma un agente)
-- Vercel: Nico pagó Pro; publicado de nuevo a las 15:17 en https://cruce-senales.vercel.app. Solo CLI, en lote, sin GitHub.
+- Vercel (resuelto): Pro de Nico; GitHub conectado pero construye solo `main`; un push a `main` publica solo.
 - Crear la clave de la API de Anthropic con límite de gasto y cargarla como secreto de la función `agente` en Supabase.
 - Elegir el modelo del agente (por defecto `claude-haiku-5-5`; Juan pidió calidad).
 - Rotar la clave publishable de Supabase después del evento.
