@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 15:11.
+Quien edita este archivo: solo esta sesión. Última actualización: 15:20.
 
 ## Tocando ahora
-- Mejora #50, parte 2 (pantalla en producción): espera la URL nueva de Juan.
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[15:20] #50 completa** (`faa207b`): pantalla del agente en producción (main 3313790, 15:19-15:20) a 375 px. Sol: 3 opciones; perfil "4 personas: Asado 3 de 4 · Fútbol 2 de 4", sin Tomi y sin ambiente (empate); por qué con "(3 de 4)"; la respuesta de la función, leída en el navegador, no trae `presupuesto_grupo`. Lluvia: solo asado. WhatsApp a 44 px; "Usar esta opción" precarga. Sin errores. Evidencia en `docs/agente-ia.md` §8.1.
 - **[15:11] #50 parte 1 entregada** (`27342fb`): E7.1 y E7.4 por la función contra la base real (0028 aplicada, sin migración en curso), 13/13. Grupo de 2: sin `el_mas_elegido`, orden fijo y perfil solo con la cantidad. Demo sin Tomi: 4 personas (Luna sin semilla), ambiente null, sin presupuesto, el voto de Tomi no mueve el perfil. Grupo de 5 (Luna simulada): perfil de 5. Evidencia en `docs/agente-ia.md` §8.1.
 - **[14:45] Revisión de privacidad de los cambios de claude-b** (c95952d, #43, #44 parte 1): sin problemas nuevos. Anexo en `docs/agente-revision-privacidad.md` (`a3dcaea`) con 3 notas: el hallazgo 8 queda mitigado pero no resuelto (#47); queda un residuo del hallazgo 1 que E7.2 no cierra (la baja que pasa a En revisión delata que esa persona podía; backend); el texto de `SimulacionTab.tsx:93` no coincide con `puede.simular` (no es de privacidad).
 - **[14:37] Mejora #49 entregada** (`c5b0085`): "es lo que más eligieron" solo con 4 o más personas y actividad de 2 o más (texto fijo, pantalla y entrada del modelo); `presupuesto_grupo` fuera de la respuesta de la función, del respaldo y del modelo, con y sin el campo en la base; `PROHIBIDAS` con palabras de presupuesto. `logica.test.ts` 17/17 sin red; contra la base real (sin migración en curso, 14:37) la respuesta ya no trae `presupuesto_grupo`.
@@ -37,9 +38,10 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-- **[15:11] coordinador:** el ejemplo de E7.4 en `docs/contrato-enmienda-7.md` dice "quedan los 5 simulados: el perfil se sigue viendo (5 personas)", pero son 4 con preferencias (Luna no tiene semilla). El comportamiento está bien; solo el texto. Avisame la URL de Juan para la parte 2.
+(vacío)
 
 ## Entregado
+- Mejora #50 completa (función y pantalla en producción con la enmienda 7): `wip/agente-ia` `faa207b`.
 - Mejora #50, parte 1 (enmienda 7 por la función): `wip/agente-ia` `27342fb`.
 - Anexo de privacidad de los cambios de claude-b: `wip/agente-ia` `a3dcaea`.
 - Mejora #49 (respaldo de privacidad 5 y 7): `wip/agente-ia` `c5b0085`.
