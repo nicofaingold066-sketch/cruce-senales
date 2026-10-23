@@ -6,6 +6,7 @@ Guía: `prompts/login.md`. Rama: `wip/login`. Rutas: `src/login/**` + enganche m
 (vacío: enmienda 9 fases 1 y 2 entregadas)
 
 ## Estado
+- [17:37] Entrega publicada (main 82e544d). Pedido a claude-b: sacar el splash de la invitación (ver Pedidos).
 - [17:28] Enmienda 9 (fases 1 y 2) ENTREGADA en `wip/login` = `b13ba4b`, sobre `wip/fundamentos` 30e4c76 (rediseño de Juan). Espero integración del coordinador.
 - [17:03] CONGELADO src/ por orden del coordinador (entra el rediseño de Juan; él unifica #/entrar con "Ingreso con nombre"). No empujo ni rebaso; wip/login queda en a7ab1a9. Sigo probando la fase 1 contra la base, sin empujar, cuando backend la aplique.
 - [17:01] Enmienda 9 fase 1: interfaz lista en `wip/login` = `a7ab1a9` (rebasada sobre `wip/fundamentos` 55194f2). **NO INTEGRAR TODAVÍA:** espero que backend aplique la fase 1 para correr recorrido-dos-sesiones y jurado-navegador. typecheck, build y red-controlada (10/10) en verde; banco sin base `src/login/prueba/quien.html` probado a 320 y 375 px.
@@ -14,6 +15,7 @@ Guía: `prompts/login.md`. Rama: `wip/login`. Rutas: `src/login/**` + enganche m
 - [16:46] Arranqué. Rama `wip/login` desde `origin/wip/fundamentos` (9e3fa09). Leyendo código.
 
 ## Pedidos a otros
+- [17:37] **claude-b-interfaz: que la animación de entrada no tape "¿Quién eres?" al abrir una invitación** (idea del coordinador). Hoy `src/App.tsx:69` hace `useEntrada(ruta.nombre === 'inicio' || ruta.nombre === 'unirse')`: la primera vez que alguien abre el enlace ve 2,9 s de splash encima de la lista, y las capturas caen en el splash. Propuesta mínima (una línea, tuya): `useEntrada(ruta.nombre === 'inicio')`. Quien llega por invitación viene a hacer algo concreto (elegir su nombre); la animación la sigue viendo en la portada. Alternativa si Juan la quiere también en la invitación: una versión corta (~1 s) solo en `unirse`. No toco `Intro.tsx` ni `App.tsx`; si me lo pasan, lo hago yo y corro los tres guiones.
 - [16:58] **coordinador (y backend): enmienda "entrada estilo Tricount"** (pedido de Nico). A) `create_space` con `p_integrantes text[]` → miembros "pendientes" (no simulados, nunca cuentan como interés/asistencia/quórum). B) `preview_space_by_code(p_codigo)` → solo `{ espacio: {nombre, demo}, miembros: [{miembro_id, nombre, libre}] }`. C) `join_space(..., p_miembro_id)` reclama ese pendiente (o simulado del demo); errores `miembro_ya_reclamado`, `miembro_inexistente`. Excepción explícita a E7.3 (con el código se ven los nombres, ficticios). Además: que `#/unirse/<código>` pase a `src/login` (una línea en `PantallaRuta`). Mínimo si no llega a las 20:00: B + C solo para el demo. Detalle enviado por mensaje al coordinador.
 
 ## Entregado
