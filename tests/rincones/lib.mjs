@@ -97,6 +97,17 @@ const AUDITORIA = () => {
       if (oculto && e.scrollWidth > e.clientWidth + 2) out.push({ tipo: 'texto-cortado', detalle: `${desc(e)}: "${e.textContent.trim().slice(0, 50)}" (${e.scrollWidth}>${e.clientWidth})` })
     }
   }
+  // 3b. texto cortado en vertical (caja con overflow oculto más baja que su contenido) y pestañas recortadas por el borde
+  for (const e of document.querySelectorAll('body *')) {
+    if (!visible(e) || e.closest('.visualmente-oculto')) continue
+    const s = getComputedStyle(e)
+    if ((s.overflowY === 'hidden' || s.overflow === 'hidden') && (e.textContent || '').trim().length > 1 && e.scrollHeight > e.clientHeight + 2 && e.clientHeight > 0 && e.children.length < 3)
+      out.push({ tipo: 'texto-cortado-vertical', detalle: `${desc(e)}: "${e.textContent.trim().slice(0, 40)}" (${e.scrollHeight}>${e.clientHeight})` })
+  }
+  for (const e of document.querySelectorAll('[role=tab]')) {
+    const r = e.getBoundingClientRect()
+    if (visible(e) && (r.right > vw + 1 || r.left < -1)) out.push({ tipo: 'pestana-recortada', detalle: `pestaña "${(e.innerText || '').trim()}" se sale de la pantalla (${Math.round(r.left)}–${Math.round(r.right)} de ${vw})` })
+  }
   // 4. objetivos táctiles pequeños (solo informativo a ≤ 480 px)
   if (vw <= 480) {
     for (const e of document.querySelectorAll('button, a[href], [role=tab], input[type=checkbox], input[type=radio]')) {
@@ -166,7 +177,7 @@ const AUDITORIA = () => {
       for (const ra of a.rs) for (const rb of b.rs) {
         const w = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left)
         const h = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top)
-        if (w > 6 && h > Math.min(ra.height, rb.height) * 0.4) choque = true
+        if (w > 6 && h > Math.min(ra.height, rb.height) * 0.2) choque = true
       }
       if (choque) {
         // Se ignora si están en capas distintas (uno es de un diálogo/superposición que tapa a propósito).
