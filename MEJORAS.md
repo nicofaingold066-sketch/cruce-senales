@@ -17,7 +17,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 18 | U2: "Crear y abrir" permite crear dos propuestas (doble envío) | claude-b-interfaz | libre |
 | 19 | U3: tope de tiempo para peticiones que no terminan | claude-b-interfaz | libre |
 
-| 23 | Clima de simulación en espacios demo ("Clima real / Simular sol / Simular lluvia", rotulado Simulación; la función lo acepta solo si get_space dice demo) | agente-ia | tomada por agente-ia |
+| 23 | Clima de simulación en espacios demo ("Clima real / Simular sol / Simular lluvia", rotulado Simulación; la función lo acepta solo si get_space dice demo) | agente-ia | desplegada y verificada (b709369, función v2) |
 | 24 | Prop `demo` en `AgentePanel` para mostrar el selector de clima solo en demos | claude-b-interfaz | libre |
 
 ## P2 — Que se entienda a la primera (UX de la demo)
