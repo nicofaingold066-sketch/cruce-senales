@@ -85,7 +85,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 ## Para Nico (no las toma un agente)
 - Juan sube un aporte real con su cuenta (JuanMorales10) antes del sábado 13:00: las bases piden que el historial muestre quién hizo qué. Nada inventado ni commits vacíos.
 - Vercel (resuelto): Pro de Nico; GitHub conectado pero construye solo `main`; un push a `main` publica solo.
-- Crear la clave de la API de Anthropic con límite de gasto y cargarla como secreto de la función `agente` en Supabase.
+- Clave del modelo: HECHO (16:45): `AI_GATEWAY_API_KEY` cargada como secreto de la función por Nico; falta que agente-ia entregue #64 y probar en vivo.
 - Elegir el modelo del agente (por defecto `claude-haiku-5-5`; Juan pidió calidad).
 - Rotar la clave publishable de Supabase después del evento.
 
