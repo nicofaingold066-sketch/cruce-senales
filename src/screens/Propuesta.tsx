@@ -80,6 +80,10 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
     ...(esOrganizadorEspacio ? [{ id: 'simulacion' as Pestana, texto: 'Simulación' }] : []),
   ]
   const activa = pestanas.some((t) => t.id === pestana) ? pestana : 'plan'
+  // Enmienda 3: el código decide el acento; mientras el servidor no lo envíe, se usan sus mismos booleanos.
+  const cod = p.siguiente_accion.codigo
+  const turno = cod === 'te_toca_aceptar' || (cod !== 'ya_aceptaste' && p.mi_situacion.puede.aceptar)
+  const yaAcepte = cod === 'ya_aceptaste' || (!turno && p.mi_situacion.acepte_version && p.opcion != null)
   const props = { p, viva, soloLectura, irAPestana: setPestana }
 
   return (
@@ -119,12 +123,19 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
 
       <header className="propuesta-cabecera">
         <h1>{p.titulo}</h1>
-        <div className={`estado-hero estado-hero-${p.estado}`} role="status" aria-live="polite">
+        <div
+          className={`estado-hero estado-hero-${p.estado} ${turno ? 'estado-hero-turno' : ''}`}
+          data-codigo={cod}
+          role="status"
+          aria-live="polite"
+        >
           <div className="estado-hero-fila">
             <span className="estado-hero-punto" aria-hidden="true" />
             <strong className="estado-hero-etiqueta">{p.estado_etiqueta}</strong>
             {p.opcion ? <span className="estado-hero-version">Versión {p.opcion.version}</span> : null}
           </div>
+          {turno && cod !== 'te_toca_aceptar' ? <span className="pastilla pastilla-turno">Tu turno: confirma la versión {p.opcion?.version}</span> : null}
+          {yaAcepte && cod !== 'ya_aceptaste' ? <span className="pastilla pastilla-ok">Ya confirmaste la versión {p.opcion?.version}</span> : null}
           <p className="estado-hero-siguiente">
             <span className="visualmente-oculto">Próxima acción: </span>
             {p.siguiente_accion.texto}

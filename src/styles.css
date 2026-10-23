@@ -712,13 +712,16 @@ input[aria-invalid='true'],
 }
 /* La X del nombre es el logo: misma altura que las mayúsculas. */
 .marca-x {
-  height: 0.86em;
+  height: 0.9em;
   width: auto;
-  margin: 0 0.1em 0 0.02em;
+  margin: 0 0.06em 0 -0.02em;
   overflow: visible;
 }
 .logo-b {
   stroke: var(--punto);
+}
+.logo-b-relleno {
+  fill: var(--punto);
 }
 .marca-grande .marca-nombre {
   font-size: 2.6rem;
@@ -901,4 +904,36 @@ input[aria-invalid='true'],
 }
 .ficha summary h2 {
   margin: 0;
+}
+
+/* ---- Enmienda 3: acento personal según siguiente_accion.codigo ---- */
+.estado-hero-turno {
+  box-shadow: inset 5px 0 0 var(--primario);
+}
+.pastilla {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 3px 12px;
+}
+.pastilla-turno {
+  background: var(--primario);
+  color: var(--primario-texto);
+}
+.pastilla-ok {
+  background: var(--ok-fondo);
+  color: var(--texto);
+  border: 1px solid var(--ok-borde);
+}
+
+/* ---- Invitación por enlace ---- */
+.invitacion {
+  margin: 12px 0 8px;
+}
+@media (max-width: 400px) {
+  .estado-hero-etiqueta {
+    font-size: 1.15rem;
+  }
 }

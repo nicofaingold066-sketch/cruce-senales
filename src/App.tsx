@@ -112,6 +112,8 @@ function Pantalla({ ruta }: { ruta: Ruta }) {
       return <NuevaPropuesta key={ruta.espacioId} espacioId={ruta.espacioId} />
     case 'propuesta':
       return <Propuesta espacioId={ruta.espacioId} propuestaId={ruta.propuestaId} />
+    case 'unirse':
+      return <Inicio key={ruta.codigo} codigoInvitacion={ruta.codigo} />
     default:
       return <Inicio />
   }
