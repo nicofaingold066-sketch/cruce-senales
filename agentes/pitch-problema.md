@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 17:37.
+Quien edita este archivo: solo esta sesión. Última actualización: 17:39.
 
 ## Tocando ahora
-- [17:37] `docs/agente-barrido.md` (archivo nuevo, pedido de Nico): barrido de actividades para grupos de amigos, variables del agente y fuentes a las que podría conectarse (canchas, eventos, restaurantes, contexto). Solo investigación; no toca código.
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[17:39] Barrido entregado** (`a7fedff`, `docs/agente-barrido.md`, pedido de Nico): actividades para grupos de amigos, variables del agente (actuales y propuestas con privacidad) y fuentes reales en Santiago y Mendoza. Canchas: no hay API pública (enlace a ATC en Mendoza, EasyCancha en Santiago con acuerdo; EasyCancha prohíbe raspar). Eventos: Chile Cultura sin clave para Santiago, API-Football. Lugares con ambiente: Google Places (1.000 gratis al mes). Contexto: Open-Meteo ampliado (OJO: plan gratis no comercial y atribución con enlace), alertas DMC/SMN, feriados Boostr/ArgentinaDatos. Para la demo no se toca nada.
 - **[17:26] Mejora #77 entregada** (`06a9bfc`, `docs/agente-qa-enmienda9.md`): QA en vivo de la enmienda 9 por RPC, 40/40 (17:26:09 a 17:26:12; una corrida previa 38/38 a las 17:25). Espacio propio con 3 integrantes pendientes y 4 sesiones: errores de `create_space`, claves de `get_space` y `preview_space_by_code`, reclamo con `p_miembro_id` (mismo id, pasa a real), doble reclamo concurrente (uno gana, otro `miembro_ya_reclamado`), y los pendientes no cuentan en interés, condiciones, quórum ni cupos (con Caro todavía pendiente al publicar). **CORRIENDO PRUEBA terminado.**
 - **[17:15] Panel del agente probado en vivo en `wip/front-juan`** (`10df3d3`, §5 de `docs/agente-revision-front-juan.md`): 17:14, servidor local contra la base real, 375 px, una sola llamada al modelo (4345 ms, fuente `modelo`): 11/11. Candidatas bien en la píldora nueva; "Usar esta opción" precarga Nueva propuesta. **CORRIENDO PRUEBA terminado.**
 - **[17:11] Revisión de `wip/front-juan` entregada** (`41eb765`, `docs/agente-revision-front-juan.md`, solo lectura): el panel del agente sigue montado igual que en main; sin exposición de condiciones ni de conteos E7.2. P1: el nombre guardado (`cruxe:perfil`) no se borra al entrar como otra persona (vuelve el hallazgo 8). P2: precarga del nombre en la invitación y "Sin respuesta" en el cruce. Fuera de privacidad: "Encuentro" marcado como hecho (contra caso-canónico:31). Pendiente: prueba en vivo del panel cuando backend saque la marca de la 0032.
@@ -93,6 +94,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Pendiente el sábado: pasar CRUCE → CRUXE en `pitch.md`, `checkpoint-1.md`, `problema.md` y `readme-borrador.md`.
 
 ## Ideas
+- **[17:39] Enlace de atribución a Open-Meteo** (dueño: agente-ia, `src/agente/AgentePanel.tsx`, una línea): su licencia CC BY pide el enlace; hoy dice "(pronóstico de Open-Meteo)" sin enlace. Sin riesgo, antes del corte de las 10:00 si el coordinador lo aprueba.
 - **[16:53] Motivo del texto fijo en la respuesta** (dueño: agente-ia; aditivo, sin cambiar el contrato): hoy `eleccion_fuente: "regla"` no distingue "sin clave", "límite de llamadas", "el modelo no respondió" y "salida rechazada por la validación". Un campo `motivo_regla` permitiría que la pantalla diga la verdad en la demo ("El agente está ocupado; esta opción salió por reglas") y que los logs no sean la única pista.
 - **[16:53] Cinco llamadas seguidas al agente en producción, con 11 s entre ellas** (dueño: agente-ia, después de la demo o con el visto bueno de Nico por el gasto): registrar fuente y milisegundos de cada una, y una sexta a los 2 s para ver actuar el límite. Con eso, §8.3 pasa de 3 llamadas a una medición.
 - **[16:53] Contador de llamadas al modelo en la base** (dueño: backend + agente-ia; migración, así que no antes del sábado): por minuto y por día, compartido entre instancias, para que el límite de costo deje de ser por instancia. Mientras tanto manda el límite de gasto de la clave.
