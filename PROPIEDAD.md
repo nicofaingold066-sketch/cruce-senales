@@ -17,8 +17,8 @@ Solo el coordinador edita este archivo. Si una ruta no figura acá, es del coord
 | `.env` | nadie (local, ignorado por git) | — |
 
 ## Roles y dónde viven
-- **coordinador**: sesión Claude "Hola" en la computadora A. Integra, verifica, fusiona, decide el contrato.
+- **coordinador**: sesión Claude "Coordinador CRUCE" en la computadora A. Integra, verifica, fusiona, decide el contrato.
 - **backend**: agente Claude en la computadora A (subagente de la sesión coordinadora). Único dueño de la base.
 - **claude-b-interfaz**: Claude en la computadora B. Dueño de `src/`.
 - **codex**: Codex en la computadora A, en su copia aislada `../codex-work` (rama `codex/revisiones`). Solo informes.
-- **pitch-problema**: otra sesión Claude de Nico en la computadora A, para el texto del checkpoint y el pitch.
+- **pitch-problema**: sesión Claude "Pitch y Agente IA del círculo" en la computadora A: texto del checkpoint, guion del pitch y notas de ideas dictadas por Nico en `/Users/macair/cruse/ideas-nico/` (fuera del repo).

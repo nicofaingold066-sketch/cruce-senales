@@ -1,6 +1,6 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, ~11:30 Santiago.
+Actualizado: viernes 23 oct, ~11:45 Santiago.
 
 ## Hitos de hoy
 - 12:00 checkpoint 1: Problema. 17:15 checkpoint 2: algo funcionando. Sábado 13:00 entrega (último commit de `main`).
@@ -12,7 +12,7 @@ Actualizado: viernes 23 oct, ~11:30 Santiago.
 | backend | Enmienda 2 (A1 a A5) como migraciones 0008+ sobre lo aplicado (0001 a 0007) y pruebas reales | `wip/fundamentos` |
 | claude-b-interfaz | Ya empujó 3 commits solo en `src/` (contrato 2, reset con intento, cupo reservado, resultado incierto). Falta que lea el protocolo y ajuste: leer el motivo desde `mi_situacion.motivo_aceptar` | `wip/ui-enmienda` |
 | codex | Revisiones solo lectura. Entregó `revision-codex-1` y `revision-codex-2` | `codex/revisiones` |
-| pitch-problema | `docs/problema.md` (checkpoint 12:00) y guion del pitch | `wip/fundamentos` |
+| pitch-problema | `docs/problema.md` listo para el checkpoint de las 12:00 (falta lo que digan los amigos del asado); guion del pitch; notas de la idea "agente del círculo" en `ideas-nico/` | `wip/fundamentos` |
 | coordinador | Coordinación, contrato, integración, verificación A1 a A5 | `wip/fundamentos` |
 
 ## Estado de los hallazgos altos (verificado contra la base real y por Codex)
@@ -28,7 +28,8 @@ Migraciones 0008 a 0011 de la enmienda 2 YA aplicadas por el backend (A1 reserva
 Contrato v1 enmendado por `docs/contrato-enmienda-2.md`. Sofi elegible en la franja B. Costo fuera de este corte. Baja que rompe el mínimo lleva a En revisión con versión nueva.
 
 ## Incidentes
-- 11:00 un duplicado del agente de backend escribió a la vez en la base; se detuvo el workflow original. Quedó un único backend.
+- 11:00 un duplicado del agente de backend escribió a la vez en la base; se detuvo el workflow original. Quedó un único backend. Auditoría de duplicados 11:45: sin migraciones repetidas (disco 0001 a 0011 = base), un solo subagente corriendo, tres worktrees esperados, ramas sin repetir.
 
 ## Decisiones pendientes de Nico
 - **IA dentro del producto.** El tema es cambiar hábitos "con IA" y hoy el producto no usa IA (fuera de alcance). La sesión de pitch advierte que el jurado puede preguntar dónde está. Opciones: (a) responder con honestidad: IA en la construcción y, en el producto, solo opcional para explicar el plan; (b) agregar al final una explicación opcional con texto de respaldo, sin gasto, solo si sobra tiempo después de las 17:15.
+- **Idea de Nico "agente del círculo"** (`/Users/macair/cruse/ideas-nico/01-agente-del-circulo.md`, en bruto): un agente de IA que lee la situación privada de cada uno (presupuesto, ánimo, gustos) y mira afuera (clima, canchas, eventos) para proponer el plan. Resolvería la pregunta de "dónde está la IA", pero agrega alcance (servicios externos, posible costo). Hay que decidir si entra y cómo, sin romper la regla de no abarcar todo. Postura del coordinador: la base privada y de versiones va primero; el agente entra como una capa que SOLO propone y explica, con respaldo de texto fijo, después de que el recorrido de punta a punta pase verificado.

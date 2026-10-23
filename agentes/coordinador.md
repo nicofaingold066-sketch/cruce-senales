@@ -1,4 +1,4 @@
-# Agente: coordinador (sesión Claude "Hola", computadora A)
+# Agente: coordinador (sesión Claude "Coordinador CRUCE", computadora A)
 
 Quien edita este archivo: solo el coordinador. Última actualización: ~11:30.
 
@@ -20,7 +20,6 @@ Ninguno.
 ## Pedidos a otros
 - A claude-b-interfaz: leer el motivo de aceptar desde `mi_situacion.motivo_aceptar` (no `puede.motivo`). Ver aclaración al final de `docs/contrato-enmienda-2.md`.
 - Al backend (resuelto): códigos de error confirmados; commit/push de su archivo de estado lo hace el coordinador.
-Al backend: no tocar migraciones aplicadas; reporte final por hallazgo con migración y prueba. A claude-b-interfaz: arrancar con `docs/tareas/interfaz-enmienda-2.md` y crear su estado en `agentes/claude-b-interfaz.md`.
 
 ## Entregado
 Contrato v1, enmienda 2, protocolo de coordinación.
