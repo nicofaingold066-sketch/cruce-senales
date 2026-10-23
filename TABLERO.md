@@ -42,7 +42,7 @@ Contrato v1 enmendado por `docs/contrato-enmienda-2.md`. Sofi elegible en la fra
 
 ## Decisiones de Nico sobre el agente de IA
 - **Proveedor del modelo: API de Anthropic** (decidido por Nico, viernes ~11:10). Modelo sugerido para redactar la explicación: `claude-haiku-5-5` (corto, barato, rápido; timeout ~8 s con texto fijo de respaldo).
-- **Tope de gasto: AÚN NO DEFINIDO.** Mientras no lo defina Nico no se pide ni se crea ninguna clave y no se escribe código del agente. La clave irá solo como secreto de Supabase, puesta por Nico, nunca en el repo, el chat ni el cliente.
+- **Crédito disponible: USD 200 en la API de Anthropic (dicho por Nico, relatado por la sesión de pitch; confirmar con Nico). Ese es el saldo, no el tope del agente: el límite por clave aún no está definido.** Mientras no lo defina Nico no se pide ni se crea ninguna clave y no se escribe código del agente. La clave irá solo como secreto de Supabase, puesta por Nico, nunca en el repo, el chat ni el cliente.
 
 ## Decisiones pendientes de Nico
 - **IA dentro del producto** (la especificación está aprobada y subida; falta aprobar CONSTRUIRLA, definir el tope de gasto y pasar la puerta de las 14:30). El tema es cambiar hábitos "con IA" y hoy el producto no usa IA (fuera de alcance). La sesión de pitch advierte que el jurado puede preguntar dónde está. Opciones: (a) responder con honestidad: IA en la construcción y, en el producto, solo opcional para explicar el plan; (b) agregar al final una explicación opcional con texto de respaldo, sin gasto, solo si sobra tiempo después de las 17:15.
