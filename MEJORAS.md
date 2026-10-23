@@ -19,6 +19,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 24 | Prop `demo` en `AgentePanel` para mostrar el selector de clima solo en demos | claude-b-interfaz | entregada (5bea676), en main |
 | 28 | PRIVACIDAD: `proponer_plan_borrador` devuelve en `perfil_grupo.gustos` actividades con `cuantos: 1` al llamarlo directo (deja adivinar quién la eligió). Filtrar `cuantos >= 2` en la base | backend | verificada en vivo (66a1910, 0023): el RPC directo devuelve solo Asado 3 y Fútbol 2 |
 | 29 | Regresión de privacidad del agente en `tests/e2e/`: ni el RPC ni la función devuelven gustos de una sola persona, nombres ni preferencias individuales (sin clave de modelo: texto fijo) | codex | libre |
+| 43 | Textos que prometen unanimidad (R1 de revision-codex-5): "hasta que ... todas las personas la confirmen de nuevo" (En revisión) y "Cada persona tiene que confirmar de nuevo" (comparación v1 → v2). Decir: se necesitan de nuevo al menos N confirmaciones, incluido el anfitrión; quien participe confirma la versión nueva | claude-b-interfaz | libre |
 
 ## P2 — Que se entienda a la primera (UX de la demo)
 | # | Mejora | Dueño | Estado |
@@ -33,13 +34,14 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 26 | Perfil agregado visible al grupo ("Asado: 5 de 6") solo con 4 o más personas | agente-ia | verificada: 71a0cff + filtro de una sola persona 05b2c46, función v4 |
 | 27 | Redesplegar la función del agente en lote | coordinador | hecha: v4 desplegada desde 05b2c46 y probada en vivo |
 | 30 | Portada: si la sesión ya tiene la demo, mostrar la propuesta activa con su estado ("Te toca confirmar") para llegar en un toque desde el segundo teléfono (idea de claude-b) | claude-b-interfaz | entregada (5e0a788), publicada en Vercel 14:06 |
-| 31 | Tarjetas de propuestas en el espacio con estado destacado (color + punto, "Tu turno") según `siguiente_accion.codigo` (idea de claude-b) | claude-b-interfaz | libre |
+| 31 | Tarjetas de propuestas en el espacio con estado destacado (color + punto, "Tu turno") según `siguiente_accion.codigo` (idea de claude-b) | claude-b-interfaz | entregada (a1fa96b), publicada 14:20 |
 | 32 | Panel del agente a prueba de demo: estados claros de cargando / falla temporal / sin plan compatible, reintento, y que nunca bloquee la pantalla del espacio | agente-ia | entregada (40710d5), integrada en wip/fundamentos 85c18b1; typecheck y build en verde |
+| 44 | Toda la app a 375 px como el panel del agente (#35): toques de 44 px, `aria-live` en cambios de estado de la propuesta, foco útil tras errores, sin desborde | claude-b-interfaz | libre (después de #43) |
 | 35 | Panel del agente en el teléfono y accesible: `aria-live` en cargando/errores, foco al botón útil tras un error, toques de 44 px, probado a 375 px | agente-ia | entregada (b49705e), integrada en wip/fundamentos |
 | 37 | `docs/agente-ia.md` al día con lo construido (privacidad con mínimo 2, clima simulado solo en demo, respaldo sin clave, fuentes visibles), corto y verificable para el jurado | agente-ia | entregada (71a2628), integrada en wip/fundamentos e415341 |
 | 38 | Pruebas de la función sin red ni modelo (textoValido, sinNombres, entradaModelo, filtro de mínimo 2, clima simulado solo en demo) versionadas en `supabase/functions/agente/` y con el comando en `docs/agente-ia.md` | agente-ia | verificada (837a126): 14/14 con `node --test "supabase/functions/agente/*.test.ts"`, integrada 8d2b8be |
 | 39 | Redesplegar la función `agente` v5 en lote (index.ts + logica.ts; bloquea "reserv*" y "agend*"). Antes del sábado 10:00 | coordinador | hecha: función v5 desplegada (index.ts + logica.ts de 487d2fc) y probada en vivo |
-| 40 | Sin clave de modelo, que el "por qué" con texto fijo use también el ritmo y el ambiente del grupo (solo totales, nunca de una persona), para que la demo sin IA no suene genérica | agente-ia | verificada (487d2fc): 16/16 y en vivo "es lo que más eligieron (3 de 4)"; pantalla en main, se publica en el próximo lote de Vercel |
+| 40 | Sin clave de modelo, que el "por qué" con texto fijo use también el ritmo y el ambiente del grupo (solo totales, nunca de una persona), para que la demo sin IA no suene genérica | agente-ia | verificada y publicada (función v5 + pantalla 14:20) |
 | 41 | Recorrido del agente en producción desde un teléfono (375 px) con evidencia en `docs/agente-ia.md` (fecha, hora del reloj, versión) | agente-ia | entregada (deeea83): evidencia 14:09–14:11 en producción a 375 px, en main |
 | 42 | Revisión de privacidad de solo lectura de toda la app contra el agente: ¿alguna pantalla, respuesta o error deja ver preferencias o condiciones de otra persona? Informe con archivo y línea en `docs/agente-revision-privacidad.md`; los arreglos los hace cada dueño | agente-ia | libre |
 
@@ -49,14 +51,15 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 12 | Nombres con tabulador o espacio no separable al inicio: normalizar para que no esquiven `nombre_en_uso` | backend | verificada (0017; 123 pruebas pasan) |
 | 13 | ACL por defecto de `supabase_admin` y de tablas en `public`: endurecer si es posible | backend | verificada (0018); los defaults de supabase_admin no se pueden cambiar con nuestro rol |
 | 14 | Paquete > 500 KB: dividir el código para que cargue más rápido en el teléfono | claude-b-interfaz | verificada (6d9806c): build en partes, recorrido demo → agente → propuesta probado con la versión compilada |
-| 15 | Sondeo liviano (`p_desde_rev`) para no bajar el estado completo cada 3 s | backend + claude-b-interfaz | backend verificada (0021, en main); claude-b-interfaz: libre (después de U5–U7) |
+| 15 | Sondeo liviano (`p_desde_rev`) para no bajar el estado completo cada 3 s | backend + claude-b-interfaz | entregada en ambos lados (0021 + 6df9595), publicada 14:20 |
 | 16 | README contra las bases (3 preguntas, componentes, participantes) | codex | verificada (b45c226): README compacto adoptado |
 | 17 | Variantes del jurado (`docs/jurado-variantes.md`) verificadas con pruebas reales | codex | verificada en API (f89ab42); falta en el navegador |
 | 21 | `simulate_save_preferences` para variantes del jurado en vivo (enmienda 5) | backend | verificada (0019 y 0020, en main) |
-| 22 | `opcion_anterior` {version, franja_clave, inicio, fin} en el estado tras una reparación ("Sábado → Domingo" en v1 → v2) | backend, luego claude-b-interfaz | backend verificada (52ae246; suite backend 47/47); claude-b-interfaz: libre para mostrar "Sábado → Domingo" con `propuesta.opcion_anterior` (enmienda 6) |
+| 22 | `opcion_anterior` {version, franja_clave, inicio, fin} en el estado tras una reparación ("Sábado → Domingo" en v1 → v2) | backend, luego claude-b-interfaz | verificada en el navegador (a294210): "Sábado 31 oct 14:00 → Domingo 1 nov 14:00", v2 desde cero; publicada 14:20 |
 | 33 | `cruce.verificar_privilegios()` como paso fijo después de cada migración (idea de backend) | coordinador | libre |
 | 34 | Respuestas fuera de orden y tope de tiempo probados con red controlada (idea de codex): guion reproducible en `tests/e2e/` o informe | codex | libre (después de #29) |
 | 36 | `candidatas` sin señal individual: hoy una actividad elegida por una sola persona puede aparecer como candidata (sin conteo). Evaluar si conviene exigir 2 o completar con catálogo; decidir con el coordinador antes de migrar | backend | descartada: las candidatas también pueden ser actividades que nadie eligió (puntaje por ritmo, ambiente y clima) y no traen conteo; el límite honesto ya está en docs/agente-ia.md |
+| 45 | Latencia bajo carga: medir `get_proposal_state`, `accept_version` y `proponer_plan_borrador` con 10 sesiones concurrentes; si algo pasa 1 s o da 57014, proponer índice o ajuste (sin migrar sin aviso) | backend | libre |
 
 ## Para Nico (no las toma un agente)
 - Vercel: el cupo volvió a las 14:06 y `main` se publicó. Desplegamos solo en lote y por CLI (GitHub sigue desconectado).

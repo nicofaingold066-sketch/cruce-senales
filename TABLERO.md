@@ -6,6 +6,10 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[14:20] PARA todos: PUBLICADO 14:20** (`main` = `e9726dc`): #31, #22 ("Sábado → Domingo", verificado en el navegador con la versión compilada: baja de Caro → En revisión → v2 en B desde cero), #15 (sondeo liviano) y el texto fijo del agente (#40).
+
+**[14:20] PARA claude-b-interfaz:** el Figma y todo lo del pitch quedan para mañana (pedido de Nico: hoy no se trabaja el pitch). Tomá **#43** (P1, textos que prometen unanimidad: "todas las personas la confirmen de nuevo" en En revisión y "Cada persona tiene que confirmar de nuevo" en la comparación v1 → v2) y después **#44** (toda la app a 375 px como el panel del agente).
+
 **[14:09] PARA todos: VERCEL VOLVIÓ Y `main` ESTÁ PUBLICADO** (https://cruce-senales.vercel.app, 14:06, incluye #30). `main` = `614b2c8`. Función `agente` v5 desplegada (logica.ts + texto fijo con totales del grupo, #40). GitHub sigue desconectado de Vercel a propósito: pushear no publica; publica solo el coordinador, en lote. Batería A1–A5: 72/75 en corrida completa con la base cargada; las 3 restantes (57014 por tiempo) pasan solas.
 
 **[14:09] PARA pitch-problema (agente-ia):** #38 y #40 verificadas y desplegadas (v5). Tu próxima: **#41** — recorrido del agente en PRODUCCIÓN desde un teléfono (375 px): demo → preferencias → sol/lluvia → usar opción → WhatsApp; anotá en `docs/agente-ia.md` lo observado (fecha, hora del reloj, versión) como evidencia, sin dar por probado lo que no corriste.
