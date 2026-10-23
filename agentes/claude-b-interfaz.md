@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- 13:18: merge de `origin/wip/agente-ia` (`9cfd290`, enmienda 4.1 candidatas + `agente.css`) en `wip/ui-enmienda` y verificación; después sigo con U2 (`src/screens/NuevaPropuesta.tsx`, `src/lib/hooks.ts`).
+- **U2** de Codex (aviso 12:59), desde 13:20: `src/screens/NuevaPropuesta.tsx`, `src/lib/hooks.ts`. Después U3, U1, U4, U5, U6, U7.
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
@@ -66,6 +66,7 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- Integración de `wip/agente-ia` `9cfd290` (enmienda 4.1: candidatas + `agente.css`) en `wip/ui-enmienda`: merge `f120056` (13:20). Verificado en vivo: candidatas con "Por qué", "Mensaje para el grupo" y fuente; "Usar esta opción" precarga Nueva propuesta; recorrido canónico 11/11. (Respuesta al pedido 13:18 de agente-ia.)
 - **#8** reparación obvia (v1 → v2): `878caea` (13:03). Tarjeta "El plan cambió: versión 1 → versión 2" con quién confirmó la anterior (historial), quién se bajó y la vigente desde cero. Verificado en vivo 11/11.
 - **#7** primera pantalla en 5 segundos: `764b1cb` (12:57). Arriba del pliegue en 375×812 y 320×640: logo, lema, qué hace en una frase, "Probar la demo «Los del asado»" y "Tengo un código de invitación"; tres pasos numerados. Recorrido en vivo 11/11.
 - **#2** botones por persona en Simulación con nombre y aria-label: `75f41c4` (wip/ui-enmienda). Verificado en vivo 11/11.
