@@ -31,7 +31,7 @@ const CONFUSOS = [
 const vistos = new Set()
 export function revisarTextos(persona, donde, texto, captura) {
   // La portada ofrece la demo a propósito: ahí los personajes y la «Simulación» son esperables. 
-  const enPortada = /^portada/.test(donde)
+  const enPortada = /portada/.test(donde)
   for (const r of [...DEMO, ...CONFUSOS]) {
     if (enPortada) continue
     const m = texto.match(r.re)

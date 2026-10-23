@@ -220,7 +220,9 @@ try {
   renata.fin('del enlace a «No puedo» en las dos franjas')
   await ver(renata, 'renata-guardado')
   resumen.pasos.renata = lecturas.at(-1)
-  await renata.tocarPestana('Plan')
+  if (renata.rapida) await renata.tocar(renata.page.getByRole('link', { name: 'Ver el plan' }), 'enlace «Ver el plan»')
+  else await renata.tocarPestana('Plan')
+  await renata.page.getByRole('tab', { name: 'Plan' }).waitFor({ timeout: 20000 })
   await ver(renata, 'renata-plan-sin-franja')
 
   // ───────────────────────── 4. Bruno: contesta una franja, deja la otra «Pendiente», presupuesto bajo ─────────────────────────
