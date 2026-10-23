@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 13:52.
+Quien edita este archivo: solo esta sesión. Última actualización: 13:53.
 
 ## Tocando ahora
-(nada)
+- Mejora #35 (panel del agente en el teléfono y accesible): `src/agente/**`
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
