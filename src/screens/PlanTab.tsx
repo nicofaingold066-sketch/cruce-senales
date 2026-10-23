@@ -129,10 +129,17 @@ function razonNoAceptar(p: EstadoPropuesta): string {
   return 'Ahora no puedes confirmar esta versión.'
 }
 
+// Mejora #56: con más confirmaciones que el mínimo, "5 de 4" se lee raro; se dice "5 (mínimo 4)".
+function cuentaConfirmados(confirmados: number, minimo: number): string {
+  return confirmados > minimo ? `${confirmados} (mínimo ${minimo})` : `${confirmados} de ${minimo}`
+}
+
 function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
   const o = p.opcion!
   const { ocupado, error, correr } = useMutacion(viva)
   const confirmado = p.estado === 'grupo_confirmado'
+  const sobreMinimo = o.cupos.confirmados > o.cupos.minimo
+  const cuenta = cuentaConfirmados(o.cupos.confirmados, o.cupos.minimo)
 
   async function aceptar() {
     // Siempre se envía la versión que la persona está viendo, nunca una calculada.
@@ -153,21 +160,28 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
       </p>
 
       {/* Solo dibuja los números que entrega el servidor: un punto por cada confirmación necesaria. */}
-      <div className="puntos" role="img" aria-label={`Confirmaron ${o.cupos.confirmados} de ${o.cupos.minimo} necesarias`}>
+      <div className="puntos" role="img" aria-label={`Confirmaron ${cuenta}${sobreMinimo ? '' : ' necesarias'}`}>
         {Array.from({ length: o.cupos.minimo }, (_, i) => (
           <span key={i} className={`punto ${i < o.cupos.confirmados ? 'punto-lleno' : ''}`} />
         ))}
-        <span className="puntos-texto">
-          {o.cupos.confirmados} de {o.cupos.minimo}
-        </span>
+        <span className="puntos-texto">{cuenta}</span>
       </div>
       <dl className="datos">
         <dt>Aceptaciones</dt>
         <dd>
-          <strong>
-            {o.cupos.confirmados} de {o.cupos.minimo}
-          </strong>{' '}
-          necesarias (máximo {o.cupos.maximo}, disponibles {o.cupos.disponibles})
+          {sobreMinimo ? (
+            <>
+              <strong>{o.cupos.confirmados}</strong> (mínimo {o.cupos.minimo}, máximo {o.cupos.maximo}, disponibles{' '}
+              {o.cupos.disponibles})
+            </>
+          ) : (
+            <>
+              <strong>
+                {o.cupos.confirmados} de {o.cupos.minimo}
+              </strong>{' '}
+              necesarias (máximo {o.cupos.maximo}, disponibles {o.cupos.disponibles})
+            </>
+          )}
         </dd>
         <dt>Anfitrión ({p.imprescindible.nombre})</dt>
         <dd>
@@ -310,7 +324,8 @@ function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
             </p>
           ) : (
             <p className="cv-pie">
-              Confirmaron {o.cupos.confirmados} de {o.cupos.minimo}: {o.aceptaron.map((a) => a.miembro.nombre).join(', ')}.
+              Confirmaron {cuentaConfirmados(o.cupos.confirmados, o.cupos.minimo)}:{' '}
+              {o.aceptaron.map((a) => a.miembro.nombre).join(', ')}.
             </p>
           )}
         </div>
@@ -326,7 +341,10 @@ function OpcionAnterior({ p }: { p: EstadoPropuesta }) {
       <h2>Versión {o.version} (en revisión, no confirmada)</h2>
       <p>{franjaTexto(o.franja.inicio, o.franja.fin)}</p>
       <p className="suave">
-        Conserva {o.cupos.confirmados} confirmación(es) de {o.cupos.minimo} necesarias. No se transfiere a la próxima versión.
+        {o.cupos.confirmados > o.cupos.minimo
+          ? `Conserva ${o.cupos.confirmados} confirmaciones (mínimo ${o.cupos.minimo}).`
+          : `Conserva ${o.cupos.confirmados} confirmación(es) de ${o.cupos.minimo} necesarias.`}{' '}
+        No se transfiere a la próxima versión.
       </p>
     </section>
   )
