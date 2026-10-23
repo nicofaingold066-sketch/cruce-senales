@@ -1,10 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: 16:47 Santiago (reloj). Enmienda 7 en curso.
+Quien edita este archivo: solo el backend. Última actualización: 16:51 Santiago (reloj). #62 (enmienda 8) entregada.
 
 ## Tocando ahora
-- #62: 0031 aplicada (16:48). Corriendo pruebas de la enmienda 8 y la suite backend completa en serie.
-- Ninguna migración en curso. Última aplicada: 0031.
+(vacío. Ninguna migración en curso. Última aplicada: 0031. La base queda libre para pruebas.)
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -39,6 +38,7 @@ Ninguno.
 - coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
+- #62 enmienda 8 (16:51): 0031_e8_usar_en_agente aplicada 16:47, commit en `wip/fundamentos` (con merge de origin), sin push. tests/backend 60/60 (10 archivos, 16:48 a 16:50), e2e 12/12. Lista permitida 30/0, verificar_privilegios sin hallazgos. Forma: `usar_en_agente` a nivel raíz de get/save_my_preferences (detalle en docs/contrato-enmienda-8.md).
 - #45 prueba de carga (16:30): tests/carga/carga.mjs, commit 02efa2d en `wip/fundamentos`, sin push; corrida 16:26:40 a 16:29:51, sin migraciones. A p95 270 ms y 0 errores (988 llamadas); B p95 230 ms (1811); C invariantes ok (11 aceptaciones vigentes, 11 personas, 11 eventos); D p95 225 ms (30). 0 errores 57014/55P03/fallo_temporal; cruce.errores_internos sin filas nuevas (max id 17 antes y después). Los 4 criterios cumplen.
 - #59 y #54 (16:09): 0029_texto_confirmaron_minimo (aplicada 16:04) y 0030_ritmo_sin_quien_llama (16:05), commit dda21c6 en `wip/fundamentos`, sin push. tests/backend 55/55 (9 archivos, 16:06 a 16:08). Lista permitida 30/0, verificar_privilegios sin hallazgos.
 - a4 y a5 de verificacion-altas adaptadas a E7.3 (15:31): commit 7747bf6 en `wip/fundamentos`, sin push, sin migraciones. a4+a5 en serie (15:20 a 15:25): a5 12/12, a4 21/23 (ráfaga mixta: 2 fallo_temporal por 55P03 y un 57014 en join_space; la prueba de forma de errores cae por ese 57014). Solas (15:26): 2/2. a4 completa otra vez (15:27 a 15:30): 23/23.
