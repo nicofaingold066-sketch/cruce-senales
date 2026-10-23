@@ -20,6 +20,24 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md
 - ux-flujo [19:31]: hecho en `87d4a62` (rama `wip/apertura`): `src/lib/ejemplos.ts` exporta `ATAJOS` (Pádel, Tenis, Cena, Cine, Cumple, Asado en el medio, Juegos de mesa, Café o brunch, Cerro, Museo o feria, Fútbol, Juntada; con título, ícono existente y duración) y `atajosParaGrupo(nombreGrupo)`, que sube primero el atajo que nombra el grupo («Los del pádel» → Pádel) y deja «Asado» primero solo si el grupo lo nombra. Es pura y tiene prueba (7/7). La pantalla es de front-juan: ver mi pedido siguiente.
 - front-juan [19:31]: reemplaza mi pedido de las 19:29 sobre los atajos. En `src/screens/NuevaPropuesta.tsx:47`, borrar la constante `ACTIVIDADES` y usar `const ACTIVIDADES = atajosParaGrupo(espacio.nombre)` (importar de `../lib/ejemplos`; cada atajo tiene `titulo`, `icono` y `min`, igual que hoy). Así un grupo «Los del pádel» ve Pádel primero y ya no se titula «Asado». Los íconos son los que ya existen en `Icono.tsx` (Pádel y Tenis usan `futbol`; si querés uno de raqueta, agregalo y cambia el `icono` en mi lista). Con el grupo de la demo («Los del asado») Asado va primero, igual que hoy; el caso precargado `CASO` no cambia.
 - [19:50] backend [19:49] confirmó el pedido de catálogo: Parte B en la base, migración 0038 (`aef9c7d`), con mis filas y zonas. Cerrado por mi lado; no hay nada más que pedir.
+- sinteticos [20:36]: H11 hecho en `0e03b8a`: `ordenarActividadesParaGrupo(actividades, nombreGrupo)` en `src/lib/ejemplos.ts` (prueba 8/8). Sube primero la actividad que nombra el grupo y saca a «Asado» del primer lugar. Los placeholders ya están en `ejemploPorSemilla`/`placeholderGrupo` (pedido a front-juan de las 19:27).
+- agente-ia [20:36]: en `src/agente/AgentePanel.tsx` (donde hace `setActividades(r.data.opciones.actividades)`, hacia la línea 112) usar `setActividades(ordenarActividadesParaGrupo(r.data.opciones.actividades, nombreGrupo))`, con `import { ordenarActividadesParaGrupo } from '../lib/ejemplos'` (rama `wip/apertura`, `0e03b8a`). Necesita el nombre del grupo (`espacio.nombre`) como prop. Es solo el orden de los chips; no cambia qué opciones hay ni lo que se guarda.
+
+## Hallazgo → cambio → dueño (regla de Nico, 20:34)
+| Hallazgo | Cambio | Dueño | Cuándo | Estado |
+|---|---|---|---|---|
+| El texto de ayuda y los placeholders dicen «asado» | usar `placeholderGrupo/placeholderPlan/ayudaGrupo` (`CrearGrupo.tsx:47,55`, `NuevaPropuesta.tsx:375`) | front-juan | antes de las 11:00 | pedido hecho 19:27 |
+| El primer atajo de «Nueva propuesta» es «Asado» | `atajosParaGrupo(espacio.nombre)` en `NuevaPropuesta.tsx:47` | front-juan | antes de las 11:00 | pedido hecho 19:41 |
+| El primer chip de «Me gustaría» es «Asado» | `ordenarActividadesParaGrupo` en `AgentePanel.tsx` | agente-ia | antes de las 11:00 | pedido hecho 20:36 |
+| Catálogo de 5 actividades (todo asado, fútbol, fiesta) | 8 actividades nuevas | backend | antes del corte 23:00 | HECHO (0038) |
+| Faltan variables de juntadas: accesibilidad (sin escaleras), sin alcohol, niños y mascotas, duración | etiquetas del lugar, no de la persona, y filtro del plan | backend | después del congelamiento (siguiente paso) | decisión para Nico (abajo) |
+| «Variar el lugar» y «cómo les fue» no existen | historial del grupo | backend | después | decisión para Nico (abajo) |
+| Faltan una copia de seguridad y ensayo de las respuestas incómodas (`docs/preguntas-jurado.md`: C1, C6, P2, S5b) | video de respaldo y ensayo con cronómetro | Nico | sábado antes de las 13:00 | decisión para Nico (abajo) |
+
+## Decisiones para Nico
+1. ¿Las etiquetas «sin alcohol», «apto para peques y mascotas» y «sin escaleras» entran como siguiente paso del README (propiedad del lugar, no de la persona), o antes del sábado? Recomiendo siguiente paso: el congelamiento es a las 11:00 y requeriría una migración.
+2. ¿La segunda tanda del catálogo (12 actividades, `docs/catalogo-ampliado.md`) queda como siguiente paso? Recomiendo sí.
+3. Grabar el video de respaldo y ensayar las cuatro respuestas incómodas de `docs/preguntas-jurado.md` (C1, C6, P2, S5b) antes de las 13:00.
 
 ## Ideas
 (prioridad, quién lo hace)
