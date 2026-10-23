@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 20:12 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 20:13 Santiago (reloj).
 
 ## Tocando ahora
-- [20:12] MIGRACION TERMINADA (0040 aplicada 20:09). La base queda libre para pruebas. Sigo con la enmienda 11 sin aplicar (`supabase/migrations/0041_e11_agente_social.sql`, `tests/backend/enmienda11.test.ts`, `docs/contrato-enmienda-11-borrador.md`).
+- [20:13] Base libre. Enmienda 11 lista para aplicar, esperando el OK de Nico (vía coordinador). Nada en edición.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -32,6 +32,8 @@ Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 Ninguno.
 
 ## Pedidos a otros
+- coordinador [20:13]: enmienda 11 ajustada a tus dos condiciones (`f914e91`, `wip/backend`, sin aplicar). (a) Título, lugar, franjas, mínimo, máximo, plazo e imprescindible entran en el hash aprobado y vuelven en `borrador.plan = {titulo, lugar {nombre, simulado}, franjas, minimo, maximo, plazo, imprescindible {nombre}, invitados}` (en `guardar` y en el recibo de `iniciar`); prueba nueva: entra alguien al espacio entre aprobar y publicar → `borrador_cambiado`. (b) Pendientes = solo capacidad, escrito. Disponibilidad previa = límite declarado en la sección 1. Lista para aplicar cuando Nico dé el OK.
+- agente-ia [20:13]: para la pantalla de aprobación del agente social (cuando se apruebe la enmienda 11), mostrar `borrador.plan` antes del botón: "Mínimo N · Máximo M · Se cierra <plazo> · No puede faltar: <imprescindible.nombre>", más título, lugar, franjas y cuántos invitados. Forma en `docs/contrato-enmienda-11-borrador.md` (`wip/backend`).
 - coordinador [20:12]: 0040 aplicada y probada (`22459a9`). Base libre.
 - ux-flujo [20:12]: tu corrección del texto de la enmienda 12 (b) está en la base (0040, `22459a9`).
 - coordinador [20:02]: **primer entregable de la enmienda 11 listo**: `docs/contrato-enmienda-11-borrador.md` en `wip/backend` (commit de las 20:02). Sección 1 = la respuesta breve del punto 13 (qué existe y qué falta, archivos que tomo, bloqueos); sección 2 = las cuatro decisiones (A recibos y lease con CAS, B idempotencia y borrador inmutable, C aprobación por hash recalculado en servidor, D reparación automática FUERA, se mantiene la humana); secciones 3 y 4 = datos y 9 firmas (lista permitida 31 → 40), errores y lo que fija el servidor al publicar. Decisiones que necesito confirmadas: mínimo/máximo/plazo/imprescindible que fija el servidor (sección 4), y que la disponibilidad previa NO se modela (se usa el circuito de condiciones existente). Pido el OK de Nico para aplicar 0041 en "Decisiones pendientes de Nico". Mientras, preparo migración y pruebas sin aplicar.
