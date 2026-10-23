@@ -121,7 +121,7 @@ Para confirmar, cada invitado vuelve a abrir la app (nadie se lo avisa): portada
 
 ### 3.3 Dónde dudaría alguien (visto en pantalla)
 
-1. **El organizador busca opción antes de responder él.** La próxima acción del servidor le dice "Busca una opción compatible" con 4 personas respondidas, aunque él (que no puede faltar) no respondió. Resultado: "Sin opción compatible" sin explicación posible (por privacidad). Pedidos: front-juan (aviso en `BuscarOpcion` si soy el imprescindible sin condiciones) y backend (texto de `siguiente_accion`).
+1. **El organizador busca opción antes de responder él.** La próxima acción del servidor le dice "Busca una opción compatible" con 4 personas respondidas, aunque él (que no puede faltar) no respondió. Resultado: "Sin opción compatible" sin explicación posible (por privacidad). Resuelto en el servidor por la enmienda 12 (a) (backend `f896112`, 0039): la próxima acción ahora dice "Primero marca tu disponibilidad". Componente `AvisoParaMi` listo para la pantalla (front-juan).
 2. **"Me interesa" es el botón principal de Mi respuesta.** Botón negro grande arriba; las franjas y "Guardar condiciones" quedan abajo, fuera de la pantalla a 375 px. Un invitado puede tocar "Me interesa" y creer que respondió: el motor no lo usa. Pedido: front-juan (orden en `RespuestaTab.tsx`) y friccion (#88).
 3. **Una franja en Pendiente deja fuera sin aviso.** Ema guarda Sí/Pendiente, ve "Guardado" y la etiqueta "Incompletas"; nada le dice que así no entra en la búsqueda. Después no es elegible. Pedido: friccion (#88) y front-juan.
 4. **El invitado aterriza en el espacio, no en el plan.** Arriba ve el código y "Compartir/Copiar/WhatsApp" (acciones del organizador), y abajo el botón fijo "Nueva propuesta". La tarjeta de su plan queda a media pantalla. Lo resuelve en parte #88 de friccion (ir directo a responder).
@@ -201,9 +201,9 @@ Etiquetas: `types.ts:28-36`. Textos de "Próxima acción": `0013`, `0029`.
 | Estado | Próxima acción que muestra | Cómo se llega |
 |---|---|---|
 | Borrador | "El organizador debe abrir la propuesta." | `create_proposal` sin abrir |
-| Reuniendo interés | "Cada persona marca su disponibilidad en privado. Luego el organizador busca una opción." **[visto]**. Al organizador con suficientes condiciones: "Ya hay N personas con condiciones. Busca una opción compatible." **[visto]** (también si falta el imprescindible) | `open_proposal` |
+| Reuniendo interés | "Cada persona marca su disponibilidad en privado. Luego el organizador busca una opción." **[visto]**. Al organizador con suficientes condiciones: "Ya hay N personas con condiciones. Busca una opción compatible." **[visto]**. Desde la enmienda 12 (0039, 19:57), si el organizador es el imprescindible y no completó lo suyo: "Primero marca tu disponibilidad: eres quien no puede faltar." **[leído]** | `open_proposal` |
 | (sigue en Reuniendo interés) "Sin opción compatible" | "Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar." **[visto]** | `evaluate_and_publish` sin franja viable; es un resultado, no un estado |
-| Esperando compromisos | "Te toca confirmar la versión N." **[visto]** / "Ya confirmaste… Faltan X para el mínimo" / "Falta la aceptación de [imprescindible]" | opción publicada o `propose_repair` |
+| Esperando compromisos | "Te toca confirmar la versión N." **[visto]** / "Ya confirmaste… Faltan X para el mínimo" / "Falta la aceptación de [imprescindible]" / E12 (b), a quien tiene la disponibilidad incompleta: "Completa tu disponibilidad para poder entrar en la opción." **[leído; ver nota]** | opción publicada o `propose_repair` |
 | Grupo confirmado | "Grupo confirmado en la versión N. Cupos disponibles: X." **[visto]** | confirmados ≥ mínimo con el imprescindible |
 | En revisión | "Hubo una baja… El organizador debe buscar una alternativa" | baja que deja menos que el mínimo o saca al imprescindible |
 | Expirado | "Venció el plazo sin grupo confirmado." | pasa el cierre sin grupo confirmado |

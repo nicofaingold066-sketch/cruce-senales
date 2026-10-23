@@ -43,3 +43,14 @@ test('elegible o sin versión: sin aviso; retirado: sin aviso', () => {
   assert.equal(avisoParaMi({ estado: 'en_revision', imprescindible: vale, mi_situacion: { ...ana, elegible_en_version: false } }), null)
   assert.equal(avisoParaMi({ estado: 'reuniendo_interes', imprescindible: vale, mi_situacion: yo({ retirado: true }) }), null)
 })
+
+test('no elegible con disponibilidad incompleta: no promete entrar en esta versión', () => {
+  const ema = yo({ miembro_id: 'm-ema', condiciones: 'incompletas', elegible_en_version: false, puede: { guardar_condiciones: true } })
+  const a = avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: ema })
+  assert.equal(a?.clave, 'version_sin_ti')
+  assert.equal(a?.irARespuesta, true)
+  assert.match(a.texto, /si el plan se rearma/)
+  assert.doesNotMatch(a.texto, /entrar en (la|esta) opción/)
+  const sinGuardar = avisoParaMi({ estado: 'grupo_confirmado', imprescindible: vale, mi_situacion: { ...ema, puede: {} } })
+  assert.equal(sinGuardar?.irARespuesta, false)
+})

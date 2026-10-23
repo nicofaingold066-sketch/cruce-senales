@@ -28,12 +28,17 @@ export function avisoParaMi({ estado, imprescindible, mi_situacion: yo }: DatosA
     }
   }
   if ((estado === 'esperando_compromisos' || estado === 'grupo_confirmado') && yo.elegible_en_version === false) {
+    // Los elegibles se fijan al publicar la versión (0002_utilidades.sql:262; accept_version los revisa en
+    // 0005_api_motor.sql:135): completar ahora no te suma a ESTA versión, solo cuenta si el plan se rearma.
+    const incompleta = yo.condiciones !== 'completas'
     return {
       clave: 'version_sin_ti',
       tono: 'info',
       titulo: 'Esta versión es sin ti',
-      texto: 'Con lo que marcaste (o dejaste sin marcar), esta fecha no te queda. No tienes que hacer nada.',
-      irARespuesta: false,
+      texto: incompleta
+        ? 'Tu disponibilidad quedó incompleta, así que no entraste en esta versión. Si la completas, cuenta si el plan se rearma.'
+        : 'Con lo que marcaste, esta fecha no te queda. No tienes que hacer nada.',
+      irARespuesta: incompleta && yo.puede.guardar_condiciones === true,
     }
   }
   return null
