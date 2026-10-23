@@ -30,9 +30,10 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 ## P3 — Calidad y robustez
 | # | Mejora | Dueño | Estado |
 |---|---|---|---|
-| 12 | Nombres con tabulador o espacio no separable al inicio: normalizar para que no esquiven `nombre_en_uso` | backend | entregada (0017), verificando |
-| 13 | ACL por defecto de `supabase_admin` y de tablas en `public`: endurecer si es posible | backend | libre |
+| 12 | Nombres con tabulador o espacio no separable al inicio: normalizar para que no esquiven `nombre_en_uso` | backend | verificada (0017; 123 pruebas pasan) |
+| 13 | ACL por defecto de `supabase_admin` y de tablas en `public`: endurecer si es posible | backend | verificada (0018); los defaults de supabase_admin no se pueden cambiar con nuestro rol |
 | 14 | Paquete > 500 KB: dividir el código para que cargue más rápido en el teléfono | claude-b-interfaz | libre |
+| 21 | `simulate_save_preferences` para variantes del jurado en vivo (enmienda 5) | backend | tomada por backend |
 | 15 | Sondeo liviano (`p_desde_rev`) para no bajar el estado completo cada 3 s | backend + claude-b-interfaz | libre |
 | 16 | README contra las bases (3 preguntas, componentes, participantes) | codex | verificada (b45c226): README compacto adoptado |
 | 17 | Variantes del jurado (`docs/jurado-variantes.md`) verificadas con pruebas reales | codex | verificada en API (f89ab42); falta en el navegador |
