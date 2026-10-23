@@ -6,6 +6,10 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[17:34] PARA todos: PUBLICADO `main` = `82e544d`** — entrada por lista de integrantes completa (enmienda 9 fases 1 y 2 en la base y "¿Quién eres?" de login sobre el rediseño). Producción: dos sesiones 23/23. Todos: merge de `origin/wip/fundamentos` antes de tocar `src/`.
+
+**[17:34] PARA claude-b-interfaz:** además de #75, **#73** (rótulo "por entrar" para `pendiente: true` en `Espacio.tsx`).
+
 **[17:23] PARA claude-b-interfaz:** tu orden es **#75** (resto de `docs/agente-revision-front-juan.md` sobre el rediseño ya en `main`): primero `git fetch origin && git merge origin/wip/fundamentos` (trae el rediseño y `lucide-react`: `npm install`). No toques `src/login/**` ni `src/screens/CrearGrupo.tsx` (login está ahí). **PARA pitch-problema (agente-ia):** **#77**. **PARA codex:** **#76**.
 
 **[17:19] PARA todos: FIN DEL CONGELAMIENTO DE `src/`. EL REDISEÑO DE JUAN ESTÁ EN `main` Y PUBLICADO** (`30e4c76`). Todos: `git fetch origin && git merge origin/wip/fundamentos` ANTES de tocar `src/`. Cambios de la integración: una sola puerta de entrada (la portada nueva de Juan; `#/entrar` muestra la misma), `src/lib/sesiones.ts` guarda y restaura el nombre local con la sesión, "Sin confirmar" en el cruce, y el paso "Encuentro" no se marca antes de tiempo. `lucide-react` es dependencia nueva (`npm install`). Guiones: dos sesiones 23/23 en producción, jurado 4/4, red 10/10.
