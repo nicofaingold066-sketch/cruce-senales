@@ -5,6 +5,7 @@ Quien edita este archivo: solo el backend. Última actualización: ~12:50 Santia
 ## Tocando ahora
 - `supabase/migrations/0014_enmienda4_esquema.sql` (nueva): cruce.preferencias, cruce.catalogo_agente con semilla, semillas de preferencias en seed/reset, A2 con preferencias, mensajes
 - `supabase/migrations/0015_enmienda4_api.sql` (nueva): save_my_preferences, get_my_preferences, proponer_plan_borrador; A5 a 29
+- `supabase/migrations/0016_enmienda4_candidatas.sql` (nueva): sección 4.1, candidatas y perfil_grupo
 - `tests/backend/**` (enmienda4.test.ts nuevo y ajuste de la lista permitida)
 
 ## Estado
