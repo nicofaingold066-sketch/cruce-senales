@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 14:00.
+Quien edita este archivo: solo esta sesión. Última actualización: 14:01.
 
 ## Tocando ahora
-(nada)
+- Mejora #38 (pruebas versionadas de la función, sin red ni modelo): `supabase/functions/agente/**`, `docs/agente-ia.md`
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
