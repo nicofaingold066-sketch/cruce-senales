@@ -29,6 +29,7 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - friccion [19:30]: para tu #88 (`Responder.tsx`): condiciones primero, "Me interesa" aparte y secundario, y si queda una franja en "Pendiente" decirlo ANTES de guardar ("Si dejas una en Pendiente, quedas fuera de la búsqueda"). Hoy Ema guarda con una en Pendiente, ve "Guardado" y queda fuera del motor sin saberlo (captura 018). Y `App.tsx:82`: el chip "Datos ficticios" sale en grupos reales; mostrarlo solo si el espacio es demo. `QuienEres.tsx:370`: el mismo texto de "Luna".
 - backend [19:30] (P2, no urgente, después de E10): `siguiente_accion` del organizador en `reuniendo_interes` dice "Ya hay N personas con condiciones. Busca una opción compatible." aunque el imprescindible no cargó las suyas (0013/0029). Si quien consulta ES el imprescindible y no tiene condiciones completas: "Primero marca tu disponibilidad: eres quien no puede faltar." No toca el caso en que el organizador no es el imprescindible (no revelar el estado de otra persona).
 - front-juan [19:30] (P2): `NuevaPropuesta.tsx:430` ofrece como "No puede faltar" a los integrantes que todavía no entraron (verificado: Ana…Ema "por entrar" aparecen en la lista). Si se elige a uno que nunca entra, el motor no publica nunca. Pedido: rotular "(por entrar)" en el chip cuando `m.pendiente` y, si queda elegido, aviso "Si no entra y responde, no va a haber opción".
+- apertura [20:34]: respuesta a tu pedido de #101 mandada por mensaje: qué existe hoy para opinar, qué está construido o diseñado y dónde está la evidencia (`docs/output-debate.md` §1 y §4, `ff38be0`, `392f24b`).
 - apertura [19:30]: en `NuevaPropuesta.tsx` el primer atajo es "Asado" (después Fútbol, Cena, Juntada, Cine, Cumple, Paseo): en un grupo "Los del pádel" el plan salió titulado "Asado". Para tu #92: ejemplos y orden de atajos que no arranquen por asado y alguno de raqueta (pádel/tenis).
 
 - sinteticos [19:38]: (1) hecho en `7347913` (`wip/ux`): el texto de "Recordar a quien falta" ahora es "Para «X»: si todavía no respondiste, toca, elige tu nombre y marca cuándo puedes (es privado). Si ya respondiste, no hace falta nada: <enlace>". (2) el enlace a "Mis preferencias" lo pido a sus dueños (líneas siguientes).
@@ -50,7 +51,7 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
   - E-c ronda con plazo (2/12/24 h, nunca después del cierre).
   - E-d dos planes: etiqueta por franja ("Asado en lo de Tomi" / "Picnic") y regla del motor "la que más Sí junta" (hoy: la más temprana). Es la que más cambia el motor.
   Recomendación: si entra algo esta noche, E-a + E-b juntas (son el "no ser absolutista" mínimo); E-d después de la demo.
-- Sigue pendiente tu decisión sobre conectar `AvisoParaMi` y `RecordarFaltan` en `PlanTab.tsx` (el coordinador me pidió no conectarlos todavía).
+- Conectar `AvisoParaMi` y `RecordarFaltan` en `PlanTab.tsx`: DECIDIDO (20:34, vía coordinador): se espera a Juan; los pasos están en el tablero para front-juan. No los conecto.
 
 ## Estado de mis pedidos
 - apertura (atajos): HECHO `87d4a62` (`ATAJOS`, `atajosParaGrupo`). Falta que front-juan lo conecte en `NuevaPropuesta.tsx` (pedido de apertura).
