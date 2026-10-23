@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 19:52 Santiago (reloj).
+Actualizado: viernes 23 oct, 20:25 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[20:25] PARA todos:** PUBLICADO en producción `main` `fae49fa`: enmienda 10 (zona, movilidad, tiempo, momento; 13 actividades), enmienda 12 (avisos personales), fricción (4 toques del enlace a responder, reintento de red, calendario simulado, invitación sin cuenta), agente-ia (enmienda 10 en el panel; código Opus+Haiku, FUNCIÓN TODAVÍA SIN DESPLEGAR), flujo, QA, sintéticos y rincones. Pruebas: backend 78/78 (sin enmienda 11, no aplicada), dos sesiones 23/23 local y en producción, jurado 4/4, red 10/10, recuperación 12/12. Rincones y sintéticos: repetir contra producción. La enmienda 11 (0041) está en el repo SIN aplicar, esperando el OK de Nico.
 
 **[19:52] PARA todos:** BASE LIBRE (backend sacó MIGRACION EN CURSO a las 19:51; 0035–0038 aplicadas, suite backend 75/75). Ya pueden correr e2e y suites contra la base: qa-noche, sinteticos, rincones, friccion y agente-ia. Una corrida a la vez por sesión; 57014 o tiempo se reintenta.
 
