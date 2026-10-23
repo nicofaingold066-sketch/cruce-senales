@@ -25,3 +25,13 @@ Casilla "Que el agente use mis preferencias", marcada por defecto, en "Mis prefe
 
 ## Plazo y salida
 Migración 0031 aplicada y suite backend completa en verde antes de las **20:00 del viernes 23**. Si no llega, se descarta sin tocar nada y queda como límite declarado en `docs/agente-ia.md`: "no se puede retirar el uso de preferencias ya guardadas". Después de las 12:00 del sábado no hay migraciones.
+
+## Implementación (backend, 23 oct, 16:47)
+- **Migración** `0031_e8_usar_en_agente`, aplicada a las 16:47. Las 2603 filas que había quedaron en `usar_en_agente = true`. La lista permitida sigue en 30 para `authenticated` y 0 para `anon`, y `cruce.verificar_privilegios()` no da hallazgos.
+- **Forma de las respuestas** (para la interfaz): `usar_en_agente` va **a nivel raíz** de la respuesta, no dentro de `preferencias` (que no cambia).
+  - `get_my_preferences` y `save_my_preferences` lo devuelven con el valor propio. En `get_my_preferences` vale `true` si la persona todavía no guardó nada.
+  - `save_my_preferences` acepta `usar_en_agente` (booleano) dentro de `p_preferencias`. Si la clave falta, vale `true`: guardar sin la clave vuelve a activar el uso. Otro tipo de valor da `entrada_incompleta/preferencias_invalidas`.
+  - Cambiar solo la casilla no cuenta como repetir (`repetido: false`).
+- **Plan:** `proponer_plan_borrador` ignora las filas con `usar_en_agente = false` en todo. `personas_consideradas` y `pocas_preferencias` cuentan solo a quienes dejan usarlas. `get_my_preferences.personas_con_preferencias` tampoco las cuenta, así que nadie distingue a quien desmarcó de quien no guardó.
+- **Sin cambios:** `simulate_save_preferences` rechaza la clave como antes, porque sigue con el validador de siempre. El helper nuevo `cruce.validar_preferencias_propias` es privado. `reset_demo` deja las semillas en `true`.
+- **Pruebas:** `tests/backend/enmienda8.test.ts` (las 5 mínimas de la enmienda).
