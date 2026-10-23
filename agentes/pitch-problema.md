@@ -1,29 +1,34 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 12:49.
+Quien edita este archivo: solo esta sesión. Última actualización: 13:18.
 
 ## Tocando ahora
-- Mejora #11 (explicación del agente) + pedido de Nico: agente coordinador y empático que propone según los intereses de todo el grupo.
-- `supabase/functions/agente/**`, `src/agente/**`, `docs/agente*.md`
+- `supabase/functions/agente/**`, `src/agente/**`, `docs/agente*.md` (esperando el despliegue de la función para probarla en vivo)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
-- Enmienda 4 aprobada por el coordinador (`docs/contrato-enmienda-4.md`, 05df745); sin `agente_insumos`. Backend implementando (0014+).
-- `wip/agente-ia` commit `c404e3d`: función del servidor `supabase/functions/agente/index.ts` y pantalla `src/agente/` (`AgentePanel`, `api.ts`). Typecheck y build en verde. La función no se probó en vivo: falta la base (0014+) y el despliegue, que hace el coordinador. Sintaxis verificada con `node --check`; no hay Deno local para chequear tipos.
-- Sin clave: la función devuelve texto fijo. Si la función no está publicada, la pantalla llama directo a `proponer_plan_borrador` con clima desconocido.
+- Enmienda 4.1 en la función y la pantalla (`wip/agente-ia`, `9cfd290`, con `origin/wip/fundamentos` integrado). Typecheck y build en verde.
+- Revisión independiente con 4 enfoques (privacidad, API de Claude, contrato e interfaz) y verificación adversarial: 12 hallazgos confirmados, todos corregidos. El principal: el catálogo le pasaba al modelo el nombre "Tomi" ("Quincho de Tomi") y el validador descartaba casi siempre la salida del modelo. Ahora el modelo recibe el catálogo sin nombres y la validación compara palabras completas y nombres propios.
+- Probado contra la base real (0014 a 0016), corriendo la función en Node con un adaptador de Deno y sin clave: Tomi recibe 3 candidatas, el clima real de Open-Meteo, eleccion_fuente=regla y explicacion_fuente=texto_fijo; Luna recibe no_es_organizador_espacio; una fecha que no es sábado da fecha_invalida; la respuesta no contiene nombres de otros ni valores de preferencias.
+- Probado en el navegador (rama de Claude B + la mía, teléfono 375 px): guardar preferencias, "Que el agente proponga" (respaldo por RPC porque la función todavía no está publicada), candidatas con la recomendada destacada y "Usar esta opción", que precarga título y franjas en Nueva propuesta. Arreglé un desborde del recuadro de opciones en el teléfono.
+- Sin probar: la llamada real al modelo, porque no hay clave.
 
 ## Siguiente
-Cuando el backend publique 0014+: probar la pantalla en vivo contra la base y pedir el despliegue de la función.
+Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin clave) y verificar CORS y verify_jwt. Con clave (Nico): probar la elección y la redacción del modelo y que la validación no descarte de más.
 
 ## Bloqueos
 - Las tablas y RPC del agente las escribe el backend después de que el coordinador apruebe la enmienda 4.
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-- **[12:49] coordinador (URGENTE, antes de que el backend cierre 0014):** Nico pidió que el agente "lea los intereses de todos los integrantes y proponga según todos", con un tono comprensivo, ejecutivo, coordinador, amable y empático. Propongo una ampliación chica de `proponer_plan_borrador` (enmienda 4.1, solo agrega campos): (a) `candidatas`: hasta 3 entradas del catálogo que pasaron el descarte, ordenadas por el puntaje fijo, cada una con `id`, `actividad_etiqueta`, `lugar`, `titulo`, `franjas` y `frases_grupo` (la primera es la elección de hoy); (b) `perfil_grupo`, agregado y no identificable: `personas`, `gustos` (`[{actividad_etiqueta, cuantos}]`), `energia_mayoritaria`, `ambiente_mayoritario` (o null) y `presupuesto_grupo` (`cualquiera`|`moderado`|`bajo`, el más restrictivo, que el plan ya revela). Con `personas <= 3` se omiten `gustos`, `energia_mayoritaria`, `ambiente_mayoritario` y `presupuesto_grupo`. El modelo elige UNA de las `candidatas` (la función valida que el id esté en la lista; si no, usa la primera) y redacta la explicación y un mensaje para el grupo. Sigue sin ver datos de una persona y sin confirmar nada. Si no lo aprobás, la función sigue funcionando con `resultado` como hoy.
-- **[12:46] coordinador:** función `supabase/functions/agente/` lista para desplegar (rama `wip/agente-ia`, `c404e3d`). Usa los secretos automáticos `SUPABASE_URL` y `SUPABASE_ANON_KEY` (o `SUPABASE_PUBLISHABLE_KEY`); opcionales `ANTHROPIC_API_KEY` (lo pone Nico) y `AGENTE_MODELO`. Deja verify_jwt activado.
-- **[12:46] claude-b-interfaz (vía coordinador):** enganchar `AgentePanel` de `src/agente/AgentePanel.tsx` en la pantalla del espacio: `<AgentePanel espacioId={espacio.id} esOrganizador={espacio.mi_rol === 'organizador'} soloLectura={soloLectura} />`. En `NuevaPropuesta`, al precargar, llamar a `tomarBorradorAgente(espacioId)` de `src/agente/api.ts`: si devuelve algo, usar su `titulo` y sus `franjas[0]`/`franjas[1]` (inicio y fin en HoraLocal) en vez de los del caso.
+- **[13:18] coordinador:** la función `supabase/functions/agente/` está LISTA PARA DESPLEGAR (`wip/agente-ia`, `9cfd290`). verify_jwt activado; usa SUPABASE_URL y SUPABASE_ANON_KEY (o SUPABASE_PUBLISHABLE_KEY); opcionales ANTHROPIC_API_KEY (Nico) y AGENTE_MODELO. Temperatura: claude-haiku-5-5 rechaza valores distintos del predeterminado (400), así que la repetibilidad la dan effort low, el esquema JSON con enum de ids y, sin clave, siempre la primera candidata con texto fijo.
+- **[13:18] claude-b-interfaz:** probé tu enganche con mi rama y funciona (panel en el espacio y precarga en Nueva propuesta). Cuando integres `wip/agente-ia` vas a recibir `src/agente/agente.css`, que ya importa `AgentePanel`.
 
 ## Entregado
+- Mejora #11 y enmienda 4.1 en la función y la pantalla: `wip/agente-ia`, commits `15b5b2a` (4.1 + arreglos de la revisión), `8ce33de` (integra wip/fundamentos) y `9cfd290` (desborde en teléfono).
 - `docs/agente-ia.md`, `docs/pitch.md`, `docs/checkpoint-1.md`, `docs/jurado-variantes.md` (integrados por el coordinador).
 - Pendiente el sábado: pasar CRUCE → CRUXE en `pitch.md`, `checkpoint-1.md`, `problema.md` y `readme-borrador.md`.
+
+## Ideas
+- **[13:18] Mensaje del agente para pegar en WhatsApp** (dueño: agente-ia + claude-b): un botón "Compartir por WhatsApp" con el `mensaje_al_grupo` y el enlace de invitación, para que el plan salga del chat de siempre y vuelva a CRUXE. Encaja con la respuesta a "¿por qué no WhatsApp?": conviven.
+- **[13:18] "Ritmo del grupo" visible para todos** (dueño: backend + agente-ia): mostrar al grupo solo el perfil agregado (por ejemplo "Asado: lo marcaron 5 de 6") cuando hay 4 personas o más, para que cada uno vea que el plan sale de todos. Ojo con la inferencia en grupos chicos: con 3 o menos, no se muestra.
