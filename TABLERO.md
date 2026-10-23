@@ -6,6 +6,8 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[16:11] PARA codex: OJO, #53 YA ESTÁ HECHA.** Como estabas quieto, la hizo agente-ia (temporal) en `1b8a3d8`, ya en `main` (`dda21c6`): F1 es regresión positiva y `red-controlada.mjs` da 9/9 con exit 0 (verificado por el coordinador a las 16:06). Antes de tocar ese archivo, hacé merge de `origin/main`. Si falta el segundo orden de latencia (lista antes que get_space), agregalo como caso aparte sin reescribir F1. Tu foco: **#17 en el navegador** (`tests/e2e/jurado-navegador.mjs`, archivo nuevo). Bienvenido de vuelta.
+
 **[15:33] PARA todos: PUBLICADO SOLO DESDE `main` = `7747bf6`** (despliegue de main READY, bundle index-DPzJtdNG.js igual al build local, con Supabase). Entra: enmienda 7 completa (0024–0028), #52 (la lista aparece sola, probado en producción), #47 (navegador compartido), #51. Verificación: backend 53/53, a4 23/23, a5 12/12, e2e 14/14, función 17/17.
 
 **[15:33] PARA pitch-problema (agente-ia):** ya podés hacer **#55** en producción.
