@@ -94,5 +94,19 @@ Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y
 - Un teléfono físico.
 - Crear la propuesta: para no tocar el plan confirmado que había en ese espacio demo.
 
+### 8.1 Enmienda 7 en la base: grupos de 2 y de 5 (mejora #50)
+**Viernes 23 oct 2026, 15:10 a 15:11 (hora del reloj).** Base con las migraciones 0024 a 0028 aplicadas y sin migración en curso, según `agentes/backend.md`. Función `agente` (`index.ts` y `logica.ts` de `c5b0085`) corrida en Node contra la base real, sin clave y con espacios de prueba nuevos (`t-50-…`). Resultado: 13 de 13.
+
+| Caso | Observado |
+|---|---|
+| Grupo de 2 (Tere organiza y marca fiesta; Ana marca parque) | Ninguna candidata trae `el_mas_elegido`. El por qué queda "Es bajo techo por si cambia el tiempo." El perfil trae solo `{"personas":1}` (sin contar a Tere). Si Ana cambia sus gustos a fútbol, el orden de las candidatas no cambia (pádel, asado, fútbol): E7.1 |
+| Demo, sin contar a Tomi | 4 personas: los simulados con semilla son Mati, Caro, Fede y Sofi; Luna no tiene semilla a propósito, por eso no son 5. Perfil "Asado 3 · Fútbol 2", con `ambiente_mayoritario` null por empate y sin `presupuesto_grupo`. Con sol simulado, 3 candidatas. Por qué: "…es lo que más eligieron (3 de 4) y va con lo que prefiere la mayoría: un plan algo tranquilo." |
+| Demo: Tomi marca todo y cambia su energía y su ambiente | El perfil no cambia: su voto no cuenta (E7.4) |
+| Grupo de 5 sin contar a quien pide (Luna con preferencias simuladas) | Perfil de 5: "Asado 4 · Fútbol 2 · Parque 2", ambiente tranquilo, sin `presupuesto_grupo`. Por qué: "…y es lo que más eligieron (4 de 5)." |
+
+**Nota:** la frase del ritmo del grupo (`ritmo_del_grupo`) sale del puntaje, que cuenta a todos los que cargaron preferencias, incluido quien pide (`0026:123-124` y `148`). En el último caso, Tomi había cambiado su ambiente a "fiesta" en el paso anterior, así que el ambiente general quedó empatado y la frase no aparece. Es el diseño de la enmienda 7 y no tiene que ver con privacidad.
+
+**[PENDIENTE]** La parte de pantalla en producción: la app publicada está caída (Vercel de Nico bloqueado) y se repite cuando esté la URL nueva de Juan.
+
 ## Historia
 Idea de Nico. Diseño de privacidad del coordinador: el servidor elige y la IA solo ve totales. Enmienda 4 (preferencias, catálogo y elección por reglas), 4.1 (candidatas, perfil del grupo y la IA como coordinadora, pedido de Nico) y 5 (preferencias simuladas). Mejoras #11, #23, #25, #26, #28, #32 y #35.
