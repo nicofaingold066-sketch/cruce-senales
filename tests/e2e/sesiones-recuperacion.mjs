@@ -102,9 +102,10 @@ const estado = p => p.evaluate(() => window.sesionesQA.estado())
 const guardar = p => p.evaluate(() => window.sesionesQA.guardarFicticia('qa-ficticio-Tomi-guardado'))
 const cambiar = p => p.evaluate(() => window.sesionesQA.cambiar())
 const mostrar = p => p.evaluate(() => window.sesionesQA.mostrarInicio())
+// La portada es la entrada (#/entrar ya no es una pantalla aparte): App sin hash muestra la portada con el aviso de la otra sesión.
 const mostrarEntrada = async p => {
   await p.evaluate(() => window.sesionesQA.mostrarApp())
-  await p.waitForURL(/#\/entrar$/)
+  await p.getByRole('heading', { level: 1 }).first().waitFor()
   await retorno(p).waitFor()
 }
 const retorno = p => p.getByRole('button', { name: 'Volver a esa sesión', exact: true })
@@ -221,41 +222,47 @@ try {
     assert.equal(ops.includes('token'), false)
   })
 
-  await caso('L1 login: retorno válido restaura Tomi, portada y sus espacios', async ({ route, op, args }) => {
+  await caso('L1 portada: retorno válido restaura Tomi, portada y sus espacios', async ({ route, op, args }) => {
     assert.equal(op, 'token'); assert.equal(args.refresh_token, 'qa-ficticio-Tomi-guardado')
     return responder(route, sesion('Tomi', 'qa-ficticio-Tomi-rotado'))
   }, async p => {
     await poner(p, 'Pepe'); await guardar(p); await mostrarEntrada(p)
     await Promise.all([p.waitForEvent('domcontentloaded'), retorno(p).click()])
     await p.waitForFunction(() => window.sesionesQA?.lista)
-    await p.getByRole('heading', { name: 'Tus espacios', exact: true }).waitFor()
-    assert.equal(new URL(p.url()).hash, '#/')
+    // Los espacios de Tomi aparecen en la portada (el rótulo de la sección cambió de «Tus espacios» a «Tus grupos»).
+    await p.getByRole('heading', { name: /^Tus (grupos|espacios)$/ }).waitFor()
+    await p.getByRole('link', { name: /Los del asado/ }).waitFor()
+    assert.ok(['', '#/'].includes(new URL(p.url()).hash), 'La portada no cambia de ruta')
     assert.deepEqual(await estado(p), { actual: 'Tomi', guardada: null })
     assert.equal(await retorno(p).count(), 0)
   })
 
-  await caso('L2 login: copia inválida conserva Pepe y ofrece las tres entradas con foco útil', async ({ route, op }) => {
+  await caso('L2 portada: copia inválida conserva Pepe y deja las tres entradas (demo, código, nombre)', async ({ route, op }) => {
     assert.equal(op, 'token'); return errorFatal(route)
   }, async p => {
     await poner(p, 'Pepe'); await guardar(p); await mostrarEntrada(p)
     await retorno(p).click()
-    await p.getByText('No se pudo volver a esa sesión', { exact: true }).waitFor()
+    const alerta = p.getByRole('alert').filter({ hasText: 'No se pudo volver a la otra sesión' })
+    await alerta.waitFor()
     assert.deepEqual(await estado(p), { actual: 'Pepe', guardada: null })
-    const demo = p.getByRole('button', { name: 'Probar la demo «Los del asado»', exact: true })
-    await demo.waitFor()
+    assert.equal(await retorno(p).count(), 0)
+    // Entradas que quedan: demo, unirse con código y nombre (ingreso). «Crear un grupo» solo aparece con nombre guardado.
+    await p.getByRole('button', { name: 'Probar la demo «Los del asado»', exact: true }).waitFor()
     assert.equal(await p.getByRole('button', { name: 'Unirme', exact: true }).count(), 1)
-    assert.equal(await p.getByRole('button', { name: 'Crear un espacio', exact: true }).count(), 1)
-    await p.waitForFunction(() => document.activeElement?.textContent === 'Probar la demo «Los del asado»')
+    assert.equal(await p.getByRole('button', { name: 'Entrar', exact: true }).count(), 1)
+    assert.equal(await p.getByRole('textbox', { name: '¿Cómo te llaman tus amigos?' }).count(), 1)
   })
 
-  await caso('L3 login: HTTP 503 conserva copia, sesión actual y foco en otra persona', async ({ route, op }) => {
+  await caso('L3 portada: HTTP 503 conserva copia y sesión actual, y permite reintentar u olvidar', async ({ route, op }) => {
     assert.equal(op, 'token'); return responder(route, { msg: 'Falla de red ficticia' }, 503)
   }, async p => {
     await poner(p, 'Pepe'); await guardar(p); await mostrarEntrada(p)
     await retorno(p).click()
     await p.getByText('Sin conexión con el servidor. La sesión sigue guardada; intenta de nuevo.', { exact: false }).waitFor({ timeout: 35000 })
     assert.deepEqual(await estado(p), { actual: 'Pepe', guardada: 'Tomi en «Los del asado»' })
-    await p.waitForFunction(() => document.activeElement?.textContent === 'Entrar como otra persona')
+    // La copia sigue ofrecida: se puede reintentar o descartar (el foco del error ya no se maneja en la portada).
+    assert.equal(await retorno(p).isEnabled(), true)
+    assert.equal(await p.getByRole('button', { name: 'Olvidarla', exact: true }).isEnabled(), true)
   })
 } finally {
   await browser.close(); await server.close()
