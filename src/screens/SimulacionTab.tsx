@@ -79,15 +79,19 @@ export default function SimulacionTab({ p, viva, soloLectura }: PestanaProps) {
           <section className="tarjeta tarjeta-sim sim-atajos" aria-label="Atajos de simulación">
             <h2>Atajos</h2>
             <div className="sim-atajos-botones">
-              <Boton
-                variante="secundario"
-                onClick={guardarTodos.ejecutar}
-                ocupado={guardarTodos.ocupado}
-                ocupadoTexto="Cargando condiciones…"
-                disabled={soloLectura}
-              >
-                Cargar condiciones del caso a las personas simuladas
-              </Boton>
+              {p.mi_situacion.puede.simular ? (
+                <Boton
+                  variante="secundario"
+                  onClick={guardarTodos.ejecutar}
+                  ocupado={guardarTodos.ocupado}
+                  ocupadoTexto="Cargando condiciones…"
+                  disabled={soloLectura}
+                >
+                  Cargar condiciones del caso a las personas simuladas
+                </Boton>
+              ) : (
+                <p className="suave">Cargar el caso de una vez solo se puede en el espacio demo, con la propuesta abierta.</p>
+              )}
               {version != null && puedenAceptar.length > 0 ? (
                 <Boton
                   onClick={aceptarTodos.ejecutar}

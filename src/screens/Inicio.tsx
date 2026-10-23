@@ -218,6 +218,9 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
     if (r?.ok) {
       if (r.data.resultado.reclamo_asiento_simulado) {
         dejarAviso(`Reclamaste el lugar de ${nombre.trim()}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.`)
+      } else if (r.data.resultado.ya_era_miembro) {
+        // Esta sesión ya estaba en el espacio: el servidor no cambia el nombre. Se avisa en vez de entrar en silencio.
+        dejarAviso('Este teléfono ya estaba en este espacio: sigues con tu nombre de antes (lo ves arriba). Para entrar como otra persona, usa otro teléfono o una ventana privada.')
       }
       irA(rutas.espacio(r.data.resultado.espacio_id))
     }

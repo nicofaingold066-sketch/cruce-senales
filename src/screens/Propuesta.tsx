@@ -83,6 +83,11 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
     ...(esOrganizadorEspacio ? [{ id: 'simulacion' as Pestana, texto: 'Simulación' }] : []),
   ]
   const activa = pestanas.some((t) => t.id === pestana) ? pestana : 'plan'
+  // Misma condición con que PlanTab muestra la comparación "versión anterior → vigente".
+  const muestraComparacion =
+    (p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado') &&
+    p.ultima_evaluacion?.resultado === 'reparacion_publicada' &&
+    p.ultima_evaluacion.version === p.opcion?.version
   // Enmienda 3: el código decide el acento. Solo si llega un código desconocido se usan los booleanos del servidor.
   const cod = p.siguiente_accion.codigo
   const conocido = (CODIGOS_SIGUIENTE as readonly string[]).includes(cod)
@@ -124,7 +129,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
         </Aviso>
       ) : null}
 
-      {avisoVersion != null && !(activa === 'plan' && p.ultima_evaluacion?.resultado === 'reparacion_publicada') ? (
+      {avisoVersion != null && !(activa === 'plan' && muestraComparacion) ? (
         <Aviso
           tono="aviso"
           titulo={`Hay una versión nueva (versión ${avisoVersion})`}

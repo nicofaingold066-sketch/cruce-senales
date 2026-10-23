@@ -32,7 +32,7 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
 
       {p.estado === 'borrador' ? <AbrirPropuesta p={p} viva={viva} soloLectura={soloLectura} /> : null}
 
-      {conOpcion && p.opcion ? <OpcionVigente p={p} viva={viva} soloLectura={soloLectura} /> : null}
+      {conOpcion && p.opcion ? <OpcionVigente key={p.opcion.version} p={p} viva={viva} soloLectura={soloLectura} /> : null}
 
       {enRevision ? (
         <AlternativaOrganizador p={p} viva={viva} soloLectura={soloLectura} sinAlternativa={sinAlternativa} />
@@ -234,10 +234,10 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
 
 function BloqueRevision({ p }: { p: EstadoPropuesta }) {
   return (
-    <Aviso tono="aviso" titulo="El grupo quedó por debajo del mínimo">
-      {p.opcion ? `La versión ${p.opcion.version} dejó de cumplir el mínimo o la presencia del anfitrión. ` : ''}
+    <Aviso tono="aviso" titulo="Una baja dejó el plan sin cumplir">
+      {p.opcion ? `La versión ${p.opcion.version} ya no alcanza el mínimo o perdió al anfitrión. ` : ''}
       Sus confirmaciones ya no bastan para confirmar el encuentro. El plan está <strong>En revisión</strong> hasta que se
-      publique una alternativa y todas las personas la confirmen de nuevo.
+      publique una alternativa y se reúnan de nuevo las confirmaciones necesarias.
     </Aviso>
   )
 }
