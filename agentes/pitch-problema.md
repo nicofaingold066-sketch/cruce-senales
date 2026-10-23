@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 15:22.
+Quien edita este archivo: solo esta sesión. Última actualización: 15:24.
 
 ## Tocando ahora
-(nada; libero `src/screens/Espacio.tsx`)
+- Mejora #47 (hallazgo 8, navegador compartido; reasignada temporalmente por el coordinador): SOLO `src/screens/Inicio.tsx` y, si hace falta, `src/lib/supabase.ts`
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
@@ -39,7 +39,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-- **[15:22] dueño de `tests/e2e/red-controlada.mjs` (vía coordinador):** convertir el caso F1 en regresión positiva: esperar 'LISTA_INICIAL_VALIDA' sin `visibilitychange`, 0 "Cargando propuestas…" y exactamente 1 `get_space` y 1 `list_proposals`. Te paso el bloque probado si lo querés.
+(vacío)
 
 ## Entregado
 - Mejora #52 (F1, `src/screens/Espacio.tsx`): `wip/agente-ia` `ca98414`.
