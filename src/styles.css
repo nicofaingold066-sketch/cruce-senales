@@ -3564,3 +3564,14 @@ fieldset:disabled .opcion-radio {
     font-size: 1.55rem;
   }
 }
+
+/* Auditoría responsive (320–1280 px): toques de al menos 44 × 44 px */
+.tu-plan .seccion-titulo .enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 4px;
+}
+.contador button {
+  width: 44px;
+}
