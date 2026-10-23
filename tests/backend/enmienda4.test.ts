@@ -4,6 +4,7 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 import {
   clienteSinSesion, crearEspacioPrueba, err, nuevaSesion, ok, PERMITIDAS, rpc, rpcCrudo, intento, type Json, type Sesion,
+  TOTAL_PERMITIDAS,
 } from './helpers'
 
 type Pref = { presupuesto: string; energia: string; ambiente: string; lugar: string; me_gustaria: string[] }
@@ -239,7 +240,7 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
   })
 
   it('7. lista permitida: 31 para authenticated (29 de la enmienda 4 + 1 de la 5 + 1 de la 9), 0 para anon, agente_insumos no existe', async () => {
-    expect(Object.keys(PERMITIDAS)).toHaveLength(31)
+    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40
     for (const fn of ['save_my_preferences', 'get_my_preferences', 'proponer_plan_borrador']) {
       const a = await rpcCrudo(clienteSinSesion(), fn, PERMITIDAS[fn]())
       expect(a.error?.code, fn).toBe('42501')

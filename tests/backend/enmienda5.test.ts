@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it } from 'vitest'
 import {
   clienteSinSesion, crearEspacioPrueba, err, intento, nuevaSesion, ok, PERMITIDAS, rpc, rpcCrudo,
   type Json, type Sesion,
+  TOTAL_PERMITIDAS,
 } from './helpers'
 
 const SECO = { sabado: 'seco', domingo: 'seco' }
@@ -129,7 +130,7 @@ describe('enmienda 5: preferencias simuladas en vivo', { timeout: 90_000 }, () =
   })
 
   it('4. catálogo: 31 funciones para authenticated, 0 para anon', async () => {
-    expect(Object.keys(PERMITIDAS)).toHaveLength(31)
+    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40
     const a = await rpcCrudo(clienteSinSesion(), 'simulate_save_preferences', PERMITIDAS.simulate_save_preferences())
     expect(a.error?.code).toBe('42501')
     const b = await rpcCrudo(O, 'simulate_save_preferences', PERMITIDAS.simulate_save_preferences())
