@@ -104,9 +104,12 @@ describe('enmienda 3', { timeout: 90_000 }, () => {
     expect(mirar(a.propuesta)).toEqual({ codigo: 'ya_aceptaste', texto: 'Ya confirmaste la versión 1. Faltan 3 para el mínimo.' })
 
     const ids = Object.fromEntries(demo.miembros.map((m: Json) => [m.nombre, m.miembro_id]))
-    for (const n of ['Luna', 'Mati', 'Caro']) {
-      await ok(O, 'simulate_accept', { p_propuesta_id: prop, p_miembro_id: ids[n], p_version: 1, p_intento_id: intento() })
-    }
+    // Plural con X > 1 y singular con X = 1 (0013).
+    await ok(O, 'simulate_accept', { p_propuesta_id: prop, p_miembro_id: ids.Luna, p_version: 1, p_intento_id: intento() })
+    expect(mirar(await estado(U, prop))).toEqual({ codigo: 'ya_aceptaste', texto: 'Ya confirmaste la versión 1. Faltan 2 para el mínimo.' })
+    await ok(O, 'simulate_accept', { p_propuesta_id: prop, p_miembro_id: ids.Mati, p_version: 1, p_intento_id: intento() })
+    expect(mirar(await estado(U, prop))).toEqual({ codigo: 'ya_aceptaste', texto: 'Ya confirmaste la versión 1. Falta 1 para el mínimo.' })
+    await ok(O, 'simulate_accept', { p_propuesta_id: prop, p_miembro_id: ids.Caro, p_version: 1, p_intento_id: intento() })
     // Mínimo alcanzado pero falta el anfitrión.
     const u = await estado(U, prop)
     expect(u.estado).toBe('esperando_compromisos')
