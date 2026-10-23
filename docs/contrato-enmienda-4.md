@@ -153,3 +153,11 @@ Pasa de 26 a **29** funciones públicas ejecutables por `authenticated`: las 26 
 
 ## Postergado
 - `simulate_save_preferences`, para que el organizador cambie en vivo las preferencias de un simulado (variantes del jurado). Se suma solo si sobra tiempo.
+
+## 4.1 Agregado aprobado: candidatas y perfil del grupo (pedido de Nico vía agente-ia)
+`proponer_plan_borrador` agrega dos campos a `resultado` cuando `tipo = "borrador"`. No cambia nada de lo anterior.
+- **`candidatas`**: hasta 3 entradas que PASARON el descarte, ordenadas por el puntaje fijo (desempates de la sección 4). Cada una: `id`, `actividad`, `actividad_etiqueta`, `lugar` {id, nombre, simulado}, `titulo`, `franjas` (formato de `create_proposal`), `frases_grupo`. La primera es siempre la elección por regla (la misma de los campos actuales). Nunca incluye puntajes ni descartadas.
+- **`perfil_grupo`**, solo agregados: `personas` (entero), `gustos` [{`actividad_etiqueta`, `cuantos`}] ordenado por cuantos, `energia_mayoritaria`, `ambiente_mayoritario` (o null) y `presupuesto_grupo` (`cualquiera` | `moderado` | `bajo`, el más restrictivo). **Con `personas <= 3` se devuelve solo `personas`** (los demás campos se omiten).
+- **Decisión del coordinador sobre el modelo:** el modelo puede ELEGIR una de las `candidatas` (todas ya validadas por el servidor) y redactar la explicación y un mensaje para el grupo con tono amable, empático y ejecutivo. La función valida que el `id` elegido esté en `candidatas` (si no, usa la primera), que los textos no nombren a nadie ni aludan a la situación de una persona, y su largo. La respuesta de la función indica `eleccion_fuente` (`modelo` | `regla`) y `explicacion_fuente` (`modelo` | `texto_fijo`). Sin clave o ante cualquier falla: primera candidata y texto fijo.
+- **Condición de interfaz:** el organizador ve las candidatas con la elegida destacada y decide él cuál usar; nada se crea solo.
+- Pruebas del backend: candidatas sin puntajes ni descartadas; primera = elección por regla; con 3 personas o menos, `perfil_grupo` solo trae `personas`; ninguna fuga de datos individuales.
