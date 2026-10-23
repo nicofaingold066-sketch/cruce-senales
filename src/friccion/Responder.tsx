@@ -262,6 +262,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
             <a className="btn btn-secundario entrada-enlace" href={verPlan}>
               Todavía no sé: ver el plan
             </a>
+            <p className="suave rapida-nota">Si todavía no sabes, vuelve a abrir el mismo enlace cuando sepas: te trae directo aquí.</p>
           </section>
         ) : (
           <section className="tarjeta entrada-principal" aria-labelledby="rapida-hecho">

@@ -115,14 +115,14 @@ function Marco({
           {incompatible ? (
             <Aviso
               tono="error"
-              titulo="Versión incompatible"
+              titulo="Hay una versión nueva de CRUXE"
               accion={
                 <Boton variante="secundario" onClick={() => window.location.reload()}>
                   Recargar la aplicación
                 </Boton>
               }
             >
-              Versión incompatible: recarga la aplicación. Mientras tanto no se pueden registrar acciones.
+              Recarga para seguir. Mientras tanto no se pueden registrar acciones; lo que ya guardaste está a salvo.
             </Aviso>
           ) : null}
         </div>
@@ -136,14 +136,15 @@ function Marco({
           <div className="pantalla">
             <Aviso
               tono="error"
-              titulo="No se pudo iniciar la sesión"
+              titulo="No pudimos conectarte"
               accion={
                 <Boton variante="secundario" onClick={reintentar}>
                   Reintentar
                 </Boton>
               }
             >
-              {sesion.mensaje}
+              {/* rincones O-13: el texto de la sesión (hooks.ts) habla del proyecto; quien abrió un enlace solo necesita saber qué hacer. */}
+              Revisa tu conexión y toca Reintentar. No necesitas cuenta ni contraseña.
             </Aviso>
           </div>
         ) : null}
