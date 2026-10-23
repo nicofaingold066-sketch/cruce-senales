@@ -21,6 +21,7 @@ import {
   type BorradorAgente,
   type CandidataAgente,
   type ClimaSimulado,
+  type PerfilGrupo,
   type Energia,
   type LugarPref,
   type Preferencias,
@@ -206,6 +207,30 @@ function enlaceWhatsApp(mensaje: string, invitacion: string | null): string {
   return `https://wa.me/?text=${encodeURIComponent(texto)}`
 }
 
+const RITMO: Record<string, string> = { con_todo: 'con todo', algo_tranquilo: 'algo tranquilo' }
+const AMBIENTE_GRUPO: Record<string, string> = { fiesta: 'de fiesta', tranquilo: 'tranquilo' }
+
+/**
+ * Lo que eligió el grupo, solo en totales (mejora #26). Con 3 personas o menos no se muestra nada,
+ * para que no se pueda adivinar quién eligió qué. El presupuesto no se muestra nunca.
+ */
+function PerfilDelGrupo({ perfil }: { perfil: PerfilGrupo | null | undefined }) {
+  if (!perfil || perfil.personas <= 3 || !perfil.gustos?.length) return null
+  const ritmo = perfil.energia_mayoritaria ? RITMO[perfil.energia_mayoritaria] : null
+  const ambiente = perfil.ambiente_mayoritario ? AMBIENTE_GRUPO[perfil.ambiente_mayoritario] : null
+  return (
+    <div className="bloque">
+      <p>
+        <strong>Lo que eligió el grupo ({perfil.personas} personas): </strong>
+        {perfil.gustos.map((g) => `${g.actividad_etiqueta} ${g.cuantos} de ${perfil.personas}`).join(' · ')}.
+        {ritmo ? ` La mayoría prefiere ${ritmo === 'con todo' ? 'ir con todo' : 'algo tranquilo'}.` : ''}
+        {ambiente ? ` Ambiente ${ambiente}.` : ''}
+      </p>
+      <p className="suave">Son totales del grupo: nadie ve lo que eligió cada uno.</p>
+    </div>
+  )
+}
+
 function etiquetaOpcion(c: CandidataAgente): string {
   return `${c.actividad_etiqueta} · ${c.lugar.nombre.replace(' (Simulación)', '')}`
 }
@@ -264,6 +289,7 @@ function BorradorTarjeta({
           })}
         </div>
       </fieldset>
+      <PerfilDelGrupo perfil={b.perfil_grupo} />
       <label className={`campo ${tituloValido ? '' : 'campo-error'}`}>
         <span>Título</span>
         <input value={titulo} maxLength={80} onChange={(e) => setTitulo(e.target.value)} disabled={soloLectura} />

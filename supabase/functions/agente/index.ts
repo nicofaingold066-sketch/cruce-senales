@@ -413,6 +413,8 @@ Deno.serve(async (req) => {
       personas_consideradas: base.personas_consideradas,
       candidatas,
       elegida_id: elegida.id,
+      // Solo totales del grupo; con 3 personas o menos, solo la cantidad (mejora #26).
+      perfil_grupo: perfil ? (perfil.personas > 3 ? perfil : { personas: perfil.personas }) : null,
       clima: { fuente: clima.fuente, resumen, sabado: clima.sabado.estado, domingo: clima.domingo.estado },
       explicacion: delModelo?.explicacion ?? unirFrases(elegida.frases_grupo, simulado),
       mensaje_al_grupo: delModelo?.mensaje ?? mensajeFijo(elegida),

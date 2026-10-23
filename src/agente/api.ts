@@ -46,6 +46,15 @@ export interface CandidataAgente {
   frases_grupo: string[]
 }
 
+/** Totales del grupo (enmienda 4.1). Con 3 personas o menos solo trae `personas`. */
+export interface PerfilGrupo {
+  personas: number
+  gustos?: { actividad_etiqueta: string; cuantos: number }[]
+  energia_mayoritaria?: string | null
+  ambiente_mayoritario?: string | null
+  presupuesto_grupo?: string | null
+}
+
 export interface BorradorAgente extends CandidataAgente {
   tipo: 'borrador'
   personas_consideradas: number
@@ -57,6 +66,7 @@ export interface BorradorAgente extends CandidataAgente {
   mensaje_al_grupo: string
   eleccion_fuente: 'modelo' | 'regla'
   explicacion_fuente: 'modelo' | 'texto_fijo'
+  perfil_grupo?: PerfilGrupo | null
 }
 
 export type ResultadoAgente = BorradorAgente | { tipo: 'sin_plan_compatible' }
@@ -129,6 +139,7 @@ function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
       : r.clima,
     explicacion: fijo ? textoFijo(elegida.frases_grupo) : (r.explicacion as string),
     mensaje_al_grupo: fijo || !r.mensaje_al_grupo ? mensajeFijo(elegida) : r.mensaje_al_grupo,
+    perfil_grupo: r.perfil_grupo ? (r.perfil_grupo.personas > 3 ? r.perfil_grupo : { personas: r.perfil_grupo.personas }) : null,
     eleccion_fuente: !sinFuncion && r.eleccion_fuente === 'modelo' ? 'modelo' : 'regla',
     explicacion_fuente: !fijo && r.explicacion_fuente === 'modelo' ? 'modelo' : 'texto_fijo',
   }
