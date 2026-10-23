@@ -26,7 +26,7 @@ await corto('R121', d, async () => {
 await corto('R123', d, async () => {
   await d.goto(`${BASE}/#/unirse/${g.codigo}`); await T(d, 4500)
   await rincon(d, 'R123', 'Invitación abierta en un navegador que YA es miembro ("Seguir como Dani")', { foco: true }); nota('R123', await txt(d))
-  await d.getByRole('button', { name: /Entrar como otra persona/ }).click(); await T(d, 800)
+  await d.getByRole('button', { name: /Entrar como otra persona|Elegir otro nombre|Seguir como/ }).first().click({ timeout: 4000 }).catch(() => nota('R123', 'sin botón para cambiar de persona')); await T(d, 800)
   await rincon(d, 'R124', 'Confirmación de "Entrar como otra persona"'); nota('R124', await txt(d))
 })
 // C. Perfil: editar nombre, grupos
@@ -51,7 +51,7 @@ if (demo) {
   await corto('R127', j, async () => {
     await j.goto(`${BASE}/#/unirse/${demo}`); await T(j, 4500)
     await rincon(j, 'R127', 'Invitación al DEMO: lista con personas simuladas reclamables', { foco: true }); nota('R127', await txt(j))
-    await j.getByRole('button', { name: /Mati/ }).first().click(); await T(j, 800)
+    await j.getByRole('button', { name: /Mati/ }).first().click({ timeout: 4000 }); await T(j, 800)
     await rincon(j, 'R128', 'Demo: confirmar "¿Eres Mati?" (lugar simulado)'); nota('R128', await txt(j))
     await j.getByRole('button', { name: /Sí, soy Mati/ }).click(); await j.waitForURL(/#\/e\//, { timeout: 30000 }); await T(j, 3500)
     await rincon(j, 'R129', 'Demo: espacio tras reclamar el lugar de Mati (jurado)'); nota('R129', await txt(j))

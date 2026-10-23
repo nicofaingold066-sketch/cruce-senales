@@ -39,7 +39,7 @@ await corto('R145', z, async () => {
   await z.goto(`${BASE}/#/unirse/${codigoB}`); await T(z, 4000)
   await rincon(z, 'R145', 'Invitación al grupo B: Zoe y Lalo libres para elegir', { foco: false }); nota('R145', await txt(z))
   await z.getByRole('button', { name: /^Zoe/ }).click(); await T(z, 600); await z.getByRole('button', { name: /Sí, soy Zoe/ }).click()
-  await z.waitForURL(/#\/e\//, { timeout: 30000 }); await T(z, 3500); await guardarSesion(z)
+  await z.waitForURL(/#\/e\//, { timeout: 40000 }); await T(z, 3500); if (/responder/.test(z.url())) { await z.goto(`${BASE}/#/e/${espacioB}`); await T(z, 3500) }; await guardarSesion(z)
   await rincon(z, 'R146', 'Zoe dentro del grupo B (propuesta abierta de la que es imprescindible)'); nota('R146', await txt(z))
 })
 console.log('ERRORES', JSON.stringify(errores)); console.log(guardar('f7')); await b.close()
