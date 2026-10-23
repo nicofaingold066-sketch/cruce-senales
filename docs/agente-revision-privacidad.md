@@ -120,3 +120,18 @@ Autor: agente-ia. Viernes 23 oct 2026; informe cerrado a las 14:33 (hora del rel
 - **Hallazgo 7:** quitar `presupuesto_grupo` de la respuesta de la función, del respaldo y de la entrada del modelo; sumar "gratis", "barat*", "económic*" y "presupuesto" a `PROHIBIDAS`; corregir el documento.
 
 Lo demás es del backend (hallazgos 1 a 6, con enmienda) o de claude-b-interfaz (1, en la pantalla, y 8).
+
+## Anexo: cambios de interfaz de claude-b (c95952d, #43 y #44 parte 1)
+Revisión de solo lectura de `git diff c95952d^ 23331e2` (rama `wip/ui-enmienda`), con el mismo método: dos revisores (exposición directa e inferencias) y un verificador. Cerrada el viernes 23 oct 2026 a las 14:45 (hora del reloj).
+
+**Resultado: sin problemas nuevos de privacidad.** Se revisó:
+- **El aviso "sigues con tu nombre de antes"** (`src/screens/Inicio.tsx:221-224`): no lleva datos y vive solo en memoria.
+- **El foco después de un error** (`src/components/ui.tsx:72-81`): solo vuelve a leer el error propio.
+- **El estado anunciado completo** (`aria-atomic`, `src/screens/Propuesta.tsx:150-153`): anuncia lo que ya se veía.
+- **Los textos de "En revisión" y de la comparación v1 → v2** (`src/screens/PlanTab.tsx:235-243`): usan solo datos públicos (bajas, mínimo, anfitrión).
+- **El atajo de Simulación** (`src/screens/SimulacionTab.tsx:82-94`): sigue siendo solo del organizador.
+
+**Tres notas:**
+1. **Hallazgo 8:** el cambio de `Inicio.tsx` lo **mitiga** (avisa en vez de entrar en silencio), pero **no lo resuelve**: la segunda persona sigue dentro con la sesión de la primera. El arreglo completo es la mejora #47 (claude-b).
+2. **Residuo del hallazgo 1 que E7.2 no cierra** (backend): si alguien que no había confirmado se baja y el plan pasa a "En revisión" por no llegar al mínimo, el grupo deduce que esa persona podía en la franja vigente. Lo causa la transición de `0011:764-772`, no estos cambios. Conviene declararlo como límite o basar la regla solo en aceptaciones.
+3. **No es de privacidad:** el texto de `SimulacionTab.tsx:93` dice que la carga en bloque "solo se puede en el espacio demo". En el servidor, `puede.simular` significa ser organizador del espacio, tener una propuesta activa y que haya simulados.
