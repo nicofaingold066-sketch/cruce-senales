@@ -219,12 +219,14 @@ function CopiarCodigo({ codigo }: { codigo: string }) {
   }
   return (
     <>
-      <button type="button" className="btn btn-secundario btn-chico" onClick={copiar}>
-        Copiar código
-      </button>{' '}
-      <button type="button" className="btn btn-primario btn-chico" onClick={() => void compartir()}>
-        Compartir enlace
-      </button>
+      <span className="fila-botones">
+        <button type="button" className="btn btn-secundario btn-chico" onClick={copiar}>
+          Copiar código
+        </button>
+        <button type="button" className="btn btn-primario btn-chico" onClick={() => void compartir()}>
+          Compartir enlace
+        </button>
+      </span>
       {copiado === 'si' ? <span role="status"> Copiado.</span> : null}
       {copiado === 'no' ? <span role="status"> No se pudo copiar; selecciónalo a mano.</span> : null}
       {copiado === 'enlace' ? <span role="status"> Enlace copiado: ábrelo en otro teléfono.</span> : null}

@@ -57,6 +57,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Mejora #44: lo que recibe foco o se desplaza a la vista no queda bajo el encabezado fijo. */
+  scroll-padding-top: 96px;
 }
 
 body {
@@ -479,7 +481,13 @@ a {
   padding: 4px 10px;
   font-size: 0.9rem;
 }
-.btn:disabled,
+.btn:disabled {
+  /* Mejora #44: deshabilitado se lee bien (gris, sin opacidad). aria-disabled sigue siendo "trabajando". */
+  background: var(--fondo);
+  border-color: var(--borde);
+  color: var(--suave);
+  cursor: not-allowed;
+}
 .btn[aria-disabled='true'] {
   opacity: 0.55;
   cursor: not-allowed;
@@ -487,7 +495,11 @@ a {
 .fila-botones {
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
   margin-top: 8px;
+}
+.fila-botones > .btn {
+  margin: 0;
 }
 .enlace {
   background: none;
@@ -546,6 +558,17 @@ input[aria-invalid='true'],
   font-weight: 700;
   padding: 0 6px;
 }
+/* Mejora #44: una leyenda de dos líneas queda dentro del recuadro, no cruzada por el borde. */
+.grupo legend,
+.franja-cond legend {
+  float: left;
+  width: 100%;
+  margin-bottom: 6px;
+}
+.grupo legend + *,
+.franja-cond legend + * {
+  clear: both;
+}
 .par-fechas {
   display: grid;
   gap: 0 12px;
@@ -570,6 +593,32 @@ input[aria-invalid='true'],
   min-height: 44px;
   display: flex;
   align-items: center;
+}
+/* Mejora #44: los bloques plegables dicen si se abren o se cierran (+ / –), como la ficha. */
+.plegable > summary,
+.sim-editar > summary {
+  list-style: none;
+  justify-content: space-between;
+  gap: 8px;
+}
+.plegable > summary {
+  font-size: 1.05rem;
+}
+.plegable > summary::-webkit-details-marker,
+.sim-editar > summary::-webkit-details-marker {
+  display: none;
+}
+.plegable > summary::after,
+.sim-editar > summary::after {
+  content: '+';
+  flex: none;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primario);
+}
+.plegable[open] > summary::after,
+.sim-editar[open] > summary::after {
+  content: '–';
 }
 .condiciones {
   display: grid;
@@ -963,7 +1012,7 @@ input[aria-invalid='true'],
 
 /* ---- Enmienda 3: acento personal según siguiente_accion.codigo ---- */
 .estado-hero-turno {
-  box-shadow: inset 5px 0 0 var(--primario);
+  border-left: 6px solid var(--primario);
 }
 .pastilla {
   display: inline-block;
@@ -1254,7 +1303,7 @@ input[aria-invalid='true'],
 }
 .plan-activo-turno {
   border-color: var(--primario);
-  box-shadow: inset 5px 0 0 var(--primario);
+  border-left-width: 6px;
 }
 .plan-activo .pastilla {
   align-self: flex-start;
@@ -1334,4 +1383,65 @@ input[aria-invalid='true'],
   text-decoration: line-through;
   text-decoration-color: var(--suave);
   color: var(--suave);
+}
+
+/* ---- Mejora #44 parte 2: teléfonos chicos (320 a 400 px) ---- */
+h1,
+h2,
+h3,
+.btn,
+.franja-grande {
+  text-wrap: balance;
+}
+.fecha {
+  white-space: nowrap;
+}
+.tarjeta-fila > .etiqueta,
+.tp-estado > .etiqueta {
+  margin-left: 0;
+}
+@media (max-width: 480px) {
+  .fila-botones > .btn {
+    flex: 1 1 auto;
+  }
+}
+@media (max-width: 400px) {
+  .encabezado .sep {
+    display: none;
+  }
+  .datos-ficticios {
+    margin-left: auto;
+    font-size: 0.75rem;
+    padding: 0 6px;
+  }
+  /* Una opción por fila, todas del mismo ancho: a la mitad, "Sí puedo" se parte en dos líneas. */
+  .opcion-radio {
+    flex: 1 1 100%;
+  }
+  .estado-hero-version {
+    margin-left: 0;
+  }
+  .hl-evento {
+    grid-template-columns: 3rem 12px 1fr;
+    gap: 6px;
+  }
+  .hl-texto {
+    text-wrap: pretty;
+  }
+}
+@media (max-width: 400px) {
+  .cta-fija .btn {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+  .cta-fija p {
+    font-size: 0.8rem;
+  }
+}
+@media (max-width: 360px) {
+  /* Las cuatro pestañas del organizador en 2 × 2, sin "Simulación" sola en otra fila. */
+  .pestanas:has(> .pestana:nth-child(4)) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
 }

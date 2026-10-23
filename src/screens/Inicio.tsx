@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../lib/api'
-import { supabase } from '../lib/supabase'
 import type { ApiError, EspacioResumen, PropuestaResumen, TipoEspacio } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
+import { entrarComoOtraPersona, leerGuardada, olvidarGuardada, volverAGuardada } from '../lib/sesiones'
 import { Aviso, Boton, Cargando, ErrorCaja, InsigniaEstado } from '../components/ui'
 import { Marca } from '../components/Marca'
 
@@ -58,6 +58,7 @@ export default function Inicio({
           <UnirsePorCodigo deshabilitado={soloLectura} codigoInicial={codigoInvitacion} />
         </div>
       ) : null}
+      {codigoInvitacion ? null : <OtraSesion />}
       {conPlan && !codigoInvitacion ? <TuPlan activas={activas} /> : null}
       <section className={`portada ${conPlan ? 'portada-compacta' : ''}`} aria-labelledby="portada-titulo">
         <Marca grande />
@@ -205,19 +206,88 @@ function irAUnirse() {
   form?.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true })
 }
 
-/**
- * Cierra la sesión anónima de este navegador y abre una nueva (hallazgo 8 de la revisión de privacidad, mejora #47).
- * Borra también lo que la app guardó en sessionStorage (por ejemplo, el borrador del agente).
- */
-async function sesionNueva(): Promise<boolean> {
-  await supabase.auth.signOut({ scope: 'local' })
-  try {
-    for (const k of Object.keys(sessionStorage)) if (k.startsWith('cruxe:')) sessionStorage.removeItem(k)
-  } catch {
-    // Sin almacenamiento: no hay nada que borrar.
+/** Mejora #47: si alguien entró como otra persona en este navegador, la sesión anterior se puede retomar. */
+function OtraSesion() {
+  const [guardada, setGuardada] = useState(() => leerGuardada())
+  const [confirmarOlvido, setConfirmarOlvido] = useState(false)
+  const [ocupado, setOcupado] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const enVuelo = useRef(false)
+
+  async function volver() {
+    if (enVuelo.current || !guardada) return
+    enVuelo.current = true
+    setOcupado(true)
+    setError(null)
+    const r = await volverAGuardada(guardada)
+    if (r.ok) {
+      // Todo lo que está en pantalla es de la sesión de ahora: se empieza de cero con la recuperada.
+      window.location.reload()
+      return
+    }
+    enVuelo.current = false
+    setOcupado(false)
+    setError(r.mensaje)
+    setGuardada(leerGuardada())
   }
-  const r = await supabase.auth.signInAnonymously()
-  return !r.error
+
+  if (!guardada) return error ? <Aviso tono="error" titulo="No se pudo volver a la otra sesión">{error}</Aviso> : null
+  return (
+    <Aviso
+      tono="info"
+      titulo={`Este navegador guarda otra sesión: ${guardada.etiqueta}`}
+      accion={
+        confirmarOlvido ? (
+          <div className="fila-botones">
+            <Boton
+              variante="peligro"
+              onClick={() => {
+                olvidarGuardada()
+                setGuardada(null)
+              }}
+            >
+              Sí, olvidarla
+            </Boton>
+            <Boton variante="secundario" onClick={() => setConfirmarOlvido(false)}>
+              Cancelar
+            </Boton>
+          </div>
+        ) : (
+          <div className="fila-botones">
+            <Boton onClick={volver} ocupado={ocupado} ocupadoTexto="Volviendo…">
+              Volver a esa sesión
+            </Boton>
+            <Boton variante="secundario" onClick={() => setConfirmarOlvido(true)} disabled={ocupado}>
+              Olvidarla
+            </Boton>
+          </div>
+        )
+      }
+    >
+      {confirmarOlvido
+        ? `Si la olvidas, este navegador ya no podrá volver a ser ${guardada.etiqueta}.`
+        : 'Alguien entró como otra persona en este navegador. Al volver, la sesión abierta ahora deja de estar en este navegador.'}
+      {error ? <p className="suave">{error}</p> : null}
+    </Aviso>
+  )
+}
+
+/**
+ * Abre una sesión anónima nueva en este navegador (hallazgo 8 de la revisión de privacidad, mejora #47) SIN revocar
+ * la anterior: signOut, aun con scope 'local', llama a /logout y la sesión anónima de Tomi no se recupera nunca.
+ * La anterior queda guardada para volver desde el inicio (lib/sesiones). Borra también lo que la app guardó en
+ * sessionStorage (por ejemplo, el borrador del agente).
+ */
+async function sesionNueva(etiqueta: string) {
+  const r = await entrarComoOtraPersona(etiqueta)
+  if (r.ok) {
+    try {
+      for (const k of Object.keys(sessionStorage)) if (k.startsWith('cruxe:')) sessionStorage.removeItem(k)
+    } catch {
+      // Sin almacenamiento: no hay nada que borrar.
+    }
+  }
+  return r
 }
 
 function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: boolean; codigoInicial?: string }) {
@@ -225,15 +295,17 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
   const [nombre, setNombre] = useState('')
   const { ocupado, error, ejecutar } = useAccion()
   // Navegador compartido: la sesión guardada ya es miembro de este espacio con otro nombre.
-  const [yaMiembro, setYaMiembro] = useState<{ espacioId: string; nombreActual: string } | null>(null)
+  const [yaMiembro, setYaMiembro] = useState<{ espacioId: string; espacio: string; nombreActual: string } | null>(null)
   const [confirmar, setConfirmar] = useState(false)
   const [cambiando, setCambiando] = useState(false)
   const [errorCambio, setErrorCambio] = useState<string | null>(null)
   const faltan = codigo.trim() === '' || nombre.trim() === ''
 
-  function entrar(r: { espacio_id: string; reclamo_asiento_simulado: boolean }) {
+  function entrar(r: { espacio_id: string; reclamo_asiento_simulado: boolean }, sesionGuardada?: string) {
     if (r.reclamo_asiento_simulado) {
-      dejarAviso(`Reclamaste el lugar de ${nombre.trim()}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.`)
+      dejarAviso(`Reclamaste el lugar de ${nombre.trim()}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.${sesionGuardada ? ` ${sesionGuardada}` : ''}`)
+    } else if (sesionGuardada) {
+      dejarAviso(`Entraste como ${nombre.trim()}. ${sesionGuardada}`)
     }
     irA(rutas.espacio(r.espacio_id))
   }
@@ -251,28 +323,37 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
     if (r.data.resultado.ya_era_miembro) {
       // El servidor no cambia el nombre ni crea a otra persona: no se entra en silencio como quien estaba antes.
       const yo = r.data.espacio.miembros.find((m) => m.es_yo)
-      setYaMiembro({ espacioId: r.data.resultado.espacio_id, nombreActual: yo?.nombre ?? 'otra persona' })
+      setYaMiembro({ espacioId: r.data.resultado.espacio_id, espacio: r.data.espacio.nombre, nombreActual: yo?.nombre ?? 'otra persona' })
       return
     }
     entrar(r.data.resultado)
   }
 
   async function entrarComoOtra() {
+    if (!yaMiembro || cambiando) return
+    const previa = yaMiembro
     setCambiando(true)
     setErrorCambio(null)
     try {
-      if (!(await sesionNueva())) {
-        setErrorCambio('No se pudo abrir una sesión nueva. Revisa tu conexión e intenta de nuevo.')
+      const s = await sesionNueva(`${previa.nombreActual} en «${previa.espacio}»`)
+      if (!s.ok) {
+        setErrorCambio(s.mensaje)
         return
       }
       setYaMiembro(null)
       setConfirmar(false)
       const r = await ejecutar(`join-nueva:${codigo.trim()}:${nombre.trim()}`, () => api.joinSpace(codigo.trim(), nombre.trim()))
-      if (r?.ok) entrar(r.data.resultado)
+      if (r?.ok) {
+        entrar(
+          r.data.resultado,
+          s.guardada ? `La sesión de ${previa.nombreActual} quedó guardada en este navegador: para volver a ella, ve a tus espacios.` : undefined,
+        )
+      }
     } finally {
       setCambiando(false)
     }
   }
+  const otraGuardada = yaMiembro && confirmar ? leerGuardada() : null
   return (
     <form id="unirse" className="tarjeta" onSubmit={hacer} noValidate>
       <h2>Unirme con un código</h2>
@@ -309,11 +390,12 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
           {confirmar ? (
             <>
               <p>
-                Se va a cerrar la sesión de {yaMiembro.nombreActual} en este navegador. Esa sesión no tiene contraseña: desde acá no se
-                puede volver a entrar como {yaMiembro.nombreActual}. Para no perderla, abre el enlace en una ventana privada u otro teléfono.
+                {otraGuardada
+                  ? `Este navegador ya guarda la sesión de ${otraGuardada.etiqueta}; la de ${yaMiembro.nombreActual} no se guardará y no se podrá volver a ella desde acá.`
+                  : `Se abre una sesión nueva para ti. La de ${yaMiembro.nombreActual} queda guardada en este navegador: se puede retomar desde tus espacios con "Volver a esa sesión".`}
               </p>
               <div className="fila-botones">
-                <Boton variante="peligro" onClick={() => void entrarComoOtra()} ocupado={cambiando} ocupadoTexto="Cambiando de persona…">
+                <Boton variante={otraGuardada ? 'peligro' : 'primario'} onClick={() => void entrarComoOtra()} ocupado={cambiando} ocupadoTexto="Cambiando de persona…">
                   Sí, entrar como {nombre.trim() || 'otra persona'}
                 </Boton>
                 <Boton variante="secundario" onClick={() => setConfirmar(false)} disabled={cambiando}>
