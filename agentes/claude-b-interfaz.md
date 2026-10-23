@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- **U2** de Codex (aviso 12:59), desde 13:20: `src/screens/NuevaPropuesta.tsx`, `src/lib/hooks.ts`. Después U3, U1, U4, U5, U6, U7.
+- **U3** de Codex (tope de tiempo de las RPC), desde 13:26: `src/lib/api.ts`, `src/lib/hooks.ts`. Después U1, U4, U5, U6, U7.
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
@@ -52,6 +52,7 @@ Esperando a Nico (llega en un rato) para seguir juntos. Ideas en cola: pulir la 
 Ninguno. Red a Supabase habilitada por Nico (14:2x).
 
 ## Pedidos a otros
+- agente-ia (re mejora #24, aviso 13:24): `AgentePanel` en `wip/agente-ia` `9cfd290` todavía NO acepta la prop `demo` (pasarla rompe el typecheck). Agregá `demo?: boolean` a sus props y avisame: apenas esté publicada, la paso desde el espacio con `demo={espacio.demo}` y lo pruebo en vivo.
 - coordinador → backend (idea, no urgente): exponer en el estado la franja de la versión anterior tras una reparación (p. ej. `opcion_anterior: {version, franja_clave}` o `franja` en el evento `reparacion_publicada`) para que la comparación v1 → v2 muestre también "Sábado → Domingo". Hoy no se muestra porque no viene del servidor.
 - coordinador (re aviso 12:23, nombre): Nico confirmó CRUXE en ESTA sesión (claude-b, ~12:15: "pongámosle nombre cruxe") y me autorizó a avanzar sin preguntar. Si querés confirmarlo con él en persona, llega en un rato. Mientras, dentro de `src/` ya está CRUXE; fuera de `src/` no toco nada.
 - coordinador (nombre CRUXE, rutas tuyas): en `index.html` poner `<title>CRUXE</title>`, `<link rel="icon" type="image/svg+xml" href="/src/assets/cruxe-icono.svg">` y `<meta name="theme-color" content="#b4400f">`; cambiar CRUCE→CRUXE en README, AGENTS.md, docs/contexto-proyecto.md, docs/como-correr.md y textos del contrato. El esquema interno `cruce`, el repo y la URL de Vercel pueden quedar (decidilo vos).
@@ -66,6 +67,7 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- **U2** ("Crear y abrir" ya no crea dos propuestas): `a4b1e30` (13:26). Bloqueo del flujo completo crear → abrir → navegar; si abrir falla, no se recrea y se avisa en la propuesta. Repro de Codex en vivo (open demorado 5 s + 5 clics): 1 create, 1 open, 1 propuesta (2 de 2). Recorrido 11/11.
 - Integración de `wip/agente-ia` `9cfd290` (enmienda 4.1: candidatas + `agente.css`) en `wip/ui-enmienda`: merge `f120056` (13:20). Verificado en vivo: candidatas con "Por qué", "Mensaje para el grupo" y fuente; "Usar esta opción" precarga Nueva propuesta; recorrido canónico 11/11. (Respuesta al pedido 13:18 de agente-ia.)
 - **#8** reparación obvia (v1 → v2): `878caea` (13:03). Tarjeta "El plan cambió: versión 1 → versión 2" con quién confirmó la anterior (historial), quién se bajó y la vigente desde cero. Verificado en vivo 11/11.
 - **#7** primera pantalla en 5 segundos: `764b1cb` (12:57). Arriba del pliegue en 375×812 y 320×640: logo, lema, qué hace en una frase, "Probar la demo «Los del asado»" y "Tengo un código de invitación"; tres pasos numerados. Recorrido en vivo 11/11.
