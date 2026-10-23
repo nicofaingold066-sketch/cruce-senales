@@ -68,7 +68,7 @@ test('textoValido acepta invitaciones normales', () => {
     '¡Hola! Les propongo un asado en el quincho el sábado 31 o el domingo 1. Marquen si les interesa.',
     'Elijan una de las dos fechas y marquen si les interesa.',
     'Que cada uno de ustedes marque su disponibilidad.',
-    '¡No pueden faltar! Es barato, nada caro.',
+    '¡No pueden faltar! Queda cerca y no es caro llegar.',
     '¡Salud por el asado del sábado con todo el grupo!',
     'Marquen si les interesa y confirmen en CRUXE cuando se publique.',
   ]) {
@@ -86,6 +86,9 @@ test('textoValido rechaza nombres, situaciones personales y promesas que no pasa
     'Es ideal para quien anda cansado esta semana.',
     'Lo reservamos en el club para el domingo.',
     'Ya agendé el quincho para el sábado.',
+    'Es barato y le sirve a todos.',
+    'Una opción gratis para el finde.',
+    'Pensado para un presupuesto ajustado.',
   ]) {
     assert.equal(textoValido(t, 320, NOMBRES), false, t)
   }
@@ -124,12 +127,14 @@ test('entradaModelo solo manda gustos que eligieron al menos 2 personas', () => 
   const e = entradaModelo([ASADO], PERFIL_5, 'Sin pronóstico disponible.', NOMBRES)
   assert.deepEqual(e.grupo.gustos, ['Asado: 4 de 5', 'Fútbol: 2 de 5'])
   assert.equal(e.grupo.ritmo, 'algo tranquilo')
-  assert.equal(e.grupo.presupuesto, 'algo económico')
+  // El presupuesto del grupo no le llega al modelo (hallazgo 7).
+  assert.equal('presupuesto' in e.grupo, false)
+  assert.equal(JSON.stringify(e).includes('moderado'), false)
 })
 
 test('entradaModelo con 3 personas o menos manda solo la cantidad', () => {
   const e = entradaModelo([ASADO], { ...PERFIL_5, personas: 3 }, 'Sin pronóstico disponible.', NOMBRES)
-  assert.deepEqual(e.grupo, { personas: 3, gustos: [], ritmo: null, ambiente: null, presupuesto: null })
+  assert.deepEqual(e.grupo, { personas: 3, gustos: [], ritmo: null, ambiente: null })
 })
 
 test('perfilParaRespuesta filtra gustos de una persona y reduce los grupos chicos', () => {
@@ -139,6 +144,10 @@ test('perfilParaRespuesta filtra gustos de una persona y reduce los grupos chico
   ])
   assert.deepEqual(perfilParaRespuesta({ ...PERFIL_5, personas: 2 }), { personas: 2 })
   assert.equal(perfilParaRespuesta(null), null)
+  // Sin presupuesto, venga o no en la respuesta de la base (enmienda 7, E7.4).
+  assert.equal('presupuesto_grupo' in (perfilParaRespuesta(PERFIL_5) ?? {}), false)
+  const { presupuesto_grupo: _p, ...sinCampo } = PERFIL_5
+  assert.deepEqual(perfilParaRespuesta(sinCampo), perfilParaRespuesta(PERFIL_5))
 })
 
 test('climaPedido: el clima simulado solo vale en un espacio demo y con un valor válido', () => {
@@ -218,4 +227,36 @@ test('mensajeFijo y esSabado', () => {
   assert.equal(esSabado('2026-10-31'), true)
   assert.equal(esSabado('2026-10-30'), false)
   assert.equal(esSabado('31-10-2026'), false)
+})
+
+test('texto fijo con el grupo (mejora #40): nombra ritmo, ambiente y cuántos la eligieron, solo con totales', () => {
+  const texto = unirFrases(ASADO.frases_grupo, false, { perfil: PERFIL_5, actividad: 'Asado' })
+  assert.equal(
+    texto,
+    'Le sirve al presupuesto de todos, es bajo techo por si cambia el tiempo, es lo que más eligieron (4 de 5) y va con lo que prefiere la mayoría: un plan algo tranquilo y con ambiente tranquilo.',
+  )
+  for (const n of NOMBRES) assert.equal(texto.includes(n), false, `aparece ${n}`)
+  // Sin ambiente mayoritario, solo el ritmo.
+  assert.match(unirFrases(['ritmo_del_grupo'], false, { perfil: { ...PERFIL_5, ambiente_mayoritario: null } }), /mayoría: un plan algo tranquilo\.$/)
+})
+
+test('texto fijo con el grupo: con 3 personas o menos, o con una sola persona en la actividad, vuelve al texto general', () => {
+  const chico = unirFrases(ASADO.frases_grupo, false, { perfil: { ...PERFIL_5, personas: 3 }, actividad: 'Asado' })
+  assert.doesNotMatch(chico, /de 3|mayoría|más eligieron/)
+  assert.equal(chico, 'Le sirve al presupuesto de todos, es bajo techo por si cambia el tiempo y va con el ritmo que prefiere el grupo.')
+  // Una actividad de una sola persona no se presenta como "lo que más eligieron" (hallazgo 5).
+  assert.equal(unirFrases(['bajo_techo', 'el_mas_elegido'], false, { perfil: PERFIL_5, actividad: 'Pádel' }), 'Es bajo techo por si cambia el tiempo.')
+  // Sin perfil no se puede saber si delata a alguien: la frase no se dice.
+  assert.equal(unirFrases(['el_mas_elegido', 'ritmo_del_grupo']), 'Va con el ritmo que prefiere el grupo.')
+})
+
+test('hallazgo 5: el modelo no recibe "lo que más eligieron" si delata a alguien', () => {
+  const dos = entradaModelo([PARQUE], { personas: 2 }, 'Sin pronóstico disponible.', NOMBRES)
+  const conFrase = { ...PARQUE, frases_grupo: [...PARQUE.frases_grupo, 'el_mas_elegido'] }
+  const dosConFrase = entradaModelo([conFrase], { personas: 2 }, 'Sin pronóstico disponible.', NOMBRES)
+  assert.deepEqual(dosConFrase.opciones[0].razones, dos.opciones[0].razones)
+  assert.equal(JSON.stringify(dosConFrase).includes('más eligieron'), false)
+  // Con 5 personas y la actividad elegida por 4, sí, con el conteo.
+  const asado = entradaModelo([ASADO], PERFIL_5, 'Sin pronóstico disponible.', NOMBRES)
+  assert.ok(asado.opciones[0].razones.includes('es lo que más eligieron (4 de 5)'))
 })
