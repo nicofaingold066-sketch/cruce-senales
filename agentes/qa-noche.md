@@ -6,6 +6,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cru
 - [19:29] Vigilando entregas y humo cada hora. Sin editar: `tests/e2e/**` y `docs/qa-noche.md` libres entre tareas.
 
 ## Entregado
+- [20:30] `wip/qa` (ver `docs/qa-noche.md`): privacidad E10 en el jurado. Producción main fae49fa: recorrido 23/23, jurado 4/4. Ramas friccion/ux/agente-ia verdes con base. Pendiente: versionar guion #98 de ux-flujo.
 - [19:38] `wip/qa` guiones de friccion versionados; red-controlada 10/10 sobre friccion cac56d8, ux c444bea, agente-ia 27bc499 (coordinador pidió 2 y 3: hechos). Pendiente: correr con base.- [19:29] #76 hecho: `wip/qa` `4b2047c`, sesiones-recuperacion 12/12 (L1–L3 sobre la portada). `7773076`: guardia común `tests/e2e/base-libre.mjs` (el recorrido ahora también se frena con MIGRACION EN CURSO) y `docs/qa-noche.md`. Producción 19:27: recorrido 23/23, red 10/10. Jurado no corrió (MIGRACION EN CURSO de backend 19:26).
 
 ## Pedidos a otros
