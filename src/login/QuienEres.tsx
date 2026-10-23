@@ -34,6 +34,8 @@ export interface FuenteEntrada {
   verPorCodigo: (codigo: string) => Promise<ApiResult<VistaPorCodigo>>
   /** miembroId null: "No estoy en la lista" (se une con el nombre escrito, como siempre). */
   unirse: (codigo: string, nombre: string, miembroId: string | null) => Promise<ApiResult<UnirseOk>>
+  /** Si la sesión de este teléfono ya es miembro del espacio de ese código (list_my_spaces), cuál. Opcional. */
+  yaEstoy?: (codigo: string) => Promise<{ espacioId: string; miembroId: string } | null>
 }
 
 function entrarAlEspacio(r: UnirseOk['resultado'], espacio: string, nombre: string, porLista: boolean, sesionGuardada?: string) {
@@ -180,6 +182,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
   const [vista, setVista] = useState<VistaPorCodigo | null>(null)
   const [errorVista, setErrorVista] = useState<ApiError | null>(null)
   const [elegido, setElegido] = useState<MiembroPorReclamar | null>(null)
+  const [yaEstoy, setYaEstoy] = useState<{ espacioId: string; miembroId: string } | null>(null)
   const u = useUnirse(fuente)
   const titulo = useRef<HTMLHeadingElement>(null)
   const campoNombre = useRef<HTMLInputElement>(null)
@@ -200,6 +203,18 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
   useEffect(() => {
     void cargar()
   }, [cargar])
+
+  // Quien ya entró desde este teléfono y vuelve a abrir el enlace (por ejemplo, un recordatorio) sigue con un toque.
+  useEffect(() => {
+    let vivo = true
+    void fuente.yaEstoy?.(codigo).then((y) => {
+      if (vivo) setYaEstoy(y)
+    })
+    return () => {
+      vivo = false
+    }
+  }, [codigo, fuente])
+  const yo = yaEstoy && vista ? (vista.miembros.find((m) => m.miembro_id === yaEstoy.miembroId) ?? null) : null
 
   useEffect(() => {
     // Alguien tomó ese lugar mientras tanto: se vuelve a la lista actualizada, con el foco en el título.
@@ -226,6 +241,19 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
         {!vista && !errorVista ? <Cargando texto="Buscando tu grupo…" /> : null}
         {errorVista ? (
           <ErrorCaja error={errorVista} onReintentar={() => void cargar()} titulo={vista ? 'No se pudo actualizar la lista' : 'No se pudo cargar la lista del grupo'} />
+        ) : null}
+
+        {yo && yaEstoy && !elegido ? (
+          <section className="tarjeta entrada-opcion entrada-principal" aria-labelledby="quien-ya">
+            <h2 id="quien-ya">Ya estás en este grupo como {yo.nombre}</h2>
+            <p className="suave">Este teléfono ya entró como {yo.nombre}. Sigue para responder o ver el plan.</p>
+            <div className="entrada-botones">
+              <Boton autoFocus onClick={() => irA(rutas.responder(yaEstoy.espacioId))}>
+                Seguir como {yo.nombre}
+              </Boton>
+            </div>
+            <p className="suave">¿No eres {yo.nombre}? Elige tu nombre abajo y entra con una sesión nueva.</p>
+          </section>
         ) : null}
 
         {vista && elegido ? (
