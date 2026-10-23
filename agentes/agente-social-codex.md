@@ -4,6 +4,7 @@ Sesión: `01a16a31-3df5-7220-92d7-d0c8545c403b`. Actualización: 2026-10-23 19:4
 Encargo: integración social sobre CRUXE existente; Empresa fuera. Todo dato de producto usado es ficticio.
 
 ## Tocando ahora
+- CORRIENDO PRUEBA: adapter E8 con demo propio desde /tmp; solo RPC existentes y clave pública; cero modelos. Se quitará la marca al terminar.
 - Solo esta ficha: `agentes/agente-social-codex.md`.
 - No reclamo ni edito rutas de backend, agente-ia, interfaz o QA de otra sesión.
 - Preparación y pruebas propias fuera del repo, en `/tmp` (ver entregables).
@@ -27,7 +28,7 @@ Fuentes: `PROPIEDAD.md`, `TABLERO.md`, `MEJORAS.md`, `agentes/backend.md`, `agen
 
 | Operación real | Entrada | Salida mínima / límite |
 | --- | --- | --- |
-| `get_my_preferences` | `p_espacio_id` | Preferencias propias o null. E8 debe devolver el flag propio; el adapter espera `preferencias.usar_en_agente`, ubicación pendiente de contrastar con código entregado por backend |
+| `get_my_preferences` | `p_espacio_id` | Preferencias propias o null. E8 devuelve `usar_en_agente` a nivel raíz; el objeto preferencias no cambia. Adapter ajustado a la entrega real |
 | `save_my_preferences` | `p_espacio_id`, `p_preferencias` con opciones cerradas y flag booleano opcional | Persistencia propia; por defecto true. Adapter exige flag explícito y su eco persistido; si no se demuestra, outcome incierto, sin segundo guardado omitiendo el flag |
 | `proponer_plan_borrador` | `p_espacio_id`, `p_sabado`, `p_clima` con sábado/domingo seco/lluvia/desconocido | Solo organizador; candidatas y agregados filtrados o sin_plan_compatible. E8 excluye opt-out de descartes, puntajes, totales y umbrales |
 | Circuito humano existente | `create_proposal`, `open_proposal`, `save_my_conditions`, `evaluate_and_publish`, `accept_version`, `withdraw_commitment`, `propose_repair` | Backend decide identidad, cupos, plazo, elegibilidad e idempotencia. Cada versión necesita aceptaciones nuevas; el agente no acepta por nadie |
@@ -72,3 +73,6 @@ Objetivo: PARCIAL. Esta ficha publica diagnóstico, reparto y pedidos, no códig
 - Pedido a coordinador/agente-ia: resolver explícitamente la configuración provisional Opus 5.5 → Astra solicitada por Juan, manteniendo validación y efectos fuera del modelo. No cambiaré su código o secretos. Las limitaciones de 8 s y 1500 tokens necesitan prueba con la configuración elegida antes de prometer elección/redacción real.
 - Backend adelantó 0031: la marca MIGRACION EN CURSO fue observada desde 16:46. Runner real E8 sigue SIN ejecutar hasta final confirmado y ventana. No asumir el horario anterior 16:55.
 - Publicación anterior de esta ficha verificada: `d01a15879403e1fcae0f8c3515a811de1058e510`, un solo archivo; remoto y SHA256 del contenido coincidieron. Autorización sigue limitada a esta ficha, no implementación.
+
+## E8 entregada y verificación en curso (19:54 UTC)
+Backend confirmó 0031 aplicada y base libre (ficha 16:51); docs/contrato-enmienda-8.md aclara flag a nivel raíz en get/save, y dentro de p_preferencias solo en la entrada de save. Adapter corregido ANTES de usar la base: typecheck y 12/12 mocks pasan. Inicio runner /tmp/cruxe-social-e8-contract-live-20261023.mjs --run-after-e8, con comprobación de marcas de backend/agente-ia/codex antes de auth. No se llama a la función con IA ni se usa ninguna clave de modelo.
