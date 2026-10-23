@@ -5,9 +5,15 @@ Dueño: agente-ia. Estado al viernes 23 oct 2026, 16:55: **construido, integrado
 **En una frase:** el agente lee los gustos de todo el grupo, mira el clima y propone hasta 3 planes que le sirven a todos. Propone, pero no decide por nadie y nunca ve lo que puso cada uno.
 
 ## 1. Cómo funciona
-1. **Cada integrante carga sus preferencias, en privado,** con opciones cerradas: presupuesto, energía, ambiente, si prefiere techo y qué le gustaría (asado, pádel, fútbol, parque, fiesta). No hay texto libre ni datos de salud o de dinero. Una casilla, marcada por defecto, dice "Que el agente use mis preferencias": si la desmarca, el agente no las usa y nadie puede distinguirla de alguien que no guardó (enmienda 8, mejora #72).
+1. **Cada integrante carga sus preferencias, en privado,** con opciones cerradas: presupuesto, energía, ambiente, si prefiere techo y qué le gustaría (asado, pádel, fútbol, parque, fiesta). No hay texto libre ni datos de salud o de dinero. Una casilla, marcada por defecto, dice "Que el agente use mis preferencias": si la desmarca, el agente no las usa y nadie puede distinguirla de alguien que no guardó (enmienda 8, mejora #72). Desde la enmienda 10 (#87) hay cuatro preguntas más, todas opcionales: su zona (una de 8 comunas de Santiago, nunca la dirección), cómo se mueve (auto con lugar para llevar gente, auto sin lugar, transporte público, bici o a pie, necesito que me lleven), hasta cuánto viaja (15, 30, 45 o 60 o más minutos) y el momento del día (mañana, tarde, noche o da igual). "Prefiero no responder" no aporta esa variable.
 2. **El organizador toca "Que el agente proponga"** y elige el fin de semana.
-3. **El servidor (Postgres) elige con reglas fijas.** Lee las preferencias de todos y descarta lo que no le sirve a alguien: precio por encima del presupuesto más bajo, o aire libre si llueve y alguien pidió techo. Después ordena por gustos, ritmo, ambiente y clima. Devuelve hasta 3 **candidatas** y un **perfil del grupo** hecho solo de totales.
+3. **El servidor (Postgres) elige con reglas fijas.** Lee las preferencias de todos y descarta lo que no le sirve a alguien: precio por encima del presupuesto más bajo, o aire libre si llueve y alguien pidió techo. Después ordena por gustos, ritmo, ambiente y clima. Desde la enmienda 10 también mira el viaje:
+   - Descarta el lugar si a alguien le queda más lejos que su tiempo máximo.
+   - Si alguien necesita que lo lleven, cuenta en auto solo si las personas con auto con lugar alcanzan para llevarlo.
+   - Prefiere el plan cuyo viaje más largo es el más corto.
+   - Suma puntos si el horario coincide con el momento del día que eligieron.
+   
+   Devuelve hasta 3 **candidatas** (cada una con el viaje máximo estimado del grupo, solo con 4 personas o más con zona) y un **perfil del grupo** hecho solo de totales.
 4. **La IA coordina** (si hay clave). Con un carácter comprensivo, empático, amable, ejecutivo y de buen coordinador, elige una de las candidatas y escribe el porqué y un mensaje para invitar al grupo. Nunca recibe datos de una persona.
 5. **El organizador decide.** Ve todas las candidatas con la recomendada destacada, puede editar el título y elige con "Usar esta opción". Eso solo precarga "Nueva propuesta". Desde ahí sigue el recorrido de siempre: condiciones, confirmación, baja y reparación. El agente **no crea, no invita y no confirma nada.**
 
@@ -15,16 +21,17 @@ Dueño: agente-ia. Estado al viernes 23 oct 2026, 16:55: **construido, integrado
 | Quién | Ve | No ve nunca |
 |---|---|---|
 | Cada integrante | Sus propias preferencias | Las de los demás |
-| Organizador | Candidatas, clima y perfil del grupo solo con totales ("Asado 4 de 5"), y nunca el presupuesto | Lo que eligió cada uno |
+| Organizador | Candidatas, clima y perfil del grupo solo con totales ("Asado 4 de 5"), y nunca el presupuesto. Con la enmienda 10, una sola cifra de viaje: "Queda a menos de 35 minutos para todos (estimado)" | Lo que eligió cada uno; la zona, cómo se mueve o el tiempo de viaje de cada uno; quién necesita que lo lleven |
 | Servidor (Postgres) | Todas las preferencias, para descartar y ordenar | — |
-| Modelo de IA | Las candidatas sin nombres de integrantes, el clima y los totales del grupo | Nombres, ids y preferencias individuales |
+| Modelo de IA | Las candidatas sin nombres de integrantes, el clima, los totales del grupo y, por opción, solo el viaje máximo en minutos | Nombres, ids, preferencias individuales, zonas y cómo se mueve cada uno |
 
 Para que no se pueda adivinar quién eligió qué:
 - con 3 personas o menos, el perfil del grupo trae solo la cantidad de personas;
 - una actividad que eligió una sola persona no se muestra ni se le manda al modelo;
 - "es lo que más eligieron" solo se dice con 4 personas o más y si la actividad la eligieron 2 o más;
 - el presupuesto del grupo no sale de la función ni de la pantalla, y tampoco se le manda al modelo. La base deja de mandarlo con la enmienda 7 (E7.4); hasta entonces, la función y la pantalla lo descartan;
-- el modelo no puede escribir palabras sobre presupuesto ("gratis", "barato", "económico").
+- el modelo no puede escribir palabras sobre presupuesto ("gratis", "barato", "económico");
+- enmienda 10: el viaje solo sale como el máximo del grupo, y con 4 personas o más; si todo queda descartado por viaje, el aviso dice "Ningún plan del catálogo queda dentro del tiempo de viaje de todos" sin decir para quién; el modelo no puede escribir dónde vive nadie ni cómo se mueve ("vive", "sin auto", "que lo lleven", "comuna de").
 
 Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y `docs/contrato-enmienda-7.md`.
 
