@@ -106,3 +106,15 @@
   text-align: center;
   font-size: 0.9rem;
 }
+
+/* "Falta tu respuesta" (acceso a la respuesta de un toque desde el plan) */
+.falta-respuesta h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+  margin: 0 0 6px;
+}
+.falta-respuesta .btn {
+  width: 100%;
+}

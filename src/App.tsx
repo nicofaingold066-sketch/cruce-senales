@@ -221,7 +221,7 @@ function PantallaRuta({ ruta }: { ruta: Ruta }) {
     case 'espacio':
       return <Espacio key={ruta.espacioId} espacioId={ruta.espacioId} />
     case 'responder':
-      return <Responder key={ruta.espacioId} espacioId={ruta.espacioId} />
+      return <Responder key={`${ruta.espacioId}/${ruta.propuestaId ?? ''}`} espacioId={ruta.espacioId} propuestaId={ruta.propuestaId} />
     case 'nueva':
       return <NuevaPropuesta key={ruta.espacioId} espacioId={ruta.espacioId} />
     case 'propuesta':

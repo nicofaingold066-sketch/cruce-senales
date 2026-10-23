@@ -59,7 +59,7 @@ export type Ruta =
   | { nombre: 'crear' }
   | { nombre: 'espacio'; espacioId: string }
   | { nombre: 'nueva'; espacioId: string }
-  | { nombre: 'responder'; espacioId: string }
+  | { nombre: 'responder'; espacioId: string; propuestaId?: string }
   | { nombre: 'propuesta'; espacioId: string; propuestaId: string }
   | { nombre: 'unirse'; codigo: string; invalida?: boolean }
   | { nombre: 'entrar' }
@@ -84,7 +84,7 @@ export function parseRuta(hash: string): Ruta {
   if (partes[0] === 'crear') return { nombre: 'crear' }
   if (partes[0] === 'e' && partes[1]) {
     if (partes[2] === 'nueva') return { nombre: 'nueva', espacioId: partes[1] }
-    if (partes[2] === 'responder') return { nombre: 'responder', espacioId: partes[1] }
+    if (partes[2] === 'responder') return { nombre: 'responder', espacioId: partes[1], ...(partes[3] ? { propuestaId: partes[3] } : {}) }
     if (partes[2] === 'p' && partes[3]) return { nombre: 'propuesta', espacioId: partes[1], propuestaId: partes[3] }
     return { nombre: 'espacio', espacioId: partes[1] }
   }
@@ -98,8 +98,8 @@ export const rutas = {
   crear: () => '#/crear',
   espacio: (id: string) => `#/e/${id}`,
   nueva: (id: string) => `#/e/${id}/nueva`,
-  /** #88: responder en un toque la propuesta abierta (si no hay una sola, la pantalla vuelve al espacio). */
-  responder: (id: string) => `#/e/${id}/responder`,
+  /** #88: responder en un toque la propuesta abierta (o esa propuesta); si no se puede, la pantalla vuelve al espacio. */
+  responder: (id: string, propuestaId?: string) => `#/e/${id}/responder${propuestaId ? `/${propuestaId}` : ''}`,
   propuesta: (e: string, p: string) => `#/e/${e}/p/${p}`,
   unirse: (codigo: string) => `#/unirse/${encodeURIComponent(codigo)}`,
   entrar: () => '#/entrar',

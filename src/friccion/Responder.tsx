@@ -65,7 +65,7 @@ type Carga =
   | { fase: 'lista'; p: EstadoPropuesta; espacio: string; demo: boolean; yo: string | null; organizador: boolean }
 
 /** Busca la única propuesta que esta persona puede responder ahora; si no hay una sola, sale (ver `salir`). */
-function usePropuestaPorResponder(espacioId: string) {
+function usePropuestaPorResponder(espacioId: string, propuestaId?: string) {
   const [carga, setCarga] = useState<Carga>({ fase: 'cargando' })
   // Aviso que dejó "¿Quién eres?" ("Entraste como Ana…"). Si se vuelve al espacio, se le pasa a esa pantalla.
   const [aviso] = useState(() => tomarAviso())
@@ -95,8 +95,9 @@ function usePropuestaPorResponder(espacioId: string) {
     const vivas = lista.data.propuestas.filter(
       (x) => !x.plazo_vencido && !x.mi_situacion.retirado && x.estado !== 'cancelado' && x.estado !== 'expirado',
     )
-    const abiertas = vivas.filter((x) => x.estado === 'reuniendo_interes')
-    if (abiertas.length !== 1) return salir(vivas.length === 1 ? vivas[0] : null)
+    // Con una propuesta pedida (botón "Responder en un toque" dentro de un plan), solo esa.
+    const abiertas = vivas.filter((x) => x.estado === 'reuniendo_interes' && (!propuestaId || x.id === propuestaId))
+    if (abiertas.length !== 1) return salir(propuestaId ? (vivas.find((x) => x.id === propuestaId) ?? null) : vivas.length === 1 ? vivas[0] : null)
     const e = await api.getProposalState(abiertas[0].id)
     if (!e.ok) return setCarga({ fase: 'error', error: e.error })
     if (e.data.sin_cambios === true) return salir(abiertas[0])
@@ -106,7 +107,7 @@ function usePropuestaPorResponder(espacioId: string) {
     const espacio = esp.data.espacio
     const yo = espacio.miembros.find((m) => m.es_yo)?.nombre ?? s.nombre
     setCarga({ fase: 'lista', p, espacio: espacio.nombre, demo: espacio.demo, yo, organizador: espacio.mi_rol === 'organizador' })
-  }, [espacioId, salir])
+  }, [espacioId, propuestaId, salir])
 
   useEffect(() => {
     void cargar()
@@ -115,9 +116,9 @@ function usePropuestaPorResponder(espacioId: string) {
   return { carga, setCarga, cargar, aviso }
 }
 
-export function Responder({ espacioId }: { espacioId: string }) {
+export function Responder({ espacioId, propuestaId }: { espacioId: string; propuestaId?: string }) {
   const { soloLectura } = useShell()
-  const { carga, setCarga, cargar, aviso } = usePropuestaPorResponder(espacioId)
+  const { carga, setCarga, cargar, aviso } = usePropuestaPorResponder(espacioId, propuestaId)
   const lista = carga.fase === 'lista' ? carga : null
   useIdentidad(lista?.espacio ?? null, lista?.yo ?? null, lista ? (lista.organizador ? 'organizador' : 'miembro') : null)
   const guardar = useAccion()
@@ -199,7 +200,9 @@ export function Responder({ espacioId }: { espacioId: string }) {
           {!elegida
             ? 'Toca una opción y listo. Solo el servidor ve lo que respondes; el grupo no sabe qué elegiste.'
             : Object.values(elegida.disponibilidad).includes('si')
-              ? 'Cuando el grupo haya respondido, quien organiza busca una opción compatible. Si te sirve, la confirmas en el plan.'
+              ? s.es_organizador
+                ? 'Cuando el grupo haya respondido, busca una opción compatible desde el plan.'
+                : 'Cuando el grupo haya respondido, quien organiza busca una opción compatible. Si te sirve, la confirmas en el plan.'
               : 'Quedó guardado que no puedes en ninguno. Si algo cambia, puedes cambiarlo mientras se reúnen respuestas.'}
         </p>
       </section>
