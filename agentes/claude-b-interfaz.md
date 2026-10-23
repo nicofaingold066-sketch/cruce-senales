@@ -3,10 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- **#73** (rótulo "por entrar" para `pendiente: true`), desde 18:37: `src/screens/Espacio.tsx` (solo la lista de personas) y `src/lib/types.ts` (`MiembroEspacio.pendiente`).
-- **#75**: ya resuelta por front-juan en `91e9f9a` (invitación sin precargar el nombre y con "Soy X / No soy X", textos de E7.2, escape del `.ics` con `'\;'` y `[
-]+`, cierre con confeti solo con `acepte_version`). Revisado en el código de `main`; no hago nada.
-- Después **#67** y **#68** sobre el rediseño (reviso qué sigue aplicando).
+(vacío desde 18:39: pausa para seguir desde otra máquina. Lo que sigue está en "Traspaso para la próxima sesión", al final.)
 ## Estado
 16:43: recibido el aviso de las 16:42 (sesión "login"). No toco `src/login/**` ni sus líneas de enganche en `shell.tsx`/`App.tsx` hasta que login entregue. Antes de cambiar `Inicio.tsx` aviso acá, y mantengo los nombres accesibles "Probar la demo «Los del asado»" y "Unirme".
 15:40: **relevo**. Esta es la sesión local en la computadora de Nico (la de la nube quedó en pausa a las 14:55). Arranque hecho según el traspaso; vigía corriendo.
@@ -119,6 +116,8 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- **#73** rótulo "por entrar": `8a75ce0` (18:39, en `wip/ui-enmienda` sobre `main` `a255653`). `MiembroEspacio.pendiente?: boolean`; la lista de personas del espacio rotula "por entrar" y atenúa el avatar. Guion oficial `tests/e2e/recorrido-dos-sesiones.mjs` contra el build local: 23/23. **Límite:** el rótulo no se vio en vivo con un grupo que tenga integrantes pendientes (el guion no crea ese caso).
+- **#75**: ya estaba resuelta por front-juan en `91e9f9a`; revisado en el código, sin cambios míos.
 - **#47, arreglo sobre `c389722`**: `5204837` (15:40). Sin `signOut`: se guarda el `refresh_token` de la sesión actual en `localStorage` (`cruxe:sesion-guardada`, `src/lib/sesiones.ts`) y se abre otra sesión anónima; la portada ofrece "Volver a esa sesión" (`refreshSession({ refresh_token })` y recarga) y "Olvidarla" (con confirmación). Si ya hay otra guardada, no se pisa y la confirmación lo dice con botón de peligro. En vivo a 375 y 320 px: 12/12 (aviso sin entrar, la confirmación dice que se guarda, doble clic = 1 `join_space` y 1 sesión nueva, **0 llamadas a `/logout`**, vuelta a Tomi organizador). Recorrido 11/11.
 - **#44 parte 2** arreglos visuales a 320 px: `4945241` (15:40). Leyendas dentro del recuadro; opciones de respuesta una por fila y del mismo ancho; pestañas del organizador en 2 × 2 a ≤360 px; encabezado de 3 a 2 líneas; `scroll-padding-top`; barra "Confirmar" más baja; +/– en `.plegable` y `.sim-editar`; botones parejos (Copiar/Compartir en `.fila-botones`); fechas sin cortar; espacio antes de SIMULACIÓN en el historial resumido; columna del historial más ancha; borde de "tu turno" sin doble línea; "Versión N" sin quedar sola; `.btn:disabled` gris sin opacidad (`aria-disabled` igual). Pendiente de agente-ia: `agente.css` (pedido de las 14:50). Auditoría de 28 pantallas a 320 y 375 px antes y después (sin desborde) y comparación de capturas lado a lado. Recorrido 11/11.
 - (#52, #47 y #51: los hizo el coordinador en `main`; mis versiones locales se descartaron. La #51 la verifiqué igual en vivo antes de saberlo.)
@@ -164,6 +163,38 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
 - Tarjetas de propuestas en la pantalla del espacio con el mismo estado destacado (color + punto) y "Tu turno" según `siguiente_accion.codigo`: hoy son texto plano. Dueño: claude-b-interfaz.
 - Actualizar el archivo de Figma con la Simulación compacta y el agente plegado, para el pitch. Dueño: claude-b-interfaz.
 - Timeout de RPC en el cliente (U3 de Codex): una llamada colgada congela botones y sondeo durante la demo. Dueño: claude-b-interfaz (lo tomo con U1–U7).
+
+## Traspaso para la próxima sesión (vie 23 oct, 18:39)
+
+Para quien siga como claude-b-interfaz desde otra máquina. Mandan el resto de este archivo y el traspaso anterior ("Traspaso a la sesión local", más abajo): arranque, reglas de producto, protocolo de coordinación, trampas y scripts siguen valiendo, con estos cambios.
+
+### Estado
+- `wip/ui-enmienda` = `8a75ce0` = `main` `a255653` (rediseño de Juan integrado y publicado) + #73. Todo empujado; no queda nada solo en la máquina anterior.
+- En `main` ya están mis #44 parte 2 y el arreglo de #47 sin `signOut` ("Volver a esa sesión"), con el rediseño encima.
+- Lo que sigue, en el orden del coordinador:
+  1. Esperar a que integre `8a75ce0` (#73). Si querés comprobar el rótulo en vivo: crear un grupo con integrantes desde "Crear grupo" (es de login, no lo edites) y abrir el espacio.
+  2. **#67** (P1) y **#68** de `docs/agente-revision-a11y.md`. **Ojo:** ese informe se escribió sobre la interfaz ANTERIOR al rediseño; antes de tocar nada, revisá en el código actual qué sigue aplicando y anotalo. Plan para A1: un hook en `src/lib/hooks.ts` que ponga `document.title = "<pantalla> · CRUXE"` y, salvo en la primera pantalla de la carga, lleve el foco al `h1` (con `tabIndex={-1}`) o al aviso pendiente; usarlo en cada pantalla, **sin tocar `App.tsx`** (ahí está el enganche de login). Plan para A2: componente `Confirmacion` en `src/components/ui.tsx` (un `Aviso` con `ref` y `tabIndex={-1}` que se enfoca al montarse), `ref` en `Boton` (React 19 lo recibe como prop) y que "Volver" devuelva el foco al botón que la abrió.
+- Ideas mías sin asignar (sección Ideas): aviso de un solo uso consumido en un efecto; botones de demo ocultos mientras la portada busca tus espacios.
+
+### Reglas nuevas desde el traspaso anterior
+- **No tocar** `src/login/**`, `src/screens/CrearGrupo.tsx` ni el enganche de login en `src/App.tsx` / `src/lib/shell.tsx`. Antes de cambiar `Inicio.tsx`, avisar acá: login depende de "Probar la demo «Los del asado»" y "Unirme".
+- **front-juan también edita `src/`** (rediseño y su #79): mirá su "Tocando ahora" antes de reclamar y no pisen el mismo archivo.
+- **El agente usa el modelo real y cada llamada cuesta**: no lo llames en bucle. El `a375.js` de abajo ya no lo llama (solo con `AGENTE=1`).
+- Antes de cualquier prueba contra la base, revisá en `agentes/*.md`: "MIGRACION EN CURSO", "PRUEBA DE CARGA EN CURSO" o "CORRIENDO PRUEBA" de otro. Si aparece, esperá.
+- La dependencia `lucide-react` ya está en `package.json`: `npm ci` después de traer `wip/fundamentos`.
+
+### Arranque en otra máquina (además del paso 1 del traspaso anterior)
+- Node 24. Identidad de git como en el traspaso anterior, en la copia del código y en `../cruce-coord`.
+- Para empujar hace falta acceso a GitHub en esa máquina (un token personal con escritura en el repo, o `gh auth login`). Sin eso, los reclamos y entregas quedan locales y el resto del equipo no los ve: ya pasó una vez y el coordinador rehízo #52, #47 y #51 en paralelo.
+- `git fetch origin && git switch wip/ui-enmienda && git pull && git merge origin/wip/fundamentos && npm ci`.
+- Playwright: `npm i -g playwright && npx playwright install chromium`. Para que lo encuentren los guiones del repo: `NODE_PATH=$(npm root -g)`.
+- Si la red no sale por IPv6 (pasó en la Mac anterior: `npm` y `fetch` con `ENETUNREACH`): `export NODE_OPTIONS=--dns-result-order=ipv4first`.
+
+### Cómo verificar ahora
+1. `npm run typecheck` y `npm run build`.
+2. `npx vite preview --port 4173` y el guion oficial: `NODE_PATH=$(npm root -g) node tests/e2e/recorrido-dos-sesiones.mjs http://localhost:4173` → tiene que dar "RECORRIDO OK: 23 aprobadas, 0 fallidas". Es la puerta para commitear; cubre F1 (#52), E7.2, la baja y la reparación, el navegador compartido (#47) y "N (mínimo M)" (#56).
+3. `e2e-recorrido.js` (11 pasos, abajo) se escribió para la interfaz anterior; con el rediseño puede necesitar ajustes de selectores. El guion oficial lo reemplaza.
+4. Para cambios visuales: `ANCHO=320 node a375.js` antes y después, y `comparar.js` (abajo) para ver las capturas lado a lado.
 
 ## Traspaso a la sesión local (vie 23 oct, 14:55)
 
@@ -404,7 +435,7 @@ async function crearPropuesta(T, espacioUrl) {
 
 </details>
 
-<details><summary><code>a375.js</code>: auditoría de 28 pantallas: `ANCHO=375 node a375.js` y `ANCHO=320 node a375.js`. Deja capturas e `informe-<ancho>.json` en `./a375/`.</summary>
+<details><summary><code>a375.js</code>: auditoría de 28 pantallas: `ANCHO=375 node a375.js` y `ANCHO=320 node a375.js`. Deja capturas e `informe-<ancho>.json` en `./a375/`. No llama al agente salvo `AGENTE=1` (cada llamada cuesta). Escrito para la interfaz anterior al rediseño: puede necesitar ajustes.</summary>
 
 <!-- archivo: a375.js -->
 ```js
@@ -464,7 +495,7 @@ const medir = () => {
     await btn(T, 'Buscar alternativa').click(); await T.getByText('Opción vigente · Versión 2').waitFor(); await foto(T, '20-v2-organizador'); await L.getByText('Opción vigente · Versión 2').waitFor({ timeout: 15000 }); await foto(L, '21-v2-luna-comparacion');
     await tab(L, 'Historial'); await foto(L, '22-historial-luna'); await tab(L, 'Mi respuesta'); await foto(L, '23-mi-respuesta-luna-con-version');
     await L.goto(BASE + '#/'); await L.locator('.tu-plan').waitFor({ timeout: 15000 }); await foto(L, '24-portada-tu-plan');
-    await T.goto(espacioUrl); await T.locator('a.tarjeta-prop').first().waitFor(); await T.locator('summary', { hasText: 'Agente del círculo' }).click(); await btn(T, 'Que el agente proponga').waitFor({ timeout: 15000 }); await btn(T, 'Que el agente proponga').click(); await T.getByRole('button', { name: /^Usar (este borrador|esta opción)$/ }).first().waitFor({ timeout: 20000 }).catch(() => {}); await foto(T, '25-espacio-con-propuesta-y-agente');
+    await T.goto(espacioUrl); await T.locator('a.tarjeta-prop').first().waitFor(); if (process.env.AGENTE === '1') { await T.locator('summary', { hasText: 'Agente del círculo' }).click(); await btn(T, 'Que el agente proponga').waitFor({ timeout: 15000 }); await btn(T, 'Que el agente proponga').click(); await T.getByRole('button', { name: /^Usar (este borrador|esta opción)$/ }).first().waitFor({ timeout: 20000 }).catch(() => {}); } await foto(T, '25-espacio-con-propuesta-y-agente');
     await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta/ }).first().click(); await btn(T, 'Revisar antes de crear').click(); await btn(T, 'Crear y abrir al grupo').click(); await T.waitForURL(/\/p\//);
     await cond(T, 'No puedo', 'No puedo'); await tab(T, 'Simulación'); await btn(T, 'Cargar condiciones del caso a las personas simuladas').click(); await T.waitForTimeout(2500); await tab(T, 'Plan'); await btn(T, 'Buscar opción compatible').click(); await T.getByText('Sin opción compatible').first().waitFor(); await foto(T, '26-sin-opcion');
     await btn(T, 'Cancelar propuesta').click(); await foto(T, '27-confirmar-cancelar'); await T.getByRole('button', { name: /^Sí, cancelar/ }).first().click(); await T.locator('.estado-hero-etiqueta', { hasText: 'Cancelado' }).waitFor(); await foto(T, '28-cancelado');
@@ -571,6 +602,32 @@ const BASE = 'http://localhost:4173/';
     const t = (await N.getByRole('tab').allInnerTexts()).map((s) => s.trim());
     console.log((t.includes('Simulación') ? 'FALLÓ ' : 'PASÓ  ') + 'No demo: el organizador NO tiene pestaña Simulación — ' + t.join(' | '));
   } catch (e) { console.log('CORTE: ' + e.message.split('\n')[0] + ' | ' + (await N.locator('main').innerText()).slice(0, 300).replace(/\s+/g, ' ')); }
+  await br.close();
+})();
+```
+
+</details>
+
+<details><summary><code>comparar.js</code>: capturas "antes | después" lado a lado. Guardá las de antes en `./antes/` y las de después en `./a375/`; uso: `node comparar.js 320 1100 09-mi-respuesta 03-espacio-vacio-organizador` → `./comparar/`.</summary>
+
+<!-- archivo: comparar.js -->
+```js
+// Arma una imagen "antes | después" por pantalla (solo la parte de arriba) para mirar la #44 parte 2.
+let pw; try { pw = require('playwright'); } catch { pw = require(require('child_process').execSync('npm root -g').toString().trim() + '/playwright'); }
+const fs = require('fs'), path = require('path');
+const [ancho, alto, ...nombres] = process.argv.slice(2);
+(async () => {
+  const br = await pw.chromium.launch();
+  const pg = await br.newPage({ viewport: { width: Number(ancho) * 2 + 24, height: Number(alto) } });
+  fs.mkdirSync('comparar', { recursive: true });
+  for (const n of nombres) {
+    const a = 'data:image/png;base64,' + fs.readFileSync(path.resolve('antes', `${ancho}-${n}.png`)).toString('base64');
+    const d = 'data:image/png;base64,' + fs.readFileSync(path.resolve('a375', `${ancho}-${n}.png`)).toString('base64');
+    await pg.setContent(`<body style="margin:0;display:flex;gap:24px;background:#888;align-items:flex-start"><img src="${a}" width="${ancho}"><img src="${d}" width="${ancho}"></body>`);
+    await pg.waitForTimeout(200);
+    await pg.screenshot({ path: `comparar/${ancho}-${n}.png` });
+    console.log('comparar/' + `${ancho}-${n}.png`);
+  }
   await br.close();
 })();
 ```
