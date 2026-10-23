@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 17:39.
+Quien edita este archivo: solo esta sesión. Última actualización: 17:42.
 
 ## Tocando ahora
-(nada)
+- [17:42] `docs/agente-barrido.md`: sección nueva de distancia y movilidad (pedido de Nico). Solo diseño.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
