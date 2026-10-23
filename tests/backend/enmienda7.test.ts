@@ -245,3 +245,37 @@ describe('E7.4: el perfil del grupo no cuenta a quien lo pide', { timeout: 90_00
     })
   })
 })
+
+describe('E7.5: puede.simular solo en demo y mensaje general de espacio_no_demo', { timeout: 90_000 }, () => {
+  const MENSAJE = 'Esta acción solo está permitida en espacios de demostración.'
+
+  it('organizador con propuesta activa: puede.simular false fuera del demo y true en el demo; el error trae el mensaje nuevo', async () => {
+    const [A, B] = await sesiones()
+    // Espacio no demo con una propuesta activa del organizador.
+    const esp = await crearEspacioPrueba(A, 'e7-simular', 'Org t')
+    const b = (await ok(B, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Dos t' })).resultado.miembro_id as string
+    const prop = await crearPropuesta(A, esp.espacioId, esp.miembroId, { minimo: 2, maximo: 4, titulo: 't-e7-simular' })
+    const fuera = (await ok(A, 'get_proposal_state', { p_propuesta_id: prop })).propuesta
+    expect(fuera.estado).toBe('reuniendo_interes')
+    expect(fuera.mi_situacion.es_organizador_espacio).toBe(true)
+    expect(fuera.mi_situacion.puede.simular).toBe(false)
+
+    // Demo propio: el organizador con una propuesta activa sí puede simular.
+    const demo = (await ok(A, 'seed_demo_space')).espacio
+    const pd = await crearPropuesta(A, demo.id, demo.mi_miembro_id, { minimo: 2, maximo: 4, titulo: 't-e7-simular-demo' })
+    const dentro = (await ok(A, 'get_proposal_state', { p_propuesta_id: pd })).propuesta
+    expect(dentro.estado).toBe('reuniendo_interes')
+    expect(dentro.mi_situacion.puede.simular).toBe(true)
+
+    // El mensaje nuevo, en la simulación, en el alta de simulados y en el reinicio.
+    for (const r of [
+      await rpc(A, 'add_simulated_member', { p_espacio_id: esp.espacioId, p_nombre_visible: 'Simu t' }),
+      await rpc(A, 'simulate_mark_interest', { p_propuesta_id: prop, p_miembro_id: b, p_interesado: true }),
+      await rpc(A, 'reset_demo', { p_espacio_id: esp.espacioId, p_intento_id: intento() }),
+    ]) {
+      expect(err(r)).toBe('no_autorizado/espacio_no_demo')
+      expect(r.error.mensaje).toBe(MENSAJE)
+    }
+    for (const p of [prop, pd]) await ok(A, 'cancel_proposal', { p_propuesta_id: p })
+  })
+})

@@ -61,3 +61,7 @@ Aprobada por el coordinador el 23 oct 2026, a partir de `docs/agente-revision-pr
   - `privacidad-audiencia`: Luna recibe `null` en `personas_con_condiciones` y Tomi recibe 3.
   - `tests/e2e/recorrido-canonico` y `jurado-variantes`: la opción de Luna y la de Tomi se siguen exigiendo idénticas salvo `cupos.pendientes`, que en Luna es `null` y en Tomi un número.
 - **Pruebas existentes adaptadas a E7.4** (`enmienda4`): los perfiles esperados ya no cuentan a quien pide. La prueba de #28 suma un cuarto miembro, y Pádel recién aparece con dos personas además del organizador.
+- **E7.5 (`0028_e7_simular_solo_demo_y_mensaje`, aplicada a las 15:09):**
+  - `cruce.situacion` agrega la condición "espacio demo" a `puede.simular`. Las propuestas activas de espacios no demo que tenían simulados de antes pasaron de `true` a `false` (comprobado en la base, antes y después).
+  - `cruce.mensaje` devuelve el texto general para `no_autorizado/espacio_no_demo`.
+  - Prueba: `describe('E7.5')` en `tests/backend/enmienda7.test.ts`. En un espacio no demo nuevo, `puede.simular` ya era `false` porque no puede tener simulados; el caso de los simulados de antes se comprobó con la consulta directa.
