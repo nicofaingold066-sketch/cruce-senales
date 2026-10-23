@@ -2,10 +2,10 @@
 
 Dueño del informe: agente-ia. Viernes 23 oct 2026, escrito a las 17:15 (hora del reloj, Santiago). Pedido del coordinador. Solo lectura: no se editó nada de esa rama ni de `src/`.
 
-Qué se revisó: `wip/front-juan` en `5b8cf1a` (base común con `main`: `7b0335b`), contra `origin/main` (`61c5228`). Son 30 archivos de `src/` (5930 líneas más, 1738 menos); no toca `src/agente/` ni `supabase/`. Método: lectura del diff completo con dos enfoques, el panel del agente (yo) y la privacidad (una revisión independiente con un modelo distinto), y verificación en el código de los hallazgos de abajo. En la copia de la rama, typecheck y build pasan. **Todavía no se probó en vivo:** cuando se escribió esto, backend tenía la migración 0032 en curso.
+Qué se revisó: `wip/front-juan` en `5b8cf1a` (base común con `main`: `7b0335b`), contra `origin/main` (`61c5228`). Son 30 archivos de `src/` (5930 líneas más, 1738 menos); no toca `src/agente/` ni `supabase/`. Método: lectura del diff completo con dos enfoques, el panel del agente (yo) y la privacidad (una revisión independiente con un modelo distinto), y verificación en el código de los hallazgos de abajo. En la copia de la rama, typecheck y build pasan. Probado en vivo a las 17:14 (§5).
 
 ## Resumen
-- **El panel del agente sigue montado y conectado igual que en `main`.** No hace falta adaptarlo para que funcione; falta mirarlo en vivo por un detalle visual (abajo).
+- **El panel del agente sigue montado y conectado igual que en `main`, y funciona en vivo con el modelo real** (§5). No hace falta adaptarlo.
 - **Privacidad: ninguna pantalla nueva muestra condiciones, disponibilidad ni los conteos que la enmienda 7 reserva al organizador.** No se calcula ningún estado, cupo ni plazo en el cliente. Lo que compartir manda afuera (WhatsApp, `.ics`) lleva solo datos públicos.
 - **Hay un problema nuevo de navegador compartido (P1):** el nombre que el rediseño guarda en el navegador no se borra al "Entrar como otra persona", así que la persona siguiente aparece con el nombre de la anterior y lo trae precargado.
 - Para la integración: la rama no tiene la ruta `#/entrar` de login, y agrega `lucide-react` sin registrarla.
@@ -67,5 +67,14 @@ Prioridad: P1 hace falta antes de la demo (pasa en el recorrido de navegador com
 - **Cruce con más de 10 personas:** `src/components/Cruce.tsx:91` (`slice(0, 10)`) oculta sin aviso a la persona 11 en adelante, incluso a quien mira. No pasa en la demo (6 personas).
 - **Integración:** la rama no tiene la ruta `#/entrar` de login (`main` `61c5228`: `src/lib/shell.tsx:60`, `:76`, `:91` y `src/App.tsx:9`, `:151-152`). Al mezclar hay que conservarla. **Dependencia nueva:** `lucide-react` 1.53.0 (`package.json`); AGENTS.md pide avisar y registrarla en `docs/componentes-externos.md`.
 
-## 5. Pendiente
-- Prueba en vivo a 375 px del panel en la rama (preferencias, "Que el agente proponga" con una sola llamada al modelo, candidatas en la píldora, "Usar esta opción" hasta "Nueva propuesta"), cuando backend saque la marca de la 0032.
+## 5. Prueba en vivo del panel en la rama
+**Viernes 23 oct 2026, de 17:14:37 a 17:14:44 (hora del reloj).** `wip/front-juan` `5b8cf1a` en un servidor local contra la base real (sin migración en curso, última aplicada 0034), Chrome sin ventana a 375 × 812 con tacto. Demo propio nuevo con datos ficticios, entrando como "Tomi". **Una sola llamada al modelo.** Resultado: 11 de 11.
+- El panel se monta al abrir "Agente del círculo"; guardar preferencias funciona.
+- "Simular sol" y "Que el agente proponga": una llamada a la función, 4345 ms, `eleccion_fuente: "modelo"` y `explicacion_fuente: "modelo"`; la pantalla dice "Lo redactó la IA…".
+- Candidatas: asado en el quincho, fútbol en la cancha y picnic en el parque. Elegida: el asado. Perfil del grupo: 4 personas, asado 3 de 4, fútbol 2 de 4, ritmo "algo tranquilo".
+- Lo que escribió la IA: "Es la actividad que más eligieron (3 de 4) y se hace en el quincho, así que sirve aunque cambie el tiempo. Además el ritmo es tranquilo y el presupuesto les calza a todos." y el mensaje "Hola, les propongo un asado en el quincho, el sábado 31 de 14:00 a 17:00 o el domingo 1 de 14:00 a 17:00; marquen si les interesa y carguen su disponibilidad en CRUXE para elegir el día." Coincide con los totales y las franjas que mandó el servidor; sin nombres ni datos de una persona.
+- Las candidatas se ven bien en la píldora nueva: la elegida en fondo oscuro con "SIMULACIÓN" y "Recomendada por el agente" legibles, dentro del ancho (35 a 340 px).
+- "Usar esta opción" lleva a "Nueva propuesta" con el aviso "Borrador del agente" y el título "Asado en casa de Tomi".
+- Sin desborde horizontal ni errores en la consola.
+
+Detalle que ya estaba en `main`, no del rediseño: el panel dice "3 opciones para 5 personas" y el perfil dice "4 personas". Son dos números del servidor que cuentan distinto (`personas_consideradas` incluye a quien pide; el perfil lo excluye desde la enmienda 7, E7.4). Se puede aclarar el texto más adelante.
