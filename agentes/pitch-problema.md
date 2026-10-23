@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 15:24.
+Quien edita este archivo: solo esta sesión. Última actualización: 15:27.
 
 ## Tocando ahora
-- Mejora #47 (hallazgo 8, navegador compartido; reasignada temporalmente por el coordinador): SOLO `src/screens/Inicio.tsx` y, si hace falta, `src/lib/supabase.ts`
+(nada; libero `src/screens/Inicio.tsx` y `src/lib/supabase.ts`, que no hizo falta tocar)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[15:27] Mejora #47 entregada** (`c389722`, solo `src/screens/Inicio.tsx`): con `ya_era_miembro`, aviso "Este navegador ya está en este espacio como <nombre>" con "Seguir como <nombre>" y "Entrar como otra persona". Esta última pide confirmación (la sesión anónima anterior no se recupera desde ese navegador; sugiere una ventana privada), cierra la sesión local, borra `cruxe:*` de sessionStorage, abre una sesión anónima nueva y repite `join_space`. Probado en el mismo navegador (servidor local de mi rama contra la base real): Tomi crea la demo → enlace como Luna → aviso con Tomi → confirmación → entra como Luna, miembro y sin herramientas del organizador. Typecheck y build en verde. Durante la prueba la red estuvo intermitente y un primer intento dio "No pudimos confirmar el resultado"; al reenviar funcionó.
 - **[15:22] Mejora #52 entregada** (`ca98414`, solo `src/screens/Espacio.tsx`): con la generación en null, `cargarTodo` pide `get_space` y después `list_proposals`; con la generación conocida, en paralelo como antes. `node tests/e2e/red-controlada.mjs`: N1 a N8 PASS; el caso F1 (reproducción) ahora FALLA porque el defecto ya no ocurre. Con F1 en positivo (copia local, no commiteada): 10/10, con 1 `get_space` y 1 `list_proposals` y sin sondeo, también con el orden de respuesta invertido. Typecheck y build en verde. Archivo liberado.
 - **[15:20] #50 completa** (`faa207b`): pantalla del agente en producción (main 3313790, 15:19-15:20) a 375 px. Sol: 3 opciones; perfil "4 personas: Asado 3 de 4 · Fútbol 2 de 4", sin Tomi y sin ambiente (empate); por qué con "(3 de 4)"; la respuesta de la función, leída en el navegador, no trae `presupuesto_grupo`. Lluvia: solo asado. WhatsApp a 44 px; "Usar esta opción" precarga. Sin errores. Evidencia en `docs/agente-ia.md` §8.1.
 - **[15:11] #50 parte 1 entregada** (`27342fb`): E7.1 y E7.4 por la función contra la base real (0028 aplicada, sin migración en curso), 13/13. Grupo de 2: sin `el_mas_elegido`, orden fijo y perfil solo con la cantidad. Demo sin Tomi: 4 personas (Luna sin semilla), ambiente null, sin presupuesto, el voto de Tomi no mueve el perfil. Grupo de 5 (Luna simulada): perfil de 5. Evidencia en `docs/agente-ia.md` §8.1.
@@ -42,6 +43,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 (vacío)
 
 ## Entregado
+- Mejora #47 (navegador compartido, `src/screens/Inicio.tsx`): `wip/agente-ia` `c389722`.
 - Mejora #52 (F1, `src/screens/Espacio.tsx`): `wip/agente-ia` `ca98414`.
 - Mejora #50 completa (función y pantalla en producción con la enmienda 7): `wip/agente-ia` `faa207b`.
 - Mejora #50, parte 1 (enmienda 7 por la función): `wip/agente-ia` `27342fb`.
