@@ -6,9 +6,18 @@ export function enlaceInvitacion(codigo: string): string {
   return `${window.location.origin}${window.location.pathname}${rutas.unirse(codigo)}`
 }
 
-export function textoInvitacion(espacio: string, codigo: string): string {
+/** Quién puede venir a un plan (psico §3.3 y §8.5). Es una regla del grupo, nunca un dato de una persona. */
+export type QuienViene = 'grupo' | 'parejas' | 'abierta'
+export const FRASE_QUIEN_VIENE: Record<QuienViene, string> = {
+  grupo: 'Esta vez es solo el grupo.',
+  parejas: 'Pueden venir con pareja.',
+  abierta: 'Cada uno puede traer a alguien. Cuenta para los cupos.',
+}
+
+export function textoInvitacion(espacio: string, codigo: string, quienViene?: QuienViene): string {
   // Fricción: decir de entrada que no hay cuenta y qué hacer. "Me interesa" lo ve el grupo: no se promete que todo es privado.
-  return `Súmate a «${espacio}» en CRUXE: toca el enlace, elige tu nombre y marca cuándo puedes. Sin cuenta ni contraseña; tus condiciones solo las ve la app: ${enlaceInvitacion(codigo)}`
+  const regla = quienViene ? ` ${FRASE_QUIEN_VIENE[quienViene]}` : ''
+  return `Súmate a «${espacio}» en CRUXE: toca el enlace, elige tu nombre y marca cuándo puedes.${regla} Sin cuenta ni contraseña; tus condiciones solo las ve la app: ${enlaceInvitacion(codigo)}`
 }
 
 /** Enlace universal de WhatsApp con el texto ya escrito; la persona elige a quién mandarlo. */
