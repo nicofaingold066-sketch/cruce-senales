@@ -402,13 +402,13 @@ Todo lo de abajo depende de que backend tenga tiempo; después de las 12:00 no h
 ### D. Cierre, ubicación y nivel de gasto (pedido de las 20:28)
 | # | Qué | Dueño | Cuándo | Esfuerzo |
 |---|---|---|---|---|
-| D1 | Frase «Tu confirmación solo vale si llegan N; si no llegan, nadie queda comprometido» junto al botón de confirmar, y «Se cierra el jueves… si no están las N confirmaciones, el plan no se arma» (§8.9) | front-juan (PlanTab) | **Antes** | Bajo, alto valor |
-| D2 | «Hoy conviene recordar: faltan N y se cierra mañana» visible solo para quien organiza, sin enviar nada; y «Te lo recuerda CRUXE» en el texto del recordatorio | ux-flujo | **Antes** | Bajo |
-| D3 | `.ics` con `VALARM` (-1 día y -2 h) y `LOCATION`; margen de 15 minutos en el recordatorio (§12 U3, U4) | friccion (`compartir.ts`) | **Antes** | Bajo |
-| D4 | Botón «Buscar el lugar en el mapa» (solo el lugar; oculto o «(ejemplo)» si es simulación) y línea fija de día, hora y duración (§12 U1, U2) | front-juan | **Antes** | Bajo |
-| D5 | **Estilo** simple · normal · especial: selector para quien organiza, parámetro en la función `agente`, tabla fija actividad → nivel, frase fija; dos formas por estilo (§13) | agente-ia | **Antes** | Medio |
-| D6 | Tiempo estimado propio por persona (§12 U6) | backend | **Después** (enmienda) | Medio |
-| D7 | Presupuesto con `algo_especial` (V11) | backend | **Después** (enmienda) | Medio |
+| E1 | Frase «Tu confirmación solo vale si llegan N; si no llegan, nadie queda comprometido» junto al botón de confirmar, y «Se cierra el jueves… si no están las N confirmaciones, el plan no se arma» (§8.9) | front-juan (PlanTab) | **Antes** | Bajo, alto valor |
+| E2 | «Hoy conviene recordar: faltan N y se cierra mañana» visible solo para quien organiza, sin enviar nada; y «Te lo recuerda CRUXE» en el texto del recordatorio | ux-flujo | **Antes** | Bajo |
+| E3 | `.ics` con `VALARM` (-1 día y -2 h) y `LOCATION`; margen de 15 minutos en el recordatorio (§12 U3, U4) | friccion (`compartir.ts`) | **Antes** | Bajo |
+| E4 | Botón «Buscar el lugar en el mapa» (solo el lugar; oculto o «(ejemplo)» si es simulación) y línea fija de día, hora y duración (§12 U1, U2) | front-juan | **Antes** | Bajo |
+| E5 | **Estilo** simple · normal · especial: selector para quien organiza, parámetro en la función `agente`, tabla fija actividad → nivel, frase fija; dos formas por estilo (§13) | agente-ia | **Antes** | Medio |
+| E6 | Tiempo estimado propio por persona (§12 U6) | backend | **Después** (enmienda) | Medio |
+| E7 | Presupuesto con `algo_especial` (V11) | backend | **Después** (enmienda) | Medio |
 
 ## 10. Lámina de pitch: «CRUXE entiende la dinámica de un grupo»
 **Título:** *Un grupo no discute el plan: discute lo que el plan dice de cada uno.*
