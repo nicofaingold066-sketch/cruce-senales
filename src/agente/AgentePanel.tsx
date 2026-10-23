@@ -9,6 +9,7 @@ import { franjaTexto } from '../lib/format'
 import { irA, rutas } from '../lib/shell'
 import type { ApiError } from '../lib/types'
 import { Aviso, Boton, Cargando, ErrorCaja, RotuloSimulacion } from '../components/ui'
+import './agente.css'
 import {
   agenteApi,
   guardarBorradorAgente,
@@ -220,7 +221,7 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
       <Aviso tono="info" titulo="Opciones del agente">
         Todas le sirven al grupo según lo que cargó cada uno. Elegís vos: todavía nadie está invitado ni confirmado.
       </Aviso>
-      <fieldset className="grupo">
+      <fieldset className="grupo agente-candidatas">
         <legend>
           {b.candidatas.length > 1 ? `${b.candidatas.length} opciones` : 'Opción'} para {b.personas_consideradas} personas
         </legend>
