@@ -9,7 +9,8 @@ import {
 
 const SI = { A: 'si', B: 'si' }
 const PRIMERO = { codigo: 'reunir_condiciones', texto: 'Primero marca tu disponibilidad: eres quien no puede faltar.' }
-const COMPLETA = { codigo: 'reunir_condiciones', texto: 'Completa tu disponibilidad para poder entrar en la opción.' }
+// 0040: el texto no promete entrar en la versión ya publicada (los elegibles se fijan al publicar).
+const COMPLETA = { codigo: 'reunir_condiciones', texto: 'Tu disponibilidad está incompleta: no entraste en esta versión. Si la completas, cuenta si el plan se rearma.' }
 const GENERAL = { codigo: 'reunir_condiciones', texto: 'Cada persona marca su disponibilidad en privado. Luego el organizador busca una opción.' }
 
 describe('enmienda 12: avisos personales de siguiente acción', { timeout: 120_000 }, () => {
