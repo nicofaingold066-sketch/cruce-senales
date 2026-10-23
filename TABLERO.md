@@ -1,6 +1,6 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, ~11:45 Santiago.
+Actualizado: viernes 23 oct, 10:57 Santiago (hora real del reloj).
 
 ## Hitos de hoy
 - 12:00 checkpoint 1: Problema. 17:15 checkpoint 2: algo funcionando. Sábado 13:00 entrega (último commit de `main`).
@@ -28,7 +28,7 @@ Migraciones 0008 a 0011 de la enmienda 2 YA aplicadas por el backend (A1 reserva
 Contrato v1 enmendado por `docs/contrato-enmienda-2.md`. Sofi elegible en la franja B. Costo fuera de este corte. Baja que rompe el mínimo lleva a En revisión con versión nueva.
 
 ## Incidentes
-- 11:00 un duplicado del agente de backend escribió a la vez en la base; se detuvo el workflow original. Quedó un único backend. Auditoría de duplicados 11:45: sin migraciones repetidas (disco 0001 a 0011 = base), un solo subagente corriendo, tres worktrees esperados, ramas sin repetir.
+- ~10:35 un duplicado del agente de backend escribió a la vez en la base; se detuvo el workflow original. Quedó un único backend. Auditoría de duplicados ~10:50: sin migraciones repetidas (disco 0001 a 0011 = base), un solo subagente corriendo, tres worktrees esperados, ramas sin repetir.
 
 ## Decisiones pendientes de Nico
 - **IA dentro del producto.** El tema es cambiar hábitos "con IA" y hoy el producto no usa IA (fuera de alcance). La sesión de pitch advierte que el jurado puede preguntar dónde está. Opciones: (a) responder con honestidad: IA en la construcción y, en el producto, solo opcional para explicar el plan; (b) agregar al final una explicación opcional con texto de respaldo, sin gasto, solo si sobra tiempo después de las 17:15.

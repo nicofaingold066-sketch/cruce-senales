@@ -1,6 +1,6 @@
 # Agente: coordinador (sesión Claude "Coordinador CRUCE", computadora A)
 
-Quien edita este archivo: solo el coordinador. Última actualización: ~11:30.
+Quien edita este archivo: solo el coordinador. Última actualización: 10:57 (hora real).
 
 ## Tocando ahora
 - `docs/contrato*.md`, `AGENTS.md`, `CLAUDE.md`, `docs/tareas/**`, `docs/contexto-proyecto.md`
