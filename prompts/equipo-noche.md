@@ -21,6 +21,7 @@ Hackatón Señales (Makana), caso 06 social. Un grupo de amigos cierra un plan: 
 | qa-noche | Sonnet | `/Users/macair/cruse/cruce-qa` | `wip/qa` | `tests/e2e/**`, `docs/qa-noche.md` |
 | sinteticos | Sonnet | `/Users/macair/cruse/cruce-sinteticos` | `wip/sinteticos` | `tests/sinteticos/**`, `docs/usuarios-sinteticos.md` |
 | rincones | Sonnet | `/Users/macair/cruse/cruce-rincones` | `wip/rincones` | `tests/rincones/**`, `docs/rincones.md` |
+| psico | Sonnet | `/Users/macair/cruse/cruce-psico` | `wip/psico` | `docs/psicologia-grupo.md`, `docs/psicologia-fuentes.md` |
 | front-juan (Juan, otra compu) | — | — | `wip/front-juan` | `src/screens/**`, `src/components/**`, `src/styles.css` |
 | agente-ia (sesión "Pitch y Agente IA del círculo") | — | — | `wip/agente-ia` | `src/agente/**`, `supabase/functions/agente/**`, `docs/agente*.md`, `docs/pitch*.md` |
 | coordinador | Opus | `/Users/macair/cruse/cruce-senales` | `wip/fundamentos` → `main` | contrato, integración, publicación |

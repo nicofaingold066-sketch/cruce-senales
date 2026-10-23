@@ -13,6 +13,7 @@ Detalle y reglas: `prompts/equipo-noche.md`.
 | `tests/e2e/**`, `docs/qa-noche.md` | qa-noche (sesión nueva, Sonnet) | `wip/qa` |
 | `tests/sinteticos/**`, `docs/usuarios-sinteticos.md` | sinteticos (sesión nueva, Sonnet) | `wip/sinteticos` |
 | `tests/rincones/**`, `docs/rincones.md` | rincones (sesión nueva, Sonnet) | `wip/rincones` |
+| `docs/psicologia-grupo.md`, `docs/psicologia-fuentes.md` | psico (sesión nueva, Sonnet; solo investigación y diseño, sin código) | `wip/psico` |
 | `src/screens/**`, `src/components/**`, `src/styles.css` | front-juan (Juan) | `wip/front-juan` |
 | `src/agente/**`, `supabase/functions/agente/**`, `docs/agente*.md`, `docs/pitch*.md` | agente-ia | `wip/agente-ia` |
 | Lo demás de `src/` | nadie esta noche (pedir al coordinador) | — |
