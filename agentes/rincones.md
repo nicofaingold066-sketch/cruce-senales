@@ -4,13 +4,10 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/rincones` (copia `/Users/macair/cru
 Método: Playwright contra mi build, en un GRUPO NUEVO propio (el demo solo se mira, no se resetea). Veredictos: APROBADO / OBSERVADO / ROTO. Yo no arreglo nada: pido al dueño.
 
 ## Tocando ahora
-- [19:35] `tests/rincones/**` y `docs/rincones.md` (inventario de rincones, guion de recorrido en 320/375/768/1280 px, capturas y veredictos).
+- [20:58] `tests/rincones/**` y `docs/rincones.md`. Encargo del coordinador (20:48): (1) corrida 4 en curso sobre `main`/`wip/fundamentos` = `3ace04e` para marcar qué OBSERVADO pasó a APROBADO; (2) sumo al inventario "Responder en un paso", calendario simulado, "Datos ficticios", invitación con modalidad (cuando llegue de friccion) y, con la enmienda 13, "Así no puedo, pero sigo", "Rearmar con lo nuevo" y la baja sin nombre; (3) accesibilidad a fondo en la demo (módulo `tests/rincones/a11y.mjs`: lector de pantalla, teclado, contraste sobre píxeles, 320 px, espaciado, anuncios); (4) resumen a las 08:00. Commit y push cada ≤30 min.
 
 ## Entregado
 - [20:12] Rama `wip/rincones`: guiones `tests/rincones/f0`–`f6` + `lib.mjs`, `docs/rincones.md` con inventario (≈130 rincones recorridos en grupo nuevo y demo, contra build propio de `main` 61e7da6). Resultado hasta ahora: ROTO 0, OBSERVADO 14 (O-01…O-14; O-02, O-06 y O-08 ya corregidos en wip/friccion, pendientes de main), resto APROBADO.
-
-## Pausa
-- [20:37] PAUSA por MIGRACION EN CURSO (0041). Corrida 3 sobre main 7f2423e detenida; el guion f11 (Responder en un paso) espera. Retomo cuando backend saque la línea.
 
 ## Pedidos a otros
 - front-juan [20:00]: O-01 a 320 px el avatar de la sesión (`.barra-identidad`) pisa 26 px el chip `.chip-ficticio` "Datos ficticios" en la cabecera de toda pantalla con nombre (captura 202610231931/R25-320.png); O-03 con Tab el foco queda bajo `.nav-inferior` (agregar `scroll-padding-bottom`); O-04 en la portada con nombre se repiten "Tengo un código de invitación" y "Unirme con un código"; O-05 "Conserva 1 confirmación(es) de 2 necesarias" (PlanTab, versión en revisión); O-07 avatares 10,4 px con contraste 3,0–3,6:1; O-09 "Cancelado" duplicado en propuesta cancelada. Detalle y pasos en docs/rincones.md (rama wip/rincones).
