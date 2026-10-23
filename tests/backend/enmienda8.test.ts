@@ -196,8 +196,8 @@ describe('enmienda 8: el agente solo usa las preferencias de quien lo permite', 
     await guardar(E, demo.espacioId, GRATIS, true)
   })
 
-  it('5. catálogo: 30 para authenticated y 0 para anon, una sola firma por nombre', async () => {
-    expect(Object.keys(PERMITIDAS)).toHaveLength(30)
+  it('5. catálogo: 31 para authenticated y 0 para anon, una sola firma por nombre', async () => {
+    expect(Object.keys(PERMITIDAS)).toHaveLength(31)
     const anon = clienteSinSesion()
     for (const fn of ['save_my_preferences', 'get_my_preferences', 'proponer_plan_borrador']) {
       const a = await rpcCrudo(anon, fn, PERMITIDAS[fn]())

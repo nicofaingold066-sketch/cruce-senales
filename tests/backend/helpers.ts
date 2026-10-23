@@ -62,6 +62,7 @@ export const PERMITIDAS: Record<string, () => Record<string, unknown>> = {
   server_info: () => ({}),
   create_space: () => ({ p_nombre: '', p_tipo: 'amigos', p_nombre_visible: 'x' }),
   join_space: () => ({ p_codigo: 'ZZZZZZZZ', p_nombre_visible: 'x' }),
+  preview_space_by_code: () => ({ p_codigo: 'ZZZZZZZZ' }), // enmienda 9
   list_my_spaces: () => ({}),
   get_space: () => ({ p_espacio_id: Z }),
   seed_demo_space: () => ({}),

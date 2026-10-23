@@ -39,3 +39,28 @@ Hoy, para entrar a un espacio hay que escribir el nombre a mano, y reclamar un l
 
 ## Plazo y salida
 Fase 1 aplicada con la suite en verde antes de las **19:00**; fase 2 antes de las **20:00**. Lo que no llegue se descarta sin tocar nada y queda como siguiente paso en el README. Después de las 12:00 del sábado no hay migraciones.
+
+## Implementación (backend)
+
+### Fase 1 (`0032_e9_lista_de_integrantes`, aplicada a las 17:00)
+Lista permitida: 31 para `authenticated`, 0 para `anon`; `join_space` tiene una sola firma; `cruce.verificar_privilegios()` sin hallazgos. Pruebas: `tests/backend/enmienda9.test.ts`.
+
+**`preview_space_by_code(p_codigo text)`** (cualquier sesión, sin ser miembro; no inscribe; sin bloqueos):
+```json
+{ "ok": true, "contrato": 2, "servidor_ahora": {...},
+  "espacio": { "nombre": "Los del asado", "demo": true },
+  "miembros": [ { "miembro_id": "uuid", "nombre": "Luna", "libre": true }, ... ] }
+```
+- `miembros` viene en el orden del espacio (el mismo que `get_space`), con TODOS los integrantes, también los que no están libres. Esas tres son las únicas claves de cada uno.
+- `libre = true`: simulado del demo sin actividad (reclamable), o integrante pendiente (fase 2) que nadie reclamó. `false` para los reales, para los simulados con actividad (semilla de preferencias incluida: en el demo canónico solo Luna está libre) y para los simulados fuera del demo.
+- Errores: código vacío → `entrada_incompleta/formato_invalido`; no existe → `fuera_de_audiencia/codigo_inexistente` ("El código de invitación no existe."). El código se normaliza igual que en `join_space` (mayúsculas, sin espacios).
+
+**`join_space(p_codigo, p_nombre_visible, p_miembro_id uuid default null)`**: `resultado` siempre trae seis claves:
+```json
+{ "espacio_id": "uuid", "miembro_id": "uuid", "reclamo_asiento_simulado": false, "reclamo_pendiente": false,
+  "ya_era_miembro": false, "repetido": false }
+```
+- Con `p_miembro_id`: la sesión queda como ese integrante, con el mismo `miembro_id` y SU nombre (`p_nombre_visible` se ignora, pero igual hay que mandar algo; sirve `""`). `reclamo_asiento_simulado: true` si era un simulado del demo, `reclamo_pendiente: true` si era un pendiente.
+- Errores con `p_miembro_id`: no existe o es de otro espacio → `entrada_incompleta/miembro_inexistente` ("Ese integrante no existe en este espacio."); es una persona real, o un simulado fuera del demo → `no_autorizado/miembro_ya_reclamado` ("Ese lugar ya lo tomó otra persona."); simulado del demo con actividad → `asiento_en_uso/asiento_en_uso` (igual que por nombre). Dos reclamos a la vez del mismo lugar: uno gana, el otro recibe `miembro_ya_reclamado`.
+- Si la sesión ya era miembro del espacio, responde `ya_era_miembro: true` con su `miembro_id` de siempre, aunque mande otro `p_miembro_id` (la sesión no cambia de persona).
+- Sin `p_miembro_id`: idéntico a antes ("No estoy en la lista"), salvo la clave nueva `reclamo_pendiente: false`. Escribir el nombre de un pendiente por ese camino da `nombre_en_uso`, como cualquier nombre tomado: para entrar como un pendiente se usa `p_miembro_id`.
