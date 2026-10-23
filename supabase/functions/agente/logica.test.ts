@@ -9,13 +9,18 @@ import {
   candidatasDe,
   crearLimiteModelo,
   elegirProveedor,
+  familiaModelo,
   GATEWAY_URL,
   MAX_TOKENS_MODELO,
   MODELO_DIRECTO,
   MODELO_GATEWAY,
   modoSalida,
+  RESPALDO_DIRECTO,
+  RESPALDO_GATEWAY,
   textoDeRespuesta,
   usuarioDe,
+  viajeDe,
+  viajeSeguro,
   climaPedido,
   climaSimulado,
   entradaModelo,
@@ -278,14 +283,17 @@ const entorno = (vars: Record<string, string>) => (n: string) => vars[n]
 
 test('proveedor: con clave del Gateway usa el Gateway, aunque también haya clave directa', () => {
   const p = elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'k-gateway', ANTHROPIC_API_KEY: 'k-directa' }))
-  assert.deepEqual(p, { tipo: 'gateway', variableClave: 'AI_GATEWAY_API_KEY', baseURL: GATEWAY_URL, modelo: MODELO_GATEWAY })
+  assert.deepEqual(p, { tipo: 'gateway', variableClave: 'AI_GATEWAY_API_KEY', baseURL: GATEWAY_URL, modelo: MODELO_GATEWAY, respaldo: RESPALDO_GATEWAY })
   assert.equal(GATEWAY_URL, 'https://ai-gateway.vercel.sh')
-  assert.equal(MODELO_GATEWAY, 'anthropic/claude-haiku-5.5')
+  assert.equal(MODELO_GATEWAY, 'anthropic/claude-opus-5.5')
+  assert.equal(RESPALDO_GATEWAY, 'anthropic/claude-haiku-5.5')
 })
 
 test('proveedor: sin clave del Gateway y con la directa usa la API de Anthropic, sin URL propia', () => {
   const p = elegirProveedor(entorno({ ANTHROPIC_API_KEY: 'k-directa' }))
-  assert.deepEqual(p, { tipo: 'anthropic', variableClave: 'ANTHROPIC_API_KEY', modelo: MODELO_DIRECTO })
+  assert.deepEqual(p, { tipo: 'anthropic', variableClave: 'ANTHROPIC_API_KEY', modelo: MODELO_DIRECTO, respaldo: RESPALDO_DIRECTO })
+  assert.equal(MODELO_DIRECTO, 'claude-opus-5-5')
+  assert.equal(RESPALDO_DIRECTO, 'claude-haiku-5-5')
   assert.equal(p?.baseURL, undefined)
 })
 
@@ -318,13 +326,14 @@ test('modoSalida: json por defecto; "herramienta" fuerza una herramienta', () =>
 const CANDIDATAS = [ASADO, { ...ASADO, id: 'lugar-sim-02' }]
 const ENTRADA = { clima: 'seco', candidatas: [] }
 
-test('pedido por el Gateway: modelo con creador, esquema JSON con la elección limitada, sin effort y con tope corto', () => {
+test('pedido por el Gateway: Opus, pensamiento adaptativo con esfuerzo bajo (como documenta Vercel), esquema JSON y tope', () => {
   const gw = elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'k' }))!
   const pedido = armarPedido(gw, 'json', CANDIDATAS, 'SISTEMA', ENTRADA) as Record<string, any>
-  assert.equal(pedido.model, 'anthropic/claude-haiku-5.5')
+  assert.equal(pedido.model, 'anthropic/claude-opus-5.5')
   assert.equal(pedido.max_tokens, MAX_TOKENS_MODELO)
   assert.ok(pedido.max_tokens >= 1000 && pedido.max_tokens < 2048, 'tope con lugar para el pensamiento del modelo, por debajo del anterior')
-  assert.equal(pedido.output_config.effort, undefined)
+  assert.deepEqual(pedido.thinking, { type: 'adaptive' })
+  assert.equal(pedido.output_config.effort, 'low')
   assert.equal(pedido.output_config.format.type, 'json_schema')
   assert.deepEqual(pedido.output_config.format.schema.properties.eleccion_id.enum, ['lugar-sim-01', 'lugar-sim-02'])
   assert.equal(pedido.output_config.format.schema.additionalProperties, false)
@@ -334,10 +343,11 @@ test('pedido por el Gateway: modelo con creador, esquema JSON con la elección l
   assert.equal(pedido.messages.length, 1)
 })
 
-test('pedido por la API directa: igual que antes, con effort bajo', () => {
+test('pedido por la API directa: Opus con effort bajo, sin thinking explícito', () => {
   const directa = elegirProveedor(entorno({ ANTHROPIC_API_KEY: 'k' }))!
   const pedido = armarPedido(directa, 'json', CANDIDATAS, 'S', ENTRADA) as Record<string, any>
-  assert.equal(pedido.model, 'claude-haiku-5-5')
+  assert.equal(pedido.model, 'claude-opus-5-5')
+  assert.equal(pedido.thinking, undefined)
   assert.equal(pedido.output_config.effort, 'low')
   assert.equal(pedido.max_tokens, MAX_TOKENS_MODELO)
 })
@@ -428,4 +438,74 @@ test('límite: la memoria no crece con quien dejó de pedir', () => {
   for (let i = 0; i < 500; i++) l.permitir(`u${i}`, i)
   // Mucho después, un solo pedido limpia a los anteriores: solo se comprueba que sigue funcionando.
   assert.equal(l.permitir('u0', 1_000_000), true)
+})
+
+// ---- Enmienda 10: viaje máximo estimado, sin zonas, modos ni personas ----
+
+test('viajeSeguro: solo minutos y estimado; cualquier otra clave o un valor raro se descarta', () => {
+  assert.deepEqual(viajeSeguro({ max_minutos: 35, estimado: true }), { max_minutos: 35, estimado: true })
+  assert.deepEqual(viajeSeguro({ max_minutos: 34.6, estimado: true, zona: 'nunoa', modo: 'auto', por_persona: [10, 35] }), { max_minutos: 35, estimado: true })
+  assert.equal(viajeSeguro(null), null)
+  assert.equal(viajeSeguro({ max_minutos: '35' }), null)
+  assert.equal(viajeSeguro({ max_minutos: 0 }), null)
+  assert.equal(viajeSeguro({ max_minutos: 5000 }), null)
+  assert.equal(viajeSeguro({ max_minutos: Number.NaN }), null)
+})
+
+test('viajeDe: vale el de la candidata elegida; el de arriba solo si la elegida es la primera', () => {
+  const a = { ...ASADO, viaje: { max_minutos: 20, estimado: true } }
+  const b = { ...PARQUE, viaje: { max_minutos: 45, estimado: true } }
+  assert.deepEqual(viajeDe(b, [a, b], { max_minutos: 20, estimado: true }), { max_minutos: 45, estimado: true })
+  assert.equal(viajeDe({ ...PARQUE, viaje: null }, [a, { ...PARQUE, viaje: null }], { max_minutos: 20 }), null)
+  // Sin viaje por candidata (respuesta vieja): el de arriba es el de la primera.
+  assert.deepEqual(viajeDe(ASADO, [ASADO, PARQUE], { max_minutos: 25, estimado: true }), { max_minutos: 25, estimado: true })
+  assert.equal(viajeDe(PARQUE, [ASADO, PARQUE], { max_minutos: 25, estimado: true }), null)
+})
+
+test('entradaModelo: el modelo recibe solo viaje_max_minutos por opción, nunca zona ni modo', () => {
+  const conViaje = [{ ...ASADO, viaje: { max_minutos: 35, estimado: true, zona: 'nunoa' } as never }, { ...PARQUE, viaje: null }]
+  const e = entradaModelo(conViaje, PERFIL_5, 'Sábado seco', NOMBRES)
+  assert.equal(e.opciones[0].viaje_max_minutos, 35)
+  assert.equal(e.opciones[1].viaje_max_minutos, null)
+  const texto = JSON.stringify(e)
+  assert.ok(!/nunoa|zona|modo|auto|transporte|me_llevan/.test(texto), texto)
+})
+
+test('textoValido: no deja decir dónde vive nadie ni cómo se mueve', () => {
+  for (const t of [
+    'Elegimos el parque porque Ana vive cerca.',
+    'Queda bien aunque haya quien no tiene auto en el grupo.',
+    'Armemos el asado y lo pasen a buscar al que va sin auto.',
+    'Es en la comuna de Ñuñoa, a mano para todos.',
+  ]) assert.equal(textoValido(t, 240, NOMBRES), false, t)
+  assert.equal(textoValido('El asado queda a menos de 35 minutos para todos, según un estimado.', 240, NOMBRES), true)
+})
+
+// ---- Opus con respaldo en Haiku (decisión de Nico, 23 oct) ----
+
+test('pedido del respaldo: mismo pedido con el modelo de respaldo', () => {
+  const gw = elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'k' }))!
+  const pedido = armarPedido(gw, 'json', CANDIDATAS, 'S', ENTRADA, gw.respaldo) as Record<string, any>
+  assert.equal(pedido.model, 'anthropic/claude-haiku-5.5')
+  assert.deepEqual(pedido.output_config.format.schema.properties.eleccion_id.enum, ['lugar-sim-01', 'lugar-sim-02'])
+})
+
+test('pedido en modo herramienta: sin thinking (no se combina con la herramienta forzada)', () => {
+  const gw = elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'k' }))!
+  const pedido = armarPedido(gw, 'herramienta', CANDIDATAS, 'S', ENTRADA, gw.respaldo) as Record<string, any>
+  assert.equal(pedido.thinking, undefined)
+  assert.equal(pedido.output_config, undefined)
+})
+
+test('AGENTE_MODELO_RESPALDO pisa el respaldo si tiene el formato del proveedor', () => {
+  assert.equal(elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'k', AGENTE_MODELO_RESPALDO: 'anthropic/claude-sonnet-5.5' }))?.respaldo, 'anthropic/claude-sonnet-5.5')
+  assert.equal(elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'k', AGENTE_MODELO_RESPALDO: 'claude-sonnet-5-5' }))?.respaldo, RESPALDO_GATEWAY)
+  assert.equal(elegirProveedor(entorno({ ANTHROPIC_API_KEY: 'k', AGENTE_MODELO_RESPALDO: 'anthropic/x' }))?.respaldo, RESPALDO_DIRECTO)
+})
+
+test('familiaModelo: lo que la pantalla nombra', () => {
+  assert.equal(familiaModelo('anthropic/claude-opus-5.5'), 'opus')
+  assert.equal(familiaModelo('claude-haiku-5-5'), 'haiku')
+  assert.equal(familiaModelo('anthropic/claude-sonnet-5.5'), 'sonnet')
+  assert.equal(familiaModelo('otro/modelo'), 'otro')
 })

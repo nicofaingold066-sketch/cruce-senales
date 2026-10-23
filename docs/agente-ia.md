@@ -5,9 +5,15 @@ Dueño: agente-ia. Estado al viernes 23 oct 2026, 16:55: **construido, integrado
 **En una frase:** el agente lee los gustos de todo el grupo, mira el clima y propone hasta 3 planes que le sirven a todos. Propone, pero no decide por nadie y nunca ve lo que puso cada uno.
 
 ## 1. Cómo funciona
-1. **Cada integrante carga sus preferencias, en privado,** con opciones cerradas: presupuesto, energía, ambiente, si prefiere techo y qué le gustaría (asado, pádel, fútbol, parque, fiesta). No hay texto libre ni datos de salud o de dinero. Una casilla, marcada por defecto, dice "Que el agente use mis preferencias": si la desmarca, el agente no las usa y nadie puede distinguirla de alguien que no guardó (enmienda 8, mejora #72).
+1. **Cada integrante carga sus preferencias, en privado,** con opciones cerradas: presupuesto, energía, ambiente, si prefiere techo y qué le gustaría (asado, pádel, fútbol, parque, fiesta). No hay texto libre ni datos de salud o de dinero. Una casilla, marcada por defecto, dice "Que el agente use mis preferencias": si la desmarca, el agente no las usa y nadie puede distinguirla de alguien que no guardó (enmienda 8, mejora #72). Desde la enmienda 10 (#87) hay cuatro preguntas más, todas opcionales: su zona (una de 8 comunas de Santiago, nunca la dirección), cómo se mueve (auto con lugar para llevar gente, auto sin lugar, transporte público, bici o a pie, necesito que me lleven), hasta cuánto viaja (15, 30, 45 o 60 o más minutos) y el momento del día (mañana, tarde, noche o da igual). "Prefiero no responder" no aporta esa variable.
 2. **El organizador toca "Que el agente proponga"** y elige el fin de semana.
-3. **El servidor (Postgres) elige con reglas fijas.** Lee las preferencias de todos y descarta lo que no le sirve a alguien: precio por encima del presupuesto más bajo, o aire libre si llueve y alguien pidió techo. Después ordena por gustos, ritmo, ambiente y clima. Devuelve hasta 3 **candidatas** y un **perfil del grupo** hecho solo de totales.
+3. **El servidor (Postgres) elige con reglas fijas.** Lee las preferencias de todos y descarta lo que no le sirve a alguien: precio por encima del presupuesto más bajo, o aire libre si llueve y alguien pidió techo. Después ordena por gustos, ritmo, ambiente y clima. Desde la enmienda 10 también mira el viaje:
+   - Descarta el lugar si a alguien le queda más lejos que su tiempo máximo.
+   - Si alguien necesita que lo lleven, cuenta en auto solo si las personas con auto con lugar alcanzan para llevarlo.
+   - Prefiere el plan cuyo viaje más largo es el más corto.
+   - Suma puntos si el horario coincide con el momento del día que eligieron.
+   
+   Devuelve hasta 3 **candidatas** (cada una con el viaje máximo estimado del grupo, solo con 4 personas o más con zona) y un **perfil del grupo** hecho solo de totales.
 4. **La IA coordina** (si hay clave). Con un carácter comprensivo, empático, amable, ejecutivo y de buen coordinador, elige una de las candidatas y escribe el porqué y un mensaje para invitar al grupo. Nunca recibe datos de una persona.
 5. **El organizador decide.** Ve todas las candidatas con la recomendada destacada, puede editar el título y elige con "Usar esta opción". Eso solo precarga "Nueva propuesta". Desde ahí sigue el recorrido de siempre: condiciones, confirmación, baja y reparación. El agente **no crea, no invita y no confirma nada.**
 
@@ -15,16 +21,17 @@ Dueño: agente-ia. Estado al viernes 23 oct 2026, 16:55: **construido, integrado
 | Quién | Ve | No ve nunca |
 |---|---|---|
 | Cada integrante | Sus propias preferencias | Las de los demás |
-| Organizador | Candidatas, clima y perfil del grupo solo con totales ("Asado 4 de 5"), y nunca el presupuesto | Lo que eligió cada uno |
+| Organizador | Candidatas, clima y perfil del grupo solo con totales ("Asado 4 de 5"), y nunca el presupuesto. Con la enmienda 10, una sola cifra de viaje: "Queda a menos de 35 minutos para todos (estimado)" | Lo que eligió cada uno; la zona, cómo se mueve o el tiempo de viaje de cada uno; quién necesita que lo lleven |
 | Servidor (Postgres) | Todas las preferencias, para descartar y ordenar | — |
-| Modelo de IA | Las candidatas sin nombres de integrantes, el clima y los totales del grupo | Nombres, ids y preferencias individuales |
+| Modelo de IA | Las candidatas sin nombres de integrantes, el clima, los totales del grupo y, por opción, solo el viaje máximo en minutos | Nombres, ids, preferencias individuales, zonas y cómo se mueve cada uno |
 
 Para que no se pueda adivinar quién eligió qué:
 - con 3 personas o menos, el perfil del grupo trae solo la cantidad de personas;
 - una actividad que eligió una sola persona no se muestra ni se le manda al modelo;
 - "es lo que más eligieron" solo se dice con 4 personas o más y si la actividad la eligieron 2 o más;
 - el presupuesto del grupo no sale de la función ni de la pantalla, y tampoco se le manda al modelo. La base deja de mandarlo con la enmienda 7 (E7.4); hasta entonces, la función y la pantalla lo descartan;
-- el modelo no puede escribir palabras sobre presupuesto ("gratis", "barato", "económico").
+- el modelo no puede escribir palabras sobre presupuesto ("gratis", "barato", "económico");
+- enmienda 10: el viaje solo sale como el máximo del grupo, y con 4 personas o más; si todo queda descartado por viaje, el aviso dice "Ningún plan del catálogo queda dentro del tiempo de viaje de todos" sin decir para quién; el modelo no puede escribir dónde vive nadie ni cómo se mueve ("vive", "sin auto", "que lo lleven", "comuna de").
 
 Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y `docs/contrato-enmienda-7.md`.
 
@@ -160,6 +167,14 @@ Después, la sesión de integración corrió dos llamadas desde una sola sesión
 **Producción con el rediseño de Juan, viernes 23 oct, de 17:22:55 a 17:23:01 (hora del reloj).** `main` `30e4c76` publicado, Chrome sin ventana a 375 × 812, demo propio nuevo, una sola llamada al modelo: 12 de 12. El panel se monta al abrir "Agente del círculo", la casilla "Que el agente use mis preferencias" (#72) aparece marcada, "Simular sol" y "Que el agente proponga" responden en 3495 ms con fuente `modelo`, y la IA escribió: "El asado es lo que más eligieron (3 de 4) y encaja con un ritmo algo tranquilo. Además, el quincho es bajo techo, así que sirve aunque cambie el tiempo." "Usar esta opción" precarga "Nueva propuesta". Sin desborde ni errores de consola.
 
 **Posibles canchas en producción, viernes 23 oct, de 19:05:47 a 19:06:01 (hora del reloj).** `main` publicado con los botones (el paquete del panel trae "Posibles canchas reales"), demo propio, una sola llamada al modelo, 375 × 812. Con el asado elegido no aparece el bloque; con el fútbol aparecen los tres enlaces (Google Maps, EasyCancha, ATC), de 44 px o más, que se abren aparte y no llevan datos del grupo; ATC abre "Fútbol 5 · 31/10 · 11:00 hs · 13 clubes encontrados en Mendoza". 13 de 14: la que falló fue "sin errores en la consola", por `ERR_NETWORK_CHANGED` (la red de la computadora de la prueba cambió en medio) y la precarga de "Nueva propuesta" que no pudo bajar; el archivo existe en el servidor (200).
+
+### 8.4 Enmienda 10 en el panel contra la base migrada (mejora #87)
+**Viernes 23 oct 2026, de 19:40:09 a 19:40:28 (hora del reloj).** Base con 0035 a 0037 aplicadas (backend: "MIGRACION TERMINADA", 19:39). Servidor local de `wip/agente-ia` (`27bc499`) contra la base real, 375 × 812, demo propio. Función publicada: v8 (todavía sin los cambios de la enmienda 10 en la función). Una llamada al modelo; la segunda propuesta salió sin plan y no llamó al modelo.
+- Las cuatro preguntas aparecen con el texto de privacidad. Guardar con Ñuñoa, transporte público, 60 min o más y tarde da `ok` y `tiempo_max: "60"` (texto). "Prefiero no responder" en el momento saca la clave. Al recargar se ven las respuestas.
+- "Simular sol" y "Que el agente proponga": 7340 ms, fuente `modelo`. Cada candidata trae `viaje: { max_minutos: 25, estimado: true }`, sin otras claves. La pantalla dice **"Queda a menos de 25 minutos para todos (estimado)."**, también al elegir otra opción. Ninguna respuesta trae zonas, modos ni movilidad, y el texto de la IA no habla de dónde vive nadie ni de autos.
+- Con Puente Alto, bici o a pie y hasta 15 minutos: `{ tipo: "sin_plan_compatible", motivo: "sin_lugar_cerca_para_todos" }`, y la pantalla dice "Ningún plan del catálogo queda dentro del tiempo de viaje de todos. Por privacidad no se dice para quién."
+- Sin desborde ni errores. Resultado del guion: 13 de 14. La que falló fue del guion, no de la app: comparaba con el `viaje` de arriba de la respuesta, que la v8 de la función no manda (lo agrega la función nueva). La pantalla usó el de la candidata elegida, como se diseñó.
+- Falta: redesplegar la función con los cambios de la enmienda 10 (el modelo recibe `viaje_max_minutos` y la respuesta trae `viaje` arriba).
 
 ## Historia
 Idea de Nico. Diseño de privacidad del coordinador: el servidor elige y la IA solo ve totales. Enmienda 4 (preferencias, catálogo y elección por reglas), 4.1 (candidatas, perfil del grupo y la IA como coordinadora, pedido de Nico) y 5 (preferencias simuladas). Mejoras #11, #23, #25, #26, #28, #32 y #35. #64: el modelo pasa por el Vercel AI Gateway (pedido de Nico), con un tope de tokens y un límite de llamadas por persona (pedido del coordinador por costo).

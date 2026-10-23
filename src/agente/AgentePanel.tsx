@@ -24,9 +24,14 @@ import {
   type PerfilGrupo,
   type Energia,
   type LugarPref,
+  type MomentoDia,
+  type Movilidad,
   type Preferencias,
   type Presupuesto,
   type ResultadoAgente,
+  type TiempoMax,
+  viajeDeOpcion,
+  type Zona,
 } from './api'
 import { enlacesCanchas } from './canchas'
 
@@ -51,6 +56,44 @@ const LUGAR: { v: LugarPref; texto: string }[] = [
   { v: 'da_igual', texto: 'Da igual' },
   { v: 'bajo_techo', texto: 'Prefiero bajo techo' },
 ]
+
+// Enmienda 10: cuatro preguntas opcionales para elegir un lugar a mano. "Prefiero no responder" no aporta la variable.
+type SinRespuesta = ''
+const NO_RESPONDER = { v: '' as SinRespuesta, texto: 'Prefiero no responder' }
+const ZONA: { v: Zona | SinRespuesta; texto: string }[] = [
+  { v: 'providencia', texto: 'Providencia' },
+  { v: 'nunoa', texto: 'Ñuñoa' },
+  { v: 'las_condes', texto: 'Las Condes' },
+  { v: 'santiago_centro', texto: 'Santiago Centro' },
+  { v: 'maipu', texto: 'Maipú' },
+  { v: 'la_florida', texto: 'La Florida' },
+  { v: 'puente_alto', texto: 'Puente Alto' },
+  { v: 'vitacura', texto: 'Vitacura' },
+  NO_RESPONDER,
+]
+const MOVILIDAD: { v: Movilidad | SinRespuesta; texto: string }[] = [
+  { v: 'auto_con_lugar', texto: 'Tengo auto y puedo llevar gente' },
+  { v: 'auto_sin_lugar', texto: 'Tengo auto, sin lugar para llevar' },
+  { v: 'transporte_publico', texto: 'Transporte público' },
+  { v: 'bici_o_pie', texto: 'Bici o a pie' },
+  { v: 'me_llevan', texto: 'Necesito que me lleven' },
+  NO_RESPONDER,
+]
+const TIEMPO: { v: TiempoMax | SinRespuesta; texto: string }[] = [
+  { v: '15', texto: 'Hasta 15 min' },
+  { v: '30', texto: 'Hasta 30 min' },
+  { v: '45', texto: 'Hasta 45 min' },
+  { v: '60', texto: '60 min o más' },
+  NO_RESPONDER,
+]
+const MOMENTO: { v: MomentoDia | SinRespuesta; texto: string }[] = [
+  { v: 'manana', texto: 'Mañana (antes de las 13)' },
+  { v: 'tarde', texto: 'Tarde (13 a 19)' },
+  { v: 'noche', texto: 'Noche (después de las 19)' },
+  { v: 'da_igual', texto: 'Da igual' },
+  NO_RESPONDER,
+]
+type Opcional = 'zona' | 'movilidad' | 'tiempo_max' | 'momento'
 
 const VACIAS: Preferencias = {
   presupuesto: 'da_igual',
@@ -80,9 +123,9 @@ function Opciones<T extends string>({
       <legend>{titulo}</legend>
       <div className="opciones">
         {opciones.map((o) => {
-          const id = `${nombre}-${o.v}`
+          const id = `${nombre}-${o.v || 'sin-respuesta'}`
           return (
-            <label key={o.v} htmlFor={id} className={`opcion-radio ${valor === o.v ? 'opcion-activa' : ''}`}>
+            <label key={o.v || 'sin-respuesta'} htmlFor={id} className={`opcion-radio ${valor === o.v ? 'opcion-activa' : ''}`}>
               <input id={id} type="radio" name={nombre} checked={valor === o.v} onChange={() => onCambio(o.v)} />
               {o.texto}
             </label>
@@ -129,6 +172,16 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
     setBorrador((b) => ({ ...b, [k]: v }))
     setAviso(null)
   }
+  // Enmienda 10: "Prefiero no responder" saca la clave (no se manda; el servidor no usa esa variable).
+  const ponerOpcional = (k: Opcional, v: string) => {
+    setBorrador((b) => {
+      const n = { ...b } as Record<string, unknown>
+      if (v === '') delete n[k]
+      else n[k] = v
+      return n as unknown as Preferencias
+    })
+    setAviso(null)
+  }
   const alternar = (clave: string) =>
     poner(
       'me_gustaria',
@@ -170,6 +223,14 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
         </div>
         {sinActividades ? <small>Marcá al menos una.</small> : null}
       </fieldset>
+      <div className="bloque agente-viaje">
+        <h3 className="agente-subtitulo">Para elegir un lugar a mano (opcional)</h3>
+        <p className="suave">Solo lo usa el servidor para elegir un lugar que te quede a mano. Nadie del grupo ve tu zona ni cómo te movés.</p>
+        <Opciones nombre="pref-zona" titulo="Tu zona" opciones={ZONA} valor={borrador.zona ?? ''} onCambio={(v) => ponerOpcional('zona', v)} deshabilitado={soloLectura || ocupado} />
+        <Opciones nombre="pref-movilidad" titulo="Cómo te movés" opciones={MOVILIDAD} valor={borrador.movilidad ?? ''} onCambio={(v) => ponerOpcional('movilidad', v)} deshabilitado={soloLectura || ocupado} />
+        <Opciones nombre="pref-tiempo" titulo="Hasta cuánto viajás" opciones={TIEMPO} valor={borrador.tiempo_max ?? ''} onCambio={(v) => ponerOpcional('tiempo_max', v)} deshabilitado={soloLectura || ocupado} />
+        <Opciones nombre="pref-momento" titulo="Momento del día" opciones={MOMENTO} valor={borrador.momento ?? ''} onCambio={(v) => ponerOpcional('momento', v)} deshabilitado={soloLectura || ocupado} />
+      </div>
       <label htmlFor="pref-usar" className="agente-casilla">
         <input
           id="pref-usar"
@@ -286,7 +347,11 @@ function BorradorTarjeta({
     : textoFijo(elegida.frases_grupo, false, b.clima.fuente === 'simulacion', b.perfil_grupo, elegida.actividad_etiqueta)
   const mensaje = esLaDestacada ? b.mensaje_al_grupo : mensajeFijo(elegida)
   const deModelo = esLaDestacada && b.explicacion_fuente === 'modelo'
+  // Qué modelo escribió (Opus, o Haiku si Opus no respondió a tiempo).
+  const quien = b.modelo_usado === 'opus' ? 'Claude Opus' : b.modelo_usado === 'haiku' ? 'Claude Haiku, de respaldo' : b.modelo_usado === 'sonnet' ? 'Claude Sonnet' : null
   const canchas = enlacesCanchas(elegida.actividad, elegida.franjas[0])
+  // Enmienda 10: el viaje de la opción que está mirando el organizador (null con menos de 4 personas con zona).
+  const viaje = viajeDeOpcion(elegida, b)
 
   function usar() {
     guardarBorradorAgente(espacioId, { titulo: titulo.trim(), franjas: elegida.franjas })
@@ -336,6 +401,11 @@ function BorradorTarjeta({
           </li>
         ))}
       </ul>
+      {viaje ? (
+        <p className="agente-viaje-linea">
+          <strong>Queda a menos de {viaje.max_minutos} minutos para todos{viaje.estimado ? ' (estimado)' : ''}.</strong>
+        </p>
+      ) : null}
       {canchas.length > 0 ? (
         <div className="bloque agente-canchas">
           <p>
@@ -384,7 +454,7 @@ function BorradorTarjeta({
       </div>
       <p className="suave">
         {deModelo
-          ? 'Lo redactó la IA, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.'
+          ? `Lo redactó la IA${quien ? ` (${quien})` : ''}, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.`
           : 'Texto fijo. Las opciones las armó el servidor con reglas fijas a partir de las preferencias de todos.'}
       </p>
       <p className="suave">El mínimo, el máximo, la persona imprescindible y el cierre los completás vos en el paso siguiente.</p>
@@ -490,10 +560,22 @@ function ProponerPlan({
   const climaPedido = demo && clima !== 'real' ? clima : undefined
 
   const refError = useFocoEnError(error)
+  // Con Opus la respuesta puede tardar: pasados 8 s se avisa que sigue trabajando, para que no parezca trabado.
+  const [largo, setLargo] = useState(false)
+  useEffect(() => {
+    if (!ocupado) {
+      setLargo(false)
+      return
+    }
+    const t = setTimeout(() => setLargo(true), 8000)
+    return () => clearTimeout(t)
+  }, [ocupado])
 
   // Región que siempre existe y anuncia los cambios (mejora #35). Los errores graves ya se anuncian solos (role="alert").
   const anuncio = ocupado
-    ? 'El agente está buscando opciones para el grupo.'
+    ? largo
+      ? 'El agente sigue pensando: puede tardar hasta medio minuto.'
+      : 'El agente está buscando opciones para el grupo.'
     : error?.codigo === 'entrada_incompleta' && error.detalle === 'pocas_preferencias'
       ? 'Faltan preferencias: el agente necesita las de al menos 2 personas.'
       : resultado?.tipo === 'borrador'
@@ -539,7 +621,11 @@ function ProponerPlan({
       <Boton onClick={() => void proponer()} ocupado={ocupado} ocupadoTexto="El agente está pensando…" disabled={soloLectura || !sabado}>
         Que el agente proponga
       </Boton>
-      {ocupado ? <Cargando texto="El agente está leyendo las preferencias del grupo y el clima…" /> : null}
+      {ocupado ? (
+        <Cargando
+          texto={largo ? 'El agente sigue pensando: puede tardar hasta medio minuto…' : 'El agente está leyendo las preferencias del grupo y el clima…'}
+        />
+      ) : null}
       <div ref={refError}>
         {error ? <ErrorAgente error={error} espacioId={espacioId} onReintentar={() => void proponer()} /> : null}
       </div>
@@ -548,7 +634,9 @@ function ProponerPlan({
       </p>
       {resultado?.tipo === 'sin_plan_compatible' ? (
         <Aviso tono="aviso" titulo="Sin plan compatible" accion={<PropuestaAMano espacioId={espacioId} />}>
-          Con las preferencias cargadas no hay un plan del catálogo que le sirva a todos. Por privacidad no se muestran los motivos.
+          {resultado.motivo === 'sin_lugar_cerca_para_todos'
+            ? 'Ningún plan del catálogo queda dentro del tiempo de viaje de todos. Por privacidad no se dice para quién.'
+            : 'Con las preferencias cargadas no hay un plan del catálogo que le sirva a todos. Por privacidad no se muestran los motivos.'}
         </Aviso>
       ) : null}
       {resultado?.tipo === 'borrador' ? <BorradorTarjeta espacioId={espacioId} b={resultado} soloLectura={soloLectura} invitacion={invitacion} /> : null}
