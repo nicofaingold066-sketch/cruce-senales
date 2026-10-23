@@ -77,10 +77,12 @@ function usePropuestaPorResponder(espacioId: string) {
    */
   const salir = useCallback(
     (x: PropuestaResumen | null) => {
-      const partes = [avisoRef.current, x ? `«${x.titulo}»: ${x.siguiente_accion.texto}` : null].filter(Boolean)
+      // En el plan, "Te toca confirmar…" ya está arriba: el aviso no lo repite.
+      const alPlan = x?.siguiente_accion.codigo === 'te_toca_aceptar'
+      const partes = [avisoRef.current, x && !alPlan ? `«${x.titulo}»: ${x.siguiente_accion.texto}` : null].filter(Boolean)
       if (partes.length) dejarAviso(partes.join(' '))
       avisoRef.current = null
-      window.location.replace(x?.siguiente_accion.codigo === 'te_toca_aceptar' ? rutas.propuesta(espacioId, x.id) : rutas.espacio(espacioId))
+      window.location.replace(alPlan ? rutas.propuesta(espacioId, x.id) : rutas.espacio(espacioId))
     },
     [espacioId],
   )
