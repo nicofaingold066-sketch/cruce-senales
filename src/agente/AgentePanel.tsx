@@ -3,7 +3,7 @@
 // 2) "Que el agente proponga": solo el organizador. Muestra el borrador que eligió el servidor y,
 //    si quiere, lo lleva a la pantalla de nueva propuesta. El agente nunca crea ni confirma nada.
 // Para engancharla: <AgentePanel espacioId={...} esOrganizador={...} soloLectura={...} />.
-import { useCallback, useEffect, useState } from 'react'
+import { Component, useCallback, useEffect, useState, type ReactNode } from 'react'
 import { api } from '../lib/api'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto } from '../lib/format'
@@ -349,6 +349,48 @@ function BorradorTarjeta({
   )
 }
 
+/** Salida que nunca falla: crear la propuesta a mano, como siempre. */
+function PropuestaAMano({ espacioId }: { espacioId: string }) {
+  return (
+    <a className="btn btn-secundario btn-chico" href={rutas.nueva(espacioId)}>
+      Crear la propuesta a mano
+    </a>
+  )
+}
+
+/** Errores del agente con texto claro para la demo y siempre una salida (mejora #32). */
+function ErrorAgente({ error, espacioId, onReintentar }: { error: ApiError; espacioId: string; onReintentar: () => void }) {
+  if (error.codigo === 'entrada_incompleta' && error.detalle === 'pocas_preferencias') {
+    return (
+      <Aviso tono="aviso" titulo="Faltan preferencias" accion={<PropuestaAMano espacioId={espacioId} />}>
+        El agente necesita las preferencias de al menos 2 personas. Pedile al grupo que las cargue, o creá la propuesta a mano.
+      </Aviso>
+    )
+  }
+  if (error.codigo === 'fallo_temporal' || error.codigo === 'contrato_incompatible') {
+    const titulo = error.sinConexion ? 'Sin conexión' : error.detalle === 'tiempo_agotado' ? 'El agente tardó demasiado' : 'El agente no respondió'
+    return (
+      <Aviso
+        tono="error"
+        titulo={titulo}
+        accion={
+          <div className="fila-botones agente-compartir">
+            {error.reintentable ? (
+              <button type="button" className="btn btn-secundario btn-chico" onClick={onReintentar}>
+                Reintentar
+              </button>
+            ) : null}
+            <PropuestaAMano espacioId={espacioId} />
+          </div>
+        }
+      >
+        {error.mensaje} No se creó nada; podés reintentar o crear la propuesta a mano.
+      </Aviso>
+    )
+  }
+  return <ErrorCaja error={error} onReintentar={onReintentar} />
+}
+
 type ClimaElegido = 'real' | ClimaSimulado
 
 const CLIMA_DEMO: { v: ClimaElegido; texto: string }[] = [
@@ -432,12 +474,13 @@ function ProponerPlan({
       <Boton onClick={() => void proponer()} ocupado={ocupado} ocupadoTexto="El agente está pensando…" disabled={soloLectura || !sabado}>
         Que el agente proponga
       </Boton>
-      {error ? <ErrorCaja error={error} onReintentar={() => void proponer()} /> : null}
+      {ocupado ? <Cargando texto="El agente está leyendo las preferencias del grupo y el clima…" /> : null}
+      {error ? <ErrorAgente error={error} espacioId={espacioId} onReintentar={() => void proponer()} /> : null}
       <p className="suave" aria-live="polite">
         {anuncio}
       </p>
       {resultado?.tipo === 'sin_plan_compatible' ? (
-        <Aviso tono="aviso" titulo="Sin plan compatible">
+        <Aviso tono="aviso" titulo="Sin plan compatible" accion={<PropuestaAMano espacioId={espacioId} />}>
           Con las preferencias cargadas no hay un plan del catálogo que le sirva a todos. Por privacidad no se muestran los motivos.
         </Aviso>
       ) : null}
@@ -446,7 +489,53 @@ function ProponerPlan({
   )
 }
 
-export function AgentePanel({
+/**
+ * Barrera de errores: si algo del agente falla al dibujarse, se ve un aviso y el resto del espacio
+ * sigue funcionando (mejora #32). La demo nunca depende de este panel.
+ */
+class BarreraAgente extends Component<{ children: ReactNode }, { fallo: boolean }> {
+  state = { fallo: false }
+  static getDerivedStateFromError() {
+    return { fallo: true }
+  }
+  componentDidCatch(e: unknown) {
+    // Solo el tipo de error, nunca datos del grupo.
+    console.error('agente: el panel falló al dibujarse', e instanceof Error ? e.name : 'desconocido')
+  }
+  render() {
+    if (this.state.fallo) {
+      return (
+        <Aviso
+          tono="aviso"
+          titulo="El agente no está disponible ahora"
+          accion={
+            <button type="button" className="btn btn-secundario btn-chico" onClick={() => this.setState({ fallo: false })}>
+              Reintentar
+            </button>
+          }
+        >
+          El resto del espacio funciona igual: podés crear la propuesta a mano.
+        </Aviso>
+      )
+    }
+    return this.props.children
+  }
+}
+
+export function AgentePanel(props: {
+  espacioId: string
+  esOrganizador: boolean
+  soloLectura?: boolean
+  demo?: boolean
+}) {
+  return (
+    <BarreraAgente>
+      <PanelAgente {...props} />
+    </BarreraAgente>
+  )
+}
+
+function PanelAgente({
   espacioId,
   esOrganizador,
   soloLectura,

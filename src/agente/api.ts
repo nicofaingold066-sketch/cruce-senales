@@ -145,6 +145,21 @@ function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
   }
 }
 
+// Tiempos límite del cliente (mejora #32): la demo nunca queda esperando para siempre.
+// La función del servidor corta sola a los ~8 s; si igual tarda más, se usa el respaldo por RPC.
+const TIEMPO_FUNCION_MS = 10000
+const TIEMPO_RPC_MS = 8000
+
+function tiempoAgotado(): { ok: false; error: ApiError } {
+  return falloTemporal('tiempo_agotado', 'El servidor tardó demasiado en responder. Intenta de nuevo.')
+}
+
+function esAborto(e: unknown): boolean {
+  const nombre = (e as { name?: string } | null)?.name ?? ''
+  const mensaje = (e as { message?: string } | null)?.message ?? ''
+  return nombre === 'AbortError' || nombre === 'TimeoutError' || /abort/i.test(mensaje)
+}
+
 function incompatibleError(): { ok: false; error: ApiError } {
   return {
     ok: false,
@@ -184,16 +199,16 @@ async function rpc<T>(
     return { ok: false, error: { ...falloTemporal('sin_conexion', 'Sin conexión con el servidor. Reintenta cuando vuelva la conexión.').error, sinConexion: true } }
   }
   try {
-    const { data, error } = await supabase.rpc(fn as never, args as never)
+    const { data, error } = await supabase.rpc(fn as never, args as never).abortSignal(AbortSignal.timeout(TIEMPO_RPC_MS))
     if (error) {
       if ((error as { code?: string }).code === 'PGRST202') {
         return falloTemporal('operacion_no_publicada', 'El agente todavía no está disponible en el servidor.')
       }
-      return falloTemporal()
+      return esAborto(error) ? tiempoAgotado() : falloTemporal()
     }
     return leerSobre(data, tomar)
-  } catch {
-    return falloTemporal()
+  } catch (e) {
+    return esAborto(e) ? tiempoAgotado() : falloTemporal()
   }
 }
 
@@ -223,7 +238,7 @@ export const agenteApi = {
     try {
       const body: Record<string, unknown> = { espacio_id: espacioId, sabado }
       if (climaSimulado) body.clima_simulado = climaSimulado
-      const { data, error } = await supabase.functions.invoke('agente', { body })
+      const { data, error } = await supabase.functions.invoke('agente', { body, timeout: TIEMPO_FUNCION_MS })
       if (!error && data) {
         const r = leerSobre(data, (c) => {
           const res = c.resultado as ResultadoAgente
