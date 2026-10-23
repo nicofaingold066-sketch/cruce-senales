@@ -29,9 +29,9 @@ Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegib
 |---|---|---|---|
 | `simulate_save_preferences` | 0019 | cambiar en vivo las preferencias de los simulados del demo (variantes del jurado) | sin pantalla; lo usan las pruebas |
 | `join_space(…, p_miembro_id)` desde la portada | 0032 | que "Unirme con un código" también reclame un integrante anotado (hoy da `nombre_en_uso`) | `Inicio.tsx:384` no lo pasa; sí `QuienEres.tsx` |
-| `resultado.motivo = "sin_lugar_cerca_para_todos"` **[E10: en la base, sin pantalla]** | 0035 (backend #85) | decir "No hay lugar cerca para todos" en vez de "sin plan compatible" | agente-ia #87 |
-| `candidatas[i].viaje = {max_minutos, estimado}` **[E10: en la base, sin pantalla]** | 0035 | "Queda a menos de N minutos para todos (estimado)" | agente-ia #87 |
-| Preferencias `zona`, `movilidad`, `tiempo_max` (texto), `momento` **[E10: en la base, sin pantalla]** | 0035 | las cuatro preguntas en "Mis preferencias" | agente-ia #87; tipos en `src/lib/types.ts` por backend #93 |
+| `resultado.motivo = "sin_lugar_cerca_para_todos"` **[E10: en la base, sin pantalla]** | 0035 (backend #85) | decir "No hay lugar cerca para todos" en vez de "sin plan compatible" | agente-ia #87 (en `wip/agente-ia` `1eaf510`, sin integrar) |
+| `candidatas[i].viaje = {max_minutos, estimado}` **[E10: en la base, sin pantalla]** | 0035 | "Queda a menos de N minutos para todos (estimado)" | agente-ia #87: hecho en `wip/agente-ia` `1eaf510` (probado 19:40 contra la base), sin integrar |
+| Preferencias `zona`, `movilidad`, `tiempo_max` (texto), `momento` **[E10: en la base, sin pantalla]** | 0035 | las cuatro preguntas en "Mis preferencias" | agente-ia #87: hecho en `wip/agente-ia` `1eaf510`, sin integrar. Leído: el panel manda las ocho claves juntas en un solo formulario, así que guardar no borra las de viaje (el riesgo de "reemplazar" queda cubierto) |
 | Actividades nuevas en `me_gustaria` (cena, bar, juegos_casa, cine, cultura, juegos_salida, cerro, cafe) **[E10 parte B: en la base, sin pantalla]** | 0036 (backend #86) | chips nuevos en preferencias | agente-ia; apertura propone el catálogo (#95) |
 
 ## 3. Lo que le falta al front y habría que pedir al back
@@ -62,3 +62,4 @@ Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegib
 | 19:49 | ux-flujo `59685eb` (`wip/ux`) | `src/componentes-nuevos/AvisoParaMi.tsx` + `avisoPersonal.ts` (prueba) | sin RPC; usa `estado`, `imprescindible`, `mi_situacion` |
 | 19:28-19:41 | backend `c63200d`, `aef9c7d` (`wip/backend`) | E10 Parte A (0035-0037) y Parte B (0038, 13 actividades) aplicadas en la base; enmienda10 9/9 | §2: las filas E10 pasan a "en la base, sin pantalla". Las claves nuevas salen en `get_my_preferences.preferencias` solo si tienen valor; `save_my_preferences` reemplaza (la clave que falta queda vacía); `get_my_preferences.opciones.actividades` ya trae las 13 |
 | 19:50 | ux-flujo `c535212` | merge de `wip/fundamentos`; `recorrido-dos-sesiones.mjs` 23/23 contra el build 4183 | — |
+| 19:37-19:40 | agente-ia `d5d913e`, `1eaf510` (`wip/agente-ia`) | interfaz de E10: cuatro preguntas opcionales ("Prefiero no responder" saca la clave) y "Queda a menos de N minutos para todos (estimado)" | §2: filas E10 con pantalla en su rama, sin integrar. Textos en voseo ("Cómo te movés", "Hasta cuánto viajás") en una app en tuteo |
