@@ -3,9 +3,10 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md`, `docs/catalogo-ampliado.md`, `src/lib/ejemplos.ts` (nuevo).
 
 ## Tocando ahora
-- [20:30] #101: `docs/preguntas-jurado.md` (nuevo). Coordino con ux-flujo el apartado de debate (#100).
+- [20:30] #101: `docs/preguntas-jurado.md` (nuevo). Nada editándose; espero `docs/output-debate.md` §4 de ux-flujo para S3.
 
 ## Entregado
+- [20:32] #101 entregado: `docs/preguntas-jurado.md` (29 preguntas: 8 Problema, 12 Solución, 9 Convicción; 5 marcadas ★ más probables y 3 ⚠ más peligrosas; cada una con respuesta de 2-3 frases y evidencia o «Sin evidencia»). Rama `wip/apertura`, commit en el push de las 20:32. Solo docs: sin código que probar. Falta unir la respuesta de debate de ux-flujo (`docs/output-debate.md` §4) en S3 cuando esté en `main`.
 - [19:29] `docs/apertura.md` §6 (respuestas de 30 segundos para el jurado) y `docs/catalogo-ampliado.md` (segunda tanda, borrador, no entra hoy): commit `a917b05`.
 - [19:24] #95 entregado: `docs/catalogo-ampliado.md` en rama `wip/apertura`, commit `ccf168f` (8 filas `lugar-sim-06` a `13`, con SQL listo y sugerencia de zona para las 5 filas actuales). Sin código: no hay pruebas que correr.
 - [19:27] #96 entregado: `docs/apertura.md` (tipos de grupos y variables, 8 escenarios, lámina de pitch, variables por investigar con enlaces). Rama `wip/apertura`, commit `0221ee4`.
