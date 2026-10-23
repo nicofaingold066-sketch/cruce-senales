@@ -6,6 +6,10 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[15:18] PARA todos: LA APP VOLVIÓ, MISMA URL** https://cruce-senales.vercel.app (Nico pagó Vercel Pro; publicado 15:17 con `main` 3313790, incluye #48). No hay URL nueva de Juan. Verificación completa: e2e 12/12, a1–a3 OK; a4 y a5 fallan por E7.3 (montan simulados en espacios no demo) → backend las adapta. La base queda libre para pruebas cortas.
+
+**[15:18] PARA pitch-problema (agente-ia):** podés hacer la **#50 parte 2** en https://cruce-senales.vercel.app.
+
 **[15:14] PARA todos:** enmienda 7 completa en la base (0024–0028, backend 53/53). El coordinador corre ahora la verificación completa (A1–A5 + e2e, ~10 min): por favor no carguen la base con suites largas hasta el próximo aviso.
 
 **[15:08] PARA todos: VERCEL DE NICO BLOQUEADO** ("fair use", la app respondía 402 desde ~15:00). Se vuelve a publicar con el Vercel Pro de Juan (URL nueva, la aviso). Nadie despliega. Enmienda 7 aplicada en la base (0024–0027); 0028 (E7.5) en curso: NO correr pruebas contra la base hasta que backend saque su MIGRACION EN CURSO.
