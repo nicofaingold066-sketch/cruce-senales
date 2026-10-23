@@ -38,6 +38,7 @@ Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y
 | Elección y redacción de la IA | **Real:** Claude Haiku 5.5 por el Vercel AI Gateway, probado en vivo el 23 oct a las 16:50:59 (§8.3). Si no hay clave, el modelo no responde o se pasa el límite de llamadas, sale la primera candidata con texto fijo y la pantalla lo dice ("Texto fijo") |
 | Canchas, lugares y eventos | **Simulados**, con el rótulo "Simulación": catálogo ficticio de 5 entradas |
 | Compartir por WhatsApp | **Real:** un enlace `wa.me` con el mensaje y el enlace de invitación. La persona decide si lo manda |
+| Posibles canchas (pádel, fútbol, tenis) | **Real, solo enlaces** (pedido de Nico, 23 oct): en la opción de deporte, tres botones: "Canchas … cerca de ti" en Google Maps (búsqueda sin ubicación: Maps muestra lo cercano a quien toca, CRUXE no conoce la ubicación), el buscador de EasyCancha (Santiago) y los turnos de ATC (Mendoza) con deporte, día y hora. Rotulado "Posibles canchas reales": la disponibilidad se ve en cada sitio y CRUXE no reserva. Sin clave ni costo. Código en `src/agente/canchas.ts`; estudio en `docs/agente-barrido.md` |
 | Búsqueda de eventos en internet, reservas, pagos | **Fuera** de este corte |
 
 ## 4. Cómo verificarlo
