@@ -1,12 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: ~12:50 Santiago (backend), enmienda 4 en curso. El backend no hace commit/push; el coordinador sincroniza este archivo.
+Quien edita este archivo: solo el backend. Última actualización: ~13:20 Santiago (backend), enmienda 4 aplicada; mejora #12 en curso. El backend no hace commit/push; el coordinador sincroniza este archivo.
 
 ## Tocando ahora
-- `supabase/migrations/0014_enmienda4_esquema.sql` (nueva): cruce.preferencias, cruce.catalogo_agente con semilla, semillas de preferencias en seed/reset, A2 con preferencias, mensajes
-- `supabase/migrations/0015_enmienda4_api.sql` (nueva): save_my_preferences, get_my_preferences, proponer_plan_borrador; A5 a 29
-- `supabase/migrations/0016_enmienda4_candidatas.sql` (nueva): sección 4.1, candidatas y perfil_grupo
-- `tests/backend/**` (enmienda4.test.ts nuevo y ajuste de la lista permitida)
+- Mejora #12 (nombres con tabulador o espacio no separable): `supabase/migrations/0017_nombres_normalizados.sql` (nueva) y `tests/backend/**`
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -22,6 +19,9 @@ Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 001
 ## Enmienda 3
 0012_enmienda3 aplicada: siguiente_accion personal (te_toca_aceptar / ya_aceptaste / buscar_opcion), simulate_load_case atómico (26 públicas; verificación de catálogo actualizada). Pruebas: tests/backend/enmienda3.test.ts (4) + ajustes; suite completa 27/27 (5 archivos, 34.7 s). errores_internos 0. 0013_enmienda3_singular aplicada ("Falta 1" / "Faltan X"); suite 27/27 (32.5 s). Sin commitear: 0012, 0013 y tests.
 
+## Enmienda 4
+0014_enmienda4_esquema (tablas preferencias y catalogo_agente con semilla, semillas en seed/reset y en los demos existentes, A2 con preferencias, mensajes), 0015_enmienda4_api (save_my_preferences, get_my_preferences, proponer_plan_borrador; A5 a 29; agente_insumos no existe) y 0016_enmienda4_candidatas (4.1: candidatas y perfil_grupo) aplicadas. tests/backend/enmienda4.test.ts (9 pruebas: secciones 7.1 a 7.9 y 4.1). Suite completa 36/36 (6 archivos, 34.5 s). errores_internos 0. Sin commitear: 0014, 0015, 0016 y tests.
+
 ## Siguiente
 Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 
@@ -34,3 +34,7 @@ Ninguno.
 
 ## Entregado
 Migraciones 0008 a 0011 (ya commiteadas por el coordinador en d904a93). Tests en el working tree sin commitear.
+
+## Ideas
+- Prueba de catálogo en CI de la base: ejecutar `select cruce.verificar_privilegios()` como paso de la suite (vía una RPC de diagnóstico solo para service_role o en un script de despliegue), para que una función nueva sin grant falle antes de la demo. Dueño: backend + coordinador.
+- `simulate_save_preferences` (postergado en la enmienda 4) para las variantes del jurado: hoy las semillas de los simulados son fijas y no se pueden cambiar en vivo. Dueño: backend.
