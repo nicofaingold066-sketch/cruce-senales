@@ -34,6 +34,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 13 | ACL por defecto de `supabase_admin` y de tablas en `public`: endurecer si es posible | backend | verificada (0018); los defaults de supabase_admin no se pueden cambiar con nuestro rol |
 | 14 | Paquete > 500 KB: dividir el código para que cargue más rápido en el teléfono | claude-b-interfaz | libre |
 | 21 | `simulate_save_preferences` para variantes del jurado en vivo (enmienda 5) | backend | tomada por backend |
+| 22 | `opcion_anterior` {version, franja_clave} en el estado tras una reparación, para mostrar "Sábado → Domingo" en la comparación v1 → v2 (idea de claude-b) | backend, luego claude-b-interfaz | libre (después de #21) |
 | 15 | Sondeo liviano (`p_desde_rev`) para no bajar el estado completo cada 3 s | backend + claude-b-interfaz | libre |
 | 16 | README contra las bases (3 preguntas, componentes, participantes) | codex | verificada (b45c226): README compacto adoptado |
 | 17 | Variantes del jurado (`docs/jurado-variantes.md`) verificadas con pruebas reales | codex | verificada en API (f89ab42); falta en el navegador |
