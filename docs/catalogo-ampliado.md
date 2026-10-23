@@ -86,3 +86,24 @@ Doce actividades más, tomadas de `docs/agente-barrido.md` §2, para llegar a un
 | `bici` | Paseo en bici | gratis | no | con_todo | tranquilo | mañana |
 
 Notas: `tenis` ya está en `src/agente/canchas.ts` (enlace de canchas con ATC); `basquet` y `karting` suman actividades de aire libre, y hoy hay pocas (fútbol, parque y cerro). El límite de 6 marcas por persona sigue valiendo.
+
+## Fila propuesta por psico: asado en lugar neutro (NO aplicar hasta el OK de Nico, decisión D1)
+Pedido de psico (20:41): que «asado en casa» y «parrilla en un lugar neutro» compitan entre las candidatas. La actividad es la misma (`asado`), así que los gustos suman juntos y el chip de «Me gustaría» no cambia. Mismos atributos que `lugar-sim-01` (barato, techado, algo_tranquilo, tranquilo); lo que cambia es el lugar y la zona.
+
+| id | orden | actividad | actividad_etiqueta | lugar_nombre | zona | precio | techado | energía | ambiente | titulo_plantilla | sábado | domingo |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `lugar-sim-14` | 14 | `asado` | Asado | Parrilla del parque (Simulación) | `providencia` | barato | sí | algo_tranquilo | tranquilo | Asado en una parrilla del parque | 14:00–17:00 | 14:00–17:00 |
+
+```sql
+insert into cruce.catalogo_agente
+  (id, orden, actividad, actividad_etiqueta, lugar_nombre, zona, precio, techado, energia, ambiente, titulo_plantilla,
+   sab_inicio, sab_fin, dom_inicio, dom_fin) values
+  ('lugar-sim-14', 14, 'asado', 'Asado', 'Parrilla del parque (Simulación)', 'providencia', 'barato', true, 'algo_tranquilo', 'tranquilo',
+   'Asado en una parrilla del parque', '14:00', '17:00', '14:00', '17:00');
+```
+
+Efectos a revisar antes de aplicar (backend):
+- Dos filas con la misma `actividad` y puntaje parecido: se desempata por precio y luego por `orden`, así que el quincho (orden 1) gana al parque (orden 14) salvo que la zona o el viaje (enmienda 10) cambien el puntaje. Para que la forma neutra gane cuando el viaje a la casa es largo, basta la regla de equidad de viaje; no hace falta tocar nada más.
+- `perfil_grupo.gustos` agrupa por actividad: no cuenta dos veces el asado.
+- Las candidatas son hasta 3: con dos de asado puede quedar solo un lugar para otra actividad; es un costo real de la fila.
+- No cambia el caso canónico ni «Los del asado».
