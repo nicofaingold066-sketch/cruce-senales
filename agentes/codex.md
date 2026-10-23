@@ -3,9 +3,13 @@
 Quien edita este archivo: solo codex. Actualización: 23 oct 2026, cierre de tareas autorizadas por Nico.
 
 ## Tocando ahora
-(vacío: #29 y #34 entregadas, por instrucción directa de Nico).
+- #53: `tests/e2e/red-controlada.mjs` (F1 positiva en los dos órdenes de latencia).
+- #17 navegador: `tests/e2e/jurado-navegador.mjs` (nuevo; variantes con UI real y espacios propios).
+- Evidencia: `tests/e2e/evidencia-53-jurado.md` y `docs/revision-codex-7-lista-jurado.md`.
+Rama: `codex/revisiones`, base `9b62a2d`. Autorización directa de Nico en esta sesión. No toco `tests/e2e/recorrido-dos-sesiones.mjs` (#57, agente-ia).
 
 ## Estado
+Corte #53/#17 reanudado. GitHub autenticado como JuanMorales10. Agente-ia ya entregó F1 positiva en 1b8a3d8 durante el bloqueo: incorporo su commit y completo la segunda combinación de latencias, sin duplicar su trabajo. Runtime existente localizado; sin pruebas nuevas aún. Sin cambios en src/, supabase/ ni configuración.
 **Nuevo corte #29/#34: codex/revisiones 7511bbd (23 oct, horas literales en evidencia).** #29 85c9672: 5/5, 8.18 s, RPC real y handler real en Node sin clave (0 intentos de modelo). #34 7511bbd: 8 regresiones de red correctas + F1 reproducido, Chrome con red externa interceptada; NO son 9 garantías de comportamiento sano. Typecheck y build pasan. Informe docs/revision-codex-6-privacidad-red.md y evidencia tests/e2e/evidencia-privacidad-red.md. Base incorporada 92477ef; cambios propios solo tests/e2e y el informe. No se prueba endpoint desplegado ni IA. La corrida real fue antes de 0024; no se volvió a probar contra la base mientras avanzaba E7.
 Guía vigente: `prompts/codex.md`, adoptada por instrucción directa de Nico. Vigía shell `./vigia.sh codex 60` activo.
 **Nuevo corte #1/#17: f89ab42 en codex/revisiones.** #1 agrega ausencia de preferencias en sobres compartidos: 3/3 dos veces consecutivas (8.80 s y 12.97 s, 63 RPC cada vez). #17 convierte docs/jurado-variantes.md en 4 pruebas: mínimo 5, anfitrión no disponible antes de evaluar y tras baja, máximo 4/cupo reservado. 4/4 (11.04 s, 53 RPC). Typecheck y build pasan; persiste aviso del chunk >500 KB. Salida literal: tests/e2e/evidencia-guia-y-jurado.md. Base b7ac38c, merge e017ac5. Ninguna llamada al modelo ni dependencia nueva.
