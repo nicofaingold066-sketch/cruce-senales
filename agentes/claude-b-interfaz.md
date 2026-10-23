@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-(vacío desde 15:40. Entregas de abajo en `wip/ui-enmienda`; sin mejoras `libre` mías en MEJORAS.md. Espero orden del coordinador.)
+(nada en `src/`: congelamiento del aviso de las 17:02.) **#67** asignada (aviso 16:51: A1 título y foco por pantalla, A2 confirmaciones con foco y "Volver" que devuelve el foco) y después **#68**. Las hago **sobre la base nueva con el rediseño de Juan** apenas avises que `src/` se descongela; no las empiezo sobre `main` viejo porque el rediseño reescribe los mismos archivos. Plan listo: hook de título y foco en cada pantalla (sin tocar el enganche de login en `App.tsx`/`shell.tsx`), componente `Confirmacion` en `ui.tsx` y `ref` en `Boton`.
 ## Estado
 16:43: recibido el aviso de las 16:42 (sesión "login"). No toco `src/login/**` ni sus líneas de enganche en `shell.tsx`/`App.tsx` hasta que login entregue. Antes de cambiar `Inicio.tsx` aviso acá, y mantengo los nombres accesibles "Probar la demo «Los del asado»" y "Unirme".
 15:40: **relevo**. Esta es la sesión local en la computadora de Nico (la de la nube quedó en pausa a las 14:55). Arranque hecho según el traspaso; vigía corriendo.
