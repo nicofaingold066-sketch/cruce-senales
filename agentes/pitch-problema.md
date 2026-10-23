@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 15:30.
+Quien edita este archivo: solo esta sesión. Última actualización: 15:37.
 
 ## Tocando ahora
-(nada; libero `src/screens/SimulacionTab.tsx`)
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[15:37] Mejora #55 entregada** (`dfa3698`): recorrido completo en producción (main 7747bf6, 15:36:03–15:36:44) con dos sesiones separadas a 375 px (Playwright, contextos aislados = ventana normal y privada): 16/16. Lista sola (181 ms), Luna sin Simulación, v1 confirmado, E7.2 sin conteos para Luna, baja de Caro → En revisión, v2 con "no pasan a la versión 2" y confirmado, navegador compartido con "Entrar como otra persona" → Pepe. Sin errores. Evidencia en `docs/agente-ia.md` §8.2.
 - **[15:30] Mejora #51 entregada** (`ea7342d`, solo `src/screens/SimulacionTab.tsx`): cuando `puede.simular` es false, el texto dice el motivo real: borrador ("Abre la propuesta…"), propuesta no activa ("La propuesta está en estado «Cancelado»: el caso solo se carga mientras la propuesta está activa.") o espacio no demo ("La simulación es solo para el espacio de demostración…"). Solo explica: quien decide es `puede.simular`. Visto en el navegador (servidor local de mi rama, demo propia) en borrador y en cancelado. Typecheck y build en verde.
 - **[15:27] Mejora #47 entregada** (`c389722`, solo `src/screens/Inicio.tsx`): con `ya_era_miembro`, aviso "Este navegador ya está en este espacio como <nombre>" con "Seguir como <nombre>" y "Entrar como otra persona". Esta última pide confirmación (la sesión anónima anterior no se recupera desde ese navegador; sugiere una ventana privada), cierra la sesión local, borra `cruxe:*` de sessionStorage, abre una sesión anónima nueva y repite `join_space`. Probado en el mismo navegador (servidor local de mi rama contra la base real): Tomi crea la demo → enlace como Luna → aviso con Tomi → confirmación → entra como Luna, miembro y sin herramientas del organizador. Typecheck y build en verde. Durante la prueba la red estuvo intermitente y un primer intento dio "No pudimos confirmar el resultado"; al reenviar funcionó.
 - **[15:22] Mejora #52 entregada** (`ca98414`, solo `src/screens/Espacio.tsx`): con la generación en null, `cargarTodo` pide `get_space` y después `list_proposals`; con la generación conocida, en paralelo como antes. `node tests/e2e/red-controlada.mjs`: N1 a N8 PASS; el caso F1 (reproducción) ahora FALLA porque el defecto ya no ocurre. Con F1 en positivo (copia local, no commiteada): 10/10, con 1 `get_space` y 1 `list_proposals` y sin sondeo, también con el orden de respuesta invertido. Typecheck y build en verde. Archivo liberado.
@@ -41,9 +42,11 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-(vacío)
+- **[15:37] claude-b-interfaz (vía coordinador):** "5 de 4 confirmaron" (tarjeta del espacio) y "Confirmaron 5 de 4" (versión vigente) se leen raro cuando se supera el mínimo; sugerencia: "5 confirmaron (mínimo 4)".
+- **[15:37] coordinador:** el guion del recorrido (Playwright, dos contextos, 16 comprobaciones) está en mi carpeta temporal; si lo querés como prueba versionada en `tests/e2e/`, te lo paso.
 
 ## Entregado
+- Mejora #55 (recorrido completo en producción con dos sesiones): `wip/agente-ia` `dfa3698`.
 - Mejora #51 (texto del atajo de Simulación): `wip/agente-ia` `ea7342d`.
 - Mejora #47 (navegador compartido, `src/screens/Inicio.tsx`): `wip/agente-ia` `c389722`.
 - Mejora #52 (F1, `src/screens/Espacio.tsx`): `wip/agente-ia` `ca98414`.
