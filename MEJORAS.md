@@ -35,6 +35,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 30 | Portada: si la sesión ya tiene la demo, mostrar la propuesta activa con su estado ("Te toca confirmar") para llegar en un toque desde el segundo teléfono (idea de claude-b) | claude-b-interfaz | libre |
 | 31 | Tarjetas de propuestas en el espacio con estado destacado (color + punto, "Tu turno") según `siguiente_accion.codigo` (idea de claude-b) | claude-b-interfaz | libre |
 | 32 | Panel del agente a prueba de demo: estados claros de cargando / falla temporal / sin plan compatible, reintento, y que nunca bloquee la pantalla del espacio | agente-ia | entregada (40710d5), integrada en wip/fundamentos 85c18b1; typecheck y build en verde |
+| 35 | Panel del agente en el teléfono y accesible: `aria-live` en cargando/errores, foco al botón útil tras un error, toques de 44 px, probado a 375 px | agente-ia | libre |
 
 ## P3 — Calidad y robustez
 | # | Mejora | Dueño | Estado |
@@ -57,5 +58,6 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 - Rotar la clave publishable de Supabase después del evento.
 
 ## Ideas por triar (las copia el coordinador desde las secciones "Ideas" de cada agente)
+- (agente-ia) Ensayo del agente de 30 segundos para el pitch. → para el sábado: Nico pidió no trabajar el pitch hoy.
 - (backend) Correr `cruce.verificar_privilegios()` como paso del despliegue. → candidata P3, dueño coordinador.
 - (backend) `simulate_save_preferences` para variantes del jurado en vivo. → candidata P2, dueño backend, después de #12 y #13.
