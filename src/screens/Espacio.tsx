@@ -72,6 +72,14 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
   }, [espacioId, cargarLista])
 
   const cargarTodo = useCallback(async () => {
+    // F1 (revisión 6 de Codex): mientras no se conoce la generación, la lista se pide después de get_space.
+    // Si se pidieran juntas, la lista quedaría con generación null y se descartaría al llegar get_space primero.
+    // Con la generación fijada, se piden en paralelo como siempre.
+    if (generacion.current == null) {
+      await cargarEspacio()
+      await cargarLista()
+      return
+    }
     await Promise.all([cargarEspacio(), cargarLista()])
   }, [cargarEspacio, cargarLista])
 
