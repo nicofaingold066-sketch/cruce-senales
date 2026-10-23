@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- **Mejora #14** (dividir el paquete > 500 KB, solo con `import()` en `src/`), desde 13:51: `src/App.tsx`, `src/screens/Espacio.tsx`. Después #30, #31 (aviso 13:49) y #15.
+- **Mejora #30** (portada con la propuesta activa y "Te toca confirmar"), desde 13:53: `src/screens/Inicio.tsx`, `src/styles.css`. Después #31 (tarjetas por código) y #15 (sondeo liviano).
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
@@ -66,6 +66,7 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- **#14** paquete dividido: `6d9806c` (13:53). Inicial 528 → 460 KB (148 → 132 KB gzip), sin la advertencia; pantallas y agente en partes de 3 a 37 KB con precarga en segundo plano. Recorrido 11/11 y agente OK en vivo. (El resto del inicial es React + supabase-js; bajar más pediría tocar la config de Vite, que no es mía.)
 - **#9** historial legible para el jurado: `460c8b5` (13:51). En orden, agrupado por versión, hora del servidor, marca de color por tipo, Simulación "por Tomi", cambio de estado como etiqueta y resumen (versiones, confirmaciones en total, bajas). Verificado en vivo; recorrido 11/11.
 - **U5, U6, U7** de Codex: `a9fbe42` (13:48). U5 "Saltar al contenido" mueve el foco sin cambiar la ruta; U6 enlace de invitación mal formado → aviso "no es válido" + formulario (probado con "%", "%E0%A4%A", "ABC%20DEF"); U7 cupo reservado sin promesa ("podrás confirmar si se libera un cupo para otros"). Recorrido 11/11. **Con esto U1–U7 quedan entregados.**
 - **U4** el panel de Simulación respeta el state_rev: `7f01756` (13:45). En vivo con dos pedidos retenidos (foto vieja entregada al final): con el arreglo muestra el dato nuevo y no retrocede; con el código anterior seguía mostrando el viejo. Recorrido: 3 corridas seguidas 11/11; una corrida previa dio 9/11 (falló el paso 10, aceptar v2 desde Simulación) y no se repitió: probable intermitencia de tiempos, lo sigo mirando.
