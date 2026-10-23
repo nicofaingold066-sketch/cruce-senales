@@ -3,14 +3,14 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- `src/components/**`, `src/screens/**`, `src/lib/api.ts`, `src/lib/types.ts`, `src/styles.css`, `src/assets/**` (enmienda 3 en la UI: `siguiente_accion.codigo` con respaldo de texto y `simulate_load_case` en el atajo; logo X v2; quitar "Empresa" del formulario; enlace de invitación `#/unirse/<código>`)
+(vacío)
 
 ## Estado
-Corte "identidad + UX móvil" (aviso 12:04 y pedido de Nico) CERRADO en `wip/ui-enmienda` `68f4b71`. Nombre nuevo del producto por decisión de Nico: **CRUXE** (antes CRUCE). Recorrido en vivo contra el backend real 11/11 con la UI nueva, sin respuestas `ok:false`; typecheck y build en verde.
+Corte "enmienda 3 en la UI + logo X v2" CERRADO en `wip/ui-enmienda` `a890f11`. Recorrido EN VIVO contra el backend real 11/11, sin respuestas `ok:false`; typecheck y build en verde. **La enmienda 3 ya responde en el servidor y la UI la usa**: Luna recibe `te_toca_aceptar` ("Te toca confirmar la versión 1.") y el atajo de simulación cargó el caso con `simulate_load_case` en una sola operación.
 
 Figma (para todo el equipo):
 - User flow + estados de la propuesta (FigJam): https://www.figma.com/board/sqWhMOQEdpT80S7YhXPtCl
-- Identidad + 7 pantallas móviles reales del recorrido: https://www.figma.com/design/RgQLomDluDvf2fBSlbaGUU
+- Identidad (logo X v2) + 7 pantallas móviles reales: https://www.figma.com/design/RgQLomDluDvf2fBSlbaGUU
 
 ## Recorrido EN VIVO contra el backend real (14:3x, build de `wip/ui-enmienda` = `wip/fundamentos` 615ef0f + mi e7d868d)
 Chromium sin cabeza, dos contextos = dos sesiones anónimas (Tomi y Luna), 390 px, a través de la interfaz (clics reales, sin tocar la API a mano). Se registró toda respuesta RPC con `ok:false` o `contrato` distinto de 2: **ninguna**.
@@ -28,6 +28,10 @@ Chromium sin cabeza, dos contextos = dos sesiones anónimas (Tomi y Luna), 390 p
 Además: `NODE_USE_ENV_PROXY=1 npm run test:backend` → 10 archivos, 100 pruebas pasan.
 
 ## Hecho
+- Logo X v2 (pedido de Nico: "una X copada, inspirada en la de X con toque propio"): trazo grueso brasa (el plan) y trazo fino partido en dos personas que llegan al cruce desde lados opuestos y se encuentran en su borde. CRU✕E en el nombre; ícono `src/assets/cruxe-icono.svg`.
+- Enmienda 3 en la UI: acento personal por `siguiente_accion.codigo` (`te_toca_aceptar`, `ya_aceptaste`) con respaldo en `puede.aceptar`/`acepte_version`; atajo de simulación con `simulate_load_case` y respaldo persona por persona si la operación no estuviera publicada.
+- Enlace de invitación `#/unirse/<código>` (precarga el código, foco en el nombre) + botón "Compartir enlace" (menú nativo del teléfono o copia el enlace). Probado en vivo: Luna entra por el enlace.
+- Solo social: "Crear espacio" ya no ofrece Empresa (tipo fijo "amigos").
 - Identidad CRUXE: logo propio (dos trazos que vienen de lados opuestos y se encuentran = la X; en el nombre la X es el logo: CRU✕E), paleta brasa #B4400F / carbón #1F1A17 / papel #FAF6F1, fuente del sistema, ícono `src/assets/cruxe-icono.svg`.
 - UX móvil: portada con lema y 3 pasos; estado de la propuesta grande y con color (texto del servidor); avance en puntos (números del servidor); "Confirmar versión N" fijo abajo en teléfono (52 px); ficha plegable; sin aviso repetido de versión nueva; pestañas sin cortar.
 - Corte enmienda 2 (rama `wip/ui-enmienda`): contrato 2, `reset_demo` con intento, cupos reservados (`mi_situacion.motivo_aceptar`), errores `asiento_en_uso`/`intento_obsoleto`/`cupo_completo` con ayuda, falla antes/después de enviar.
@@ -39,7 +43,7 @@ Además: `NODE_USE_ENV_PROXY=1 npm run test:backend` → 10 archivos, 100 prueba
 - LÍMITE: todo eso con respuestas ficticias interceptadas, NO contra el servidor real. El recorrido en vivo sigue bloqueado por la red (ver Bloqueos).
 
 ## Siguiente
-(a) Enlace de invitación `#/unirse/<código>` que precarga el formulario (no necesita backend), para abrir la demo en el segundo teléfono. (b) "Te toca confirmar" cuando `puede.aceptar` sea true (dato del servidor) hasta que exista la idea 1. Pendiente decisión de Nico: quitar "Empresa" del formulario de crear espacio.
+Esperando a Nico (llega en un rato) para seguir juntos. Ideas en cola: pulir la pantalla de Simulación para la demo (es la que más se usa en vivo) y la pantalla del espacio (lista de propuestas con el estado destacado).
 
 ## Bloqueos
 Ninguno. Red a Supabase habilitada por Nico (14:2x).
@@ -58,5 +62,5 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
-Rama `wip/ui-enmienda`, último commit `68f4b71` (identidad CRUXE + UX móvil). Antes: `1624b4f`, `e7d868d`, enmienda 2.
+Rama `wip/ui-enmienda`, último commit `a890f11` (enmienda 3 + logo X v2 + invitación por enlace + solo social). Antes: `68f4b71`, `b6578ce`, `1624b4f`, `e7d868d`.
 
