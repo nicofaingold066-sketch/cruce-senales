@@ -3,9 +3,12 @@
 Guía: `prompts/login.md`. Rama: `wip/login`. Rutas: `src/login/**` + enganche mínimo en `src/lib/shell.tsx` (ruta `entrar`) y `src/App.tsx` (`case 'entrar'` y redirección de primera visita).
 
 ## Tocando ahora
-- `src/login/**` (pantalla "¿Quién eres?", sin enganchar hasta que se apruebe la enmienda)
+- `src/login/**`
+- `src/App.tsx`: la línea de `case 'unirse'` (autorizada, enmienda 9)
+- `src/lib/api.ts`: SOLO `VistaPorCodigoOk`, `previewSpaceByCode` y `p_miembro_id` opcional en `joinSpace` (autorizado)
 
 ## Estado
+- [17:01] Enmienda 9 fase 1: interfaz lista en `wip/login` = `a7ab1a9` (rebasada sobre `wip/fundamentos` 55194f2). **NO INTEGRAR TODAVÍA:** espero que backend aplique la fase 1 para correr recorrido-dos-sesiones y jurado-navegador. typecheck, build y red-controlada (10/10) en verde; banco sin base `src/login/prueba/quien.html` probado a 320 y 375 px.
 - [16:58] Corte 2 (entrada estilo Tricount): esperando decisión del coordinador sobre la enmienda. Armo la pantalla "¿Quién eres?" en `src/login` sin engancharla.
 - [16:51] Corte 1 entregado en `wip/login` (cd4d885). Espero integración del coordinador.
 - [16:46] Arranqué. Rama `wip/login` desde `origin/wip/fundamentos` (9e3fa09). Leyendo código.
