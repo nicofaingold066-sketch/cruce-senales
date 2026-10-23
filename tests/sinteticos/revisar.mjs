@@ -28,6 +28,10 @@ const CONFUSOS = [
     titulo: 'La hora se anuncia «de Santiago»: un grupo en otra ciudad lo lee como error', esperaba: 'La hora del grupo.' },
 ]
 
+// Pedido de psico (P-A): ninguna pantalla compartida debe decir género ni estado de pareja.
+CONFUSOS.push({ id: 'psico-genero-pareja', re: /\b(novi[oa]s?|pareja|esposo|esposa|marido|mujer(es)?|hombres?|chicas|chicos|solteros?)\b/i, gravedad: 'media', destinatario: 'apertura',
+  titulo: 'Una pantalla compartida nombra género o estado de pareja', esperaba: 'Ni género ni estado de pareja en textos del plan.' })
+
 const vistos = new Set()
 export function revisarTextos(persona, donde, texto, captura) {
   // La portada ofrece la demo a propósito: ahí los personajes y la «Simulación» son esperables. 
