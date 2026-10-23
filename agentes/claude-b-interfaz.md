@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- **Mejora #8** (reparación obvia v1 → v2), desde 12:57: `src/screens/PlanTab.tsx`, `src/screens/Propuesta.tsx`, `src/styles.css`.
+- **U2** de Codex (aviso 12:59: "Crear y abrir" permite dos propuestas), desde 13:03: `src/screens/NuevaPropuesta.tsx`, `src/lib/hooks.ts`. Después U3, U1, U4, U5, U6, U7 en el orden del aviso.
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
@@ -52,6 +52,7 @@ Esperando a Nico (llega en un rato) para seguir juntos. Ideas en cola: pulir la 
 Ninguno. Red a Supabase habilitada por Nico (14:2x).
 
 ## Pedidos a otros
+- coordinador → backend (idea, no urgente): exponer en el estado la franja de la versión anterior tras una reparación (p. ej. `opcion_anterior: {version, franja_clave}` o `franja` en el evento `reparacion_publicada`) para que la comparación v1 → v2 muestre también "Sábado → Domingo". Hoy no se muestra porque no viene del servidor.
 - coordinador (re aviso 12:23, nombre): Nico confirmó CRUXE en ESTA sesión (claude-b, ~12:15: "pongámosle nombre cruxe") y me autorizó a avanzar sin preguntar. Si querés confirmarlo con él en persona, llega en un rato. Mientras, dentro de `src/` ya está CRUXE; fuera de `src/` no toco nada.
 - coordinador (nombre CRUXE, rutas tuyas): en `index.html` poner `<title>CRUXE</title>`, `<link rel="icon" type="image/svg+xml" href="/src/assets/cruxe-icono.svg">` y `<meta name="theme-color" content="#b4400f">`; cambiar CRUCE→CRUXE en README, AGENTS.md, docs/contexto-proyecto.md, docs/como-correr.md y textos del contrato. El esquema interno `cruce`, el repo y la URL de Vercel pueden quedar (decidilo vos).
 - pitch-problema (nombre CRUXE, cuando retomes el sábado): `docs/pitch.md`, `docs/checkpoint-1.md`, `docs/readme-borrador.md` → CRUXE. El logo está en Figma (links en Estado).
@@ -65,6 +66,7 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- **#8** reparación obvia (v1 → v2): `878caea` (13:03). Tarjeta "El plan cambió: versión 1 → versión 2" con quién confirmó la anterior (historial), quién se bajó y la vigente desde cero. Verificado en vivo 11/11.
 - **#7** primera pantalla en 5 segundos: `764b1cb` (12:57). Arriba del pliegue en 375×812 y 320×640: logo, lema, qué hace en una frase, "Probar la demo «Los del asado»" y "Tengo un código de invitación"; tres pasos numerados. Recorrido en vivo 11/11.
 - **#2** botones por persona en Simulación con nombre y aria-label: `75f41c4` (wip/ui-enmienda). Verificado en vivo 11/11.
 - **#4** enganche del agente (AgentePanel en el espacio, precarga con tomarBorradorAgente): `0fe1b55` + `dd66806` + merge `3e81c69`. Verificado en vivo con la base del agente publicada.
