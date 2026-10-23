@@ -5449,3 +5449,104 @@ fieldset:disabled .opcion-radio {
     display: none;
   }
 }
+
+/* ------------------------------------------------------------------ tablet (iPad vertical, 600-959 px) */
+/* La hoja y la escena siguen de borde a borde, pero el contenido va en una columna central de 640 px:
+   el margen crece con la pantalla y la barra, la escena, la hoja y la acción fija se alinean solas. */
+@media (min-width: 600px) and (max-width: 959px) {
+  :root {
+    --margen: max(24px, calc((100vw - 640px) / 2));
+  }
+  .escena {
+    padding-top: 20px;
+  }
+  .hoja {
+    padding-top: 14px;
+  }
+  /* Las pestañas y los avisos globales van en la misma columna (en el teléfono sangran a los bordes) */
+  .pestanas {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .avisos-globales:not(:empty) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* La hoja llega hasta abajo: sin la costura de su sombra a mitad de pantalla cuando hay poco contenido */
+@media (max-width: 959px) {
+  .vista {
+    display: flex;
+    flex-direction: column;
+  }
+  .vista > .hoja {
+    flex: 1;
+  }
+}
+
+/* ------------------------------------------------------------------ compu (960 px o más) */
+@media (min-width: 960px) {
+  /* La portada es un "hero": marca, lema y el cruce 3D centrados en la altura de la escena, con la órbita grande */
+  .escena-portada {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 72px;
+  }
+  .escena-portada .orbita {
+    zoom: 1.35;
+    margin-top: 18px;
+  }
+  /* La hoja se centra en su columna (en pantallas anchas no queda pegada a la escena con un hueco a la derecha) */
+  .hoja {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  /* La barra de navegación flota centrada sobre la columna de la hoja, no sobre el corte escena/hoja */
+  .nav-inferior {
+    left: calc(42% + 29%);
+  }
+  .con-nav .hoja {
+    padding-bottom: 112px;
+  }
+}
+
+/* Tiras deslizables: los chips se desvanecen en los bordes en vez de cortarse en seco */
+.carrusel {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+}
+
+/* Tarjeta del plan a 320 px: "Esperando compromisos" + "Versión 2" bajan de línea en vez de ensanchar la tarjeta */
+.pv-arriba {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+li:has(> .plan-vivo) {
+  min-width: 0;
+}
+
+/* 320 px: los tres contadores de "Mis planes" en una fila y "Encuentro" entero en los pasos */
+@media (max-width: 359px) {
+  .resumen-planes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .resumen-planes > span {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 8px 10px;
+    font-size: 0.78rem;
+    line-height: 1.2;
+  }
+  .estado-hero {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .paso {
+    letter-spacing: -0.02em;
+  }
+}
