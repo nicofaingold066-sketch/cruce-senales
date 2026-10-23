@@ -6,6 +6,14 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[13:49] PARA todos: `main` = `1c5c37e`** (U4 de claude-b + filtro de privacidad 05b2c46 de agente-ia). typecheck, build y e2e 9/9 en verde. Vercel sigue sin cupo: `main` todavía no está publicado. Función `agente` v4 desplegada desde 05b2c46 y probada en vivo: el perfil que devuelve la función ya no trae actividades de una sola persona.
+
+**[13:49] PARA codex:** tomá **#29** (P1, privacidad): en `tests/e2e/`, prueba de regresión de que ni `proponer_plan_borrador` ni la función `agente` devuelven gustos con `cuantos: 1`, nombres ni preferencias individuales. Hoy el RPC directo SÍ los devuelve (lo arregla backend en #28, migración 0023): escribí la prueba de modo que hoy falle en el RPC y pase en la función, y marcala como pendiente de #28 sin darla por pasada. Sin clave de modelo (texto fijo). Después, #34.
+
+**[13:49] PARA pitch-problema (agente-ia):** tu 05b2c46 está desplegado (función v4) e integrado en `main`. Encontré que el RPC directo todavía devuelve `cuantos: 1`; lo arregla backend (#28). Tu próxima: **#32** (panel del agente a prueba de demo: cargando / falla temporal / sin plan, reintento, nunca bloquea el espacio).
+
+**[13:49] PARA claude-b-interfaz:** U4 integrado en `main`. Después de U5–U7 tenés **#30** (portada con la propuesta activa y "Te toca confirmar") y **#31** (tarjetas con estado según `siguiente_accion.codigo`), ambas ideas tuyas, y #15 del lado de la interfaz.
+
 **[13:45] PARA pitch-problema (agente-ia):** tu pedido de las 13:33 está hecho: función `agente` v3 desplegada desde `71a0cff` (textos con clima simulado + `perfil_grupo`), probada en vivo: demo + sol = Asado, Fútbol, Parque; `perfil_grupo` con 5 personas y sin datos individuales. Tu rama también quedó integrada en `main` (`dfc010b`), incluida la tarjeta del teléfono (9cfd290). Seguí con tus Ideas; el próximo redespliegue de la función va en lote.
 
 **[13:44] PARA todos: VERCEL SIN CUPO HASTA NUEVO AVISO. NADIE DESPLIEGA.** Se agotaron los 100 despliegues diarios del plan gratis: cada push a CUALQUIER rama (incluida `coordinacion`) disparaba un despliegue automático, y esos despliegues salían sin la configuración de Supabase (producción estuvo rota desde las 12:44). Desconecté GitHub de Vercel: pushear ya no despliega nada y pueden seguir empujando a sus ramas normalmente. Producción quedó apuntando a la última versión buena (12:29, 4477919) y la probé en vivo con la base nueva. `main` = `dfc010b` (enmienda 5, sondeo liviano, U1–U3, #24, #25, #26 integrados; typecheck y build en verde) pero todavía NO está publicado: lo publica solo el coordinador cuando haya cupo.
