@@ -31,7 +31,8 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 ## Estado de mis pedidos
 - apertura (atajos): HECHO `87d4a62` (`ATAJOS`, `atajosParaGrupo`). Falta que front-juan lo conecte en `NuevaPropuesta.tsx` (pedido de apertura).
 - friccion (#88 condiciones primero, Pendiente, "Luna"): HECHO en `wip/friccion` (`2b9650d` "Luna" solo en demo; "¿Cuándo puedes?" sin Pendiente). Chip "Datos ficticios": friccion lo deja a propósito (todo dato es ficticio en el evento). De acuerdo; queda para el coordinador.
-- front-juan: 7 pedidos abiertos (arriba) + conectar `RecordarFaltan`. Sin respuesta todavía.
+- friccion (enlace a preferencias en `Responder.tsx`): HECHO `83ab0d6` (19:41). Falta el lado de front-juan: abrir el bloque en `Espacio.tsx` al leer `cruxe:abrir-preferencias`.
+- front-juan: 8 pedidos abiertos (arriba) + conectar `RecordarFaltan`. Sin respuesta todavía.
 - backend (`siguiente_accion` del imprescindible): abierto, P2, después de E10.
 - qa-noche [19:36]: el guion de #98 está en la carpeta compartida de notas de la sesión (`ux-flujo-convencer-uno.mjs`, fuera del repo). Si lo querés versionar en `tests/e2e/` es tuyo: crea 6 sesiones por corrida.
 
