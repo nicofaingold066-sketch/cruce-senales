@@ -12,7 +12,11 @@ const sb = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_PUBLISHABLE_KEY
 const a = await sb.auth.signInAnonymously(); if (a.error) throw a.error
 const rpc = async (fn, args) => { const r = await sb.rpc(fn, args); if (r.error || r.data?.ok === false) throw new Error(fn + ' ' + JSON.stringify(r.error ?? r.data)); return r.data }
 const integrantes = (process.env.INTEGRANTES ?? 'Ana,Beto').split(',').filter(Boolean)
-const e = await rpc('create_space', { p_nombre: 'Prueba fricción ' + Date.now().toString(36), p_tipo: 'amigos', p_nombre_visible: 'Orga', ...(integrantes.length ? { p_integrantes: integrantes } : {}) })
+const e = process.env.DEMO === '1' ? await (async () => {
+  const d = await rpc('seed_demo_space', {})
+  const g = await rpc('get_space', { p_espacio_id: d.resultado.espacio_id })
+  return { resultado: { espacio_id: d.resultado.espacio_id, codigo_invitacion: g.espacio.codigo_invitacion, miembro_id: g.espacio.miembros.find((m) => m.es_yo).miembro_id } }
+})() : await rpc('create_space', { p_nombre: 'Prueba fricción ' + Date.now().toString(36), p_tipo: 'amigos', p_nombre_visible: 'Orga', ...(integrantes.length ? { p_integrantes: integrantes } : {}) })
 const espacioId = e.resultado.espacio_id, codigo = e.resultado.codigo_invitacion
 if (process.env.SIN_PROPUESTA !== '1') {
   const d = new Date(Date.now() + 6 * 864e5), d2 = new Date(Date.now() + 7 * 864e5), c = new Date(Date.now() + 4 * 864e5)
