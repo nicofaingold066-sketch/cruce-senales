@@ -52,3 +52,9 @@ Límites que la bola de nieve NO cruza:
 - Nada de dependencias nuevas, servicios pagos ni claves sin aprobación de Nico.
 - Verificar con modelos livianos cuando sea solo verificar (Sonnet), para cuidar tokens.
 - Sábado 11:00: se congelan las funciones. Después, solo arreglos de defectos.
+
+## Migraciones y pruebas (no chocar)
+Aplicar una migración bloquea las funciones que reemplaza: las llamadas que llegan en ese momento esperan y pueden cortarse por tiempo (`57014`). Por eso:
+1. **Backend:** antes de aplicar una migración, poné en "Tocando ahora" la línea `MIGRACION EN CURSO: 00NN` y empujá; al terminar, borrala. Nunca apliques dos migraciones a la vez.
+2. **Todos:** si ves `MIGRACION EN CURSO` en `agentes/backend.md`, no corras suites de pruebas contra la base ni pruebes en vivo hasta que desaparezca.
+3. **Demo:** desde el sábado a las 12:00 no se aplica NINGUNA migración. Tampoco durante una prueba en vivo con el jurado.
