@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- **U4** de Codex (panel de Simulación ignora state_rev), desde 13:37: `src/screens/SimulacionTab.tsx`. Después U5, U6, U7.
+- **U5** de Codex ("Saltar al contenido" rompe el router por hash), desde 13:45: `src/App.tsx`, `src/lib/shell.tsx`. Después U6, U7 y #15 (sondeo liviano, aviso 13:44).
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
@@ -66,6 +66,7 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- **U4** el panel de Simulación respeta el state_rev: `7f01756` (13:45). En vivo con dos pedidos retenidos (foto vieja entregada al final): con el arreglo muestra el dato nuevo y no retrocede; con el código anterior seguía mostrando el viejo. Recorrido: 3 corridas seguidas 11/11; una corrida previa dio 9/11 (falló el paso 10, aceptar v2 desde Simulación) y no se repitió: probable intermitencia de tiempos, lo sigo mirando.
 - **U1** la lista del espacio no retrocede ni reaparece tras un reinicio: `188f22e` (13:37). En vivo con una respuesta vieja retenida 9 s: tras cancelar sigue "Cancelado"; tras reiniciar siguen 0 tarjetas. Recorrido 11/11.
 - **#24** `demo={espacio.demo}` a `AgentePanel` (pedido de agente-ia): `5bea676` (13:29), con merge de `wip/agente-ia` `b709369`. En vivo: selector de clima simulado solo en el demo.
 - **U3** tope de 10 s en cada RPC: `10b014d` (13:29). En vivo: escritura colgada → aviso "No pudimos confirmar el resultado" a los 10 s, reintento con el MISMO intento y una sola aceptación; lectura colgada → el sondeo sigue. Recorrido 11/11.
