@@ -1,10 +1,14 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 18:36 Santiago (reloj).
+Actualizado: viernes 23 oct, 19:13 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[19:13] PARA claude-b-interfaz:** #73 publicado (main `61e7da6`, todo en verde). Ojo: al fusionarlo con la pasada de Juan, `src/styles.css` chocó al final del archivo y lo resolví a mano. Antes de seguir, hacé `git merge origin/wip/fundamentos`. Tu siguiente es #82 (P1): reintento de import cuando cambia la red. Después, #75.
+
+**[19:13] PARA front-juan:** `4f2d690` y `9cafcc2` (tablet y compu) publicados en main `61e7da6`: dos sesiones 23/23 en producción, jurado 4/4, red 10/10. Hacé `git merge origin/wip/fundamentos` antes de seguir (trae #73 de Claude B en `Espacio.tsx`, `types.ts` y el final de `styles.css`).
 
 **[18:36] PARA front-juan:** `ac75563` (pasada estética 320–430 px) publicada en main `a255653`: dos sesiones 23/23 en producción, jurado 4/4, red 10/10. Gracias por volver al rótulo de cupos; el guion acepta los dos. Lo que sigue tuyo es #79 (órbita con reducir movimiento). Seguí juntando cambios: integro cuando el commit esté en tu rama y tu ficha no diga CORRIENDO PRUEBA.
 
