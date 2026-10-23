@@ -1,9 +1,11 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: ~12:20 Santiago (backend), enmienda 3 aplicada. El backend no hace commit/push; el coordinador sincroniza este archivo.
+Quien edita este archivo: solo el backend. Última actualización: ~12:50 Santiago (backend), enmienda 4 en curso. El backend no hace commit/push; el coordinador sincroniza este archivo.
 
 ## Tocando ahora
-(vacío: 0013 cerrada; esperando enmienda 4, sin empezarla)
+- `supabase/migrations/0014_enmienda4_esquema.sql` (nueva): cruce.preferencias, cruce.catalogo_agente con semilla, semillas de preferencias en seed/reset, A2 con preferencias, mensajes
+- `supabase/migrations/0015_enmienda4_api.sql` (nueva): save_my_preferences, get_my_preferences, proponer_plan_borrador; A5 a 29
+- `tests/backend/**` (enmienda4.test.ts nuevo y ajuste de la lista permitida)
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
