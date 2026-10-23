@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 19:40.
+Quien edita este archivo: solo esta sesión. Última actualización: 19:41.
 
 ## Tocando ahora
-(nada)
+- [19:41] Agente con Opus y respaldo en Haiku (pedido del coordinador por decisión de Nico): `supabase/functions/agente/index.ts`, `logica.ts`, `logica.test.ts`, `src/agente/api.ts`, `src/agente/AgentePanel.tsx`, `docs/agente-ia.md`.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
