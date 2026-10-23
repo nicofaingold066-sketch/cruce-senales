@@ -55,7 +55,7 @@ export function CampoIntegrantes({
           maxLength={30}
           autoComplete="off"
         />
-        <small>Opcional. Solo un nombre o apodo: al abrir la invitación, cada persona elige el suyo.</small>
+        <small>Opcional. Escribe los nombres como les gusta que los llamen: al abrir la invitación, cada persona elige el suyo.</small>
       </label>
       <Boton variante="secundario" onClick={agregar} disabled={nuevo.trim() === ''}>
         Agregar
