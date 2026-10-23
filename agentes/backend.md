@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 20:02 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 20:08 Santiago (reloj).
 
 ## Tocando ahora
-- [20:02] Base libre. Preparando la migración de la enmienda 11 (agente social) SIN APLICAR: `supabase/migrations/0041_e11_agente_social.sql`, `tests/backend/enmienda11.test.ts`. 0040 queda reservada a la corrección de texto de la enmienda 12 (b) si el coordinador la aprueba.
+- [20:08] Base libre. Enmienda 11 preparada SIN APLICAR (esperando OK de Nico vía coordinador). 0040 reservada al texto de la enmienda 12 (b) (esperando OK del coordinador).
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -60,6 +60,7 @@ Ninguno.
 - coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
+- Enmienda 11, preparación (20:08): commit en `wip/backend` (ver `git log`). `supabase/migrations/0041_e11_agente_social.sql` **preparada, NO aplicada**; `tests/backend/enmienda11.test.ts` (6 pruebas: permisos, consentimiento, candidatos opacos, idempotencia de iniciar con dos uuid concurrentes, borrador inmutable/aprobación por hash/revocación/publicación atómica e idempotente/invitación personal, política autónoma y cambio de política, sin destinatarios) que se saltea sola mientras no esté aplicada. Ensayo `begin … rollback` de las tablas y del cálculo de plan y hash: correcto, sin residuos (verificado). Borrador del contrato corregido: `cruce.intentos` NO separa por operación (el mismo uuid en `aprobar` y `publicar` choca); el resto en `docs/contrato-enmienda-11-borrador.md`. Suite actual sin cambios (E11 omitida). Lo que NO cubre: modelo real, interfaz y vencimiento del lease (120 s; sin prueba automática).
 - O-06 de rincones (19:59): commit `dc26ba4` en `wip/backend`. `src/lib/api.ts`: si PostgREST rechaza un id que no es uuid (22P02, HTTP 400), el cliente responde `fuera_de_audiencia/no_miembro`, no reintentable, con el mismo mensaje que el servidor da para un id inexistente ("No perteneces a este espacio o el elemento no existe."). Antes salía como falla temporal. Sin base; typecheck y build ok. `docs/seguridad-final.md` repasado con 0039 (`f0b9138`).
 - Enmienda 12 (19:58): commit `f896112` en `wip/backend`. 0039 aplicada 19:54: `cruce.siguiente_accion_personal` con (a) organizador imprescindible sin condiciones completas → `reunir_condiciones` "Primero marca tu disponibilidad: eres quien no puede faltar." (en vez de `buscar_opcion` o del texto general; si la última evaluación fue `sin_opcion`, sigue `sin_opcion`) y (b) opción publicada y condiciones incompletas (y todavía puede guardarlas) → `reunir_condiciones` "Completa tu disponibilidad para poder entrar en la opción.". Sin códigos ni RPC nuevas. Pruebas: `tests/backend/enmienda12.test.ts` 3/3; actualicé `enmienda3.test.ts` (Tomi sin condiciones ahora recibe el aviso personal; con ellas, `buscar_opcion`). Suite **78/78** (13 archivos, 19:55:16 a 19:57:45; antes, un 57014 en `seed_demo_space` reintentado y pasado). `tests/e2e/recorrido-canonico.test.ts` no cambia: Tomi guarda sus condiciones antes de `buscar_opcion`.
 - #81 informe de seguridad (19:53): `docs/seguridad-final.md`, commit `188fa66`. Catálogo 31/0, 31 nombres, 31 SECURITY DEFINER con `search_path=''`, 0 internas expuestas, RLS deny-all en las 17 tablas, advisors explicados (solo INFO/WARN esperados), `verificar_privilegios` sin hallazgos, errores internos y la consulta para repetirlo.
