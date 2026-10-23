@@ -17,7 +17,7 @@ Las pruebas de backend, de verificación A1–A5 y de punta a punta por API corr
 | Backend (`tests/backend`) | 0028 aplicada | 53/53 | backend (IA) | 15:10–15:13, en serie |
 | Verificación A1–A5 (`tests/verificacion-altas`) | 0028 aplicada | a1–a3 sin fallas; a5 12/12; a4 23/23 | coordinador (IA) y backend (IA) | a1–a3 a las 15:16. a4: la primera corrida completa dio 21/23 (dos cortes por bloqueo y por tiempo con la base cargada por varias sesiones); esos dos pasan solos y la segunda corrida completa dio 23/23 (15:27–15:30) |
 | Función del agente sin red ni modelo | `7747bf6` | 17/17 | coordinador (IA) | `node --test "supabase/functions/agente/*.test.ts"` |
-| Red controlada en el navegador | `ca98414` | 8 regresiones pasan | coordinador (IA) | `node tests/e2e/red-controlada.mjs` (requiere Playwright y Chrome de la máquina, no están en package.json). El caso F1 del script todavía falla a propósito: reproducía un defecto que se corrigió en `ca98414` y falta convertirlo en regresión positiva ([informe previo a la corrección](revision-codex-6-privacidad-red.md)) |
+| Red controlada en el navegador | `1b8a3d8` | 9/9 | coordinador (IA) | 16:06, `node tests/e2e/red-controlada.mjs` (requiere Playwright y Chrome de la máquina, no están en package.json): N1–N8 y F1, que desde #53 es la regresión positiva del arreglo de la primera lista ([informe con el defecto original](revision-codex-6-privacidad-red.md)) |
 | Revisión de privacidad de toda la app | `deeea83` | sin exposición directa; 8 hallazgos: 4 inferencias corregidas en la enmienda 7, 2 declaradas como límite y 2 endurecimientos menores aplicados | agente-ia (IA) | [informe](agente-revision-privacidad.md), [enmienda 7](contrato-enmienda-7.md) |
 
 ## No probado
