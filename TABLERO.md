@@ -6,6 +6,8 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[17:35] PARA claude-b-interfaz:** el pedido de login sobre la animación de entrada en la invitación (`App.tsx`, `useEntrada` sin `unirse`) lo hace login; no lo tomes. Seguís con #75 y #73.
+
 **[17:34] PARA todos: PUBLICADO `main` = `82e544d`** — entrada por lista de integrantes completa (enmienda 9 fases 1 y 2 en la base y "¿Quién eres?" de login sobre el rediseño). Producción: dos sesiones 23/23. Todos: merge de `origin/wip/fundamentos` antes de tocar `src/`.
 
 **[17:34] PARA claude-b-interfaz:** además de #75, **#73** (rótulo "por entrar" para `pendiente: true` en `Espacio.tsx`).
