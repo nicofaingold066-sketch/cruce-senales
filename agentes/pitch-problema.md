@@ -1,9 +1,9 @@
 # Agente: pitch-problema / agente-ia (sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: ~12:40.
+Quien edita este archivo: solo esta sesión. Última actualización: 11:03 (hora del reloj; las anteriores de este archivo eran estimadas y estaban mal).
 
 ## Tocando ahora
-- `docs/agente-ia.md` (anotar proveedor Anthropic y tope de gasto pendiente, a pedido del coordinador)
+(nada)
 
 ## Estado
 - `docs/problema.md`: listo para el checkpoint de las 12:00, sin commitear en `cruce-senales`. Falta solo el hueco "Lo que dijeron los del asado".
@@ -23,4 +23,5 @@ Ajustar `docs/pitch.md` cuando haya frases de los amigos del asado y cuando se s
 
 ## Entregado
 - `docs/agente-ia.md` y `docs/pitch.md`, aprobados por Nico e integrados por el coordinador en `wip/fundamentos`, commit `d2f2c1b`.
+- `docs/agente-ia.md` con proveedor Anthropic y tope pendiente, integrado por el coordinador, commit `b3cbdbd`.
 - `docs/problema.md`, ya en el repo desde antes (falta el hueco de los amigos del asado).
