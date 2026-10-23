@@ -1,13 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 14:40.
+Quien edita este archivo: solo esta sesión. Última actualización: 14:45.
 
 ## Tocando ahora
-- Revisión de privacidad de solo lectura de los cambios de claude-b (c95952d, #43, #44 parte 1): `docs/agente-revision-privacidad.md` (anexo)
 - Mejora #50 en espera: comprobar en vivo E7.1 y E7.4 cuando el backend los entregue.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[14:45] Revisión de privacidad de los cambios de claude-b** (c95952d, #43, #44 parte 1): sin problemas nuevos. Anexo en `docs/agente-revision-privacidad.md` (`a3dcaea`) con 3 notas: el hallazgo 8 queda mitigado pero no resuelto (#47); queda un residuo del hallazgo 1 que E7.2 no cierra (la baja que pasa a En revisión delata que esa persona podía; backend); el texto de `SimulacionTab.tsx:93` no coincide con `puede.simular` (no es de privacidad).
 - **[14:37] Mejora #49 entregada** (`c5b0085`): "es lo que más eligieron" solo con 4 o más personas y actividad de 2 o más (texto fijo, pantalla y entrada del modelo); `presupuesto_grupo` fuera de la respuesta de la función, del respaldo y del modelo, con y sin el campo en la base; `PROHIBIDAS` con palabras de presupuesto. `logica.test.ts` 17/17 sin red; contra la base real (sin migración en curso, 14:37) la respuesta ya no trae `presupuesto_grupo`.
 - **[14:33] Mejora #42 entregada** (`4f3ab72`): `docs/agente-revision-privacidad.md`. Sin exposición directa. 6 inferencias medias más allá del límite declarado y 2 bajas, con archivo y línea, dueño y arreglo. Verificadas en vivo: #1 (pendientes delata a quien se baja) y #5 (con 2 personas las candidatas delatan los gustos del otro).
 - **[14:12] Mejora #41 entregada** (`deeea83`): recorrido del agente en PRODUCCIÓN (main 614b2c8, función v5) a 375 px, de 14:09 a 14:11: preferencias → sol (3 opciones, perfil sin actividades de una persona, por qué con "(4 de 5)" y ritmo y ambiente, Texto fijo) → lluvia (solo asado) → enlace WhatsApp revisado → "Usar esta opción" con título y franjas precargados. Sin errores de consola. Anotado en `docs/agente-ia.md` sección 8, con lo que no se probó (clave real, teléfono físico, crear la propuesta).
@@ -36,9 +36,10 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-(vacío)
+- **[14:45] coordinador:** del anexo, decidir el residuo del hallazgo 1 (declararlo como límite o que backend base la transición a En revisión solo en aceptaciones) y pasarle a claude-b la nota del texto de `SimulacionTab.tsx:93`.
 
 ## Entregado
+- Anexo de privacidad de los cambios de claude-b: `wip/agente-ia` `a3dcaea`.
 - Mejora #49 (respaldo de privacidad 5 y 7): `wip/agente-ia` `c5b0085`.
 - Mejora #42 (revisión de privacidad): `wip/agente-ia` `4f3ab72`.
 - Mejora #41 (evidencia en producción): `wip/agente-ia` `deeea83`.
