@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 19:06.
+Quien edita este archivo: solo esta sesión. Última actualización: 19:13.
 
 ## Tocando ahora
-(nada)
+- [19:13] Enmienda 10, Interfaz (aprobada por Nico 19:11): `src/agente/api.ts`, `src/agente/AgentePanel.tsx`, `src/agente/agente.css`, `supabase/functions/agente/index.ts`, `logica.ts`, `logica.test.ts` y `docs/agente-ia.md`. Pruebas contra la base solo cuando backend saque MIGRACION EN CURSO.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
