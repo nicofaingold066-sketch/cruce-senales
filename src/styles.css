@@ -3247,3 +3247,7 @@ fieldset:disabled .opcion-radio {
   grid-column: 1 / -1;
   order: -1;
 }
+.ir-confirmar {
+  margin-top: 12px;
+  width: 100%;
+}

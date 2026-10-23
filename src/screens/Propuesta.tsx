@@ -183,6 +183,11 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
             {p.siguiente_accion.texto}
           </p>
           <Pasos p={p} />
+          {turno && activa !== 'plan' ? (
+            <button type="button" className="btn btn-turno btn-chico ir-confirmar" onClick={() => setPestana('plan')}>
+              Ir a confirmar
+            </button>
+          ) : null}
         </div>
       </header>
 
