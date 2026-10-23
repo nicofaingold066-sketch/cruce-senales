@@ -53,3 +53,44 @@ export function placeholderPlan(e: Ejemplo): string {
 export function ayudaGrupo(e: Ejemplo): string {
   return `Cualquier grupo sirve, por ejemplo ${e.tipo}.`
 }
+
+// Atajos de actividad de «Nueva propuesta» (pedido de ux-flujo, 19:35): en un grupo «Los del pádel» el primer atajo no
+// puede ser «Asado». Los datos son los mismos que usa la pantalla (título, ícono, duración en minutos); los íconos son
+// nombres que ya existen en components/Icono.tsx. «Asado» no va primero: queda en el medio.
+export interface Atajo {
+  titulo: string
+  icono: 'asado' | 'futbol' | 'cena' | 'juntada' | 'cine' | 'cumple' | 'paseo'
+  min: number
+  /** Palabras (sin tildes, en minúscula) que, si aparecen en el nombre del grupo, sugieren este atajo. */
+  palabras: readonly string[]
+}
+
+export const ATAJOS: readonly Atajo[] = [
+  { titulo: 'Pádel', icono: 'futbol', min: 90, palabras: ['padel'] },
+  { titulo: 'Tenis', icono: 'futbol', min: 90, palabras: ['tenis'] },
+  { titulo: 'Cena', icono: 'cena', min: 120, palabras: ['cena', 'restaurante'] },
+  { titulo: 'Cine', icono: 'cine', min: 150, palabras: ['cine', 'pelicula'] },
+  { titulo: 'Cumple', icono: 'cumple', min: 180, palabras: ['cumple', 'cumpleanos'] },
+  { titulo: 'Asado', icono: 'asado', min: 180, palabras: ['asado', 'parrilla', 'quincho'] },
+  { titulo: 'Juegos de mesa', icono: 'juntada', min: 180, palabras: ['juegos', 'mesa'] },
+  { titulo: 'Café o brunch', icono: 'juntada', min: 120, palabras: ['cafe', 'brunch', 'once', 'lectura'] },
+  { titulo: 'Cerro', icono: 'paseo', min: 180, palabras: ['cerro', 'trekking', 'caminata'] },
+  { titulo: 'Museo o feria', icono: 'paseo', min: 120, palabras: ['museo', 'feria', 'cultura'] },
+  { titulo: 'Fútbol', icono: 'futbol', min: 60, palabras: ['futbol', 'pichanga', 'baby'] },
+  { titulo: 'Juntada', icono: 'juntada', min: 120, palabras: [] },
+]
+
+function sinTildes(t: string): string {
+  return t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+}
+
+/**
+ * Atajos en el orden que conviene mostrar para un grupo. Si el nombre del grupo nombra una actividad («Los del pádel»),
+ * ese atajo va primero; si no, el orden base. «Asado» solo va primero si el grupo lo nombra.
+ */
+export function atajosParaGrupo(nombreGrupo: string): readonly Atajo[] {
+  const nombre = sinTildes(nombreGrupo)
+  const palabras = nombre.split(/[^a-z0-9]+/).filter(Boolean)
+  const elegido = ATAJOS.find((a) => a.palabras.some((p) => palabras.includes(p)))
+  return elegido ? [elegido, ...ATAJOS.filter((a) => a !== elegido)] : ATAJOS
+}

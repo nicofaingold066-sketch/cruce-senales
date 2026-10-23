@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import {
+  ATAJOS,
   EJEMPLOS,
+  atajosParaGrupo,
   ayudaGrupo,
   ejemploPorIndice,
   ejemploPorSemilla,
@@ -48,5 +50,33 @@ describe('ejemplos que rotan (mejora #92)', () => {
     expect(placeholderGrupo(e)).toBe('Ej.: Los del pádel')
     expect(placeholderPlan(e)).toBe('Ej.: Pádel el martes a las 20:00')
     expect(ayudaGrupo(e)).toBe('Cualquier grupo sirve, por ejemplo amigos del pádel.')
+  })
+
+  it('los atajos no arrancan por asado y llevan pádel y tenis', () => {
+    expect(ATAJOS[0].titulo).not.toBe('Asado')
+    const titulos = ATAJOS.map((a) => a.titulo)
+    expect(new Set(titulos).size).toBe(titulos.length)
+    expect(titulos).toContain('Pádel')
+    expect(titulos).toContain('Tenis')
+    expect(titulos).toContain('Asado')
+    expect(atajosParaGrupo('').map((a) => a.titulo)).toEqual(titulos)
+  })
+
+  it('el nombre del grupo sube su actividad al primer lugar, sin perder ni repetir atajos', () => {
+    const casos: [string, string][] = [
+      ['Los del pádel', 'Pádel'],
+      ['LOS DEL PADEL', 'Pádel'],
+      ['Cumpleaños de Vale', 'Cumple'],
+      ['Los del asado', 'Asado'],
+      ['Club de lectura', 'Café o brunch'],
+      ['Tenis de los domingos', 'Tenis'],
+    ]
+    for (const [grupo, primero] of casos) {
+      const r = atajosParaGrupo(grupo)
+      expect(r[0].titulo).toBe(primero)
+      expect(r.length).toBe(ATAJOS.length)
+      expect(new Set(r.map((a) => a.titulo)).size).toBe(ATAJOS.length)
+    }
+    expect(atajosParaGrupo('Amigos de siempre')[0].titulo).toBe('Pádel')
   })
 })
