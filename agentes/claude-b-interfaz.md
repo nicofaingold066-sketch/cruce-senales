@@ -3,8 +3,8 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- **#47** (navegador compartido, `ya_era_miembro` → "Entrar como otra persona"), desde 14:40: `src/screens/Inicio.tsx`, `src/lib/api.ts`, `src/lib/hooks.ts`, `src/lib/supabase.ts`, `src/App.tsx`.
-- **#44** parte 2 (arreglos visuales a 320/375 px), en espera tras #47: `src/styles.css`. Parte 1 entregada: `23331e2`.
+- **#48** (interfaz de la enmienda 7: conteos null para no organizadores, Simulación solo en demo), desde 14:45: `src/lib/types.ts`, `src/screens/PlanTab.tsx`, `src/screens/Propuesta.tsx`, `src/screens/SimulacionTab.tsx`, `src/screens/Espacio.tsx`, `src/screens/Inicio.tsx`.
+- Después **#47** (navegador compartido): `src/screens/Inicio.tsx`, `src/lib/sesiones.ts` (nuevo). Y **#44** parte 2 (visual 320/375 px): `src/styles.css`.
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
