@@ -113,8 +113,6 @@ export interface Puede {
   guardar_condiciones: boolean
   evaluar: boolean
   aceptar: boolean
-  /** Enmienda 2 (A1): si `aceptar` es false, el servidor puede explicar por qué (p. ej. "cupo_reservado"). */
-  motivo?: string | null
   retirarme: boolean
   proponer_reparacion: boolean
   cancelar: boolean
@@ -133,6 +131,8 @@ export interface MiSituacion {
   retirado: boolean
   elegible_en_version: boolean | null
   acepte_version: boolean
+  /** Enmienda 2 (A1): por qué `puede.aceptar` es false; "cupo_reservado" si el último cupo es del imprescindible. */
+  motivo_aceptar?: string | null
   puede: Puede
 }
 
