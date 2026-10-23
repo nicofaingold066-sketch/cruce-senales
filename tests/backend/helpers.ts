@@ -88,6 +88,13 @@ export const PERMITIDAS: Record<string, () => Record<string, unknown>> = {
   simulate_withdraw: () => ({ p_propuesta_id: Z, p_miembro_id: Z }),
   get_simulation_panel: () => ({ p_propuesta_id: Z }),
   simulate_load_case: () => ({ p_propuesta_id: Z, p_intento_id: randomUUID() }), // enmienda 3
+  // enmienda 4
+  save_my_preferences: () => ({
+    p_espacio_id: Z,
+    p_preferencias: { presupuesto: 'da_igual', energia: 'con_todo', ambiente: 'da_igual', lugar: 'da_igual', me_gustaria: ['asado'] },
+  }),
+  get_my_preferences: () => ({ p_espacio_id: Z }),
+  proponer_plan_borrador: () => ({ p_espacio_id: Z, p_sabado: '2026-10-31', p_clima: { sabado: 'desconocido', domingo: 'desconocido' } }),
 }
 
 /** Lista cerrada de siguiente_accion.codigo (enmienda 3). */
