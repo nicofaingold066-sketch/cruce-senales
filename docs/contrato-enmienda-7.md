@@ -29,4 +29,5 @@ Aprobada por el coordinador el 23 oct 2026, a partir de `docs/agente-revision-pr
 - **El organizador puede usar el motor como oráculo** (hallazgo 2): eligiendo a alguien como imprescindible y repitiendo evaluaciones, puede deducir si esa persona puede en una franja. CRUXE oculta las condiciones a los demás miembros, no al motor que el organizador opera.
 - **Comparar dos pedidos del perfil** (hallazgo 6) deja ver qué cargó quien guardó entre medio. Los totales son exactos a propósito: el agente los necesita.
 - **En el espacio demo** los simulados tienen semillas conocidas: una persona real que reclama un lugar no debe cargar preferencias reales.
+- **Una baja que deja el plan En revisión** dice algo de quien se bajó: si no había confirmado y aun así el plan quedó bajo el mínimo, esa persona podía en la franja vigente (`0011`, transición de la baja). Se mantiene: pasar a En revisión cuando ya no se llega al mínimo es la regla del producto.
 - Navegador compartido (hallazgo 8): se arregla en la interfaz (#47), no en el contrato.
