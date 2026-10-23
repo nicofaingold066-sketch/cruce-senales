@@ -3,9 +3,13 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-(vacío desde 14:55: pausa por traspaso de esta sesión a una sesión local en la computadora de Nico. Lo que sigue está en "Siguiente"; el traspaso completo, con los scripts de prueba, está en la última sección: "Traspaso a la sesión local".)
-
+(vacío desde 15:40. Entregas de abajo en `wip/ui-enmienda`; sin mejoras `libre` mías en MEJORAS.md. Espero orden del coordinador.)
 ## Estado
+15:40: **relevo**. Esta es la sesión local en la computadora de Nico (la de la nube quedó en pausa a las 14:55). Arranque hecho según el traspaso; vigía corriendo.
+- **Por qué no se me vio entre 14:49 y ahora:** esta máquina no tenía credenciales de GitHub, así que mis reclamos (#47 a las 14:49, #52 a las 14:53) y mis entregas quedaron en commits locales. Mientras, el coordinador hizo #52 (`ca98414`), #47 (`c389722`) y #51 (`ea7342d`) en `wip/fundamentos`. **Descarté mis versiones de esas tres** y rearmé `wip/ui-enmienda` sobre `main` `7747bf6`.
+- **Hallazgo en #47 de `main` (`c389722`), corregido abajo (`5204837`):** `supabase.auth.signOut({ scope: 'local' })` igual hace `POST /logout?scope=local` (auth-js 2.118, `GoTrueAdminApi.signOut`) y revoca en el servidor la sesión anónima que estaba en el navegador. En la notebook de la demo, si un jurado toca "Entrar como otra persona", la sesión de Tomi (organizador) no vuelve más. El traspaso pedía no usar `signOut` justo por esto. Mi arreglo mantiene tu flujo, tu confirmación y el borrado de `sessionStorage`; solo cambia cómo se abre la sesión nueva.
+- Intermitencia observada (1 de 9 corridas del recorrido): en el paso 2 Luna entró bien pero no apareció el aviso "Reclamaste el lugar de Luna". No se reprodujo en 6 repeticiones de los pasos 1 y 2. Ver Ideas.
+- Transparencia: una auditoría de 28 pantallas (15:08–15:12) se solapó con la 0028 (15:09–15:10); al empezar, `backend.md` no tenía MIGRACION EN CURSO. Desde el aviso de las 15:14 no corrí nada hasta que se liberó la base (15:18).
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
 
 Figma (para todo el equipo):
@@ -94,6 +98,8 @@ Orden del coordinador (14:37): #48 (hecha) → **#47** → **#44 parte 2**.
 Ninguno. Red a Supabase habilitada por Nico (14:2x).
 
 ## Pedidos a otros
+- coordinador (16:14): integrar `wip/ui-enmienda` = `7b0335b` (`main` `dda21c6` + `4945241` #44 parte 2 + `5204837` arreglo de #47; la fusión con main entró sin conflictos, typecheck y build en verde, recorrido 11/11). Si preferís dejar la #47 con `signOut`, revertí solo `5204837`; `4945241` no depende de él. La #56 ("5 de 4") la hizo agente-ia (`7107902`, ya en main): descarté mi versión.
+- backend (15:40): gracias por E7.5 (0028) para `puede.simular` fuera de demo; con eso permiso e interfaz dicen lo mismo.
 - backend (E7.3, 14:50): que `mi_situacion.puede.simular` sea false fuera de los espacios demo (hoy = organizador y activa y hay simulados). La interfaz ya oculta la Simulación con `espacio.demo` (`b2adc4d`); así el permiso del servidor y la interfaz dicen lo mismo.
 - agente-ia (#44, 14:50): a 320 px, en `src/agente/agente.css`, `.agente-candidatas .opcion-radio` deja el radio solo en su línea ("Asado · Quincho de Tomi", SIMULACIÓN y "Recomendada" bajan). Propuesta: `display:grid; grid-template-columns:auto 1fr; column-gap:8px` y los `span` en la columna 2. También `.agente-panel small{display:block; line-height:1.4}`.
 - coordinador (re aviso 12:23, nombre): Nico confirmó CRUXE en ESTA sesión (claude-b, ~12:15: "pongámosle nombre cruxe") y me autorizó a avanzar sin preguntar. Si querés confirmarlo con él en persona, llega en un rato. Mientras, dentro de `src/` ya está CRUXE; fuera de `src/` no toco nada.
@@ -109,6 +115,9 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- **#47, arreglo sobre `c389722`**: `5204837` (15:40). Sin `signOut`: se guarda el `refresh_token` de la sesión actual en `localStorage` (`cruxe:sesion-guardada`, `src/lib/sesiones.ts`) y se abre otra sesión anónima; la portada ofrece "Volver a esa sesión" (`refreshSession({ refresh_token })` y recarga) y "Olvidarla" (con confirmación). Si ya hay otra guardada, no se pisa y la confirmación lo dice con botón de peligro. En vivo a 375 y 320 px: 12/12 (aviso sin entrar, la confirmación dice que se guarda, doble clic = 1 `join_space` y 1 sesión nueva, **0 llamadas a `/logout`**, vuelta a Tomi organizador). Recorrido 11/11.
+- **#44 parte 2** arreglos visuales a 320 px: `4945241` (15:40). Leyendas dentro del recuadro; opciones de respuesta una por fila y del mismo ancho; pestañas del organizador en 2 × 2 a ≤360 px; encabezado de 3 a 2 líneas; `scroll-padding-top`; barra "Confirmar" más baja; +/– en `.plegable` y `.sim-editar`; botones parejos (Copiar/Compartir en `.fila-botones`); fechas sin cortar; espacio antes de SIMULACIÓN en el historial resumido; columna del historial más ancha; borde de "tu turno" sin doble línea; "Versión N" sin quedar sola; `.btn:disabled` gris sin opacidad (`aria-disabled` igual). Pendiente de agente-ia: `agente.css` (pedido de las 14:50). Auditoría de 28 pantallas a 320 y 375 px antes y después (sin desborde) y comparación de capturas lado a lado. Recorrido 11/11.
+- (#52, #47 y #51: los hizo el coordinador en `main`; mis versiones locales se descartaron. La #51 la verifiqué igual en vivo antes de saberlo.)
 - **#48** interfaz de la enmienda 7: `b2adc4d` (14:52).
   - E7.2: `pendientes` y `personas_con_condiciones` son `number | null`; con null no aparecen "Faltan por responder" ni "Con condiciones cargadas", y queda "N de M necesarias".
   - E7.3: la pestaña Simulación y las herramientas del organizador solo aparecen en espacios demo; el texto de "Crear un espacio" ya no promete simulados.
@@ -142,6 +151,8 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
 - Antes (fuera de MEJORAS): `08a87c3` simulate_load_case con resumen, `a890f11` enmienda 3 + logo X v2 + invitación por enlace, `68f4b71`/`b6578ce` identidad y UX móvil.
 
 ## Ideas
+- Aviso de un solo uso (`dejarAviso`/`tomarAviso`) más robusto: hoy se consume en el inicializador de `useState` de la pantalla destino; si React descarta ese primer render, el aviso se pierde (posible causa de la intermitencia del paso 2). Consumirlo en un efecto. Dueño: claude-b-interfaz.
+- Portada: mientras "Buscando tus espacios…" se ven los botones de demo; en el segundo teléfono, un toque rápido crea otra demo donde Luna sería Tomi. Ocultarlos hasta que responda `list_my_spaces`. Dueño: claude-b-interfaz.
 - Sondeo liviano también para la lista del espacio y el panel de Simulación (hoy bajan todo cada 10 s y 3 s): pediría `p_desde_rev` en `list_proposals` y `get_simulation_panel`. Dueño: backend + claude-b-interfaz.
 - Para el jurado: modo "presentación" que agranda letra y botones en la pantalla de la propuesta (un toque en el encabezado). Dueño: claude-b-interfaz.
 - Navegación: el botón atrás del teléfono vuelve a la pantalla anterior pero el scroll arranca arriba; para Historial y Simulación largos podría conservarse por pantalla. Dueño: claude-b-interfaz (baja prioridad).
