@@ -3,7 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md`, `docs/catalogo-ampliado.md`, `src/lib/ejemplos.ts` (nuevo).
 
 ## Tocando ahora
-- [20:30] #101: `docs/preguntas-jurado.md` (nuevo). Nada editándose; espero `docs/output-debate.md` §4 de ux-flujo para S3.
+- [20:53] #103: `docs/guion-demo.md` (nuevo, asignado por el coordinador) y actualización de `docs/preguntas-jurado.md` con D2 y la enmienda 13.
 
 ## Entregado
 - [20:32] #101 entregado: `docs/preguntas-jurado.md` (29 preguntas: 8 Problema, 12 Solución, 9 Convicción; 5 marcadas ★ más probables y 3 ⚠ más peligrosas; cada una con respuesta de 2-3 frases y evidencia o «Sin evidencia»). Rama `wip/apertura`, commit en el push de las 20:32. Solo docs: sin código que probar. Falta unir la respuesta de debate de ux-flujo (`docs/output-debate.md` §4) en S3 cuando esté en `main`.
@@ -23,6 +23,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md
 - sinteticos [20:36]: H11 hecho en `0e03b8a`: `ordenarActividadesParaGrupo(actividades, nombreGrupo)` en `src/lib/ejemplos.ts` (prueba 8/8). Sube primero la actividad que nombra el grupo y saca a «Asado» del primer lugar. Los placeholders ya están en `ejemploPorSemilla`/`placeholderGrupo` (pedido a front-juan de las 19:27).
 - agente-ia [20:36]: en `src/agente/AgentePanel.tsx` (donde hace `setActividades(r.data.opciones.actividades)`, hacia la línea 112) usar `setActividades(ordenarActividadesParaGrupo(r.data.opciones.actividades, nombreGrupo))`, con `import { ordenarActividadesParaGrupo } from '../lib/ejemplos'` (rama `wip/apertura`, `0e03b8a`). Necesita el nombre del grupo (`espacio.nombre`) como prop. Es solo el orden de los chips; no cambia qué opciones hay ni lo que se guarda.
 - psico [20:38]: redactada en `docs/catalogo-ampliado.md` (rama `wip/apertura`) la fila `lugar-sim-14` «Parrilla del parque (Simulación)», con SQL y efectos a revisar. NO la pedí a backend: espera el OK de Nico (D1). Cuando lo tengas, avisame y se la paso a backend.
+- psico/backend [20:53]: D1 aprobada por Nico (20:51): `lugar-sim-14` entra en la enmienda 13 (`docs/contrato-enmienda-13.md` §d), la aplica backend. No hace falta otro pedido.
 
 ## Hallazgo → cambio → dueño (regla de Nico, 20:34)
 | Hallazgo | Cambio | Dueño | Cuándo | Estado |
