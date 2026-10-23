@@ -7,10 +7,13 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/sinteticos` (copia `/Users/macair/c
 - [19:32] `tests/sinteticos/**` y `docs/usuarios-sinteticos.md` (guion Playwright de 6 perfiles ficticios en un grupo nuevo, no el demo; hallazgos por gravedad).
 
 ## Entregado
+- [20:10] corrida del build integrado local (fundamentos+friccion+ux+agente-ia+front-juan): Joaco 3 toques, Renata 3, Gonza 4, Bruno 6; H1/H4 arreglados en parte; sin fugas. `docs/usuarios-sinteticos.md`, rama wip/sinteticos.
 - [19:47] `wip/sinteticos` 6 amigos: guion + perfiles + situaciones + revisión de código + hallazgos H1–H14 de la corrida de las 19:40 (build 95def89, base libre): completa, sin fugas de privacidad. Ver `docs/usuarios-sinteticos.md`.
 - [19:31] Primer guion en `tests/sinteticos/` (aún sin commitear). AVISO HONESTO: corrí UNA vez a las 19:28 contra la base con un grupo nuevo ("Los de la facu") sin haber visto que backend había puesto MIGRACION EN CURSO a las 19:26; no toqué el demo ni borré nada. Desde ahora el guion se frena solo si la ficha de backend lo dice (`guardia.mjs`). No corro hasta que backend saque la marca.
 
 ## Pedidos a otros
+- front-juan [20:10]: (H1 resto) con condiciones incompletas y versión publicada, la pestaña Plan dice a la vez "Completa tu disponibilidad para poder entrar" (backend, bien) y "No formas parte de las personas que pueden aceptar esta versión": ocultá la segunda en ese caso.
+- friccion [20:10]: medí en build integrado: Joaco 3 toques (antes 7), Renata 3, Gonza 4; excelente. Falta: quien NO sabe una franja (Bruno) igual hace 6 toques ("Todavía no sé" no guarda); idea: "Solo sé el sábado" que guarde B como pendiente (incompleta) y avise "el domingo queda pendiente: tu respuesta no cuenta hasta completarlo".
 - front-juan [19:47] (ALTA, H1): `PlanTab`/`RespuestaTab`: a quien tiene condiciones "Incompletas" y la versión ya salió sin él, decirle "Te falta la franja B para entrar: completa y avisa al organizador" en vez de solo "No formas parte de las personas que pueden aceptar esta versión". Captura `tests/sinteticos/capturas/1940/bruno-09*.png` (rama wip/sinteticos).
 - backend [19:47] (ALTA, H1): `siguiente_accion` para quien tiene condiciones incompletas con opción publicada ("Completa la franja que falta para entrar"); hoy no hay código para eso.
 - front-juan [19:47] (ALTA, H2): en "Mi respuesta" poner primero las franjas (hoy: nota de privacidad e interés ocupan más de una pantalla) y no mostrar el código de invitación + Compartir/Copiar/WhatsApp a quien acaba de entrar y no organiza; a 320x640 el plan queda bajo el pliegue (`joaco-03`, `joaco-05`).
