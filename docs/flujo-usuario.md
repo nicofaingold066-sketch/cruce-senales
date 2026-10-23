@@ -7,7 +7,7 @@ Cómo leer las marcas:
 - **[visto]**: lo recorrí en la app compilada (`vite build` + `vite preview`, 375 px, base real) el viernes 23 entre 19:24 y 19:27, con un grupo ficticio. Guion propio fuera del repo; capturas en mi carpeta temporal (no se suben).
 - **[leído]**: sale del código, no lo vi en pantalla.
 
-La enmienda 10 (zona, movilidad, tiempo de viaje, momento del día) está aprobada pero todavía no aplicada: figura en el mapa (§1) como **[E10, pendiente]**. Las referencias son `archivo:línea`; las de SQL son `0011_enmienda2_propuestas.sql` salvo que diga otra cosa. Qué RPC usa cada pantalla y qué falta de cada lado: `docs/front-back-puente.md`.
+La enmienda 10 (zona, movilidad, tiempo de viaje, momento del día) está aprobada pero todavía no aplicada: figura en el mapa (§1) como **[E10: en la base, sin pantalla]**. Las referencias son `archivo:línea`; las de SQL son `0011_enmienda2_propuestas.sql` salvo que diga otra cosa. Qué RPC usa cada pantalla y qué falta de cada lado: `docs/front-back-puente.md`.
 
 ## 1. Mapa de información: qué entra, qué decide el servidor, qué sale
 
@@ -58,7 +58,7 @@ flowchart LR
 | Confirmación de la versión | sí | sí, nombre y hora | sí | |
 | Baja | sí | sí, nombre y versión | sí | |
 | Preferencias del agente | sí | no | totales solo con más de 3 personas y 2 o más votos; presupuesto nunca | el detalle |
-| E10: zona, movilidad, tiempo máx., momento **[pendiente]** | sí | no | no (tampoco totales) | el detalle; sale solo `viaje.max_minutos` con 4 o más personas que aportaron |
+| E10: zona, movilidad, tiempo máx., momento **[en la base, sin pantalla]** | sí | no | no (tampoco totales) | el detalle; sale solo `viaje.max_minutos` con 4 o más personas que aportaron |
 | Clima | | | lo ve en el borrador del agente | |
 
 ## 2. Roles
@@ -152,7 +152,7 @@ Rutas: `shell.tsx:77-90`. Pantallas: `App.tsx:175-197`. RPC: `api.ts:269-383`.
 
 **Paso 3. Espacio** (`#/e/<id>`) **[visto]** Código con Compartir / Copiar / WhatsApp, "Propuestas" ("Todavía no hay propuestas" + "Crear propuesta"), "Personas del espacio" (pendientes "por entrar"), "Agente del círculo" plegado. `get_space` y `list_proposals` al entrar y cada 10 s. Texto de invitación: "Súmate a «X» en CRUXE para armar el próximo plan: <enlace>" (`compartir.ts:9`) **[leído]**.
 
-**Paso 3b. Agente, opcional** **[leído]** (`AgentePanel.tsx`) Preferencias de cada persona (`get_my_preferences`, `save_my_preferences`). "Que el agente proponga" (solo organizador del espacio): función `agente`, si falla `proponer_plan_borrador`. Exige 2 personas con preferencias (`pocas_preferencias`). "Usar esta opción" precarga la nueva propuesta. El agente no crea ni confirma nada. **[E10, pendiente]** cuatro preguntas más en preferencias y "Queda a menos de N minutos para todos (estimado)" en la tarjeta del borrador (agente-ia, #87).
+**Paso 3b. Agente, opcional** **[leído]** (`AgentePanel.tsx`) Preferencias de cada persona (`get_my_preferences`, `save_my_preferences`). "Que el agente proponga" (solo organizador del espacio): función `agente`, si falla `proponer_plan_borrador`. Exige 2 personas con preferencias (`pocas_preferencias`). "Usar esta opción" precarga la nueva propuesta. El agente no crea ni confirma nada. **[E10: en la base, sin pantalla]** cuatro preguntas más en preferencias y "Queda a menos de N minutos para todos (estimado)" en la tarjeta del borrador (agente-ia, #87).
 
 **Paso 4. Nueva propuesta** (`#/e/<id>/nueva`) **[visto]** Paso 1: atajos (Asado, Fútbol, Cena, Juntada, Cine, Cumple, Paseo), propósito, dos opciones de día (próximos 14) y hora, duración, mínimo, máximo, "No puede faltar" (todos los integrantes, también los pendientes), cierre. "Revisar antes de crear" → paso 2 con la ficha → "Crear y abrir al grupo" (`create_proposal` + `open_proposal`) o "Crear solo el borrador". El texto dice "Si sirven las dos, gana la A", pero el servidor ordena por fecha de inicio **[leído]**.
 
@@ -188,8 +188,8 @@ Rutas: `shell.tsx:77-90`. Pantallas: `App.tsx:175-197`. RPC: `api.ts:269-383`.
 | Baja | cada uno | `cruce.bajas` | todo el grupo | estado, reparación |
 | Preferencias del agente | cada uno | `cruce.preferencias` | solo yo (totales al organizador con más de 3 y 2 votos; presupuesto nunca) | `proponer_plan_borrador` |
 | "Que el agente use mis preferencias" | cada uno | `preferencias.usar_en_agente` | solo yo | a quién cuenta el agente |
-| **[E10, pendiente]** zona, movilidad, tiempo máximo, momento | cada uno, opcional | `cruce.preferencias` (claves nuevas) | solo yo | descartar candidatas lejanas, equidad de viaje, momento del día |
-| **[E10, pendiente]** tiempos entre zonas, zona de cada lugar | servidor (ficticios) | `cruce.tiempos_zona`, `catalogo_agente.zona` | nadie | cálculo de viaje |
+| **[E10: en la base, sin pantalla]** zona, movilidad, tiempo máximo, momento | cada uno, opcional | `cruce.preferencias` (claves nuevas) | solo yo | descartar candidatas lejanas, equidad de viaje, momento del día |
+| **[E10: en la base, sin pantalla]** tiempos entre zonas, zona de cada lugar | servidor (ficticios) | `cruce.tiempos_zona`, `catalogo_agente.zona` | nadie | cálculo de viaje |
 | Sábado y clima simulado del agente | organizador | no se guarda | — | función `agente` |
 | Borrador del agente | organizador | `sessionStorage cruxe:borrador-agente:<id>` | esa pestaña | precarga de la nueva propuesta |
 | Historial | servidor | eventos de la propuesta | todo el grupo | pestaña Historial |
