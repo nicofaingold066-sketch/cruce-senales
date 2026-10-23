@@ -31,3 +31,25 @@ Aprobada por el coordinador el 23 oct 2026, a partir de `docs/agente-revision-pr
 - **En el espacio demo** los simulados tienen semillas conocidas: una persona real que reclama un lugar no debe cargar preferencias reales.
 - **Una baja que deja el plan En revisión** dice algo de quien se bajó: si no había confirmado y aun así el plan quedó bajo el mínimo, esa persona podía en la franja vigente (`0011`, transición de la baja). Se mantiene: pasar a En revisión cuando ya no se llega al mínimo es la regla del producto.
 - Navegador compartido (hallazgo 8): se arregla en la interfaz (#47), no en el contrato.
+
+## Implementación (backend, 23 oct, 14:44 a 15:00 por el reloj)
+- **Migraciones**, aplicadas una por vez y numeradas en el orden en que se aplicaron (el coordinador pidió E7.2 al final):
+  - `0024_e7_orden_candidatas` (E7.1)
+  - `0025_e7_simulacion_solo_demo` (E7.3)
+  - `0026_e7_perfil_sin_quien_llama` (E7.4)
+  - `0027_e7_conteos_solo_organizador` (E7.2)
+- **Lista permitida**: sigue en 30 para `authenticated` y 0 para `anon`. Todas siguen con `SECURITY DEFINER` y `search_path=''`. `cruce.verificar_privilegios()` no da hallazgos.
+- **Pruebas**: `tests/backend/enmienda7.test.ts`, con un `describe` por punto.
+- **Precisiones y diferencias con lo de arriba:**
+  - **E7.1 + E7.4: las "personas" de todos los umbrales son las demás.** Desde 0026, quien llama no cuenta para ninguno: el orden por marcas (sin marcas con 3 o menos), `presupuesto_todos`, `ritmo_del_grupo` y `el_mas_elegido`. Para `el_mas_elegido` hacen falta más de 3 personas, que 2 o más hayan elegido la actividad y que sea la más elegida, siempre contando solo a los demás.
+  - **Lo que sigue contando a quien llama:** el puntaje (marcas, energía y ambiente), los descartes por precio y techo, `personas_consideradas` y `pocas_preferencias`. El plan es para todo el grupo.
+  - **Grupos de 3 o menos (sin contar a quien llama):** la energía y el ambiente siguen pesando en el orden de las candidatas. La spec dice que el resto del puntaje queda igual.
+  - **E7.4: `ambiente_mayoritario` puede venir en `null` si hay empate**, como antes. Cambia el caso de la prueba 4.1, el demo con Tomi y Luna: sin Tomi quedan empatados tranquilo (Caro) y fiesta (Fede), y antes salía "tranquilo" gracias al voto de Tomi.
+  - **E7.4: `presupuesto_grupo` ya no viene** en `perfil_grupo`.
+  - **E7.3: el texto del error no calza con la simulación.** `no_autorizado/espacio_no_demo` mantiene el de la tabla de `docs/contrato.md`: "El reinicio solo está permitido en espacios de demostración.". Cambiarlo le toca al coordinador.
+  - **E7.3: `get_simulation_panel` no cambió.** Si en un espacio no demo quedaron simulados de antes, el organizador los sigue viendo, pero ya no puede operarlos.
+  - **E7.3: `mi_situacion.puede.simular` no cambió.** Fuera del demo puede seguir en `true` si quedaron simulados de antes, aunque el servidor ahora rechaza la operación (pedido de claude-b-interfaz, pendiente).
+  - **E7.2: el `null` depende de quién llama.** Se decide con `propuestas.organizador_id`, el organizador de la propuesta, en `cruce.vista_propuesta`. Así sale igual en `get_proposal_state` (y en `rev_vista`) y en la `propuesta` que devuelve cualquier escritura.
+  - **E7.2: el organizador sigue viendo `pendientes` con las bajas descontadas**, como hasta ahora.
+  - **E7.2: `siguiente_accion` se arma antes de ocultar los conteos.** El único texto que usa el conteo es "buscar_opcion", y solo lo recibe quien puede evaluar.
+- **Pruebas existentes adaptadas a E7.3:** las que creaban simulados en espacios no demo ahora usan el demo propio de su sesión (`demoPrueba` en `tests/backend/helpers.ts`, y `a1CrearEspacio` en `tests/verificacion-altas`). En `a2-reclamo` ya no se puede armar desde la API el caso "simulado en espacio no demo que alguien reclama". La prueba ahora verifica que no se puede crear y que quien entra con ese nombre no reclama nada.

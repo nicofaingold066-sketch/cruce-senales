@@ -51,6 +51,88 @@ describe('E7.1: el orden de las candidatas no delata gustos en grupos chicos', {
   })
 })
 
+// Saca de una EstadoPropuesta lo que cambia de una propuesta a otra aunque pase lo mismo: ids y momentos.
+const VARIABLES = new Set(['id', 'en', 'creada_en', 'publicada_en', 'aceptado_en', 'titulo'])
+function sinVariables(v: Json): Json {
+  if (Array.isArray(v)) return v.map(sinVariables)
+  if (v && typeof v === 'object') {
+    return Object.fromEntries(Object.entries(v).filter(([k]) => !VARIABLES.has(k)).map(([k, x]) => [k, sinVariables(x)]))
+  }
+  return v
+}
+
+describe('E7.2: los conteos de la propuesta solo los ve el organizador', { timeout: 90_000 }, () => {
+  it('miembro común: null en los dos conteos; la baja de un no elegible y la de un elegible sin aceptar dejan idéntica su vista', async () => {
+    const [A, B, W] = await sesiones()
+    const esp = await crearEspacioPrueba(A, 'e7-conteos', 'Org t')
+    await ok(B, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Comun t' })
+    await ok(W, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Baja t' })
+    const estado = async (s: Sesion, p: string) => (await ok(s, 'get_proposal_state', { p_propuesta_id: p })).propuesta
+    const SI = { A: 'si', B: 'si' }
+
+    // Dos propuestas iguales; lo único distinto es lo que W marcó en privado:
+    // en P1 no puede (no elegible), en P2 puede (elegible) y no acepta.
+    const p1 = await crearPropuesta(A, esp.espacioId, esp.miembroId, { minimo: 2, maximo: 4, titulo: 't-e7-conteos-1' })
+    const p2 = await crearPropuesta(A, esp.espacioId, esp.miembroId, { minimo: 2, maximo: 4, titulo: 't-e7-conteos-2' })
+    for (const p of [p1, p2]) {
+      await ok(A, 'save_my_conditions', { p_propuesta_id: p, p_disponibilidad: SI })
+      await ok(B, 'save_my_conditions', { p_propuesta_id: p, p_disponibilidad: SI })
+    }
+
+    // Entra en rev_vista: que W guarde condiciones no cambia lo que ve B (sondeo sin cambios), sí lo del organizador.
+    const b0 = await ok(B, 'get_proposal_state', { p_propuesta_id: p1 })
+    const a0 = await ok(A, 'get_proposal_state', { p_propuesta_id: p1 })
+    expect(b0.propuesta.personas_con_condiciones).toBeNull()
+    expect(a0.propuesta.personas_con_condiciones).toBe(2)
+    await ok(W, 'save_my_conditions', { p_propuesta_id: p1, p_disponibilidad: { A: 'no', B: 'no' } })
+    await ok(W, 'save_my_conditions', { p_propuesta_id: p2, p_disponibilidad: SI })
+    expect((await ok(B, 'get_proposal_state', { p_propuesta_id: p1, p_desde_rev: b0.rev_vista })).sin_cambios).toBe(true)
+    const a1 = await ok(A, 'get_proposal_state', { p_propuesta_id: p1, p_desde_rev: a0.rev_vista })
+    expect(a1.sin_cambios).toBe(false)
+    expect(a1.propuesta.personas_con_condiciones).toBe(3)
+
+    // Las dos publican la versión 1 en A. El organizador ve los pendientes (2 y 3); B, null en las dos.
+    const e1 = await ok(A, 'evaluate_and_publish', { p_propuesta_id: p1, p_intento_id: intento() })
+    const e2 = await ok(A, 'evaluate_and_publish', { p_propuesta_id: p2, p_intento_id: intento() })
+    for (const e of [e1, e2]) expect(e.resultado).toMatchObject({ tipo: 'opcion_publicada', version: 1, franja: 'A' })
+    expect(e1.propuesta.opcion.cupos.pendientes).toBe(2)
+    expect(e2.propuesta.opcion.cupos.pendientes).toBe(3)
+    const [v1, v2] = [await estado(B, p1), await estado(B, p2)]
+    for (const v of [v1, v2]) {
+      expect(v.personas_con_condiciones).toBeNull()
+      expect(v.opcion.cupos.pendientes).toBeNull()
+      expect(v.opcion.cupos).toMatchObject({ minimo: 2, maximo: 4, confirmados: 0, disponibles: 4 })
+    }
+    expect(sinVariables(v2)).toEqual(sinVariables(v1))
+
+    // W se baja de las dos. La respuesta de su propia baja tampoco trae los conteos.
+    for (const p of [p1, p2]) {
+      const baja = await ok(W, 'withdraw_commitment', { p_propuesta_id: p })
+      expect(baja.resultado.efecto).toBe('sin_cambio_de_estado')
+      expect(baja.propuesta.personas_con_condiciones).toBeNull()
+      expect(baja.propuesta.opcion.cupos.pendientes).toBeNull()
+    }
+    const [d1, d2] = [await estado(B, p1), await estado(B, p2)]
+    expect(sinVariables(d2)).toEqual(sinVariables(d1))
+    expect(d1.bajas).toHaveLength(1)
+    expect(d1.bajas[0]).toMatchObject({ version: 1, habia_aceptado: false })
+    expect(d1.personas_con_condiciones).toBeNull()
+    expect(d1.opcion.cupos.pendientes).toBeNull()
+    // El organizador sigue viendo los dos conteos; la baja no descuenta a W de personas_con_condiciones.
+    const [o1, o2] = [await estado(A, p1), await estado(A, p2)]
+    expect(o1.personas_con_condiciones).toBe(3)
+    expect(o2.personas_con_condiciones).toBe(3)
+    expect(o1.opcion.cupos.pendientes).toBe(2)
+    expect(o2.opcion.cupos.pendientes).toBe(2)
+    // Un miembro común que acepta tampoco los recibe en la respuesta de su operación.
+    const acepta = await ok(B, 'accept_version', { p_propuesta_id: p1, p_version: 1, p_intento_id: intento() })
+    expect(acepta.propuesta.personas_con_condiciones).toBeNull()
+    expect(acepta.propuesta.opcion.cupos.pendientes).toBeNull()
+    expect(acepta.propuesta.opcion.cupos.confirmados).toBe(1)
+    for (const p of [p1, p2]) await ok(A, 'cancel_proposal', { p_propuesta_id: p })
+  })
+})
+
 describe('E7.3: simulación solo en espacios demo', { timeout: 90_000 }, () => {
   it('fuera del demo: add_simulated_member y todas las simulate_* responden no_autorizado/espacio_no_demo, sin efectos', async () => {
     const [A, B] = await sesiones()

@@ -133,7 +133,9 @@ describe('privacidad y audiencia', { timeout: 60_000 }, () => {
     // Solo las respuestas propias (save y get_my_conditions) traen disponibilidad, y es la de Luna.
     for (const v of vistas.slice(2)) expect(JSON.stringify(v)).not.toContain('"disponibilidad":')
     const estado = vistas[2].propuesta
-    expect(estado.personas_con_condiciones).toBe(3)
+    // Enmienda 7 (E7.2): el conteo solo lo ve el organizador de la propuesta; Luna (miembro) recibe null.
+    expect(estado.personas_con_condiciones).toBeNull()
+    expect((await ok(T, 'get_proposal_state', { p_propuesta_id: prop })).propuesta.personas_con_condiciones).toBe(3)
     expect(JSON.stringify(estado)).not.toMatch(/"(si|no|pendiente)"/)
     expect(JSON.stringify(estado)).not.toContain('incompletas')
 
