@@ -3,7 +3,7 @@
 // 2) "Que el agente proponga": solo el organizador. Muestra el borrador que eligió el servidor y,
 //    si quiere, lo lleva a la pantalla de nueva propuesta. El agente nunca crea ni confirma nada.
 // Para engancharla: <AgentePanel espacioId={...} esOrganizador={...} soloLectura={...} />.
-import { Component, useCallback, useEffect, useState, type ReactNode } from 'react'
+import { Component, useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { api } from '../lib/api'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto } from '../lib/format'
@@ -100,6 +100,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   const [guardadas, setGuardadas] = useState(false)
   const [aviso, setAviso] = useState<string | null>(null)
   const { ocupado, error, ejecutar } = useAccion()
+  const refError = useFocoEnError(error)
 
   const cargar = useCallback(async () => {
     setCargando(true)
@@ -164,8 +165,11 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
         </div>
         {sinActividades ? <small>Marcá al menos una.</small> : null}
       </fieldset>
-      {error ? <ErrorCaja error={error} onReintentar={() => void guardar()} /> : null}
+      <div ref={refError}>{error ? <ErrorCaja error={error} onReintentar={() => void guardar()} /> : null}</div>
       {aviso ? <Aviso tono="ok">{aviso}</Aviso> : null}
+      <p className="agente-sr" aria-live="polite">
+        {ocupado ? 'Guardando tus preferencias…' : aviso ?? ''}
+      </p>
       <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura || sinActividades}>
         {guardadas ? 'Actualizar mis preferencias' : 'Guardar mis preferencias'}
       </Boton>
@@ -349,6 +353,19 @@ function BorradorTarjeta({
   )
 }
 
+/**
+ * Cuando aparece un error, lleva el foco al primer botón o enlace útil del aviso (mejora #35),
+ * para que con lector de pantalla o teclado no haya que buscar cómo seguir.
+ */
+function useFocoEnError(error: ApiError | null): RefObject<HTMLDivElement | null> {
+  const ref = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (!error) return
+    ref.current?.querySelector<HTMLElement>('button, a[href]')?.focus()
+  }, [error])
+  return ref
+}
+
 /** Salida que nunca falla: crear la propuesta a mano, como siempre. */
 function PropuestaAMano({ espacioId }: { espacioId: string }) {
   return (
@@ -430,8 +447,14 @@ function ProponerPlan({
 
   const climaPedido = demo && clima !== 'real' ? clima : undefined
 
-  const anuncio =
-    resultado?.tipo === 'borrador'
+  const refError = useFocoEnError(error)
+
+  // Región que siempre existe y anuncia los cambios (mejora #35). Los errores graves ya se anuncian solos (role="alert").
+  const anuncio = ocupado
+    ? 'El agente está buscando opciones para el grupo.'
+    : error?.codigo === 'entrada_incompleta' && error.detalle === 'pocas_preferencias'
+      ? 'Faltan preferencias: el agente necesita las de al menos 2 personas.'
+      : resultado?.tipo === 'borrador'
       ? `El agente encontró ${resultado.candidatas.length === 1 ? 'una opción' : `${resultado.candidatas.length} opciones`}. Recomendada: ${resultado.titulo}.`
       : resultado?.tipo === 'sin_plan_compatible'
         ? 'Sin plan compatible.'
@@ -475,7 +498,9 @@ function ProponerPlan({
         Que el agente proponga
       </Boton>
       {ocupado ? <Cargando texto="El agente está leyendo las preferencias del grupo y el clima…" /> : null}
-      {error ? <ErrorAgente error={error} espacioId={espacioId} onReintentar={() => void proponer()} /> : null}
+      <div ref={refError}>
+        {error ? <ErrorAgente error={error} espacioId={espacioId} onReintentar={() => void proponer()} /> : null}
+      </div>
       <p className="suave" aria-live="polite">
         {anuncio}
       </p>
@@ -505,17 +530,19 @@ class BarreraAgente extends Component<{ children: ReactNode }, { fallo: boolean 
   render() {
     if (this.state.fallo) {
       return (
-        <Aviso
-          tono="aviso"
-          titulo="El agente no está disponible ahora"
-          accion={
-            <button type="button" className="btn btn-secundario btn-chico" onClick={() => this.setState({ fallo: false })}>
-              Reintentar
-            </button>
-          }
-        >
-          El resto del espacio funciona igual: podés crear la propuesta a mano.
-        </Aviso>
+        <div className="agente-panel">
+          <Aviso
+            tono="aviso"
+            titulo="El agente no está disponible ahora"
+            accion={
+              <button type="button" className="btn btn-secundario btn-chico" onClick={() => this.setState({ fallo: false })}>
+                Reintentar
+              </button>
+            }
+          >
+            El resto del espacio funciona igual: podés crear la propuesta a mano.
+          </Aviso>
+        </div>
       )
     }
     return this.props.children
@@ -564,12 +591,12 @@ function PanelAgente({
 
   return (
     <>
-      <section className="tarjeta">
+      <section className="tarjeta agente-panel">
         <h2>Mis preferencias</h2>
         <MisPreferencias espacioId={espacioId} soloLectura={soloLectura} />
       </section>
       {esOrganizador ? (
-        <section className="tarjeta">
+        <section className="tarjeta agente-panel">
           <h2>Agente del círculo</h2>
           <p className="suave">
             Lee las preferencias de todo el grupo, mira el clima y un catálogo de lugares (de Simulación) y te propone opciones que le sirven a todos. Propone, pero no decide por nadie.
