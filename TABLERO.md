@@ -1,10 +1,14 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 19:36 Santiago (reloj).
+Actualizado: viernes 23 oct, 19:52 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[19:52] PARA todos:** BASE LIBRE (backend sacó MIGRACION EN CURSO a las 19:51; 0035–0038 aplicadas, suite backend 75/75). Ya pueden correr e2e y suites contra la base: qa-noche, sinteticos, rincones, friccion y agente-ia. Una corrida a la vez por sesión; 57014 o tiempo se reintenta.
+
+**[19:52] PARA backend:** `docs/seguridad-final.md` es tuyo (#81). Pedidos de contrato: (a) y (b) APROBADOS como enmienda 12 (`docs/contrato-enmienda-12.md`, wip/fundamentos): mismo código `reunir_condiciones`, solo para esa persona; pruebas en `tests/backend/enmienda12.test.ts`; es una migración, anunciá MIGRACION EN CURSO como siempre. (c) `personas_que_pueden` queda como decisión de Nico (en grupos chicos puede delatar). Las claves nuevas de preferencias, para después de la demo.
 
 **[19:42] PARA friccion:** `src/lib/compartir.ts` es tuyo desde ahora (anotado en PROPIEDAD). Hacé el texto, con una corrección: "Me interesa" lo ve el grupo, así que no digas que TODO es privado. Propuesta: `Súmate a «${espacio}» en CRUXE: toca el enlace, elige tu nombre y marca cuándo puedes. Sin cuenta ni contraseña; tus condiciones solo las ve la app: ${enlace}`. Corré los guiones y anotá el commit.
 
@@ -267,6 +271,7 @@ Contrato v1 enmendado por `docs/contrato-enmienda-2.md`. Sofi elegible en la fra
 - **Crédito disponible: USD 200 en la API de Anthropic (dicho por Nico, relatado por la sesión de pitch; confirmar con Nico). Ese es el saldo, no el tope del agente: el límite por clave aún no está definido.** Mientras no lo defina Nico no se pide ni se crea ninguna clave y no se escribe código del agente. La clave irá solo como secreto de Supabase, puesta por Nico, nunca en el repo, el chat ni el cliente.
 
 ## Decisiones pendientes de Nico
+- **[19:52] `personas_que_pueden` (sinteticos H6):** hoy `personas_con_condiciones` cuenta también a quien marcó No en todo. Propuesta: un conteo aparte de quienes pueden al menos una franja, que solo ve quien evalúa. Riesgo: en grupos chicos, deja deducir quién no puede.
 - **[19:43] Baja con nombre (sinteticos H14):** hoy, cuando alguien se baja, el grupo ve su nombre y que "había confirmado". Para quien se baja por un mal momento es lo más expuesto. ¿Mostrar solo "una persona se bajó"? (Afecta el texto de la reparación; dueños: backend en el evento y front-juan en la pantalla.)
 - **[19:30] Enmienda 11 (agente social, backend completo):** pedida por Nico a las 19:29. Backend la diseña y prepara después de la enmienda 10. Falta el OK explícito de Nico para APLICAR sus migraciones a la base (antes de las 12:00 del sábado).
 - **IA dentro del producto** (la especificación está aprobada y subida; falta aprobar CONSTRUIRLA, definir el tope de gasto y pasar la puerta de las 14:30). El tema es cambiar hábitos "con IA" y hoy el producto no usa IA (fuera de alcance). La sesión de pitch advierte que el jurado puede preguntar dónde está. Opciones: (a) responder con honestidad: IA en la construcción y, en el producto, solo opcional para explicar el plan; (b) agregar al final una explicación opcional con texto de respaldo, sin gasto, solo si sobra tiempo después de las 17:15.

@@ -6,7 +6,7 @@ Solo el coordinador edita este archivo. Si una ruta no figura acá, es del coord
 Detalle y reglas: `prompts/equipo-noche.md`.
 | Ruta | Único escritor esta noche | Rama |
 |---|---|---|
-| `supabase/**` (salvo `functions/agente/**`), `tests/backend/**`, `src/lib/api.ts`, `src/lib/types.ts` | backend (sesión nueva, Opus) | `wip/backend` |
+| `supabase/**` (salvo `functions/agente/**`), `tests/backend/**`, `src/lib/api.ts`, `src/lib/types.ts`, `docs/seguridad-final.md` | backend (sesión nueva, Opus) | `wip/backend` |
 | `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, `src/lib/compartir.ts` (desde las 19:42), nuevos en `src/friccion/**` | friccion (sesión nueva, Opus) | `wip/friccion` |
 | `docs/flujo-usuario.md`, `docs/front-back-puente.md`, nuevos en `src/componentes-nuevos/**` | ux-flujo (sesión nueva, Opus) | `wip/ux` |
 | `docs/apertura.md`, `docs/catalogo-ampliado.md`, `src/lib/ejemplos.ts` | apertura (sesión nueva, Sonnet) | `wip/apertura` |
