@@ -3,7 +3,7 @@
 Quien edita este archivo: solo codex. Actualización: 23 oct 2026, cierre de tareas autorizadas por Nico.
 
 ## Tocando ahora
-(vacío: #1, #10, #16 y #17 entregadas).
+**#29**, luego **#34**, por autorización directa de Nico: `tests/e2e/privacidad-agente.test.ts`, `tests/e2e/red-controlada*`, `tests/e2e/evidencia-privacidad-red.md` y `docs/revision-codex-6-privacidad-red.md`. Solo pruebas e informes. Se consulta MIGRACION EN CURSO antes de cada corrida real; si aparece, se espera. Sin modelos pagos, dependencias nuevas ni cambios propios en src/supabase/main.
 
 ## Estado
 Guía vigente: `prompts/codex.md`, adoptada por instrucción directa de Nico. Vigía shell `./vigia.sh codex 60` activo.
