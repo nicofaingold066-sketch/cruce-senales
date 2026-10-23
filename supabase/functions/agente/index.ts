@@ -16,6 +16,7 @@ import {
   climaSimulado,
   crearLimiteModelo,
   elegirProveedor,
+  familiaModelo,
   entradaModelo,
   esSabado,
   leerPronostico,
@@ -36,7 +37,10 @@ import {
   type ResultadoPlan,
 } from './logica.ts'
 
-const PLAZO_TOTAL_MS = 8000
+// Opus tarda más que Haiku: hasta 20 s para el principal y lo que quede (unos 8 s) para el respaldo.
+const PLAZO_TOTAL_MS = 30000
+const PLAZO_PRINCIPAL_MS = 20000
+const PLAZO_RESPALDO_MS = 8000
 const PLAZO_CLIMA_MS = 3000
 // Una llamada al modelo por persona cada 10 s y un tope por minuto, en la memoria de esta instancia (mejor esfuerzo).
 const limiteModelo = crearLimiteModelo()
@@ -113,44 +117,59 @@ async function coordinarConModelo(
   perfil: PerfilGrupo | null,
   clima: string,
   nombres: string[],
-  restanteMs: number,
+  hastaMs: number,
   simulado: boolean,
   usuario: string,
-): Promise<{ eleccion: Candidata; explicacion: string; mensaje: string } | null> {
+): Promise<{ eleccion: Candidata; explicacion: string; mensaje: string; modelo: string } | null> {
   const proveedor = elegirProveedor((n) => Deno.env.get(n))
-  if (!proveedor || restanteMs < 1500 || candidatas.length === 0 || candidatas.some((c) => typeof c.id !== 'string')) return null
+  const restante = () => hastaMs - Date.now()
+  if (!proveedor || restante() < 1500 || candidatas.length === 0 || candidatas.some((c) => typeof c.id !== 'string')) return null
   const clave = Deno.env.get(proveedor.variableClave)
   if (!clave) return null
   // Costo: pasado el límite, el agente responde igual, con la regla y el texto fijo (no es un error).
+  // Cuenta una vez por pedido de la persona, aunque se use el respaldo.
   if (!limiteModelo.permitir(usuario, Date.now())) {
     console.info('agente: límite de llamadas al modelo; va la regla', proveedor.tipo)
     return null
   }
   const modo = modoSalida(Deno.env.get('AGENTE_SALIDA'))
-  const client = new Anthropic({ apiKey: clave, baseURL: proveedor.baseURL, timeout: restanteMs, maxRetries: 0 })
-  try {
-    // El `timeout` del SDK cubre hasta las cabeceras; el `signal` corta también la lectura del cuerpo.
-    const respuesta = await client.messages.create(
-      armarPedido(proveedor, modo, candidatas, SISTEMA, entradaModelo(candidatas, perfil, clima, nombres, simulado)),
-      { signal: AbortSignal.timeout(restanteMs) },
-    )
-    const texto = textoDeRespuesta(respuesta, modo)
-    if (texto === null) {
-      // Solo el motivo de corte y cuántos tokens escribió: sirve para ver si el tope corta respuestas.
-      console.error('agente: respuesta del modelo descartada', proveedor.tipo, respuesta.stop_reason, respuesta.usage?.output_tokens ?? null)
-      return null
+  const entrada = entradaModelo(candidatas, perfil, clima, nombres, simulado)
+  // Principal (Opus) y, si falla o no llega a tiempo, una sola llamada al respaldo (Haiku). Después, la regla.
+  const intentos = [
+    { modelo: proveedor.modelo, plazo: PLAZO_PRINCIPAL_MS },
+    { modelo: proveedor.respaldo, plazo: PLAZO_RESPALDO_MS },
+  ]
+  for (const [i, intento] of intentos.entries()) {
+    // El respaldo necesita tiempo para responder; al principal le deja el suyo.
+    const quedan = restante() - (i === 0 ? Math.min(PLAZO_RESPALDO_MS, 6000) : 0)
+    const plazo = Math.min(intento.plazo, i === 0 ? Math.max(quedan, 0) : restante())
+    if (plazo < 1500) continue
+    const familia = familiaModelo(intento.modelo)
+    const client = new Anthropic({ apiKey: clave, baseURL: proveedor.baseURL, timeout: plazo, maxRetries: 0 })
+    try {
+      // El `timeout` del SDK cubre hasta las cabeceras; el `signal` corta también la lectura del cuerpo.
+      const respuesta = await client.messages.create(
+        armarPedido(proveedor, modo, candidatas, SISTEMA, entrada, intento.modelo),
+        { signal: AbortSignal.timeout(plazo) },
+      )
+      const texto = textoDeRespuesta(respuesta, modo)
+      if (texto === null) {
+        // Solo el motivo de corte y cuántos tokens escribió: sirve para ver si el tope corta respuestas.
+        console.error('agente: respuesta del modelo descartada', proveedor.tipo, familia, respuesta.stop_reason, respuesta.usage?.output_tokens ?? null)
+        continue
+      }
+      // La elección tiene que ser una de las opciones que el servidor ya validó, y los textos, válidos.
+      const valida = validarSalidaModelo(texto, candidatas, nombres)
+      if (valida) return { ...valida, modelo: familia }
+      console.error('agente: salida del modelo rechazada por la validación', proveedor.tipo, familia)
+    } catch (e) {
+      // Solo el proveedor, el modelo, el tipo de error y el código HTTP: nunca el contenido, la clave ni datos del grupo.
+      const estado = e instanceof Error && typeof (e as { status?: unknown }).status === 'number' ? (e as { status: number }).status : 0
+      // constructor.name: las clases de error del SDK no fijan `name` (queda "Error").
+      console.error('agente: el modelo no respondió', proveedor.tipo, familia, e instanceof Error ? e.constructor.name : 'desconocido', estado)
     }
-    // La elección tiene que ser una de las opciones que el servidor ya validó, y los textos, válidos.
-    const valida = validarSalidaModelo(texto, candidatas, nombres)
-    if (!valida) console.error('agente: salida del modelo rechazada por la validación', proveedor.tipo)
-    return valida
-  } catch (e) {
-    // Solo el proveedor, el tipo de error y el código HTTP: nunca el contenido, la clave ni datos del grupo.
-    const estado = e instanceof Error && typeof (e as { status?: unknown }).status === 'number' ? (e as { status: number }).status : 0
-    // constructor.name: las clases de error del SDK no fijan `name` (queda "Error").
-    console.error('agente: el modelo no respondió', proveedor.tipo, e instanceof Error ? e.constructor.name : 'desconocido', estado)
-    return null
   }
+  return null
 }
 
 Deno.serve(async (req) => {
@@ -224,7 +243,7 @@ Deno.serve(async (req) => {
     perfil,
     resumen,
     nombres,
-    PLAZO_TOTAL_MS - (Date.now() - inicio),
+    inicio + PLAZO_TOTAL_MS,
     simulado,
     usuarioDe(autorizacion),
   )
@@ -255,6 +274,8 @@ Deno.serve(async (req) => {
         unirFrases(elegida.frases_grupo, simulado, { perfil: perfilParaRespuesta(perfil), actividad: elegida.actividad_etiqueta }),
       mensaje_al_grupo: delModelo?.mensaje ?? mensajeFijo(elegida),
       eleccion_fuente: delModelo ? 'modelo' : 'regla',
+      // Qué modelo escribió: "opus", "haiku" (respaldo) u otro; null con la regla y el texto fijo.
+      modelo_usado: delModelo?.modelo ?? null,
       explicacion_fuente: delModelo ? 'modelo' : 'texto_fijo',
     },
   })

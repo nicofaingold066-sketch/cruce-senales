@@ -85,6 +85,8 @@ export interface BorradorAgente extends CandidataAgente {
   mensaje_al_grupo: string
   eleccion_fuente: 'modelo' | 'regla'
   explicacion_fuente: 'modelo' | 'texto_fijo'
+  /** Qué modelo escribió: "opus", "haiku" (respaldo) u otro; null con la regla y el texto fijo. */
+  modelo_usado?: string | null
   perfil_grupo?: PerfilGrupo | null
   /** Enmienda 10: el de la opción destacada. */
   viaje?: Viaje | null
@@ -222,13 +224,15 @@ function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
     perfil_grupo: perfilSeguro(r.perfil_grupo),
     viaje: viajeDeOpcion(elegida, { candidatas, viaje: r.viaje }),
     eleccion_fuente: !sinFuncion && r.eleccion_fuente === 'modelo' ? 'modelo' : 'regla',
+    modelo_usado: !fijo && typeof r.modelo_usado === 'string' ? r.modelo_usado : null,
     explicacion_fuente: !fijo && r.explicacion_fuente === 'modelo' ? 'modelo' : 'texto_fijo',
   }
 }
 
 // Tiempos límite del cliente (mejora #32): la demo nunca queda esperando para siempre.
 // La función del servidor corta sola a los ~8 s; si igual tarda más, se usa el respaldo por RPC.
-const TIEMPO_FUNCION_MS = 10000
+// Con Opus la función puede tardar hasta unos 30 s (20 s Opus y, si falla, unos 8 s Haiku): el cliente espera un poco más.
+const TIEMPO_FUNCION_MS = 35000
 const TIEMPO_RPC_MS = 8000
 
 function tiempoAgotado(): { ok: false; error: ApiError } {

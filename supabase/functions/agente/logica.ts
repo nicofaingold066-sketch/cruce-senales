@@ -340,10 +340,13 @@ export function validarSalidaModelo(
 // ---------------------------------------------------------------------------------------------
 
 export const GATEWAY_URL = 'https://ai-gateway.vercel.sh'
-/** Nombre en el Gateway: `creador/modelo`, con punto en la versión (página de modelos de Vercel). */
-export const MODELO_GATEWAY = 'anthropic/claude-haiku-5.5'
-/** Nombre en la API de Anthropic directa. */
-export const MODELO_DIRECTO = 'claude-haiku-5-5'
+// Nombres en el Gateway: `creador/modelo`, con punto en la versión (página de modelos de Vercel).
+// Decisión de Nico (23 oct, 19:4x): Opus como principal y Haiku como respaldo si Opus falla o no llega a tiempo.
+export const MODELO_GATEWAY = 'anthropic/claude-opus-5.5'
+export const RESPALDO_GATEWAY = 'anthropic/claude-haiku-5.5'
+// Nombres en la API de Anthropic directa.
+export const MODELO_DIRECTO = 'claude-opus-5-5'
+export const RESPALDO_DIRECTO = 'claude-haiku-5-5'
 /**
  * Lo que se le deja escribir al modelo. El JSON (explicación de 240, mensaje de 320 y el id) ocupa unos
  * 250 tokens, pero Haiku 5.5 piensa por defecto y ese pensamiento cuenta contra max_tokens: con un tope
@@ -358,26 +361,37 @@ export interface Proveedor {
   variableClave: 'AI_GATEWAY_API_KEY' | 'ANTHROPIC_API_KEY'
   /** Solo el Gateway usa otra URL base; con la API directa queda la del SDK. */
   baseURL?: string
+  /** Principal (Opus). */
   modelo: string
+  /** Una sola llamada a este si el principal falla o no llega a tiempo (Haiku). */
+  respaldo: string
+}
+
+/** Lo que la pantalla dice que se usó: "opus", "haiku", "sonnet" u "otro". */
+export function familiaModelo(modelo: string): 'opus' | 'haiku' | 'sonnet' | 'otro' {
+  const m = modelo.toLowerCase()
+  return m.includes('opus') ? 'opus' : m.includes('haiku') ? 'haiku' : m.includes('sonnet') ? 'sonnet' : 'otro'
 }
 
 export type ModoSalida = 'json' | 'herramienta'
 
 /**
  * Elige el proveedor según qué secretos existen. `leer` devuelve el valor de una variable de entorno
- * (en la función, Deno.env.get). AGENTE_MODELO pisa el modelo, pero solo si tiene el formato del
- * proveedor elegido (`creador/modelo` en el Gateway, sin barra en la API directa): así un valor viejo
- * no deja al agente sin modelo en silencio.
+ * (en la función, Deno.env.get). AGENTE_MODELO y AGENTE_MODELO_RESPALDO pisan el principal y el respaldo,
+ * pero solo si tienen el formato del proveedor elegido (`creador/modelo` en el Gateway, sin barra en la API
+ * directa): así un valor viejo no deja al agente sin modelo en silencio.
  */
 export function elegirProveedor(leer: (nombre: string) => string | undefined): Proveedor | null {
   const hay = (n: string) => (leer(n) ?? '').trim().length > 0
   const pedido = (leer('AGENTE_MODELO') ?? '').trim()
+  const pedidoRespaldo = (leer('AGENTE_MODELO_RESPALDO') ?? '').trim()
   if (hay('AI_GATEWAY_API_KEY')) {
     return {
       tipo: 'gateway',
       variableClave: 'AI_GATEWAY_API_KEY',
       baseURL: GATEWAY_URL,
       modelo: pedido.includes('/') ? pedido : MODELO_GATEWAY,
+      respaldo: pedidoRespaldo.includes('/') ? pedidoRespaldo : RESPALDO_GATEWAY,
     }
   }
   if (hay('ANTHROPIC_API_KEY')) {
@@ -385,6 +399,7 @@ export function elegirProveedor(leer: (nombre: string) => string | undefined): P
       tipo: 'anthropic',
       variableClave: 'ANTHROPIC_API_KEY',
       modelo: pedido && !pedido.includes('/') ? pedido : MODELO_DIRECTO,
+      respaldo: pedidoRespaldo && !pedidoRespaldo.includes('/') ? pedidoRespaldo : RESPALDO_DIRECTO,
     }
   }
   return null
@@ -418,9 +433,10 @@ export function armarPedido(
   candidatas: Candidata[],
   sistema: string,
   entrada: unknown,
+  modelo: string = proveedor.modelo,
 ) {
   const base = {
-    model: proveedor.modelo,
+    model: modelo,
     max_tokens: MAX_TOKENS_MODELO,
     system: sistema,
     messages: [{ role: 'user' as const, content: JSON.stringify(entrada) }],
@@ -441,9 +457,11 @@ export function armarPedido(
   }
   return {
     ...base,
-    // `effort` está probado con la API directa; el Gateway no lo documenta junto a output_config, así que no se manda.
+    // Esfuerzo bajo para que Opus responda rápido. Vercel documenta `effort` junto con `thinking: adaptive`
+    // (Opus 5.5 piensa siempre; con la herramienta forzada no se manda, porque no se combinan).
+    ...(proveedor.tipo === 'gateway' ? { thinking: { type: 'adaptive' as const } } : {}),
     output_config: {
-      ...(proveedor.tipo === 'anthropic' ? { effort: 'low' as const } : {}),
+      effort: 'low' as const,
       format: { type: 'json_schema' as const, schema: esquema },
     },
   }

@@ -347,6 +347,8 @@ function BorradorTarjeta({
     : textoFijo(elegida.frases_grupo, false, b.clima.fuente === 'simulacion', b.perfil_grupo, elegida.actividad_etiqueta)
   const mensaje = esLaDestacada ? b.mensaje_al_grupo : mensajeFijo(elegida)
   const deModelo = esLaDestacada && b.explicacion_fuente === 'modelo'
+  // Qué modelo escribió (Opus, o Haiku si Opus no respondió a tiempo).
+  const quien = b.modelo_usado === 'opus' ? 'Claude Opus' : b.modelo_usado === 'haiku' ? 'Claude Haiku, de respaldo' : b.modelo_usado === 'sonnet' ? 'Claude Sonnet' : null
   const canchas = enlacesCanchas(elegida.actividad, elegida.franjas[0])
   // Enmienda 10: el viaje de la opción que está mirando el organizador (null con menos de 4 personas con zona).
   const viaje = viajeDeOpcion(elegida, b)
@@ -452,7 +454,7 @@ function BorradorTarjeta({
       </div>
       <p className="suave">
         {deModelo
-          ? 'Lo redactó la IA, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.'
+          ? `Lo redactó la IA${quien ? ` (${quien})` : ''}, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.`
           : 'Texto fijo. Las opciones las armó el servidor con reglas fijas a partir de las preferencias de todos.'}
       </p>
       <p className="suave">El mínimo, el máximo, la persona imprescindible y el cierre los completás vos en el paso siguiente.</p>
@@ -558,10 +560,22 @@ function ProponerPlan({
   const climaPedido = demo && clima !== 'real' ? clima : undefined
 
   const refError = useFocoEnError(error)
+  // Con Opus la respuesta puede tardar: pasados 8 s se avisa que sigue trabajando, para que no parezca trabado.
+  const [largo, setLargo] = useState(false)
+  useEffect(() => {
+    if (!ocupado) {
+      setLargo(false)
+      return
+    }
+    const t = setTimeout(() => setLargo(true), 8000)
+    return () => clearTimeout(t)
+  }, [ocupado])
 
   // Región que siempre existe y anuncia los cambios (mejora #35). Los errores graves ya se anuncian solos (role="alert").
   const anuncio = ocupado
-    ? 'El agente está buscando opciones para el grupo.'
+    ? largo
+      ? 'El agente sigue pensando: puede tardar hasta medio minuto.'
+      : 'El agente está buscando opciones para el grupo.'
     : error?.codigo === 'entrada_incompleta' && error.detalle === 'pocas_preferencias'
       ? 'Faltan preferencias: el agente necesita las de al menos 2 personas.'
       : resultado?.tipo === 'borrador'
@@ -607,7 +621,11 @@ function ProponerPlan({
       <Boton onClick={() => void proponer()} ocupado={ocupado} ocupadoTexto="El agente está pensando…" disabled={soloLectura || !sabado}>
         Que el agente proponga
       </Boton>
-      {ocupado ? <Cargando texto="El agente está leyendo las preferencias del grupo y el clima…" /> : null}
+      {ocupado ? (
+        <Cargando
+          texto={largo ? 'El agente sigue pensando: puede tardar hasta medio minuto…' : 'El agente está leyendo las preferencias del grupo y el clima…'}
+        />
+      ) : null}
       <div ref={refError}>
         {error ? <ErrorAgente error={error} espacioId={espacioId} onReintentar={() => void proponer()} /> : null}
       </div>
