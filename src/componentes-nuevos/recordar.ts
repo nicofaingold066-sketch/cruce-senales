@@ -30,7 +30,7 @@ export function textoAviso({ motivo, titulo, cuando, enlace, cuposLibres }: Dato
   const fecha = cuando ? limpio(cuando) : ''
   switch (motivo) {
     case 'faltan':
-      return `Para ${plan}: si todavía no respondiste, sin apuro: toca, elige tu nombre y marca cuándo puedes (es privado). Si ya respondiste, no hace falta nada: ${enlace}`
+      return `Te lo recuerda CRUXE: para ${plan}, si todavía no respondiste, sin apuro: toca, elige tu nombre y marca cuándo puedes (es privado). Si ya respondiste, no hace falta nada: ${enlace}`
     case 'version_nueva':
       // #100: decir qué hacer si NO puede (no confirmar), para que el "no" no vuelva al chat ni al silencio ambiguo.
       return `Hay opción para ${plan}${fecha ? `: ${fecha}` : ''}. Si vas, toca y confírmala; si no puedes, no confirmes: el plan sale solo con quienes confirman. ${enlace}`

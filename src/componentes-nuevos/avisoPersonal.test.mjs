@@ -79,3 +79,23 @@ test('no elegible con disponibilidad incompleta: no promete entrar en esta versi
   const sinGuardar = avisoParaMi({ estado: 'grupo_confirmado', imprescindible: vale, mi_situacion: { ...ema, puede: {} } })
   assert.equal(sinGuardar?.irARespuesta, false)
 })
+
+test('quien puede confirmar: su confirmación solo vale si llegan al mínimo', () => {
+  const ana = yo({ miembro_id: 'm-ana', es_organizador: false, condiciones: 'completas', elegible_en_version: true })
+  const a = avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: ana, minimo: 4 }, { plazoTexto: 'jue 29 oct, 20:00' })
+  assert.equal(a?.clave, 'solo_vale_si_llegan')
+  assert.equal(a.titulo, 'Si no llegan 4, nadie queda comprometido')
+  assert.match(a.texto, /^Tu confirmación solo vale si llegan 4\. Se cierra jue 29 oct, 20:00;/)
+  assert.equal(avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: { ...ana, acepte_version: true }, minimo: 4 }), null)
+})
+
+test('organizador cerca del cierre con pendientes: hoy conviene recordar; lejos o sin pendientes, no', () => {
+  const org = yo({ condiciones: 'completas', elegible_en_version: true, acepte_version: true })
+  const opcion = { cupos: { pendientes: 2 } }
+  const a = avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: org, opcion, minimo: 4 }, { plazoTexto: 'mañana', horasAlCierre: 20 })
+  assert.equal(a?.clave, 'hoy_conviene_recordar')
+  assert.match(a.texto, /^Faltan 2 por confirmar y se cierra mañana\. CRUXE no manda avisos solo/)
+  assert.equal(avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: org, opcion, minimo: 4 }, { horasAlCierre: 80 }), null)
+  assert.equal(avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: org, opcion: { cupos: { pendientes: 0 } }, minimo: 4 }, { horasAlCierre: 10 }), null)
+  assert.equal(avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: org, opcion: { cupos: { pendientes: null } }, minimo: 4 }, { horasAlCierre: 10 }), null)
+})
