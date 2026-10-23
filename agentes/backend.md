@@ -1,11 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: 15:00 Santiago (reloj). Enmienda 7 en curso.
+Quien edita este archivo: solo el backend. Última actualización: 15:06 Santiago (reloj). Enmienda 7 entregada.
 
 ## Tocando ahora
-- Enmienda 7 (orden del coordinador: E7.1, E7.3, E7.4 y E7.2 al final).
-- Rutas: supabase/migrations/0024 a 0027, tests/backend/ (enmienda7.test.ts nuevo y adaptaciones), tests/verificacion-altas/a1-helper.ts y a2-reclamo.test.ts (adaptadas a E7.3), sección final de docs/contrato-enmienda-7.md.
-- Ninguna migración en curso. Última aplicada: 0027 (E7.2). Corriendo suites backend y e2e.
+(vacío. Ninguna migración en curso. Última aplicada: 0027.)
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -34,10 +32,14 @@ Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 Ninguno.
 
 ## Pedidos a otros
+- coordinador (15:06): E7.2 ya está en la base y `main` todavía no tiene b2adc4d (#48): hasta que llegue, la interfaz publicada muestra "persona(s)" sin número a quien no organiza.
+- coordinador: el texto de `no_autorizado/espacio_no_demo` en docs/contrato.md habla del reinicio; ahora también lo devuelven add_simulated_member y las simulate_*.
+- claude-b-interfaz (pedido suyo de las 14:50, pendiente): `mi_situacion.puede.simular` sigue en true fuera del demo si quedaron simulados viejos; requiere migración nueva (0028), no la hice sin aprobación.
 - coordinador: agregar al final de docs/contrato-enmienda-3.md (es tuyo) la lista cerrada de códigos y sus disparadores (texto en mi reporte). Commit de 0012_enmienda3.sql y de tests/backend.
 - coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
+- Enmienda 7 (15:06): commits 254f0d9 (E7.1, 0024), 4d88d3a (E7.3, 0025 + pruebas al demo propio), 145e3e8 (E7.4, 0026 + tests/backend/enmienda7.test.ts), 8eb54df (E7.2, 0027 + doc), f33978a (e2e sin cupos.pendientes de Luna), 4721a5a (doc) en `wip/fundamentos`, sin push. Orden aplicado: 0024 E7.1, 0025 E7.3, 0026 E7.4, 0027 E7.2. Lista permitida 30/0, verificar_privilegios sin hallazgos. tests/backend 52/52 (9 archivos, 15:01 a 15:03); tests/e2e 12/12 sumando la corrida de 15:03 (11/12) y la falla de transporte repetida sola (1/1, 15:06). Detalle en la sección Implementación de docs/contrato-enmienda-7.md.
 - Mejora #28 (privacidad, `perfil_grupo.gustos` solo con `cuantos >= 2`): commit 66a1910 en `wip/fundamentos` (0023_gustos_minimo_dos.sql aplicada 13:51, tests/backend/enmienda4.test.ts, línea en docs/contrato-enmienda-6.md). enmienda4.test.ts 10/10; suite backend 47/47 (8 archivos, 169 s, 13:53 a 13:56). Sin push.
 - Mejora #22 (`opcion_anterior`): commit 52ae246 en `wip/fundamentos` (0022_opcion_anterior.sql aplicada 13:47, tests/backend/mejoras.test.ts, docs/contrato-enmienda-6.md). Prueba #22 1/1; suite backend 46/46 (8 archivos, 94 s, 13:48). Sin push.
 - Migraciones 0008 a 0011 (ya commiteadas por el coordinador en d904a93).
