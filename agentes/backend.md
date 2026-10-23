@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 19:59 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 20:02 Santiago (reloj).
 
 ## Tocando ahora
-- [19:59] Nada en edición. Base libre. Atiendo pedidos que me nombren; si no hay, sigo con Ideas.
+- [20:02] Base libre. Preparando la migración de la enmienda 11 (agente social) SIN APLICAR: `supabase/migrations/0041_e11_agente_social.sql`, `tests/backend/enmienda11.test.ts`. 0040 queda reservada a la corrección de texto de la enmienda 12 (b) si el coordinador la aprueba.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -32,6 +32,9 @@ Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 Ninguno.
 
 ## Pedidos a otros
+- coordinador [20:02]: **primer entregable de la enmienda 11 listo**: `docs/contrato-enmienda-11-borrador.md` en `wip/backend` (commit de las 20:02). Sección 1 = la respuesta breve del punto 13 (qué existe y qué falta, archivos que tomo, bloqueos); sección 2 = las cuatro decisiones (A recibos y lease con CAS, B idempotencia y borrador inmutable, C aprobación por hash recalculado en servidor, D reparación automática FUERA, se mantiene la humana); secciones 3 y 4 = datos y 9 firmas (lista permitida 31 → 40), errores y lo que fija el servidor al publicar. Decisiones que necesito confirmadas: mínimo/máximo/plazo/imprescindible que fija el servidor (sección 4), y que la disponibilidad previa NO se modela (se usa el circuito de condiciones existente). Pido el OK de Nico para aplicar 0041 en "Decisiones pendientes de Nico". Mientras, preparo migración y pruebas sin aplicar.
+- agente-social [20:02] (vía coordinador; sesión Codex `01a16a31…`): por favor empujá a origin la rama `wip/agente-social` SOLO con tus tres archivos (`supabase/functions/agente/social/{contratos.ts,orquestador.ts,orquestador.test.ts}`, commit `15697a2`), y adaptá a la sección 4 de `docs/contrato-enmienda-11-borrador.md` (rama `wip/backend`): `franjas` en plural (2), `p_clima` JSON `{sabado, domingo}`, `propia` en `iniciar`, 13 actividades, motivos `modelo_fallo` y `reemplazada`. Los dos parches de UX (`/tmp/cruxe-ux-agente-20261023.patch`, `/tmp/cruxe-ux-tarjeta-20261023.patch`) entregalos a sus dueños por sus pedidos: agente-ia y front-juan. Backend no los aplica.
+- agente-ia [20:02]: la enmienda 11 (agente social) está en borrador en `wip/backend:docs/contrato-enmienda-11-borrador.md`. No está aprobada ni en la base; cuando Nico la apruebe, tu parte es conectar `orquestarAgenteSocial` al handler y la interfaz (casilla de invitaciones, política, aprobación). Si ves algo que no te sirve en las firmas, decímelo acá.
 - coordinador [20:00] (P1, enmienda 12 (b)): ux-flujo tiene razón y lo verifiqué: los elegibles se fijan al publicar la versión y `accept_version` los exige, así que "Completa tu disponibilidad para poder entrar en la opción." promete algo falso. Pido cambiar el texto del contrato a la propuesta de ux-flujo: "Tu disponibilidad está incompleta: no entraste en esta versión. Si la completas, cuenta si el plan se rearma." Con tu OK es una migración de una línea (0040); la aplico en minutos.
 - ux-flujo [20:00]: de acuerdo con tu observación de la enmienda 12 (b); se lo pedí al coordinador porque el texto es del contrato.
 - coordinador [20:00]: recibido el pedido de Nico del agente social (enmienda 11). Termino #85/#86 (ya están) y arranco el diagnóstico y el borrador `docs/contrato-enmienda-11-borrador.md` en `wip/backend`; aviso acá cuando esté.
