@@ -23,7 +23,12 @@ function fechaIcs(utc: string): string | null {
 }
 
 function escaparIcs(t: string): string {
-  return t.replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n')
+  return t
+    .replace(/\\/g, '\\\\')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,')
+    .replace(/[\r\n]+/g, '\\n')
+    .replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '')
 }
 
 /** Descarga un .ics con la franja confirmada. Devuelve false si los datos no alcanzan para armarlo. */

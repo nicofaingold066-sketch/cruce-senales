@@ -27,9 +27,12 @@ export function Orbita({ compacta = false }: { compacta?: boolean }) {
     <div className={`orbita ${compacta ? 'orbita-compacta' : ''}`} aria-hidden="true" onPointerMove={inclinar} onPointerLeave={soltar} onPointerUp={soltar}>
       <div className="orbita-escena" ref={escena}>
         <div className="orbita-plano">
+          <span className="orbita-piso" />
           <span className="orbita-anillo" />
           <span className="orbita-anillo orbita-anillo-2" />
           <span className="orbita-reflejo" />
+          <span className="orbita-onda" />
+          <span className="orbita-onda orbita-onda-2" />
           {Array.from({ length: PERSONAS }, (_, i) => (
             <span
               key={i}
@@ -38,11 +41,16 @@ export function Orbita({ compacta = false }: { compacta?: boolean }) {
             >
               <span className="orbita-rayo" />
               <span className="orbita-nodo">
-                <span className={`orbita-esfera ${i % 3 === 1 ? 'orbita-esfera-tenue' : ''}`} />
+                <span className="orbita-sombra" />
+                <span className={`orbita-esfera ${i % 3 === 1 ? 'orbita-esfera-perla' : ''}`} />
               </span>
             </span>
           ))}
         </div>
+        <span className="orbita-pilar" />
+        {Array.from({ length: 6 }, (_, i) => (
+          <span key={`c${i}`} className="orbita-chispa" style={{ '--i': i } as CSSProperties} />
+        ))}
         <div className="orbita-centro">
           <svg className="orbita-x" viewBox="0 0 100 100">
             <defs>

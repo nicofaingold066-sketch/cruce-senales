@@ -24,7 +24,7 @@ export default function RespuestaTab({ p, viva, soloLectura }: PestanaProps) {
         </span>
         <div>
           <strong>Tus condiciones no se muestran al grupo</strong>
-          <p>Solo el servidor las ve para armar la opción; el grupo ve cuántas personas cargaron, nunca cuáles son.</p>
+          <p>Solo el servidor las ve para armar la opción. Nadie ve cuáles son; solo quien organiza ve cuántas personas respondieron.</p>
         </div>
       </div>
       {s.retirado ? (

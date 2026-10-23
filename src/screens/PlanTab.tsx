@@ -37,7 +37,8 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
 
       {p.estado === 'borrador' ? <AbrirPropuesta p={p} viva={viva} soloLectura={soloLectura} /> : null}
 
-      {p.estado === 'grupo_confirmado' && p.opcion ? <CierrePlan p={p} /> : null}
+      {/* El cierre (calendario, aviso) es para quien va: quien confirmó esta versión. */}
+      {p.estado === 'grupo_confirmado' && p.opcion && p.mi_situacion.acepte_version ? <CierrePlan p={p} /> : null}
 
       {conOpcion && p.opcion ? <OpcionVigente key={p.opcion.version} p={p} viva={viva} soloLectura={soloLectura} /> : null}
 

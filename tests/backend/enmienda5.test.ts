@@ -127,8 +127,8 @@ describe('enmienda 5: preferencias simuladas en vivo', { timeout: 90_000 }, () =
     expect((await ok(L2, 'get_my_preferences', { p_espacio_id: d2.id })).preferencias).toBeNull()
   })
 
-  it('4. catálogo: 30 funciones para authenticated, 0 para anon', async () => {
-    expect(Object.keys(PERMITIDAS)).toHaveLength(30)
+  it('4. catálogo: 31 funciones para authenticated, 0 para anon', async () => {
+    expect(Object.keys(PERMITIDAS)).toHaveLength(31)
     const a = await rpcCrudo(clienteSinSesion(), 'simulate_save_preferences', PERMITIDAS.simulate_save_preferences())
     expect(a.error?.code).toBe('42501')
     const b = await rpcCrudo(O, 'simulate_save_preferences', PERMITIDAS.simulate_save_preferences())

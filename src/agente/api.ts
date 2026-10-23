@@ -25,6 +25,8 @@ export interface ActividadOpcion {
 
 export interface MisPreferencias {
   preferencias: Preferencias | null
+  /** Enmienda 8: si es false, el agente no usa las preferencias de esta persona (siguen guardadas). true si no guardó. */
+  usar_en_agente: boolean
   actualizadas_en: Momento | null
   opciones: { actividades: ActividadOpcion[] }
   personas_con_preferencias: number
@@ -259,16 +261,21 @@ export const agenteApi = {
   getMyPreferences: (espacioId: string) =>
     rpc<MisPreferencias>('get_my_preferences', { p_espacio_id: espacioId }, (c) => ({
       preferencias: (c.preferencias as Preferencias | null) ?? null,
+      usar_en_agente: c.usar_en_agente !== false,
       actualizadas_en: (c.actualizadas_en as Momento | null) ?? null,
       opciones: (c.opciones as MisPreferencias['opciones']) ?? { actividades: [] },
       personas_con_preferencias: typeof c.personas_con_preferencias === 'number' ? c.personas_con_preferencias : 0,
     })),
 
-  saveMyPreferences: (espacioId: string, preferencias: Preferencias) =>
-    rpc<{ repetido: boolean }>(
+  // Enmienda 8: `usar_en_agente` viaja dentro de p_preferencias; si falta, el servidor lo toma como true.
+  saveMyPreferences: (espacioId: string, preferencias: Preferencias, usarEnAgente = true) =>
+    rpc<{ repetido: boolean; usar_en_agente: boolean }>(
       'save_my_preferences',
-      { p_espacio_id: espacioId, p_preferencias: preferencias },
-      (c) => ({ repetido: Boolean((c.resultado as { repetido?: boolean } | undefined)?.repetido) }),
+      { p_espacio_id: espacioId, p_preferencias: { ...preferencias, usar_en_agente: usarEnAgente } },
+      (c) => ({
+        repetido: Boolean((c.resultado as { repetido?: boolean } | undefined)?.repetido),
+        usar_en_agente: c.usar_en_agente !== false,
+      }),
       true,
     ),
 

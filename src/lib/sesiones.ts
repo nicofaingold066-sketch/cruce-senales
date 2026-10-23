@@ -4,6 +4,7 @@
 // navegador y se crea otra sesión anónima, que solo reemplaza la sesión local.
 import { isAuthRetryableFetchError } from '@supabase/supabase-js'
 import { supabase } from './supabase'
+import { guardarPerfil, leerPerfil, olvidarPerfil } from './perfil'
 
 const CLAVE = 'cruxe:sesion-guardada'
 
@@ -11,6 +12,8 @@ export interface SesionGuardada {
   refresh_token: string
   /** "Tomi en «Los del asado»": solo para mostrar en la portada. */
   etiqueta: string
+  /** Nombre local (lib/perfil) de quien guardó la sesión: se restaura al volver y no queda a la vista de otra persona. */
+  nombre?: string
 }
 
 export function leerGuardada(): SesionGuardada | null {
@@ -19,7 +22,7 @@ export function leerGuardada(): SesionGuardada | null {
     if (!crudo) return null
     const g = JSON.parse(crudo) as Partial<SesionGuardada>
     return typeof g.refresh_token === 'string' && typeof g.etiqueta === 'string'
-      ? { refresh_token: g.refresh_token, etiqueta: g.etiqueta }
+      ? { refresh_token: g.refresh_token, etiqueta: g.etiqueta, ...(typeof g.nombre === 'string' ? { nombre: g.nombre } : {}) }
       : null
   } catch {
     return null
@@ -57,7 +60,8 @@ export async function entrarComoOtraPersona(etiqueta: string): Promise<Resultado
     const { data, error } = await supabase.auth.refreshSession()
     const token = data.session?.refresh_token
     if (error || !token) return { ok: false, mensaje: 'No se pudo guardar tu sesión actual. Sigues como antes; intenta de nuevo.' }
-    if (!guardar({ refresh_token: token, etiqueta })) {
+    const nombre = leerPerfil()?.nombre
+    if (!guardar({ refresh_token: token, etiqueta, ...(nombre ? { nombre } : {}) })) {
       return { ok: false, mensaje: 'Este navegador no permite guardar la sesión actual. Para entrar como otra persona, usa una ventana privada.' }
     }
     guardada = true
@@ -82,6 +86,9 @@ export async function volverAGuardada(g: SesionGuardada): Promise<{ ok: true } |
     return { ok: false, mensaje: `La sesión de ${g.etiqueta} ya no se puede recuperar en este navegador.` }
   }
   olvidarGuardada()
+  // El nombre local vuelve con su sesión (o se borra si no había), así nadie más queda mostrado como esa persona.
+  if (g.nombre) guardarPerfil(g.nombre)
+  else olvidarPerfil()
   return { ok: true }
 }
 
@@ -94,6 +101,8 @@ export async function volverAGuardada(g: SesionGuardada): Promise<{ ok: true } |
 export async function sesionNueva(etiqueta: string) {
   const r = await entrarComoOtraPersona(etiqueta)
   if (r.ok) {
+    // La persona nueva no hereda el nombre local de la anterior ("Hola, Tomi." en la notebook de Tomi).
+    olvidarPerfil()
     try {
       for (const k of Object.keys(sessionStorage)) if (k.startsWith('cruxe:')) sessionStorage.removeItem(k)
     } catch {

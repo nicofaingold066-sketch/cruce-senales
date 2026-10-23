@@ -97,6 +97,8 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   const [errorCarga, setErrorCarga] = useState<ApiError | null>(null)
   const [actividades, setActividades] = useState<ActividadOpcion[]>([])
   const [borrador, setBorrador] = useState<Preferencias>(VACIAS)
+  // Enmienda 8 (mejora #72): marcada por defecto; desmarcada, el agente no usa estas preferencias.
+  const [usar, setUsar] = useState(true)
   const [guardadas, setGuardadas] = useState(false)
   const [aviso, setAviso] = useState<string | null>(null)
   const { ocupado, error, ejecutar } = useAccion()
@@ -108,6 +110,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
     if (r.ok) {
       setActividades(r.data.opciones.actividades)
       if (r.data.preferencias) setBorrador(r.data.preferencias)
+      setUsar(r.data.usar_en_agente)
       setGuardadas(Boolean(r.data.preferencias))
       setErrorCarga(null)
     } else setErrorCarga(r.error)
@@ -133,10 +136,11 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   const sinActividades = borrador.me_gustaria.length === 0
 
   async function guardar() {
-    const r = await ejecutar(`preferencias:${espacioId}`, () => agenteApi.saveMyPreferences(espacioId, borrador))
+    const r = await ejecutar(`preferencias:${espacioId}`, () => agenteApi.saveMyPreferences(espacioId, borrador, usar))
     if (r?.ok) {
       setGuardadas(true)
-      setAviso('Guardado. Nadie más ve tus preferencias.')
+      setUsar(r.data.usar_en_agente)
+      setAviso(r.data.usar_en_agente ? 'Guardado. Nadie más ve tus preferencias.' : 'Guardado. El agente no usa tus preferencias; siguen guardadas solo para ti.')
     }
   }
 
@@ -165,6 +169,23 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
         </div>
         {sinActividades ? <small>Marcá al menos una.</small> : null}
       </fieldset>
+      <label htmlFor="pref-usar" className="agente-casilla">
+        <input
+          id="pref-usar"
+          type="checkbox"
+          checked={usar}
+          disabled={soloLectura || ocupado}
+          aria-describedby="pref-usar-ayuda"
+          onChange={(e) => {
+            setUsar(e.target.checked)
+            setAviso(null)
+          }}
+        />
+        <span>
+          Que el agente use mis preferencias
+          <small id="pref-usar-ayuda">Si la desmarcas, el agente no las usa; siguen guardadas solo para ti.</small>
+        </span>
+      </label>
       <div ref={refError}>{error ? <ErrorCaja error={error} onReintentar={() => void guardar()} /> : null}</div>
       {aviso ? <Aviso tono="ok">{aviso}</Aviso> : null}
       <p className="agente-sr" aria-live="polite">

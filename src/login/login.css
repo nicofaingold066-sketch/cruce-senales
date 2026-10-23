@@ -1,0 +1,38 @@
+/* Entrada (#/entrar). Solo variables y clases de src/styles.css; nada nuevo en la paleta. */
+.entrada-cabeza {
+  padding: 14px 0 4px;
+}
+.entrada-opciones {
+  display: grid;
+  gap: 4px;
+}
+.entrada-opcion {
+  min-width: 0;
+}
+.entrada-opcion h2 {
+  font-size: 1.05rem;
+  margin: 0 0 8px;
+}
+.entrada-opcion > p {
+  margin: 6px 0;
+  font-size: 0.9rem;
+}
+.entrada-opcion .btn,
+.entrada-botones .btn {
+  width: 100%;
+  margin: 4px 0;
+  white-space: normal;
+  text-align: center;
+}
+.entrada-principal {
+  border-color: var(--primario);
+  border-width: 2px;
+}
+.entrada-principal .btn-primario {
+  min-height: 52px;
+  font-size: 1.05rem;
+}
+.entrada-botones {
+  display: grid;
+  gap: 6px;
+}

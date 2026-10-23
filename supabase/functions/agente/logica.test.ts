@@ -3,8 +3,19 @@
 // Usa solo el corredor de pruebas de Node (node:test), sin dependencias nuevas. Datos ficticios del caso.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { Buffer } from 'node:buffer'
 import {
+  armarPedido,
   candidatasDe,
+  crearLimiteModelo,
+  elegirProveedor,
+  GATEWAY_URL,
+  MAX_TOKENS_MODELO,
+  MODELO_DIRECTO,
+  MODELO_GATEWAY,
+  modoSalida,
+  textoDeRespuesta,
+  usuarioDe,
   climaPedido,
   climaSimulado,
   entradaModelo,
@@ -259,4 +270,162 @@ test('hallazgo 5: el modelo no recibe "lo que más eligieron" si delata a alguie
   // Con 5 personas y la actividad elegida por 4, sí, con el conteo.
   const asado = entradaModelo([ASADO], PERFIL_5, 'Sin pronóstico disponible.', NOMBRES)
   assert.ok(asado.opciones[0].razones.includes('es lo que más eligieron (4 de 5)'))
+})
+
+// ---- Proveedor del modelo y costo (mejora #64): todo sin red, sin claves reales ni modelo ----
+
+const entorno = (vars: Record<string, string>) => (n: string) => vars[n]
+
+test('proveedor: con clave del Gateway usa el Gateway, aunque también haya clave directa', () => {
+  const p = elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'k-gateway', ANTHROPIC_API_KEY: 'k-directa' }))
+  assert.deepEqual(p, { tipo: 'gateway', variableClave: 'AI_GATEWAY_API_KEY', baseURL: GATEWAY_URL, modelo: MODELO_GATEWAY })
+  assert.equal(GATEWAY_URL, 'https://ai-gateway.vercel.sh')
+  assert.equal(MODELO_GATEWAY, 'anthropic/claude-haiku-5.5')
+})
+
+test('proveedor: sin clave del Gateway y con la directa usa la API de Anthropic, sin URL propia', () => {
+  const p = elegirProveedor(entorno({ ANTHROPIC_API_KEY: 'k-directa' }))
+  assert.deepEqual(p, { tipo: 'anthropic', variableClave: 'ANTHROPIC_API_KEY', modelo: MODELO_DIRECTO })
+  assert.equal(p?.baseURL, undefined)
+})
+
+test('proveedor: sin ninguna clave, o con claves vacías, no hay modelo', () => {
+  assert.equal(elegirProveedor(entorno({})), null)
+  assert.equal(elegirProveedor(entorno({ AI_GATEWAY_API_KEY: '', ANTHROPIC_API_KEY: '   ' })), null)
+})
+
+test('proveedor: la respuesta nunca lleva el valor de la clave', () => {
+  const p = elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'SECRETO-123' }))
+  assert.ok(!JSON.stringify(p).includes('SECRETO-123'))
+})
+
+test('proveedor: AGENTE_MODELO solo vale si tiene el formato del proveedor elegido', () => {
+  const gw = (m: string) => elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'k', AGENTE_MODELO: m }))
+  assert.equal(gw('anthropic/claude-sonnet-5.5')?.modelo, 'anthropic/claude-sonnet-5.5')
+  assert.equal(gw('claude-haiku-5-5')?.modelo, MODELO_GATEWAY, 'un id sin creador no sirve en el Gateway')
+  const directo = (m: string) => elegirProveedor(entorno({ ANTHROPIC_API_KEY: 'k', AGENTE_MODELO: m }))
+  assert.equal(directo('claude-sonnet-5-5')?.modelo, 'claude-sonnet-5-5')
+  assert.equal(directo('anthropic/claude-haiku-5.5')?.modelo, MODELO_DIRECTO, 'un id con barra no sirve en la API directa')
+})
+
+test('modoSalida: json por defecto; "herramienta" fuerza una herramienta', () => {
+  assert.equal(modoSalida(undefined), 'json')
+  assert.equal(modoSalida(''), 'json')
+  assert.equal(modoSalida('cualquier cosa'), 'json')
+  assert.equal(modoSalida(' Herramienta '), 'herramienta')
+})
+
+const CANDIDATAS = [ASADO, { ...ASADO, id: 'lugar-sim-02' }]
+const ENTRADA = { clima: 'seco', candidatas: [] }
+
+test('pedido por el Gateway: modelo con creador, esquema JSON con la elección limitada, sin effort y con tope corto', () => {
+  const gw = elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'k' }))!
+  const pedido = armarPedido(gw, 'json', CANDIDATAS, 'SISTEMA', ENTRADA) as Record<string, any>
+  assert.equal(pedido.model, 'anthropic/claude-haiku-5.5')
+  assert.equal(pedido.max_tokens, MAX_TOKENS_MODELO)
+  assert.ok(pedido.max_tokens >= 1000 && pedido.max_tokens < 2048, 'tope con lugar para el pensamiento del modelo, por debajo del anterior')
+  assert.equal(pedido.output_config.effort, undefined)
+  assert.equal(pedido.output_config.format.type, 'json_schema')
+  assert.deepEqual(pedido.output_config.format.schema.properties.eleccion_id.enum, ['lugar-sim-01', 'lugar-sim-02'])
+  assert.equal(pedido.output_config.format.schema.additionalProperties, false)
+  assert.equal(pedido.tools, undefined)
+  assert.equal(pedido.temperature, undefined)
+  assert.equal(pedido.system, 'SISTEMA')
+  assert.equal(pedido.messages.length, 1)
+})
+
+test('pedido por la API directa: igual que antes, con effort bajo', () => {
+  const directa = elegirProveedor(entorno({ ANTHROPIC_API_KEY: 'k' }))!
+  const pedido = armarPedido(directa, 'json', CANDIDATAS, 'S', ENTRADA) as Record<string, any>
+  assert.equal(pedido.model, 'claude-haiku-5-5')
+  assert.equal(pedido.output_config.effort, 'low')
+  assert.equal(pedido.max_tokens, MAX_TOKENS_MODELO)
+})
+
+test('pedido en modo herramienta: herramienta forzada con el mismo esquema y sin output_config', () => {
+  const gw = elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'k' }))!
+  const pedido = armarPedido(gw, 'herramienta', CANDIDATAS, 'S', ENTRADA) as Record<string, any>
+  assert.deepEqual(pedido.tool_choice, { type: 'tool', name: 'elegir_plan' })
+  assert.equal(pedido.tools.length, 1)
+  assert.equal(pedido.tools[0].name, 'elegir_plan')
+  assert.deepEqual(pedido.tools[0].input_schema.properties.eleccion_id.enum, ['lugar-sim-01', 'lugar-sim-02'])
+  assert.equal(pedido.output_config, undefined)
+})
+
+test('pedido: la entrada del modelo es solo la que se le pasa (sin nombres ni claves)', () => {
+  const gw = elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'SECRETO-123' }))!
+  const pedido = armarPedido(gw, 'json', CANDIDATAS, 'S', entradaModelo(CANDIDATAS, PERFIL_5, 'Sábado seco', NOMBRES))
+  const texto = JSON.stringify(pedido)
+  assert.ok(!texto.includes('SECRETO-123'))
+  for (const n of NOMBRES) assert.ok(!texto.includes(n), `no debe llevar a ${n}`)
+})
+
+const SALIDA_OK = JSON.stringify({
+  eleccion_id: 'lugar-sim-01',
+  explicacion: 'Un asado les sirve a todos y el día viene tranquilo.',
+  mensaje_al_grupo: 'Armemos un asado el sábado o el domingo. Marquen si les interesa y carguen su disponibilidad.',
+})
+
+test('respuesta en JSON: solo vale si terminó bien (end_turn) y trae texto', () => {
+  const bien = { stop_reason: 'end_turn', content: [{ type: 'text', text: SALIDA_OK }] }
+  assert.equal(textoDeRespuesta(bien, 'json'), SALIDA_OK)
+  assert.equal(textoDeRespuesta({ stop_reason: 'max_tokens', content: bien.content }, 'json'), null, 'cortada por largo')
+  assert.equal(textoDeRespuesta({ stop_reason: 'refusal', content: [] }, 'json'), null)
+  assert.equal(textoDeRespuesta({ stop_reason: 'end_turn', content: [] }, 'json'), null)
+})
+
+test('respuesta por herramienta: toma la entrada de la herramienta esperada y la valida igual', () => {
+  const tool = { type: 'tool_use', name: 'elegir_plan', input: JSON.parse(SALIDA_OK) }
+  const texto = textoDeRespuesta({ stop_reason: 'tool_use', content: [tool] }, 'herramienta')
+  assert.ok(texto)
+  assert.equal(validarSalidaModelo(texto, CANDIDATAS, NOMBRES)?.eleccion.id, 'lugar-sim-01')
+  assert.equal(textoDeRespuesta({ stop_reason: 'tool_use', content: [{ ...tool, name: 'otra' }] }, 'herramienta'), null)
+  assert.equal(textoDeRespuesta({ stop_reason: 'end_turn', content: [tool] }, 'herramienta'), null)
+  // Una elección fuera de la lista o un texto con un nombre siguen rechazándose, venga de donde venga.
+  const mala = textoDeRespuesta({ stop_reason: 'tool_use', content: [{ ...tool, input: { ...tool.input, eleccion_id: 'otro' } }] }, 'herramienta')
+  assert.equal(validarSalidaModelo(mala!, CANDIDATAS, NOMBRES), null)
+  const conNombre = textoDeRespuesta({ stop_reason: 'tool_use', content: [{ ...tool, input: { ...tool.input, mensaje_al_grupo: 'Tomi, armemos un asado el sábado, marquen si les interesa.' } }] }, 'herramienta')
+  assert.equal(validarSalidaModelo(conNombre!, CANDIDATAS, NOMBRES), null)
+})
+
+test('usuarioDe: toma el sub del JWT y no se rompe con nada raro', () => {
+  const jwt = (carga: object) => `Bearer cabecera.${Buffer.from(JSON.stringify(carga)).toString('base64url')}.firma`
+  assert.equal(usuarioDe(jwt({ sub: 'u-123' })), 'u-123')
+  assert.equal(usuarioDe(jwt({ role: 'anon' })), 'sin-usuario')
+  assert.equal(usuarioDe(jwt({ sub: 'x'.repeat(200) })), 'sin-usuario')
+  assert.equal(usuarioDe('Bearer basura'), 'sin-usuario')
+  assert.equal(usuarioDe(''), 'sin-usuario')
+  assert.equal(usuarioDe(null), 'sin-usuario')
+})
+
+test('límite: una llamada al modelo por persona cada 10 s; otra persona no se ve afectada', () => {
+  const l = crearLimiteModelo()
+  assert.equal(l.permitir('ana', 0), true)
+  assert.equal(l.permitir('ana', 9_999), false, 'antes de 10 s, no')
+  assert.equal(l.permitir('beto', 5_000), true, 'otra persona sí')
+  assert.equal(l.permitir('ana', 10_000), true, 'a los 10 s, sí')
+  assert.equal(l.permitir('ana', 12_000), false)
+})
+
+test('límite: un pedido negado no corre la espera de la persona', () => {
+  const l = crearLimiteModelo()
+  assert.equal(l.permitir('ana', 0), true)
+  for (let t = 1_000; t < 10_000; t += 1_000) assert.equal(l.permitir('ana', t), false)
+  assert.equal(l.permitir('ana', 10_000), true, 'insistir no alarga la espera')
+})
+
+test('límite: tope global por ventana, aunque cada persona espere sus 10 s', () => {
+  const l = crearLimiteModelo(10_000, 3, 60_000)
+  assert.equal(l.permitir('a', 0), true)
+  assert.equal(l.permitir('b', 1), true)
+  assert.equal(l.permitir('c', 2), true)
+  assert.equal(l.permitir('d', 3), false, 'cuarta llamada en la ventana')
+  assert.equal(l.permitir('d', 60_000), true, 'pasada la ventana vuelve a haber lugar')
+})
+
+test('límite: la memoria no crece con quien dejó de pedir', () => {
+  const l = crearLimiteModelo(10_000, 1_000_000, 60_000)
+  for (let i = 0; i < 500; i++) l.permitir(`u${i}`, i)
+  // Mucho después, un solo pedido limpia a los anteriores: solo se comprueba que sigue funcionando.
+  assert.equal(l.permitir('u0', 1_000_000), true)
 })

@@ -95,7 +95,7 @@ export default function Perfil() {
             <Icono n="privado" />
           </div>
           <ul className="lista-check">
-            <li>Tus condiciones (cuándo puedes) las ve solo el servidor. El grupo solo ve cuántas personas cargaron.</li>
+            <li>Tus condiciones (cuándo puedes) las ve solo el servidor. Solo quien organiza ve cuántas personas respondieron, nunca qué respondió cada una.</li>
             <li>Marcar "Me interesa" no es confirmar. Confirmas una versión concreta del plan.</li>
             <li>Si el plan cambia, tu confirmación anterior no pasa a la versión nueva.</li>
             <li>Todo lo que ves en la demo son datos ficticios.</li>

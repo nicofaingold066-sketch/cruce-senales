@@ -343,7 +343,8 @@ function Pasos({ p }: { p: EstadoPropuesta }) {
     reuniendo_interes: 0,
     en_revision: 1,
     esperando_compromisos: 2,
-    grupo_confirmado: 4,
+    // El grupo confirmado espera el encuentro: no se marca como hecho algo que todavía no pasó (caso canónico).
+    grupo_confirmado: 3,
   }
   const i = actual[p.estado]
   if (i === undefined) return null

@@ -300,3 +300,195 @@ export function validarSalidaModelo(
   if (!textoValido(salida.explicacion, 240, nombres) || !textoValido(salida.mensaje_al_grupo, 320, nombres)) return null
   return { eleccion, explicacion: salida.explicacion.trim(), mensaje: salida.mensaje_al_grupo.trim() }
 }
+
+// ---------------------------------------------------------------------------------------------
+// Proveedor del modelo (mejora #64). Sin red ni claves: estas funciones solo deciden y arman datos.
+// Con AI_GATEWAY_API_KEY se usa el Vercel AI Gateway; sin ella y con ANTHROPIC_API_KEY, la API de
+// Anthropic directa; sin ninguna, no hay modelo y el agente sigue con reglas y texto fijo.
+// ---------------------------------------------------------------------------------------------
+
+export const GATEWAY_URL = 'https://ai-gateway.vercel.sh'
+/** Nombre en el Gateway: `creador/modelo`, con punto en la versión (página de modelos de Vercel). */
+export const MODELO_GATEWAY = 'anthropic/claude-haiku-5.5'
+/** Nombre en la API de Anthropic directa. */
+export const MODELO_DIRECTO = 'claude-haiku-5-5'
+/**
+ * Lo que se le deja escribir al modelo. El JSON (explicación de 240, mensaje de 320 y el id) ocupa unos
+ * 250 tokens, pero Haiku 5.5 piensa por defecto y ese pensamiento cuenta contra max_tokens: con un tope
+ * justo la respuesta se corta antes del texto, se cobra igual y el agente cae al texto fijo. Antes 2048.
+ */
+export const MAX_TOKENS_MODELO = 1500
+export const NOMBRE_HERRAMIENTA = 'elegir_plan'
+
+export interface Proveedor {
+  tipo: 'gateway' | 'anthropic'
+  /** Nombre de la variable de entorno con la clave: la clave en sí nunca pasa por acá. */
+  variableClave: 'AI_GATEWAY_API_KEY' | 'ANTHROPIC_API_KEY'
+  /** Solo el Gateway usa otra URL base; con la API directa queda la del SDK. */
+  baseURL?: string
+  modelo: string
+}
+
+export type ModoSalida = 'json' | 'herramienta'
+
+/**
+ * Elige el proveedor según qué secretos existen. `leer` devuelve el valor de una variable de entorno
+ * (en la función, Deno.env.get). AGENTE_MODELO pisa el modelo, pero solo si tiene el formato del
+ * proveedor elegido (`creador/modelo` en el Gateway, sin barra en la API directa): así un valor viejo
+ * no deja al agente sin modelo en silencio.
+ */
+export function elegirProveedor(leer: (nombre: string) => string | undefined): Proveedor | null {
+  const hay = (n: string) => (leer(n) ?? '').trim().length > 0
+  const pedido = (leer('AGENTE_MODELO') ?? '').trim()
+  if (hay('AI_GATEWAY_API_KEY')) {
+    return {
+      tipo: 'gateway',
+      variableClave: 'AI_GATEWAY_API_KEY',
+      baseURL: GATEWAY_URL,
+      modelo: pedido.includes('/') ? pedido : MODELO_GATEWAY,
+    }
+  }
+  if (hay('ANTHROPIC_API_KEY')) {
+    return {
+      tipo: 'anthropic',
+      variableClave: 'ANTHROPIC_API_KEY',
+      modelo: pedido && !pedido.includes('/') ? pedido : MODELO_DIRECTO,
+    }
+  }
+  return null
+}
+
+/**
+ * AGENTE_SALIDA=herramienta fuerza una herramienta en vez del JSON con esquema, si el proveedor no acepta el
+ * formato. Solo sirve con Haiku 5.5: Sonnet 5.5, Opus 5.5 y Fable 5.1 rechazan (400) un tool_choice forzado.
+ */
+export function modoSalida(valor: string | undefined): ModoSalida {
+  return (valor ?? '').trim().toLowerCase() === 'herramienta' ? 'herramienta' : 'json'
+}
+
+function esquemaSalida(candidatas: Candidata[]) {
+  return {
+    type: 'object' as const,
+    properties: {
+      eleccion_id: { type: 'string' as const, enum: candidatas.map((c) => c.id) },
+      explicacion: { type: 'string' as const },
+      mensaje_al_grupo: { type: 'string' as const },
+    },
+    required: ['eleccion_id', 'explicacion', 'mensaje_al_grupo'],
+    additionalProperties: false,
+  }
+}
+
+/** El pedido a Messages. La elección queda limitada por esquema a los ids que el servidor ya validó. */
+export function armarPedido(
+  proveedor: Proveedor,
+  modo: ModoSalida,
+  candidatas: Candidata[],
+  sistema: string,
+  entrada: unknown,
+) {
+  const base = {
+    model: proveedor.modelo,
+    max_tokens: MAX_TOKENS_MODELO,
+    system: sistema,
+    messages: [{ role: 'user' as const, content: JSON.stringify(entrada) }],
+  }
+  const esquema = esquemaSalida(candidatas)
+  if (modo === 'herramienta') {
+    return {
+      ...base,
+      tools: [
+        {
+          name: NOMBRE_HERRAMIENTA,
+          description: 'Elige una de las opciones recibidas y redacta la explicación y el mensaje para el grupo.',
+          input_schema: esquema,
+        },
+      ],
+      tool_choice: { type: 'tool' as const, name: NOMBRE_HERRAMIENTA },
+    }
+  }
+  return {
+    ...base,
+    // `effort` está probado con la API directa; el Gateway no lo documenta junto a output_config, así que no se manda.
+    output_config: {
+      ...(proveedor.tipo === 'anthropic' ? { effort: 'low' as const } : {}),
+      format: { type: 'json_schema' as const, schema: esquema },
+    },
+  }
+}
+
+interface BloqueRespuesta {
+  type: string
+  text?: string
+  name?: string
+  input?: unknown
+}
+
+/**
+ * Saca el texto JSON de la respuesta del modelo, o null si no terminó bien (cortada por largo, rechazo,
+ * sin el bloque esperado). El resultado sigue pasando por validarSalidaModelo.
+ */
+export function textoDeRespuesta(
+  respuesta: { stop_reason?: string | null; content: BloqueRespuesta[] },
+  modo: ModoSalida,
+): string | null {
+  if (modo === 'herramienta') {
+    if (respuesta.stop_reason !== 'tool_use') return null
+    const bloque = respuesta.content.find((b) => b.type === 'tool_use' && b.name === NOMBRE_HERRAMIENTA)
+    return bloque && bloque.input && typeof bloque.input === 'object' ? JSON.stringify(bloque.input) : null
+  }
+  if (respuesta.stop_reason !== 'end_turn') return null
+  const texto = respuesta.content.map((b) => (b.type === 'text' ? (b.text ?? '') : '')).join('')
+  return texto.length > 0 ? texto : null
+}
+
+// ---------------------------------------------------------------------------------------------
+// Límite de llamadas al modelo (mejora #64, costo). Frena a una persona que pide una y otra vez y pone un
+// techo por instancia; no frena a quien abre sesiones anónimas nuevas (cada una trae otro usuario) ni suma
+// entre instancias, y se reinicia con la función. Es una protección parcial: el tope real de gasto es el
+// límite de la clave. Si el límite dice que no, el agente responde igual con la regla y el texto fijo.
+// ---------------------------------------------------------------------------------------------
+
+export const ESPERA_POR_USUARIO_MS = 10_000
+export const TOPE_GLOBAL = 30
+export const VENTANA_GLOBAL_MS = 60_000
+
+/** El `sub` del JWT de quien llama. Solo para llevar la cuenta: la base es quien comprueba la sesión. */
+export function usuarioDe(autorizacion: string | null | undefined): string {
+  try {
+    const token = (autorizacion ?? '').replace(/^Bearer\s+/i, '')
+    const carga = token.split('.')[1]
+    if (!carga) return 'sin-usuario'
+    const json = atob(carga.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(carga.length / 4) * 4, '='))
+    const sub = (JSON.parse(json) as { sub?: unknown }).sub
+    return typeof sub === 'string' && sub.length > 0 && sub.length <= 64 ? sub : 'sin-usuario'
+  } catch {
+    return 'sin-usuario'
+  }
+}
+
+export interface LimiteModelo {
+  /** true si esta llamada puede ir al modelo (y la cuenta); false si hay que responder con la regla. */
+  permitir(usuario: string, ahora: number): boolean
+}
+
+export function crearLimiteModelo(
+  esperaMs = ESPERA_POR_USUARIO_MS,
+  tope = TOPE_GLOBAL,
+  ventanaMs = VENTANA_GLOBAL_MS,
+): LimiteModelo {
+  const ultimo = new Map<string, number>()
+  let llamadas: number[] = []
+  return {
+    permitir(usuario, ahora) {
+      for (const [u, t] of ultimo) if (ahora - t >= esperaMs) ultimo.delete(u)
+      llamadas = llamadas.filter((t) => ahora - t < ventanaMs)
+      const previo = ultimo.get(usuario)
+      if (previo !== undefined && ahora - previo < esperaMs) return false
+      if (llamadas.length >= tope) return false
+      ultimo.set(usuario, ahora)
+      llamadas.push(ahora)
+      return true
+    },
+  }
+}

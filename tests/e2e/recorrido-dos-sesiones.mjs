@@ -1,5 +1,6 @@
 // #57. Recorrido completo en el navegador a 375 px con dos sesiones separadas: Tomi (ventana normal)
-// y Luna (ventana privada), más el navegador compartido. Es el guion de la evidencia #55 (docs/agente-ia.md §8.2).
+// y Luna (ventana privada), más el navegador compartido y la vuelta a la sesión de Tomi ("Volver a esa sesión").
+// Es el guion de la evidencia #55 (docs/agente-ia.md §8.2).
 //
 //   node tests/e2e/recorrido-dos-sesiones.mjs [url]
 //
@@ -94,6 +95,7 @@ try {
   await tocar(T, 'Probar la demo «Los del asado»')
   await T.getByRole('heading', { name: 'Los del asado' }).waitFor({ timeout: 20000 })
   const codigo = (await T.locator('.codigo').first().textContent())?.trim()
+  const urlEspacio = T.url()
   verificar('Tomi entra a su demo como organizador', !!codigo && (await T.getByText('Herramientas del organizador').count()) > 0, `código ${enmascarar(codigo)}`)
   await captura(T, 'tomi-espacio')
 
@@ -124,7 +126,7 @@ try {
   await L.getByText('Asado en casa de Tomi', { exact: false }).first().click()
   await L.getByRole('tab', { name: 'Mi respuesta' }).waitFor({ timeout: 15000 })
   // La pestaña depende del espacio (get_space aparte): se espera a que llegue y se mira un rato, no un instante.
-  await L.getByRole('link', { name: '← Los del asado' }).waitFor({ timeout: 15000 })
+  await L.getByRole('link', { name: /Los del asado/ }).first().waitFor({ timeout: 15000 }) // rediseño: el volver lleva ícono, no '←'
   let conSimulacion = false
   for (let i = 0; i < 6 && !conSimulacion; i++) {
     conSimulacion = (await L.getByRole('tab', { name: 'Simulación' }).count()) > 0
@@ -134,8 +136,8 @@ try {
   await pestana(L, 'Mi respuesta'); await conInteres(L); await conCondiciones(L)
   // E7.2 con control positivo, mientras se reúne interés: Tomi ve el conteo de condiciones cargadas; Luna no.
   await pestana(T, 'Plan'); await pestana(L, 'Plan')
-  const tomiVeConteo = await esperarTexto(T, 'Con condiciones cargadas', 10000).then(() => true, () => false)
-  const lunaVeConteo = (await L.getByText('Con condiciones cargadas', { exact: false }).count()) > 0
+  const tomiVeConteo = await esperarTexto(T, 'Con condiciones', 10000).then(() => true, () => false)
+  const lunaVeConteo = (await L.getByText('Con condiciones', { exact: false }).count()) > 0
   verificar('E7.2: "Con condiciones cargadas" lo ve Tomi y no Luna', tomiVeConteo && !lunaVeConteo, `Tomi ${tomiVeConteo ? 'sí' : 'no'}, Luna ${lunaVeConteo ? 'sí' : 'no'}`)
   await pestana(T, 'Simulación'); await tocar(T, 'Cargar condiciones del caso a las personas simuladas')
   await esperarTexto(T, 'cargadas las condiciones de', 20000)
@@ -193,7 +195,9 @@ try {
     await esperarTexto(T, 'Este navegador ya está en este espacio como Tomi').then(() => true, () => false))
   await captura(T, 'compartido-aviso')
   await tocar(T, 'Entrar como otra persona')
-  await esperarTexto(T, 'no se puede volver a entrar como Tomi')
+  // Mejora #47 (arreglo 5204837): la sesión de Tomi no se revoca; queda guardada para volver a ella.
+  verificar('Confirmación: la sesión de Tomi queda guardada en este navegador',
+    await esperarTexto(T, 'queda guardada en este navegador').then(() => true, () => false))
   await tocar(T, 'Sí, entrar como Pepe')
   await T.getByRole('heading', { name: 'Los del asado' }).waitFor({ timeout: 20000 })
   const cab = await T.locator('header').innerText()
@@ -201,12 +205,30 @@ try {
     /Pepe/.test(cab) && (await T.getByText('Herramientas del organizador').count()) === 0, cab.replace(/\s+/g, ' ').slice(0, 80))
   await T.getByText('Asado en casa de Tomi', { exact: false }).first().waitFor({ timeout: 15000 })
   // La tarjeta une el texto del servidor (siguiente_accion) y el conteo que arma la interfaz.
-  const tarjeta = (await T.locator('.tarjeta-prop').first().innerText()).replace(/\s+/g, ' ')
+  const tarjeta = (await T.locator('.plan-vivo, .tarjeta-prop').first().innerText()).replace(/\s+/g, ' ')
   const imposiblesTarjeta = conteosImposibles(tarjeta)
   verificar('#56: la tarjeta dice "N confirmaron (mínimo M)" y no "N de M" con N mayor',
     imposiblesTarjeta.length === 0 && /\d+ confirmaron \(mínimo \d+\)/.test(tarjeta), imposiblesTarjeta.length ? imposiblesTarjeta.join(', ') : tarjeta)
   await captura(T, 'compartido-pepe')
   verificar('Sin desborde horizontal a 375 px (Pepe)', !(await T.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)))
+
+  // 8. Vuelta (mejora #61): desde la portada, "Volver a esa sesión" devuelve a Tomi como organizador.
+  await T.goto(`${BASE}/#/`)
+  verificar('Portada: ofrece volver a la sesión de Tomi',
+    await esperarTexto(T, 'Este navegador guarda otra sesión: Tomi').then(() => true, () => false))
+  await captura(T, 'volver-a-esa-sesion')
+  await tocar(T, 'Volver a esa sesión')
+  // La pantalla se recarga con la sesión recuperada: el aviso desaparece porque ya no hay nada guardado.
+  await T.getByText('Este navegador guarda otra sesión', { exact: false }).first().waitFor({ state: 'detached', timeout: 20000 }).catch(() => {})
+  await T.goto(urlEspacio)
+  await T.getByRole('heading', { name: 'Los del asado' }).waitFor({ timeout: 20000 })
+  const cabTomi = (await T.locator('header').innerText()).replace(/\s+/g, ' ')
+  const herramientas = await T.getByText('Herramientas del organizador').first().waitFor({ timeout: 15000 }).then(() => true, () => false)
+  verificar('Vuelve a ser Tomi, organizador, con sus herramientas', /Tomi/.test(cabTomi) && /organizador/.test(cabTomi) && herramientas, cabTomi.slice(0, 80))
+  await T.goto(`${BASE}/#/`)
+  await T.waitForTimeout(1500)
+  verificar('Ya no queda otra sesión guardada', (await T.getByText('Este navegador guarda otra sesión', { exact: false }).count()) === 0)
+  await captura(T, 'tomi-de-vuelta')
 } catch (e) {
   fallidas++
   paso(`ERROR: ${String(e?.message ?? e).split('\n')[0]}`)

@@ -186,6 +186,9 @@ function PantallaRuta({ ruta }: { ruta: Ruta }) {
       return <CrearGrupo />
     case 'unirse':
       return ruta.invalida ? <Inicio key="invitacion-invalida" invitacionInvalida /> : <Inicio key={ruta.codigo} codigoInvitacion={ruta.codigo} />
+    case 'entrar':
+      // Una sola puerta: la portada del rediseño ya resuelve el ingreso (nombre, demo, código o grupo nuevo).
+      return <Inicio />
     default:
       return <Inicio />
   }

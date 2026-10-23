@@ -61,6 +61,7 @@ export type Ruta =
   | { nombre: 'nueva'; espacioId: string }
   | { nombre: 'propuesta'; espacioId: string; propuestaId: string }
   | { nombre: 'unirse'; codigo: string; invalida?: boolean }
+  | { nombre: 'entrar' }
 
 /** U6 (revisión de Codex): un enlace mal copiado no puede romper la app; se avisa y se ofrece escribir el código. */
 function rutaUnirse(crudo: string): Ruta {
@@ -76,6 +77,7 @@ function rutaUnirse(crudo: string): Ruta {
 export function parseRuta(hash: string): Ruta {
   const partes = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
   if (partes[0] === 'unirse' && partes[1]) return rutaUnirse(partes[1])
+  if (partes[0] === 'entrar') return { nombre: 'entrar' }
   if (partes[0] === 'planes') return { nombre: 'planes' }
   if (partes[0] === 'perfil') return { nombre: 'perfil' }
   if (partes[0] === 'crear') return { nombre: 'crear' }
@@ -96,6 +98,7 @@ export const rutas = {
   nueva: (id: string) => `#/e/${id}/nueva`,
   propuesta: (e: string, p: string) => `#/e/${e}/p/${p}`,
   unirse: (codigo: string) => `#/unirse/${encodeURIComponent(codigo)}`,
+  entrar: () => '#/entrar',
 }
 
 export function irA(hash: string) {

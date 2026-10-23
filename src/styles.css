@@ -5007,3 +5007,188 @@ fieldset:disabled .opcion-radio {
 .franja-cond > legend {
   margin-bottom: 8px;
 }
+.quien-soy {
+  margin: 0 0 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--revision-suave);
+}
+.quien-soy p {
+  margin: 0;
+  font-size: 0.92rem;
+}
+.quien-soy .fila-botones {
+  margin-top: 8px;
+}
+/* La X de la órbita a la altura de las esferas: centrada sobre el plano, flotando apenas */
+.orbita-centro {
+  margin: -58px 0 0 -46px;
+}
+.orbita-compacta .orbita-centro {
+  margin: -50px 0 0 -39px;
+}
+@keyframes orbita-flotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* ------------------------------------------------------------------ Órbita 3D: pasada estética */
+.orbita {
+  --giro: 64s;
+  --inclinacion: 62deg;
+}
+/* Piso de vidrio oscuro con luz de brasa en el centro */
+.orbita-piso {
+  position: absolute;
+  inset: -14%;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side, rgba(255, 106, 43, 0.16), rgba(255, 106, 43, 0.05) 45%, transparent 72%),
+    radial-gradient(closest-side, rgba(255, 255, 255, 0.05), transparent 80%);
+}
+.orbita-anillo {
+  border: 1px solid rgba(255, 220, 200, 0.18);
+  box-shadow:
+    0 0 30px rgba(255, 106, 43, 0.14),
+    inset 0 0 40px rgba(255, 106, 43, 0.1);
+}
+.orbita-anillo-2 {
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+/* Ondas tipo sonar que salen de la X sobre el plano */
+.orbita-onda {
+  position: absolute;
+  inset: 38%;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 138, 85, 0.75);
+  opacity: 0;
+  animation: orbita-onda 3.85s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+}
+.orbita-onda-2 {
+  animation-delay: 1.9s;
+}
+@keyframes orbita-onda {
+  0% {
+    opacity: 0.85;
+    transform: scale(0.35);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+/* Rayos más finos y elegantes, con estela */
+.orbita-rayo {
+  height: 2px;
+  top: -1px;
+  background: linear-gradient(90deg, rgba(255, 106, 43, 0) 0%, rgba(255, 106, 43, 0.9) 55%, rgba(255, 220, 190, 1) 62%, rgba(255, 106, 43, 0) 100%) no-repeat,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03));
+  background-size:
+    46% 100%,
+    100% 100%;
+}
+/* Sombra de contacto de cada persona sobre el plano */
+.orbita-sombra {
+  position: absolute;
+  left: -14px;
+  top: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.25) 60%, transparent);
+}
+/* Esferas brillantes: brasa y perla, con reflejo y borde iluminado */
+.orbita-esfera {
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.4) 9%, transparent 22%),
+    radial-gradient(circle at 70% 82%, rgba(255, 190, 150, 0.55) 0%, transparent 34%),
+    radial-gradient(circle at 40% 40%, #ff9a63 0%, #f2601f 36%, #a83a0c 72%, #3d1203 100%);
+  box-shadow:
+    0 0 16px rgba(255, 106, 43, 0.45),
+    inset -3px -5px 9px rgba(0, 0, 0, 0.35),
+    inset 2px 2px 6px rgba(255, 220, 200, 0.25);
+}
+.orbita-esfera-perla {
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.5) 10%, transparent 24%),
+    radial-gradient(circle at 70% 82%, rgba(255, 180, 140, 0.45) 0%, transparent 36%),
+    radial-gradient(circle at 40% 40%, #fff6ee 0%, #e6d8cc 34%, #a8968a 70%, #4a3f39 100%);
+  box-shadow:
+    0 0 14px rgba(255, 230, 210, 0.25),
+    inset -3px -5px 9px rgba(0, 0, 0, 0.3);
+}
+/* Columna de luz debajo de la X */
+.orbita-pilar {
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  width: 70px;
+  height: 120px;
+  margin: -112px 0 0 -35px;
+  background: linear-gradient(180deg, transparent 0%, rgba(255, 106, 43, 0.18) 55%, rgba(255, 106, 43, 0.32) 100%);
+  filter: blur(10px);
+  border-radius: 50%;
+  pointer-events: none;
+}
+/* Chispas de brasa que suben */
+.orbita-chispa {
+  position: absolute;
+  left: calc(50% + (var(--i) - 2.5) * 13px);
+  top: 58%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #ffb07a;
+  box-shadow: 0 0 6px rgba(255, 106, 43, 0.9);
+  opacity: 0;
+  animation: orbita-chispa 3.6s ease-out infinite;
+  animation-delay: calc(var(--i) * 0.6s);
+}
+@keyframes orbita-chispa {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(1);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc((var(--i) - 2.5) * 6px), -90px) scale(0.4);
+  }
+}
+.orbita-x {
+  filter: drop-shadow(0 0 12px rgba(255, 106, 43, 0.8)) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5));
+}
+@media (prefers-reduced-motion: reduce) {
+  .orbita-onda,
+  .orbita-chispa {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+/* Un solo ángulo animado para el plano y las esferas: siempre sincronizados (las esferas nunca se "aplastan") */
+@property --orbita-ang {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+.orbita-plano {
+  transform: rotateX(var(--inclinacion)) rotateZ(var(--orbita-ang));
+  animation: orbita-ang var(--giro) linear infinite;
+}
+@keyframes orbita-ang {
+  to {
+    --orbita-ang: 360deg;
+  }
+}
+.orbita-esfera {
+  animation: none;
+  transform: rotateZ(calc(var(--a) * -1 - var(--orbita-ang))) rotateX(calc(var(--inclinacion) * -1));
+}
