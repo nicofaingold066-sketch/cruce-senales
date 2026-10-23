@@ -65,8 +65,8 @@ function Marco({
   const conNav =
     sesion.fase === 'lista' && ((ruta.nombre === 'inicio' && perfil != null) || ruta.nombre === 'planes' || ruta.nombre === 'perfil')
   const quien = identidad.yo ?? perfil?.nombre ?? null
-  // Entrada animada al abrir la portada o una invitación (una vez por sesión del navegador).
-  const entrada = useEntrada(ruta.nombre === 'inicio' || ruta.nombre === 'unirse')
+  // Entrada animada al abrir la portada (una vez por sesión del navegador). En una invitación no: tapaba "¿Quién eres?".
+  const entrada = useEntrada(ruta.nombre === 'inicio')
 
   return (
     <>
