@@ -16,6 +16,8 @@ import {
   modoSalida,
   textoDeRespuesta,
   usuarioDe,
+  viajeDe,
+  viajeSeguro,
   climaPedido,
   climaSimulado,
   entradaModelo,
@@ -428,4 +430,45 @@ test('límite: la memoria no crece con quien dejó de pedir', () => {
   for (let i = 0; i < 500; i++) l.permitir(`u${i}`, i)
   // Mucho después, un solo pedido limpia a los anteriores: solo se comprueba que sigue funcionando.
   assert.equal(l.permitir('u0', 1_000_000), true)
+})
+
+// ---- Enmienda 10: viaje máximo estimado, sin zonas, modos ni personas ----
+
+test('viajeSeguro: solo minutos y estimado; cualquier otra clave o un valor raro se descarta', () => {
+  assert.deepEqual(viajeSeguro({ max_minutos: 35, estimado: true }), { max_minutos: 35, estimado: true })
+  assert.deepEqual(viajeSeguro({ max_minutos: 34.6, estimado: true, zona: 'nunoa', modo: 'auto', por_persona: [10, 35] }), { max_minutos: 35, estimado: true })
+  assert.equal(viajeSeguro(null), null)
+  assert.equal(viajeSeguro({ max_minutos: '35' }), null)
+  assert.equal(viajeSeguro({ max_minutos: 0 }), null)
+  assert.equal(viajeSeguro({ max_minutos: 5000 }), null)
+  assert.equal(viajeSeguro({ max_minutos: Number.NaN }), null)
+})
+
+test('viajeDe: vale el de la candidata elegida; el de arriba solo si la elegida es la primera', () => {
+  const a = { ...ASADO, viaje: { max_minutos: 20, estimado: true } }
+  const b = { ...PARQUE, viaje: { max_minutos: 45, estimado: true } }
+  assert.deepEqual(viajeDe(b, [a, b], { max_minutos: 20, estimado: true }), { max_minutos: 45, estimado: true })
+  assert.equal(viajeDe({ ...PARQUE, viaje: null }, [a, { ...PARQUE, viaje: null }], { max_minutos: 20 }), null)
+  // Sin viaje por candidata (respuesta vieja): el de arriba es el de la primera.
+  assert.deepEqual(viajeDe(ASADO, [ASADO, PARQUE], { max_minutos: 25, estimado: true }), { max_minutos: 25, estimado: true })
+  assert.equal(viajeDe(PARQUE, [ASADO, PARQUE], { max_minutos: 25, estimado: true }), null)
+})
+
+test('entradaModelo: el modelo recibe solo viaje_max_minutos por opción, nunca zona ni modo', () => {
+  const conViaje = [{ ...ASADO, viaje: { max_minutos: 35, estimado: true, zona: 'nunoa' } as never }, { ...PARQUE, viaje: null }]
+  const e = entradaModelo(conViaje, PERFIL_5, 'Sábado seco', NOMBRES)
+  assert.equal(e.opciones[0].viaje_max_minutos, 35)
+  assert.equal(e.opciones[1].viaje_max_minutos, null)
+  const texto = JSON.stringify(e)
+  assert.ok(!/nunoa|zona|modo|auto|transporte|me_llevan/.test(texto), texto)
+})
+
+test('textoValido: no deja decir dónde vive nadie ni cómo se mueve', () => {
+  for (const t of [
+    'Elegimos el parque porque Ana vive cerca.',
+    'Queda bien aunque haya quien no tiene auto en el grupo.',
+    'Armemos el asado y lo pasen a buscar al que va sin auto.',
+    'Es en la comuna de Ñuñoa, a mano para todos.',
+  ]) assert.equal(textoValido(t, 240, NOMBRES), false, t)
+  assert.equal(textoValido('El asado queda a menos de 35 minutos para todos, según un estimado.', 240, NOMBRES), true)
 })

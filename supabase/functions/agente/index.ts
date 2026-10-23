@@ -28,6 +28,8 @@ import {
   unirFrases,
   usuarioDe,
   validarSalidaModelo,
+  viajeDe,
+  viajeSeguro,
   type Candidata,
   type Clima,
   type PerfilGrupo,
@@ -61,6 +63,8 @@ const SISTEMA = [
   'explicacion: una o dos frases, máximo 240 caracteres, sobre por qué esa opción le sirve al grupo.',
   'mensaje_al_grupo: una invitación de máximo 320 caracteres, en una sola línea, que proponga el plan con sus dos opciones de día',
   'e invite a cada uno a marcar si le interesa y cargar su disponibilidad.',
+  'Si una opción trae viaje_max_minutos, puedes decir que queda a menos de esos minutos para todos y que es un estimado;',
+  'nunca digas dónde vive nadie, cómo se mueve ni si alguien necesita que lo lleven.',
 ].join(' ')
 
 function responder(cuerpo: unknown, estado = 200): Response {
@@ -209,7 +213,8 @@ Deno.serve(async (req) => {
   if (!plan.ok || plan.resultado?.tipo !== 'borrador') return responder(plan)
 
   const base = plan.resultado as ResultadoPlan
-  const candidatas = candidatasDe(base)
+  // Enmienda 10: de cada viaje solo pasan los minutos y si es estimado (cualquier otra clave se descarta).
+  const candidatas = candidatasDe(base).map((c) => (c.viaje === undefined ? c : { ...c, viaje: viajeSeguro(c.viaje) }))
   const perfil = base.perfil_grupo ?? null
   const resumen = resumenClima(clima)
 
@@ -243,6 +248,8 @@ Deno.serve(async (req) => {
       // Solo totales del grupo; con 3 personas o menos, solo la cantidad (mejora #26).
       perfil_grupo: perfilParaRespuesta(perfil),
       clima: { fuente: clima.fuente, resumen, sabado: clima.sabado.estado, domingo: clima.domingo.estado },
+      // Enmienda 10: el viaje máximo estimado de la opción destacada (null con menos de 4 personas con zona).
+      viaje: viajeDe(elegida, candidatas, base.viaje),
       explicacion:
         delModelo?.explicacion ??
         unirFrases(elegida.frases_grupo, simulado, { perfil: perfilParaRespuesta(perfil), actividad: elegida.actividad_etiqueta }),

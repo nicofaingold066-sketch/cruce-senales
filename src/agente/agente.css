@@ -56,3 +56,12 @@
   display: block;
   line-height: 1.4;
 }
+
+/* Enmienda 10: preguntas de viaje (opcionales) y la línea del viaje máximo en el borrador. */
+.agente-subtitulo {
+  margin: 0 0 4px;
+  font-size: 1rem;
+}
+.agente-viaje-linea {
+  margin: 8px 0;
+}

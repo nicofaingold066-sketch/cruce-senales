@@ -22,6 +22,12 @@ export interface Franja {
   fin: string
 }
 
+/** Enmienda 10: viaje máximo estimado del grupo hacia una opción. Solo con 4 personas o más; si no, null. */
+export interface Viaje {
+  max_minutos: number
+  estimado: boolean
+}
+
 export interface Candidata {
   id: string
   actividad?: string
@@ -30,6 +36,7 @@ export interface Candidata {
   titulo: string
   franjas: Franja[]
   frases_grupo: string[]
+  viaje?: Viaje | null
 }
 
 /** Totales del grupo (enmienda 4.1). Con 3 personas o menos solo llega `personas`. */
@@ -46,6 +53,26 @@ export interface ResultadoPlan extends Candidata {
   personas_consideradas: number
   candidatas?: Candidata[]
   perfil_grupo?: PerfilGrupo
+}
+
+/**
+ * Enmienda 10: solo un número de minutos y si es estimado. Cualquier otra clave (zona, modo, una persona) se
+ * descarta aunque llegue, y un valor raro da null: la respuesta compartida nunca lleva más que esto.
+ */
+export function viajeSeguro(v: unknown): Viaje | null {
+  if (!v || typeof v !== 'object') return null
+  const m = (v as { max_minutos?: unknown }).max_minutos
+  if (typeof m !== 'number' || !Number.isFinite(m) || m <= 0 || m > 600) return null
+  return { max_minutos: Math.round(m), estimado: (v as { estimado?: unknown }).estimado !== false }
+}
+
+/**
+ * El viaje de la opción destacada. Si las candidatas traen su propio viaje, vale ese. Si solo viene el de arriba
+ * (que es el de la primera opción), sirve únicamente cuando la destacada es la primera.
+ */
+export function viajeDe(elegida: Candidata, candidatas: Candidata[], arriba: unknown): Viaje | null {
+  if (elegida.viaje !== undefined) return viajeSeguro(elegida.viaje)
+  return candidatas[0]?.id === elegida.id ? viajeSeguro(arriba) : null
 }
 
 // Textos fijos por código de frase (lista cerrada de la enmienda 4). Siempre afirmativos sobre el plan.
@@ -72,6 +99,9 @@ const PROHIBIDAS = [
   'cansad*', 'deprim*', 'restricci*', 'confirmad*', 'reserv*', 'agend*', 'ya está listo',
   // Presupuesto (hallazgo 7 de la revisión de privacidad): el servidor ya descarta por precio; el texto no lo menciona.
   'gratis', 'barat*', 'económic*', 'economic*', 'poco presupuesto', 'presupuesto bajo', 'presupuesto ajustado', 'presupuesto limitado',
+  // Enmienda 10: ni dónde vive nadie ni cómo se mueve (el servidor ya lo tuvo en cuenta).
+  'vive', 'viven', 'sin auto', 'no tiene auto', 'no tienen auto', 'que lo lleven', 'que la lleven', 'que los lleven', 'lo pasen a buscar',
+  'la pasen a buscar', 'sin movilidad', 'comuna de',
 ]
 const LETRA = '\\p{L}'
 
@@ -261,6 +291,8 @@ export function entradaModelo(candidatas: Candidata[], perfil: PerfilGrupo | nul
     },
     opciones: candidatas.map((c) => ({
       id: c.id,
+      // Enmienda 10: solo el viaje máximo estimado del grupo (minutos), nunca zonas, modos ni personas.
+      viaje_max_minutos: viajeSeguro(c.viaje)?.max_minutos ?? null,
       // El catálogo puede traer el nombre de un integrante ("Quincho de Tomi"): al modelo le llega sin nombre.
       plan: sinNombres(c.titulo, nombres),
       actividad: c.actividad_etiqueta,
