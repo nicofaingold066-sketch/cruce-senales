@@ -30,6 +30,10 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 10 | Revisión de la interfaz (autoridad en el cliente, textos prematuros, respuestas viejas, datos privados) | codex | entregada (3718b6b): hallazgos U1-U7 pasados a claude-b |
 | 11 | Explicación del agente: que diga por qué ese plan sin revelar a nadie, con la fuente (modelo o texto fijo) visible | agente-ia | entregada (9cfd290), verificada sin clave |
 
+| 25 | "Compartir por WhatsApp" con el mensaje del agente (enlace wa.me con el texto, sin integraciones) | agente-ia | libre |
+| 26 | Perfil agregado visible al grupo ("Asado: 5 de 6") solo con 4 o más personas | agente-ia | libre |
+| 27 | Redesplegar la función del agente con los textos corregidos de wip/agente-ia (lote con el próximo cambio; antes del sábado 11:00) | coordinador | pendiente |
+
 ## P3 — Calidad y robustez
 | # | Mejora | Dueño | Estado |
 |---|---|---|---|
