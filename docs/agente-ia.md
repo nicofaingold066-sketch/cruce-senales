@@ -61,18 +61,23 @@ Para cada combinación de actividad y lugar del catálogo:
 
 Las dos franjas salen de los horarios del lugar en el fin de semana siguiente, con el formato exacto de `create_proposal`: exactamente 2 franjas en hora local de Santiago.
 
-## 6. Redacción: lo que ve el modelo y lo que no
-El modelo **nunca recibe datos de una persona**, ni con nombre ni sin nombre. Solo recibe:
-- el plan ya elegido: actividad, lugar del catálogo, franjas y precio aproximado;
-- el clima;
-- frases sobre el grupo entero, generadas por el servidor y no identificables. Ejemplos: "le sirve al presupuesto de todos", "es bajo techo", "es lo que más eligieron".
+## 6. El agente coordinador: lo que ve el modelo y lo que no
+Pedido de Nico: un agente que lea los intereses de todos los integrantes y proponga según todos ellos, con carácter **comprensivo, empático, amable, ejecutivo y de buen coordinador**. Aprobado por el coordinador como enmienda 4.1.
 
-Con eso redacta una o dos frases de explicación. El servidor valida la respuesta:
-- largo máximo;
-- que no nombre a ningún miembro;
-- que no mencione presupuesto, ánimo ni otra preferencia de alguien en particular.
+**Cómo lee a todo el grupo sin exponer a nadie.** El servidor lee las preferencias de cada integrante y arma dos cosas:
+- **Candidatas:** hasta 3 opciones del catálogo que pasaron el descarte de la sección 5, es decir, que le sirven a todos. Van ordenadas por el puntaje fijo.
+- **Perfil del grupo:** solo totales. Cuántas personas son, cuántas marcaron cada actividad ("Asado: 5 de 6"), el ritmo y el ambiente que prefiere la mayoría y el presupuesto más restrictivo del grupo como categoría (cualquiera, moderado o bajo). Con 3 personas o menos solo va la cantidad de personas.
 
-Si la respuesta no pasa la validación, si el modelo tarda más de unos 8 segundos o si no hay modelo aprobado, se usa un **texto fijo** armado con las mismas frases del grupo. La demo nunca depende de que responda la IA.
+**Qué hace el modelo.** Recibe las candidatas, el perfil del grupo y el clima, nada más. Con ese carácter:
+1. elige **una** de las candidatas, la que mejor equilibra gustos, ritmo y clima;
+2. explica en una o dos frases por qué le sirve al grupo;
+3. redacta un mensaje corto para invitar al grupo, con las dos opciones de día.
+
+**Lo que valida el servidor.** La salida es JSON con esquema fijo, y el id elegido tiene que estar entre las candidatas: si no, va la primera. Los textos tienen largo máximo y no pueden nombrar a ningún miembro ni usar palabras que aludan a la situación de alguien (dinero, salud, ánimo, "alguien", "confirmado", "reservado"). La respuesta indica `eleccion_fuente` (`modelo` o `regla`) y `explicacion_fuente` (`modelo` o `texto_fijo`).
+
+**Quién decide.** El organizador ve todas las candidatas, con la recomendada destacada, y elige él cuál usar. El agente no crea, no invita y no confirma nada.
+
+**Sin clave, con error, con una elección inválida o pasados unos 8 segundos:** primera candidata y **texto fijo**. Así la demo es repetible y nunca depende de que responda la IA. Con `claude-haiku-5-5` no se puede fijar la temperatura (la API la rechaza), así que la repetibilidad la dan el esfuerzo bajo, el esquema fijo y la lista cerrada de candidatas.
 
 **Riesgo de inferencia en grupos chicos.** Con 4 o 5 personas, una frase como "es gratis porque alguien lo necesitaba" deja adivinar quién fue. Por eso las frases del grupo son siempre afirmativas sobre el plan ("le sirve al presupuesto de todos"), nunca sobre una restricción ("alguien no tiene plata"). Con 3 personas o menos no se da ninguna explicación de presupuesto ni de ánimo, solo de clima y lugar.
 

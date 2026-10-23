@@ -1,0 +1,13 @@
+/* Estilos propios del panel del agente. Lo demás viene de src/styles.css. */
+
+/* Un fieldset toma por defecto el ancho mínimo de su contenido y se sale de la tarjeta en el teléfono. */
+.agente-candidatas {
+  min-width: 0;
+}
+
+/* Cada opción ocupa el ancho completo y sus rótulos bajan de línea si no caben. */
+.agente-candidatas .opcion-radio {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
