@@ -90,3 +90,8 @@
   width: auto;
   flex: none;
 }
+.quien-espacio {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: -4px 0 8px;
+}

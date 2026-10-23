@@ -209,8 +209,10 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
   return (
     <div className="pantalla entrada">
       <h1 ref={titulo} tabIndex={-1} className="portada-lema">
-        {vista ? `¿Quién eres en «${vista.espacio.nombre}»?` : 'Te invitaron a un plan'}
+        {vista ? '¿Quién eres?' : 'Te invitaron a un plan'}
       </h1>
+      {/* El nombre del espacio va fuera de los títulos: los guiones esperan el título del espacio para saber que ya se entró. */}
+      {vista ? <p className="quien-espacio">en «{vista.espacio.nombre}»</p> : null}
       <p className="portada-sub">Elige tu nombre. Este teléfono quedará como esa persona; no pedimos correo ni contraseña.</p>
 
       {!vista && !errorVista ? <Cargando texto="Buscando tu grupo…" /> : null}
