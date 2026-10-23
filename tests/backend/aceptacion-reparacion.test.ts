@@ -1,9 +1,10 @@
 // Pruebas críticas: confirmación solo con anfitrión, doble clic, último cupo con sesiones concurrentes,
 // baja a revisión, reparación sin aceptaciones heredadas, versión vieja, sin alternativa,
-// baja que conserva el acuerdo y plazo vencido. Espacios propios con prefijo "t-".
+// baja que conserva el acuerdo y plazo vencido. Espacios propios con prefijo "t-"; las pruebas con simulados
+// usan el demo propio de la sesión O (enmienda 7, E7.3: la simulación solo existe en espacios demo).
 import { beforeAll, describe, expect, it } from 'vitest'
 import {
-  crearEspacioPrueba, crearPropuesta, err, esperar, FRANJAS, intento, nuevaSesion, ok, rpc, simulado,
+  crearEspacioPrueba, crearPropuesta, demoPrueba, err, esperar, FRANJAS, intento, nuevaSesion, ok, rpc, simulado,
   type Json, type Sesion,
 } from './helpers'
 
@@ -17,7 +18,7 @@ describe('aceptación, baja y reparación', { timeout: 90_000 }, () => {
   }, 60_000)
 
   it('confirmación solo con el imprescindible (mínimo 3) y doble clic sin duplicar', async () => {
-    const esp = await crearEspacioPrueba(O, 'anfitrion', 'Anfitrion t')
+    const esp = await demoPrueba(O) // E7.3: con simulados, el demo propio de O (anfitrión = organizador)
     const u1 = (await ok(U1, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Uno t' })).resultado.miembro_id
     const s = await Promise.all(['S1 t', 'S2 t', 'S3 t'].map((n) => simulado(O, esp.espacioId, n)))
     const prop = await crearPropuesta(O, esp.espacioId, esp.miembroId, { minimo: 3, maximo: 6 })
@@ -100,7 +101,7 @@ describe('aceptación, baja y reparación', { timeout: 90_000 }, () => {
   })
 
   it('baja a revisión, reparación sin heredadas, versión vieja y baja que conserva el acuerdo', async () => {
-    const esp = await crearEspacioPrueba(O, 'reparacion', 'Tomi t')
+    const esp = await demoPrueba(O) // E7.3
     const [luna, mati, caro, fede, sofi] = await Promise.all(
       ['Luna t', 'Mati t', 'Caro t', 'Fede t', 'Sofi t'].map((n) => simulado(O, esp.espacioId, n)),
     )
@@ -170,8 +171,8 @@ describe('aceptación, baja y reparación', { timeout: 90_000 }, () => {
   })
 
   it('rama sin alternativa: el anfitrión deja de estar disponible', async () => {
-    const esp = await crearEspacioPrueba(O, 'sin-alternativa', 'Tomi t')
-    const [luna, mati, caro] = await Promise.all(['Luna t', 'Mati t', 'Caro t'].map((n) => simulado(O, esp.espacioId, n)))
+    const esp = await demoPrueba(O) // E7.3; nombres distintos de los de la prueba anterior (mismo demo)
+    const [luna, mati, caro] = await Promise.all(['Luna u', 'Mati u', 'Caro u'].map((n) => simulado(O, esp.espacioId, n)))
     const prop = await crearPropuesta(O, esp.espacioId, esp.miembroId, { minimo: 4, maximo: 6 })
     await ok(O, 'save_my_conditions', { p_propuesta_id: prop, p_disponibilidad: { A: 'si', B: 'si' } })
     for (const id of [luna, mati, caro]) await ok(O, 'simulate_save_conditions', { p_propuesta_id: prop, p_miembro_id: id, p_disponibilidad: { A: 'si', B: 'si' } })

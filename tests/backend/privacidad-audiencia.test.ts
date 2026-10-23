@@ -1,8 +1,9 @@
 // Pruebas críticas: conexión (C0), privacidad, interés sin compromiso, sin opción, fuera de audiencia,
-// validaciones de creación e idempotencia de create_proposal. Espacios propios con prefijo "t-".
+// validaciones de creación e idempotencia de create_proposal. Como hay un simulado (Mati t), el espacio es el
+// demo propio de la sesión T (enmienda 7, E7.3: la simulación solo existe en espacios demo).
 import { beforeAll, describe, expect, it } from 'vitest'
 import {
-  clienteSinSesion, CONTRATO, crearEspacioPrueba, crearPropuesta, err, FRANJAS, intento, nuevaSesion, ok, PLAZO, rpc,
+  clienteSinSesion, CONTRATO, crearPropuesta, demoPrueba, err, FRANJAS, intento, nuevaSesion, ok, PLAZO, rpc,
   rpcCrudo, simulado, type Json, type Sesion,
 } from './helpers'
 
@@ -17,7 +18,7 @@ describe('privacidad y audiencia', { timeout: 60_000 }, () => {
 
   beforeAll(async () => {
     ;[T, L, X] = await Promise.all([nuevaSesion(), nuevaSesion(), nuevaSesion()])
-    esp = await crearEspacioPrueba(T, 'privacidad', 'Tomi t')
+    esp = await demoPrueba(T) // E7.3; el demo ya trae Luna, Mati, Caro, Fede y Sofi simulados, sin condiciones
     const j = await ok(L, 'join_space', { p_codigo: esp.codigo.toLowerCase(), p_nombre_visible: 'Luna t' })
     lunaId = j.resultado.miembro_id
     matiId = await simulado(T, esp.espacioId, 'Mati t')
@@ -136,10 +137,16 @@ describe('privacidad y audiencia', { timeout: 60_000 }, () => {
     expect(JSON.stringify(estado)).not.toMatch(/"(si|no|pendiente)"/)
     expect(JSON.stringify(estado)).not.toContain('incompletas')
 
-    // El organizador ve solo simulados en el panel, y no puede simular a un miembro real.
+    // El organizador ve solo simulados en el panel (todos los del demo, Mati t incluido; ni Luna t ni él mismo),
+    // y no puede simular a un miembro real.
     const panel = await ok(T, 'get_simulation_panel', { p_propuesta_id: prop })
     const nombres = panel.simulacion.miembros.map((m: Json) => m.miembro.nombre)
-    expect(nombres).toEqual(['Mati t'])
+    const miembros = (await ok(T, 'get_space', { p_espacio_id: esp.espacioId })).espacio.miembros
+    const simulados = miembros.filter((m: Json) => m.simulado).map((m: Json) => m.miembro_id).sort()
+    expect(panel.simulacion.miembros.map((m: Json) => m.miembro.miembro_id).sort()).toEqual(simulados)
+    expect(nombres).toContain('Mati t')
+    expect(nombres).not.toContain('Luna t')
+    expect(panel.simulacion.miembros.map((m: Json) => m.miembro.miembro_id)).not.toContain(esp.miembroId)
     expect(panel.simulacion.rotulo).toBe('Simulación')
     const real = await rpc(T, 'simulate_save_conditions', { p_propuesta_id: prop, p_miembro_id: lunaId, p_disponibilidad: { A: 'no', B: 'no' } })
     expect(err(real)).toBe('no_autorizado/miembro_no_simulado')

@@ -2,7 +2,7 @@
 // Demo propio de una sesión de prueba (nunca el demo real) y espacios "t-".
 import { beforeAll, describe, expect, it } from 'vitest'
 import {
-  clienteSinSesion, crearEspacioPrueba, err, intento, nuevaSesion, ok, PERMITIDAS, rpc, rpcCrudo, simulado,
+  clienteSinSesion, crearEspacioPrueba, err, intento, nuevaSesion, ok, PERMITIDAS, rpc, rpcCrudo,
   type Json, type Sesion,
 } from './helpers'
 
@@ -74,9 +74,13 @@ describe('enmienda 5: preferencias simuladas en vivo', { timeout: 90_000 }, () =
     expect(err(await sim(O, id.Luna, SOFI_GRATIS))).toBe('no_autorizado/miembro_no_simulado') // Luna ya es real
     expect(err(await sim(O, id.Tomi, SOFI_GRATIS))).toBe('no_autorizado/miembro_no_simulado')
     expect(err(await sim(X, id.Sofi, SOFI_GRATIS))).toBe('fuera_de_audiencia/no_miembro')
+    // Enmienda 7 (E7.3): fuera del demo ya no se crean simulados; espacio_no_demo llega antes de mirar al miembro.
     const esp = await crearEspacioPrueba(O, 'e5-no-demo', 'Org t')
-    const s = await simulado(O, esp.espacioId, 'Simu t')
-    expect(err(await sim(O, s, SOFI_GRATIS, esp.espacioId))).toBe('no_autorizado/espacio_no_demo')
+    expect(err(await rpc(O, 'add_simulated_member', { p_espacio_id: esp.espacioId, p_nombre_visible: 'Simu t' })))
+      .toBe('no_autorizado/espacio_no_demo')
+    expect(err(await sim(O, esp.miembroId, SOFI_GRATIS, esp.espacioId))).toBe('no_autorizado/espacio_no_demo')
+    // Simulado de otro espacio: Sofi del demo propio de X.
+    const s = (await ok(X, 'seed_demo_space')).espacio.miembros.find((m: Json) => m.nombre === 'Sofi').miembro_id
     expect(err(await sim(O, s, SOFI_GRATIS))).toBe('no_autorizado/miembro_no_simulado') // simulado de otro espacio
     expect(err(await sim(O, id.Sofi, { ...SOFI_GRATIS, comentario: 'x' }))).toBe('entrada_incompleta/preferencias_invalidas')
     expect(err(await sim(O, id.Sofi, 'texto'))).toBe('entrada_incompleta/formato_invalido')

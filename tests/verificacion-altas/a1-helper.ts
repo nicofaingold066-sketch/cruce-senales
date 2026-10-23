@@ -48,18 +48,22 @@ export interface A1Espacio {
   sims: Set<string> // miembro_id de simulados
 }
 
-/** Crea un espacio de prueba "ver-A1-..." con organizador org, invitados reales y simulados. */
+/**
+ * Espacio de prueba con organizador org, invitados reales y simulados. Enmienda 7 (E7.3): la simulación solo
+ * existe en espacios demo, así que es el demo propio de la sesión org (seed_demo_space, idempotente), no un
+ * espacio "ver-A1-..." nuevo. El organizador del demo se llama "Tomi"; acá se lo sigue mapeando como org.nombre.
+ * Los 5 simulados del demo (Luna, Mati, Caro, Fede, Sofi) no tienen condiciones y no entran en las propuestas.
+ */
 export async function a1CrearEspacio(
   org: A1Sesion,
   reales: A1Sesion[],
   simulados: string[],
-  etiqueta: string,
+  _etiqueta: string,
 ): Promise<A1Espacio> {
-  const nombre = `ver-A1-${etiqueta}-${Date.now().toString(36)}`.slice(0, 60)
-  const r = a1Ok(await a1Rpc(org, 'create_space', { p_nombre: nombre, p_tipo: 'amigos', p_nombre_visible: org.nombre }), 'create_space')
-  const espacioId = r.resultado.espacio_id
-  const codigo = r.resultado.codigo_invitacion
-  const miembros: Record<string, string> = { [org.nombre]: r.resultado.miembro_id }
+  const r = a1Ok(await a1Rpc(org, 'seed_demo_space', {}), 'seed_demo_space')
+  const espacioId = r.espacio.id
+  const codigo = r.espacio.codigo_invitacion
+  const miembros: Record<string, string> = { [org.nombre]: r.espacio.mi_miembro_id }
   for (const s of reales) {
     const j = a1Ok(await a1Rpc(s, 'join_space', { p_codigo: codigo, p_nombre_visible: s.nombre }), 'join_space ' + s.nombre)
     miembros[s.nombre] = j.resultado.miembro_id
