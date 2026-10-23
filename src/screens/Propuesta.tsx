@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../lib/api'
 import type { Espacio } from '../lib/types'
+import { CODIGOS_SIGUIENTE } from '../lib/types'
 import { usePropuestaViva } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
@@ -80,10 +81,11 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
     ...(esOrganizadorEspacio ? [{ id: 'simulacion' as Pestana, texto: 'Simulación' }] : []),
   ]
   const activa = pestanas.some((t) => t.id === pestana) ? pestana : 'plan'
-  // Enmienda 3: el código decide el acento; mientras el servidor no lo envíe, se usan sus mismos booleanos.
+  // Enmienda 3: el código decide el acento. Solo si llega un código desconocido se usan los booleanos del servidor.
   const cod = p.siguiente_accion.codigo
-  const turno = cod === 'te_toca_aceptar' || (cod !== 'ya_aceptaste' && p.mi_situacion.puede.aceptar)
-  const yaAcepte = cod === 'ya_aceptaste' || (!turno && p.mi_situacion.acepte_version && p.opcion != null)
+  const conocido = (CODIGOS_SIGUIENTE as readonly string[]).includes(cod)
+  const turno = cod === 'te_toca_aceptar' || (!conocido && p.mi_situacion.puede.aceptar)
+  const yaAcepte = cod === 'ya_aceptaste' || (!conocido && !turno && p.mi_situacion.acepte_version && p.estado === 'esperando_compromisos')
   const props = { p, viva, soloLectura, irAPestana: setPestana }
 
   return (
