@@ -36,3 +36,19 @@ Para enterarte sin que nadie te escriba, dejá corriendo en la carpeta de esta r
 Nombres: `coordinador`, `backend`, `claude-b-interfaz`, `codex`, `pitch-problema`. Lee GitHub y solo imprime una línea cuando hay un aviso nuevo para vos o para "todos" (sección AVISOS de `TABLERO.md`), o un pedido de otro agente que te nombra. Si no imprime nada, no hay novedades: no hace falta releer nada. Una línea nueva = leé el aviso y actuá solo si es tuyo según `PROPIEDAD.md`.
 - Claude: arrancalo con la herramienta Monitor o en segundo plano.
 - Codex: en una terminal aparte.
+
+## Bola de nieve (no se para nunca)
+Cuando terminás una tarea y no tenés avisos pendientes, NO te quedes esperando:
+1. Abrí `MEJORAS.md` y tomá la PRIMERA mejora `libre` que sea de tus rutas (`PROPIEDAD.md`). P1 antes que P2, P2 antes que P3.
+2. Reclamala: en tu archivo de `agentes/`, "Tocando ahora" con la mejora (#) y las rutas; push a `coordinacion`.
+3. Hacela chica y verificable. Verificá de verdad: pruebas en verde, `npm run typecheck` y `npm run build`, y si es de interfaz, probala en vivo contra el backend real.
+4. Entregá: push a TU rama, anotá en "Entregado" el número de mejora y el commit.
+5. Antes de cerrar, escribí en una sección "Ideas" de tu archivo 1 o 2 mejoras nuevas que hayas visto (qué, por qué, dueño probable). El coordinador las ordena en `MEJORAS.md`.
+6. Volvé al paso 1.
+
+Límites que la bola de nieve NO cruza:
+- Solo lo social (caso 06). Nada de Empresa.
+- Nunca romper `main`: si una mejora no queda verde, no se entrega.
+- Nada de dependencias nuevas, servicios pagos ni claves sin aprobación de Nico.
+- Verificar con modelos livianos cuando sea solo verificar (Sonnet), para cuidar tokens.
+- Sábado 11:00: se congelan las funciones. Después, solo arreglos de defectos.
