@@ -67,7 +67,7 @@ const DESCRIPCION_ESTADO: Record<EstadoNodo, string> = {
   confirmo: 'confirmó',
   interesado: 'le interesa',
   baja: 'se bajó',
-  pendiente: 'sin respuesta visible',
+  pendiente: 'sin confirmar',
 }
 
 export function Cruce({
@@ -180,7 +180,7 @@ export function Cruce({
           <i className="ley-interes" /> Le interesa
         </span>
         <span>
-          <i className="ley-pendiente" /> Sin respuesta
+          <i className="ley-pendiente" /> Sin confirmar
         </span>
       </figcaption>
     </figure>
