@@ -1,6 +1,6 @@
 # De la investigación al producto (#102)
 
-Dueño: ux-flujo (rama `wip/ux`). Pedido de Nico: "no perder nada de lo que estudiamos y meterlo en la aplicación". Último barrido: viernes 23 oct 2026, 20:45. Próximos barridos: 23:00 y 07:00.
+Dueño: ux-flujo (rama `wip/ux`). Pedido de Nico: "no perder nada de lo que estudiamos y meterlo en la aplicación". Último barrido: viernes 23 oct 2026, 20:46. Próximos barridos: 23:00 y 07:00.
 
 Fuentes (todas en origin): `docs/flujo-usuario.md` (FU) y `docs/output-debate.md` (OD), de ux-flujo; `docs/usuarios-sinteticos.md` (SIN); `docs/rincones.md` (RIN); `docs/qa-noche.md` (QA); `docs/agente-barrido.md` (AB); `docs/apertura.md` (AP); `docs/catalogo-ampliado.md` (CA); `docs/preguntas-jurado.md` (PJ); `docs/psicologia-grupo.md` (PSI); `prompts/contexto-dia-pitch-reglas.md` (CDP) y `prompts/contexto-dia-login-agente-social.md` (CDL).
 
@@ -10,7 +10,7 @@ Impacto: **A** se cierra la juntada en la demo · **B** se entiende a la primera
 Estado: "HECHO" con commit; "sin conectar" = componente listo que espera a front-juan (Nico decidió esperar a Juan); "pedido" = línea enviada al dueño en su ficha o la de quien lo encontró; "decisión de Nico" = está en "Decisiones para Nico" de `agentes/ux-flujo.md` o de la ficha de quien la propuso.
 
 
-Resumen: 132 filas (A 23, B 41, C 20, D 33, E 15). 88 antes de las 11:00, 23 antes de las 12:00, 21 después. Con algo hecho: 32; componentes listos sin conectar: 12; con decisión de Nico de por medio: 22.
+Resumen: 132 filas (A 23, B 41, C 20, D 33, E 15). 88 antes de las 11:00, 23 antes de las 12:00, 21 después. Con algo hecho: 33; componentes listos sin conectar: 12; con decisión de Nico de por medio: 22.
 
 | # | Impacto | Hallazgo (fuente) | Cambio concreto en la app | Dueño | Tipo | Cuándo | Estado |
 |---|---|---|---|---|---|---|---|
@@ -54,10 +54,10 @@ Resumen: 132 filas (A 23, B 41, C 20, D 33, E 15). 88 antes de las 11:00, 23 ant
 | 38 | B · se entiende | El calendario simulado guarda una agenda inventada al instante ("Hora al dentista" parece salud) (SIN revisión #90) | Marcar primero y pedir un toque para guardar; ofrecerlo solo en demos | friccion | componente | antes de las 11:00, sin migración | pedido de sinteticos 19:58 |
 | 39 | B · se entiende | Enlace a un grupo inexistente: "Falla temporal" y "Reintentar" que nunca anda (RIN O-06, O-08) | "Este enlace no lleva a ningún grupo" / "Esta invitación no existe" | friccion | texto | antes de las 11:00, sin migración | HECHO `05e148d`/`dc26ba4`, en producción |
 | 40 | B · se entiende | Navegador que ya es miembro: todos "no disponible" sin "Seguir como X" (RIN O-02) | "Seguir como X" en "¿Quién eres?" | friccion | componente | antes de las 11:00, sin migración | HECHO `8d881d9` |
-| 41 | B · se entiende | Quien vuelve por el enlace pasa por "Seguir como X" (+1 toque) (ideas ux-flujo) | Si ya es miembro, ir directo a la propuesta vigente | friccion | componente | antes de las 11:00, sin migración | pedido 20:43 (ux-flujo) |
+| 41 | B · se entiende | Quien vuelve por el enlace pasa por "Seguir como X" (+1 toque) (ideas ux-flujo) | Si ya es miembro, ir directo a la propuesta vigente | friccion | componente | antes de las 11:00, sin migración | descartado: en un teléfono compartido (#47) entraría como la persona anterior sin preguntar; \"Seguir como X\" es un toque y ya lleva a responder (friccion) |
 | 42 | B · se entiende | Entrar escribiendo el código no reclamaba al integrante anotado (FU §7) | `destinoPorCodigo` | friccion | componente | antes de las 11:00, sin migración | HECHO `3c07fe3` |
 | 43 | B · se entiende | Portada con nombre: "Tengo un código" y "Unirme con un código" a la vez; dos formularios de unión (RIN O-04; CDL S1§5) | Dejar uno solo; reusar `UnirsePorCodigo` | front-juan + friccion | componente | antes de las 11:00, sin migración | pedido de rincones 20:00 |
-| 44 | B · se entiende | El organizador anota los nombres de a uno (5 escrituras + 5 toques) (FU §3.1) | En "Quiénes son", aceptar una lista pegada separada por comas o saltos de línea | friccion | componente | antes de las 11:00, sin migración | pedido 20:43 (ux-flujo) |
+| 44 | B · se entiende | El organizador anota los nombres de a uno (5 escrituras + 5 toques) (FU §3.1) | En "Quiénes son", aceptar una lista pegada separada por comas o saltos de línea | friccion | componente | antes de las 11:00, sin migración | HECHO `ee27fc5` (friccion) |
 | 45 | B · se entiende | Sin red: tres avisos a la vez; contrato incompatible: dos avisos iguales (RIN O-12a, O-12b) | Un solo aviso | front-juan + friccion | componente | antes de las 11:00, sin migración | pedido de rincones 20:12 |
 | 46 | B · se entiende | "Hoy paso" deshabilitado sin explicación (RIN O-12c) | Explicarlo u ocultarlo | front-juan | texto | antes de las 11:00, sin migración | pedido de rincones 20:12 |
 | 47 | B · se entiende | Al fallar el inicio anónimo, texto técnico (RIN O-13) | Texto no técnico | friccion | texto | antes de las 11:00, sin migración | pedido de rincones 20:12 |
@@ -80,7 +80,7 @@ Resumen: 132 filas (A 23, B 41, C 20, D 33, E 15). 88 antes de las 11:00, 23 ant
 | 64 | B · se entiende | Fechas fijas del caso demo; el agente propone por defecto el sábado `2026-10-31` (FU §7; CDL S3§4) | Sin cambio para la demo del 24 (31 oct es futuro y está dentro de 16 días); después, fecha relativa | agente-ia | agente | después de la demo | verificado leyendo `AgentePanel.tsx:39` |
 | 65 | C · privacidad y tono | Lo que daña es mentir sobre el motivo, no cancelar (PSI F1) | "Gracias por avisar. No hace falta contar por qué." a quien se baja | ux-flujo | componente | antes de las 11:00, sin migración | HECHO `d065138` (`AvisoParaMi`), sin conectar |
 | 66 | C · privacidad y tono | Al grupo, el cambio de plan sin nombre ni motivo (PSI §8.1, §8.4) | `AvisoParaMi` "Cambió el plan" y `RecordarFaltan` "Hay una versión nueva…" | ux-flujo | componente | antes de las 11:00, sin migración | HECHO `d065138`, sin conectar |
-| 67 | C · privacidad y tono | Quien organiza concentra el trabajo (PSI F2, F3, §8.6) | "Se armó la juntada. Gracias por moverlo." (hecho); al crear: "Tú armas el plan; CRUXE te deja listos los avisos para el grupo" | ux-flujo + front-juan | texto | antes de las 11:00, sin migración | gracias HECHO `d065138`; texto al crear: pedido de psico a front-juan (ajustado: CRUXE no manda avisos solo) |
+| 67 | C · privacidad y tono | Quien organiza concentra el trabajo (PSI F2, F3, §8.6) | "Se armó la juntada. Gracias por moverlo." (hecho); al crear: "Tú armas el plan; CRUXE te deja listos los avisos para el grupo" | ux-flujo + front-juan | texto | antes de las 11:00, sin migración | gracias HECHO `d065138`; texto al crear ("Tú armas el plan; CRUXE te deja listos los avisos para el grupo"): pedido a front-juan para `CrearGrupo.tsx` (friccion confirma que no es de sus rutas) |
 | 68 | C · privacidad y tono | Comida: identidad ≠ necesidad; un total delata (PSI §3.4, §8.3) | Frase universal "Habrá opción sin carne" en todo plan con comida del agente | agente-ia | agente | antes de las 11:00, sin migración | pedido de psico 20:39 |
 | 69 | C · privacidad y tono | Palabras que delatan a alguien en el texto del agente (PSI §8.7) | Ampliar la lista prohibida: vegetariano, celíaco, "pareja de", novio, hombres/mujeres, "otra vez en casa"… | agente-ia + qa-noche | agente + prueba | antes de las 11:00, sin migración | pedidos de psico 20:39 |
 | 70 | C · privacidad y tono | Género y pareja son sensibles y delatan en grupos chicos (PSI F24, F27, D2) | No pedirlos ni inferirlos; regla del grupo "¿Quién viene?" (solo el grupo / con parejas / abierta) | front-juan + friccion + Nico | texto + decisión | antes de las 11:00, sin migración | pedido de psico 20:39 + D2 y D3 de psico |
