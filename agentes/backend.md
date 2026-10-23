@@ -3,7 +3,7 @@
 Quien edita este archivo: solo el backend. Última actualización: ~12:20 Santiago (backend), enmienda 3 aplicada. El backend no hace commit/push; el coordinador sincroniza este archivo.
 
 ## Tocando ahora
-(vacío: enmienda 3 cerrada)
+(vacío: 0013 cerrada; esperando enmienda 4, sin empezarla)
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -17,7 +17,7 @@ Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 001
 - A4: 0008 (fijar_ahora, vencer revalidado, bloqueos) + 0010 + 0011 · enmienda2 "A4: seed/seed...", "A4: reset/create...", "A2/A4..."; experimento de bloqueo que cruza el cierre: plazo_vencido.
 
 ## Enmienda 3
-0012_enmienda3 aplicada: siguiente_accion personal (te_toca_aceptar / ya_aceptaste / buscar_opcion), simulate_load_case atómico (26 públicas; verificación de catálogo actualizada). Pruebas: tests/backend/enmienda3.test.ts (4) + ajustes; suite completa 27/27 (5 archivos, 34.7 s). errores_internos 0. Sin commitear: 0012 y tests.
+0012_enmienda3 aplicada: siguiente_accion personal (te_toca_aceptar / ya_aceptaste / buscar_opcion), simulate_load_case atómico (26 públicas; verificación de catálogo actualizada). Pruebas: tests/backend/enmienda3.test.ts (4) + ajustes; suite completa 27/27 (5 archivos, 34.7 s). errores_internos 0. 0013_enmienda3_singular aplicada ("Falta 1" / "Faltan X"); suite 27/27 (32.5 s). Sin commitear: 0012, 0013 y tests.
 
 ## Siguiente
 Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
