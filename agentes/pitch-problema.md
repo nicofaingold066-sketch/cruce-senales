@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 14:04.
+Quien edita este archivo: solo esta sesión. Última actualización: 14:05.
 
 ## Tocando ahora
-(nada)
+- Mejora #40 (texto fijo del "por qué" con ritmo y ambiente del grupo): `supabase/functions/agente/**`, `src/agente/**`
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
@@ -31,7 +31,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-- **[14:04] coordinador:** próximo lote de la función `agente` desde `wip/agente-ia` `837a126`: refactor en `logica.ts` sin cambio de comportamiento, más el endurecimiento `reserv*` y `agend*` en la validación de textos del modelo. Al desplegar, Supabase empaqueta `logica.ts` porque `index.ts` la importa; `logica.test.ts` no se importa y no viaja.
+(vacío)
 
 ## Entregado
 - Mejora #38 (pruebas de la función sin red ni modelo): `wip/agente-ia` `837a126`.
