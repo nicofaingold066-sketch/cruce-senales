@@ -47,8 +47,8 @@ Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegib
 
 | Qué tiene el back | Qué falta en pantalla | Pedido |
 |---|---|---|
-| `mi_situacion.elegible_en_version = false` | decirle claro a quien quedó fuera de la versión que es sin él/ella (hoy la portada le dice "Grupo confirmado") | front-juan 19:30 (P2) |
-| `p.imprescindible` + `mi_situacion.condiciones` | aviso "Primero marca tu disponibilidad" si soy el imprescindible | front-juan 19:30 (P1) |
+| `mi_situacion.elegible_en_version = false` | decirle claro a quien quedó fuera de la versión que es sin él/ella (hoy la portada le dice "Grupo confirmado") | front-juan 19:30 (P2); componente listo `AvisoParaMi` (`59685eb`) |
+| `p.imprescindible` + `mi_situacion.condiciones` | aviso "Primero marca tu disponibilidad" si soy el imprescindible | front-juan 19:30 (P1); componente listo `AvisoParaMi` (`59685eb`) |
 | `miembros[].pendiente` | no ofrecer a un "por entrar" como "No puede faltar" sin aviso | front-juan 19:30 (P2) |
 | `espacio.demo` | chip "Datos ficticios" y textos del demo solo en el demo | friccion (`App.tsx`), front-juan (`Inicio.tsx:462`) 19:30 |
 
@@ -59,3 +59,4 @@ Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegib
 | 19:31 | apertura `87d4a62` (`wip/apertura`) | `src/lib/ejemplos.ts`: `ATAJOS` y `atajosParaGrupo(nombreGrupo)` | sin RPC; front-juan lo conecta en `NuevaPropuesta.tsx` |
 | 19:34 | ux-flujo `419ac2a` (`wip/ux`) | `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (prueba 7/7) | sin RPC; usa `espacio.codigo_invitacion`, `titulo` y la franja vigente |
 | 19:3x | friccion `efede20`, `3c07fe3`, `8d881d9` (`wip/friccion`) | ruta `#/e/<id>/responder`; entrada por código que reclama al integrante anotado; volver con el mismo enlace → "Seguir como X" | fila nueva en §1; resuelve en la interfaz el "`join_space` sin `p_miembro_id`" de §2 (sin verificar por mí) |
+| 19:49 | ux-flujo `59685eb` (`wip/ux`) | `src/componentes-nuevos/AvisoParaMi.tsx` + `avisoPersonal.ts` (prueba) | sin RPC; usa `estado`, `imprescindible`, `mi_situacion` |
