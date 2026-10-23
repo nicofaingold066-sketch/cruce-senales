@@ -1,10 +1,10 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: viernes 23 oct, 20:00 (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: viernes 23 oct, 20:05 (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
-Todavía en curso: 100 de ~135 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 8** (ninguno impide completar el recorrido canónico), el resto APROBADO.
+Todavía en curso: 115 de ~135 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 11 (3 ya corregidos en `wip/friccion`)** (ninguno impide completar el recorrido canónico), el resto APROBADO.
 Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no de función):
 1. **O-01** Cabecera a 320 px: el avatar de la sesión tapa el chip "Datos ficticios" en TODAS las pantallas con nombre.
 2. **O-02** Entrada por enlace en un navegador que ya es miembro: "¿Quién eres?" lo muestra "no disponible" y dice "Ya no queda ningún nombre libre", sin "Seguir como X".
@@ -23,14 +23,16 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | Id | Veredicto | Dónde | Paso exacto | Captura | Dueño |
 |---|---|---|---|---|---|
 | O-01 | OBSERVADO | Cabecera, todas las pantallas con sesión nombrada, **320 px** | Entrar con un nombre y abrir cualquier pantalla a 320 px: el avatar ("RO") se superpone 26 px sobre "Datos ficticios" y lo corta | `202610231931/R25-320.png` | front-juan |
-| O-02 | OBSERVADO | `#/unirse/<código>` en un navegador que ya es miembro | Entrar como Dani por el enlace; volver a abrir el mismo enlace: lista con todos "no disponible", "Ya no queda ningún nombre libre en la lista"; no hay "Seguir como Dani" | `202610231950/R123-375.png` | friccion |
+| O-02 | OBSERVADO | `#/unirse/<código>` en un navegador que ya es miembro | Entrar como Dani por el enlace; volver a abrir el mismo enlace: lista con todos "no disponible", "Ya no queda ningún nombre libre en la lista"; no hay "Seguir como Dani" | `202610231950/R123-375.png` | friccion — **CORREGIDO en `wip/friccion` (20:03, verificado con un miembro que entró por formulario: "Seguir como Mica"); pendiente de integrar a `main`** |
 | O-03 | OBSERVADO | Foco con teclado, portada con plan y tarjetas al pie (375) | Tab hasta "Tengo un código de invitación" o la tarjeta del plan: el foco queda bajo `.nav-inferior` (falta `scroll-padding-bottom`) | `202610231944/R80-375.png` | front-juan |
 | O-04 | OBSERVADO | Portada con nombre | "Tengo un código de invitación" (tarjeta) y "Unirme con un código" (formulario) aparecen a la vez, repetidos | `202610231944/R80-375.png` | front-juan |
 | O-05 | OBSERVADO | Plan en revisión, tarjeta "Versión 1 (en revisión, no confirmada)" | Texto "Conserva 1 confirmación(es) de 2 necesarias" | `202610231941/R63-375.png` | front-juan |
-| O-06 | OBSERVADO | `#/e/<id que no es uuid>` | Pantalla "Falla temporal. Intenta de nuevo. Reintentar" (el servidor responde 400); reintentar nunca va a andar. Un id mal escrito no es una falla temporal | `202610231928/R07b-375.png` | friccion (mensaje) / backend (código de error) |
+| O-06 | OBSERVADO | `#/e/<id que no es uuid>` | Pantalla "Falla temporal. Intenta de nuevo. Reintentar" (el servidor responde 400); reintentar nunca va a andar. Un id mal escrito no es una falla temporal | `202610231928/R07b-375.png` | friccion — **CORREGIDO en `wip/friccion` `05e148d`/`dc26ba4` (20:00): "Este enlace no lleva a ningún grupo"; pendiente de integrar** |
 | O-07 | OBSERVADO (leve) | Avatares con iniciales (todas las pantallas) | Texto de 10,4 px y contraste 3,0–3,6:1 en "AN", "BE", "CA" | `202610231931/R25-375.png` | front-juan |
-| O-08 | OBSERVADO (leve) | `#/unirse/<código inexistente>` | El título dice "Te invitaron a un plan · Elige tu nombre" aunque el código no existe; el error está arriba y el resto sigue como si sirviera | `202610231928/R04-375.png` | friccion |
+| O-08 | OBSERVADO (leve) | `#/unirse/<código inexistente>` | El título dice "Te invitaron a un plan · Elige tu nombre" aunque el código no existe; el error está arriba y el resto sigue como si sirviera | `202610231928/R04-375.png` | friccion — **CORREGIDO en `wip/friccion` `05e148d`: "Esta invitación no existe"; pendiente de integrar** |
 | O-09 | OBSERVADO (leve) | Propuesta cancelada | "Cancelado" dos veces seguidas (tarjeta de estado y aviso) | `202610231944/R89-375.png` | front-juan |
+| O-10 | OBSERVADO | Nueva propuesta, "No puede faltar" | Con integrantes que todavía no entraron ("por entrar"), la lista los ofrece igual que a los demás y no avisa que, si el elegido no entra, no se puede publicar una opción (R141/R143/R144) | `202610231956/R141-375.png` | front-juan |
+| O-11 | OBSERVADO | Agente del círculo, resultado en un grupo real | Voseo ("Elegís vos", "completás") en una app que tutea; la opción "Asado · Quincho de Tomi" y los lugares marcados "SIMULACIÓN" aparecen en un grupo que no es el demo | `202610231958/R154-375.png` | agente-ia |
 
 ## Inventario de rincones
 (Estado: A = APROBADO, O = OBSERVADO, R = ROTO, — = pendiente de recorrer.)
@@ -144,6 +146,20 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | R125 | Perfil: guardar nombre nuevo | auto | A |
 | R126 | Espacio visto por un invitado con propuesta confirmada y cancelada | auto | A |
 | R127 | Invitación al demo (personas simuladas con actividad → "no disponible") | auto | A |
+
+### Grupo B con integrantes pendientes y agente (`f7` 19:56, `f8` 19:58)
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| R140 | Grupo B: 3 personas, 2 "por entrar" | auto | A |
+| R141 | Nueva propuesta: imprescindible pendiente (Zoe) elegida | ojo | O (O-10) |
+| R142 | Nueva propuesta: cierre con "Elegir" | auto | A |
+| R143/R144 | Paso 2 y propuesta con imprescindible que aún no entró | auto | O (O-10) |
+| R145/R146 | Invitación al grupo B (Zoe y Lalo libres) y Zoe dentro | auto | A |
+| R150/R151 | Agente: preferencias de una invitada, guardadas ("Guardado. Nadie más ve tus preferencias.") | auto | A |
+| R152 | Agente: preferencias del organizador, botón "Que el agente proponga" | auto | A |
+| R153 | "El agente está pensando…" | auto | A |
+| R154 | Agente: 3 opciones, recomendada, título editable, mensaje para el grupo, "Usar esta opción" (una sola llamada) | ojo | O (O-11) |
+| R155 | Nueva propuesta precargada desde el agente ("Borrador del agente") | auto | A |
 
 ## Pendiente de recorrer
 "Entrar como otra persona" (tras O-02), reclamar un lugar simulado libre del demo, "Hoy paso", agente con preferencias de invitados y una llamada al agente en un grupo real, Nueva propuesta con valores inválidos (mínimo > máximo, cierre vencido, imprescindible pendiente), expirado (plazo vencido), acciones sin red a mitad (guardar condiciones, confirmar), contrato incompatible, y los cuatro anchos de cada rincón mirados a ojo (hoy `auto` en varios). Se repite lo afectado tras cada publicación en `main`.
