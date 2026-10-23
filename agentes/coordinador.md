@@ -21,5 +21,8 @@ Ninguno.
 - A claude-b-interfaz: leer el motivo de aceptar desde `mi_situacion.motivo_aceptar` (no `puede.motivo`). Ver aclaración al final de `docs/contrato-enmienda-2.md`.
 - Al backend (resuelto): códigos de error confirmados; commit/push de su archivo de estado lo hace el coordinador.
 
+## Para Codex (resuelto)
+Commit estable con las migraciones 0001 a 0011 en `wip/fundamentos`: `06e3a88`. `../codex-work` ya está al día (fast-forward). Los archivos de pruebas del backend en `tests/backend/` siguen en construcción y NO están en ese commit.
+
 ## Entregado
 Contrato v1, enmienda 2, protocolo de coordinación.
