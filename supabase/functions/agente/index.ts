@@ -261,7 +261,8 @@ export function entradaModelo(candidatas: Candidata[], perfil: PerfilGrupo | nul
     clima,
     grupo: {
       personas: perfil?.personas ?? null,
-      gustos: p?.gustos?.map((g) => `${g.actividad_etiqueta}: ${g.cuantos} de ${p.personas}`) ?? [],
+      // Una actividad que eligió una sola persona no se menciona: se podría adivinar quién fue.
+      gustos: p?.gustos?.filter((g) => g.cuantos >= 2).map((g) => `${g.actividad_etiqueta}: ${g.cuantos} de ${p.personas}`) ?? [],
       ritmo: p?.energia_mayoritaria ? ENERGIA_TEXTO[p.energia_mayoritaria] ?? null : null,
       ambiente: p?.ambiente_mayoritario ? AMBIENTE_TEXTO[p.ambiente_mayoritario] ?? null : null,
       presupuesto: p?.presupuesto_grupo ? PRESUPUESTO_TEXTO[p.presupuesto_grupo] ?? null : null,
@@ -414,7 +415,11 @@ Deno.serve(async (req) => {
       candidatas,
       elegida_id: elegida.id,
       // Solo totales del grupo; con 3 personas o menos, solo la cantidad (mejora #26).
-      perfil_grupo: perfil ? (perfil.personas > 3 ? perfil : { personas: perfil.personas }) : null,
+      perfil_grupo: perfil
+        ? perfil.personas > 3
+          ? { ...perfil, gustos: perfil.gustos?.filter((g) => g.cuantos >= 2) ?? [] }
+          : { personas: perfil.personas }
+        : null,
       clima: { fuente: clima.fuente, resumen, sabado: clima.sabado.estado, domingo: clima.domingo.estado },
       explicacion: delModelo?.explicacion ?? unirFrases(elegida.frases_grupo, simulado),
       mensaje_al_grupo: delModelo?.mensaje ?? mensajeFijo(elegida),
