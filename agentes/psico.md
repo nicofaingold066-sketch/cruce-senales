@@ -4,16 +4,48 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/psico` (copia `/Users/macair/cruse/
 Pedido de Nico (20:26): bromas internas (casa, vegetariano o carne), quién pone la casa, si todos quieren ponerla (sorteo, rotación, lugar neutro), comida, parejas ("+1"), composición del grupo, y NO ser absolutista (dos planes parecidos con distinto concepto).
 
 ## Tocando ahora
-- [20:33] `docs/psicologia-grupo.md` y `docs/psicologia-fuentes.md` (rama `wip/psico`). Ninguna otra ruta.
+- [20:41] `docs/psicologia-grupo.md` y `docs/psicologia-fuentes.md` (rama `wip/psico`): afinando y cerrando pedidos. Ninguna otra ruta.
 
 ## Entregado
-(nada todavía)
+- [20:37] Rama `wip/psico`, commit `d7c7ec0`: `docs/psicologia-fuentes.md` (30 fuentes con enlace y fuerza A/B/C; lista de lo que NO encontré) y `docs/psicologia-grupo.md` (línea de tiempo de una juntada, 12 temas de dinámica social, 9 variables nuevas + lo que NO se pide, composición del grupo, rotación de casa, "dos formas de juntarse", 8 bancos de textos, priorización A/B/C, lámina de pitch, límites). Sin código, sin pruebas que correr. Aviso honesto: es investigación de escritorio; casi nada es de Chile y varias fuentes quedaron con fuerza C (marcadas).
+- Conclusiones en una línea cada una: (1) el género y el estado de pareja de una persona NO se piden ni se infieren; "solo hombres / solo mujeres / con parejas" se resuelve con una regla del GRUPO sobre quién puede venir (solo el grupo / con parejas / abierta). (2) Comida: se pregunta por la comida de esta juntada, no por la persona, y el plan dice SIEMPRE "habrá opción sin carne", la pida alguien o no. (3) Casa: tres salidas ordenadas (casa del grupo / lugar neutro / turnos), regla acordada antes, y se dice sin motivo: "esta vez toca un lugar neutro". (4) No ser absolutista: la versión sigue siendo UNA; el agente le muestra al organizador DOS de las 3 candidatas que ya devuelve, distintas en un concepto ("dónde": casa o lugar neutro), ambas válidas para todos; "Sugerida" y "Otra forma".
+
+## Conclusión corta para ux-flujo (#100 "cómo se discute el output")
+- ux-flujo [20:41]: lo tuyo de #100, en cuatro líneas. (a) El grupo NO vota entre dos planes: reintroduce la negociación del chat y expone al que pierde; se discute AFUERA (en el chat, como siempre) pero se COMPROMETE en CRUXE sobre una versión. (b) La discusión sana ocurre antes, en privado y con opciones cerradas; el output muestra solo lo que sirve a todos, sin porqués ("esta vez toca un lugar neutro"). (c) "Dos formas parecidas" la ve solo quien organiza; elige UNA y sale una versión; la otra queda guardada para una versión 2 (idea para después). (d) Si el grupo quiere ajustar algo, es una versión nueva sin aceptaciones heredadas, y los textos de baja y cambio están en `docs/psicologia-grupo.md` §8.1 y §8.4. Detalle en §3 y §7 de ese archivo (rama `wip/psico`, `git show origin/wip/psico:docs/psicologia-grupo.md`).
 
 ## Pedidos a otros
-(ninguno todavía)
+(Cada hallazgo accionable está acá o en "Decisiones para Nico". Prioridad A = antes del congelamiento de las 11:00 del sábado, sin migración.)
+- agente-ia [20:41] P-A: (1) en el prompt y el texto fijo, frase UNIVERSAL de comida/alcohol en todo plan con comida: "Habrá opción sin carne." (y "y sin alcohol"), idéntica haya pedido alguien o no (psicologia-grupo.md §3.4, §8.3); (2) ampliar la lista de palabras que el modelo no puede escribir con las de §8.7 (vegetariano, vegano, celíaco, pareja de, novio/novia, hombres/mujeres/chicos/chicas, "otra vez en casa", "ya que nadie", "para variar"…); (3) "dos formas de juntarse": del lote de hasta 3 candidatas, mostrar la recomendada ("Sugerida") y la que más difiere en el eje "dónde" (casa: asado, juegos_casa; afuera: el resto), si no hay en el eje de energía; texto de §7/§8.7; el organizador sigue eligiendo UNA y llega a "Nueva propuesta" como hoy; sin votación, sin dos versiones. Mapeo y plantilla en §7.
+- front-juan [20:41] P-A: en `src/screens/NuevaPropuesta.tsx`: (1) selector "¿Quién viene?" con tres opciones: "Solo el grupo", "Con parejas", "Abierta: cada uno puede traer a alguien" que sume una marca corta al título ("· solo el grupo") y el cupo máximo siga siendo del organizador; (2) ayuda plegable antes de "No puede faltar": "¿Dónde se juntan? En una casa del grupo, en un lugar neutro, o por turnos. Si varios quieren recibir, acuerden antes cómo decidir (turnos o sorteo)." (§3.2, §5, §6). Ni género ni estado de pareja de ninguna persona en ninguna pantalla.
+- friccion [20:41] P-A: en `src/lib/compartir.ts`, si el plan trae la marca de "quién viene", repetirla en el mensaje del enlace ("Esta vez es solo el grupo."). Y en "Crear un grupo", una línea bajo el campo de nombres: "Escribe los nombres como les gusta que los llamen" (bromas con apodos, §3.3). Textos en §8.5.
+- ux-flujo [20:41] P-A: aplicar los textos de §8.1, §8.4, §8.6 en `avisoPersonal.ts` y `recordar.tsx` (baja sin nombre ni motivo; "Gracias por avisar. No hace falta contar por qué."; "Tú armas el plan, CRUXE hace el seguimiento"). Y anotar en `docs/investigacion-a-producto.md` las filas de abajo. P-C (después): botón "Pasar la organización" a otra persona (§3.8) y "¿Cómo les fue?" cerrada (§8.8).
+- apertura [20:41] P-B (espera OK de Nico, decisión D1): redactar en `docs/catalogo-ampliado.md` UNA fila nueva "Asado en lugar neutro (Simulación)" (actividad asado, mismos atributos que el asado actual, zona existente, horarios sáb y dom) para que "asado en casa" y "parrilla en un lugar neutro" compitan. Sin ella la segunda forma de asado no existe.
+- backend [20:41] P-B (SOLO si Nico dice sí en D1; si no, ignorar): aplicar esa fila como datos (migración mínima, sin tocar firmas ni funciones). Opcional P-B2 (también con OK): columna `tipo_lugar` ('casa'|'neutro') en `catalogo_agente` y regla en `proponer_plan_borrador` para incluir al menos una candidata de cada tipo si existen. NO pido `modalidad` en la propuesta (cambia la firma de `create_proposal`, rompe el 31/0) ni la clave `comida` hoy (sin efecto).
+- sinteticos [20:41] P-A: sumar a la tabla de situaciones: (a) "Ana no come carne" y (b) "Beto no toma": comprobar que el texto compartido del plan sea IDÉNTICO haya o no respondido alguien eso; (c) "juntada solo del grupo": comprobar que ninguna pantalla compartida diga género ni estado de pareja. Después de que agente-ia aplique A1.
+- qa-noche [20:41] P-A: un guardia que busque en `src/` y en los textos del agente las palabras de §8.7 (vegetariano, celíaco, "pareja de", "novio", "hombres", "mujeres"…) en copia visible para el grupo; excluir el catálogo y los comentarios de código.
 
 ## Decisiones para Nico
-(ninguna todavía)
+- D1 [20:41]: ¿Autorizas una enmienda MÍNIMA de datos antes del sábado 12:00: una fila de catálogo "Asado en lugar neutro (Simulación)" (y, solo si backend la ve chica, la columna `tipo_lugar`)? Sin ella, "asado en casa vs parrilla en lugar neutro" no se puede mostrar con el catálogo actual. Recomiendo SÍ a la fila, y la columna solo si sobra tiempo. Todo lo demás de psico va sin migración.
+- D2 [20:41]: ¿Confirmas la regla "género y estado de pareja de una persona no se piden ni se infieren; la composición es una regla del grupo (solo el grupo / con parejas / abierta)"? Es sensible (la Ley 21.719 lista identidad de género y vida sexual entre los datos sensibles; guía secundaria, entra en plena vigencia el 1 dic 2026) y en un grupo de 5 delata. Recomiendo SÍ.
+- D3 [20:41]: ¿La "modalidad" (solo grupo / con parejas / abierta) va por ahora como marca en el título + texto del enlace (sin migración)? Alternativa: campo propio, que cambia la firma de `create_proposal`. Recomiendo título por ahora; campo después del evento.
+- D4 [20:41]: Oferta de casa: ¿PÚBLICA ("Fede ofreció su casa", simple pero la ausencia se nota) o PRIVADA (el servidor elige entre quienes dijeron sí, no se nota quién dijo no, pero hay que modelar casas)? No entra antes del sábado; es la decisión de producto para el siguiente paso. Recomiendo privada.
+- D5 [20:41]: La Ley 21.719 trata la "situación socioeconómica" y la "salud" como datos sensibles. El presupuesto (3 niveles) y las restricciones de comida lo son. ¿Se revisa después del evento el texto de "¿Qué guarda CRUXE de mí?" y el consentimiento? No bloquea la entrega. (Fuente secundaria; hay que verificar el texto oficial.)
+- D6 [20:41]: ¿Se dice en el pitch "creemos que" y se nombran los límites (evidencia de EE.UU. y Europa, ninguna de Chile)? Recomiendo SÍ, y no citar cifras de psico salvo F1 con su fuente (80 % de 1.100 encuestados de EE.UU. dice que cancelar no daña la amistad pero que sí duele la mentira).
+- Lámina para el pitch ya redactada: `docs/psicologia-grupo.md` §10 ("CRUXE entiende la dinámica de un grupo"). Quien tiene `docs/pitch*.md` es agente-ia; el coordinador decide si entra.
+
+## Filas para `docs/investigacion-a-producto.md` (hallazgo → cambio → dueño → antes/después de las 11:00 → estado)
+| Hallazgo | Cambio | Dueño | Cuándo | Estado |
+|---|---|---|---|---|
+| Lo que daña es mentir sobre el motivo, no cancelar (F1) | "No voy" sin motivo; texto "Gracias por avisar. No hace falta contar por qué." | ux-flujo | antes | pedido |
+| Comida: identidad ≠ necesidad ≠ ganas de hoy; un total delata | Frase universal "Habrá opción sin carne" siempre | agente-ia | antes | pedido |
+| El género es sensible y delata en grupos chicos (F27); es un eje débil de amistad (F24) | No pedirlo ni inferirlo; regla del grupo "quién viene" | front-juan, friccion | antes | pedido + D2 |
+| Quien organiza concentra el trabajo (F3, F2) | Texto "CRUXE hace el seguimiento"; después "pasar la organización" | ux-flujo | antes (texto) / después | pedido |
+| Un sorteo acordado antes se acepta; el impuesto cae mal (F10) | Ayuda "acuerden antes cómo decidir (turnos o sorteo)" | front-juan | antes | pedido |
+| El hueco del catálogo: solo hay un asado y es de casa | Fila "Asado en lugar neutro" | apertura + backend | antes del sáb 12:00 | espera D1 |
+| Dos formas distintas en concepto (hipótesis) | "Sugerida" + "Otra forma" | agente-ia | antes | pedido |
+| Las bromas con apodos aparecen tal cual (F11) | Línea bajo el campo de nombres | friccion | antes | pedido |
 
 ## Ideas
-(ninguna todavía)
+1. P2: tras el evento, probar con un grupo real las hipótesis de la línea de tiempo (§2) con tres preguntas cerradas; hoy son de escritorio.
+2. P3: "otra forma" como versión 2 de `propose_repair` cuando el plan se cae (§7).
+3. P3: historial de dónde fue cada juntada para sugerir rotación sin nombrar personas (V8).
