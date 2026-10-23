@@ -10,6 +10,8 @@ import { Entrada, useEntrada } from './components/Intro'
 import { Marca } from './components/Marca'
 import { lazy, Suspense, useEffect } from 'react'
 import Inicio from './screens/Inicio'
+import { QuienEres } from './login/QuienEres'
+import { fuenteReal } from './login/fuente'
 
 // Mejora #14: la primera pantalla carga sola; las demás van en partes aparte (dividen el paquete de > 500 KB)
 // y se precargan en segundo plano apenas hay sesión, para que en la demo navegar no espere a la red.
@@ -63,8 +65,8 @@ function Marco({
   const conNav =
     sesion.fase === 'lista' && ((ruta.nombre === 'inicio' && perfil != null) || ruta.nombre === 'planes' || ruta.nombre === 'perfil')
   const quien = identidad.yo ?? perfil?.nombre ?? null
-  // Entrada animada al abrir la portada o una invitación (una vez por sesión del navegador).
-  const entrada = useEntrada(ruta.nombre === 'inicio' || ruta.nombre === 'unirse')
+  // Entrada animada al abrir la portada (una vez por sesión del navegador). En una invitación no: tapaba "¿Quién eres?".
+  const entrada = useEntrada(ruta.nombre === 'inicio')
 
   return (
     <>
@@ -185,7 +187,7 @@ function PantallaRuta({ ruta }: { ruta: Ruta }) {
     case 'crear':
       return <CrearGrupo />
     case 'unirse':
-      return ruta.invalida ? <Inicio key="invitacion-invalida" invitacionInvalida /> : <Inicio key={ruta.codigo} codigoInvitacion={ruta.codigo} />
+      return ruta.invalida ? <Inicio key="invitacion-invalida" invitacionInvalida /> : <QuienEres key={ruta.codigo} codigo={ruta.codigo} fuente={fuenteReal} />
     case 'entrar':
       // Una sola puerta: la portada del rediseño ya resuelve el ingreso (nombre, demo, código o grupo nuevo).
       return <Inicio />

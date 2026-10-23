@@ -36,3 +36,62 @@
   display: grid;
   gap: 6px;
 }
+
+/* "¿Quién eres?" (entrada estilo Tricount) */
+.entrada-subtitulo {
+  font-size: 1rem;
+  margin: 8px 0;
+}
+.quien-lista {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.quien-lista li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.quien-nombre {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  justify-content: flex-start;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.quien-tomado {
+  flex: none;
+  font-size: 0.85rem;
+}
+.entrada-enlace {
+  width: 100%;
+  margin: 4px 0;
+}
+.quien-integrantes {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.quien-integrantes li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.quien-integrantes .btn {
+  width: auto;
+  flex: none;
+}
+.quien-espacio {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: -4px 0 8px;
+}

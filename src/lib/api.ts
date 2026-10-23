@@ -39,6 +39,11 @@ export type UnirseOk = EspacioOk<{
   repetido: boolean
 }>
 export type ListaEspaciosOk = OkBase & { espacios: EspacioResumen[] }
+/** Enmienda 9: lo único que se ve con el código antes de unirse. */
+export type VistaPorCodigoOk = OkBase & {
+  espacio: { nombre: string; demo: boolean }
+  miembros: { miembro_id: string; nombre: string; libre: boolean }[]
+}
 export type VerEspacioOk = OkBase & { espacio: Espacio }
 export type SembrarDemoOk = EspacioOk<{ espacio_id: string; creado: boolean; repetido: boolean }>
 export type AgregarSimuladoOk = EspacioOk<{ miembro_id: string }>
@@ -266,10 +271,23 @@ export const api = {
   serverInfo: () => llamar<ServerInfoOk>('server_info', {}, false),
 
   // 1.1 - 1.7 Espacios
-  createSpace: (nombre: string, tipo: TipoEspacio, nombreVisible: string) =>
-    llamar<CrearEspacioOk>('create_space', { p_nombre: nombre, p_tipo: tipo, p_nombre_visible: nombreVisible }, true),
-  joinSpace: (codigo: string, nombreVisible: string) =>
-    llamar<UnirseOk>('join_space', { p_codigo: codigo, p_nombre_visible: nombreVisible }, true),
+  createSpace: (nombre: string, tipo: TipoEspacio, nombreVisible: string, integrantes?: string[]) =>
+    llamar<CrearEspacioOk>(
+      'create_space',
+      integrantes && integrantes.length > 0
+        ? { p_nombre: nombre, p_tipo: tipo, p_nombre_visible: nombreVisible, p_integrantes: integrantes }
+        : { p_nombre: nombre, p_tipo: tipo, p_nombre_visible: nombreVisible },
+      true,
+    ),
+  joinSpace: (codigo: string, nombreVisible: string, miembroId?: string | null) =>
+    llamar<UnirseOk>(
+      'join_space',
+      miembroId
+        ? { p_codigo: codigo, p_nombre_visible: nombreVisible, p_miembro_id: miembroId }
+        : { p_codigo: codigo, p_nombre_visible: nombreVisible },
+      true,
+    ),
+  previewSpaceByCode: (codigo: string) => llamar<VistaPorCodigoOk>('preview_space_by_code', { p_codigo: codigo }, false),
   listMySpaces: () => llamar<ListaEspaciosOk>('list_my_spaces', {}, false),
   getSpace: (espacioId: string) => llamar<VerEspacioOk>('get_space', { p_espacio_id: espacioId }, false),
   seedDemoSpace: () => llamar<SembrarDemoOk>('seed_demo_space', {}, true),
