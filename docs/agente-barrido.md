@@ -37,16 +37,51 @@ Reglas de privacidad que ya rigen y que cualquier variable nueva tiene que respe
 ### Variables que convendría sumar
 | Variable | Para qué | Cómo pedirla sin exponer a nadie | Prioridad |
 |---|---|---|---|
-| **Zona** (comuna en Santiago, departamento en Mendoza) | Elegir un lugar que les quede a todos | Se guarda solo el código de la zona, nunca una dirección ni coordenadas | Alta |
-| Tiempo máximo de viaje | Descartar lo que queda lejos | 15 · 30 · 45 · 60+ minutos | Alta |
+| **Zona** (comuna en Santiago, departamento en Mendoza) | Elegir un lugar que les quede a todos | Se guarda solo el código de la zona, nunca una dirección ni coordenadas | Alta (ver §1.1) |
+| **Cómo se mueve** | Que nadie quede afuera por no tener cómo llegar | Auto · transporte público · bici o a pie · necesito que me lleven (§1.1) | Alta |
+| Tiempo máximo de viaje | Descartar lo que queda lejos | 15 · 30 · 45 · 60+ minutos | Alta (§1.1) |
+| Puedo llevar gente | Cubrir a quien no tiene movilidad | Si tiene auto: 0 · 1 · 2 · 3 o más lugares | Media (§1.1) |
 | Momento del día | Mañana, tarde o noche | Opción cerrada | Alta |
 | Comida | Vegetariano, vegano o sin gluten, para elegir restaurante | Solo como filtro del servidor ("que tenga opción vegetariana"), nunca como total visible: en un grupo chico delata a alguien. Sin gluten roza un dato de salud: pedirlo como "necesito opción sin gluten" y tratarlo igual | Media |
 | Alcohol | Bar o no bar | sí · prefiero sin · da igual | Media |
-| Transporte | Con auto o transporte público | Opción cerrada; cambia la zona razonable | Media |
 | Acompañantes | Niños o mascota | Opción cerrada | Baja |
 | **Lo que el grupo hizo antes** | No repetir siempre el asado; variar | Es del grupo, no de una persona: "hace 3 juntas que es asado" | Alta |
 | Cada cuánto se juntan | Medir si el plan "volvió a pasar" (el problema del caso) | Lo calcula el servidor con las propuestas confirmadas | Media |
 | Cómo les fue | "¿Se juntaron? ¿Les gustó?" después de la fecha | Una pregunta cerrada al grupo; es el dato propio más valioso para mejorar las propuestas | Alta (después de la demo) |
+
+### 1.1 Distancia y movilidad (pedido de Nico)
+**La idea:** el agente mira cuánto tiene que viajar cada integrante y prefiere el plan en el que **nadie viaja demasiado**, en vez del que queda bien para la mayoría y lejísimos para uno. Además, si alguien no tiene cómo moverse, el plan tiene que quedarle a mano o tiene que haber quién lo lleve.
+
+**Qué marca cada uno (en privado, opciones cerradas):**
+- **Zona:** su comuna (Santiago) o departamento (Mendoza). Nunca la dirección ni la ubicación del teléfono.
+- **Cómo se mueve:** auto · transporte público · bici o a pie · necesito que me lleven.
+- **Hasta cuánto viaja:** 15 · 30 · 45 · 60 o más minutos.
+- **Si tiene auto, a cuántos puede llevar:** 0 · 1 · 2 · 3 o más.
+
+**Cómo decide el servidor (reglas fijas, como hoy con el presupuesto y el techo):**
+1. Para cada lugar candidato calcula el tiempo de viaje de cada persona **según cómo se mueve**: auto con la tabla de auto, transporte público con la de micro y metro, bici o a pie con la suya. La tabla es de zona a zona y se calcula una sola vez (§3, Contexto).
+2. **Descarta** el lugar si a alguien le supera su tiempo máximo.
+3. **No deja a nadie sin cómo llegar.** Sea N la cantidad de personas que marcaron "necesito que me lleven":
+   - El plan sirve si queda dentro de su tiempo a pie o en transporte público, o si las personas con auto ofrecen en total al menos N lugares.
+   - Si no hay lugares suficientes, se descarta.
+   - Un asado en casa de alguien del grupo usa la zona de esa casa, con permiso de quien la ofrece.
+4. **Ordena por equidad:** primero el plan cuyo viaje más largo es el más corto ("nadie viaja más de 30 minutos"), y después el de menos minutos sumados. Esto se suma a los puntos de gustos, ritmo y clima que ya existen.
+5. Más adelante: si las últimas juntas le quedaron lejos siempre a la misma zona, la próxima le da prioridad a esa zona (el servidor lo sabe por las propuestas confirmadas).
+
+**Qué ve el grupo y qué no:**
+- El grupo ve **un solo número**: "queda a menos de 35 minutos para todos". Nunca el tiempo de cada uno, ni quién vive dónde, ni quién no tiene auto.
+- La explicación del agente no dice "porque alguien no tiene auto". El modelo de IA recibe solo "viaje máximo: 35 minutos" y "hay lugar en auto para quien lo necesita", nunca una zona ni una persona.
+- "Necesito que me lleven" puede decir algo de la situación de alguien (como el presupuesto), así que se trata igual que el presupuesto: solo lo ve el servidor y nunca aparece en totales.
+- Organizar el viaje en sí (quién pasa a buscar a quién) lo hacen ellos, por fuera del agente, si quieren. Más adelante, un botón opcional "pido que me lleven" que la persona decide mostrar.
+- **Límite que hay que aceptar:** en un grupo chico, si el plan siempre cae cerca de una misma comuna, alguien puede sospechar por qué. El agente no lo confirma ni lo explica, y la equidad del punto 5 reparte los lugares.
+
+**Qué hace falta:**
+- **Datos:** las tablas zona a zona. En auto, bici y a pie, con OSRM u OpenRouteService (gratis). En micro y metro de Santiago, con el GTFS de la DTPM. Mendoza no tiene GTFS público vigente: ahí se usaría el tiempo en auto por un factor, rotulado como estimado.
+- **Producto:** las 4 preguntas nuevas en "Mis preferencias".
+- **Catálogo:** la zona de cada lugar.
+- **Base:** una enmienda al contrato y una migración. No entra antes de la demo: después del sábado a las 12:00 no hay migraciones.
+
+**Para el pitch:** "El agente no elige el lugar que le queda bien a la mayoría: elige el que le queda razonable a todos, incluida la persona que no tiene auto, sin contarle a nadie quién es."
 
 **Bienestar (lo que pidió Nico, "si se siente mal"):** no conviene preguntar salud ni ánimo; son datos sensibles y en un grupo de amigos se adivina quién fue. Hoy se cubre con "energía: algo tranquilo", que dice lo mismo para el plan sin decir por qué. Se puede sumar "esta semana prefiero algo corto" con la misma lógica.
 
@@ -134,7 +169,7 @@ Lo que el agente puede decir hoy: "posibles canchas cerca: ver disponibilidad", 
 ## 4. Cómo se arma, sin romper la privacidad
 1. **El servidor sigue decidiendo.** Las fuentes nuevas alimentan el catálogo de candidatas; el servidor descarta y ordena con reglas fijas, como hoy.
 2. **El modelo sigue viendo solo opciones y totales.** Si se usa Google para lugares, que el texto lo arme el servidor con datos propios, o usar Grounding Lite, que es la vía que Google permite para un modelo.
-3. **Ubicación por zona, no por persona.** Cada uno elige su comuna o departamento. Se calcula una tabla de tiempos zona a zona y se elige el lugar que minimiza el viaje más largo del grupo.
+3. **Ubicación por zona, no por persona.** Cada uno elige su comuna o departamento y cómo se mueve. Se calcula una tabla de tiempos zona a zona y se elige el lugar que minimiza el viaje más largo del grupo, sin dejar afuera a quien no tiene movilidad (§1.1).
 4. **Enlazar, no reservar.** Hasta que haya acuerdos, el agente propone y deriva con un enlace a la búsqueda real (ATC, EasyCancha, la ticketera, Google Maps). Nunca dice "disponible" ni "reservado", como hoy.
 5. **Lo que se puede guardar es lo propio.** El catálogo curado, los identificadores de lugares y la respuesta del grupo después del plan ("¿se juntaron?"). Los datos de Google o Foursquare no se guardan.
 
@@ -146,7 +181,7 @@ Lo que el agente puede decir hoy: "posibles canchas cerca: ver disponibilidad", 
 2. Sumar el clima ampliado, las alertas y los feriados.
 3. Sumar los eventos gratis de Chile Cultura como candidatas, con enlace y atribución.
 4. Sumar el fixture de fútbol.
-5. Sumar las variables de zona, momento del día y comida, con las reglas de privacidad de siempre.
+5. Sumar distancia y movilidad (§1.1: zona, cómo se mueve, tiempo máximo, a cuántos puede llevar), momento del día y comida, con las reglas de privacidad de siempre.
 6. Restaurantes y bares con Google Places, con tope de gasto.
 7. Botones "ver canchas" con el enlace de ATC (Mendoza) y de Google Maps o EasyCancha (Santiago).
 8. Preguntar "¿se juntaron?" después de cada plan.
