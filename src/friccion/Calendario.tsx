@@ -1,7 +1,8 @@
 // #90 "Tomar de mi calendario (Simulación)". Una agenda FICTICIA, generada en el teléfono a partir de la fecha de cada
 // franja y una semilla, marca qué franjas quedan libres. No se conecta a ningún calendario real, no pide permisos y
 // nada sale del teléfono: solo propone una disponibilidad que la persona decide usar (guardar sigue siendo su acción).
-// Se usa en la respuesta de un toque (Responder.tsx) y front-juan puede conectarlo en "Mi respuesta":
+// Solo en espacios demo (en un grupo real una agenda inventada confunde). Se usa en la respuesta de un toque
+// (Responder.tsx, donde marca la opción sugerida sin guardar) y front-juan puede conectarlo en "Mi respuesta":
 //   <TomarDeCalendario franjas={p.franjas} semilla={p.mi_situacion.miembro_id} onTomar={(d) => b.reemplazar(d)} />
 import { useId, useState } from 'react'
 import type { Disponibilidad, Franja, Valor } from '../lib/types'
@@ -26,7 +27,7 @@ export interface DiaAgenda {
 }
 
 // Todo inventado; ningún dato de personas reales.
-const ACTIVIDADES = ['Turno en el trabajo', 'Clase de guitarra', 'Almuerzo familiar', 'Partido de básquet', 'Hora al dentista', 'Taller de cerámica', 'Ayudar en una mudanza', 'Estudiar para la prueba']
+const ACTIVIDADES = ['Turno en el trabajo', 'Clase de guitarra', 'Almuerzo familiar', 'Partido de básquet', 'Feria de las pulgas', 'Taller de cerámica', 'Ayudar en una mudanza', 'Estudiar para la prueba']
 
 /** FNV-1a de 32 bits: misma semilla y mismo día → misma agenda. */
 function hash(s: string): number {

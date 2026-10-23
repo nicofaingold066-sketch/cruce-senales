@@ -94,3 +94,15 @@
 .calendario-sim-cuerpo .btn {
   width: 100%;
 }
+
+.btn.rapida-sugerida {
+  outline: 3px solid var(--primario);
+  outline-offset: 2px;
+}
+
+.rapida-preferencias {
+  display: block;
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 0.9rem;
+}
