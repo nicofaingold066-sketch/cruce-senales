@@ -216,6 +216,20 @@ async function llamar<T extends OkBase>(
   if (res.error) {
     const msg = res.error.message ?? ''
     if (esErrorDeRed(msg)) return falloDeRed(escritura)
+    if (res.error.code === '22P02') {
+      // Un id que no es uuid (por ejemplo, un enlace mal copiado) no llega a la función: PostgREST lo rechaza.
+      // Se responde lo mismo que el servidor para un id que no existe, sin reintento (pedido O-06 de rincones).
+      return {
+        ok: false,
+        error: {
+          codigo: 'fuera_de_audiencia',
+          detalle: 'no_miembro',
+          mensaje: 'No perteneces a este espacio o el elemento no existe.',
+          reintentable: false,
+          state_rev: null,
+        },
+      }
+    }
     if (res.error.code === 'PGRST202') {
       // Operación aún no publicada en la base: se trata como falla temporal (contrato 0.3).
       return fallo(
