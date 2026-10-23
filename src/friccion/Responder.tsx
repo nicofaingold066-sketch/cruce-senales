@@ -1,7 +1,8 @@
 // #88 "Respuesta en un paso" (feedback del jurado: quitar fricción). Después de "¿Quién eres?", el invitado llega acá
 // (#/e/<id>/responder) y responde la propuesta abierta con UN toque: "Puedo los dos días", "Solo …" o "No puedo".
 // Cada opción guarda las dos franjas juntas con save_my_conditions (privado: solo el servidor lo ve).
-// Si no hay exactamente una propuesta que pueda responder ahora, no muestra nada: reemplaza la ruta por el espacio.
+// Si no hay exactamente una propuesta que pueda responder ahora, no muestra nada: reemplaza la ruta por el espacio
+// (o por el plan, si te toca confirmar) y deja un aviso con lo que dice el servidor sobre qué sigue.
 // El servidor decide si puede guardar (`puede.guardar_condiciones`); esta pantalla nunca lo calcula.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../lib/api'
@@ -63,7 +64,7 @@ type Carga =
   | { fase: 'error'; error: ApiError }
   | { fase: 'lista'; p: EstadoPropuesta; espacio: string; demo: boolean; yo: string | null; organizador: boolean }
 
-/** Busca la única propuesta que esta persona puede responder ahora; si no hay una sola, vuelve al espacio. */
+/** Busca la única propuesta que esta persona puede responder ahora; si no hay una sola, sale (ver `salir`). */
 function usePropuestaPorResponder(espacioId: string) {
   const [carga, setCarga] = useState<Carga>({ fase: 'cargando' })
   // Aviso que dejó "¿Quién eres?" ("Entraste como Ana…"). Si se vuelve al espacio, se le pasa a esa pantalla.
