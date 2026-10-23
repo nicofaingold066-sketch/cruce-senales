@@ -175,5 +175,6 @@ Nuevo en esta corrida:
 |---|---|---|
 | 19:28 | build `95def89` (parcial: el guion se cortó al confirmar Gonza; corrió durante MIGRACION EN CURSO) | descartada |
 | 19:40 | build `95def89`, base libre | completa; hallazgos H1–H14 |
+| 20:26 | **PRODUCCIÓN** https://cruce-senales.vercel.app (`main` `7f2423e`) | completa, sin fugas, mismos números que el build integrado: Joaco 3 toques (4,2 s), Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2. Solo 3 hallazgos automáticos (todos bajos: «asado», «hora de Santiago», «anfitrión») |
 | 20:12 | mismo build integrado, rehecho con `b8e19ae` (enmienda 12 b), friccion `05e148d` | completa, sin fugas; Joaco 3 toques (3,5 s), Renata 3, Gonza 4, Bruno 6. **H1 cerrado en lo importante**: Bruno lee «Tu disponibilidad está incompleta: no entraste en esta versión. Si la completas, cuenta si el plan se rearma.» (queda además la línea repetida «No formas parte de las personas…», menor) |
 | 20:06 | build integrado local (fundamentos + friccion + ux + agente-ia + front-juan), base con 0035–0039 | completa; Joaco 3 toques; H1 y H4 en parte arreglados |
