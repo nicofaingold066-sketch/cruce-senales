@@ -1,8 +1,11 @@
-// Función del servidor del agente del círculo (docs/agente-ia.md, enmienda 4).
-// Hace solo tres cosas: trae el clima, pide el plan a proponer_plan_borrador (puntaje fijo en
-// Postgres, con el JWT de quien llama) y, si hay clave, le pide a Claude que redacte la explicación.
-// El modelo nunca recibe datos de una persona: solo el plan elegido, el clima y frases del grupo.
-// Sin clave, con error o pasados ~8 s, devuelve el texto fijo. Nunca crea ni confirma nada.
+// Función del servidor del agente del círculo (docs/agente-ia.md, enmiendas 4 y 4.1).
+// 1) Trae el clima. 2) Pide a proponer_plan_borrador, con el JWT de quien llama, las opciones que
+// le sirven a todo el grupo (el servidor las filtra y ordena con reglas fijas, leyendo las
+// preferencias de cada uno). 3) Si hay clave, Claude hace de coordinador del grupo: elige UNA de esas
+// opciones mirando el perfil del grupo entero y redacta por qué y un mensaje para invitar.
+// El modelo nunca recibe datos de una persona: solo opciones ya validadas, el clima y totales del grupo.
+// Sin clave, con error, con una elección fuera de la lista o pasados ~8 s: primera opción y texto fijo.
+// Nunca crea, invita ni confirma nada.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import Anthropic from 'npm:@anthropic-ai/sdk@1.2.0'
 
@@ -31,15 +34,30 @@ interface Franja {
   fin: string
 }
 
-interface Borrador {
-  tipo: 'borrador'
-  actividad: string
+interface Candidata {
+  id: string
+  actividad?: string
   actividad_etiqueta: string
   lugar: { id: string; nombre: string; simulado: boolean }
   titulo: string
   franjas: Franja[]
   frases_grupo: string[]
+}
+
+/** Totales del grupo (enmienda 4.1). Con 3 personas o menos solo llega `personas`. */
+interface PerfilGrupo {
+  personas: number
+  gustos?: { actividad_etiqueta: string; cuantos: number }[]
+  energia_mayoritaria?: string | null
+  ambiente_mayoritario?: string | null
+  presupuesto_grupo?: string | null
+}
+
+interface ResultadoPlan extends Candidata {
+  tipo: 'borrador'
   personas_consideradas: number
+  candidatas?: Candidata[]
+  perfil_grupo?: PerfilGrupo
 }
 
 // Textos fijos por código de frase (lista cerrada de la enmienda 4). Siempre afirmativos sobre el plan.
@@ -51,11 +69,43 @@ const FRASES: Record<string, string> = {
   ritmo_del_grupo: 'va con el ritmo que prefiere el grupo',
 }
 
-// Palabras que delatan una situación individual. Si el modelo las usa, se descarta su texto.
+const ENERGIA_TEXTO: Record<string, string> = { con_todo: 'con todo', algo_tranquilo: 'algo tranquilo' }
+const AMBIENTE_TEXTO: Record<string, string> = { fiesta: 'de fiesta', tranquilo: 'tranquilo' }
+const PRESUPUESTO_TEXTO: Record<string, string> = {
+  cualquiera: 'sin límite de presupuesto',
+  moderado: 'algo económico',
+  bajo: 'gratis o casi gratis',
+}
+
+// Expresiones que delatan la situación de una persona o prometen algo que no pasó. Se comparan como
+// palabras completas (las que terminan en * son prefijos). Si el modelo usa una, se descarta su salida.
 const PROHIBIDAS = [
-  'alguien', 'algunos', 'algunas', 'plata', 'dinero', 'pobre', 'caro para', 'no puede', 'no pueden',
-  'enfermo', 'enferma', 'salud', 'ánimo', 'animo', 'triste', 'cansad', 'deprim', 'restricci',
+  'alguien', 'algunos de ustedes', 'algunas de ustedes', 'uno de ustedes no', 'una de ustedes no', 'quien no puede',
+  'plata', 'dinero', 'pobre*', 'caro para', 'no le alcanza', 'no les alcanza', 'no puede pagar', 'no pueden pagar',
+  'no puede ir', 'no pueden ir', 'enferm*', 'problemas de salud', 'su salud', 'tu salud', 'ánimo', 'animo', 'triste*',
+  'cansad*', 'deprim*', 'restricci*', 'confirmad*', 'reservad*', 'agendad*', 'ya está listo',
 ]
+const LETRA = '\\p{L}'
+const PROHIBIDAS_RE = PROHIBIDAS.map((p) => {
+  const prefijo = p.endsWith('*')
+  const base = (prefijo ? p.slice(0, -1) : p).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`(^|[^${LETRA}])${base}${prefijo ? '' : `($|[^${LETRA}])`}`, 'u')
+})
+
+const SISTEMA = [
+  'Eres el agente coordinador de un grupo de amigos en CRUXE, una app chilena para que los planes entre amigos sí ocurran.',
+  'Tu carácter: comprensivo, empático, amable, ejecutivo y buen coordinador. Piensas en el grupo entero, no en una persona.',
+  'Recibes opciones de plan que el servidor ya comprobó que le sirven a todos (presupuesto, techo si llueve), el clima y el perfil',
+  'agregado del grupo. Elige la opción que mejor equilibra los gustos del grupo, su ritmo y el clima; ante la duda, la primera.',
+  'Escribe en español de Chile, cercano y concreto, sin exagerar.',
+  'Reglas que no se rompen: no nombres a ninguna persona; no hables de la situación de nadie en particular (dinero, salud, ánimo,',
+  'disponibilidad); no uses las palabras "alguien", "plata", "dinero", "confirmado", "reservado" ni "agendado"; no inventes datos',
+  'que no te dieron; no digas que algo está confirmado, reservado o agendado: el grupo todavía tiene que aceptarlo, y los lugares',
+  'son de simulación.',
+  'explicacion: una o dos frases, máximo 240 caracteres, sobre por qué esa opción le sirve al grupo.',
+  'mensaje_al_grupo: una invitación de máximo 320 caracteres, en una sola línea, que proponga el plan con sus dos opciones de día',
+  'e invite a cada uno a marcar si le interesa y cargar su disponibilidad.',
+].join(' ')
 
 function responder(cuerpo: unknown, estado = 200): Response {
   return new Response(JSON.stringify(cuerpo), {
@@ -138,57 +188,122 @@ function unirFrases(codigos: string[]): string {
   return `${texto.charAt(0).toUpperCase()}${texto.slice(1)}.`
 }
 
-/** Acepta el texto del modelo solo si es corto y no nombra a nadie ni delata una situación individual. */
-function textoValido(texto: string, nombres: string[]): boolean {
-  const t = texto.trim()
-  if (t.length < 15 || t.length > 240 || t.includes('\n')) return false
-  const bajo = t.toLowerCase()
-  if (PROHIBIDAS.some((p) => bajo.includes(p))) return false
-  return !nombres.some((n) => n.length > 1 && new RegExp(`\\b${n.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'u').test(bajo))
+const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+
+/** "sábado 31 de 14:00 a 17:00", sin convertir zonas (HoraLocal de Santiago). */
+function franjaCorta(f: Franja): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}:\d{2})/.exec(f.inicio)
+  const n = /T(\d{2}:\d{2})/.exec(f.fin)
+  if (!m || !n) return `${f.inicio} a ${f.fin}`
+  const dia = DIAS[new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]))).getUTCDay()]
+  return `${dia} ${Number(m[3])} de ${m[4]} a ${n[1]}`
 }
 
-async function redactarConModelo(
-  borrador: Borrador,
+function mensajeFijo(c: Candidata): string {
+  const [a, b] = c.franjas
+  const dias = a && b ? ` el ${franjaCorta(a)} o el ${franjaCorta(b)}` : ''
+  return `¡Hola! Les propongo ${c.titulo.charAt(0).toLowerCase()}${c.titulo.slice(1)}${dias}. Marquen si les interesa y carguen su disponibilidad en CRUXE.`
+}
+
+function escapar(t: string): string {
+  return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/** Saca los nombres de los integrantes de un texto del catálogo ("Asado en casa de Tomi" → "Asado en casa"). */
+export function sinNombres(texto: string, nombres: string[]): string {
+  let t = texto
+  for (const n of nombres) {
+    if (n.length < 2) continue
+    const nombre = escapar(n)
+    t = t.replace(new RegExp(`\\s+(de|del|con)\\s+${nombre}(?=$|[^${LETRA}])`, 'giu'), '')
+    t = t.replace(new RegExp(`(^|[^${LETRA}])${nombre}(?=$|[^${LETRA}])`, 'giu'), '$1')
+  }
+  return t.replace(/\s{2,}/g, ' ').trim()
+}
+
+/**
+ * Acepta un texto del modelo solo si es corto, no nombra a nadie y no delata una situación individual.
+ * Los nombres se buscan con su mayúscula inicial (son nombres propios), así "caro" no choca con Caro.
+ */
+export function textoValido(texto: unknown, max: number, nombres: string[]): texto is string {
+  if (typeof texto !== 'string') return false
+  const t = texto.trim()
+  if (t.length < 15 || t.length > max || t.includes('\n')) return false
+  const bajo = t.toLowerCase()
+  if (PROHIBIDAS_RE.some((re) => re.test(bajo))) return false
+  return !nombres.some((n) => {
+    if (n.length < 2) return false
+    const propio = n.charAt(0).toUpperCase() + n.slice(1)
+    return new RegExp(`(^|[^${LETRA}])${escapar(propio)}($|[^${LETRA}])`, 'u').test(t)
+  })
+}
+
+/** Lo único que ve el modelo: opciones ya validadas, clima y totales del grupo. Sin nombres ni ids de miembros. */
+export function entradaModelo(candidatas: Candidata[], perfil: PerfilGrupo | null, clima: string, nombres: string[]) {
+  const p = perfil && perfil.personas > 3 ? perfil : null
+  return {
+    clima,
+    grupo: {
+      personas: perfil?.personas ?? null,
+      gustos: p?.gustos?.map((g) => `${g.actividad_etiqueta}: ${g.cuantos} de ${p.personas}`) ?? [],
+      ritmo: p?.energia_mayoritaria ? ENERGIA_TEXTO[p.energia_mayoritaria] ?? null : null,
+      ambiente: p?.ambiente_mayoritario ? AMBIENTE_TEXTO[p.ambiente_mayoritario] ?? null : null,
+      presupuesto: p?.presupuesto_grupo ? PRESUPUESTO_TEXTO[p.presupuesto_grupo] ?? null : null,
+    },
+    opciones: candidatas.map((c) => ({
+      id: c.id,
+      // El catálogo puede traer el nombre de un integrante ("Quincho de Tomi"): al modelo le llega sin nombre.
+      plan: sinNombres(c.titulo, nombres),
+      actividad: c.actividad_etiqueta,
+      lugar: sinNombres(c.lugar.nombre.replace(' (Simulación)', ''), nombres),
+      dias: c.franjas.map(franjaCorta),
+      razones: c.frases_grupo.map((f) => FRASES[f]).filter(Boolean),
+    })),
+  }
+}
+
+async function coordinarConModelo(
+  candidatas: Candidata[],
+  perfil: PerfilGrupo | null,
   clima: string,
-  textoFijo: string,
   nombres: string[],
   restanteMs: number,
-): Promise<string | null> {
+): Promise<{ eleccion: Candidata; explicacion: string; mensaje: string } | null> {
   const clave = Deno.env.get('ANTHROPIC_API_KEY')
-  if (!clave || restanteMs < 1500) return null
+  if (!clave || restanteMs < 1500 || candidatas.length === 0 || candidatas.some((c) => typeof c.id !== 'string')) return null
   const modelo = Deno.env.get('AGENTE_MODELO') || MODELO_POR_DEFECTO
   const client = new Anthropic({ apiKey: clave, timeout: restanteMs, maxRetries: 0 })
   try {
     const respuesta = await client.messages.create({
       model: modelo,
-      max_tokens: 1024,
-      output_config: { effort: 'low' },
-      system:
-        'Redactas, en español de Chile y en tono cercano, la explicación de un plan para un grupo de amigos. ' +
-        'Escribe una o dos frases, de 200 caracteres como máximo, en una sola línea y sin comillas. ' +
-        'Usa solo los datos que te dan. No nombres a ninguna persona, no hables de la situación de nadie en particular ' +
-        '(dinero, salud, ánimo, disponibilidad) y no digas que el plan está confirmado: el grupo todavía tiene que aceptarlo.',
-      messages: [
-        {
-          role: 'user',
-          content: JSON.stringify({
-            plan: borrador.titulo,
-            actividad: borrador.actividad_etiqueta,
-            lugar: borrador.lugar.nombre.replace(' (Simulación)', ''),
-            dias: 'sábado o domingo',
-            clima,
-            razones_del_grupo: borrador.frases_grupo.map((c) => FRASES[c]).filter(Boolean),
-            ejemplo_de_tono: textoFijo,
-          }),
+      max_tokens: 2048,
+      system: SISTEMA,
+      output_config: {
+        effort: 'low',
+        format: {
+          type: 'json_schema',
+          schema: {
+            type: 'object',
+            properties: {
+              eleccion_id: { type: 'string', enum: candidatas.map((c) => c.id) },
+              explicacion: { type: 'string' },
+              mensaje_al_grupo: { type: 'string' },
+            },
+            required: ['eleccion_id', 'explicacion', 'mensaje_al_grupo'],
+            additionalProperties: false,
+          },
         },
-      ],
+      },
+      messages: [{ role: 'user', content: JSON.stringify(entradaModelo(candidatas, perfil, clima, nombres)) }],
     })
     if (respuesta.stop_reason !== 'end_turn') return null
-    const texto = respuesta.content
-      .map((b) => (b.type === 'text' ? b.text : ''))
-      .join('')
-      .trim()
-    return textoValido(texto, nombres) ? texto : null
+    const texto = respuesta.content.map((b) => (b.type === 'text' ? b.text : '')).join('')
+    const salida = JSON.parse(texto) as { eleccion_id?: unknown; explicacion?: unknown; mensaje_al_grupo?: unknown }
+    // La elección tiene que ser una de las opciones que el servidor ya validó.
+    const eleccion = candidatas.find((c) => c.id === salida.eleccion_id)
+    if (!eleccion) return null
+    if (!textoValido(salida.explicacion, 240, nombres) || !textoValido(salida.mensaje_al_grupo, 320, nombres)) return null
+    return { eleccion, explicacion: salida.explicacion.trim(), mensaje: salida.mensaje_al_grupo.trim() }
   } catch (e) {
     // Solo el tipo de error: nunca el contenido ni datos del grupo.
     console.error('agente: el modelo no respondió', e instanceof Error ? e.name : 'desconocido')
@@ -238,12 +353,15 @@ Deno.serve(async (req) => {
     p_clima: { sabado: clima.sabado.estado, domingo: clima.domingo.estado },
   })
   if (errorPlan || !plan || typeof plan !== 'object') return errorTemporal()
-  // Errores de negocio (rol, pertenencia, pocas preferencias...) pasan tal cual.
+  // Errores de negocio (rol, pertenencia, pocas preferencias...) y "sin plan compatible" pasan tal cual.
   if (!plan.ok || plan.resultado?.tipo !== 'borrador') return responder(plan)
 
-  const borrador = plan.resultado as Borrador
+  const base = plan.resultado as ResultadoPlan
+  // Sin la enmienda 4.1, la única opción es la que eligió el servidor (su id es el del catálogo).
+  const candidatas: Candidata[] =
+    Array.isArray(base.candidatas) && base.candidatas.length > 0 ? base.candidatas.slice(0, 3) : [{ ...base, id: base.id ?? base.lugar.id }]
+  const perfil = base.perfil_grupo ?? null
   const resumen = resumenClima(clima)
-  const textoFijo = unirFrases(borrador.frases_grupo)
 
   // Nombres visibles del espacio (no son privados): solo para rechazar un texto que nombre a alguien.
   let nombres: string[] = []
@@ -252,14 +370,28 @@ Deno.serve(async (req) => {
     nombres = espacio.espacio.miembros.map((m: { nombre?: string }) => m.nombre ?? '').filter(Boolean)
   }
 
-  const delModelo = await redactarConModelo(borrador, resumen, textoFijo, nombres, PLAZO_TOTAL_MS - (Date.now() - inicio))
+  const delModelo = await coordinarConModelo(candidatas, perfil, resumen, nombres, PLAZO_TOTAL_MS - (Date.now() - inicio))
+  const elegida = delModelo?.eleccion ?? candidatas[0]
 
+  // Los campos de primer nivel describen la opción destacada; `candidatas` trae todas para que el
+  // organizador vea y decida cuál usar. Nada se crea ni se invita desde acá.
   return responder({
     ...plan,
     resultado: {
-      ...borrador,
+      tipo: 'borrador',
+      actividad: elegida.actividad ?? base.actividad,
+      actividad_etiqueta: elegida.actividad_etiqueta,
+      lugar: elegida.lugar,
+      titulo: elegida.titulo,
+      franjas: elegida.franjas,
+      frases_grupo: elegida.frases_grupo,
+      personas_consideradas: base.personas_consideradas,
+      candidatas,
+      elegida_id: elegida.id,
       clima: { fuente: clima.fuente, resumen, sabado: clima.sabado.estado, domingo: clima.domingo.estado },
-      explicacion: delModelo ?? textoFijo,
+      explicacion: delModelo?.explicacion ?? unirFrases(elegida.frases_grupo),
+      mensaje_al_grupo: delModelo?.mensaje ?? mensajeFijo(elegida),
+      eleccion_fuente: delModelo ? 'modelo' : 'regla',
       explicacion_fuente: delModelo ? 'modelo' : 'texto_fijo',
     },
   })

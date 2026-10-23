@@ -12,9 +12,12 @@ import { Aviso, Boton, Cargando, ErrorCaja, RotuloSimulacion } from '../componen
 import {
   agenteApi,
   guardarBorradorAgente,
+  mensajeFijo,
+  textoFijo,
   type ActividadOpcion,
   type Ambiente,
   type BorradorAgente,
+  type CandidataAgente,
   type Energia,
   type LugarPref,
   type Preferencias,
@@ -137,11 +140,11 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
       <p className="suave">
         Solo las ves tú. El agente las usa para elegir el plan, pero al grupo le llega solo la propuesta, nunca lo que pusiste.
       </p>
-      <Opciones nombre="pref-presupuesto" titulo="Presupuesto este finde" opciones={PRESUPUESTO} valor={borrador.presupuesto} onCambio={(v) => poner('presupuesto', v)} deshabilitado={soloLectura} />
-      <Opciones nombre="pref-energia" titulo="Energía" opciones={ENERGIA} valor={borrador.energia} onCambio={(v) => poner('energia', v)} deshabilitado={soloLectura} />
-      <Opciones nombre="pref-ambiente" titulo="Ambiente" opciones={AMBIENTE} valor={borrador.ambiente} onCambio={(v) => poner('ambiente', v)} deshabilitado={soloLectura} />
-      <Opciones nombre="pref-lugar" titulo="Lugar" opciones={LUGAR} valor={borrador.lugar} onCambio={(v) => poner('lugar', v)} deshabilitado={soloLectura} />
-      <fieldset className={`grupo ${sinActividades ? 'grupo-error' : ''}`} disabled={soloLectura}>
+      <Opciones nombre="pref-presupuesto" titulo="Presupuesto este finde" opciones={PRESUPUESTO} valor={borrador.presupuesto} onCambio={(v) => poner('presupuesto', v)} deshabilitado={soloLectura || ocupado} />
+      <Opciones nombre="pref-energia" titulo="Energía" opciones={ENERGIA} valor={borrador.energia} onCambio={(v) => poner('energia', v)} deshabilitado={soloLectura || ocupado} />
+      <Opciones nombre="pref-ambiente" titulo="Ambiente" opciones={AMBIENTE} valor={borrador.ambiente} onCambio={(v) => poner('ambiente', v)} deshabilitado={soloLectura || ocupado} />
+      <Opciones nombre="pref-lugar" titulo="Lugar" opciones={LUGAR} valor={borrador.lugar} onCambio={(v) => poner('lugar', v)} deshabilitado={soloLectura || ocupado} />
+      <fieldset className={`grupo ${sinActividades ? 'grupo-error' : ''}`} disabled={soloLectura || ocupado}>
         <legend>Me gustaría</legend>
         <div className="opciones">
           {actividades.map((a) => {
@@ -166,31 +169,89 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   )
 }
 
+function CopiarMensaje({ texto }: { texto: string }) {
+  const [estado, setEstado] = useState<'si' | 'no' | null>(null)
+  useEffect(() => {
+    if (estado !== 'si') return
+    const t = setTimeout(() => setEstado(null), 2000)
+    return () => clearTimeout(t)
+  }, [estado])
+  async function copiar() {
+    try {
+      await navigator.clipboard.writeText(texto)
+      setEstado('si')
+    } catch {
+      setEstado('no')
+    }
+  }
+  return (
+    <>
+      <button type="button" className="btn btn-secundario btn-chico" onClick={() => void copiar()}>
+        {estado === 'si' ? 'Copiado' : 'Copiar mensaje'}
+      </button>
+      {estado === 'no' ? <small> No se pudo copiar: seleccioná el texto.</small> : null}
+    </>
+  )
+}
+
+function etiquetaOpcion(c: CandidataAgente): string {
+  return `${c.actividad_etiqueta} · ${c.lugar.nombre.replace(' (Simulación)', '')}`
+}
+
 function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: BorradorAgente; soloLectura?: boolean }) {
-  const [titulo, setTitulo] = useState(b.titulo)
-  useEffect(() => setTitulo(b.titulo), [b.titulo])
+  const [seleccion, setSeleccion] = useState(b.elegida_id)
+  const elegida = b.candidatas.find((c) => c.id === seleccion) ?? b.candidatas[0]
+  const esLaDestacada = elegida.id === b.elegida_id
+  const [titulo, setTitulo] = useState(elegida.titulo)
+  useEffect(() => setTitulo(elegida.titulo), [elegida.titulo])
   const tituloValido = titulo.trim().length >= 1 && titulo.trim().length <= 80
+  // La explicación y el mensaje del modelo son de la opción que destacó; para otra, el texto fijo.
+  const explicacion = esLaDestacada ? b.explicacion : textoFijo(elegida.frases_grupo, false)
+  const mensaje = esLaDestacada ? b.mensaje_al_grupo : mensajeFijo(elegida)
+  const deModelo = esLaDestacada && b.explicacion_fuente === 'modelo'
 
   function usar() {
-    guardarBorradorAgente(espacioId, { titulo: titulo.trim(), franjas: b.franjas })
+    guardarBorradorAgente(espacioId, { titulo: titulo.trim(), franjas: elegida.franjas })
     irA(rutas.nueva(espacioId))
   }
 
   return (
-    <div className="bloque" aria-live="polite">
-      <Aviso tono="info" titulo="Borrador del agente">
-        Todavía no es una propuesta: nadie está invitado ni confirmado.
+    <div className="bloque">
+      <Aviso tono="info" titulo="Opciones del agente">
+        Todas le sirven al grupo según lo que cargó cada uno. Elegís vos: todavía nadie está invitado ni confirmado.
       </Aviso>
+      <fieldset className="grupo">
+        <legend>
+          {b.candidatas.length > 1 ? `${b.candidatas.length} opciones` : 'Opción'} para {b.personas_consideradas} personas
+        </legend>
+        <div className="opciones">
+          {b.candidatas.map((c) => {
+            const id = `agente-opcion-${c.id}`
+            return (
+              <label key={c.id} htmlFor={id} className={`opcion-radio ${seleccion === c.id ? 'opcion-activa' : ''}`}>
+                <input id={id} type="radio" name="agente-opcion" checked={seleccion === c.id} onChange={() => setSeleccion(c.id)} />
+                {etiquetaOpcion(c)}
+                {c.lugar.simulado ? <> <RotuloSimulacion /></> : null}
+                {c.id === b.elegida_id ? (
+                  <span className="etiqueta etiqueta-destacada">
+                    {b.eleccion_fuente === 'modelo' ? 'Recomendada por el agente' : 'Recomendada'}
+                  </span>
+                ) : null}
+              </label>
+            )
+          })}
+        </div>
+      </fieldset>
       <label className={`campo ${tituloValido ? '' : 'campo-error'}`}>
         <span>Título</span>
         <input value={titulo} maxLength={80} onChange={(e) => setTitulo(e.target.value)} disabled={soloLectura} />
       </label>
       <p>
-        <strong>{b.actividad_etiqueta}</strong> en {b.lugar.nombre.replace(' (Simulación)', '')}{' '}
-        {b.lugar.simulado ? <RotuloSimulacion /> : null}
+        <strong>{elegida.actividad_etiqueta}</strong> en {elegida.lugar.nombre.replace(' (Simulación)', '')}{' '}
+        {elegida.lugar.simulado ? <RotuloSimulacion /> : null}
       </p>
       <ul>
-        {b.franjas.map((f, i) => (
+        {elegida.franjas.map((f, i) => (
           <li key={i}>
             Franja {i === 0 ? 'A' : 'B'}: {franjaTexto(f.inicio, f.fin)}
           </li>
@@ -200,15 +261,25 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
         Clima: {b.clima.resumen}
         {b.clima.fuente === 'open-meteo' ? ' (pronóstico de Open-Meteo)' : ''}
       </p>
-      <p>{b.explicacion}</p>
+      <p>
+        <strong>Por qué: </strong>
+        {explicacion}
+      </p>
+      <div className="bloque">
+        <p>
+          <strong>Mensaje para el grupo: </strong>
+          {mensaje}
+        </p>
+        <CopiarMensaje key={mensaje} texto={mensaje} />
+      </div>
       <p className="suave">
-        {b.explicacion_fuente === 'modelo'
-          ? 'Explicación redactada por IA a partir del plan y de datos del grupo entero. La IA no vio lo que puso cada uno.'
-          : 'Explicación de texto fijo. El plan lo eligió el servidor con reglas fijas.'}
+        {deModelo
+          ? 'Lo redactó la IA, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.'
+          : 'Texto fijo. Las opciones las armó el servidor con reglas fijas a partir de las preferencias de todos.'}
       </p>
       <p className="suave">El mínimo, el máximo, la persona imprescindible y el cierre los completás vos en el paso siguiente.</p>
       <Boton onClick={usar} disabled={soloLectura || !tituloValido}>
-        Usar este borrador
+        Usar esta opción
       </Boton>
     </div>
   )
@@ -217,7 +288,21 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
 function ProponerPlan({ espacioId, soloLectura }: { espacioId: string; soloLectura?: boolean }) {
   const [sabado, setSabado] = useState(SABADO_DEL_CASO)
   const [resultado, setResultado] = useState<ResultadoAgente | null>(null)
-  const { ocupado, error, ejecutar } = useAccion()
+  const { ocupado, error, ejecutar, limpiarError } = useAccion()
+
+  function cambiarSabado(v: string) {
+    // Un resultado de otro fin de semana no se puede usar: se limpia.
+    setSabado(v)
+    setResultado(null)
+    limpiarError()
+  }
+
+  const anuncio =
+    resultado?.tipo === 'borrador'
+      ? `El agente encontró ${resultado.candidatas.length === 1 ? 'una opción' : `${resultado.candidatas.length} opciones`}. Recomendada: ${resultado.titulo}.`
+      : resultado?.tipo === 'sin_plan_compatible'
+        ? 'Sin plan compatible.'
+        : ''
 
   async function proponer() {
     setResultado(null)
@@ -229,13 +314,16 @@ function ProponerPlan({ espacioId, soloLectura }: { espacioId: string; soloLectu
     <div className="bloque">
       <label className="campo">
         <span>Fin de semana (sábado)</span>
-        <input type="date" value={sabado} onChange={(e) => setSabado(e.target.value)} disabled={soloLectura || ocupado} />
+        <input type="date" value={sabado} onChange={(e) => cambiarSabado(e.target.value)} disabled={soloLectura || ocupado} />
         <small>El agente propone dos franjas: ese sábado y el domingo siguiente.</small>
       </label>
       <Boton onClick={() => void proponer()} ocupado={ocupado} ocupadoTexto="El agente está pensando…" disabled={soloLectura || !sabado}>
         Que el agente proponga
       </Boton>
       {error ? <ErrorCaja error={error} onReintentar={() => void proponer()} /> : null}
+      <p className="suave" aria-live="polite">
+        {anuncio}
+      </p>
       {resultado?.tipo === 'sin_plan_compatible' ? (
         <Aviso tono="aviso" titulo="Sin plan compatible">
           Con las preferencias cargadas no hay un plan del catálogo que le sirva a todos. Por privacidad no se muestran los motivos.
@@ -265,7 +353,7 @@ export function AgentePanel({
         <section className="tarjeta">
           <h2>Agente del círculo</h2>
           <p className="suave">
-            Mira las preferencias del grupo, el clima y un catálogo de lugares (de Simulación) y propone qué hacer. Propone, pero no decide por nadie.
+            Lee las preferencias de todo el grupo, mira el clima y un catálogo de lugares (de Simulación) y te propone opciones que le sirven a todos. Propone, pero no decide por nadie.
           </p>
           <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} />
         </section>
