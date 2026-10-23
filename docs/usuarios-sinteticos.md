@@ -90,6 +90,64 @@ Leído en las ramas `wip/friccion` (`efede20`…`cac56d8`), `wip/ux` (`ede33ca`)
 
 Los pedidos de esta revisión están en la ficha `agentes/sinteticos.md`.
 
-## Hallazgos
+## Hallazgos de la corrida de las 19:40 (build de `wip/fundamentos` `95def89`, contra la base)
 
-(Se completa con cada corrida; ordenados por gravedad.)
+Corrida completa, sin errores del guion: crear grupo, 5 invitados, v1, confirmaciones, baja de Gonza, En revisión, v2. Capturas en `tests/sinteticos/capturas/1940/`. El camino de un toque de friccion (#88) todavía no está en este build.
+
+### Números por persona (de abrir el enlace a la primera respuesta guardada)
+
+| Persona | Ancho | Toques | Pantallas | Segundos de máquina |
+|---|---|---|---|---|
+| Joaco (apurado) | 320 px | 7 (nombre, «Sí, soy», tarjeta del plan, pestaña «Mi respuesta», Sí, Sí, Guardar) | 5 | 6,2 |
+| Renata | 375 px | 7 | 5 | 6,7 |
+| Bruno (solo franja A) | 375 px | 6 | 5 | 7,0 |
+| Gonza («Me interesa» + 2 franjas) | 375 px | 8 | 5 | 6,7 |
+| Joaco confirma desde la portada | 320 px | 2 (tarjeta «Tu plan», «Confirmar versión 1») | 2 | 2,6 |
+| Vale crea el grupo con 5 nombres | 375 px | 8 | 3 | 8,9 |
+
+Una persona real tarda más que la máquina (leer, buscar con el dedo): 7 toques son del orden de 15 s, no 10.
+
+### ALTA
+
+**H1. Bruno queda fuera de la versión 1 y la app no le dice por qué ni qué hacer.** Paso: Bruno contesta solo la franja A y guarda («Guardado. Solo tú ves estas condiciones.»); Vale busca la opción; Bruno abre «Plan». Ve: «No formas parte de las personas que pueden aceptar esta versión.» y en «Mi respuesta», solo la etiqueta «Incompletas». No ve «te falta la franja B». Entra de nuevo recién cuando completa la B y Vale busca alternativa (lo hizo y quedó en la versión 2). Captura: `bruno-06`, `bruno-09`, `bruno-10`. → front-juan (texto de `PlanTab`/`RespuestaTab` para `condiciones = incompletas`), backend (`siguiente_accion` para quien tiene condiciones incompletas: «Completa la franja B para entrar»).
+
+**H2. El invitado llega a lo que no necesita.** Paso: enlace → su nombre → «Sí, soy Joaco» → espacio. Ve el código de invitación con Compartir/Copiar/WhatsApp y un aviso; el plan queda debajo del pliegue (a 320×640, apenas el título «Propuestas»). En «Mi respuesta» las franjas quedan después de la nota de privacidad y la tarjeta de interés, a más de una pantalla de scroll. Captura: `joaco-03`, `joaco-05`. → friccion (#88 «Responder» lo resuelve para el enlace; falta para quien llega después), front-juan (ordenar «Mi respuesta»: franjas primero; esconder el código de invitación a quien no organiza).
+
+### MEDIA
+
+**H3. «Datos ficticios» en todas las pantallas de un grupo real.** Vale, Joaco… lo ven en el encabezado desde la portada. Un amigo duda de si su respuesta vale. → front-juan (`App.tsx` es de friccion: pedirle que lo muestre solo en demo).
+
+**H4. «Luna» y «persona simulada» en la pantalla «¿Quién eres?» de un grupo real.** En «Unirme con un código»: «Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.» Lo ve cada invitado (`joaco-01`). → friccion (`src/login/QuienEres.tsx`): mostrarlo solo si el grupo es demo.
+
+**H5. Poner presupuesto y techo exige elegir una actividad.** Bruno encuentra «Agente del círculo» (plegado al final del espacio), marca «Ojalá gratis» y «Prefiero bajo techo»; «Guardar mis preferencias» queda apagado hasta que marque al menos una actividad («Marcá al menos una»). Fue en 6 toques porque el guion sabía dónde estaba; ningún texto de «Mi respuesta» lo menciona (pedido ya hecho por ux-flujo a front-juan y friccion). Captura: `bruno-07`. → agente-ia (`AgentePanel`: permitir guardar sin actividades).
+
+**H6. Quedan «Con condiciones 4» aunque solo 3 pueden.** Renata dijo «No puedo» en las dos y cuenta como condiciones completas; Vale ve 4 y «Ya hay 3 personas con condiciones» y no puede saber que una de ellas no va. → backend/front-juan: decir «3 pueden» o contar solo con al menos un Sí (sin decir quién).
+
+**H7. «Me interesa» separado de la respuesta.** Joaco, Renata y Bruno contestaron las franjas; el grupo ve «2 con interés» (Vale y Gonza) y a Joaco como los demás. Sí puedo no suma interés. Es la duplicación que friccion saca con #88. A comprobar cuando entre.
+
+**H8. La reparación dice «Sábado → Sábado».** Tras la baja de Gonza, «Buscar alternativa» publica la versión 2 en la misma franja (con Bruno adentro); el cartel «El plan cambió: versión 1 → versión 2 · Sábado 31 oct 20:00 → Sábado 31 oct 20:00» no explica qué cambió (cambió la gente, no la fecha). Captura: `vale-15`. → front-juan: «Misma fecha; cambió quién va».
+
+**H9. «Anfitrión» en una cena donde nadie recibe.** «Anfitrión (Vale)», «Cupo del anfitrión reservado», «perdió al anfitrión». → front-juan / apertura.
+
+### BAJA
+
+- **H10.** «hora de Santiago (America/Santiago)» (`vale-08`): un grupo en otra ciudad lo toma por error. → front-juan.
+- **H11.** «Asado», «Fiesta», «Bar» entre las actividades de «Me gustaría» de Bruno, y «Los del asado» en el ejemplo del título del grupo: son del catálogo, ya ampliado con cena, cine, cultura, etc. Nada que hacer salvo el orden. → apertura.
+- **H12.** «1 confirmaron» (singular mal). → front-juan.
+- **H13.** Gonza: tras «No voy» la página sigue mostrando el editor de condiciones con «Completas» y un «Guardar condiciones» apagado: queda abierta una pantalla que ya no sirve. → front-juan.
+- **H14.** La baja es pública con nombre y «había confirmado» («Gonza se bajó (versión 1) · había confirmado», visible para Joaco y Vale). Es por diseño; para quien se baja por un mal momento es lo más expuesto de toda la app. → decisión de Nico (¿mostrar solo «una persona se bajó»?).
+
+### Lo que anduvo bien
+
+- Privacidad: en el teléfono de Vale, Joaco, Renata y Gonza no apareció nada de las condiciones ni de las preferencias de Bruno (presupuesto, techo, franja incompleta): revisión automática, sin fugas.
+- Silencio: Pili nunca abrió el enlace y siguió «por entrar»; no cuenta para nada ni se la trata como asistente.
+- Interés no es confirmación: «Marcaste "Me interesa". Esto no es una confirmación.» y el cuadro «Con interés 2 / Confirmados 0» son claros.
+- Reparación: v2 empezó con 0 confirmaciones, con el cuadro «versión 1 → versión 2 · Estas confirmaciones no pasan a la versión 2».
+- Un toque de ida y vuelta: Joaco confirmó desde la portada en 2 toques (tarjeta «Tu plan» y «Confirmar versión 1»).
+
+## Corridas
+
+| Hora | Contra | Resultado |
+|---|---|---|
+| 19:28 | build `95def89` (parcial: el guion se cortó al confirmar Gonza; corrió durante MIGRACION EN CURSO) | descartada |
+| 19:40 | build `95def89`, base libre | completa; hallazgos H1–H14 |
