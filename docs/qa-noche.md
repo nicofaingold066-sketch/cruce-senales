@@ -14,6 +14,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | `toques-invitacion.mjs` | Toques del enlace de invitación a la primera respuesta, 375 px (de friccion) | sí | `node tests/e2e/toques-invitacion.mjs <url> <etiqueta>` |
 | `red-import-cortada.mjs` | #82: corte de red al importar una pantalla (reintento `?r=1`, barrera «Recargar», precarga) | sí (caso C) | `node tests/e2e/red-import-cortada.mjs <url>` |
 | `friccion-flujo.mjs` | #88, #90 (demo) y volver con el mismo enlace, de friccion (85 líneas) | sí | `node tests/e2e/friccion-flujo.mjs <url>` |
+| `convencer-uno.mjs` | #98 de ux-flujo: organizador + 5 invitados por enlace, toques y pantallas por persona (6 sesiones por corrida) | sí | `node tests/e2e/convencer-uno.mjs <url>` |
 | `preparar-grupo.mjs` | Ayudante: crea grupo ficticio (Orga, Ana, Beto) y propuesta abierta | sí | lo llaman los dos anteriores |
 
 ## Cambios en los guiones
@@ -46,6 +47,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 20:09 | `wip/agente-ia` ddcce58: typecheck, build, recorrido 23/23; jurado cortado a mitad por una MIGRACION EN CURSO nueva de backend (no es regresión) | localhost, base | jurado y red se reintentan al salir la migración |
 | 20:14 | `wip/agente-ia` ddcce58: jurado 4/4 (privacidad de sobres sin hallazgos) y red 10/10 (reintento) | localhost, base | verde |
 | 20:28 | main `fae49fa` publicado (enmienda 10/12, fricción): recorrido 23/23, jurado 4/4 con la revisión nueva de privacidad E10 | producción | verde |
+| 20:35 | `convencer-uno.mjs` versionado | — | sin correr (backend con MIGRACION EN CURSO 0041 desde 20:32) |
 
 ## Regresiones abiertas
 (ninguna)
