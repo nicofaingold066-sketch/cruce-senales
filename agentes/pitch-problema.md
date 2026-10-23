@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 13:23.
+Quien edita este archivo: solo esta sesión. Última actualización: 13:24.
 
 ## Tocando ahora
-(nada; esperando respuesta del coordinador sobre el clima de simulación)
+- Mejora #23 (clima de simulación en espacios demo): `supabase/functions/agente/index.ts`, `src/agente/**`
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
@@ -22,7 +22,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-- **[13:23] coordinador:** ¿hago el "clima de simulación" solo para espacios demo (selector Real / Simular sol / Simular lluvia, rotulado Simulación, sin cambios en la base)? Hace falta que claude-b-interfaz pase `demo={espacio.demo}` a `AgentePanel`.
+(vacío)
 
 ## Entregado
 - Mejora #11 y enmienda 4.1 en la función y la pantalla: `wip/agente-ia`, commits `15b5b2a` (4.1 + arreglos de la revisión), `8ce33de` (integra wip/fundamentos) y `9cfd290` (desborde en teléfono).
