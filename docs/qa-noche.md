@@ -50,6 +50,9 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 20:28 | main `fae49fa` publicado (enmienda 10/12, fricción): recorrido 23/23, jurado 4/4 con la revisión nueva de privacidad E10 | producción | verde |
 | 20:35 | `convencer-uno.mjs` versionado | — | sin correr (backend con MIGRACION EN CURSO 0041 desde 20:32) |
 | 20:42 | guardia-palabras sobre `wip/qa`+fundamentos d9176a9: 57 archivos, 0 hallazgos; control con un archivo de prueba detecta 2 | estático | verde |
+| 20:42 | `wip/friccion` 05e148d: jurado V2a cayó una vez por timeout de 15 s en `waitForResponse` (justo al salir la migración 0041); había pasado 4/4 a las 20:02 | localhost, base | falla aislada, no reproducida |
+| 20:45 | `wip/ux` e1794e1: recorrido 23/23, jurado 4/4, friccion-flujo 19/19, red 10/10 | localhost, base | verde |
+| 20:48 | `wip/friccion` 6bddd27 (merge de fundamentos): recorrido 23/23, jurado 4/4, friccion-flujo 19/19, red-import 4/4, red 10/10 | localhost, base | verde |
 
 ## Regresiones abiertas
 (ninguna)
