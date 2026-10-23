@@ -21,17 +21,27 @@ export default function SimulacionTab({ p, viva, soloLectura }: PestanaProps) {
   const [error, setError] = useState<ApiError | null>(null)
   const secuencia = useRef(0)
   const aplicada = useRef(0)
+  const revPanel = useRef(-1)
+  const revPadre = useRef(p.state_rev)
+  revPadre.current = p.state_rev
 
-  // Gana siempre la última consulta emitida: una respuesta atrasada no pisa a una más nueva.
+  // U4 (revisión de Codex): manda el state_rev del servidor; el orden de emisión solo desempata.
+  // Nunca se aplica una foto del panel más vieja que la ya aplicada ni que la propuesta que se muestra arriba.
+  // Las mutaciones de cada tarjeta recargan al terminar (barrera para cambios con igual revisión).
   const cargar = useCallback(async () => {
     const mia = ++secuencia.current
     const r = await api.getSimulationPanel(p.id)
-    if (mia < aplicada.current) return
+    if (!r.ok) {
+      if (mia >= aplicada.current) setError(r.error)
+      return
+    }
+    const rev = r.data.state_rev
+    if (rev < revPanel.current || rev < revPadre.current) return
+    if (rev === revPanel.current && mia < aplicada.current) return
+    revPanel.current = rev
     aplicada.current = mia
-    if (r.ok) {
-      setMiembros(r.data.simulacion.miembros)
-      setError(null)
-    } else setError(r.error)
+    setMiembros(r.data.simulacion.miembros)
+    setError(null)
   }, [p.id])
 
   useEffect(() => {
