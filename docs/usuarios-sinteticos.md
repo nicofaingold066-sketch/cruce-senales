@@ -54,6 +54,42 @@ Ideas para quienes puedan hacerlas, también en la ficha:
 - backend: una preferencia opcional «prefiero algo corto» (duración máxima), en la misma lista cerrada.
 - friccion / front-juan: mostrar la energía por defecto como «sin elegir» y no como «algo tranquilo».
 
+## Revisión de código de lo entregado hoy (sin correr; 23 oct, 19:55)
+
+Leído en las ramas `wip/friccion` (`efede20`…`cac56d8`), `wip/ux` (`ede33ca`) y `wip/agente-ia` (`d5d913e`), todavía sin integrar. Lo confirma o corrige la corrida con el build que las incluya.
+
+### friccion: «¿Cuándo puedes?» (#88), calendario simulado (#90)
+
+| Situación | ¿Se entiende el texto? | ¿Expone a alguien? | Hallazgo |
+|---|---|---|---|
+| Sin tiempo / no puede ninguna | «No puedo ninguno», detalle «Puedes cambiarlo después»: claro y baja la presión | No: guarda en privado | Después dice «Si te sirve, la confirmas en el plan» a quien acaba de decir que no puede |
+| Una sola franja | «Solo el sábado» / «Solo el domingo»: claro | No | — |
+| Bruno (solo sabe la A) | «Solo el sábado» guarda la B como **No**, no como «no sé»; «Todavía no sé: ver el plan» no guarda nada y lo manda a «Mi respuesta» (más toques) | No | Es mejor que quedar «Incompletas» sin avisar, pero mezcla «no sé» con «no puedo» (a comprobar en la corrida) |
+| Tiene ganas pero no puede | «Me interesa» solo se ofrece si dijo que sí a alguna franja | El interés es público | Con eso nadie puede decir «quiero pero otro día» |
+| Bajón | «No puedo ninguno» sirve: un toque y sin explicación | No | — |
+| Calendario simulado | «Tomar de mi calendario» + rótulo Simulación; la agenda inventa eventos («Hora al dentista», «Turno en el trabajo») | No | **Media-alta**: «Responder con esta agenda» guarda de inmediato, sin revisar, y la agenda es inventada: un amigo real puede quedar con «No» por un dentista que no existe. En un grupo real el rótulo «Simulación» contradice «nada es simulado» y el dentista parece dato de salud |
+| Llega tarde (v1 ya publicada) | Cae al espacio sin explicar | — | Bruno no se entera de que ya no puede responder en un toque |
+
+### ux-flujo: «Recordar a quien falta» / «Avisar al grupo» (#89)
+
+| Mensaje | ¿Se entiende? | ¿Expone a alguien? |
+|---|---|---|
+| «Faltan respuestas para «X». Toca, elige tu nombre y marca cuándo puedes (es privado): enlace» | Sí, corto y claro | No nombra a nadie ni cuenta cuántos faltan. Pero llega a todo el grupo, también a quien ya dijo que no (Renata) y a quien se bajó |
+| «Cambió «X»… Las confirmaciones anteriores no cuentan; si vas, toca y confirma de nuevo» | Sí | Dice que algo cambió, no por qué; quien se bajó lo recibe igual |
+| Enlace | Es el enlace de invitación del grupo | Quien lo reenvíe fuera del grupo deja entrar a desconocidos: el código sigue valiendo (ya era así) |
+
+### agente-ia: zona, movilidad, tiempo máximo y momento (enmienda 10)
+
+| Situación | ¿Se entiende? | ¿Expone? | Hallazgo |
+|---|---|---|---|
+| Sin movilidad | «Necesito que me lleven» y «Hasta cuánto viajás» son directos | No: «Nadie del grupo ve tu zona ni cómo te movés», y el servidor no devuelve minutos por persona | La etiqueta nombra la limitación sin rodeo; evaluar una forma más suave («Prefiero que me pasen a buscar») |
+| Todas | Cada pregunta tiene «Prefiero no responder» | No | Bien. Pero usa «movés», «viajás» (voseo) en una app que habla de «tú» |
+| Zona | 8 comunas de Santiago, sin «otra» | Es una dirección aproximada, privada | Un grupo de otra ciudad no puede responder (solo «Prefiero no responder») |
+| Todo el panel | Vive plegado al final del espacio («Agente del círculo – Opcional») | — | Ningún invitado lo ve: nada en «¿Cuándo puedes?» ni en «Mi respuesta» lo menciona, así que Bruno (poca plata, bajo techo) no encuentra dónde decirlo |
+| Sin plan por viaje | «Ningún plan… queda dentro del tiempo de viaje de todos. Por privacidad no se dice para quién» | Al organizador sí le dice que alguien limita el viaje | Aceptable; no dice quién |
+
+Los pedidos de esta revisión están en la ficha `agentes/sinteticos.md`.
+
 ## Hallazgos
 
 (Se completa con cada corrida; ordenados por gravedad.)
