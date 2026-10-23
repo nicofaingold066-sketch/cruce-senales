@@ -1,11 +1,11 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: 17:04 Santiago (reloj). Enmienda 7 en curso.
+Quien edita este archivo: solo el backend. Última actualización: 17:06 Santiago (reloj). Enmienda 7 en curso.
 
 ## Tocando ahora
-- #70 enmienda 9: fase 1 (0032) aplicada 17:00 y entregada; fase 2 (0033, integrantes pendientes) en preparación, sin aplicar todavía.
+- #70 enmienda 9, fase 2.
 - Rutas: supabase/migrations/0033, tests/backend/enmienda9.test.ts, docs/contrato-enmienda-9.md (Implementación).
-- Ninguna migración en curso. Última aplicada: 0032.
+- MIGRACION EN CURSO: 0033 (E9 fase 2: create_space con p_integrantes, pendientes)
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
