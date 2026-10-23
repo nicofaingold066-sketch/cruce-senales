@@ -41,6 +41,15 @@ async function ver(p, donde, { capturar = true } = {}) {
   const captura = capturar ? await p.captura(donde.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)) : undefined
   const cabecera = await p.page.locator('header').first().innerText().catch(() => '')
   revisarTextos(p, donde, `${cabecera}\n${texto}`, captura)
+  // Privacidad: lo de Bruno (poca plata, bajo techo, que lo lleven, franja incompleta) no debe verse en el teléfono de otro.
+  if (p.nombre !== 'Bruno') {
+    const plano = texto.replace(/\s+/g, ' ')
+    const fuga = plano.match(/Bruno.{0,60}(gratis|barato|techo|llev|incomplet|plata)|(gratis|barato|techo|incomplet|plata).{0,60}Bruno/i)
+    if (fuga) {
+      hallazgo({ id: `fuga-bruno-${p.nombre}-${donde}`, persona: p, gravedad: 'alta', destinatario: 'backend',
+        titulo: `Se ve algo privado de Bruno en el teléfono de ${p.nombre}`, paso: `${p.nombre} en «${donde}»`, vio: `«${fuga[0]}»`, esperaba: 'Nada de las condiciones ni preferencias de otra persona.', captura })
+    }
+  }
   const sobra = await p.desborde()
   if (sobra > 0) {
     hallazgo({ id: `desborde-${p.ancho}-${donde}`, persona: p, gravedad: 'media', destinatario: 'front-juan',
@@ -71,9 +80,35 @@ async function entrarPorEnlace(p, nombre) {
   await p.tocar(p.page.getByRole('button', { name: nombre, exact: true }), `su nombre «${nombre}»`)
   await ver(p, 'eres-tu')
   await p.tocarBoton(`Sí, soy ${nombre}`)
-  await p.page.getByRole('heading', { name: 'Los de la facu' }).waitFor({ timeout: 25000 })
+  // Con #88 (friccion) el enlace lleva directo a «¿Cuándo puedes?»; sin él, al espacio.
+  const destino = p.page.getByRole('heading', { name: 'Los de la facu' }).or(p.page.getByRole('heading', { name: '¿Cuándo puedes?' }))
+  await destino.first().waitFor({ timeout: 25000 })
   await p.page.waitForTimeout(1200)
-  return ver(p, 'espacio-recien-entrado')
+  p.rapida = await p.page.getByRole('heading', { name: '¿Cuándo puedes?' }).count() > 0
+  return ver(p, p.rapida ? 'responder-en-un-paso' : 'espacio-recien-entrado')
+}
+
+// Responde las dos franjas por el camino que ofrezca la app: «¿Cuándo puedes?» (un toque) o plan → Mi respuesta.
+// a, b: 'Sí puedo' | 'No puedo' | null (null = no sabe: en un toque va a «Todavía no sé», y en el plan deja «Pendiente»).
+async function responder(p, a, b) {
+  if (p.rapida && a && b) {
+    const nombre = a === 'Sí puedo' && b === 'Sí puedo' ? /^Puedo en? los dos/
+      : a === 'No puedo' && b === 'No puedo' ? /^No puedo (ninguno|en ninguno)/
+      : a === 'Sí puedo' ? /^Solo (el |de )/ : /^Solo (el |de )/
+    const opciones = p.page.getByRole('button', { name: nombre })
+    await p.tocar(a === 'No puedo' && b === 'Sí puedo' ? opciones.nth(1) : opciones.first(), `respuesta de un toque (${a} / ${b})`)
+    await p.esperar('Respuesta guardada', 20000)
+    return
+  }
+  if (p.rapida) {
+    await p.tocar(p.page.getByRole('link', { name: 'Todavía no sé: ver el plan' }), '«Todavía no sé: ver el plan»')
+    await p.page.getByRole('tab', { name: 'Mi respuesta' }).waitFor({ timeout: 20000 })
+    await ver(p, 'plan-desde-todavia-no-se')
+    await p.tocarPestana('Mi respuesta')
+  } else {
+    await irAMiRespuesta(p)
+  }
+  await guardarCondiciones(p, a, b)
 }
 
 // Del espacio a "Mi respuesta" de la propuesta abierta.
@@ -170,8 +205,7 @@ try {
   log('— Joaco (apurado, 320 px)')
   await reintento(async () => {
     await entrarPorEnlace(joaco, 'Joaco')
-    await irAMiRespuesta(joaco)
-    await guardarCondiciones(joaco, 'Sí puedo', 'Sí puedo')
+    await responder(joaco, 'Sí puedo', 'Sí puedo')
   })
   joaco.fin('del enlace a las condiciones guardadas')
   await ver(joaco, 'joaco-guardado')
@@ -181,8 +215,7 @@ try {
   log('— Renata (no puede ninguna franja)')
   await reintento(async () => {
     await entrarPorEnlace(renata, 'Renata')
-    await irAMiRespuesta(renata)
-    await guardarCondiciones(renata, 'No puedo', 'No puedo')
+    await responder(renata, 'No puedo', 'No puedo')
   })
   renata.fin('del enlace a «No puedo» en las dos franjas')
   await ver(renata, 'renata-guardado')
@@ -194,24 +227,58 @@ try {
   log('— Bruno (condiciones: presupuesto bajo, bajo techo)')
   await reintento(async () => {
     await entrarPorEnlace(bruno, 'Bruno')
-    await irAMiRespuesta(bruno)
-    // Solo contesta la A (le importa la B pero no sabe todavía) y guarda.
-    await guardarCondiciones(bruno, 'Sí puedo', null)
+    // Solo contesta la A (la B no la sabe todavía) y guarda.
+    await responder(bruno, 'Sí puedo', null)
   })
   bruno.fin('del enlace a guardar SOLO la franja A')
   const brunoEtiqueta = await ver(bruno, 'bruno-guardo-una-franja')
   resumen.pasos.bruno = lecturas.at(-1)
   resumen.brunoVeIncompletas = /Incompletas/.test(brunoEtiqueta.texto)
 
+  // Bruno busca dónde decir que tiene poca plata y prefiere bajo techo: «Agente del círculo», plegado al final del espacio.
+  log('— Bruno busca dónde cargar presupuesto y techo')
+  try {
+    const t1 = bruno.toques
+    await bruno.tocar(bruno.page.getByRole('link', { name: /Los de la facu/ }).first(), 'volver al espacio')
+    await bruno.page.getByRole('heading', { name: 'Los de la facu' }).waitFor({ timeout: 15000 })
+    await bruno.tocar(bruno.page.getByText('Agente del círculo', { exact: true }).first(), 'abrir «Agente del círculo»')
+    await bruno.page.getByText('Presupuesto este finde').first().waitFor({ timeout: 15000 })
+    await ver(bruno, 'bruno-preferencias')
+    await bruno.tocar(bruno.page.getByText('Ojalá gratis', { exact: true }), 'Presupuesto: Ojalá gratis')
+    await bruno.tocar(bruno.page.getByText('Prefiero bajo techo', { exact: true }), 'Lugar: bajo techo')
+    await bruno.tocar(bruno.page.locator('input[id^=pref-gusta-]').first().locator('xpath=..'), 'Me gustaría: la primera actividad')
+    // Enmienda 10, si ya está en el build: transporte, 30 minutos.
+    for (const [txt, que] of [['Transporte público', 'Cómo te movés'], ['Hasta 30 min', 'Hasta cuánto viajás']]) {
+      const o = bruno.page.getByText(txt, { exact: true })
+      if (await o.count()) await bruno.tocar(o.first(), que)
+    }
+    await bruno.tocarBoton('Guardar mis preferencias')
+    await bruno.esperar('Guardado. Nadie más ve tus preferencias.', 20000)
+    await ver(bruno, 'bruno-preferencias-guardadas')
+    resumen.brunoPreferencias = { toques: bruno.toques - t1, encontro: true }
+  } catch (e) {
+    resumen.brunoPreferencias = { encontro: false, error: String(e.message).split('\n')[0] }
+    hallazgo({ id: 'bruno-no-encuentra-preferencias', persona: bruno, gravedad: 'media', destinatario: 'ux-flujo',
+      titulo: 'Bruno no logra cargar presupuesto y techo', paso: 'Bruno, tras guardar la franja A: busca dónde decir que tiene poca plata',
+      vio: String(e.message).split('\n')[0], esperaba: 'Un camino claro desde su respuesta a «Mis preferencias».' })
+  }
+
   // ───────────────────────── 5. Gonza: «Me interesa» + las dos franjas ─────────────────────────
   log('— Gonza (le interesa, y después se baja)')
   await reintento(async () => {
     await entrarPorEnlace(gonza, 'Gonza')
-    await irAMiRespuesta(gonza)
-    await gonza.tocarBoton('Me interesa')
-    await gonza.esperar('Marcaste "Me interesa"')
-    await ver(gonza, 'gonza-me-interesa')
-    await guardarCondiciones(gonza, 'Sí puedo', 'Sí puedo')
+    if (gonza.rapida) {
+      await responder(gonza, 'Sí puedo', 'Sí puedo')
+      await ver(gonza, 'gonza-respuesta-guardada')
+      await gonza.tocarBoton('Me interesa') // la tarjeta «¿Avisar al grupo que te interesa?»
+      await gonza.esperar('Marcaste "Me interesa"')
+    } else {
+      await irAMiRespuesta(gonza)
+      await gonza.tocarBoton('Me interesa')
+      await gonza.esperar('Marcaste "Me interesa"')
+      await ver(gonza, 'gonza-me-interesa')
+      await guardarCondiciones(gonza, 'Sí puedo', 'Sí puedo')
+    }
   })
   gonza.fin('del enlace a «Me interesa» y condiciones guardadas')
   resumen.pasos.gonza = lecturas.at(-1)
