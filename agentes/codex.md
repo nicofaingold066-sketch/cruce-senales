@@ -3,9 +3,12 @@
 Quien edita este archivo: solo codex. Actualización: 23 oct 2026, cierre #53/#17; sesión autenticada como JuanMorales10.
 
 ## Tocando ahora
-(vacío: #53 ampliada y #17 navegador entregadas en `codex/revisiones`, `0e4ba7f`.)
+- Validación de #17 en producción (pedido directo del usuario): `tests/e2e/evidencia-jurado-produccion.md` (nuevo).
+- Si hace falta ajustar el guion por un cambio de interfaz: `tests/e2e/jurado-navegador.mjs` (solo este runner propio).
+Rama `codex/revisiones`. No ejecutar contra la base hasta que backend quite PRUEBA DE CARGA EN CURSO y cualquier marca de migración.
 
 ## Estado
+Nuevo corte: pedido al coordinador publicado y preparación de #17 en producción. Backend con PRUEBA DE CARGA EN CURSO; todavía no se ejecuta la suite.
 **Corte #53/#17 entregado: `codex/revisiones` `0e4ba7f`, con F1b `137721d`. Objetivo cumplido: sí.** F1 positivo de agente-ia incorporado y conservado sin reescribir; F1b aparte invierte las latencias (espacio 180 ms/lista 20 ms): red controlada 10/10, exit 0. La primera carga del producto está serializada; no se fuerza ni se afirma una llegada concurrente inversa. Variantes del jurado en Chrome a 375 px, aplicación local (base `dda21c6`) y backend real con 0030: **4/4, 23 comprobaciones**, dos corridas completas. Entrega 16:18:56–16:19:41: 202 RPC observadas, solo dos rechazos esperados (sin_alternativa y cupo reservado), sin errores JS y sin llamadas al modelo. V3 incluye clic de Sofi desde una pestaña vieja: el servidor reserva el lugar a Tomi. Dos sesiones propias reutilizadas por corrida; las cuatro propuestas se cancelan por UI. Typecheck/build/sintaxis/diff --check pasan. No certifica producción, teléfonos físicos, IA ni toda privacidad E7. Dos preparaciones fallidas por selectores del guion están registradas. Evidencia: `tests/e2e/evidencia-53-jurado.md`; informe: `docs/revision-codex-7-lista-jurado.md`. Cambios propios solo los cuatro archivos reclamados; ningún cambio propio en src/, supabase/, configuración o main.
 
 Antecedente de arranque del corte #53/#17: GitHub autenticado como JuanMorales10. Agente-ia ya entregó F1 positiva en 1b8a3d8 durante el bloqueo: incorporo su commit y completo la segunda combinación de latencias, sin duplicar su trabajo. Runtime existente localizado; sin pruebas nuevas aún. Sin cambios en src/, supabase/ ni configuración.
@@ -26,6 +29,7 @@ Coordinador: integrar `0e4ba7f` (incluye `137721d`) y actualizar #17 como verifi
 Ninguno para esta entrega. Se resolvió la autenticación de GitHub antes de publicar el reclamo. No se ejecutaron suites durante una migración ni prueba de carga.
 
 ## Pedidos a otros
+- **coordinador (nuevo pedido del usuario):** entrega #53/#17 lista en `codex/revisiones` `0e4ba7f` (F1b `137721d`). Vi el aviso 16:28: ya incorporada a `wip/fundamentos`, gracias. Integrar/publicar por tu circuito cuando esté verificada; avisar commit de producción. El usuario pidió que después ejecute `node tests/e2e/jurado-navegador.mjs https://cruce-senales.vercel.app` y publique la evidencia. Espero la liberación de la base por #45/0031; no correré suites mientras estén las marcas. No despliego ni empujo main.
 - coordinador: integrar `codex/revisiones` `0e4ba7f` (F1b `137721d`, nuevo guion #17 e informes). #53 conserva el F1 de agente-ia; solo añade el caso aparte solicitado a las 16:11. Red 10/10; jurado navegador local + backend real 4/4. Ningún defecto nuevo del producto en este alcance.
 - coordinador/pitch-problema: actualizar `docs/jurado-variantes.md`, que aún dice «Nada de esto está verificado», citando `tests/e2e/evidencia-53-jurado.md` y sus límites (no producción ni teléfonos físicos). No edité ese archivo ajeno.
 - [RESUELTO por #52/#53] interfaz/coordinador: F1 medio reproducido en Espacio.tsx:32–38,53–69,74–82 (base 92477ef): get_space llega primero, fija generacion, y list_proposals inicial válida queda descartada porque capturó null. Pantalla queda en Cargando propuestas hasta refresco/sondeo. Caso F1 en tests/e2e/red-controlada.mjs, informe revisión 6 con arreglo propuesto. No se editó src.
