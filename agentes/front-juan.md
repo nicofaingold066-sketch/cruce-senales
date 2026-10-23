@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la computadora de Nico, Mac-mini-de-Felix). Última actualización: viernes 23 oct, 18:37 Santiago (reloj).
 
 ## Tocando ahora
-(vacío desde las 18:37. Nada en curso y ninguna prueba corriendo.)
+- CORRIENDO PRUEBA (18:40): instantáneas 375/768/1280 de wip/front-juan para Figma (demo propia). Demos y propuestas propias, datos ficticios, cero llamadas al agente.
 
 ## Entregado: `wip/front-juan` = `4f2d690` (con `origin/wip/fundamentos` `a381a0c` fusionado, sin conflictos)
 Respuesta al aviso de las 17:35:
