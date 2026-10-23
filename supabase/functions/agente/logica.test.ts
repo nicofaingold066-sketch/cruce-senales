@@ -219,3 +219,24 @@ test('mensajeFijo y esSabado', () => {
   assert.equal(esSabado('2026-10-30'), false)
   assert.equal(esSabado('31-10-2026'), false)
 })
+
+test('texto fijo con el grupo (mejora #40): nombra ritmo, ambiente y cuántos la eligieron, solo con totales', () => {
+  const texto = unirFrases(ASADO.frases_grupo, false, { perfil: PERFIL_5, actividad: 'Asado' })
+  assert.equal(
+    texto,
+    'Le sirve al presupuesto de todos, es bajo techo por si cambia el tiempo, es lo que más eligieron (4 de 5) y va con lo que prefiere la mayoría: un plan algo tranquilo y con ambiente tranquilo.',
+  )
+  for (const n of NOMBRES) assert.equal(texto.includes(n), false, `aparece ${n}`)
+  // Sin ambiente mayoritario, solo el ritmo.
+  assert.match(unirFrases(['ritmo_del_grupo'], false, { perfil: { ...PERFIL_5, ambiente_mayoritario: null } }), /mayoría: un plan algo tranquilo\.$/)
+})
+
+test('texto fijo con el grupo: con 3 personas o menos, o con una sola persona en la actividad, vuelve al texto general', () => {
+  const chico = unirFrases(ASADO.frases_grupo, false, { perfil: { ...PERFIL_5, personas: 3 }, actividad: 'Asado' })
+  assert.doesNotMatch(chico, /de 3|mayoría/)
+  assert.match(chico, /es lo que más eligieron y va con el ritmo que prefiere el grupo\.$/)
+  const pocos = unirFrases(['el_mas_elegido'], false, { perfil: PERFIL_5, actividad: 'Pádel' })
+  assert.equal(pocos, 'Es lo que más eligieron.')
+  // Sin contexto, igual que antes.
+  assert.equal(unirFrases(['el_mas_elegido', 'ritmo_del_grupo']), 'Es lo que más eligieron y va con el ritmo que prefiere el grupo.')
+})

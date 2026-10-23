@@ -146,12 +146,37 @@ export function resumenClima(c: Clima): string {
 // Con clima de simulación no se habla de pronóstico: es un clima de prueba.
 const FRASE_SOL_SIMULADO = 'es al aire libre con el sol de la simulación'
 
-export function textoFrase(codigo: string, simulado: boolean): string | undefined {
-  return simulado && codigo === 'al_aire_libre_con_buen_tiempo' ? FRASE_SOL_SIMULADO : FRASES[codigo]
+/** Datos del grupo (solo totales) para que el texto fijo no suene genérico (mejora #40). */
+export interface ContextoFrases {
+  perfil?: PerfilGrupo | null
+  /** Etiqueta de la actividad de la opción ("Asado"), para decir cuántos la eligieron. */
+  actividad?: string
 }
 
-export function unirFrases(codigos: string[], simulado = false): string {
-  const partes = codigos.map((c) => textoFrase(c, simulado)).filter((t): t is string => Boolean(t))
+const ENERGIA_PLAN: Record<string, string> = { con_todo: 'un plan con todo', algo_tranquilo: 'un plan algo tranquilo' }
+const AMBIENTE_PLAN: Record<string, string> = { fiesta: 'con ambiente de fiesta', tranquilo: 'con ambiente tranquilo' }
+
+export function textoFrase(codigo: string, simulado: boolean, contexto: ContextoFrases = {}): string | undefined {
+  if (simulado && codigo === 'al_aire_libre_con_buen_tiempo') return FRASE_SOL_SIMULADO
+  // Con 3 personas o menos no se dan detalles del grupo: se podría adivinar quién eligió qué.
+  const p = contexto.perfil && contexto.perfil.personas > 3 ? contexto.perfil : null
+  if (p && codigo === 'ritmo_del_grupo') {
+    const partes = [
+      p.energia_mayoritaria ? ENERGIA_PLAN[p.energia_mayoritaria] : undefined,
+      p.ambiente_mayoritario ? AMBIENTE_PLAN[p.ambiente_mayoritario] : undefined,
+    ].filter((t): t is string => Boolean(t))
+    if (partes.length === 2) return `va con lo que prefiere la mayoría: ${partes[0]} y ${partes[1]}`
+    if (partes.length === 1) return `va con lo que prefiere la mayoría: ${partes[0]}`
+  }
+  if (p && codigo === 'el_mas_elegido' && contexto.actividad) {
+    const g = gustosVisibles(p).find((x) => x.actividad_etiqueta === contexto.actividad)
+    if (g) return `es lo que más eligieron (${g.cuantos} de ${p.personas})`
+  }
+  return FRASES[codigo]
+}
+
+export function unirFrases(codigos: string[], simulado = false, contexto: ContextoFrases = {}): string {
+  const partes = codigos.map((c) => textoFrase(c, simulado, contexto)).filter((t): t is string => Boolean(t))
   if (partes.length === 0) return 'Es la opción que mejor le sirve al grupo con lo que cargaron.'
   const texto = partes.length === 1 ? partes[0] : `${partes.slice(0, -1).join(', ')} y ${partes[partes.length - 1]}`
   return `${texto.charAt(0).toUpperCase()}${texto.slice(1)}.`
