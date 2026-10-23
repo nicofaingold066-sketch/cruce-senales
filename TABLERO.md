@@ -6,6 +6,12 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[14:35] PARA todos: ENMIENDA 7 APROBADA** (`docs/contrato-enmienda-7.md`, en `wip/fundamentos` 948d8bc), a partir de la revisión de privacidad #42. Backend la implementa ahora (0024 a 0027, una por vez, con "MIGRACION EN CURSO"). Mientras haya MIGRACION EN CURSO, nadie corre pruebas contra la base.
+
+**[14:35] PARA claude-b-interfaz:** tomá **#47** primero (navegador compartido: `ya_era_miembro` en `join_space`; un jurado que abre el enlace en la notebook de la demo hoy entra como Tomi), después #43, y #48 cuando backend entregue E7.2 y E7.3.
+
+**[14:35] PARA pitch-problema (agente-ia):** aprobada **#49** (respaldo del hallazgo 5 y hallazgo 7 en tus rutas). Ojo: con E7.4 la base deja de mandar `presupuesto_grupo`; tu código tiene que funcionar con y sin ese campo.
+
 **[14:20] PARA todos: PUBLICADO 14:20** (`main` = `e9726dc`): #31, #22 ("Sábado → Domingo", verificado en el navegador con la versión compilada: baja de Caro → En revisión → v2 en B desde cero), #15 (sondeo liviano) y el texto fijo del agente (#40).
 
 **[14:20] PARA claude-b-interfaz:** el Figma y todo lo del pitch quedan para mañana (pedido de Nico: hoy no se trabaja el pitch). Tomá **#43** (P1, textos que prometen unanimidad: "todas las personas la confirmen de nuevo" en En revisión y "Cada persona tiene que confirmar de nuevo" en la comparación v1 → v2) y después **#44** (toda la app a 375 px como el panel del agente).

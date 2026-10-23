@@ -19,6 +19,10 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 24 | Prop `demo` en `AgentePanel` para mostrar el selector de clima solo en demos | claude-b-interfaz | entregada (5bea676), en main |
 | 28 | PRIVACIDAD: `proponer_plan_borrador` devuelve en `perfil_grupo.gustos` actividades con `cuantos: 1` al llamarlo directo (deja adivinar quién la eligió). Filtrar `cuantos >= 2` en la base | backend | verificada en vivo (66a1910, 0023): el RPC directo devuelve solo Asado 3 y Fútbol 2 |
 | 29 | Regresión de privacidad del agente en `tests/e2e/`: ni el RPC ni la función devuelven gustos de una sola persona, nombres ni preferencias individuales (sin clave de modelo: texto fijo) | codex | libre |
+| 46 | PRIVACIDAD, enmienda 7 (E7.1 a E7.4, migraciones 0024 a 0027): orden de candidatas en grupos chicos, conteos de la propuesta solo para el organizador, simulación solo en demo, perfil sin quien llama y sin presupuesto | backend | tomada por backend |
+| 47 | Navegador compartido (hallazgo 8): si `join_space` responde `ya_era_miembro`, avisar "Este navegador ya está en este espacio como <nombre>" y ofrecer "Entrar como otra persona" (cierra la sesión, crea una nueva y repite `join_space`) | claude-b-interfaz | libre (antes que #43) |
+| 48 | Interfaz de la enmienda 7: con `cupos.pendientes` / `personas_con_condiciones` en null no mostrar "Faltan por responder" ni "Con condiciones cargadas"; herramientas de Simulación solo en espacios demo | claude-b-interfaz | libre cuando backend entregue E7.2 y E7.3 |
+| 49 | Respaldo del hallazgo 5 (no usar ni mandar `el_mas_elegido` si la actividad no está en `gustosVisibles`) y hallazgo 7 (sin `presupuesto_grupo` en la respuesta, el respaldo ni el modelo; "gratis", "barat*", "económic*" y "presupuesto" a PROHIBIDAS; corregir el doc) | agente-ia | aprobada, libre |
 | 43 | Textos que prometen unanimidad (R1 de revision-codex-5): "hasta que ... todas las personas la confirmen de nuevo" (En revisión) y "Cada persona tiene que confirmar de nuevo" (comparación v1 → v2). Decir: se necesitan de nuevo al menos N confirmaciones, incluido el anfitrión; quien participe confirma la versión nueva | claude-b-interfaz | libre |
 
 ## P2 — Que se entienda a la primera (UX de la demo)
@@ -43,7 +47,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 39 | Redesplegar la función `agente` v5 en lote (index.ts + logica.ts; bloquea "reserv*" y "agend*"). Antes del sábado 10:00 | coordinador | hecha: función v5 desplegada (index.ts + logica.ts de 487d2fc) y probada en vivo |
 | 40 | Sin clave de modelo, que el "por qué" con texto fijo use también el ritmo y el ambiente del grupo (solo totales, nunca de una persona), para que la demo sin IA no suene genérica | agente-ia | verificada y publicada (función v5 + pantalla 14:20) |
 | 41 | Recorrido del agente en producción desde un teléfono (375 px) con evidencia en `docs/agente-ia.md` (fecha, hora del reloj, versión) | agente-ia | entregada (deeea83): evidencia 14:09–14:11 en producción a 375 px, en main |
-| 42 | Revisión de privacidad de solo lectura de toda la app contra el agente: ¿alguna pantalla, respuesta o error deja ver preferencias o condiciones de otra persona? Informe con archivo y línea en `docs/agente-revision-privacidad.md`; los arreglos los hace cada dueño | agente-ia | libre |
+| 42 | Revisión de privacidad de solo lectura de toda la app contra el agente: ¿alguna pantalla, respuesta o error deja ver preferencias o condiciones de otra persona? Informe con archivo y línea en `docs/agente-revision-privacidad.md`; los arreglos los hace cada dueño | agente-ia | verificada (a3d74db): 8 hallazgos, ninguna exposición directa; decisiones en docs/contrato-enmienda-7.md |
 
 ## P3 — Calidad y robustez
 | # | Mejora | Dueño | Estado |
