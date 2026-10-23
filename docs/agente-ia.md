@@ -43,6 +43,9 @@ Para que no se pueda adivinar quién eligió qué:
 4. Elegir "Simular lluvia": queda solo el asado, porque alguien pidió techo.
 5. "Usar esta opción" → "Nueva propuesta" llega con el título y las dos franjas precargados, y un aviso de que el agente no crea ni confirma nada.
 
+**Lógica de la función, sin red, sin base y sin modelo** (14 pruebas: validación de textos, nombres fuera del catálogo, lo que recibe el modelo, filtro de mínimo 2 personas, clima simulado solo en demo, pronóstico y salida del modelo):
+- `node --test "supabase/functions/agente/*.test.ts"` (Node 24, sin dependencias).
+
 **Con pruebas automáticas, contra la base real:**
 - `npx vitest run tests/backend/enmienda4.test.ts`: privacidad, semilla, candidatas, rol, presupuesto, lista permitida y reinicio.
 - `npx vitest run tests/backend/enmienda5.test.ts`: preferencias simuladas para las variantes del jurado.
@@ -50,7 +53,7 @@ Para que no se pueda adivinar quién eligió qué:
 ## 5. Dónde está
 | Pieza | Ruta |
 |---|---|
-| Función del servidor (clima, candidatas, IA, validación) | `supabase/functions/agente/index.ts` |
+| Función del servidor (clima, candidatas, IA, validación) | `supabase/functions/agente/index.ts`; la lógica pura y sus pruebas en `logica.ts` y `logica.test.ts` |
 | Pantalla (preferencias, propuesta, opciones, WhatsApp) | `src/agente/AgentePanel.tsx`, `src/agente/api.ts`, `src/agente/agente.css` |
 | Base: tablas `cruce.preferencias` y `cruce.catalogo_agente`; RPC `save_my_preferences`, `get_my_preferences`, `proponer_plan_borrador` y `simulate_save_preferences` | `supabase/migrations/0014` a `0016`, `0019`, `0020` y `0023` (gustos de una sola persona) |
 | Contrato | `docs/contrato-enmienda-4.md` (con la 4.1) y `docs/contrato-enmienda-5.md` |
