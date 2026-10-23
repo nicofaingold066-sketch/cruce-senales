@@ -1,6 +1,6 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: 15:14 Santiago (reloj). Enmienda 7 (E7.1 a E7.5) entregada.
+Quien edita este archivo: solo el backend. Última actualización: 15:31 Santiago (reloj). Enmienda 7 entregada; a4 y a5 adaptadas.
 
 ## Tocando ahora
 (vacío. Ninguna migración en curso. Última aplicada: 0028. La base queda libre para pruebas.)
@@ -38,6 +38,7 @@ Ninguno.
 - coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
+- a4 y a5 de verificacion-altas adaptadas a E7.3 (15:31): commit 7747bf6 en `wip/fundamentos`, sin push, sin migraciones. a4+a5 en serie (15:20 a 15:25): a5 12/12, a4 21/23 (ráfaga mixta: 2 fallo_temporal por 55P03 y un 57014 en join_space; la prueba de forma de errores cae por ese 57014). Solas (15:26): 2/2. a4 completa otra vez (15:27 a 15:30): 23/23.
 - E7.5 (15:14): 0028_e7_simular_solo_demo_y_mensaje aplicada 15:09 (puede.simular false fuera del demo; mensaje general de espacio_no_demo), commit 8545fce en `wip/fundamentos`, sin push. tests/backend 53/53 (9 archivos, 15:10 a 15:13). Lista permitida 30/0, verificar_privilegios sin hallazgos.
 - Enmienda 7 (15:06): commits 254f0d9 (E7.1, 0024), 4d88d3a (E7.3, 0025 + pruebas al demo propio), 145e3e8 (E7.4, 0026 + tests/backend/enmienda7.test.ts), 8eb54df (E7.2, 0027 + doc), f33978a (e2e sin cupos.pendientes de Luna), 4721a5a (doc) en `wip/fundamentos`, sin push. Orden aplicado: 0024 E7.1, 0025 E7.3, 0026 E7.4, 0027 E7.2. Lista permitida 30/0, verificar_privilegios sin hallazgos. tests/backend 52/52 (9 archivos, 15:01 a 15:03); tests/e2e 12/12 sumando la corrida de 15:03 (11/12) y la falla de transporte repetida sola (1/1, 15:06). Detalle en la sección Implementación de docs/contrato-enmienda-7.md.
 - Mejora #28 (privacidad, `perfil_grupo.gustos` solo con `cuantos >= 2`): commit 66a1910 en `wip/fundamentos` (0023_gustos_minimo_dos.sql aplicada 13:51, tests/backend/enmienda4.test.ts, línea en docs/contrato-enmienda-6.md). enmienda4.test.ts 10/10; suite backend 47/47 (8 archivos, 169 s, 13:53 a 13:56). Sin push.
