@@ -5,6 +5,7 @@ import type { ApiError, EspacioResumen, TipoEspacio } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { Aviso, Boton, Cargando, ErrorCaja, Vacio } from '../components/ui'
+import { Marca } from '../components/Marca'
 
 const TIPO: Record<TipoEspacio, string> = { amigos: 'Amigos', empresa: 'Empresa' }
 
@@ -30,6 +31,23 @@ export default function Inicio() {
 
   return (
     <div className="pantalla">
+      <section className="portada" aria-labelledby="portada-titulo">
+        <Marca grande />
+        <p id="portada-titulo" className="portada-lema">
+          Del «nos juntamos» al encuentro que ocurre.
+        </p>
+        <ol className="portada-pasos">
+          <li>
+            <strong>Cada uno</strong> marca en privado cuándo puede.
+          </li>
+          <li>
+            <strong>El servidor</strong> propone una sola opción compatible.
+          </li>
+          <li>
+            <strong>Confirmas</strong> esa versión. Si alguien se baja, se repara y se vuelve a confirmar.
+          </li>
+        </ol>
+      </section>
       <h1>Tus espacios</h1>
       <p className="suave">
         Un espacio es el grupo con el que coordinas. Todo lo que ves aquí es ficticio.

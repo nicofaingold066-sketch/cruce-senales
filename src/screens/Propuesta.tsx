@@ -3,7 +3,7 @@ import { api } from '../lib/api'
 import type { Espacio } from '../lib/types'
 import { usePropuestaViva } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
-import { Aviso, Boton, Cargando, ErrorCaja, InsigniaEstado } from '../components/ui'
+import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import type { Pestana } from './tabs'
 import PlanTab from './PlanTab'
 import RespuestaTab from './RespuestaTab'
@@ -103,7 +103,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
         </Aviso>
       ) : null}
 
-      {avisoVersion != null ? (
+      {avisoVersion != null && !(activa === 'plan' && p.ultima_evaluacion?.resultado === 'reparacion_publicada') ? (
         <Aviso
           tono="aviso"
           titulo={`Hay una versión nueva (versión ${avisoVersion})`}
@@ -119,13 +119,16 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
 
       <header className="propuesta-cabecera">
         <h1>{p.titulo}</h1>
-        <div className="fila-chips">
-          <InsigniaEstado estado={p.estado} etiqueta={p.estado_etiqueta} />
-          {p.opcion ? <span className="etiqueta">Versión {p.opcion.version}</span> : null}
-        </div>
-        <div className="siguiente">
-          <span className="siguiente-rotulo">Próxima acción</span>
-          <p>{p.siguiente_accion.texto}</p>
+        <div className={`estado-hero estado-hero-${p.estado}`} role="status" aria-live="polite">
+          <div className="estado-hero-fila">
+            <span className="estado-hero-punto" aria-hidden="true" />
+            <strong className="estado-hero-etiqueta">{p.estado_etiqueta}</strong>
+            {p.opcion ? <span className="estado-hero-version">Versión {p.opcion.version}</span> : null}
+          </div>
+          <p className="estado-hero-siguiente">
+            <span className="visualmente-oculto">Próxima acción: </span>
+            {p.siguiente_accion.texto}
+          </p>
         </div>
       </header>
 

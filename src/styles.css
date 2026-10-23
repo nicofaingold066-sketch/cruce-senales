@@ -1,12 +1,14 @@
 :root {
-  --fondo: #f6f4ef;
+  /* Identidad CRUCE: brasa (acción) sobre papel cálido y carbón. */
+  --fondo: #faf6f1;
   --superficie: #ffffff;
-  --texto: #1d1b16;
+  --texto: #1f1a17;
   --suave: #54504a;
   --borde: #cfc9bd;
-  --primario: #14532d;
+  --primario: #b4400f;
   --primario-texto: #ffffff;
-  --acento: #8a3b00;
+  --acento: #7a3a0c;
+  --punto: #1f1a17;
   --foco: #0b57d0;
   --ok-fondo: #e3f3e6;
   --ok-borde: #2e7d32;
@@ -30,9 +32,10 @@
     --texto: #f1eee6;
     --suave: #b8b2a5;
     --borde: #4a463d;
-    --primario: #7ad39a;
-    --primario-texto: #0c2415;
+    --primario: #ff9b6a;
+    --primario-texto: #2a1206;
     --acento: #ffb27a;
+    --punto: #f1eee6;
     --foco: #8ab4f8;
     --ok-fondo: #173020;
     --ok-borde: #6cc688;
@@ -133,6 +136,7 @@ a {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-decoration: none;
+  align-self: center;
 }
 .sep {
   color: var(--suave);
@@ -691,4 +695,204 @@ input[aria-invalid='true'],
   content: '';
   position: absolute;
   inset: -10px -6px;
+}
+
+/* ---- Identidad ---- */
+.marca-bloque {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primario);
+}
+.marca-nombre {
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+.logo-punto {
+  fill: var(--punto);
+}
+.marca-grande {
+  gap: 12px;
+}
+.marca-grande .marca-nombre {
+  font-size: 2.2rem;
+  letter-spacing: 0.14em;
+}
+.portada {
+  padding: 18px 0 8px;
+}
+.portada-lema {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 10px 0 12px;
+}
+.portada-pasos {
+  margin: 0;
+  padding-left: 1.3rem;
+  color: var(--suave);
+}
+.portada-pasos li {
+  margin: 4px 0;
+}
+.portada-pasos strong {
+  color: var(--texto);
+}
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---- Estado destacado de la propuesta (el texto lo entrega el servidor) ---- */
+.estado-hero {
+  border-radius: var(--radio);
+  border: 2px solid var(--info-borde);
+  background: var(--info-fondo);
+  padding: 12px 14px;
+  margin: 8px 0 12px;
+}
+.estado-hero-fila {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.estado-hero-punto {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--info-borde);
+  flex: none;
+}
+.estado-hero-etiqueta {
+  font-size: 1.3rem;
+  line-height: 1.2;
+}
+.estado-hero-version {
+  margin-left: auto;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0 10px;
+}
+.estado-hero-siguiente {
+  margin: 6px 0 0;
+  font-weight: 600;
+}
+.estado-hero-grupo_confirmado {
+  border-color: var(--ok-borde);
+  background: var(--ok-fondo);
+}
+.estado-hero-grupo_confirmado .estado-hero-punto {
+  background: var(--ok-borde);
+}
+.estado-hero-en_revision {
+  border-color: var(--aviso-borde);
+  background: var(--aviso-fondo);
+}
+.estado-hero-en_revision .estado-hero-punto {
+  background: var(--aviso-borde);
+}
+.estado-hero-cancelado,
+.estado-hero-expirado {
+  border-color: var(--error-borde);
+  background: var(--error-fondo);
+}
+.estado-hero-cancelado .estado-hero-punto,
+.estado-hero-expirado .estado-hero-punto {
+  background: var(--error-borde);
+}
+.estado-hero-borrador {
+  border-color: var(--borde);
+  background: var(--superficie);
+}
+.estado-hero-borrador .estado-hero-punto {
+  background: var(--suave);
+}
+
+/* ---- Avance: un punto por confirmación necesaria ---- */
+.puntos {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.punto {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--primario);
+  background: transparent;
+}
+.punto-lleno {
+  background: var(--primario);
+}
+.opcion-confirmada .punto {
+  border-color: var(--ok-borde);
+}
+.opcion-confirmada .punto-lleno {
+  background: var(--ok-borde);
+}
+.puntos-texto {
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+/* ---- Acción principal fija abajo en teléfono ---- */
+@media (max-width: 640px) {
+  .cta-fija {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 15;
+    margin: 0;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: var(--superficie);
+    border-top: 1px solid var(--borde);
+    box-shadow: 0 -6px 18px rgb(0 0 0 / 0.08);
+  }
+  .cta-fija .btn {
+    width: 100%;
+    min-height: 52px;
+    font-size: 1.05rem;
+  }
+  .cta-fija p {
+    margin: 6px 0 0;
+    font-size: 0.85rem;
+  }
+  .contenido:has(.cta-fija) {
+    padding-bottom: 150px;
+  }
+}
+
+/* ---- Ficha plegable ---- */
+.ficha summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+}
+.ficha summary::-webkit-details-marker {
+  display: none;
+}
+.ficha summary::after {
+  content: '+';
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primario);
+}
+.ficha[open] summary::after {
+  content: '–';
+}
+.ficha summary h2 {
+  margin: 0;
 }

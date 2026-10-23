@@ -68,8 +68,10 @@ type VivaProps = Pick<PestanaProps, 'p' | 'viva' | 'soloLectura'>
 function Ficha({ p, viva }: { p: EstadoPropuesta; viva: PestanaProps['viva'] }) {
   const ahora = useAhora(1000)
   return (
-    <section className="tarjeta">
-      <h2>Ficha del plan</h2>
+    <details className="tarjeta ficha" open={!p.opcion}>
+      <summary>
+        <h2>Ficha del plan</h2>
+      </summary>
       <dl className="datos">
         <dt>Organiza</dt>
         <dd>
@@ -99,7 +101,7 @@ function Ficha({ p, viva }: { p: EstadoPropuesta; viva: PestanaProps['viva'] }) 
           <PlazoInformativo p={p} viva={viva} ahora={ahora} />
         </dd>
       </dl>
-    </section>
+    </details>
   )
 }
 
@@ -135,7 +137,6 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
   const o = p.opcion!
   const { ocupado, error, correr } = useMutacion(viva)
   const confirmado = p.estado === 'grupo_confirmado'
-  const pct = o.cupos.minimo > 0 ? Math.min(100, Math.round((o.cupos.confirmados / o.cupos.minimo) * 100)) : 0
 
   async function aceptar() {
     // Siempre se envía la versión que la persona está viendo, nunca una calculada.
@@ -155,8 +156,14 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
         Franja {o.franja.clave} · hora de Santiago ({ZONA_VISIBLE}) · publicada {momentoCorto(o.publicada_en)}
       </p>
 
-      <div className="progreso" role="img" aria-label={`Confirmaron ${o.cupos.confirmados} de ${o.cupos.minimo} necesarias`}>
-        <div className="progreso-barra" style={{ width: `${pct}%` }} />
+      {/* Solo dibuja los números que entrega el servidor: un punto por cada confirmación necesaria. */}
+      <div className="puntos" role="img" aria-label={`Confirmaron ${o.cupos.confirmados} de ${o.cupos.minimo} necesarias`}>
+        {Array.from({ length: o.cupos.minimo }, (_, i) => (
+          <span key={i} className={`punto ${i < o.cupos.confirmados ? 'punto-lleno' : ''}`} />
+        ))}
+        <span className="puntos-texto">
+          {o.cupos.confirmados} de {o.cupos.minimo}
+        </span>
       </div>
       <dl className="datos">
         <dt>Aceptaciones</dt>
@@ -200,7 +207,7 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
       <p className="suave">Las condiciones de cada persona son privadas y no se muestran.</p>
 
       {p.mi_situacion.puede.aceptar ? (
-        <div className="cta">
+        <div className="cta cta-fija">
           <Boton
             onClick={aceptar}
             ocupado={ocupado}
