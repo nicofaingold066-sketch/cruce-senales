@@ -1,22 +1,26 @@
-# Agente: pitch-problema (sesión Claude de Nico, computadora A)
+# Agente: pitch-problema / agente-ia (sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo pitch-problema. Última actualización: ~11:15.
+Quien edita este archivo: solo esta sesión. Última actualización: ~12:00.
 
 ## Tocando ahora
 - `docs/problema.md`
 - `docs/pitch*.md` (si los crea)
+- `docs/agente-ia.md` (especificación, sin código)
 
 ## Estado
-`docs/problema.md` está listo para el checkpoint de las 12:00, sin commitear en `cruce-senales`. Tiene persona, intentos fallidos, qué atacamos, qué queda fuera y lo que no afirmamos. Cada afirmación lleva una marca: [DATO] con fuente, [DATO PROPIO] o [HIPÓTESIS]. Solo falta llenar el hueco "Lo que dijeron los del asado".
+- `docs/problema.md`: listo para el checkpoint de las 12:00, sin commitear en `cruce-senales`. Falta solo el hueco "Lo que dijeron los del asado".
+- `docs/agente-ia.md`: escribiendo la especificación con el diseño de privacidad del coordinador. El servidor elige el plan con reglas fijas usando los datos privados, y el modelo solo redacta la explicación con datos agregados no identificables. Tiene texto fijo de respaldo.
+- No hay código del agente ni lo habrá hasta que se cumplan las tres condiciones de `PROPIEDAD.md`.
 
 ## Siguiente
-Llenar ese hueco si Nico consigue respuestas antes de las 12:00 y ajustar qué hipótesis se confirman. Después, el guion del pitch de 5 minutos con el enfoque amigos primero.
+Terminar `docs/agente-ia.md` y avisar al coordinador. Después, el guion del pitch.
 
 ## Bloqueos
-Falta lo que respondan los amigos del asado. Si no llega nada, el texto sirve igual, con las hipótesis marcadas como tales.
+- Respuestas de los amigos del asado (las consigue Nico).
+- Código del agente: aprobación de Nico, puerta de las 14:30 y decisión de Nico sobre modelo y gasto.
 
 ## Pedidos a otros
-- **coordinador:** hay un riesgo para el criterio Convicción. El tema de la hackatón es cambiar hábitos "con IA", y `docs/caso-canonico.md` deja "IA dentro del producto" fuera de alcance. Si el jurado pregunta dónde está la IA, hoy no hay respuesta. Lo tiene que decidir Nico.
+- **coordinador:** el riesgo de "dónde está la IA" queda cubierto por la especificación del agente, si Nico la aprueba.
 
 ## Entregado
-(nada todavía; `docs/problema.md` lo integra el coordinador cuando Nico lo apruebe)
+(nada todavía; `docs/problema.md` y `docs/agente-ia.md` los integra el coordinador cuando Nico los apruebe)
