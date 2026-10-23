@@ -40,7 +40,8 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 38 | Pruebas de la función sin red ni modelo (textoValido, sinNombres, entradaModelo, filtro de mínimo 2, clima simulado solo en demo) versionadas en `supabase/functions/agente/` y con el comando en `docs/agente-ia.md` | agente-ia | verificada (837a126): 14/14 con `node --test "supabase/functions/agente/*.test.ts"`, integrada 8d2b8be |
 | 39 | Redesplegar la función `agente` v5 en lote (index.ts + logica.ts; bloquea "reserv*" y "agend*"). Antes del sábado 10:00 | coordinador | hecha: función v5 desplegada (index.ts + logica.ts de 487d2fc) y probada en vivo |
 | 40 | Sin clave de modelo, que el "por qué" con texto fijo use también el ritmo y el ambiente del grupo (solo totales, nunca de una persona), para que la demo sin IA no suene genérica | agente-ia | verificada (487d2fc): 16/16 y en vivo "es lo que más eligieron (3 de 4)"; pantalla en main, se publica en el próximo lote de Vercel |
-| 41 | Recorrido del agente en producción desde un teléfono (375 px) con evidencia en `docs/agente-ia.md` (fecha, hora del reloj, versión) | agente-ia | libre |
+| 41 | Recorrido del agente en producción desde un teléfono (375 px) con evidencia en `docs/agente-ia.md` (fecha, hora del reloj, versión) | agente-ia | entregada (deeea83): evidencia 14:09–14:11 en producción a 375 px, en main |
+| 42 | Revisión de privacidad de solo lectura de toda la app contra el agente: ¿alguna pantalla, respuesta o error deja ver preferencias o condiciones de otra persona? Informe con archivo y línea en `docs/agente-revision-privacidad.md`; los arreglos los hace cada dueño | agente-ia | libre |
 
 ## P3 — Calidad y robustez
 | # | Mejora | Dueño | Estado |
