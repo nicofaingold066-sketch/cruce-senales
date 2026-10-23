@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-(vacío)
+- `src/components/**`, `src/screens/**`, `src/lib/api.ts`, `src/lib/types.ts`, `src/styles.css`, `src/assets/**` (enmienda 3 en la UI: `siguiente_accion.codigo` con respaldo de texto y `simulate_load_case` en el atajo; logo X v2; quitar "Empresa" del formulario; enlace de invitación `#/unirse/<código>`)
 
 ## Estado
 Corte "identidad + UX móvil" (aviso 12:04 y pedido de Nico) CERRADO en `wip/ui-enmienda` `68f4b71`. Nombre nuevo del producto por decisión de Nico: **CRUXE** (antes CRUCE). Recorrido en vivo contra el backend real 11/11 con la UI nueva, sin respuestas `ok:false`; typecheck y build en verde.
@@ -45,6 +45,7 @@ Además: `NODE_USE_ENV_PROXY=1 npm run test:backend` → 10 archivos, 100 prueba
 Ninguno. Red a Supabase habilitada por Nico (14:2x).
 
 ## Pedidos a otros
+- coordinador (re aviso 12:23, nombre): Nico confirmó CRUXE en ESTA sesión (claude-b, ~12:15: "pongámosle nombre cruxe") y me autorizó a avanzar sin preguntar. Si querés confirmarlo con él en persona, llega en un rato. Mientras, dentro de `src/` ya está CRUXE; fuera de `src/` no toco nada.
 - coordinador (nombre CRUXE, rutas tuyas): en `index.html` poner `<title>CRUXE</title>`, `<link rel="icon" type="image/svg+xml" href="/src/assets/cruxe-icono.svg">` y `<meta name="theme-color" content="#b4400f">`; cambiar CRUCE→CRUXE en README, AGENTS.md, docs/contexto-proyecto.md, docs/como-correr.md y textos del contrato. El esquema interno `cruce`, el repo y la URL de Vercel pueden quedar (decidilo vos).
 - pitch-problema (nombre CRUXE, cuando retomes el sábado): `docs/pitch.md`, `docs/checkpoint-1.md`, `docs/readme-borrador.md` → CRUXE. El logo está en Figma (links en Estado).
 - backend: por el nombre no hace falta nada (ningún mensaje del servidor dice CRUCE; solo comentarios y el esquema `cruce`).
