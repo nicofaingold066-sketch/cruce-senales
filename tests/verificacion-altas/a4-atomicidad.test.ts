@@ -4,7 +4,7 @@
 import { describe, it, expect, beforeAll } from 'vitest'
 import {
   a4Sesion, a4Rpc, a4Dormir, a4Mezclar, a4SincronizarReloj, a4AhoraServidorMs, a4Seg,
-  a4EsperarHastaServidor, a4CrearEspacio, a4ArgsCrear, a4Propuesta, a4CadenaEventos,
+  a4EsperarHastaServidor, a4CrearEspacio, a4EspacioDemo, a4ArgsCrear, a4Propuesta, a4CadenaEventos,
   a4LecturaCoherente, a4FormaError, a4Errores, a4Transporte, a4SesionesCreadas,
   type A4C, type A4R, type A4Espacio,
 } from './a4-helper'
@@ -14,7 +14,10 @@ const log = (titulo: string, x: unknown) => console.log(`[A4] ${titulo}: ${JSON.
 
 let T: A4C // organizador (Tomi ficticio)
 let R: A4C // segundo miembro real, lector
-let motor: A4Espacio // espacio no demo con 20 simulados
+// Enmienda 7 (E7.3): la simulación solo existe en espacios demo, así que el "motor" con 20 simulados es el
+// demo propio de T, el mismo que usan las pruebas de reinicio. Las pruebas corren en serie y cada una crea
+// sus propuestas; las de reinicio empiezan reiniciando, y el reinicio conserva a los simulados.
+let motor: A4Espacio // demo propio de T con 20 simulados agregados
 let lect: A4Espacio // espacio para lecturas que vencen
 let demo: { id: string; codigo: string; yo: string }
 const SIMS = Array.from({ length: 20 }, (_, i) => `ver-a4-s${String(i + 1).padStart(2, '0')}`)
@@ -24,7 +27,7 @@ const inicio = new Date().toISOString()
 beforeAll(async () => {
   T = await a4Sesion()
   await a4SincronizarReloj(T)
-  motor = await a4CrearEspacio(T, 'motor', SIMS)
+  motor = await a4EspacioDemo(T, SIMS)
   lect = await a4CrearEspacio(T, 'lecturas', [])
   R = await a4Sesion()
   const j = await a4Rpc(R, 'join_space', { p_codigo: lect.codigo, p_nombre_visible: 'Lector A4' })
@@ -32,6 +35,7 @@ beforeAll(async () => {
   const s = await a4Rpc(T, 'seed_demo_space', {})
   if (!s?.ok) throw new Error('seed T: ' + JSON.stringify(s?.error))
   demo = { id: s.resultado.espacio_id, codigo: s.espacio.codigo_invitacion, yo: s.espacio.mi_miembro_id }
+  if (demo.id !== motor.id) throw new Error('el motor debería ser el demo propio de T')
   log('inicio', { inicio, servidorMenosCliente_ms: Math.round(a4AhoraServidorMs() - Date.now()) })
 }, LARGO)
 

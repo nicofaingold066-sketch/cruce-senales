@@ -83,6 +83,22 @@ export async function a4CrearEspacio(T: A4C, sufijo: string, sims: string[]): Pr
   return e
 }
 
+/**
+ * Enmienda 7 (E7.3): la simulación solo existe en espacios demo. Un espacio con simulados es el demo propio
+ * de la sesión T (seed_demo_space es idempotente: siempre el mismo) más los simulados pedidos.
+ */
+export async function a4EspacioDemo(T: A4C, sims: string[]): Promise<A4Espacio> {
+  const r = await a4Rpc(T, 'seed_demo_space', {})
+  if (!r?.ok) throw new Error('seed_demo_space: ' + JSON.stringify(r?.error))
+  const e: A4Espacio = { id: r.resultado.espacio_id, codigo: r.espacio.codigo_invitacion, yo: r.espacio.mi_miembro_id, sims: {} }
+  for (const n of sims) {
+    const s = await a4Rpc(T, 'add_simulated_member', { p_espacio_id: e.id, p_nombre_visible: n })
+    if (!s?.ok) throw new Error('add_simulated_member: ' + JSON.stringify(s?.error))
+    e.sims[n] = s.resultado.miembro_id
+  }
+  return e
+}
+
 export function a4ArgsCrear(
   espacioId: string,
   impId: string,

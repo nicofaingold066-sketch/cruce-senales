@@ -9,7 +9,9 @@ import {
 const sufijo = Math.random().toString(36).slice(2, 8)
 const log = (...x: unknown[]) => console.log('[A5]', ...x)
 
-let A: SupabaseClient // organizador del espacio de prueba
+// Enmienda 7 (E7.3): la simulación solo existe en espacios demo. El espacio de prueba de A (con su simulado)
+// es el demo propio de la sesión A, y el espacio ajeno de B (con el suyo) es el demo propio de la sesión B.
+let A: SupabaseClient // organizador del espacio de prueba (su demo propio)
 let B: SupabaseClient // sesion ajena (no miembro)
 let C: SupabaseClient // miembro comun del espacio de A
 let tokA = ''
@@ -81,9 +83,15 @@ describe('A5 privilegios de las RPC', () => {
     expect(r.data.sesion?.autenticada).toBe(true)
     r = await okRpc(A, 'create_space', { p_nombre: `ver-A5-${sufijo}`, p_tipo: 'amigos', p_nombre_visible: 'Org A5' })
     expect(r.data.ok).toBe(true)
+    // E7.3: fuera del demo no se crean simulados; el resto del flujo va en el demo propio de A.
+    const fuera = await a5Rpc(A, 'add_simulated_member', { p_espacio_id: r.data.resultado.espacio_id, p_nombre_visible: 'Sim A5' })
+    expect(fuera.data.ok).toBe(false)
+    expect(`${fuera.data.error.codigo}/${fuera.data.error.detalle}`).toBe('no_autorizado/espacio_no_demo')
+    r = await okRpc(A, 'seed_demo_space')
+    expect(r.data.ok).toBe(true)
     espacio = r.data.resultado.espacio_id
-    codigo = r.data.resultado.codigo_invitacion
-    miA = r.data.resultado.miembro_id
+    codigo = r.data.espacio.codigo_invitacion
+    miA = r.data.espacio.mi_miembro_id
     r = await okRpc(A, 'add_simulated_member', { p_espacio_id: espacio, p_nombre_visible: 'Sim A5' })
     expect(r.data.ok).toBe(true)
     sim = r.data.resultado.miembro_id
@@ -170,6 +178,7 @@ describe('A5 privilegios de las RPC', () => {
   it('(e) sesion ajena B: no lee ni opera sobre el espacio/propuesta de A', async () => {
     const antes = (await a5Rpc(A, 'get_proposal_state', { p_propuesta_id: propuesta })).data
     const panelAntes = (await a5Rpc(A, 'get_simulation_panel', { p_propuesta_id: propuesta })).data
+    const miembrosAntes = (await a5Rpc(A, 'get_space', { p_espacio_id: espacio })).data.espacio.miembros.length
     const llamadas: [string, Record<string, unknown>][] = [
       ['get_space', { p_espacio_id: espacio }],
       ['list_proposals', { p_espacio_id: espacio }],
@@ -212,7 +221,10 @@ describe('A5 privilegios de las RPC', () => {
     expect(despues.propuesta.state_rev).toBe(antes.propuesta.state_rev)
     expect(despues.propuesta.estado).toBe(antes.propuesta.estado)
     expect(JSON.stringify(panelDespues.simulacion)).toBe(JSON.stringify(panelAntes.simulacion))
-    expect((await a5Rpc(A, 'get_space', { p_espacio_id: espacio })).data.espacio.miembros).toHaveLength(3)
+    // Ningún miembro nuevo (el demo trae además sus 5 simulados de siempre): el "Intruso" de B no entró.
+    const miembros = (await a5Rpc(A, 'get_space', { p_espacio_id: espacio })).data.espacio.miembros
+    expect(miembros).toHaveLength(miembrosAntes)
+    expect(miembros.some((m: any) => m.nombre === 'Intruso')).toBe(false)
   }, 90000)
 
   it('(e2) miembro comun C: no opera como organizador ni usa simulate_*/panel/reset; no ve condiciones ajenas', async () => {
@@ -295,9 +307,13 @@ describe('A5 privilegios de las RPC', () => {
   }, 90000)
 
   it('(adv2) confusion de espacios: organizador A simula sobre su propuesta con un simulado del espacio de B; B simula en su espacio con el simulado de A', async () => {
-    let r = await a5Rpc(B, 'create_space', { p_nombre: `ver-A5-ajeno-${sufijo}`, p_tipo: 'amigos', p_nombre_visible: 'Org B' })
+    // E7.3: los dos espacios son demos de sesiones distintas (el de A y el propio de B).
+    let r = await a5Rpc(B, 'seed_demo_space')
+    expect(r.data.ok).toBe(true)
     espacioB = r.data.resultado.espacio_id
+    expect(espacioB).not.toBe(espacio)
     r = await a5Rpc(B, 'add_simulated_member', { p_espacio_id: espacioB, p_nombre_visible: 'Sim B' })
+    expect(r.data.ok).toBe(true)
     simB = r.data.resultado.miembro_id
     const rB = await a5Rpc(B, 'create_proposal', { p_espacio_id: espacioB, p_titulo: 'ver-A5 B', p_franjas: FR, p_minimo: 2, p_maximo: 3, p_imprescindible_id: simB, p_plazo: '2026-12-05T20:00', p_zona_horaria: 'America/Santiago', p_intento_id: crypto.randomUUID() })
     const propB = rB.data.resultado.propuesta_id
@@ -316,6 +332,28 @@ describe('A5 privilegios de las RPC', () => {
       expect(x.data.ok, k).toBe(false)
       expect(x.data.contrato).toBe(2)
     }
+    // E7.3: simulación en un espacio no demo de B, con su propio miembro y con el simulado de su demo.
+    const nd = await a5Rpc(B, 'create_space', { p_nombre: `ver-A5-ajeno-${sufijo}`, p_tipo: 'amigos', p_nombre_visible: 'Org B' })
+    expect(nd.data.ok).toBe(true)
+    const espND = nd.data.resultado.espacio_id
+    const miB = nd.data.resultado.miembro_id
+    const pND = await a5Rpc(B, 'create_proposal', { p_espacio_id: espND, p_titulo: 'ver-A5 no demo', p_franjas: FR, p_minimo: 2, p_maximo: 3, p_imprescindible_id: miB, p_plazo: '2026-12-05T20:00', p_zona_horaria: 'America/Santiago', p_intento_id: crypto.randomUUID() })
+    const propND = pND.data.resultado.propuesta_id
+    await a5Rpc(B, 'open_proposal', { p_propuesta_id: propND })
+    const noDemo = {
+      y1: await a5Rpc(B, 'add_simulated_member', { p_espacio_id: espND, p_nombre_visible: 'Sim B no demo' }),
+      y2: await a5Rpc(B, 'simulate_mark_interest', { p_propuesta_id: propND, p_miembro_id: miB, p_interesado: true }),
+      y3: await a5Rpc(B, 'simulate_save_conditions', { p_propuesta_id: propND, p_miembro_id: simB, p_disponibilidad: { A: 'si', B: 'si' } }),
+      y4: await a5Rpc(B, 'simulate_accept', { p_propuesta_id: propND, p_miembro_id: simB, p_version: 1, p_intento_id: crypto.randomUUID() }),
+      y5: await a5Rpc(B, 'simulate_withdraw', { p_propuesta_id: propND, p_miembro_id: simB }),
+    }
+    for (const [k, x] of Object.entries(noDemo)) {
+      out.push(`${k}: ${a5Resumen(x)}`)
+      expect(x.data.ok, k).toBe(false)
+      expect(x.data.contrato).toBe(2)
+      expect(`${x.data.error.codigo}/${x.data.error.detalle}`, k).toBe('no_autorizado/espacio_no_demo')
+    }
+    expect((await a5Rpc(B, 'get_space', { p_espacio_id: espND })).data.espacio.miembros.some((m: any) => m.simulado)).toBe(false)
     log(out.join('\n'))
     const panel = (await a5Rpc(A, 'get_simulation_panel', { p_propuesta_id: propuesta })).data
     expect(JSON.stringify(panel)).not.toContain(simB)
@@ -351,7 +389,7 @@ describe('A5 privilegios de las RPC', () => {
     await okRpc(A, 'withdraw_commitment', { p_propuesta_id: propuesta })
     await okRpc(A, 'propose_repair', { p_propuesta_id: propuesta, p_intento_id: crypto.randomUUID() })
     await okRpc(A, 'cancel_proposal', { p_propuesta_id: propuesta })
-    // B se crea su propio demo (espacio de su sesion efimera, NO el demo real) y prueba aislamiento del reset
+    // B ya tiene su propio demo (espacio de su sesion efimera, NO el demo real; lo creo en adv2) y prueba aislamiento del reset
     const sd = await okRpc(B, 'seed_demo_space')
     const demoB = sd.data?.resultado?.espacio_id
     const ra = await a5Rpc(A, 'reset_demo', { p_espacio_id: demoB, p_intento_id: crypto.randomUUID() })
