@@ -1,0 +1,126 @@
+/* Fricción (#88 y siguientes). Solo variables y clases de src/styles.css; nada nuevo en la paleta. */
+.rapida-opciones {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.btn.rapida-opcion {
+  width: 100%;
+  min-height: 64px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  text-align: left;
+  white-space: normal;
+}
+.rapida-texto {
+  display: grid;
+  justify-items: start;
+  text-align: left;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.rapida-texto strong {
+  font-size: 1.05rem;
+}
+.rapida-detalle {
+  font-size: 0.85rem;
+  font-weight: 400;
+  opacity: 0.85;
+}
+.rapida-aviso {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+#rapida-hecho {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  margin: 0 0 6px;
+}
+
+/* #90 Tomar de mi calendario (Simulación) */
+.calendario-sim {
+  margin: 0 0 12px;
+}
+.btn.calendario-sim-abrir {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  white-space: normal;
+  text-align: left;
+}
+.calendario-sim-abrir .rotulo-sim {
+  margin-left: auto;
+}
+.calendario-sim-cuerpo > p {
+  margin: 10px 0;
+  font-size: 0.88rem;
+}
+.calendario-sim-dias {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.calendario-sim-dias li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+.calendario-sim-dia {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+}
+.calendario-sim-choque {
+  font-weight: 600;
+}
+.calendario-sim-cuerpo .btn {
+  width: 100%;
+}
+
+.btn.rapida-sugerida {
+  outline: 3px solid var(--primario);
+  outline-offset: 2px;
+}
+
+.rapida-preferencias {
+  display: block;
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* "Falta tu respuesta" (acceso a la respuesta de un toque desde el plan) */
+.falta-respuesta h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+  margin: 0 0 6px;
+}
+.falta-respuesta .btn {
+  width: 100%;
+}
+
+.rapida-nota {
+  margin: 4px 0 12px;
+  font-size: 0.85rem;
+  text-align: center;
+}

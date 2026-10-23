@@ -7,7 +7,8 @@ export function enlaceInvitacion(codigo: string): string {
 }
 
 export function textoInvitacion(espacio: string, codigo: string): string {
-  return `Súmate a «${espacio}» en CRUXE para armar el próximo plan: ${enlaceInvitacion(codigo)}`
+  // Fricción: decir de entrada que no hay cuenta y qué hacer. "Me interesa" lo ve el grupo: no se promete que todo es privado.
+  return `Súmate a «${espacio}» en CRUXE: toca el enlace, elige tu nombre y marca cuándo puedes. Sin cuenta ni contraseña; tus condiciones solo las ve la app: ${enlaceInvitacion(codigo)}`
 }
 
 /** Enlace universal de WhatsApp con el texto ya escrito; la persona elige a quién mandarlo. */
