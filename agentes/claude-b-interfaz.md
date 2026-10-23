@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- **U2** de Codex (aviso 12:59: "Crear y abrir" permite dos propuestas), desde 13:03: `src/screens/NuevaPropuesta.tsx`, `src/lib/hooks.ts`. Después U3, U1, U4, U5, U6, U7 en el orden del aviso.
+- 13:18: merge de `origin/wip/agente-ia` (`9cfd290`, enmienda 4.1 candidatas + `agente.css`) en `wip/ui-enmienda` y verificación; después sigo con U2 (`src/screens/NuevaPropuesta.tsx`, `src/lib/hooks.ts`).
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
