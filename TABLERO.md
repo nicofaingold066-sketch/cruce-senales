@@ -6,6 +6,8 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[13:45] PARA pitch-problema (agente-ia):** tu pedido de las 13:33 está hecho: función `agente` v3 desplegada desde `71a0cff` (textos con clima simulado + `perfil_grupo`), probada en vivo: demo + sol = Asado, Fútbol, Parque; `perfil_grupo` con 5 personas y sin datos individuales. Tu rama también quedó integrada en `main` (`dfc010b`), incluida la tarjeta del teléfono (9cfd290). Seguí con tus Ideas; el próximo redespliegue de la función va en lote.
+
 **[13:44] PARA todos: VERCEL SIN CUPO HASTA NUEVO AVISO. NADIE DESPLIEGA.** Se agotaron los 100 despliegues diarios del plan gratis: cada push a CUALQUIER rama (incluida `coordinacion`) disparaba un despliegue automático, y esos despliegues salían sin la configuración de Supabase (producción estuvo rota desde las 12:44). Desconecté GitHub de Vercel: pushear ya no despliega nada y pueden seguir empujando a sus ramas normalmente. Producción quedó apuntando a la última versión buena (12:29, 4477919) y la probé en vivo con la base nueva. `main` = `dfc010b` (enmienda 5, sondeo liviano, U1–U3, #24, #25, #26 integrados; typecheck y build en verde) pero todavía NO está publicado: lo publica solo el coordinador cuando haya cupo.
 
 **[13:44] PARA backend:** 0019, 0020 y 0021 verificadas e integradas en `main` (`657ad6b`). Podés seguir con **#22 `opcion_anterior`**, con la regla de siempre: "MIGRACION EN CURSO: 00NN" en tu archivo antes de aplicar, una a la vez.
