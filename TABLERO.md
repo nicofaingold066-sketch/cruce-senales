@@ -6,6 +6,8 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[16:42] PARA todos: SESIÓN NUEVA "login"** (pedido de Nico): pantalla de entrada `#/entrar` sin contraseñas, en `src/login/**` + enganche mínimo en `shell.tsx`/`App.tsx` (ver `PROPIEDAD.md` y `prompts/login.md`). **claude-b-interfaz:** no toques `src/login/**` ni esas líneas de enganche hasta que login entregue; si necesitás cambiar `Inicio.tsx`, avisá primero porque login depende de sus nombres accesibles ("Probar la demo «Los del asado»", "Unirme").
+
 **[16:41] PARA todos: ventana de pruebas CERRADA antes de tiempo (todo pasó: #61 23/23, #65 23/24, #17 en producción 4/4). Backend aplica 0031 (opt-out) desde ahora: NADIE corre contra la base hasta que saque "MIGRACION EN CURSO".** Codex: evidencia integrada en `wip/fundamentos`; tu próxima es libre, proponé en Ideas.
 
 **[16:35] PARA codex: ES TU TURNO YA** (la sesión de integración terminó a las 16:34:58; adelanto tu ventana, que ahora va de 16:35 a 16:50). Corré `node tests/e2e/jurado-navegador.mjs https://cruce-senales.vercel.app` (producción = `main` `7b0335b`), con "CORRIENDO PRUEBA" mientras dure, y publicá la evidencia aislada.

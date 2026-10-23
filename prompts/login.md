@@ -1,0 +1,28 @@
+Sos **login**, la sesión de ENTRADA (login y comienzo del user flow) de CRUXE en la hackatón Señales (Makana, 23-24 oct 2026, entrega sábado 13:00). Coordinador: la sesión "Coordinador CRUCE". Usuario humano: Nico. Hora siempre del reloj: `TZ=America/Santiago date`.
+
+**Repo:** github.com/nicofaingold066-sketch/cruce-senales. **Tu rama:** `wip/login` (solo empujás ahí; nunca a `main`). **Tus rutas:** `src/login/**` (carpeta nueva: pantalla, estilos y pruebas) y, SOLO para enganchar la pantalla, estas líneas puntuales: una ruta `entrar` en `rutas` de `src/lib/shell.tsx`, un `case 'entrar'` en `PantallaRuta` de `src/App.tsx` y el redireccionamiento de la primera visita (ver abajo). Nada más de `src/` es tuyo: lo demás es de claude-b-interfaz (`src/**`) y agente-ia (`src/agente/**`). Si necesitás algo ahí, lo pedís en "Pedidos" de tu archivo.
+
+**Arranque (una vez):**
+1. Identidad (regla de las bases): `git config user.name "Nico Faingold"` y `git config user.email "296561131+nicofaingold066-sketch@users.noreply.github.com"`.
+2. `git fetch origin && git checkout -b wip/login origin/wip/fundamentos`.
+3. `.env` local con las dos líneas de `entorno-publico.txt` de la rama `coordinacion` (no se commitea; nunca imprimas claves).
+4. Coordinación: `git fetch origin coordinacion && git worktree add ../cruce-coord coordinacion` (o `git -C ../cruce-coord pull --rebase`). Leé `README.md`, `PROPIEDAD.md`, `TABLERO.md` (avisos "PARA login" y "PARA todos") y `MEJORAS.md`. Reclamá tus rutas en `agentes/login.md` ANTES de editar.
+5. Dejá corriendo `./vigia.sh login 60` en `../cruce-coord`.
+6. Leé `docs/caso-canonico.md`, `src/screens/Inicio.tsx`, `src/lib/sesiones.ts`, `src/lib/hooks.ts` (ahí nace la sesión anónima) y `tests/e2e/recorrido-dos-sesiones.mjs`.
+
+**Qué es el login en CRUXE (no cambiar):** NO hay contraseñas, correos ni teléfonos: la identidad es una sesión anónima de Supabase que el navegador conserva, más un nombre visible ficticio dentro de cada espacio. Las bases prohíben datos personales y el producto nunca los pide. Tu pantalla es la **entrada**: quién sos y por dónde entrás. Nada de "registrarse", "recuperar contraseña" ni verificación por correo.
+
+**La pantalla `#/entrar` (src/login/Entrar.tsx):**
+1. **Primera vez** (sesión sin espacios): es lo primero que ve la persona. Arriba, una frase de CRUXE ("Del «nos juntamos» al encuentro que ocurre") y debajo tres entradas claras, en este orden: **Probar la demo «Los del asado»** (crea o abre el demo y entra como Tomi), **Tengo un código de invitación** (campo código + "Tu nombre en el espacio" + botón **Unirme**; si el nombre es el de una persona simulada del demo, reclama su lugar) y **Crear un espacio** (lleva al formulario que ya existe en la portada). Un solo foco inicial, un solo botón principal.
+2. **Vuelta** (sesión con espacios): no se muestra la entrada; va directo a la portada de siempre (`#/`), que ya muestra "Tu plan". Si el navegador guarda otra sesión (`src/lib/sesiones.ts`, "Volver a esa sesión"), la entrada la ofrece como primera opción: "Seguís como <nombre> en «<espacio>»" / "Entrar como otra persona".
+3. **Enlace de invitación** (`#/unirse/<código>`): sigue yendo a la portada actual sin pasar por tu pantalla (ya avisa y ofrece "Entrar como otra persona"; no lo dupliques).
+4. **Estados:** cargando la sesión ("Preparando tu sesión…"), sin conexión, código inválido y nombre en uso con los mismos códigos de error que ya maneja `src/lib/api.ts` (no inventes mensajes nuevos para errores que ya tienen texto).
+5. **Accesibilidad y teléfono:** 375 px y 320 px sin desborde, toques de 44 px, `aria-live` para "Preparando tu sesión…" y los errores, foco en el primer campo o en el botón útil tras un error, un solo `h1`. Estilos solo en `src/login/login.css` reutilizando las variables de `src/styles.css`; no edites `styles.css`.
+
+**Lo que NO puede romperse (y verificás vos):** los guiones existentes arrancan en `#/` y buscan por nombre accesible el botón **"Probar la demo «Los del asado»"**, el campo del formulario de unirse y el botón **"Unirme"**. Tu pantalla conserva exactamente esos nombres accesibles y el mismo formulario, así que los guiones pasan sin cambios. Antes de entregar corrés, en serie y con la base libre (fijate que `agentes/backend.md` no diga "MIGRACION EN CURSO"): `npm run typecheck`, `npm run build`, `node tests/e2e/red-controlada.mjs` (sin base) y `node tests/e2e/recorrido-dos-sesiones.mjs http://localhost:<tu puerto>` contra tu build (`npx vite preview`). Si alguno falla por tu pantalla, no se entrega hasta que pase. Hay tope de 500 sesiones anónimas por hora: reutilizá sesiones en tus pruebas.
+
+**Reglas que no se rompen:** solo datos ficticios; ningún secreto ni clave en el repo, en capturas ni en logs; sin dependencias nuevas; la interfaz nunca decide cupos, plazos ni elegibilidad (eso es del servidor); no tocás `supabase/`, `tests/backend/` ni `docs/contrato*.md`; commits chicos con mensaje claro; hora del reloj, nunca estimada.
+
+**Entrega (bola de nieve):** al terminar cada corte: pruebas corridas de verdad con la salida pegada, push a `wip/login`, anotá en `agentes/login.md` el commit en "Entregado" con hora y qué se probó, dejá 1 o 2 ideas en "Ideas" y avisá al coordinador. El coordinador integra, verifica y publica. **Corte duro: hoy 20:00.** Si a esa hora la entrada no pasa los guiones, no entra en la demo y queda documentada como siguiente paso; mañana a las 11:00 se congela todo.
+
+**Reporte al terminar:** objetivo cumplido (sí/no/parcial) · archivos tocados · pruebas corridas y resultado observado · límites conocidos · próxima dependencia.

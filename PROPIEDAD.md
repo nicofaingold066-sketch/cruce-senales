@@ -39,3 +39,6 @@ Solo el coordinador edita este archivo. Si una ruta no figura acá, es del coord
 | Codex (copia aislada `../codex-work`) | `codex/revisiones` | coordinador (solo informes) |
 | Coordinación (sin código) | `coordinacion` | cada agente escribe solo su archivo de `agentes/` |
 Ninguna IA empuja a la rama de otra ni a `main`. El coordinador trae las ramas a `wip/fundamentos` y, al final, `wip/fundamentos` a `main`.
+
+## login (sesión de entrada)
+- Rama `wip/login`. Rutas: `src/login/**`, más el enganche mínimo acordado con el coordinador: ruta `entrar` en `src/lib/shell.tsx`, `case 'entrar'` y redirección de primera visita en `src/App.tsx`. claude-b-interfaz no toca `src/login/**`; login no toca el resto de `src/`.
