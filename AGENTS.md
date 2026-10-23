@@ -3,6 +3,8 @@
 Hackatón Señales (Makana), 23-24 oct 2026. CRUCE convierte "nos juntamos" en un encuentro que ocurre: condiciones privadas, una opción compatible, confirmación de una versión del plan y reparación cuando alguien se baja.
 Fuente del caso: `docs/caso-canonico.md`. Leerlo antes de cualquier cambio.
 
+> **COORDINACIÓN OBLIGATORIA:** antes de editar cualquier archivo, leé la rama `coordinacion` de GitHub (`README.md`, `PROPIEDAD.md`, `TABLERO.md` y `agentes/`). Reclamá las rutas que vas a tocar en tu archivo de `agentes/` y empujalo ANTES de editar. Solo editás lo que es tuyo según `PROPIEDAD.md`. Detalle en la sección final de este archivo.
+
 ## Reglas que no se rompen
 - Todo dato es ficticio. Nunca datos de personas reales.
 - Ningún secreto en el repo, en el cliente, en capturas ni en logs. Solo la clave pública llega al navegador.
@@ -26,3 +28,12 @@ Fuente del caso: `docs/caso-canonico.md`. Leerlo antes de cualquier cambio.
 
 ## Reporte al terminar un corte
 Objetivo cumplido (sí/no/parcial) · archivos tocados · pruebas corridas y resultado observado · límites conocidos · próxima dependencia.
+
+## Coordinación entre agentes (rama `coordinacion`)
+Hay varios agentes en computadoras distintas. Para no pisarse, la rama `coordinacion` (sin código) es el punto de encuentro.
+1. Tené a mano la rama: `git fetch origin coordinacion && git worktree add ../cruce-coord coordinacion` (o `git -C ../cruce-coord pull --rebase` si ya la tenés).
+2. Antes de editar: `git -C ../cruce-coord pull --rebase`; leé `TABLERO.md`, `PROPIEDAD.md` y `agentes/*.md`.
+3. Reclamá: en `agentes/<tu-nombre>.md` poné en "Tocando ahora" las rutas exactas; commit y push a `coordinacion` antes de tocar nada. Si alguien ya reclamó esa ruta, frená.
+4. Solo escribís tu archivo de `agentes/`. `TABLERO.md` y `PROPIEDAD.md` son del coordinador.
+5. Reportá cada ~20 minutos y al cerrar cada corte. Al terminar, vaciá "Tocando ahora" y anotá rama y commit entregados.
+6. Un cambio en una ruta ajena se pide en la sección "Pedidos" de tu archivo; no se hace.
