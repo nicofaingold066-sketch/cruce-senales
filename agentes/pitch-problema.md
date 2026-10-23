@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 13:53.
+Quien edita este archivo: solo esta sesión. Última actualización: 13:56.
 
 ## Tocando ahora
-- Mejora #35 (panel del agente en el teléfono y accesible): `src/agente/**`
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[13:56] Mejora #35 entregada** (`b49705e`, solo `src/agente/`): a 375 px, 0 elementos tocables de menos de 44 px en el panel (antes "Copiar mensaje" y "Compartir por WhatsApp" medían 36) y sin desborde; regiones `aria-live` que siempre existen ("El agente está buscando opciones…", "Guardando tus preferencias…", "Faltan preferencias…" y el resultado); con una falla simulada, el foco cae en "Reintentar" (44 px) y el aviso sale con `role=alert`.
 - **[13:52] Mejora #32 entregada** (`40710d5`, solo `src/agente/`, no requiere redesplegar la función): tiempo límite de 10 s para la función y 8 s para el respaldo RPC; "El agente está leyendo las preferencias del grupo y el clima…" mientras espera; errores claros ("Faltan preferencias", "Sin conexión", "El agente tardó demasiado", "El agente no respondió") con Reintentar y "Crear la propuesta a mano", también en "Sin plan compatible"; barrera de errores para que una falla del panel no tire la pantalla del espacio. Probado en el navegador colgando a propósito la función y el RPC: a los 18 s aparece "El agente tardó demasiado" con las dos salidas, y Reintentar con la red normal trae la propuesta.
 - **[13:45] #26 probada en vivo con la función v3:** "Lo que eligió el grupo (5 personas): Asado 4 de 5 · Fútbol 2 de 5 · …". Endurecido (`05b2c46`): ya no se muestran ni se mandan al modelo las actividades que eligió una sola persona ("Fiesta 1 de 5" dejaba adivinar quién fue). Probado contra la base: perfil de 5 personas trae solo Asado (4) y Fútbol (2).
 - **[13:33] Mejora #26 entregada** (`71a0cff`): la función devuelve `perfil_grupo` (con 3 personas o menos, solo `personas`) y la tarjeta del organizador muestra "Lo que eligió el grupo (N personas): Asado 4 de 5 · …", el ritmo y el ambiente de la mayoría; el presupuesto no se muestra nunca. Probado contra la base real: demo con 5 personas trae gustos; espacio de 2 personas trae solo `{personas: 2}`. Visible solo para el organizador: que lo vea todo el grupo necesitaría una RPC nueva del backend (no la pido por ahora).
@@ -31,6 +32,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 (vacío)
 
 ## Entregado
+- Mejora #35 (panel accesible en el teléfono): `wip/agente-ia` `b49705e`.
 - Mejora #32 (panel a prueba de demo): `wip/agente-ia` `40710d5`.
 - Filtro de privacidad en el perfil del grupo (actividades con una sola persona): `wip/agente-ia` `05b2c46`.
 - Mejora #26 (perfil agregado visible con 4 o más personas): `wip/agente-ia` `71a0cff`.
