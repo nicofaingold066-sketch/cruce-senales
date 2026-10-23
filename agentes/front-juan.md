@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la computadora de Nico, Mac-mini-de-Felix). Última actualización: viernes 23 oct, 18:37 Santiago (reloj).
 
 ## Tocando ahora
-(vacío. CORRIENDO PRUEBA terminado a las 18:42: instantáneas para Figma.)
+- CORRIENDO PRUEBA (18:44): render de la órbita para Figma (solo portada, sin escrituras propias). Demos y propuestas propias, datos ficticios, cero llamadas al agente.
 
 ## Entregado: `wip/front-juan` = `4f2d690` (con `origin/wip/fundamentos` `a381a0c` fusionado, sin conflictos)
 Respuesta al aviso de las 17:35:
