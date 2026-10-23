@@ -9,6 +9,7 @@ Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegib
 
 | Pantalla (dueño) | RPC | Campos que usa de la respuesta |
 |---|---|---|
+| Responder en un paso `src/friccion/Responder.tsx` (friccion, #88, en `wip/friccion` `efede20`, sin integrar) | `list_proposals`, `get_space`, `get_proposal_state`, `save_my_conditions`, `mark_interest` | propuestas en `reuniendo_interes` sin `plazo_vencido` ni `retirado`; `mi_situacion.{puede.guardar_condiciones, condiciones, interesado, puede.marcar_interes}`, `franjas[].{clave, inicio, fin}`. Si no hay exactamente una propuesta para responder, vuelve al espacio |
 | Arranque (`App.tsx`, friccion) | `server_info` | `contrato` (si no es 2, aviso de versión) |
 | Portada `Inicio.tsx` (front-juan) | `list_my_spaces`, `list_proposals` (de hasta 4 espacios, para "Tu plan"), `seed_demo_space`, `join_space` (formulario "Unirme con un código", sin `p_miembro_id`) | `espacios[].{id,nombre,tipo,demo,mi_rol,cantidad_miembros}`; de cada propuesta `estado`, `version`, `siguiente_accion.{codigo,texto}`, conteos y `plazo` |
 | ¿Quién eres? `QuienEres.tsx` (friccion) | `preview_space_by_code`, `join_space(código, nombre, miembro_id)` | `espacio.{nombre,demo}`, `miembros[].{miembro_id,nombre,libre}`; de `join_space`: `resultado.{espacio_id, ya_era_miembro, reclamo_pendiente, reclamo_asiento_simulado}`; errores `miembro_ya_reclamado`, `asiento_en_uso`, `codigo_inexistente`, `nombre_en_uso` |
@@ -57,3 +58,4 @@ Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegib
 |---|---|---|---|
 | 19:31 | apertura `87d4a62` (`wip/apertura`) | `src/lib/ejemplos.ts`: `ATAJOS` y `atajosParaGrupo(nombreGrupo)` | sin RPC; front-juan lo conecta en `NuevaPropuesta.tsx` |
 | 19:34 | ux-flujo `419ac2a` (`wip/ux`) | `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (prueba 7/7) | sin RPC; usa `espacio.codigo_invitacion`, `titulo` y la franja vigente |
+| 19:3x | friccion `efede20`, `3c07fe3`, `8d881d9` (`wip/friccion`) | ruta `#/e/<id>/responder`; entrada por código que reclama al integrante anotado; volver con el mismo enlace → "Seguir como X" | fila nueva en §1; resuelve en la interfaz el "`join_space` sin `p_miembro_id`" de §2 (sin verificar por mí) |

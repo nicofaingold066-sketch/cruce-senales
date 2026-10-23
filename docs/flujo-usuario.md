@@ -135,9 +135,8 @@ Para confirmar, cada invitado vuelve a abrir la app (nadie se lo avisa): portada
 
 | Recorte | Ahorra | Dueño | Estado |
 |---|---|---|---|
-| Después de "Sí, soy X", directo a responder la propuesta vigente | 2 toques al invitado (8 → 6) | friccion #88 | en curso (friccion) |
-| En la pantalla de responder, guardar al marcar las dos franjas (sin botón aparte) | 1 toque (6 → 5) | friccion #88 | propuesto |
-| "¿Eres X?" en el mismo toque del nombre (confirmación en línea, deshacer) | 1 toque (5 → 4) | friccion | propuesto; ojo con el rótulo "Sí, soy X" de los guiones |
+| Después de "Sí, soy X", directo a responder la propuesta vigente, con respuestas de un toque ("Puedo los dos días", "Solo el …", "No puedo ninguno") que guardan las dos franjas: nunca queda "Pendiente"; "Me interesa" después y opcional | 4 toques al invitado (8 → 4) | friccion #88 | entregado en `wip/friccion` `efede20` (ruta `#/e/<id>/responder`, `src/friccion/Responder.tsx`); falta integrar. Sin verificar por mí |
+| "¿Eres X?" en el mismo toque del nombre (confirmación en línea, deshacer) | 1 toque (4 → 3) | friccion | propuesto; ojo con el rótulo "Sí, soy X" de los guiones |
 | Avisar al grupo por WhatsApp al publicar o reparar una versión | el organizador no escribe a mano | ux-flujo #89 + front-juan | componente entregado (`419ac2a`); falta conectarlo |
 | El organizador responde antes de buscar (la pantalla se lo pide) | 1 búsqueda fallida | front-juan + backend | pedido |
 
