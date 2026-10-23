@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- `src/lib/api.ts`, `src/screens/SimulacionTab.tsx` (aviso 12:28: resumen de `simulate_load_case` con `cargados` y `omitidos`)
+(vacío)
 
 ## Estado
 Corte "enmienda 3 en la UI + logo X v2" CERRADO en `wip/ui-enmienda` `a890f11`. Recorrido EN VIVO contra el backend real 11/11, sin respuestas `ok:false`; typecheck y build en verde. **La enmienda 3 ya responde en el servidor y la UI la usa**: Luna recibe `te_toca_aceptar` ("Te toca confirmar la versión 1.") y el atajo de simulación cargó el caso con `simulate_load_case` en una sola operación.
@@ -28,6 +28,7 @@ Chromium sin cabeza, dos contextos = dos sesiones anónimas (Tomi y Luna), 390 p
 Además: `NODE_USE_ENV_PROXY=1 npm run test:backend` → 10 archivos, 100 pruebas pasan.
 
 ## Hecho
+- (aviso 12:28) Atajo de simulación: UNA llamada a `simulate_load_case`, resumen con los nombres de `cargados` y `omitidos` (con motivo). Sin respaldo persona por persona. En vivo: "En una sola operación: cargadas las condiciones de Mati, Caro, Fede, Sofi." Commit `08a87c3`.
 - Logo X v2 (pedido de Nico: "una X copada, inspirada en la de X con toque propio"): trazo grueso brasa (el plan) y trazo fino partido en dos personas que llegan al cruce desde lados opuestos y se encuentran en su borde. CRU✕E en el nombre; ícono `src/assets/cruxe-icono.svg`.
 - Enmienda 3 en la UI: acento personal por `siguiente_accion.codigo` (`te_toca_aceptar`, `ya_aceptaste`) con respaldo en `puede.aceptar`/`acepte_version`; atajo de simulación con `simulate_load_case` y respaldo persona por persona si la operación no estuviera publicada.
 - Enlace de invitación `#/unirse/<código>` (precarga el código, foco en el nombre) + botón "Compartir enlace" (menú nativo del teléfono o copia el enlace). Probado en vivo: Luna entra por el enlace.
@@ -62,5 +63,5 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
-Rama `wip/ui-enmienda`, último commit `a890f11` (enmienda 3 + logo X v2 + invitación por enlace + solo social). Antes: `68f4b71`, `b6578ce`, `1624b4f`, `e7d868d`.
+Rama `wip/ui-enmienda`, último commit `08a87c3` (incluye merge de `wip/fundamentos` 4477919). Recorrido en vivo 11/11.
 
