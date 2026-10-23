@@ -12,6 +12,7 @@ import type {
   MiembroRef,
   Momento,
   PanelSimulacion,
+  PreferenciasPropias,
   PropuestaResumen,
   TipoEspacio,
 } from './types'
@@ -96,6 +97,23 @@ export type ReparacionOk = PropuestaOk<{
   repetido: boolean
 }>
 export type PanelOk = OkBase & { state_rev: number; simulacion: PanelSimulacion }
+/**
+ * Preferencias privadas propias (enmiendas 4, 8 y 10). `preferencias` solo trae zona, movilidad, tiempo_max y
+ * momento si la persona los cargó. `usar_en_agente` es true si todavía no guardó nada.
+ */
+export type MisPreferenciasOk = OkBase & {
+  preferencias: PreferenciasPropias | null
+  usar_en_agente: boolean
+  actualizadas_en: Momento | null
+  opciones: { actividades: { clave: string; etiqueta: string }[] }
+  personas_con_preferencias: number
+}
+export type GuardarPreferenciasOk = OkBase & {
+  resultado: { repetido: boolean }
+  preferencias: PreferenciasPropias
+  usar_en_agente: boolean
+  actualizadas_en: Momento
+}
 
 // ---- Núcleo ----
 
@@ -380,6 +398,20 @@ export const api = {
     llamar<CargarCasoOk>('simulate_load_case', { p_propuesta_id: propuestaId, p_intento_id: intentoId }, true),
   getSimulationPanel: (propuestaId: string) =>
     llamar<PanelOk>('get_simulation_panel', { p_propuesta_id: propuestaId }, false),
+
+  // Preferencias privadas (enmiendas 4, 8 y 10). El agente tiene sus propias llamadas en src/agente/api.ts.
+  getMyPreferences: (espacioId: string) =>
+    llamar<MisPreferenciasOk>('get_my_preferences', { p_espacio_id: espacioId }, false),
+  /** Guardar es reemplazar: una clave opcional que no se manda queda vacía. Sin `usarEnAgente`, vale true. */
+  saveMyPreferences: (espacioId: string, preferencias: PreferenciasPropias, usarEnAgente?: boolean) =>
+    llamar<GuardarPreferenciasOk>(
+      'save_my_preferences',
+      {
+        p_espacio_id: espacioId,
+        p_preferencias: usarEnAgente === undefined ? preferencias : { ...preferencias, usar_en_agente: usarEnAgente },
+      },
+      true,
+    ),
 }
 
 /** Texto para mostrar al usuario. Los mensajes del servidor ya son exactos (contrato 0.5). */
