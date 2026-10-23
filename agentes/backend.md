@@ -3,7 +3,7 @@
 Quien edita este archivo: solo el backend. Última actualización: 13:46 Santiago (reloj), mejora #22 en curso. (La marca anterior "~14:35" era estimada, no del reloj.)
 
 ## Tocando ahora
-- MIGRACION EN CURSO: 0022
+- (0022 aplicada en la base a las 13:48; ninguna migración en curso.)
 - Mejora #22 (`opcion_anterior` en EstadoPropuesta), aprobada por el coordinador. Rutas: `supabase/migrations/0022_opcion_anterior.sql` (nueva), `tests/backend/mejoras.test.ts` (describe nuevo #22), `docs/contrato-enmienda-6.md` (nueva, pedida por el coordinador). Commit en `wip/fundamentos`, sin push.
 
 ## Estado
