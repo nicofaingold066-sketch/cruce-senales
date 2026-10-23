@@ -3,9 +3,10 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, archivos NUEVOS en `src/friccion/**`.
 
 ## Tocando ahora
-- [20:16] (nada en edición) **`wip/friccion` = `f72e4af` LISTA PARA INTEGRAR** (reemplaza a `05e148d`).
+- [20:23] (nada en edición) **`wip/friccion` = `67b11b9` LISTA PARA INTEGRAR** (= `f72e4af` + merge de `wip/fundamentos` b8e19ae, sin conflictos).
 
 ## Entregado
+- [20:23] `67b11b9`: merge de `wip/fundamentos` (b8e19ae: enmienda 12, RecordarFaltan, ejemplos) sin conflictos. Typecheck y build OK; con la base libre: guion friccion **27/27** y `recorrido-dos-sesiones` **23/23**.
 - [20:16] **Pruebas de `f72e4af` con la base libre, contra mi build (20:13–20:16):** guion friccion **27/27** · `recorrido-dos-sesiones` **23/23** · `jurado-navegador` **4 PASS, 0 FAIL** · `red-controlada` 10/10 · `sesiones-recuperacion` (versión de `wip/qa`) 12/12 · typecheck y build OK.
 - [20:13] `wip/friccion` = `f72e4af` (sin probar contra la base). rincones O-13: si falla la sesión anónima, "No pudimos conectarte. Revisa tu conexión y toca Reintentar. No necesitas cuenta ni contraseña." O-12b: el aviso de contrato incompatible ya no repite título y cuerpo ("Hay una versión nueva de CRUXE" + qué hacer). sinteticos (Bruno): bajo "Todavía no sé", "vuelve a abrir el mismo enlace cuando sepas: te trae directo aquí". Pruebas sin base: `red-controlada` 10/10; `sesiones-recuperacion.mjs` de `wip/qa` contra este árbol **12/12** (la copia vieja de `tests/e2e` en mi rama da 9/12: son L1–L3 apuntando a `#/entrar`, #76, que qa-noche ya arregló en su rama).
 - [20:03] **Pruebas de `05e148d` (incluye `fc78fdd` "Falta tu respuesta" y enlaces rotos) con la base libre, contra mi build:** guion friccion **27/27** (19:59; suma ruta con propuesta, O-06 y O-08) · `recorrido-dos-sesiones` **23/23** · `jurado-navegador` **4 PASS, 0 FAIL**, 171 RPC, privacidad sin hallazgos (20:01) · `red-controlada` 10/10 · corte de red #82 **4/4** · typecheck y build OK. rincones re-revisó O-02, O-06 y O-08 en `05e148d`: aprobados.
