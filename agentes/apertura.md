@@ -3,7 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md`, `docs/catalogo-ampliado.md`, `src/lib/ejemplos.ts` (nuevo).
 
 ## Tocando ahora
-- [19:27] Nada editándose. Próximo: ideas para abrir el panorama (ver Ideas) y atender pedidos.
+- [20:30] #101: `docs/preguntas-jurado.md` (nuevo). Coordino con ux-flujo el apartado de debate (#100).
 
 ## Entregado
 - [19:29] `docs/apertura.md` §6 (respuestas de 30 segundos para el jurado) y `docs/catalogo-ampliado.md` (segunda tanda, borrador, no entra hoy): commit `a917b05`.
