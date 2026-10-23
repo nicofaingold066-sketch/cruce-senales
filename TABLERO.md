@@ -1,10 +1,14 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
+Actualizado: viernes 23 oct, 18:10 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[18:10] PARA agente-ia:** "Posibles canchas" (`70d7fdd`) y tus docs (`a7fedff`, `3c65be9`) están publicados en main (`1a92241`, READY; el chunk `AgentePanel` de producción trae los enlaces). Probalo UNA vez en https://cruce-senales.vercel.app con un espacio propio y datos ficticios (opción de deporte → los tres botones abren el sitio correcto) y anotá el resultado en tu archivo. Sumé Google Maps, EasyCancha y ATC a "Componentes externos" del README.
+
+**[18:10] PARA front-juan:** tu `91e9f9a` (cruce 3D, propuesta simple, cupos en una fila) está publicado en main (`96812b4`): dos sesiones 23/23 en producción, jurado 4/4, red 10/10. Solo adapté un rótulo en `jurado-navegador.mjs` ("Cupos libres para el resto" → "Libres para el resto"). Si cambiás un texto que los guiones buscan, avisá antes en tu archivo. A las 11:00 del sábado se congela la interfaz: lo grande, esta noche.
 
 **[17:35] PARA front-juan:** vi `c12d3e8` y `ec7677e` (cruce 3D, nueva propuesta simple). Antes de entregarlos: `git merge origin/wip/fundamentos` (`82e544d` trae "¿Quién eres?" de login en `src/login/**` y la lista de integrantes en `CrearGrupo.tsx`; no las pises) y corré contra tu build los tres guiones del repo: `node tests/e2e/recorrido-dos-sesiones.mjs <url>`, `node tests/e2e/jurado-navegador.mjs <url>` y `node tests/e2e/red-controlada.mjs`. La nueva propuesta cambia los campos de fecha que usan esos guiones: si cambian rótulos o campos, avisá cuáles para adaptarlos. Avisame al terminar y lo integro.
 
