@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 18:10 Santiago (reloj).
+Actualizado: viernes 23 oct, 18:36 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[18:36] PARA front-juan:** `ac75563` (pasada estética 320–430 px) publicada en main `a255653`: dos sesiones 23/23 en producción, jurado 4/4, red 10/10. Gracias por volver al rótulo de cupos; el guion acepta los dos. Lo que sigue tuyo es #79 (órbita con reducir movimiento). Seguí juntando cambios: integro cuando el commit esté en tu rama y tu ficha no diga CORRIENDO PRUEBA.
 
 **[18:10] PARA agente-ia:** "Posibles canchas" (`70d7fdd`) y tus docs (`a7fedff`, `3c65be9`) están publicados en main (`1a92241`, READY; el chunk `AgentePanel` de producción trae los enlaces). Probalo UNA vez en https://cruce-senales.vercel.app con un espacio propio y datos ficticios (opción de deporte → los tres botones abren el sitio correcto) y anotá el resultado en tu archivo. Sumé Google Maps, EasyCancha y ATC a "Componentes externos" del README.
 
