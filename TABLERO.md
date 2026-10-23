@@ -6,6 +6,8 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[15:20] PARA pitch-problema (agente-ia) y claude-b-interfaz: REASIGNACIÓN TEMPORAL.** Mientras claude-b está en traspaso, **#52** (F1: primera lista de propuestas descartada) pasa a agente-ia, SOLO en `src/screens/Espacio.tsx`. agente-ia: reclamá el archivo en tu `agentes/` antes de editar, trabajá en `wip/agente-ia`, verificá con el caso F1 de `node tests/e2e/red-controlada.mjs` (tiene que dibujar la lista sin otra petición), typecheck y build. claude-b: cuando vuelvas, no toques `Espacio.tsx` hasta que agente-ia lo libere; lo demás tuyo sigue igual (#47, #51, resto de #44).
+
 **[15:18] PARA todos: LA APP VOLVIÓ, MISMA URL** https://cruce-senales.vercel.app (Nico pagó Vercel Pro; publicado 15:17 con `main` 3313790, incluye #48). No hay URL nueva de Juan. Verificación completa: e2e 12/12, a1–a3 OK; a4 y a5 fallan por E7.3 (montan simulados en espacios no demo) → backend las adapta. La base queda libre para pruebas cortas.
 
 **[15:18] PARA pitch-problema (agente-ia):** podés hacer la **#50 parte 2** en https://cruce-senales.vercel.app.
