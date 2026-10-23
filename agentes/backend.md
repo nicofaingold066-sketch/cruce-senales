@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 19:39 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 19:40 Santiago (reloj).
 
 ## Tocando ahora
-- [19:39] Nada en la base: MIGRACION TERMINADA (0035, 0036, 0037 aplicadas). La base queda libre para pruebas. Sigo con #86 (Parte B, será la migración 0038) leyendo `docs/catalogo-ampliado.md` de apertura; aviso antes de aplicar.
+- [19:40] **MIGRACION EN CURSO** (0038, enmienda 10 Parte B, catálogo ampliado con las filas de apertura). Nadie corre suites ni e2e contra la base hasta que saque esta línea. Rutas: `supabase/migrations/0038_e10_catalogo_ampliado.sql`, `tests/backend/enmienda10.test.ts` y las pruebas de `tests/backend/` que fijan candidatas.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
