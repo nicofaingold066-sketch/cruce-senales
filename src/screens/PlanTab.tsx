@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { api } from '../lib/api'
 import type { EstadoPropuesta } from '../lib/types'
 import { useAhora, useMutacion } from '../lib/hooks'
-import { cuentaRegresiva, describirEvento, franjaTexto, momentoCorto, ZONA_VISIBLE } from '../lib/format'
+import { cuentaRegresiva, describirEvento, diaDe, franjaTexto, hora, momentoCorto, ZONA_VISIBLE } from '../lib/format'
 import { Aviso, Boton, ErrorCaja, Nombre } from '../components/ui'
 import type { PestanaProps } from './tabs'
 
@@ -245,12 +245,13 @@ function BloqueRevision({ p }: { p: EstadoPropuesta }) {
 /**
  * Comparación versión anterior → vigente tras una reparación. Solo reordena datos del servidor:
  * quién confirmó la anterior sale del historial, quién se bajó de `bajas`, y la vigente de `opcion`.
- * La franja de la versión anterior no viene en el estado, así que no se muestra.
+ * La franja de la versión anterior sale de `opcion_anterior` (enmienda 6); si no viene, no se muestra.
  */
 function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
   const o = p.opcion!
   const reparacion = [...p.historial].reverse().find((e) => e.tipo === 'reparacion_publicada' && e.version_nueva === o.version)
-  const vAnt = reparacion?.version_previa ?? o.version - 1
+  const ant = p.opcion_anterior ?? null
+  const vAnt = ant?.version ?? reparacion?.version_previa ?? o.version - 1
   const vistos = new Set<string>()
   const confirmaronAnt = p.historial
     .filter((e) => e.tipo === 'aceptacion' && (e.version_nueva ?? e.version_previa) === vAnt && e.actor)
@@ -263,9 +264,15 @@ function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
       <h2 id="cambio-version-titulo">
         El plan cambió: versión {vAnt} → versión {o.version}
       </h2>
+      {ant ? (
+        <p className="cv-resumen">
+          {diaDe(ant.inicio.local)} {hora(ant.inicio.local)} → <strong>{diaDe(o.franja.inicio.local)} {hora(o.franja.inicio.local)}</strong>
+        </p>
+      ) : null}
       <div className="cv-grilla">
         <div className="cv-col cv-vieja">
           <span className="cv-rotulo">Versión {vAnt} · ya no vale</span>
+          {ant ? <p className="cv-franja cv-franja-vieja">{franjaTexto(ant.inicio, ant.fin)}</p> : null}
           {confirmaronAnt.length > 0 ? (
             <ul className="cv-personas">
               {confirmaronAnt.map((m) => (

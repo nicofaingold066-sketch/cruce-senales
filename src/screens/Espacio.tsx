@@ -2,10 +2,11 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../lib/api'
 import type { ApiError, Espacio as EspacioT, PropuestaResumen } from '../lib/types'
+import { CODIGOS_SIGUIENTE } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
 import { rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { momentoCorto } from '../lib/format'
-import { Aviso, Boton, Cargando, ErrorCaja, InsigniaEstado, Nombre, Vacio } from '../components/ui'
+import { Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
 // El panel del agente va en su propia parte del paquete (mejora #14): se descarga solo al abrir el bloque.
 const AgentePanel = lazy(() => import('../agente/AgentePanel').then((m) => ({ default: m.AgentePanel })))
 
@@ -223,25 +224,28 @@ function CopiarCodigo({ codigo }: { codigo: string }) {
 }
 
 function TarjetaPropuesta({ p, espacioId }: { p: PropuestaResumen; espacioId: string }) {
+  // Mejora #31: el estado destacado (color + punto) y "Tu turno" salen del servidor:
+  // estado de la propuesta y siguiente_accion.codigo (enmienda 3); el booleano solo como respaldo.
+  const cod = p.siguiente_accion.codigo
+  const conocido = (CODIGOS_SIGUIENTE as readonly string[]).includes(cod)
+  const turno = cod === 'te_toca_aceptar' || (!conocido && p.mi_situacion.puede_aceptar)
   return (
-    <a className="tarjeta tarjeta-enlace" href={rutas.propuesta(espacioId, p.id)}>
+    <a className={`tarjeta tarjeta-enlace tarjeta-prop tarjeta-prop-${p.estado} ${turno ? 'tarjeta-prop-turno' : ''}`} href={rutas.propuesta(espacioId, p.id)}>
       <span className="tarjeta-fila">
         <span className="tarjeta-titulo">{p.titulo}</span>
-        <InsigniaEstado estado={p.estado} etiqueta={p.estado_etiqueta} />
+        {p.version != null ? <span className="etiqueta">Versión {p.version}</span> : null}
       </span>
+      <span className="tp-estado">
+        <span className="estado-hero-punto" aria-hidden="true" />
+        <strong>{p.estado_etiqueta}</strong>
+        {turno ? <span className="pastilla pastilla-turno">Tu turno</span> : null}
+        {p.mi_situacion.retirado ? <span className="etiqueta">Te retiraste</span> : null}
+      </span>
+      <span className={`tarjeta-siguiente ${turno ? 'tp-siguiente-turno' : ''}`}>{p.siguiente_accion.texto}</span>
       <span className="tarjeta-meta">
-        {p.version != null
-          ? `Versión ${p.version} · Confirmaron ${p.confirmados} de ${p.minimo} necesarias · Máximo ${p.maximo}`
-          : `Cupos: mínimo ${p.minimo}, máximo ${p.maximo} · Sin versión publicada`}
+        {p.version != null ? `${p.confirmados} de ${p.minimo} confirmaron · máx. ${p.maximo}` : `Mínimo ${p.minimo}, máximo ${p.maximo}`} ·{' '}
+        {p.plazo_vencido ? 'plazo cerrado' : `cierre ${momentoCorto(p.plazo)}`}
       </span>
-      <span className="tarjeta-meta">
-        {p.plazo_vencido ? 'Plazo de aceptación cerrado' : `Cierre de aceptación: ${momentoCorto(p.plazo)}`} · hora de Santiago
-      </span>
-      <span className="tarjeta-siguiente">
-        <strong>Próxima acción:</strong> {p.siguiente_accion.texto}
-      </span>
-      {p.mi_situacion.puede_aceptar ? <span className="etiqueta etiqueta-destacada">Te toca confirmar</span> : null}
-      {p.mi_situacion.retirado ? <span className="etiqueta">Te retiraste</span> : null}
     </a>
   )
 }
