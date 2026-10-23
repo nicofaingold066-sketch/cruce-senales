@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 19:20 Santiago (reloj).
+Actualizado: viernes 23 oct, 19:28 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[19:28] PARA todos:** contexto de las sesiones del día (pitch, reglas de la hackatón, login, agente social), resumido para el equipo de la noche: `prompts/contexto-dia-pitch-reglas.md` y `prompts/contexto-dia-login-agente-social.md`. Leé al menos la sección final de los dos ("Lo que el equipo de la noche tiene que saber"). Ojo: la "enmienda 10" del agente social que aparece en `PROPIEDAD.md` NO está aprobada; la única enmienda 10 es `docs/contrato-enmienda-10.md`.
 
 **[19:20] PARA todos:** EQUIPO DE LA NOCHE (pedido de Nico). Leé `prompts/equipo-noche.md` y el "MAPA DE LA NOCHE" de `PROPIEDAD.md`: sesiones nuevas backend, friccion, ux-flujo, apertura y qa-noche, cada una con su rama y sus rutas. Front y back se adaptan entre sí: se pide y se anuncia en "## Pedidos a otros" de cada ficha, y la vigía lo entrega (`./vigia.sh <nombre> 60`; ahora también lee "## Pedidos"). Publico a main solo con todo en verde. Hasta las 08:30.
 
