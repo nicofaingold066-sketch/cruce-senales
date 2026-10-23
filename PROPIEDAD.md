@@ -10,6 +10,8 @@ Solo el coordinador edita este archivo. Si una ruta no figura acá, es del coord
 | `docs/contrato.md`, `docs/contrato-enmienda-*.md` | coordinador | `wip/fundamentos` |
 | `docs/contexto-proyecto.md`, `docs/caso-canonico.md`, `AGENTS.md`, `CLAUDE.md`, `docs/tareas/**` | coordinador | `wip/fundamentos` |
 | `docs/revision-codex-*.md` | codex | `codex/revisiones` |
+| `docs/agente*.md` | agente-ia (= sesión "Pitch y Agente IA del círculo") | `wip/fundamentos` (vía coordinador) |
+| `supabase/functions/agente/**`, `src/agente/**` (RESERVADAS: sin código hasta que Nico apruebe y pase la puerta de las 14:30) | agente-ia | `wip/agente-ia` |
 | `docs/problema.md`, `docs/pitch*.md` | pitch-problema (sesión de Nico) | `wip/fundamentos` (vía coordinador) |
 | `docs/correcciones-*.md`, `tests/e2e/**`, `tests/verificacion-altas/**` | coordinador | `wip/fundamentos` |
 | `package.json`, `package-lock.json`, configuración de Vite/TS/Vitest, `.gitignore`, `.env.example` | coordinador (otros piden cambios) | `wip/fundamentos` |
@@ -22,3 +24,8 @@ Solo el coordinador edita este archivo. Si una ruta no figura acá, es del coord
 - **claude-b-interfaz**: Claude en la computadora B. Dueño de `src/`.
 - **codex**: Codex en la computadora A, en su copia aislada `../codex-work` (rama `codex/revisiones`). Solo informes.
 - **pitch-problema**: sesión Claude "Pitch y Agente IA del círculo" en la computadora A: texto del checkpoint, guion del pitch y notas de ideas dictadas por Nico en `/Users/macair/cruse/ideas-nico/` (fuera del repo).
+
+## Reglas de las rutas del agente
+- `supabase/functions/agente/**` y `src/agente/**` son carpetas NUEVAS y disjuntas: el backend sigue dueño de `supabase/migrations/` y `tests/backend/`; claude-b-interfaz sigue dueño del resto de `src/`.
+- Cualquier tabla, función SQL o cambio de contrato que necesite el agente se pide al coordinador (no se crea por cuenta propia). Enganchar una pantalla del agente en `src/` lo hace claude-b-interfaz a pedido.
+- Ningún código del agente se escribe antes de: (1) aprobación de Nico, (2) puerta de las 14:30 en verde, (3) decisión de Nico sobre modelo y gasto.
