@@ -14,6 +14,7 @@ import { vibrar } from '../lib/tacto'
 import { Aviso, Boton, Cargando, DiaTile, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { TomarDeCalendario } from './Calendario'
+import { QueGuarda } from './QueGuarda'
 import './friccion.css'
 
 interface Opcion {
@@ -321,6 +322,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
             <p>Nadie del grupo ve qué días puedes. Responder no es confirmar: eso viene después, con una sola opción.</p>
           </div>
         </div>
+        <QueGuarda />
       </div>
     </div>
   )

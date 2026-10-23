@@ -15,6 +15,7 @@ import { leerPerfil, recordarNombreSiFalta, usePerfil } from '../lib/perfil'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { marcarConEspacios } from './estado'
+import { QueGuarda } from '../friccion/QueGuarda'
 import './login.css'
 
 export interface MiembroPorReclamar {
@@ -351,6 +352,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
             <p>Tu sesión queda guardada en este teléfono. Lo que marques sobre cuándo puedes lo ve solo el servidor.</p>
           </div>
         </div>
+        <QueGuarda />
       </div>
     </div>
   )

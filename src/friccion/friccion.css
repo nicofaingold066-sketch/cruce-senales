@@ -124,3 +124,18 @@
   font-size: 0.85rem;
   text-align: center;
 }
+
+/* "¿Qué guarda CRUXE de mí?" */
+.que-guarda {
+  margin: 12px 0 0;
+}
+.que-guarda > summary {
+  font-size: 0.95rem;
+}
+.que-guarda-lista {
+  margin: 0;
+  padding: 0 0 0 18px;
+  display: grid;
+  gap: 8px;
+  font-size: 0.9rem;
+}
