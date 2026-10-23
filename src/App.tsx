@@ -6,6 +6,7 @@ import { Avatar, Aviso, Boton, Cargando } from './components/ui'
 import { Icono } from './components/Icono'
 import type { NombreIcono } from './components/Icono'
 import { usePerfil } from './lib/perfil'
+import { Entrada, useEntrada } from './components/Intro'
 import { Marca } from './components/Marca'
 import { lazy, Suspense, useEffect } from 'react'
 import Inicio from './screens/Inicio'
@@ -62,6 +63,8 @@ function Marco({
   const conNav =
     sesion.fase === 'lista' && ((ruta.nombre === 'inicio' && perfil != null) || ruta.nombre === 'planes' || ruta.nombre === 'perfil')
   const quien = identidad.yo ?? perfil?.nombre ?? null
+  // Entrada animada al abrir la portada o una invitación (una vez por sesión del navegador).
+  const entrada = useEntrada(ruta.nombre === 'inicio' || ruta.nombre === 'unirse')
 
   return (
     <>
@@ -142,6 +145,7 @@ function Marco({
         {sesion.fase === 'lista' ? <Pantalla ruta={ruta} /> : null}
       </main>
       {conNav ? <NavInferior ruta={ruta} /> : null}
+      {entrada.visible ? <Entrada alTerminar={entrada.cerrar} /> : null}
     </>
   )
 }
