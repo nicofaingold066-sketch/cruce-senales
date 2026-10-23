@@ -12,7 +12,7 @@ import { Aviso, Boton, Cargando, ErrorCaja, colorAvatar, iniciales } from '../co
 import { PlanVivo, esTurno } from '../components/PlanVivo'
 import { Marca } from '../components/Marca'
 import { Icono } from '../components/Icono'
-import { ArteCruce } from '../components/Cruce'
+import { Orbita } from '../components/Orbita'
 import { Resaltado } from '../components/Resaltado'
 import { Tablero } from '../components/Tablero'
 
@@ -72,7 +72,7 @@ export default function Inicio({
             </div>
           </div>
           <div className="solo-ancho">
-            <ArteCruce />
+            <Orbita compacta />
           </div>
         </section>
         <div className="hoja">
@@ -105,9 +105,7 @@ export default function Inicio({
           <p className="portada-sub">
             Cada uno dice en privado cuándo puede. CRUXE propone <strong>un solo plan</strong> y cada uno lo confirma.
           </p>
-          <div className={nuevo ? 'solo-ancho' : undefined}>
-            <ArteCruce />
-          </div>
+          <Orbita compacta={nuevo} />
         </section>
       ) : (
         <section className="escena escena-portada" aria-labelledby="portada-titulo">
@@ -116,7 +114,7 @@ export default function Inicio({
             {perfil ? `Hola, ${perfil.nombre}.` : 'Hola.'} <em>¿Qué plan armamos?</em>
           </h1>
           <p className="portada-sub">Del «nos juntamos» al encuentro que ocurre.</p>
-          <ArteCruce />
+          <Orbita compacta />
         </section>
       )}
 
@@ -339,12 +337,23 @@ function irAUnirse() {
 
 function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: boolean; codigoInicial?: string }) {
   const [codigo, setCodigo] = useState(codigoInicial ?? '')
-  const [nombre, setNombre] = useState(() => leerPerfil()?.nombre ?? '')
+  // Por un enlace de invitación puede llegar otra persona al teléfono de alguien: ahí el nombre NO se precarga
+  // (revisión del rediseño, P2); se ofrece "Soy X" o "No soy X" (sesión nueva, la de X queda guardada).
+  const porInvitacion = codigoInicial != null
+  const [nombre, setNombre] = useState(() => (porInvitacion ? '' : (leerPerfil()?.nombre ?? '')))
   const perfil = usePerfil()
   // Si la persona escribe su nombre en el ingreso con este formulario ya en pantalla, se completa solo.
   useEffect(() => {
-    if (perfil) setNombre((n) => n || perfil.nombre)
-  }, [perfil])
+    if (perfil && !porInvitacion) setNombre((n) => n || perfil.nombre)
+  }, [perfil, porInvitacion])
+  const [separando, setSeparando] = useState(false)
+  async function noSoy(quien: string) {
+    if (separando) return
+    setSeparando(true)
+    const s = await sesionNueva(quien)
+    setSeparando(false)
+    if (!s.ok) setErrorCambio(s.mensaje)
+  }
   const { ocupado, error, ejecutar } = useAccion()
   // Navegador compartido: la sesión guardada ya es miembro de este espacio con otro nombre.
   const [yaMiembro, setYaMiembro] = useState<{ espacioId: string; espacio: string; nombreActual: string } | null>(null)
@@ -390,7 +399,7 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
     setCambiando(true)
     setErrorCambio(null)
     try {
-      const s = await sesionNueva(`${previa.nombreActual} en «${previa.espacio}»`)
+      const s = await sesionNueva(previa.nombreActual)
       if (!s.ok) {
         setErrorCambio(s.mensaje)
         return
@@ -425,6 +434,21 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
           aria-invalid={error?.detalle === 'codigo_inexistente' ? true : undefined}
         />
       </label>
+      {porInvitacion && perfil ? (
+        <div className="quien-soy" role="group" aria-label="Quién usa este teléfono">
+          <p>
+            Este teléfono está como <strong>{perfil.nombre}</strong>. ¿Eres tú?
+          </p>
+          <div className="fila-botones">
+            <button type="button" className="btn btn-secundario btn-chico" onClick={() => setNombre(perfil.nombre)}>
+              Soy {perfil.nombre}
+            </button>
+            <Boton variante="secundario" className="btn-chico" onClick={() => void noSoy(perfil.nombre)} ocupado={separando} ocupadoTexto="Separando…">
+              No soy {perfil.nombre}
+            </Boton>
+          </div>
+        </div>
+      ) : null}
       <label className="campo">
         <span>Tu nombre en el espacio</span>
         <input

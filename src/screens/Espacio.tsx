@@ -222,10 +222,10 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
             <h2 id="personas-titulo">Personas del espacio</h2>
             <span className="etiqueta num">{espacio.miembros.length}</span>
           </div>
-          <ul className="miembros">
+          <ul className="chips-personas">
             {espacio.miembros.map((m) => (
               <li key={m.miembro_id}>
-                <Avatar nombre={m.nombre} simulado={m.simulado} yo={m.es_yo} />
+                <Avatar nombre={m.nombre} simulado={m.simulado} yo={m.es_yo} tam={26} />
                 <Nombre m={m} yo={m.es_yo} />
                 {m.rol === 'organizador' ? <span className="etiqueta">organizador</span> : null}
               </li>
@@ -293,28 +293,35 @@ function CopiarCodigo({ codigo, espacioNombre }: { codigo: string; espacioNombre
   }
   return (
     <>
-      <div className="invitar-botones">
-        <button type="button" className={`btn btn-claro btn-chico ${copiado === 'si' ? 'btn-hecho' : ''}`} onClick={copiar}>
+      {/* Una sola fila de tres acciones: textos cortos a la vista y el nombre completo para lectores de pantalla. */}
+      <div className="invitar-botones invitar-fila3">
+        <button type="button" className="btn btn-blanco btn-chico" onClick={() => void compartir()} aria-label="Compartir enlace">
+          <Icono n="compartir" tam={18} /> Compartir
+        </button>
+        <button
+          type="button"
+          className={`btn btn-claro btn-chico ${copiado === 'si' ? 'btn-hecho' : ''}`}
+          onClick={copiar}
+          aria-label={copiado === 'si' ? 'Código copiado' : 'Copiar código'}
+        >
           {copiado === 'si' ? (
             <>
-              <Icono n="check" tam={18} /> ¡Copiado!
+              <Icono n="check" tam={18} /> ¡Listo!
             </>
           ) : (
             <>
-              <Icono n="copiar" tam={18} /> Copiar código
+              <Icono n="copiar" tam={18} /> Copiar
             </>
           )}
-        </button>
-        <button type="button" className="btn btn-blanco btn-chico" onClick={() => void compartir()}>
-          <Icono n="compartir" tam={18} /> Compartir enlace
         </button>
         <a
           className="btn btn-claro btn-chico"
           href={urlWhatsApp(textoInvitacion(espacioNombre, codigo))}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Invitar por WhatsApp"
         >
-          <Icono n="whatsapp" tam={18} /> Invitar por WhatsApp
+          <Icono n="whatsapp" tam={18} /> WhatsApp
         </a>
       </div>
       {copiado === 'si' ? <span role="status">Copiado.</span> : null}

@@ -37,7 +37,8 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
 
       {p.estado === 'borrador' ? <AbrirPropuesta p={p} viva={viva} soloLectura={soloLectura} /> : null}
 
-      {p.estado === 'grupo_confirmado' && p.opcion ? <CierrePlan p={p} /> : null}
+      {/* El cierre (calendario, aviso) es para quien va: quien confirmó esta versión. */}
+      {p.estado === 'grupo_confirmado' && p.opcion && p.mi_situacion.acepte_version ? <CierrePlan p={p} /> : null}
 
       {conOpcion && p.opcion ? <OpcionVigente key={p.opcion.version} p={p} viva={viva} soloLectura={soloLectura} /> : null}
 
@@ -157,11 +158,6 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
   return (
     <section className={`tarjeta opcion ${confirmado ? 'opcion-confirmada' : ''}`} aria-labelledby="opcion-titulo">
       <h2 id="opcion-titulo">Opción vigente · Versión {o.version}</h2>
-      {confirmado ? (
-        <Aviso tono="ok" titulo={`Grupo confirmado en la versión ${o.version}`}>
-          Quienes confirmaron aparecen abajo. CRUXE coordina el plan; no reserva nada.
-        </Aviso>
-      ) : null}
       <div className="opcion-cuando">
         <DiaTile local={o.franja.inicio.local} />
         <div>
@@ -188,43 +184,46 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
           <span>mínimo {o.cupos.minimo} · máximo {o.cupos.maximo}</span>
         </div>
       </div>
-      <dl className="datos">
-        <dt>Aceptaciones</dt>
-        <dd>
-          {sobreMinimo ? (
-            <>
-              <strong>{o.cupos.confirmados}</strong> (mínimo {o.cupos.minimo}, máximo {o.cupos.maximo}, disponibles{' '}
-              {o.cupos.disponibles})
-            </>
-          ) : (
-            <>
-              <strong>
-                {o.cupos.confirmados} de {o.cupos.minimo}
-              </strong>{' '}
-              necesarias (máximo {o.cupos.maximo}, disponibles {o.cupos.disponibles})
-            </>
-          )}
-        </dd>
-        <dt>Anfitrión ({p.imprescindible.nombre})</dt>
-        <dd>
-          <span className={`etiqueta ${o.cupos.imprescindible_acepto ? 'etiqueta-ok' : 'etiqueta-pendiente'}`}>
-            {o.cupos.imprescindible_acepto ? 'Ya confirmó' : 'Pendiente'}
-          </span>
-        </dd>
+      {/* Datos en grilla compacta (2 × 2): todo a la vista sin desplazar. Solo números del servidor. */}
+      <dl className="datos-mini">
+        <div className="mini-dato">
+          <dt>Aceptaciones</dt>
+          <dd>
+            {sobreMinimo ? (
+              <>
+                <strong>{o.cupos.confirmados}</strong> (mínimo {o.cupos.minimo}, máximo {o.cupos.maximo}, disponibles{' '}
+                {o.cupos.disponibles})
+              </>
+            ) : (
+              <>
+                <strong>
+                  {o.cupos.confirmados} de {o.cupos.minimo}
+                </strong>{' '}
+                necesarias (máximo {o.cupos.maximo}, disponibles {o.cupos.disponibles})
+              </>
+            )}
+          </dd>
+        </div>
+        <div className="mini-dato">
+          <dt>Anfitrión ({p.imprescindible.nombre})</dt>
+          <dd>
+            <span className={`etiqueta ${o.cupos.imprescindible_acepto ? 'etiqueta-ok' : 'etiqueta-pendiente'}`}>
+              {o.cupos.imprescindible_acepto ? 'Ya confirmó' : 'Pendiente'}
+            </span>
+          </dd>
+        </div>
         {/* Enmienda 7 (E7.2): solo el organizador recibe este conteo; con null no se muestra. */}
         {o.cupos.pendientes != null ? (
-          <>
+          <div className="mini-dato">
             <dt>Faltan por responder</dt>
             <dd>{o.cupos.pendientes} persona(s)</dd>
-          </>
+          </div>
         ) : null}
         {o.cupos.reservado_imprescindible ? (
-          <>
+          <div className="mini-dato">
             <dt>Cupo del anfitrión</dt>
-            <dd>
-              Reservado hasta que confirme. Cupos libres para el resto: {o.cupos.libres_para_otros}.
-            </dd>
-          </>
+            <dd>Reservado hasta que confirme. Libres para el resto: {o.cupos.libres_para_otros}.</dd>
+          </div>
         ) : null}
       </dl>
 
@@ -232,12 +231,11 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
       {o.aceptaron.length === 0 ? (
         <p className="suave">Todavía nadie confirmó la versión {o.version}.</p>
       ) : (
-        <ul className="miembros">
+        <ul className="chips-personas">
           {o.aceptaron.map((a) => (
-            <li key={a.miembro.miembro_id}>
-              <Avatar nombre={a.miembro.nombre} simulado={a.miembro.simulado} yo={a.miembro.miembro_id === p.mi_situacion.miembro_id} />
+            <li key={a.miembro.miembro_id} title={`Confirmó ${momentoCorto(a.aceptado_en)}`}>
+              <Avatar nombre={a.miembro.nombre} simulado={a.miembro.simulado} yo={a.miembro.miembro_id === p.mi_situacion.miembro_id} tam={26} />
               <Nombre m={a.miembro} yo={a.miembro.miembro_id === p.mi_situacion.miembro_id} />
-              <span className="suave fecha"> · {momentoCorto(a.aceptado_en)}</span>
             </li>
           ))}
         </ul>
@@ -266,7 +264,10 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
           )}
         </div>
       ) : (
-        <Aviso tono="info">{razonNoAceptar(p)}</Aviso>
+        <p className="nota-linea" role="note">
+          <Icono n={p.mi_situacion.acepte_version ? 'check' : 'candado'} tam={16} />
+          {razonNoAceptar(p)}
+        </p>
       )}
       {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} enfocar /> : null}
     </section>
@@ -409,14 +410,17 @@ function Bajas({ p }: { p: EstadoPropuesta }) {
   return (
     <section className="tarjeta">
       <h2>Bajas registradas</h2>
-      <ul className="miembros">
+      <ul className="chips-personas chips-bajas">
         {p.bajas.map((b, i) => (
-          <li key={`${b.miembro.miembro_id}-${i}`}>
-            <Avatar nombre={b.miembro.nombre} simulado={b.miembro.simulado} />
-            <Nombre m={b.miembro} /> se bajó
-            {b.version != null ? ` (versión ${b.version})` : ''}
-            {b.habia_aceptado ? ' · había confirmado' : ''}
-            <span className="suave fecha"> · {momentoCorto(b.en)}</span>
+          <li key={`${b.miembro.miembro_id}-${i}`} title={momentoCorto(b.en)}>
+            <Avatar nombre={b.miembro.nombre} simulado={b.miembro.simulado} tam={26} />
+            <span className="chip-texto">
+              <Nombre m={b.miembro} />
+              <span className="chip-nota">
+                se bajó{b.version != null ? ` (versión ${b.version})` : ''}
+                {b.habia_aceptado ? ' · había confirmado' : ''}
+              </span>
+            </span>
           </li>
         ))}
       </ul>
@@ -426,7 +430,7 @@ function Bajas({ p }: { p: EstadoPropuesta }) {
 }
 
 function HistorialResumido({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: PestanaProps['irAPestana'] }) {
-  const ultimos = p.historial.slice(-5).reverse()
+  const ultimos = p.historial.slice(-3).reverse()
   return (
     <section className="tarjeta">
       <h2>Historial resumido</h2>
@@ -473,10 +477,10 @@ function ReuniendoInteres({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: P
         {p.personas_con_condiciones != null ? ' Las condiciones de cada persona son privadas: solo se cuentan.' : ''}
       </p>
       {p.interesados.miembros.length > 0 ? (
-        <ul className="miembros" aria-label="Marcaron Me interesa">
+        <ul className="chips-personas" aria-label="Marcaron Me interesa">
           {p.interesados.miembros.map((m) => (
             <li key={m.miembro_id}>
-              <Avatar nombre={m.nombre} simulado={m.simulado} yo={m.miembro_id === p.mi_situacion.miembro_id} />
+              <Avatar nombre={m.nombre} simulado={m.simulado} yo={m.miembro_id === p.mi_situacion.miembro_id} tam={26} />
               <Nombre m={m} yo={m.miembro_id === p.mi_situacion.miembro_id} />
             </li>
           ))}
@@ -560,7 +564,6 @@ function Cancelar({ p, viva, soloLectura }: VivaProps) {
   return (
     <section className="tarjeta zona-peligro">
       <h2>Cancelar propuesta</h2>
-      <p className="suave">Solo el organizador puede cancelarla. Queda registrado en el historial.</p>
       {!confirmar ? (
         <Boton variante="secundario" onClick={() => setConfirmar(true)} disabled={soloLectura}>
           Cancelar propuesta
@@ -605,23 +608,27 @@ function CierrePlan({ p }: { p: EstadoPropuesta }) {
   return (
     <section className="tarjeta cierre" aria-labelledby="cierre-titulo">
       <Confeti />
-      <span className="cierre-icono" aria-hidden="true">
-        <Icono n="fiesta" tam={26} />
-      </span>
-      <h2 id="cierre-titulo">
-        <Resaltado tipo="marcador" color="var(--ok)">¡Se juntan!</Resaltado>
-      </h2>
-      <p className="cierre-cuando">{cuando}</p>
+      <div className="cierre-cabeza">
+        <span className="cierre-icono" aria-hidden="true">
+          <Icono n="fiesta" tam={22} />
+        </span>
+        <div>
+          <h2 id="cierre-titulo">
+            <Resaltado tipo="marcador" color="var(--ok)">¡Se juntan!</Resaltado>
+          </h2>
+          <p className="cierre-cuando">{cuando}</p>
+        </div>
+      </div>
       <p className="suave">
         {o.aceptaron.length} {o.aceptaron.length === 1 ? 'persona confirmó' : 'personas confirmaron'} la versión {o.version}. CRUXE
         coordina el plan; no reserva nada.
       </p>
-      <div className="fila-botones">
-        <button type="button" className="btn btn-primario" onClick={agendar}>
-          <Icono n="agendar" tam={20} /> Agregar al calendario
+      <div className="cierre-botones">
+        <button type="button" className="btn btn-primario btn-chico" onClick={agendar} aria-label="Agregar al calendario">
+          <Icono n="agendar" tam={18} /> Calendario
         </button>
-        <a className="btn btn-secundario" href={urlWhatsApp(texto)} target="_blank" rel="noopener noreferrer">
-          <Icono n="whatsapp" tam={20} /> Avisar por WhatsApp
+        <a className="btn btn-secundario btn-chico" href={urlWhatsApp(texto)} target="_blank" rel="noopener noreferrer" aria-label="Avisar por WhatsApp">
+          <Icono n="whatsapp" tam={18} /> WhatsApp
         </a>
       </div>
       {nota ? <p role="status">{nota}</p> : null}

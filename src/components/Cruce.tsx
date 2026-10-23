@@ -89,13 +89,16 @@ export function Cruce({
   confirmado?: boolean
 }) {
   const visibles = nodos.slice(0, MAX_NODOS)
+  // Con más de 10 personas el dibujo muestra 10 y avisa cuántas más hay (nadie desaparece sin aviso).
+  const ocultas = nodos.length - visibles.length
   const pos = posiciones(visibles.length)
   const color = COLOR_TONO[tono]
   const circ = 2 * Math.PI * R_CENTRO
   const f = Math.max(0, Math.min(1, Number.isFinite(fraccion) ? fraccion : 0))
   const descripcion =
     `${valor} ${etiqueta}. ` +
-    visibles.map((n) => `${n.yo ? `${n.nombre} (tú)` : n.nombre}${n.simulado ? ' (simulación)' : ''}: ${DESCRIPCION_ESTADO[n.estado]}`).join('; ')
+    visibles.map((n) => `${n.yo ? `${n.nombre} (tú)` : n.nombre}${n.simulado ? ' (simulación)' : ''}: ${DESCRIPCION_ESTADO[n.estado]}`).join('; ') +
+    (ocultas > 0 ? `; y ${ocultas} ${ocultas === 1 ? 'persona más' : 'personas más'}` : '')
 
   return (
     <figure style={{ margin: 0 }}>
@@ -182,6 +185,7 @@ export function Cruce({
         <span>
           <i className="ley-pendiente" /> Sin confirmar
         </span>
+              {ocultas > 0 ? <span>+{ocultas} más</span> : null}
       </figcaption>
     </figure>
   )

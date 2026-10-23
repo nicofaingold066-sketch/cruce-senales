@@ -4,32 +4,94 @@ import type { ApiError, Espacio } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto, momentoCorto, ZONA_VISIBLE } from '../lib/format'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
-import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
+import { Avatar, Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
+import type { NombreIcono } from '../components/Icono'
 import { tomarBorradorAgente } from '../agente/api'
+
+// Una propuesta se arma con dos momentos posibles (A y B), cada uno un día y una hora de encuentro,
+// y una duración aproximada: la hora de fin se calcula sola. El contrato sigue recibiendo inicio y fin
+// ("YYYY-MM-DDTHH:MM", hora de Santiago, sin convertir zonas); el servidor valida todo.
+type Cierre = 'dia_antes' | 'dos_dias' | 'otro'
 
 interface Formulario {
   titulo: string
-  aInicio: string
-  aFin: string
-  bInicio: string
-  bFin: string
+  aDia: string
+  aHora: string
+  bDia: string
+  bHora: string
+  /** Minutos. */
+  duracion: number
   minimo: string
   maximo: string
   imprescindibleId: string
-  plazo: string
+  cierre: Cierre
+  /** Solo con cierre "otro". */
+  plazoOtro: string
 }
 
-// Valores exactos del caso canónico (contrato, sección 5). Todo ficticio.
+// Valores exactos del caso canónico (contrato, sección 5): A sáb 31 oct y B dom 1 nov, 14:00 a 17:00; cierre jue 29 oct 20:00.
 const CASO = {
   titulo: 'Asado en casa de Tomi',
-  aInicio: '2026-10-31T14:00',
-  aFin: '2026-10-31T17:00',
-  bInicio: '2026-11-01T14:00',
-  bFin: '2026-11-01T17:00',
+  aDia: '2026-10-31',
+  aHora: '14:00',
+  bDia: '2026-11-01',
+  bHora: '14:00',
+  duracion: 180,
   minimo: '4',
   maximo: '6',
-  plazo: '2026-10-29T20:00',
+  cierre: 'dos_dias' as Cierre,
+  plazoOtro: '',
+}
+
+const ACTIVIDADES: { titulo: string; icono: NombreIcono; min: number }[] = [
+  { titulo: 'Asado', icono: 'asado', min: 180 },
+  { titulo: 'Fútbol', icono: 'futbol', min: 60 },
+  { titulo: 'Cena', icono: 'cena', min: 120 },
+  { titulo: 'Juntada', icono: 'juntada', min: 120 },
+  { titulo: 'Cine', icono: 'cine', min: 150 },
+  { titulo: 'Cumple', icono: 'cumple', min: 180 },
+  { titulo: 'Paseo', icono: 'paseo', min: 180 },
+]
+const HORAS = ['12:00', '13:00', '14:00', '17:00', '19:00', '20:00', '21:00']
+const DURACIONES = [60, 120, 180, 240]
+const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+
+// ---- Aritmética de calendario sobre la hora de pared (UTC solo como contenedor neutro, sin zonas) ----
+const dos = (n: number) => String(n).padStart(2, '0')
+function enUTC(dia: string, hora = '00:00'): Date {
+  const [y, m, d] = dia.split('-').map(Number)
+  const [hh, mm] = hora.split(':').map(Number)
+  return new Date(Date.UTC(y, m - 1, d, hh || 0, mm || 0))
+}
+const aTexto = (d: Date) => d.toISOString().slice(0, 16)
+const sumarMinutos = (dia: string, hora: string, min: number) => aTexto(new Date(enUTC(dia, hora).getTime() + min * 60000))
+const sumarDias = (dia: string, n: number) => aTexto(new Date(enUTC(dia).getTime() + n * 86400000)).slice(0, 10)
+function hoy(): string {
+  const d = new Date()
+  return `${d.getFullYear()}-${dos(d.getMonth() + 1)}-${dos(d.getDate())}`
+}
+/** Primer sábado con al menos dos días de margen: deja tiempo para que el grupo responda antes del cierre. */
+function proximoSabado(): string {
+  let d = sumarDias(hoy(), 2)
+  while (enUTC(d).getUTCDay() !== 6) d = sumarDias(d, 1)
+  return d
+}
+function partesDia(dia: string) {
+  const f = enUTC(dia)
+  return { dia: DIAS[f.getUTCDay()], num: f.getUTCDate(), mes: MESES[f.getUTCMonth()] }
+}
+function plazoDe(form: Formulario): string {
+  if (form.cierre === 'otro') return form.plazoOtro
+  if (!form.aDia || !form.bDia) return ''
+  const primero = form.aDia < form.bDia ? form.aDia : form.bDia
+  return `${sumarDias(primero, form.cierre === 'dia_antes' ? -1 : -2)}T20:00`
+}
+function duracionTexto(min: number): string {
+  const h = Math.floor(min / 60)
+  const m = min % 60
+  return m ? `${h} h ${m} min` : `${h} h`
 }
 
 type Campo = 'titulo' | 'franjas' | 'cupos' | 'plazo' | 'imprescindible'
@@ -88,7 +150,8 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   }, [paso])
 
   // Precarga solo una vez que se conoce el espacio. En el espacio demo se usan los valores del caso.
-  // Si el agente dejó un borrador (se lee una sola vez), su título y sus dos franjas reemplazan esos valores.
+  // En un grupo propio ya viene armado el próximo fin de semana a las 20:00 (crear es tocar dos veces).
+  // Si el agente dejó un borrador (se lee una sola vez), su título y sus dos momentos reemplazan esos valores.
   const precargado = useRef(false)
   useEffect(() => {
     if (!espacio || f || precargado.current) return
@@ -96,13 +159,35 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     const yoM = espacio.miembros.find((m) => m.es_yo)
     const tomi = espacio.miembros.find((m) => m.nombre.toLowerCase() === 'tomi')
     const borrador = tomarBorradorAgente(espacio.id)
+    const sabado = proximoSabado()
     const base: Formulario = espacio.demo
       ? { ...CASO, imprescindibleId: (tomi ?? yoM)?.miembro_id ?? '' }
-      : { titulo: '', aInicio: '', aFin: '', bInicio: '', bFin: '', minimo: '2', maximo: '6', imprescindibleId: yoM?.miembro_id ?? '', plazo: '' }
+      : {
+          titulo: '',
+          aDia: sabado,
+          aHora: '20:00',
+          bDia: sumarDias(sabado, 1),
+          bHora: '20:00',
+          duracion: 120,
+          minimo: '2',
+          maximo: '6',
+          imprescindibleId: yoM?.miembro_id ?? '',
+          cierre: 'dia_antes',
+          plazoOtro: '',
+        }
     if (borrador) {
       const [a, b] = borrador.franjas
+      const dur = Math.round((enUTC(a.fin.slice(0, 10), a.fin.slice(11, 16)).getTime() - enUTC(a.inicio.slice(0, 10), a.inicio.slice(11, 16)).getTime()) / 60000)
       setDesdeAgente(true)
-      setF({ ...base, titulo: borrador.titulo, aInicio: a.inicio, aFin: a.fin, bInicio: b.inicio, bFin: b.fin })
+      setF({
+        ...base,
+        titulo: borrador.titulo,
+        aDia: a.inicio.slice(0, 10),
+        aHora: a.inicio.slice(11, 16),
+        bDia: b.inicio.slice(0, 10),
+        bHora: b.inicio.slice(11, 16),
+        duracion: dur > 0 ? dur : base.duracion,
+      })
       return
     }
     setF(base)
@@ -118,7 +203,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   if (!espacio || !f) {
     return (
       <div className="vista">
-        <section className="escena">
+        <section className="escena escena-compacta">
           <a className="escena-volver" href={rutas.espacio(espacioId)}>
             <Icono n="atras" tam={20} /> Volver al espacio
           </a>
@@ -136,17 +221,27 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     setF({ ...form, [k]: v })
     if (error) limpiarError()
   }
+  function elegirActividad(a: (typeof ACTIVIDADES)[number]) {
+    const esAtajo = form.titulo.trim() === '' || ACTIVIDADES.some((x) => x.titulo === form.titulo.trim())
+    setF({ ...form, titulo: esAtajo ? a.titulo : form.titulo, duracion: a.min })
+    if (error) limpiarError()
+  }
+
+  const aInicio = form.aDia && form.aHora ? `${form.aDia}T${form.aHora}` : ''
+  const bInicio = form.bDia && form.bHora ? `${form.bDia}T${form.bHora}` : ''
+  const aFin = aInicio ? sumarMinutos(form.aDia, form.aHora, form.duracion) : ''
+  const bFin = bInicio ? sumarMinutos(form.bDia, form.bHora, form.duracion) : ''
+  const plazo = plazoDe(form)
 
   const completo =
     form.titulo.trim() !== '' &&
-    form.aInicio !== '' &&
-    form.aFin !== '' &&
-    form.bInicio !== '' &&
-    form.bFin !== '' &&
+    aInicio !== '' &&
+    bInicio !== '' &&
+    form.duracion > 0 &&
     form.minimo !== '' &&
     form.maximo !== '' &&
     form.imprescindibleId !== '' &&
-    form.plazo !== ''
+    plazo !== ''
 
   const imprescindible = espacio.miembros.find((m) => m.miembro_id === form.imprescindibleId)
   const marcado = campoDeError(error)
@@ -183,20 +278,20 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
         espacioId,
         titulo: form.titulo.trim(),
         franjas: [
-          { inicio: form.aInicio, fin: form.aFin },
-          { inicio: form.bInicio, fin: form.bFin },
+          { inicio: aInicio, fin: aFin },
+          { inicio: bInicio, fin: bFin },
         ],
         minimo: Number(form.minimo),
         maximo: Number(form.maximo),
         imprescindibleId: form.imprescindibleId,
-        plazo: form.plazo,
+        plazo,
         intentoId,
       }),
     )
     if (!r) return
     if (!r.ok) {
       if (r.error.resultadoIncierto || r.error.codigo === 'intento_obsoleto') await cargar() // refresca el espacio
-      setPaso('editar') // vuelve al formulario con el campo marcado y todo lo escrito intacto
+      setPaso('editar') // vuelve al formulario con el campo marcado y todo lo elegido intacto
       return
     }
     const propuestaId = r.data.resultado.propuesta_id
@@ -210,17 +305,12 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
 
   return (
     <div className="vista">
-      <section className="escena" aria-labelledby="nueva-titulo">
+      <section className="escena escena-compacta" aria-labelledby="nueva-titulo">
         <a className="escena-volver" href={rutas.espacio(espacioId)}>
           <Icono n="atras" tam={20} /> {espacio.nombre}
         </a>
-        <span className="escena-eyebrow">{paso === 'editar' ? 'Paso 1 de 2 · Los datos del plan' : 'Paso 2 de 2 · Revisar y crear'}</span>
+        <span className="escena-eyebrow">{paso === 'editar' ? 'Paso 1 de 2 · El plan' : 'Paso 2 de 2 · Revisar y crear'}</span>
         <h1 id="nueva-titulo">Nueva propuesta</h1>
-        <p className="escena-sub">
-          {paso === 'editar'
-            ? 'Dos franjas, cupos y quién no puede faltar. Después, cada persona dice en privado si puede.'
-            : 'Nada se publica hasta que confirmes.'}
-        </p>
         <div className="pasos-form" aria-hidden="true">
           <span className="hecho" />
           <span className={paso === 'revisar' ? 'hecho' : ''} />
@@ -230,6 +320,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
       <div className="hoja">
         {paso === 'editar' ? (
           <form
+            className="form-compacto"
             onSubmit={(e) => {
               e.preventDefault()
               revisar()
@@ -238,13 +329,12 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
           >
             {desdeAgente ? (
               <Aviso tono="info" titulo="Borrador del agente">
-                Título y franjas vienen del borrador que propuso el agente. Revisa mínimo, máximo, persona imprescindible y
-                cierre antes de crear: el agente no crea ni confirma nada.
+                Título y momentos vienen del borrador del agente. Revisa cupos, anfitrión y cierre: el agente no crea ni confirma nada.
               </Aviso>
             ) : null}
             {espacio.demo && !desdeAgente ? (
-              <Aviso tono="info">
-                Valores precargados del caso "Los del asado". Puedes cambiarlos antes de revisar.{' '}
+              <p className="nota-caso">
+                Precargado con el caso «Los del asado».{' '}
                 <button
                   type="button"
                   className="enlace"
@@ -255,13 +345,27 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                 >
                   Restablecer valores del caso
                 </button>
-              </Aviso>
+              </p>
             ) : null}
-            {faltantes ? <Aviso tono="error">Completa todos los campos antes de revisar.</Aviso> : null}
+            {faltantes ? <Aviso tono="error">Completa el título y los dos momentos antes de revisar.</Aviso> : null}
             {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} enfocar /> : null}
 
             <fieldset className="form-seccion">
-              <legend>Qué</legend>
+              <legend>Qué hacen</legend>
+              <div className="carrusel" role="group" aria-label="Atajos de actividad">
+                {ACTIVIDADES.map((a) => (
+                  <button
+                    key={a.titulo}
+                    type="button"
+                    className={`chip-actividad ${form.titulo.trim() === a.titulo ? 'chip-activo' : ''}`}
+                    aria-pressed={form.titulo.trim() === a.titulo}
+                    onClick={() => elegirActividad(a)}
+                  >
+                    <Icono n={a.icono} tam={18} />
+                    {a.titulo}
+                  </button>
+                ))}
+              </div>
               <label className="campo">
                 <span>Propósito de la propuesta</span>
                 <input
@@ -275,64 +379,100 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
             </fieldset>
 
             <fieldset className={`form-seccion ${marcado === 'franjas' ? 'grupo-error' : ''}`}>
-              <legend>Franjas candidatas (hora de {ZONA_VISIBLE})</legend>
-              <p className="suave" style={{ marginTop: 0 }}>
-                Son exactamente dos. La primera tiene prioridad si ambas sirven.
-              </p>
-              {(
-                [
-                  ['A', 'aInicio', 'aFin'],
-                  ['B', 'bInicio', 'bFin'],
-                ] as const
-              ).map(([clave, ini, fin]) => (
-                <div key={clave} className="franja-editor">
-                  <div className="franja-editor-cabeza">
-                    <span className="franja-letra" aria-hidden="true">
-                      {clave}
-                    </span>
-                    <strong>Franja {clave}</strong>
+              <legend>Cuándo · dos opciones</legend>
+              <p className="suave nota-seccion">El grupo dice en privado cuál le sirve. Si sirven las dos, gana la A.</p>
+              {(['A', 'B'] as const).map((clave) => {
+                const dia = clave === 'A' ? form.aDia : form.bDia
+                const horaSel = clave === 'A' ? form.aHora : form.bHora
+                const inicio = clave === 'A' ? aInicio : bInicio
+                const fin = clave === 'A' ? aFin : bFin
+                return (
+                  <div key={clave} className="momento">
+                    <div className="momento-cabeza">
+                      <span className="franja-letra" aria-hidden="true">
+                        {clave}
+                      </span>
+                      <strong>Opción {clave}</strong>
+                      {inicio ? <span className="momento-resumen">{franjaTexto(inicio, fin)}</span> : null}
+                    </div>
+                    <SelectorDia clave={clave} valor={dia} alElegir={(d) => poner(clave === 'A' ? 'aDia' : 'bDia', d)} />
+                    <SelectorHora clave={clave} valor={horaSel} alElegir={(h) => poner(clave === 'A' ? 'aHora' : 'bHora', h)} />
                   </div>
-                  <div className="par-fechas-campos">
-                    <label className="campo">
-                      <span>Inicio</span>
-                      <input type="datetime-local" value={form[ini]} onChange={(e) => poner(ini, e.target.value)} />
+                )
+              })}
+              <div className="duracion" role="radiogroup" aria-label="Duración aproximada">
+                <span className="duracion-etiqueta">
+                  <Icono n="reloj" tam={16} /> Dura aprox.
+                </span>
+                <div className="opciones opciones-compactas">
+                  {DURACIONES.map((d) => (
+                    <label key={d} className={`opcion-radio ${form.duracion === d ? 'opcion-activa' : ''}`}>
+                      <input type="radio" name="duracion" checked={form.duracion === d} onChange={() => poner('duracion', d)} />
+                      {duracionTexto(d)}
                     </label>
-                    <label className="campo">
-                      <span>Fin</span>
-                      <input type="datetime-local" value={form[fin]} onChange={(e) => poner(fin, e.target.value)} />
-                    </label>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </fieldset>
-
-            <fieldset className={`form-seccion ${marcado === 'cupos' ? 'grupo-error' : ''}`}>
-              <legend>Cupos</legend>
-              <div className="cupos-fila">
-                <Contador id="cupo-minimo" etiqueta="Mínimo" ayuda="Cuenta a quien es imprescindible" valor={form.minimo} onCambio={(v) => poner('minimo', v)} />
-                <Contador id="cupo-maximo" etiqueta="Máximo" valor={form.maximo} onCambio={(v) => poner('maximo', v)} />
               </div>
             </fieldset>
 
-            <fieldset className="form-seccion">
-              <legend>Quién no puede faltar</legend>
-              <label className={`campo ${marcado === 'imprescindible' ? 'campo-error' : ''}`}>
-                <span>Persona imprescindible (anfitrión)</span>
-                <select value={form.imprescindibleId} onChange={(e) => poner('imprescindibleId', e.target.value)}>
+            <fieldset className={`form-seccion ${marcado === 'cupos' || marcado === 'imprescindible' ? 'grupo-error' : ''}`}>
+              <legend>Quiénes</legend>
+              <div className="cupos-fila">
+                <Contador id="cupo-minimo" etiqueta="Mínimo" valor={form.minimo} onCambio={(v) => poner('minimo', v)} />
+                <Contador id="cupo-maximo" etiqueta="Máximo" valor={form.maximo} onCambio={(v) => poner('maximo', v)} />
+              </div>
+              <p className="suave nota-seccion">El mínimo cuenta a quien es imprescindible.</p>
+              <div className="anfitrion-elegir" role="radiogroup" aria-label="Persona imprescindible (anfitrión)">
+                <span className="duracion-etiqueta">
+                  <Icono n="anfitrion" tam={16} /> No puede faltar
+                </span>
+                <div className="carrusel">
                   {espacio.miembros.map((m) => (
-                    <option key={m.miembro_id} value={m.miembro_id}>
-                      {m.nombre}
-                      {m.simulado ? ' (Simulación)' : ''}
-                    </option>
+                    <label key={m.miembro_id} className={`chip-persona ${form.imprescindibleId === m.miembro_id ? 'chip-activo' : ''}`}>
+                      <input
+                        type="radio"
+                        name="imprescindible"
+                        checked={form.imprescindibleId === m.miembro_id}
+                        onChange={() => poner('imprescindibleId', m.miembro_id)}
+                      />
+                      <Avatar nombre={m.nombre} simulado={m.simulado} tam={28} />
+                      <span>
+                        {m.nombre}
+                        {m.simulado ? <span className="visualmente-oculto"> (Simulación)</span> : null}
+                      </span>
+                    </label>
                   ))}
-                </select>
-                <small>Sin esta persona el grupo no puede confirmarse.</small>
-              </label>
-              <label className={`campo ${marcado === 'plazo' ? 'campo-error' : ''}`}>
-                <span>Cierre de aceptación (hora de {ZONA_VISIBLE})</span>
-                <input type="datetime-local" value={form.plazo} onChange={(e) => poner('plazo', e.target.value)} />
-                <small>El servidor decide si un plazo se cumplió; esta pantalla no lo calcula.</small>
-              </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset className={`form-seccion ${marcado === 'plazo' ? 'grupo-error' : ''}`}>
+              <legend>Cierre para confirmar</legend>
+              <div className="opciones opciones-compactas" role="radiogroup" aria-label="Cierre de aceptación">
+                {(
+                  [
+                    ['dia_antes', 'El día antes, 20:00'],
+                    ['dos_dias', 'Dos días antes, 20:00'],
+                    ['otro', 'Elegir'],
+                  ] as const
+                ).map(([v, t]) => (
+                  <label key={v} className={`opcion-radio ${form.cierre === v ? 'opcion-activa' : ''}`}>
+                    <input type="radio" name="cierre" checked={form.cierre === v} onChange={() => poner('cierre', v)} />
+                    {t}
+                  </label>
+                ))}
+              </div>
+              {form.cierre === 'otro' ? (
+                <label className="campo" style={{ marginTop: 10 }}>
+                  <span>Cierre de aceptación (hora de {ZONA_VISIBLE})</span>
+                  <input type="datetime-local" value={form.plazoOtro} onChange={(e) => poner('plazoOtro', e.target.value)} />
+                </label>
+              ) : null}
+              {plazo ? (
+                <p className="suave nota-seccion">
+                  <Icono n="cierre" tam={14} /> Cierra {momentoCorto(plazo)} (hora de Santiago). El servidor decide si se cumplió.
+                </p>
+              ) : null}
             </fieldset>
 
             <div className="barra-accion">
@@ -350,9 +490,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
               </div>
               <dl className="datos">
                 <dt>Franja A</dt>
-                <dd>{franjaTexto(form.aInicio, form.aFin)}</dd>
+                <dd>{franjaTexto(aInicio, aFin)}</dd>
                 <dt>Franja B</dt>
-                <dd>{franjaTexto(form.bInicio, form.bFin)}</dd>
+                <dd>{franjaTexto(bInicio, bFin)}</dd>
                 <dt>Zona horaria</dt>
                 <dd>{ZONA_VISIBLE}</dd>
                 <dt>Cupos</dt>
@@ -362,7 +502,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                 <dt>Imprescindible</dt>
                 <dd>{imprescindible?.nombre ?? '—'}</dd>
                 <dt>Cierre de aceptación</dt>
-                <dd>{momentoCorto(form.plazo)}</dd>
+                <dd>{momentoCorto(plazo)}</dd>
               </dl>
             </div>
             <p className="suave" style={{ marginTop: 12 }}>
@@ -389,17 +529,75 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   )
 }
 
+/** Centra el chip elegido dentro de su tira (solo en horizontal: la página no se mueve). */
+function useCentrarElegido(valor: string) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const tira = ref.current
+    const chip = tira?.querySelector<HTMLElement>('.chip-activo')
+    if (!tira || !chip) return
+    const izquierda = chip.offsetLeft - tira.clientWidth / 2 + chip.clientWidth / 2
+    tira.scrollTo({ left: Math.max(0, izquierda), behavior: 'smooth' })
+  }, [valor])
+  return ref
+}
+
+/** Tira de próximos días (14) para elegir el día de una opción. Si el elegido queda fuera, se agrega al principio. */
+function SelectorDia({ clave, valor, alElegir }: { clave: string; valor: string; alElegir: (d: string) => void }) {
+  const inicio = hoy()
+  const dias = Array.from({ length: 14 }, (_, i) => sumarDias(inicio, i))
+  if (valor && !dias.includes(valor)) dias.unshift(valor)
+  const ref = useCentrarElegido(valor)
+  return (
+    <div className="carrusel carrusel-dias" role="radiogroup" aria-label={`Día de la opción ${clave}`} ref={ref}>
+      {dias.map((d) => {
+        const p = partesDia(d)
+        const activo = d === valor
+        return (
+          <label key={d} className={`chip-dia ${activo ? 'chip-activo' : ''}`} aria-label={`${p.dia} ${p.num} ${p.mes}`}>
+            <input type="radio" name={`dia-${clave}`} checked={activo} onChange={() => alElegir(d)} />
+            <span className="chip-dia-sem" aria-hidden="true">
+              {p.dia.slice(0, 3)}
+            </span>
+            <span className="chip-dia-num" aria-hidden="true">
+              {p.num}
+            </span>
+          </label>
+        )
+      })}
+    </div>
+  )
+}
+
+/** Horas de encuentro habituales y una propia. Solo se elige el inicio: la duración define el fin. */
+function SelectorHora({ clave, valor, alElegir }: { clave: string; valor: string; alElegir: (h: string) => void }) {
+  const propia = valor !== '' && !HORAS.includes(valor)
+  const ref = useCentrarElegido(valor)
+  return (
+    <div className="carrusel carrusel-horas" role="radiogroup" aria-label={`Hora de encuentro de la opción ${clave}`} ref={ref}>
+      {HORAS.map((h) => (
+        <label key={h} className={`chip-hora ${valor === h ? 'chip-activo' : ''}`}>
+          <input type="radio" name={`hora-${clave}`} checked={valor === h} onChange={() => alElegir(h)} />
+          {h}
+        </label>
+      ))}
+      <label className={`chip-hora chip-hora-otra ${propia ? 'chip-activo' : ''}`}>
+        <span className="visualmente-oculto">Otra hora para la opción {clave}</span>
+        <input type="time" value={propia ? valor : ''} onChange={(e) => e.target.value && alElegir(e.target.value)} aria-label={`Otra hora para la opción ${clave}`} />
+      </label>
+    </div>
+  )
+}
+
 /** Contador − n + para cupos. Solo ayuda a escribir el número; el servidor valida los cupos. */
 function Contador({
   id,
   etiqueta,
-  ayuda,
   valor,
   onCambio,
 }: {
   id: string
   etiqueta: string
-  ayuda?: string
   valor: string
   onCambio: (v: string) => void
 }) {
@@ -407,28 +605,18 @@ function Contador({
   const mover = (d: number) => onCambio(String(Math.min(20, Math.max(2, (Number.isFinite(n) && valor !== '' ? n : 2) + d))))
   return (
     <div className="cupo">
-      <label htmlFor={id}>
-        <span style={{ fontWeight: 700, fontSize: '0.92rem' }}>{etiqueta}</span>
+      <label htmlFor={id} className="cupo-etiqueta">
+        {etiqueta}
       </label>
       <div className="contador">
         <button type="button" onClick={() => mover(-1)} disabled={valor !== '' && n <= 2} aria-label={`Restar uno al ${etiqueta.toLowerCase()}`}>
           <Icono n="menos" tam={18} />
         </button>
-        <input
-          id={id}
-          type="number"
-          inputMode="numeric"
-          min={2}
-          max={20}
-          value={valor}
-          onChange={(e) => onCambio(e.target.value)}
-          aria-describedby={ayuda ? `${id}-ayuda` : undefined}
-        />
+        <input id={id} type="number" inputMode="numeric" min={2} max={20} value={valor} onChange={(e) => onCambio(e.target.value)} />
         <button type="button" onClick={() => mover(1)} disabled={valor !== '' && n >= 20} aria-label={`Sumar uno al ${etiqueta.toLowerCase()}`}>
           <Icono n="mas" tam={18} />
         </button>
       </div>
-      {ayuda ? <small id={`${id}-ayuda`}>{ayuda}</small> : null}
     </div>
   )
 }

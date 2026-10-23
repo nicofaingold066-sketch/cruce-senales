@@ -1,6 +1,9 @@
 // Íconos de Lucide (https://lucide.dev, licencia ISC). Siempre decorativos: el texto vecino dice qué es.
 // Se importan uno por uno para que el paquete solo lleve los que se usan.
 import {
+  Beer,
+  Cake,
+  CalendarClock,
   CalendarDays,
   CalendarPlus,
   Check,
@@ -11,6 +14,9 @@ import {
   ChevronRight,
   Clock,
   Copy,
+  Crown,
+  Film,
+  Flame,
   Hourglass,
   House,
   KeyRound,
@@ -18,6 +24,7 @@ import {
   Lock,
   MessageCircle,
   Minus,
+  Mountain,
   PartyPopper,
   PencilLine,
   Play,
@@ -30,6 +37,8 @@ import {
   UserRoundPlus,
   Users,
   UsersRound,
+  UtensilsCrossed,
+  Volleyball,
   Zap,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -65,6 +74,15 @@ const ICONOS = {
   alerta: TriangleAlert,
   cerrado: CircleX,
   borrador: PencilLine,
+  asado: Flame,
+  futbol: Volleyball,
+  cena: UtensilsCrossed,
+  cine: Film,
+  cumple: Cake,
+  juntada: Beer,
+  paseo: Mountain,
+  cierre: CalendarClock,
+  anfitrion: Crown,
 } satisfies Record<string, LucideIcon>
 
 export type NombreIcono = keyof typeof ICONOS

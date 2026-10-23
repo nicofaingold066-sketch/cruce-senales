@@ -63,7 +63,7 @@ export function OtraSesion() {
     >
       {confirmarOlvido
         ? `Si la olvidas, este navegador ya no podrá volver a ser ${guardada.etiqueta}.`
-        : 'Alguien entró como otra persona en este navegador. Al volver, la sesión abierta ahora deja de estar en este navegador.'}
+        : 'Alguien entró como otra persona en este navegador. Al volver, la sesión abierta ahora deja de estar en este navegador. Cualquiera que use este navegador puede volver a esa sesión: para separarlas de verdad, usa una ventana privada.'}
       {error ? <p className="suave">{error}</p> : null}
     </Aviso>
   )
