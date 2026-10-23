@@ -1,6 +1,6 @@
 # Seguridad de la base: informe final (mejora #81)
 
-Autor: backend. Proyecto Supabase `tjkfdnvzsikncjbskufm` (el único de CRUXE). Corte: viernes 23 oct 2026, 19:51 (hora de Santiago), con la última migración aplicada `0038_e10_catalogo_ampliado`. Si después se aplica otra migración, este informe se vuelve a correr y se actualiza la fecha.
+Autor: backend. Proyecto Supabase `tjkfdnvzsikncjbskufm` (el único de CRUXE). Corte: viernes 23 oct 2026, 19:51 (hora de Santiago), con la última migración aplicada `0038_e10_catalogo_ampliado`; repasado a las 20:00 después de `0039_e12_avisos_personales` (solo reemplaza una función interna: mismos conteos, `verificar_privilegios` sin hallazgos, suite 78/78). Si después se aplica otra migración, este informe se vuelve a correr y se actualiza la fecha.
 
 ## Resumen
 | Control | Resultado | Cómo se midió |
@@ -15,7 +15,7 @@ Autor: backend. Proyecto Supabase `tjkfdnvzsikncjbskufm` (el único de CRUXE). C
 | Políticas RLS | 0 en todas (deny-all: solo se llega a los datos por las 31 funciones) | `pg_policy` |
 | `SELECT` de `anon` o `authenticated` en alguna tabla | ninguno | `has_table_privilege` |
 | `cruce.verificar_privilegios()` | **sin hallazgos** (no lanza excepción). Corre al final de cada migración del backend: si algo de lo de arriba fallara, la migración entera se revierte | `select cruce.verificar_privilegios()` |
-| Suite de pruebas contra la base real | `tests/backend` **75/75** (12 archivos, 19:45:07 a 19:49:15) | `npx vitest run tests/backend --no-file-parallelism` |
+| Suite de pruebas contra la base real | `tests/backend` **78/78** (13 archivos, 19:55:16 a 19:57:45) | `npx vitest run tests/backend --no-file-parallelism` |
 
 Tablas (todas con RLS y sin privilegios del navegador): `aceptaciones`, `bajas`, `catalogo_agente`, `condiciones`, `elegibles`, `errores_internos`, `espacios`, `eventos`, `eventos_espacio`, `franjas`, `intentos`, `miembros`, `participaciones`, `preferencias`, `propuestas`, `tiempos_zona` (nueva, enmienda 10) y `versiones`.
 
@@ -42,7 +42,7 @@ No hay avisos de nivel ERROR.
 ## Errores internos registrados (`cruce.errores_internos`)
 20 filas en total desde el inicio. Las dos últimas:
 - id 20 (19:35): `save_my_preferences`, 23502 (not null). Causa: la validación nueva de la enmienda 10 dejaba pasar un objeto sin claves. Corregido en `0037_e10_validar_sin_claves` y cubierto por pruebas (enmienda 8, prueba 3; enmienda 10, prueba 0).
-- id 19 (17:06): `create_space`, 23514 (check) al insertar un integrante pendiente (enmienda 9). Pendiente de revisar: un nombre de integrante que viola una restricción debería volver como error de validación y no como `fallo_temporal`. Anotado en las ideas del backend.
+- id 19 (17:06): `create_space`, 23514 (check) al insertar un integrante pendiente (enmienda 9). Causa: la restricción `miembros_real_con_sesion` no contemplaba a los pendientes. Corregido un minuto después en `0034_e9_pendiente_sin_sesion` y cubierto por `tests/backend/enmienda9.test.ts`.
 
 ## Cómo repetir este informe
 1. `select cruce.verificar_privilegios();` (no debe lanzar excepción).
