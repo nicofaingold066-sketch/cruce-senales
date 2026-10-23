@@ -61,6 +61,9 @@ export interface BorradorAgente extends CandidataAgente {
 
 export type ResultadoAgente = BorradorAgente | { tipo: 'sin_plan_compatible' }
 
+/** Clima de simulación para la demo (mejora #23). */
+export type ClimaSimulado = 'seco' | 'lluvia'
+
 // Mismos textos que la función del servidor, para el respaldo sin función.
 const FRASES: Record<string, string> = {
   presupuesto_todos: 'le sirve al presupuesto de todos',
@@ -196,9 +199,15 @@ export const agenteApi = {
     ),
 
   /** Pide el borrador al agente. Si la función del servidor no responde, usa la RPC directa sin clima. */
-  async proponer(espacioId: string, sabado: string): Promise<ApiResult<ResultadoAgente>> {
+  /**
+   * Pide el borrador al agente. `climaSimulado` solo lo acepta la función en espacios demo (lo comprueba ella).
+   * El respaldo sin función nunca simula clima: va como "desconocido".
+   */
+  async proponer(espacioId: string, sabado: string, climaSimulado?: ClimaSimulado): Promise<ApiResult<ResultadoAgente>> {
     try {
-      const { data, error } = await supabase.functions.invoke('agente', { body: { espacio_id: espacioId, sabado } })
+      const body: Record<string, unknown> = { espacio_id: espacioId, sabado }
+      if (climaSimulado) body.clima_simulado = climaSimulado
+      const { data, error } = await supabase.functions.invoke('agente', { body })
       if (!error && data) {
         const r = leerSobre(data, (c) => {
           const res = c.resultado as ResultadoAgente

@@ -19,6 +19,7 @@ import {
   type Ambiente,
   type BorradorAgente,
   type CandidataAgente,
+  type ClimaSimulado,
   type Energia,
   type LugarPref,
   type Preferencias,
@@ -258,10 +259,16 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
           </li>
         ))}
       </ul>
-      <p className="suave">
-        Clima: {b.clima.resumen}
-        {b.clima.fuente === 'open-meteo' ? ' (pronóstico de Open-Meteo)' : ''}
-      </p>
+      {b.clima.fuente === 'simulacion' ? (
+        <p className="suave">
+          Clima de prueba <RotuloSimulacion />: {b.clima.resumen.replace('Simulación: ', '')} No es un pronóstico real.
+        </p>
+      ) : (
+        <p className="suave">
+          Clima: {b.clima.resumen}
+          {b.clima.fuente === 'open-meteo' ? ' (pronóstico de Open-Meteo)' : ''}
+        </p>
+      )}
       <p>
         <strong>Por qué: </strong>
         {explicacion}
@@ -286,8 +293,17 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
   )
 }
 
-function ProponerPlan({ espacioId, soloLectura }: { espacioId: string; soloLectura?: boolean }) {
+type ClimaElegido = 'real' | ClimaSimulado
+
+const CLIMA_DEMO: { v: ClimaElegido; texto: string }[] = [
+  { v: 'real', texto: 'Clima real' },
+  { v: 'seco', texto: 'Simular sol' },
+  { v: 'lluvia', texto: 'Simular lluvia' },
+]
+
+function ProponerPlan({ espacioId, soloLectura, demo }: { espacioId: string; soloLectura?: boolean; demo?: boolean }) {
   const [sabado, setSabado] = useState(SABADO_DEL_CASO)
+  const [clima, setClima] = useState<ClimaElegido>('real')
   const [resultado, setResultado] = useState<ResultadoAgente | null>(null)
   const { ocupado, error, ejecutar, limpiarError } = useAccion()
 
@@ -298,6 +314,14 @@ function ProponerPlan({ espacioId, soloLectura }: { espacioId: string; soloLectu
     limpiarError()
   }
 
+  function cambiarClima(v: ClimaElegido) {
+    setClima(v)
+    setResultado(null)
+    limpiarError()
+  }
+
+  const climaPedido = demo && clima !== 'real' ? clima : undefined
+
   const anuncio =
     resultado?.tipo === 'borrador'
       ? `El agente encontró ${resultado.candidatas.length === 1 ? 'una opción' : `${resultado.candidatas.length} opciones`}. Recomendada: ${resultado.titulo}.`
@@ -307,7 +331,9 @@ function ProponerPlan({ espacioId, soloLectura }: { espacioId: string; soloLectu
 
   async function proponer() {
     setResultado(null)
-    const r = await ejecutar(`agente:${espacioId}:${sabado}`, () => agenteApi.proponer(espacioId, sabado))
+    const r = await ejecutar(`agente:${espacioId}:${sabado}:${climaPedido ?? 'real'}`, () =>
+      agenteApi.proponer(espacioId, sabado, climaPedido),
+    )
     if (r?.ok) setResultado(r.data)
   }
 
@@ -318,6 +344,25 @@ function ProponerPlan({ espacioId, soloLectura }: { espacioId: string; soloLectu
         <input type="date" value={sabado} onChange={(e) => cambiarSabado(e.target.value)} disabled={soloLectura || ocupado} />
         <small>El agente propone dos franjas: ese sábado y el domingo siguiente.</small>
       </label>
+      {demo ? (
+        <fieldset className="grupo" disabled={soloLectura || ocupado}>
+          <legend>
+            Clima para la demo <RotuloSimulacion />
+          </legend>
+          <div className="opciones">
+            {CLIMA_DEMO.map((o) => {
+              const id = `agente-clima-${o.v}`
+              return (
+                <label key={o.v} htmlFor={id} className={`opcion-radio ${clima === o.v ? 'opcion-activa' : ''}`}>
+                  <input id={id} type="radio" name="agente-clima" checked={clima === o.v} onChange={() => cambiarClima(o.v)} />
+                  {o.texto}
+                </label>
+              )
+            })}
+          </div>
+          <small>Solo en el espacio de demostración. Con sol o lluvia simulados, el pronóstico no es real.</small>
+        </fieldset>
+      ) : null}
       <Boton onClick={() => void proponer()} ocupado={ocupado} ocupadoTexto="El agente está pensando…" disabled={soloLectura || !sabado}>
         Que el agente proponga
       </Boton>
@@ -339,10 +384,13 @@ export function AgentePanel({
   espacioId,
   esOrganizador,
   soloLectura,
+  demo,
 }: {
   espacioId: string
   esOrganizador: boolean
   soloLectura?: boolean
+  /** Espacio de demostración: muestra el selector de clima de simulación (la función igual lo comprueba). */
+  demo?: boolean
 }) {
   return (
     <>
@@ -356,7 +404,7 @@ export function AgentePanel({
           <p className="suave">
             Lee las preferencias de todo el grupo, mira el clima y un catálogo de lugares (de Simulación) y te propone opciones que le sirven a todos. Propone, pero no decide por nadie.
           </p>
-          <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} />
+          <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} />
         </section>
       ) : null}
     </>

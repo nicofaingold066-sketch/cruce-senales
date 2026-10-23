@@ -101,7 +101,7 @@ const SISTEMA = [
   'Reglas que no se rompen: no nombres a ninguna persona; no hables de la situación de nadie en particular (dinero, salud, ánimo,',
   'disponibilidad); no uses las palabras "alguien", "plata", "dinero", "confirmado", "reservado" ni "agendado"; no inventes datos',
   'que no te dieron; no digas que algo está confirmado, reservado o agendado: el grupo todavía tiene que aceptarlo, y los lugares',
-  'son de simulación.',
+  'son de simulación. Si el clima empieza con "Simulación", es un clima de prueba: no lo presentes como pronóstico real.',
   'explicacion: una o dos frases, máximo 240 caracteres, sobre por qué esa opción le sirve al grupo.',
   'mensaje_al_grupo: una invitación de máximo 320 caracteres, en una sola línea, que proponga el plan con sus dos opciones de día',
   'e invite a cada uno a marcar si le interesa y cargar su disponibilidad.',
@@ -172,7 +172,16 @@ async function traerClima(sabado: string): Promise<{ sabado: ClimaDia; domingo: 
   }
 }
 
+/** Clima de simulación (mejora #23): solo en espacios demo, para que la demo no dependa del clima real. */
+function climaSimulado(estado: 'seco' | 'lluvia'): { sabado: ClimaDia; domingo: ClimaDia; fuente: string } {
+  const dia = { estado, maxima: null }
+  return { sabado: dia, domingo: dia, fuente: 'simulacion' }
+}
+
 function resumenClima(c: { sabado: ClimaDia; domingo: ClimaDia; fuente: string }): string {
+  if (c.fuente === 'simulacion') {
+    return c.sabado.estado === 'lluvia' ? 'Simulación: sábado y domingo con lluvia.' : 'Simulación: sábado y domingo con sol.'
+  }
   if (c.fuente !== 'open-meteo') return 'Sin pronóstico disponible.'
   const dia = (nombre: string, d: ClimaDia) => {
     const estado = d.estado === 'lluvia' ? 'con lluvia' : d.estado === 'seco' ? 'sin lluvia' : 'sin pronóstico'
@@ -326,7 +335,7 @@ Deno.serve(async (req) => {
     })
   }
 
-  let entrada: { espacio_id?: unknown; sabado?: unknown }
+  let entrada: { espacio_id?: unknown; sabado?: unknown; clima_simulado?: unknown }
   try {
     entrada = await req.json()
   } catch {
@@ -346,7 +355,21 @@ Deno.serve(async (req) => {
     auth: { persistSession: false, autoRefreshToken: false },
   })
 
-  const clima = await traerClima(sabado)
+  // Nombres visibles del espacio (no son privados): solo para rechazar un texto que nombre a alguien.
+  // get_space, con el JWT de quien llama, también dice si el espacio es demo: el cliente no lo decide.
+  let nombres: string[] = []
+  let esDemo = false
+  const { data: espacio } = await supabase.rpc('get_space', { p_espacio_id: espacioId })
+  if (espacio?.ok && espacio.espacio) {
+    esDemo = espacio.espacio.demo === true
+    if (Array.isArray(espacio.espacio.miembros)) {
+      nombres = espacio.espacio.miembros.map((m: { nombre?: string }) => m.nombre ?? '').filter(Boolean)
+    }
+  }
+
+  // Clima simulado solo en un espacio demo; en cualquier otro caso se ignora y va el clima real.
+  const pedido = entrada.clima_simulado
+  const clima = esDemo && (pedido === 'seco' || pedido === 'lluvia') ? climaSimulado(pedido) : await traerClima(sabado)
   const { data: plan, error: errorPlan } = await supabase.rpc('proponer_plan_borrador', {
     p_espacio_id: espacioId,
     p_sabado: sabado,
@@ -362,13 +385,6 @@ Deno.serve(async (req) => {
     Array.isArray(base.candidatas) && base.candidatas.length > 0 ? base.candidatas.slice(0, 3) : [{ ...base, id: base.id ?? base.lugar.id }]
   const perfil = base.perfil_grupo ?? null
   const resumen = resumenClima(clima)
-
-  // Nombres visibles del espacio (no son privados): solo para rechazar un texto que nombre a alguien.
-  let nombres: string[] = []
-  const { data: espacio } = await supabase.rpc('get_space', { p_espacio_id: espacioId })
-  if (espacio?.ok && Array.isArray(espacio.espacio?.miembros)) {
-    nombres = espacio.espacio.miembros.map((m: { nombre?: string }) => m.nombre ?? '').filter(Boolean)
-  }
 
   const delModelo = await coordinarConModelo(candidatas, perfil, resumen, nombres, PLAZO_TOTAL_MS - (Date.now() - inicio))
   const elegida = delModelo?.eleccion ?? candidatas[0]
