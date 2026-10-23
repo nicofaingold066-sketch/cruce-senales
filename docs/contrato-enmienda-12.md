@@ -6,7 +6,9 @@ Aprobada por el coordinador el 23 oct 2026 a las 19:52, a pedido de ux-flujo y s
 En `reuniendo_interes`, si quien consulta es el organizador, es el imprescindible y todavía no tiene condiciones completas: `siguiente_accion = { codigo: "reunir_condiciones", texto: "Primero marca tu disponibilidad: eres quien no puede faltar." }`, en lugar de `buscar_opcion`. Es solo para esa persona y sobre sí misma; no revela nada de otros.
 
 ## (b) Condiciones incompletas con una opción publicada
-Si hay una opción publicada y quien consulta tiene condiciones incompletas (por eso queda fuera del cálculo): `siguiente_accion = { codigo: "reunir_condiciones", texto: "Completa tu disponibilidad para poder entrar en la opción." }`. Es solo para esa persona. No cambia elegibilidad, cupos ni conteos.
+Si hay una opción publicada y quien consulta tiene condiciones incompletas (por eso queda fuera del cálculo): `siguiente_accion = { codigo: "reunir_condiciones", texto: "Tu disponibilidad está incompleta: no entraste en esta versión. Si la completas, cuenta si el plan se rearma." }`. Es solo para esa persona. No cambia elegibilidad, cupos ni conteos.
+
+**Corrección de las 20:00 (ux-flujo):** el primer texto ("Completa tu disponibilidad para poder entrar en la opción.") prometía algo que el servidor no hace: los elegibles de una versión se fijan al publicarla (`0002_utilidades.sql`) y `accept_version` los revisa (`0005_api_motor.sql`), así que completar después no permite confirmar ESA versión. El texto vale para la versión siguiente. Que completar sume a la versión vigente sería un cambio de motor y no entra.
 
 ## Fuera de esta enmienda
 - (c) `personas_que_pueden` (cuántos marcaron al menos un Sí): queda como decisión de Nico, porque en grupos chicos un conteo de "quién no puede ninguna franja" puede delatar a alguien.
