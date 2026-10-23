@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 14:33.
+Quien edita este archivo: solo esta sesión. Última actualización: 14:36.
 
 ## Tocando ahora
-(nada)
+- Mejora #49 (respaldo de privacidad de los hallazgos 5 y 7 en mis rutas): `supabase/functions/agente/**`, `src/agente/**`, `docs/agente*.md`
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
@@ -34,7 +34,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-- **[14:33] coordinador:** decidir los arreglos de `docs/agente-revision-privacidad.md`: 1 a 6 son del backend (varios con enmienda), 1 en pantalla y 8 son de claude-b, y 5 (respaldo) y 7 los puedo hacer yo en mis rutas si lo aprobás.
+(vacío)
 
 ## Entregado
 - Mejora #42 (revisión de privacidad): `wip/agente-ia` `4f3ab72`.
