@@ -15,6 +15,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | `red-import-cortada.mjs` | #82: corte de red al importar una pantalla (reintento `?r=1`, barrera «Recargar», precarga) | sí (caso C) | `node tests/e2e/red-import-cortada.mjs <url>` |
 | `friccion-flujo.mjs` | #88, #90 (demo) y volver con el mismo enlace, de friccion (85 líneas) | sí | `node tests/e2e/friccion-flujo.mjs <url>` |
 | `convencer-uno.mjs` | #98 de ux-flujo: organizador + 5 invitados por enlace, toques y pantallas por persona (6 sesiones por corrida) | sí | `node tests/e2e/convencer-uno.mjs <url>` |
+| `guardia-palabras.mjs` | P-A de psico (§8.7): ninguna palabra de la lista (vegetariano, celíaco, «pareja de», novio/a, hombres, mujeres, chicos, chicas, «otra vez en casa»…) en copia visible de `src/` ni `supabase/functions/agente/` (sin pruebas, comentarios, catálogo ni listas de prohibidas) | no | `node tests/e2e/guardia-palabras.mjs` (sale 1 si hay hallazgos) |
 | `preparar-grupo.mjs` | Ayudante: crea grupo ficticio (Orga, Ana, Beto) y propuesta abierta | sí | lo llaman los dos anteriores |
 
 ## Cambios en los guiones
@@ -48,6 +49,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 20:14 | `wip/agente-ia` ddcce58: jurado 4/4 (privacidad de sobres sin hallazgos) y red 10/10 (reintento) | localhost, base | verde |
 | 20:28 | main `fae49fa` publicado (enmienda 10/12, fricción): recorrido 23/23, jurado 4/4 con la revisión nueva de privacidad E10 | producción | verde |
 | 20:35 | `convencer-uno.mjs` versionado | — | sin correr (backend con MIGRACION EN CURSO 0041 desde 20:32) |
+| 20:42 | guardia-palabras sobre `wip/qa`+fundamentos d9176a9: 57 archivos, 0 hallazgos; control con un archivo de prueba detecta 2 | estático | verde |
 
 ## Regresiones abiertas
 (ninguna)
