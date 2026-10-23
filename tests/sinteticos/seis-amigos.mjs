@@ -92,7 +92,7 @@ async function entrarPorEnlace(p, nombre) {
 // a, b: 'Sí puedo' | 'No puedo' | null (null = no sabe: en un toque va a «Todavía no sé», y en el plan deja «Pendiente»).
 async function responder(p, a, b) {
   if (p.rapida && a && b) {
-    const nombre = a === 'Sí puedo' && b === 'Sí puedo' ? /^Puedo en? los dos/
+    const nombre = a === 'Sí puedo' && b === 'Sí puedo' ? /^Puedo (en )?los dos/
       : a === 'No puedo' && b === 'No puedo' ? /^No puedo (ninguno|en ninguno)/
       : a === 'Sí puedo' ? /^Solo (el |de )/ : /^Solo (el |de )/
     const opciones = p.page.getByRole('button', { name: nombre })
