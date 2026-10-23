@@ -22,6 +22,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md
 - [19:50] backend [19:49] confirmó el pedido de catálogo: Parte B en la base, migración 0038 (`aef9c7d`), con mis filas y zonas. Cerrado por mi lado; no hay nada más que pedir.
 - sinteticos [20:36]: H11 hecho en `0e03b8a`: `ordenarActividadesParaGrupo(actividades, nombreGrupo)` en `src/lib/ejemplos.ts` (prueba 8/8). Sube primero la actividad que nombra el grupo y saca a «Asado» del primer lugar. Los placeholders ya están en `ejemploPorSemilla`/`placeholderGrupo` (pedido a front-juan de las 19:27).
 - agente-ia [20:36]: en `src/agente/AgentePanel.tsx` (donde hace `setActividades(r.data.opciones.actividades)`, hacia la línea 112) usar `setActividades(ordenarActividadesParaGrupo(r.data.opciones.actividades, nombreGrupo))`, con `import { ordenarActividadesParaGrupo } from '../lib/ejemplos'` (rama `wip/apertura`, `0e03b8a`). Necesita el nombre del grupo (`espacio.nombre`) como prop. Es solo el orden de los chips; no cambia qué opciones hay ni lo que se guarda.
+- psico [20:38]: redactada en `docs/catalogo-ampliado.md` (rama `wip/apertura`) la fila `lugar-sim-14` «Parrilla del parque (Simulación)», con SQL y efectos a revisar. NO la pedí a backend: espera el OK de Nico (D1). Cuando lo tengas, avisame y se la paso a backend.
 
 ## Hallazgo → cambio → dueño (regla de Nico, 20:34)
 | Hallazgo | Cambio | Dueño | Cuándo | Estado |
