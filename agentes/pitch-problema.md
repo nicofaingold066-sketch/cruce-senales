@@ -1,13 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 17:56.
+Quien edita este archivo: solo esta sesión. Última actualización: 17:57.
 
 ## Tocando ahora
-- **[17:56] CORRIENDO PRUEBA:** botones de posibles canchas en el panel (servidor local, demo propio, UNA llamada al modelo). Aviso al terminar.
-- [17:44] `src/agente/AgentePanel.tsx`, `src/agente/agente.css` y `src/agente/canchas.ts` (nuevo): botones "Posibles canchas" (Google Maps, EasyCancha, ATC) en la opción de deporte, pedido y aprobado por Nico. Sin claves ni costo; solo enlaces.
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[17:57] Posibles canchas entregado** (`70d7fdd`, pedido y aprobado por Nico; `src/agente/canchas.ts` nuevo, `src/agente/AgentePanel.tsx`, `docs/agente-ia.md`). En la opción de pádel, fútbol o tenis: "Canchas … cerca de ti (Google Maps)" (búsqueda sin ubicación, sin clave), "Buscar y reservar en EasyCancha (Santiago)" y "Ver turnos en ATC (Mendoza)" con deporte, día y hora de la franja A. Rotulado "Posibles canchas reales" (el club de la opción es de simulación; CRUXE no reserva). Probado 17:56-17:57 a 375 px contra la base real con una llamada al modelo: 13/13; ATC abre 13 clubes de fútbol 5 en Mendoza para el 31/10 a las 11:00. Typecheck y build en verde. **CORRIENDO PRUEBA terminado.**
 - **[17:39] Barrido entregado** (`a7fedff`, `docs/agente-barrido.md`, pedido de Nico): actividades para grupos de amigos, variables del agente (actuales y propuestas con privacidad) y fuentes reales en Santiago y Mendoza. Canchas: no hay API pública (enlace a ATC en Mendoza, EasyCancha en Santiago con acuerdo; EasyCancha prohíbe raspar). Eventos: Chile Cultura sin clave para Santiago, API-Football. Lugares con ambiente: Google Places (1.000 gratis al mes). Contexto: Open-Meteo ampliado (OJO: plan gratis no comercial y atribución con enlace), alertas DMC/SMN, feriados Boostr/ArgentinaDatos. Para la demo no se toca nada.
 - **[17:26] Mejora #77 entregada** (`06a9bfc`, `docs/agente-qa-enmienda9.md`): QA en vivo de la enmienda 9 por RPC, 40/40 (17:26:09 a 17:26:12; una corrida previa 38/38 a las 17:25). Espacio propio con 3 integrantes pendientes y 4 sesiones: errores de `create_space`, claves de `get_space` y `preview_space_by_code`, reclamo con `p_miembro_id` (mismo id, pasa a real), doble reclamo concurrente (uno gana, otro `miembro_ya_reclamado`), y los pendientes no cuentan en interés, condiciones, quórum ni cupos (con Caro todavía pendiente al publicar). **CORRIENDO PRUEBA terminado.**
 - **[17:15] Panel del agente probado en vivo en `wip/front-juan`** (`10df3d3`, §5 de `docs/agente-revision-front-juan.md`): 17:14, servidor local contra la base real, 375 px, una sola llamada al modelo (4345 ms, fuente `modelo`): 11/11. Candidatas bien en la píldora nueva; "Usar esta opción" precarga Nueva propuesta. **CORRIENDO PRUEBA terminado.**
@@ -61,6 +61,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - **[15:37] coordinador:** el guion del recorrido (Playwright, dos contextos, 16 comprobaciones) está en mi carpeta temporal; si lo querés como prueba versionada en `tests/e2e/`, te lo paso.
 
 ## Entregado
+- Posibles canchas (enlaces Maps, EasyCancha, ATC): `wip/agente-ia` `70d7fdd`.
 - Mejora #77 (QA de la enmienda 9): `wip/agente-ia` `06a9bfc`.
 - Mejora #72 (casilla usar_en_agente): `wip/agente-ia` `5ab6cc4`.
 - Mejora #64 (cliente del modelo por Vercel AI Gateway, costo): `wip/agente-ia` `fd89382`.
