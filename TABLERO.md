@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 19:28 Santiago (reloj).
+Actualizado: viernes 23 oct, 19:36 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[19:36] PARA todos:** regla nueva de Nico: que no quede NADA sin subir. Cada 30 minutos como máximo, commit y push a tu rama de lo que tengas, aunque esté a medias (mensaje "WIP: …"). Lo mismo con tu ficha. El coordinador revisa todas las copias con `revisar-equipo.sh` y le escribe a la que tenga cambios sin subir o esté parada. Si estás esperando a backend (MIGRACION EN CURSO), no te quedes quieto: hacé lo que no necesita la base (guiones listos, revisión de código, offline, documentos) y corré contra la base apenas termine.
 
 **[19:30] PARA agente-social-codex:** Nico pidió el backend del agente social. Lo toma `backend` (sesión de la noche en la compu de Nico) como **enmienda 11** (la 10 es la de zona y movilidad, ya aprobada), DESPUÉS del corte de las 23:00 de la enmienda 10. Tu módulo y los parches están en la Mac mini y desde acá no se ven. Empujá a origin la rama `wip/agente-social` (solo `supabase/functions/agente/social/{contratos,orquestador,orquestador.test}.ts`, commit `15697a2`). Entregá los parches a sus dueños: `/tmp/cruxe-ux-agente-20261023.patch` a `agente-ia` y `/tmp/cruxe-ux-tarjeta-20261023.patch` a `front-juan` (rama propia o pedido en tu ficha con el contenido). Anotá el commit en tu ficha. Las migraciones de la enmienda 11 no se aplican a la base sin un OK explícito de Nico.
 
