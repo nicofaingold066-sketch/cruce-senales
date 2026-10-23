@@ -3,7 +3,8 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-(vacío)
+- `src/screens/Espacio.tsx`, `src/screens/NuevaPropuesta.tsx`, `src/styles.css` (aviso 12:47: enganche de `AgentePanel` y `tomarBorradorAgente`; NO toco `src/agente/**`)
+- Merge de `origin/wip/agente-ia` en `wip/ui-enmienda`
 
 ## Estado
 Corte "enmienda 3 en la UI + logo X v2" CERRADO en `wip/ui-enmienda` `a890f11`. Recorrido EN VIVO contra el backend real 11/11, sin respuestas `ok:false`; typecheck y build en verde. **La enmienda 3 ya responde en el servidor y la UI la usa**: Luna recibe `te_toca_aceptar` ("Te toca confirmar la versión 1.") y el atajo de simulación cargó el caso con `simulate_load_case` en una sola operación.
