@@ -1,9 +1,10 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: ~14:35 Santiago (backend), enmienda 5 y #15 aplicadas; esperando verificación del coordinador. El backend no hace commit/push; el coordinador sincroniza este archivo.
+Quien edita este archivo: solo el backend. Última actualización: 13:46 Santiago (reloj), mejora #22 en curso. (La marca anterior "~14:35" era estimada, no del reloj.)
 
 ## Tocando ahora
-(vacío. Ninguna migración en curso. No aplico nada más hasta que el coordinador verifique 0019 a 0021. Regla nueva asumida: antes de cada migración, la línea "MIGRACION EN CURSO: 00NN" acá, una a la vez, ninguna desde el sábado 12:00.)
+- MIGRACION EN CURSO: 0022
+- Mejora #22 (`opcion_anterior` en EstadoPropuesta), aprobada por el coordinador. Rutas: `supabase/migrations/0022_opcion_anterior.sql` (nueva), `tests/backend/mejoras.test.ts` (describe nuevo #22), `docs/contrato-enmienda-6.md` (nueva, pedida por el coordinador). Commit en `wip/fundamentos`, sin push.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
