@@ -3,9 +3,10 @@
 Guía: `prompts/login.md`. Rama: `wip/login`. Rutas: `src/login/**` + enganche mínimo en `src/lib/shell.tsx` (ruta `entrar`) y `src/App.tsx` (`case 'entrar'` y redirección de primera visita).
 
 ## Tocando ahora
-- `src/App.tsx`: SOLO la línea de `useEntrada` (sin 'unirse'), autorizada por el coordinador
+(vacío: splash entregado)
 
 ## Estado
+- [17:40] Splash fuera de la invitación ENTREGADO (ver Entregado).
 - [17:37] Entrega publicada (main 82e544d). Pedido a claude-b: sacar el splash de la invitación (ver Pedidos).
 - [17:28] Enmienda 9 (fases 1 y 2) ENTREGADA en `wip/login` = `b13ba4b`, sobre `wip/fundamentos` 30e4c76 (rediseño de Juan). Espero integración del coordinador.
 - [17:03] CONGELADO src/ por orden del coordinador (entra el rediseño de Juan; él unifica #/entrar con "Ingreso con nombre"). No empujo ni rebaso; wip/login queda en a7ab1a9. Sigo probando la fase 1 contra la base, sin empujar, cuando backend la aplique.
@@ -19,6 +20,7 @@ Guía: `prompts/login.md`. Rama: `wip/login`. Rutas: `src/login/**` + enganche m
 - [16:58] **coordinador (y backend): enmienda "entrada estilo Tricount"** (pedido de Nico). A) `create_space` con `p_integrantes text[]` → miembros "pendientes" (no simulados, nunca cuentan como interés/asistencia/quórum). B) `preview_space_by_code(p_codigo)` → solo `{ espacio: {nombre, demo}, miembros: [{miembro_id, nombre, libre}] }`. C) `join_space(..., p_miembro_id)` reclama ese pendiente (o simulado del demo); errores `miembro_ya_reclamado`, `miembro_inexistente`. Excepción explícita a E7.3 (con el código se ven los nombres, ficticios). Además: que `#/unirse/<código>` pase a `src/login` (una línea en `PantallaRuta`). Mínimo si no llega a las 20:00: B + C solo para el demo. Detalle enviado por mensaje al coordinador.
 
 ## Entregado
+- [17:39] `wip/login` = `a381a0c` (base `wip/fundamentos` 82e544d). Solo `src/App.tsx`: `useEntrada(ruta.nombre === 'inicio')` y su comentario (sin 'unirse'); `Intro.tsx` sin cambios (su comentario aún dice "y en la invitación", es de claude-b). Pruebas contra mi build: typecheck y build OK · red-controlada 10/10 (17:35) · recorrido-dos-sesiones 23/23 · jurado-navegador 4 PASS, 0 FAIL, 172 RPC, privacidad sin hallazgos (17:36–17:38) · sesión nueva en `#/unirse/<código>`: sin `#entrada`, "Unirme" visible; sesión nueva en `#/`: la animación sigue.
 - [17:27] `wip/login` = `b13ba4b` (base `wip/fundamentos` 30e4c76). Enmienda 9 fases 1 y 2.
   - Archivos: `src/login/QuienEres.tsx`, `src/login/Integrantes.tsx`, `src/login/fuente.ts`, `src/login/estado.ts`, `src/login/login.css`, banco `src/login/prueba/`; `src/App.tsx` (solo `case 'unirse'` → `QuienEres` e imports); `src/lib/api.ts` (SOLO `VistaPorCodigoOk`, `previewSpaceByCode`, `p_miembro_id` opcional en `joinSpace`, `p_integrantes` opcional en `createSpace`, autorizados); `src/screens/CrearGrupo.tsx` (estado `integrantes` + `<CampoIntegrantes>` + el cuarto argumento, excepción autorizada). `#/entrar` sigue desconectada, como decidió el coordinador.
   - Pruebas contra mi build (`vite preview` en 127.0.0.1:4317) con la base real libre: `npm run typecheck` OK · `npm run build` OK · `red-controlada.mjs` 10 PASS, 0 FAIL (17:23) · `recorrido-dos-sesiones.mjs` **23/23** (17:23:48) · `jurado-navegador.mjs` **4 PASS, 0 FAIL**, 23 comprobaciones, 172 RPC, privacidad sin hallazgos, 0 llamadas al modelo (17:24:56) · prueba propia fase 2 con 3 sesiones a 375 px (17:26:46): crear "Prueba E9 …" con Ana y Beto (sin repetidos), la lista muestra Orga no disponible/Ana/Beto, Ana elige → entra como Ana, para otra sesión Ana queda no disponible y Beto libre, sin errores ni 4xx/5xx · prueba propia fase 1 (17:13): Luna elige de la lista en el demo, sigue siéndolo al recargar.
