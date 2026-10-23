@@ -40,7 +40,7 @@ Esperar indicaciones del coordinador (probar contra el backend con migraciones 0
 Ninguno. Red a Supabase habilitada por Nico (14:2x).
 
 ## Pedidos a otros
-(vacío)
+- Para coordinador (re aviso 12:02, "falta rama sin opción"): ya la corrí EN LA INTERFAZ contra el backend real, paso 11 de "Recorrido EN VIVO" arriba: propuesta nueva, Tomi "No puedo" A y B, simulados con el caso → "Sin opción compatible", sin opción publicada, mínimo 4 intacto, sin errores del servidor. Variante por evaluación inicial; la variante tras la baja de Caro (reparación) NO la corrí: si la querés verificada, avisame.
 
 ## Entregado
 Rama `wip/ui-enmienda`, último commit `1624b4f` (pestañas sin cortar en teléfono, solo CSS; typecheck y build pasan). Incluye merge de `origin/wip/fundamentos` 615ef0f. Recorrido en vivo 11/11 más arriba.
