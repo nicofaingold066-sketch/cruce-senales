@@ -90,7 +90,7 @@ export default function SimulacionTab({ p, viva, soloLectura }: PestanaProps) {
                   Cargar condiciones del caso a las personas simuladas
                 </Boton>
               ) : (
-                <p className="suave">Cargar el caso de una vez solo se puede en el espacio demo, con la propuesta abierta.</p>
+                <p className="suave">{motivoSinAtajo(p)}</p>
               )}
               {version != null && puedenAceptar.length > 0 ? (
                 <Boton
@@ -134,6 +134,23 @@ function resumenCarga(r: CargarCasoOk['resultado']): string {
   ]
     .filter(Boolean)
     .join(' ')
+}
+
+// Estados en los que el servidor deja simular (cruce.situacion, migración 0028). Solo sirve para explicar el
+// motivo: quien decide es siempre `mi_situacion.puede.simular`.
+const ESTADOS_ACTIVOS = ['reuniendo_interes', 'esperando_compromisos', 'grupo_confirmado', 'en_revision']
+
+/**
+ * Por qué el atajo no está disponible (mejora #51). Esta fila solo la ve el organizador del espacio y solo
+ * cuando hay personas simuladas, así que queda que la propuesta no esté activa o que el espacio no sea demo.
+ */
+function motivoSinAtajo(p: EstadoPropuesta): string {
+  if (p.estado === 'borrador') return 'Abre la propuesta para poder cargar el caso a las personas simuladas.'
+  if (!ESTADOS_ACTIVOS.includes(p.estado)) {
+    return `La propuesta está en estado «${p.estado_etiqueta}»: el caso solo se carga mientras la propuesta está activa.`
+  }
+  if (!p.mi_situacion.es_organizador_espacio) return 'Solo el organizador del espacio puede cargar el caso a las personas simuladas.'
+  return 'La simulación es solo para el espacio de demostración: en este espacio no se puede cargar el caso.'
 }
 
 function useGuardarTodos(p: EstadoPropuesta, recargar: () => Promise<void>, viva: PestanaProps['viva']) {
