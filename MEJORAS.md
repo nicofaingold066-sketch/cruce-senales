@@ -9,7 +9,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 |---|---|---|---|
 | 1 | Prueba automática del recorrido canónico completo (dos sesiones reales + simulados, baja, reparación, sin opción), corrida dos veces | codex | tomada por codex |
 | 2 | Botones repetidos por persona en Simulación con nombre ("Se baja: Caro") y aria-label | claude-b-interfaz | tomada por claude-b-interfaz |
-| 3 | Base del agente (enmienda 4: preferencias, catálogo, proponer_plan_borrador) con pruebas | backend | tomada por backend |
+| 3 | Base del agente (enmienda 4: preferencias, catálogo, proponer_plan_borrador) con pruebas | backend | verificada (0014-0016, 36 pruebas) |
 | 4 | Enganche de la pantalla del agente en el espacio y precarga del borrador en Nueva propuesta | claude-b-interfaz | tomada por claude-b-interfaz |
 | 5 | Desplegar la función del agente en Supabase y probarla en vivo (con y sin clave) | coordinador + agente-ia | libre (espera a 3) |
 | 6 | Recorrido completo en DOS teléfonos reales con el link público | Nico + Juan + coordinador | libre |
@@ -39,4 +39,5 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 - Rotar la clave publishable de Supabase después del evento.
 
 ## Ideas por triar (las copia el coordinador desde las secciones "Ideas" de cada agente)
-(vacío)
+- (backend) Correr `cruce.verificar_privilegios()` como paso del despliegue. → candidata P3, dueño coordinador.
+- (backend) `simulate_save_preferences` para variantes del jurado en vivo. → candidata P2, dueño backend, después de #12 y #13.
