@@ -200,7 +200,7 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
           {o.aceptaron.map((a) => (
             <li key={a.miembro.miembro_id}>
               <Nombre m={a.miembro} yo={a.miembro.miembro_id === p.mi_situacion.miembro_id} />
-              <span className="suave"> · {momentoCorto(a.aceptado_en)}</span>
+              <span className="suave fecha"> · {momentoCorto(a.aceptado_en)}</span>
             </li>
           ))}
         </ul>
@@ -373,7 +373,7 @@ function Bajas({ p }: { p: EstadoPropuesta }) {
             <Nombre m={b.miembro} /> se bajó
             {b.version != null ? ` (versión ${b.version})` : ''}
             {b.habia_aceptado ? ' · había confirmado' : ''}
-            <span className="suave"> · {momentoCorto(b.en)}</span>
+            <span className="suave fecha"> · {momentoCorto(b.en)}</span>
           </li>
         ))}
       </ul>
@@ -391,8 +391,8 @@ function HistorialResumido({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: 
         {ultimos.map((e) => (
           <li key={e.state_rev + e.tipo + e.en.utc}>
             <span>{describirEvento(e)}</span>
-            {e.actor_tipo === 'simulacion' ? <span className="rotulo-sim">Simulación</span> : null}
-            <span className="suave"> · {momentoCorto(e.en)}</span>
+            {e.actor_tipo === 'simulacion' ? <> <span className="rotulo-sim">Simulación</span></> : null}
+            <span className="suave fecha"> · {momentoCorto(e.en)}</span>
           </li>
         ))}
       </ul>
