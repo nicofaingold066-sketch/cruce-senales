@@ -115,9 +115,9 @@ Una persona real tarda más que la máquina (leer, buscar con el dedo): 7 toques
 
 ### MEDIA
 
-**H3. «Datos ficticios» en todas las pantallas de un grupo real.** Vale, Joaco… lo ven en el encabezado desde la portada. Un amigo duda de si su respuesta vale. → front-juan (`App.tsx` es de friccion: pedirle que lo muestre solo en demo).
+**H3 (CERRADO por decisión del coordinador, 19:44: el chip se queda, el jurado tiene que verlo). «Datos ficticios» en todas las pantallas de un grupo real.** Vale, Joaco… lo ven en el encabezado desde la portada. Un amigo duda de si su respuesta vale. → front-juan (`App.tsx` es de friccion: pedirle que lo muestre solo en demo).
 
-**H4. «Luna» y «persona simulada» en la pantalla «¿Quién eres?» de un grupo real.** En «Unirme con un código»: «Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.» Lo ve cada invitado (`joaco-01`). → friccion (`src/login/QuienEres.tsx`): mostrarlo solo si el grupo es demo.
+**H4 (arreglado por friccion en `2b9650d`, a verificar en la próxima corrida). «Luna» y «persona simulada» en la pantalla «¿Quién eres?» de un grupo real.** En «Unirme con un código»: «Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.» Lo ve cada invitado (`joaco-01`). → friccion (`src/login/QuienEres.tsx`): mostrarlo solo si el grupo es demo.
 
 **H5. Poner presupuesto y techo exige elegir una actividad.** Bruno encuentra «Agente del círculo» (plegado al final del espacio), marca «Ojalá gratis» y «Prefiero bajo techo»; «Guardar mis preferencias» queda apagado hasta que marque al menos una actividad («Marcá al menos una»). Fue en 6 toques porque el guion sabía dónde estaba; ningún texto de «Mi respuesta» lo menciona (pedido ya hecho por ux-flujo a front-juan y friccion). Captura: `bruno-07`. → agente-ia (`AgentePanel`: permitir guardar sin actividades).
 

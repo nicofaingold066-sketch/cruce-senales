@@ -4,9 +4,7 @@ import { hallazgo } from './lib.mjs'
 
 // Cosas del demo que un grupo real no debería ver. `solo` limita a un perfil o pantalla.
 const DEMO = [
-  { id: 'demo-datos-ficticios', re: /Datos ficticios/i, gravedad: 'media', destinatario: 'front-juan',
-    titulo: 'El chip «Datos ficticios» aparece también en un grupo real',
-    esperaba: 'En un grupo real (no demo) no debería decir que los datos son ficticios; un amigo duda de si su respuesta vale.' },
+  // «Datos ficticios» queda en todas las pantallas por decisión del coordinador (19:44): no se reporta.
   { id: 'demo-tomi', re: /\bTomi\b/, gravedad: 'media', destinatario: 'front-juan',
     titulo: 'Aparece «Tomi» (personaje del demo) en un grupo real', esperaba: 'Ningún personaje del demo fuera del demo.' },
   { id: 'demo-asado', re: /asado/i, gravedad: 'baja', destinatario: 'apertura',
@@ -32,10 +30,10 @@ const CONFUSOS = [
 
 const vistos = new Set()
 export function revisarTextos(persona, donde, texto, captura) {
-  // La portada ofrece la demo a propósito: ahí los personajes y la «Simulación» son esperables. Solo «Datos ficticios» se revisa.
+  // La portada ofrece la demo a propósito: ahí los personajes y la «Simulación» son esperables. 
   const enPortada = /^portada/.test(donde)
   for (const r of [...DEMO, ...CONFUSOS]) {
-    if (enPortada && r.id !== 'demo-datos-ficticios') continue
+    if (enPortada) continue
     const m = texto.match(r.re)
     if (!m) continue
     if (r.validar && !r.validar(m)) continue
