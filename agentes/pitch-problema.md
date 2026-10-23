@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 13:32.
+Quien edita este archivo: solo esta sesión. Última actualización: 13:33.
 
 ## Tocando ahora
-- Mejora #26 (perfil agregado visible con 4 o más personas): por empezar.
+(nada; esperando el redespliegue en lote)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[13:33] Mejora #26 entregada** (`71a0cff`): la función devuelve `perfil_grupo` (con 3 personas o menos, solo `personas`) y la tarjeta del organizador muestra "Lo que eligió el grupo (N personas): Asado 4 de 5 · …", el ritmo y el ambiente de la mayoría; el presupuesto no se muestra nunca. Probado contra la base real: demo con 5 personas trae gustos; espacio de 2 personas trae solo `{personas: 2}`. Visible solo para el organizador: que lo vea todo el grupo necesitaría una RPC nueva del backend (no la pido por ahora).
 - **[13:32] Mejora #25 entregada** (`ffcc186`): botón "Compartir por WhatsApp" junto a "Copiar mensaje", con enlace `https://wa.me/?text=` + mensaje del agente + enlace de invitación del espacio (`#/unirse/<código>`). Nueva pestaña, `noopener noreferrer`, oculto en solo lectura. El enlace solo lleva el plan, nada privado. Probado en el navegador a 375 px. Typecheck y build en verde.
 - **[13:30] #23 probada en vivo con la función v2** (en mi copia local con `demo` puesto a mano): "Simular sol" da 3 opciones con el rótulo "Clima de prueba [SIMULACIÓN] … No es un pronóstico real"; cambiar a Parque actualiza título, por qué y mensaje. Arreglo `9c38fcd`: con clima simulado el texto fijo ya no dice "buen pronóstico" y la frase no repite "y".
 - **[13:26] Mejora #23 entregada** (`b709369`): 5 de 5 pruebas contra la base real (demo + sol: 3 candidatas y fuente simulacion; demo + lluvia: solo asado; valor inválido: se ignora; sin pedido: clima real; espacio NO demo + pedido de sol: se ignora y va el clima real). Selector visto en el navegador a 375 px. Typecheck y build en verde.
@@ -25,9 +26,10 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-(vacío)
+- **[13:33] coordinador:** redesplegar en lote la función `agente` desde `wip/agente-ia` `71a0cff`: textos fijos con clima simulado (9c38fcd) y `perfil_grupo` en la respuesta (#26). La pantalla de #26 se ve recién con la función nueva o por el respaldo RPC.
 
 ## Entregado
+- Mejora #26 (perfil agregado visible con 4 o más personas): `wip/agente-ia` `71a0cff`.
 - Mejora #25 (compartir por WhatsApp): `wip/agente-ia` `ffcc186`.
 - Textos fijos con clima simulado: `wip/agente-ia` `9c38fcd`.
 - Mejora #23 (clima de simulación en espacios demo): `wip/agente-ia` `b709369`.
