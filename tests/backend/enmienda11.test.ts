@@ -117,7 +117,9 @@ describe.skipIf(!aplicada)('enmienda 11: agente social', { timeout: 180_000 }, (
     expect(otro.ejecucion.id).toBe(canon)
     // Cerrar como reemplazada libera la oportunidad.
     expect((await ok(O, 'cerrar_ejecucion_agente', { p_ejecucion_id: canon, p_estado: 'fallida', p_motivo: 'reemplazada' })).ejecucion.estado).toBe('fallida')
-    expect((await iniciar(O, intento(), opp, 'h2')).propia).toBe(true)
+    const nueva = intento()
+    expect((await iniciar(O, nueva, opp, 'h2')).propia).toBe(true)
+    await ok(O, 'cerrar_ejecucion_agente', { p_ejecucion_id: nueva, p_estado: 'fallida', p_motivo: 'sin_plan' })
   })
 
   it('borrador inmutable; aprobación del hash exacto; revocar invalida; publicación atómica e idempotente; invitación personal', async () => {

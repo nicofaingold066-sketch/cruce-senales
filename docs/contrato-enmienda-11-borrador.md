@@ -1,4 +1,4 @@
-# Enmienda 11 (BORRADOR, no aprobada): backend del agente social
+# Enmienda 11: backend del agente social (aplicada; la registra el coordinador como definitiva)
 
 Autor: backend, viernes 23 oct 2026, 20:10 (Santiago), a pedido de Nico vía coordinador. **Borrador**: lo registra el coordinador como definitivo y Nico autoriza aplicarlo a la base. Hasta entonces backend solo prepara migración y pruebas en `wip/backend`, sin aplicar. `contrato` sigue en 2. La "enmienda 10" de zona y movilidad es otra cosa y ya está aplicada (0035–0038).
 
@@ -106,3 +106,21 @@ Nada se completa en silencio: estos valores entran en el hash que se aprueba y v
 
 ## 6. Pruebas (`tests/backend/enmienda11.test.ts`, contra la base real, datos ficticios, demo propio)
 Sin sesión, espacio ajeno, ejecución ajena y rol indebido · `usar_en_agente` sí e invitaciones no: no invita · opt-in apagado por defecto, persistencia y revocación · revocación entre borrador y publicación invalida la aprobación · política por defecto y cambio durante la ejecución · aprobación del hash exacto y rechazo de hash cambiado · doble clic con el mismo intento: un efecto · dos uuid concurrentes para la misma oportunidad: una ejecución canónica · mismo id con otros parámetros: rechazo · respuesta perdida después del commit: repetir devuelve la misma propuesta · lease vencido: el worker viejo no escribe · opción inexistente o ajena · clima desconocido no suma "buen tiempo" · atomicidad (si falla una invitación, no queda propuesta) · invitación visible solo para la persona invitada · aceptación humana posterior sin cambios · privacidad de respuestas y errores · regresión: la suite completa. Las pruebas son de base real; no cubren modelo ni interfaz.
+
+
+## Implementación (backend, 20:39)
+- **Aplicada** en `tjkfdnvzsikncjbskufm` como `0041_e11_agente_social` a las 20:34, con el OK explícito de Nico (20:33, vía coordinador). Archivo: `supabase/migrations/0041_e11_agente_social.sql`.
+- **Pruebas** (base real, datos ficticios, sin modelo ni interfaz): `tests/backend/enmienda11.test.ts` **6/6**; suite `npx vitest run tests/backend --no-file-parallelism` **84/84** (14 archivos, 20:36:12 a 20:39:05). Sin errores internos nuevos (`cruce.errores_internos` sigue en id 20).
+- **Catálogo**: 40 funciones en `public`, 40 nombres (una firma por nombre), 40 ejecutables por `authenticated`, 0 por `anon`, 40 `SECURITY DEFINER` con `search_path=''`, 0 internas expuestas, 21 tablas de `cruce` con RLS deny-all. `cruce.verificar_privilegios()` sin hallazgos (lista permitida 40). Advisors: solo los esperados (RLS sin políticas en las 21, las 40 RPC permitidas, contraseñas filtradas no aplica).
+- **Formas finales** (las de la sección 4, con estos detalles):
+  - `iniciar_ejecucion_agente` → `{ejecucion, repetido, propia}`. `ejecucion = {id, estado, oportunidad, propuesta_id, borrador: {hash, opcion_ref, texto, plan} | null, aprobacion: {hash, aprobado_en} | null, motivo}`. El error `opcion_desactualizada/oportunidad_en_uso` trae además `ejecucion` (la canónica).
+  - `agente_social_candidatos` → `{sin_plan_compatible: false, opciones: [{opcion_ref, actividad, actividad_etiqueta, titulo, franjas (2), viaje}]}` o `{sin_plan_compatible: true, motivo?, opciones: []}`. Los errores son los de `proponer_plan_borrador` (`pocas_preferencias`, `fecha_invalida`, `no_es_organizador_espacio`…). Las referencias vencen a las 24 h.
+  - `guardar_borrador_agente` → `{borrador: {hash, opcion_ref, plan}, repetido}`.
+  - `aprobar_borrador_agente` → `{aprobacion: {hash, aprobado_en}, repetido}`.
+  - `publicar_borrador_agente` → `{propuesta: {id}, invitados, repetido}`.
+  - `cerrar_ejecucion_agente` → `{ejecucion, repetido}`.
+  - `set_politica_agente_social` → `{politica: {modo, version}, repetido}`; la versión sube solo si cambia el modo.
+  - `set_recibir_invitaciones_agente` → `{recibir_invitaciones_agente}`.
+  - `get_my_preferences` suma `recibir_invitaciones_agente` (raíz). `get_proposal_state.propuesta.mi_situacion.invitacion_agente` y `list_proposals[].mi_situacion.invitacion_agente` = `{texto}` o `null`.
+- **Verificado en las pruebas**: sin sesión, ajeno y miembro común rechazados; consentimiento apagado por defecto, persistente y revocable, separado de `usar_en_agente`; referencias opacas sin ids del catálogo ni nombres; dos uuid concurrentes → una sola ejecución propia; mismo id con otros parámetros → `intento_reutilizado`; otra huella en la misma oportunidad → `oportunidad_en_uso`; borrador inmutable; plan visible con mínimo, máximo, plazo e imprescindible; hash cambiado o revocación entre borrador, aprobación y publicación → `borrador_cambiado`; sin aprobación → `sin_aprobacion`; doble clic con el mismo intento → un efecto; respuesta perdida → misma propuesta; publicada no se cierra; invitación visible solo para la persona invitada y no cuenta como interés; política autónoma publica sin aprobación y su cambio durante la ejecución vuelve a pedirla; entra alguien entre aprobar y publicar → `borrador_cambiado`; sin destinatarios → `sin_destinatarios`.
+- **No verificado** (fuera de backend o sin prueba automática): vencimiento del lease de 120 s, inferencia real del modelo, interfaz de opt-in/aprobación, disparador periódico (no existe: la demo es ejecución manual del organizador), reparación automática (fuera de esta enmienda).
