@@ -141,5 +141,7 @@ Capturas (8, de la sesión agente-ia; no están en el repo): espacio de Tomi, es
 
 **No probado en esta corrida:** un teléfono físico, la IA con clave real y la publicación automática del agente.
 
+**Corrección (mejora #57, 15:58 del mismo día):** una revisión independiente del guion mostró que dos comprobaciones de esta corrida medían menos de lo que dice la tabla. "Las confirmaciones no pasan a la v2" solo buscaba la frase, que aparece siempre después de una reparación. Y E7.2 miraba la pantalla de Luna en un estado donde "Con condiciones cargadas" no se dibuja para nadie. El guion versionado `tests/e2e/recorrido-dos-sesiones.mjs` las mide bien: la v2 dice "Nadie confirmó todavía" antes de que alguien confirme, y cada conteo se mira en el estado donde aparece, con control positivo (Tomi lo ve y Luna no). Corrido contra producción (`main` 7747bf6) de 15:58:04 a 15:58:30: esas comprobaciones pasaron. Fallaron solo las dos de la mejora #56, porque producción todavía decía "5 de 4". Con el arreglo de #56, en mi rama: 19/19.
+
 ## Historia
 Idea de Nico. Diseño de privacidad del coordinador: el servidor elige y la IA solo ve totales. Enmienda 4 (preferencias, catálogo y elección por reglas), 4.1 (candidatas, perfil del grupo y la IA como coordinadora, pedido de Nico) y 5 (preferencias simuladas). Mejoras #11, #23, #25, #26, #28, #32 y #35.
