@@ -2,7 +2,7 @@
 
 Dueño: pitch-problema. Viernes 23 oct 2026.
 
-**Nada de esto está verificado.** Lo que dice "Qué esperamos" sale de leer las reglas de `docs/caso-canonico.md` y `docs/contrato-enmienda-2.md`. No es un resultado probado. El coordinador lo verifica después con pruebas reales, y hasta entonces no se promete en el pitch.
+**Estado de la verificación (viernes 23 oct, 16:16–16:17, Codex):** las variantes 1, 2 y 3 se probaron por la interfaz real (Chrome sin ventana a 375 px, dos sesiones, un demo propio) contra la base real con 0030 aplicada: 4/4 casos y 23 comprobaciones. Detalle y salida literal en [tests/e2e/evidencia-53-jurado.md](../tests/e2e/evidencia-53-jurado.md); script: `node tests/e2e/jurado-navegador.mjs`. **Límites:** se corrió contra el código local, no contra producción ni dos teléfonos físicos; y no certifica el agente con modelo ni toda la privacidad. Por eso las líneas "Por verificar" de más abajo quedan como el criterio que se comprobó, no como pendientes sin correr.
 
 Todas parten del caso canónico "Los del asado":
 - Franjas: A = sábado 31 oct, 14:00-17:00. B = domingo 1 nov, 14:00-17:00.
