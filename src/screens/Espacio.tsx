@@ -136,7 +136,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
       <details className="tarjeta plegable agente-plegable" onToggle={(e) => setAgenteAbierto(e.currentTarget.open)}>
         <summary>Agente del círculo (opcional): tus preferencias y una idea de plan</summary>
         {/* Se monta solo al abrir: plegado no hace llamadas al servidor. */}
-        {agenteAbierto ? <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} /> : null}
+        {agenteAbierto ? <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} demo={espacio.demo} /> : null}
       </details>
 
       {esOrganizador ? (
