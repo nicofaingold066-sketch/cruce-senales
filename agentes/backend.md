@@ -1,10 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: 13:50 Santiago (reloj), #22 entregada, #28 en curso. (La marca anterior "~14:35" era estimada, no del reloj.)
+Quien edita este archivo: solo el backend. Última actualización: 13:56 Santiago (reloj), #22 y #28 entregadas. (La marca anterior "~14:35" era estimada, no del reloj.)
 
 ## Tocando ahora
-- (0023 aplicada en la base a las 13:51; ninguna migración en curso.)
-- Mejora #28 (privacidad: `perfil_grupo.gustos` solo con `cuantos >= 2`), pedida por el coordinador. Rutas: `supabase/migrations/0023_gustos_minimo_dos.sql` (nueva), `tests/backend/enmienda4.test.ts` (ajuste de 4.1 + prueba nueva), `docs/contrato-enmienda-6.md` (una línea). Commit en `wip/fundamentos`, sin push.
+(vacío. Ninguna migración en curso. Última aplicada: 0023.)
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -37,6 +36,7 @@ Ninguno.
 - coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
+- Mejora #28 (privacidad, `perfil_grupo.gustos` solo con `cuantos >= 2`): commit 66a1910 en `wip/fundamentos` (0023_gustos_minimo_dos.sql aplicada 13:51, tests/backend/enmienda4.test.ts, línea en docs/contrato-enmienda-6.md). enmienda4.test.ts 10/10; suite backend 47/47 (8 archivos, 169 s, 13:53 a 13:56). Sin push.
 - Mejora #22 (`opcion_anterior`): commit 52ae246 en `wip/fundamentos` (0022_opcion_anterior.sql aplicada 13:47, tests/backend/mejoras.test.ts, docs/contrato-enmienda-6.md). Prueba #22 1/1; suite backend 46/46 (8 archivos, 94 s, 13:48). Sin push.
 - Migraciones 0008 a 0011 (ya commiteadas por el coordinador en d904a93).
 
