@@ -89,7 +89,7 @@ Zona horaria: en este corte la única admitida es `America/Santiago`. Los ejempl
 | `no_autorizado` | `no_es_organizador_espacio` | Solo el organizador del espacio puede hacer esto. | false | Ocultar la acción. |
 | `no_autorizado` | `retirado` | Te retiraste de esta propuesta y ya no puedes participar en ella. | false | Refrescar el estado. |
 | `no_autorizado` | `condiciones_congeladas` | Formas parte de la versión vigente; tu disponibilidad no puede cambiar mientras esté vigente. | false | Refrescar el estado. |
-| `no_autorizado` | `espacio_no_demo` | El reinicio solo está permitido en espacios de demostración. | false | Ocultar la acción. |
+| `no_autorizado` | `espacio_no_demo` | Esta acción solo está permitida en espacios de demostración. | false | Ocultar la acción. |
 | `no_autorizado` | `miembro_no_simulado` | Solo se puede simular a miembros marcados como Simulación. | false | Refrescar el espacio. |
 | `fallo_temporal` | `reintentar` | Falla temporal. Intenta de nuevo. | true | Reintentar con el **mismo** `p_intento_id`. |
 

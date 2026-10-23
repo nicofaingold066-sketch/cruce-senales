@@ -25,6 +25,10 @@ Aprobada por el coordinador el 23 oct 2026, a partir de `docs/agente-revision-pr
 - `presupuesto_grupo` sale de `perfil_grupo` (hallazgo 7): el servidor ya descarta por presupuesto y nadie más lo necesita.
 - En el demo, Tomi pide y quedan los 5 simulados: el perfil se sigue viendo (5 personas).
 
+## E7.5 · Ajustes de cierre (migración 0028)
+- `mi_situacion.puede.simular` es `false` fuera de espacios demo (pedido de claude-b), coherente con E7.3.
+- El mensaje de `no_autorizado / espacio_no_demo` pasa a ser general: "Esta acción solo está permitida en espacios de demostración." (también en `docs/contrato.md`), porque ahora lo devuelven la simulación y el reinicio.
+
 ## Límites declarados (no se arreglan en este corte)
 - **El organizador puede usar el motor como oráculo** (hallazgo 2): eligiendo a alguien como imprescindible y repitiendo evaluaciones, puede deducir si esa persona puede en una franja. CRUXE oculta las condiciones a los demás miembros, no al motor que el organizador opera.
 - **Comparar dos pedidos del perfil** (hallazgo 6) deja ver qué cargó quien guardó entre medio. Los totales son exactos a propósito: el agente los necesita.
