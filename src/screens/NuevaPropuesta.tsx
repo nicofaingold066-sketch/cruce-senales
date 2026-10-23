@@ -164,6 +164,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     )
     if (!r) return
     if (!r.ok) {
+      if (r.error.resultadoIncierto || r.error.codigo === 'intento_obsoleto') await cargar() // refresca el espacio
       setPaso('editar') // vuelve al formulario con el campo marcado y todo lo escrito intacto
       return
     }
