@@ -10,7 +10,6 @@ import { Entrada, useEntrada } from './components/Intro'
 import { Marca } from './components/Marca'
 import { lazy, Suspense, useEffect } from 'react'
 import Inicio from './screens/Inicio'
-import { Entrar, PrimeraVisita } from './login/Entrar'
 
 // Mejora #14: la primera pantalla carga sola; las demás van en partes aparte (dividen el paquete de > 500 KB)
 // y se precargan en segundo plano apenas hay sesión, para que en la demo navegar no espere a la red.
@@ -188,14 +187,10 @@ function PantallaRuta({ ruta }: { ruta: Ruta }) {
     case 'unirse':
       return ruta.invalida ? <Inicio key="invitacion-invalida" invitacionInvalida /> : <Inicio key={ruta.codigo} codigoInvitacion={ruta.codigo} />
     case 'entrar':
-      return <Entrar />
+      // Una sola puerta: la portada del rediseño ya resuelve el ingreso (nombre, demo, código o grupo nuevo).
+      return <Inicio />
     default:
-      // Primera visita (sesión sin espacios): la entrada de src/login. Con espacios, la portada de siempre.
-      return (
-        <PrimeraVisita>
-          <Inicio />
-        </PrimeraVisita>
-      )
+      return <Inicio />
   }
 }
 

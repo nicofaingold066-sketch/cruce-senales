@@ -126,7 +126,7 @@ try {
   await L.getByText('Asado en casa de Tomi', { exact: false }).first().click()
   await L.getByRole('tab', { name: 'Mi respuesta' }).waitFor({ timeout: 15000 })
   // La pestaña depende del espacio (get_space aparte): se espera a que llegue y se mira un rato, no un instante.
-  await L.getByRole('link', { name: '← Los del asado' }).waitFor({ timeout: 15000 })
+  await L.getByRole('link', { name: /Los del asado/ }).first().waitFor({ timeout: 15000 }) // rediseño: el volver lleva ícono, no '←'
   let conSimulacion = false
   for (let i = 0; i < 6 && !conSimulacion; i++) {
     conSimulacion = (await L.getByRole('tab', { name: 'Simulación' }).count()) > 0
@@ -136,8 +136,8 @@ try {
   await pestana(L, 'Mi respuesta'); await conInteres(L); await conCondiciones(L)
   // E7.2 con control positivo, mientras se reúne interés: Tomi ve el conteo de condiciones cargadas; Luna no.
   await pestana(T, 'Plan'); await pestana(L, 'Plan')
-  const tomiVeConteo = await esperarTexto(T, 'Con condiciones cargadas', 10000).then(() => true, () => false)
-  const lunaVeConteo = (await L.getByText('Con condiciones cargadas', { exact: false }).count()) > 0
+  const tomiVeConteo = await esperarTexto(T, 'Con condiciones', 10000).then(() => true, () => false)
+  const lunaVeConteo = (await L.getByText('Con condiciones', { exact: false }).count()) > 0
   verificar('E7.2: "Con condiciones cargadas" lo ve Tomi y no Luna', tomiVeConteo && !lunaVeConteo, `Tomi ${tomiVeConteo ? 'sí' : 'no'}, Luna ${lunaVeConteo ? 'sí' : 'no'}`)
   await pestana(T, 'Simulación'); await tocar(T, 'Cargar condiciones del caso a las personas simuladas')
   await esperarTexto(T, 'cargadas las condiciones de', 20000)
@@ -205,7 +205,7 @@ try {
     /Pepe/.test(cab) && (await T.getByText('Herramientas del organizador').count()) === 0, cab.replace(/\s+/g, ' ').slice(0, 80))
   await T.getByText('Asado en casa de Tomi', { exact: false }).first().waitFor({ timeout: 15000 })
   // La tarjeta une el texto del servidor (siguiente_accion) y el conteo que arma la interfaz.
-  const tarjeta = (await T.locator('.tarjeta-prop').first().innerText()).replace(/\s+/g, ' ')
+  const tarjeta = (await T.locator('.plan-vivo, .tarjeta-prop').first().innerText()).replace(/\s+/g, ' ')
   const imposiblesTarjeta = conteosImposibles(tarjeta)
   verificar('#56: la tarjeta dice "N confirmaron (mínimo M)" y no "N de M" con N mayor',
     imposiblesTarjeta.length === 0 && /\d+ confirmaron \(mínimo \d+\)/.test(tarjeta), imposiblesTarjeta.length ? imposiblesTarjeta.join(', ') : tarjeta)
