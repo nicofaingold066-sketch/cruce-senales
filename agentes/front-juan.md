@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la computadora de Nico, Mac-mini-de-Felix). Última actualización: viernes 23 oct, 17:38 Santiago (reloj).
 
 ## Tocando ahora
-- CORRIENDO PRUEBA (18:29): capturas 320 px contra el build de wip/front-juan. Demos y propuestas propias, datos ficticios, cero llamadas al agente.
+(vacío. CORRIENDO PRUEBA terminado a las 18:30: capturas 320 px.)
 
 ## Entregado: `wip/front-juan` = `91e9f9a` (sobre `main` `30e4c76`, ya fusionado)
 Nuevo desde lo que integraste (`9269e8e`), pedido por Juan:
