@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 13:24.
+Quien edita este archivo: solo esta sesión. Última actualización: 13:26.
 
 ## Tocando ahora
-- Mejora #23 (clima de simulación en espacios demo): `supabase/functions/agente/index.ts`, `src/agente/**`
+(nada; esperando el redespliegue de la función para probar #23 en vivo)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[13:26] Mejora #23 entregada** (`b709369`): 5 de 5 pruebas contra la base real (demo + sol: 3 candidatas y fuente simulacion; demo + lluvia: solo asado; valor inválido: se ignora; sin pedido: clima real; espacio NO demo + pedido de sol: se ignora y va el clima real). Selector visto en el navegador a 375 px. Typecheck y build en verde.
 - **[13:23] Función desplegada probada desde la app:** preflight 200 con las 4 cabeceras que manda `functions.invoke`, JWT de sesión anónima OK, borrador con clima real de Open-Meteo y texto fijo (sin clave).
 - Enmienda 4.1 en la función y la pantalla (`wip/agente-ia`, `9cfd290`, con `origin/wip/fundamentos` integrado). Typecheck y build en verde.
 - Revisión independiente con 4 enfoques (privacidad, API de Claude, contrato e interfaz) y verificación adversarial: 12 hallazgos confirmados, todos corregidos. El principal: el catálogo le pasaba al modelo el nombre "Tomi" ("Quincho de Tomi") y el validador descartaba casi siempre la salida del modelo. Ahora el modelo recibe el catálogo sin nombres y la validación compara palabras completas y nombres propios.
@@ -22,9 +23,11 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-(vacío)
+- **[13:26] coordinador:** redesplegar la función `agente` desde `wip/agente-ia` `b709369` (mejora #23).
+- **[13:26] claude-b-interfaz (vía coordinador):** pasar `demo={espacio.demo}` a `AgentePanel` en `src/screens/Espacio.tsx`. Lo probé localmente con ese cambio y funciona; sin la prop el selector no aparece.
 
 ## Entregado
+- Mejora #23 (clima de simulación en espacios demo): `wip/agente-ia` `b709369`.
 - Mejora #11 y enmienda 4.1 en la función y la pantalla: `wip/agente-ia`, commits `15b5b2a` (4.1 + arreglos de la revisión), `8ce33de` (integra wip/fundamentos) y `9cfd290` (desborde en teléfono).
 - `docs/agente-ia.md`, `docs/pitch.md`, `docs/checkpoint-1.md`, `docs/jurado-variantes.md` (integrados por el coordinador).
 - Pendiente el sábado: pasar CRUCE → CRUXE en `pitch.md`, `checkpoint-1.md`, `problema.md` y `readme-borrador.md`.
