@@ -71,13 +71,13 @@ export default function Planes() {
         {filas ? (
           <div className="resumen-planes" aria-hidden="true">
             <span>
-              <strong className="num">{turno.length}</strong> te tocan
+              <strong className="num">{turno.length}</strong> {turno.length === 1 ? 'te toca' : 'te tocan'}
             </span>
             <span>
               <strong className="num">{enCurso.length}</strong> en curso
             </span>
             <span>
-              <strong className="num">{confirmados.length}</strong> confirmados
+              <strong className="num">{confirmados.length}</strong> {confirmados.length === 1 ? 'confirmado' : 'confirmados'}
             </span>
           </div>
         ) : null}

@@ -181,30 +181,24 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
           <span>
             <strong>{o.cupos.confirmados}</strong> confirmaron
           </span>
-          <span>mínimo {o.cupos.minimo} · máximo {o.cupos.maximo}</span>
+          <span>
+            mín. {o.cupos.minimo} · máx. {o.cupos.maximo} · {o.cupos.disponibles} {o.cupos.disponibles === 1 ? 'libre' : 'libres'}
+          </span>
         </div>
       </div>
-      {/* Datos en grilla compacta (2 × 2): todo a la vista sin desplazar. Solo números del servidor. */}
-      <dl className="datos-mini">
-        <div className="mini-dato">
-          <dt>Aceptaciones</dt>
+      {/* Cifras en una fila (número arriba, rótulo abajo): todo a la vista sin desplazar. Solo números del servidor. */}
+      <dl className="cifras">
+        <div className="cifra">
+          <dt>{sobreMinimo ? `Aceptaciones (mínimo ${o.cupos.minimo})` : 'Aceptaciones necesarias'}</dt>
           <dd>
-            {sobreMinimo ? (
-              <>
-                <strong>{o.cupos.confirmados}</strong> (mínimo {o.cupos.minimo}, máximo {o.cupos.maximo}, disponibles{' '}
-                {o.cupos.disponibles})
-              </>
-            ) : (
-              <>
-                <strong>
-                  {o.cupos.confirmados} de {o.cupos.minimo}
-                </strong>{' '}
-                necesarias (máximo {o.cupos.maximo}, disponibles {o.cupos.disponibles})
-              </>
-            )}
+            <strong>{sobreMinimo ? o.cupos.confirmados : `${o.cupos.confirmados} de ${o.cupos.minimo}`}</strong>
+            <span className="visualmente-oculto">
+              {' '}
+              (máximo {o.cupos.maximo}, disponibles {o.cupos.disponibles})
+            </span>
           </dd>
         </div>
-        <div className="mini-dato">
+        <div className="cifra">
           <dt>Anfitrión ({p.imprescindible.nombre})</dt>
           <dd>
             <span className={`etiqueta ${o.cupos.imprescindible_acepto ? 'etiqueta-ok' : 'etiqueta-pendiente'}`}>
@@ -214,18 +208,24 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
         </div>
         {/* Enmienda 7 (E7.2): solo el organizador recibe este conteo; con null no se muestra. */}
         {o.cupos.pendientes != null ? (
-          <div className="mini-dato">
+          <div className="cifra">
             <dt>Faltan por responder</dt>
-            <dd>{o.cupos.pendientes} persona(s)</dd>
-          </div>
-        ) : null}
-        {o.cupos.reservado_imprescindible ? (
-          <div className="mini-dato">
-            <dt>Cupo del anfitrión</dt>
-            <dd>Reservado hasta que confirme. Libres para el resto: {o.cupos.libres_para_otros}.</dd>
+            <dd>
+              <strong>{o.cupos.pendientes}</strong>
+              <span className="visualmente-oculto"> {o.cupos.pendientes === 1 ? 'persona' : 'personas'}</span>
+            </dd>
           </div>
         ) : null}
       </dl>
+      {o.cupos.reservado_imprescindible ? (
+        <p className="nota-linea nota-reserva">
+          <Icono n="anfitrion" tam={16} />
+          <span>
+            <strong>Cupo del anfitrión</strong> reservado hasta que {p.imprescindible.nombre} confirme. Cupos libres para el resto:{' '}
+            {o.cupos.libres_para_otros}.
+          </span>
+        </p>
+      ) : null}
 
       <h3>Quién confirmó esta versión</h3>
       {o.aceptaron.length === 0 ? (
@@ -316,7 +316,7 @@ function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
       <div className="cv-grilla">
         <div className="cv-col cv-vieja">
           <span className="cv-rotulo">Versión {vAnt} · ya no vale</span>
-          {ant ? <p className="cv-franja cv-franja-vieja">{franjaTexto(ant.inicio, ant.fin)}</p> : null}
+          {ant ? <p className="cv-franja cv-franja-vieja">{franjaBreve(ant.inicio.local, ant.fin.local)}</p> : null}
           {confirmaronAnt.length > 0 ? (
             <ul className="cv-personas">
               {confirmaronAnt.map((m) => (
@@ -341,7 +341,7 @@ function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
         </span>
         <div className="cv-col cv-nueva">
           <span className="cv-rotulo">Versión {o.version} · vigente</span>
-          <p className="cv-franja">{franjaTexto(o.franja.inicio, o.franja.fin)}</p>
+          <p className="cv-franja">{franjaBreve(o.franja.inicio.local, o.franja.fin.local)}</p>
           {o.aceptaron.length === 0 ? (
             <p className="cv-pie">
               <strong>Nadie confirmó todavía:</strong> empieza de cero. Se confirma con {o.cupos.minimo} confirmaciones de esta
@@ -357,6 +357,11 @@ function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
       </div>
     </section>
   )
+}
+
+/** "Sábado 31 oct · 14:00–17:00" para las columnas angostas de la comparación; si cruza de día, la franja completa. */
+function franjaBreve(inicio: string, fin: string): string {
+  return inicio.slice(0, 10) === fin.slice(0, 10) ? `${diaDe(inicio)} · ${hora(inicio)}–${hora(fin)}` : franjaTexto(inicio, fin)
 }
 
 function OpcionAnterior({ p }: { p: EstadoPropuesta }) {
@@ -434,12 +439,15 @@ function HistorialResumido({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: 
   return (
     <section className="tarjeta">
       <h2>Historial resumido</h2>
-      <ul className="linea">
+      <ul className="linea linea-resumen">
         {ultimos.map((e) => (
           <li key={e.state_rev + e.tipo + e.en.utc}>
-            <span>{describirEvento(e)}</span>
-            {e.actor_tipo === 'simulacion' ? <> <span className="rotulo-sim">Simulación</span></> : null}
-            <span className="suave fecha"> · {momentoCorto(e.en)}</span>
+            <span className="linea-hora num">{hora(e.en.local)}</span>
+            <span className="linea-texto">
+              {describirEvento(e)}
+              {e.actor_tipo === 'simulacion' ? <> <span className="rotulo-sim">Simulación</span></> : null}
+              <span className="visualmente-oculto"> · {momentoCorto(e.en)}</span>
+            </span>
           </li>
         ))}
       </ul>
@@ -562,8 +570,11 @@ function Cancelar({ p, viva, soloLectura }: VivaProps) {
     if (r?.ok) setConfirmar(false)
   }
   return (
-    <section className="tarjeta zona-peligro">
-      <h2>Cancelar propuesta</h2>
+    <section className={`tarjeta zona-peligro ${confirmar ? '' : 'zona-peligro-fila'}`} aria-labelledby="cancelar-titulo">
+      <div className="zona-peligro-texto">
+        <h2 id="cancelar-titulo">¿Ya no va?</h2>
+        <p className="suave">Pasa a Cancelado y no se puede reabrir.</p>
+      </div>
       {!confirmar ? (
         <Boton variante="secundario" onClick={() => setConfirmar(true)} disabled={soloLectura}>
           Cancelar propuesta

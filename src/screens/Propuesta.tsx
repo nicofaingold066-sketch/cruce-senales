@@ -206,7 +206,12 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
               <Icono n={ICONO_ESTADO[p.estado] ?? 'esperando'} tam={20} />
             </span>
             <strong className="estado-hero-etiqueta">{p.estado_etiqueta}</strong>
-            {p.opcion ? <span className="estado-hero-version">Versión {p.opcion.version}</span> : null}
+            {p.opcion ? (
+              <span className="estado-hero-version">
+                <span aria-hidden="true">v{p.opcion.version}</span>
+                <span className="visualmente-oculto">Versión {p.opcion.version}</span>
+              </span>
+            ) : null}
           </div>
           {turno && cod !== 'te_toca_aceptar' ? <span className="pastilla pastilla-turno">Tu turno: confirma la versión {p.opcion?.version}</span> : null}
           {yaAcepte && cod !== 'ya_aceptaste' ? <span className="pastilla pastilla-ok">Ya confirmaste la versión {p.opcion?.version}</span> : null}
