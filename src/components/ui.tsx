@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
-import type { ButtonHTMLAttributes, MouseEvent, ReactNode, Ref } from 'react'
+import type { ButtonHTMLAttributes, CSSProperties, MouseEvent, ReactNode, Ref } from 'react'
 import { ayudaError } from '../lib/api'
+import { hojaCalendario } from '../lib/format'
 import type { ApiError, EstadoClave, MiembroRef } from '../lib/types'
 
 export function RotuloSimulacion() {
@@ -48,11 +49,96 @@ export function Aviso({
   )
 }
 
-export function Cargando({ texto = 'Cargando…' }: { texto?: string }) {
+export function Cargando({ texto = 'Cargando…', esqueleto = false }: { texto?: string; esqueleto?: boolean }) {
   return (
-    <div className="cargando" role="status" aria-live="polite">
-      <span className="spinner" aria-hidden="true" />
-      {texto}
+    <div role="status" aria-live="polite">
+      <div className="cargando">
+        <span className="spinner" aria-hidden="true" />
+        {texto}
+      </div>
+      {esqueleto ? (
+        <div className="esqueleto" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
+// ---- Avatares: iniciales con un color estable por nombre. Las personas simuladas van con borde punteado. ----
+
+const COLORES_AVATAR = ['#7a4b3a', '#3d5a80', '#5b6c3a', '#7d3c64', '#3f6b68', '#8a5a14', '#4b4f8c', '#6b4f3a']
+
+export function iniciales(nombre: string): string {
+  const partes = nombre.trim().split(/\s+/).filter(Boolean)
+  if (partes.length === 0) return '?'
+  if (partes.length === 1) return partes[0].slice(0, 2).toLocaleUpperCase('es')
+  return (partes[0][0] + partes[1][0]).toLocaleUpperCase('es')
+}
+
+export function colorAvatar(nombre: string): string {
+  let h = 0
+  for (const c of nombre.trim().toLocaleLowerCase('es')) h = (h * 31 + c.charCodeAt(0)) >>> 0
+  return COLORES_AVATAR[h % COLORES_AVATAR.length]
+}
+
+export function Avatar({
+  nombre,
+  simulado,
+  yo,
+  tam,
+}: {
+  nombre: string
+  simulado?: boolean
+  yo?: boolean
+  tam?: number
+}) {
+  const estilo = { '--av-c': colorAvatar(nombre), ...(tam ? { '--av': `${tam}px` } : {}) } as CSSProperties
+  return (
+    <span className={`avatar ${simulado ? 'avatar-sim' : ''} ${yo ? 'avatar-yo' : ''}`} style={estilo} aria-hidden="true">
+      {iniciales(nombre)}
+    </span>
+  )
+}
+
+/** Avatares apilados, como "quién viene": hasta `max` y "+N". Decorativo; la lista con nombres va aparte. */
+export function AvatarPila({ personas, max = 5 }: { personas: Pick<MiembroRef, 'nombre' | 'simulado'>[]; max?: number }) {
+  const visibles = personas.slice(0, max)
+  const resto = personas.length - visibles.length
+  return (
+    <span className="avatar-pila" aria-hidden="true">
+      {visibles.map((m, i) => (
+        <Avatar key={`${m.nombre}-${i}`} nombre={m.nombre} simulado={m.simulado} />
+      ))}
+      {resto > 0 ? <span className="avatar avatar-mas">+{resto}</span> : null}
+    </span>
+  )
+}
+
+/**
+ * Barra de cupos. Solo dibuja números del servidor: `valor` confirmados sobre `maximo` cupos,
+ * con una marca en el `minimo` necesario. No decide nada.
+ */
+export function Progreso({
+  valor,
+  minimo,
+  maximo,
+  ok,
+  etiqueta,
+}: {
+  valor: number
+  minimo: number
+  maximo: number
+  ok?: boolean
+  etiqueta: string
+}) {
+  const tope = Math.max(maximo, minimo, valor, 1)
+  return (
+    <div className={`progreso ${ok ? 'progreso-ok' : ''}`} role="img" aria-label={etiqueta}>
+      <span className="progreso-relleno" style={{ width: `${(Math.min(valor, tope) / tope) * 100}%` }} />
+      {minimo > 0 && minimo < tope ? <span className="progreso-minimo" style={{ left: `${(minimo / tope) * 100}%` }} /> : null}
     </div>
   )
 }
@@ -123,7 +209,7 @@ export function Boton({
   children: ReactNode
   ocupado?: boolean
   ocupadoTexto?: string
-  variante?: 'primario' | 'secundario' | 'peligro'
+  variante?: 'primario' | 'secundario' | 'peligro' | 'turno' | 'claro'
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>) {
   // Mejora #44: mientras trabaja no se usa `disabled`, que saca el foco al cuerpo de la página y lo pierde
   // tras cada acción. Queda aria-disabled y se ignora la activación (también el envío de formulario).
@@ -146,5 +232,18 @@ export function Boton({
     >
       {ocupado ? ocupadoTexto : children}
     </button>
+  )
+}
+
+/** Hoja de calendario (mes, número y día) para una hora local del servidor. Decorativa: el texto completo va al lado. */
+export function DiaTile({ local }: { local: string }) {
+  const h = hojaCalendario(local)
+  if (!h) return null
+  return (
+    <span className="dia-tile" aria-hidden="true">
+      <span className="dia-tile-mes">{h.mes.toLocaleUpperCase('es')}</span>
+      <span className="dia-tile-num">{h.num}</span>
+      <span className="dia-tile-dia">{h.dia}</span>
+    </span>
   )
 }

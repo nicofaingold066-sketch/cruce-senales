@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+import { flushSync } from 'react-dom'
 import type { ReactNode } from 'react'
 
 export interface Identidad {
@@ -53,6 +54,9 @@ export function tomarAviso(): string | null {
 
 export type Ruta =
   | { nombre: 'inicio' }
+  | { nombre: 'planes' }
+  | { nombre: 'perfil' }
+  | { nombre: 'crear' }
   | { nombre: 'espacio'; espacioId: string }
   | { nombre: 'nueva'; espacioId: string }
   | { nombre: 'propuesta'; espacioId: string; propuestaId: string }
@@ -74,6 +78,9 @@ export function parseRuta(hash: string): Ruta {
   const partes = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
   if (partes[0] === 'unirse' && partes[1]) return rutaUnirse(partes[1])
   if (partes[0] === 'entrar') return { nombre: 'entrar' }
+  if (partes[0] === 'planes') return { nombre: 'planes' }
+  if (partes[0] === 'perfil') return { nombre: 'perfil' }
+  if (partes[0] === 'crear') return { nombre: 'crear' }
   if (partes[0] === 'e' && partes[1]) {
     if (partes[2] === 'nueva') return { nombre: 'nueva', espacioId: partes[1] }
     if (partes[2] === 'p' && partes[3]) return { nombre: 'propuesta', espacioId: partes[1], propuestaId: partes[3] }
@@ -84,6 +91,9 @@ export function parseRuta(hash: string): Ruta {
 
 export const rutas = {
   inicio: () => '#/',
+  planes: () => '#/planes',
+  perfil: () => '#/perfil',
+  crear: () => '#/crear',
   espacio: (id: string) => `#/e/${id}`,
   nueva: (id: string) => `#/e/${id}/nueva`,
   propuesta: (e: string, p: string) => `#/e/${e}/p/${p}`,
@@ -95,10 +105,23 @@ export function irA(hash: string) {
   window.location.hash = hash
 }
 
+type Transicion = { ready?: Promise<unknown>; finished?: Promise<unknown>; updateCallbackDone?: Promise<unknown> }
+type DocConTransicion = Document & { startViewTransition?: (cb: () => void) => Transicion }
+
 export function useRuta(): Ruta {
   const [ruta, setRuta] = useState<Ruta>(() => parseRuta(window.location.hash))
   useEffect(() => {
-    const f = () => setRuta(parseRuta(window.location.hash))
+    // Transición nativa entre pantallas (View Transitions API) donde exista; si no, el cambio es inmediato.
+    const f = () => {
+      const nueva = parseRuta(window.location.hash)
+      const doc = document as DocConTransicion
+      const reducido = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+      if (doc.startViewTransition && !reducido) {
+        const t = doc.startViewTransition(() => flushSync(() => setRuta(nueva)))
+        // Si el navegador salta la transición (otra navegación, pestaña oculta), sus promesas se rechazan: no es un error.
+        for (const pr of [t?.ready, t?.finished, t?.updateCallbackDone]) pr?.catch(() => {})
+      } else setRuta(nueva)
+    }
     window.addEventListener('hashchange', f)
     return () => window.removeEventListener('hashchange', f)
   }, [])

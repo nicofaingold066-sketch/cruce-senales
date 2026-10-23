@@ -3,8 +3,13 @@ import { api } from '../lib/api'
 import type { EstadoPropuesta } from '../lib/types'
 import { useAhora, useMutacion } from '../lib/hooks'
 import { cuentaRegresiva, describirEvento, diaDe, franjaTexto, hora, momentoCorto, ZONA_VISIBLE } from '../lib/format'
-import { Aviso, Boton, ErrorCaja, Nombre } from '../components/ui'
+import { Avatar, Aviso, Boton, DiaTile, ErrorCaja, Nombre, Progreso } from '../components/ui'
 import type { PestanaProps } from './tabs'
+import { Icono } from '../components/Icono'
+import { Confeti } from '../components/Confeti'
+import { Resaltado } from '../components/Resaltado'
+import { descargarCalendario, urlWhatsApp } from '../lib/compartir'
+import { vibrar } from '../lib/tacto'
 
 export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaProps) {
   const enRevision = p.estado === 'en_revision'
@@ -31,6 +36,8 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
       {versionReparada && p.opcion ? <CambioDeVersion p={p} /> : null}
 
       {p.estado === 'borrador' ? <AbrirPropuesta p={p} viva={viva} soloLectura={soloLectura} /> : null}
+
+      {p.estado === 'grupo_confirmado' && p.opcion ? <CierrePlan p={p} /> : null}
 
       {conOpcion && p.opcion ? <OpcionVigente key={p.opcion.version} p={p} viva={viva} soloLectura={soloLectura} /> : null}
 
@@ -64,7 +71,7 @@ type VivaProps = Pick<PestanaProps, 'p' | 'viva' | 'soloLectura'>
 function Ficha({ p, viva }: { p: EstadoPropuesta; viva: PestanaProps['viva'] }) {
   const ahora = useAhora(1000)
   return (
-    <details className="tarjeta ficha" open={!p.opcion}>
+    <details className="tarjeta plegable ficha" open={!p.opcion}>
       <summary>
         <h2>Ficha del plan</h2>
       </summary>
@@ -143,7 +150,8 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
 
   async function aceptar() {
     // Siempre se envía la versión que la persona está viendo, nunca una calculada.
-    await correr(`aceptar:${p.id}:${o.version}`, (intento) => api.acceptVersion(p.id, o.version, intento))
+    const r = await correr(`aceptar:${p.id}:${o.version}`, (intento) => api.acceptVersion(p.id, o.version, intento))
+    if (r?.ok) vibrar([14, 50, 22])
   }
 
   return (
@@ -154,17 +162,31 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
           Quienes confirmaron aparecen abajo. CRUXE coordina el plan; no reserva nada.
         </Aviso>
       ) : null}
-      <p className="franja-grande">{franjaTexto(o.franja.inicio, o.franja.fin)}</p>
-      <p className="suave">
-        Franja {o.franja.clave} · hora de Santiago ({ZONA_VISIBLE}) · publicada {momentoCorto(o.publicada_en)}
-      </p>
+      <div className="opcion-cuando">
+        <DiaTile local={o.franja.inicio.local} />
+        <div>
+          <p className="franja-grande">{franjaTexto(o.franja.inicio, o.franja.fin)}</p>
+          <p className="suave">
+            Franja {o.franja.clave} · hora de Santiago ({ZONA_VISIBLE}) · publicada {momentoCorto(o.publicada_en)}
+          </p>
+        </div>
+      </div>
 
-      {/* Solo dibuja los números que entrega el servidor: un punto por cada confirmación necesaria. */}
-      <div className="puntos" role="img" aria-label={`Confirmaron ${cuenta}${sobreMinimo ? '' : ' necesarias'}`}>
-        {Array.from({ length: o.cupos.minimo }, (_, i) => (
-          <span key={i} className={`punto ${i < o.cupos.confirmados ? 'punto-lleno' : ''}`} />
-        ))}
-        <span className="puntos-texto">{cuenta}</span>
+      {/* Solo dibuja los números que entrega el servidor: confirmados, mínimo (la marca) y máximo. */}
+      <div>
+        <Progreso
+          valor={o.cupos.confirmados}
+          minimo={o.cupos.minimo}
+          maximo={o.cupos.maximo}
+          ok={confirmado}
+          etiqueta={`Confirmaron ${cuenta}${sobreMinimo ? '' : ' necesarias'}`}
+        />
+        <div className="progreso-leyenda" aria-hidden="true">
+          <span>
+            <strong>{o.cupos.confirmados}</strong> confirmaron
+          </span>
+          <span>mínimo {o.cupos.minimo} · máximo {o.cupos.maximo}</span>
+        </div>
       </div>
       <dl className="datos">
         <dt>Aceptaciones</dt>
@@ -186,7 +208,7 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
         <dt>Anfitrión ({p.imprescindible.nombre})</dt>
         <dd>
           <span className={`etiqueta ${o.cupos.imprescindible_acepto ? 'etiqueta-ok' : 'etiqueta-pendiente'}`}>
-            {o.cupos.imprescindible_acepto ? 'Confirmado' : 'Pendiente'}
+            {o.cupos.imprescindible_acepto ? 'Ya confirmó' : 'Pendiente'}
           </span>
         </dd>
         {/* Enmienda 7 (E7.2): solo el organizador recibe este conteo; con null no se muestra. */}
@@ -213,6 +235,7 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
         <ul className="miembros">
           {o.aceptaron.map((a) => (
             <li key={a.miembro.miembro_id}>
+              <Avatar nombre={a.miembro.nombre} simulado={a.miembro.simulado} yo={a.miembro.miembro_id === p.mi_situacion.miembro_id} />
               <Nombre m={a.miembro} yo={a.miembro.miembro_id === p.mi_situacion.miembro_id} />
               <span className="suave fecha"> · {momentoCorto(a.aceptado_en)}</span>
             </li>
@@ -222,8 +245,9 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
       <p className="suave">Las condiciones de cada persona son privadas y no se muestran.</p>
 
       {p.mi_situacion.puede.aceptar ? (
-        <div className="cta cta-fija">
+        <div className="barra-accion">
           <Boton
+            variante="turno"
             onClick={aceptar}
             ocupado={ocupado}
             ocupadoTexto="Enviando…"
@@ -367,12 +391,12 @@ function AlternativaOrganizador({ p, viva, soloLectura, sinAlternativa }: VivaPr
         </Aviso>
       ) : null}
       {p.mi_situacion.puede.proponer_reparacion ? (
-        <>
+        <div className="barra-accion">
           <Boton onClick={buscar} ocupado={ocupado} ocupadoTexto="Buscando alternativa…" disabled={soloLectura}>
             {error?.reintentable ? 'Reintentar búsqueda de alternativa' : sinAltAhora ? 'Volver a buscar alternativa' : 'Buscar alternativa'}
           </Boton>
-          <p className="suave">La nueva ficha empieza con cero aceptaciones.</p>
-        </>
+          <p className="suave">La nueva versión empieza con cero aceptaciones.</p>
+        </div>
       ) : (
         <p className="suave">El organizador ({p.organizador.nombre}) debe buscar una alternativa. Mientras tanto puedes actualizar tus condiciones en "Mi respuesta".</p>
       )}
@@ -388,6 +412,7 @@ function Bajas({ p }: { p: EstadoPropuesta }) {
       <ul className="miembros">
         {p.bajas.map((b, i) => (
           <li key={`${b.miembro.miembro_id}-${i}`}>
+            <Avatar nombre={b.miembro.nombre} simulado={b.miembro.simulado} />
             <Nombre m={b.miembro} /> se bajó
             {b.version != null ? ` (versión ${b.version})` : ''}
             {b.habia_aceptado ? ' · había confirmado' : ''}
@@ -427,31 +452,36 @@ function ReuniendoInteres({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: P
   return (
     <section className="tarjeta">
       <h2>Interés del grupo</h2>
-      <dl className="datos">
-        <dt>Marcaron "Me interesa"</dt>
-        <dd>
-          {p.interesados.cantidad}
-          {p.interesados.miembros.length > 0 ? (
-            <ul className="miembros">
-              {p.interesados.miembros.map((m) => (
-                <li key={m.miembro_id}>
-                  <Nombre m={m} />
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </dd>
-        <dt>Confirmados</dt>
-        <dd>
-          <strong>{p.confirmados}</strong> · el interés no es una confirmación
-        </dd>
+      <div className="stats">
+        <div className="stat">
+          <span className="stat-etiqueta">Con interés</span>
+          <span className="stat-valor">{p.interesados.cantidad}</span>
+        </div>
+        <div className="stat">
+          <span className="stat-etiqueta">Confirmados</span>
+          <span className="stat-valor">{p.confirmados}</span>
+        </div>
         {p.personas_con_condiciones != null ? (
-          <>
-            <dt>Con condiciones cargadas</dt>
-            <dd>{p.personas_con_condiciones} persona(s) (sus condiciones son privadas)</dd>
-          </>
+          <div className="stat">
+            <span className="stat-etiqueta">Con condiciones</span>
+            <span className="stat-valor">{p.personas_con_condiciones}</span>
+          </div>
         ) : null}
-      </dl>
+      </div>
+      <p className="suave">
+        Marcar "Me interesa" no es una confirmación.
+        {p.personas_con_condiciones != null ? ' Las condiciones de cada persona son privadas: solo se cuentan.' : ''}
+      </p>
+      {p.interesados.miembros.length > 0 ? (
+        <ul className="miembros" aria-label="Marcaron Me interesa">
+          {p.interesados.miembros.map((m) => (
+            <li key={m.miembro_id}>
+              <Avatar nombre={m.nombre} simulado={m.simulado} yo={m.miembro_id === p.mi_situacion.miembro_id} />
+              <Nombre m={m} yo={m.miembro_id === p.mi_situacion.miembro_id} />
+            </li>
+          ))}
+        </ul>
+      ) : null}
       {p.estado === 'reuniendo_interes' && p.mi_situacion.condiciones !== 'completas' && !p.mi_situacion.retirado ? (
         <Aviso
           tono="info"
@@ -475,9 +505,11 @@ function AbrirPropuesta({ p, viva, soloLectura }: VivaProps) {
       <h2>Borrador</h2>
       <p>Nadie más puede marcar interés ni cargar condiciones hasta que la propuesta se abra.</p>
       {p.mi_situacion.puede.abrir ? (
-        <Boton onClick={() => void correr(`abrir:${p.id}`, () => api.openProposal(p.id))} ocupado={ocupado} ocupadoTexto="Abriendo…" disabled={soloLectura}>
-          Abrir propuesta
-        </Boton>
+        <div className="barra-accion">
+          <Boton onClick={() => void correr(`abrir:${p.id}`, () => api.openProposal(p.id))} ocupado={ocupado} ocupadoTexto="Abriendo…" disabled={soloLectura}>
+            Abrir propuesta
+          </Boton>
+        </div>
       ) : (
         <p className="suave">Solo el organizador puede abrirla.</p>
       )}
@@ -507,9 +539,11 @@ function BuscarOpcion({ p, viva, soloLectura, sinOpcion }: VivaProps & { sinOpci
         </p>
       )}
       {p.mi_situacion.puede.evaluar ? (
-        <Boton onClick={evaluar} ocupado={ocupado} ocupadoTexto="Buscando…" disabled={soloLectura}>
-          {error?.reintentable ? 'Reintentar búsqueda' : sinOpcion ? 'Volver a buscar opción' : 'Buscar opción compatible'}
-        </Boton>
+        <div className="barra-accion">
+          <Boton onClick={evaluar} ocupado={ocupado} ocupadoTexto="Buscando…" disabled={soloLectura}>
+            {error?.reintentable ? 'Reintentar búsqueda' : sinOpcion ? 'Volver a buscar opción' : 'Buscar opción compatible'}
+          </Boton>
+        </div>
       ) : null}
       {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
@@ -524,8 +558,9 @@ function Cancelar({ p, viva, soloLectura }: VivaProps) {
     if (r?.ok) setConfirmar(false)
   }
   return (
-    <section className="tarjeta">
+    <section className="tarjeta zona-peligro">
       <h2>Cancelar propuesta</h2>
+      <p className="suave">Solo el organizador puede cancelarla. Queda registrado en el historial.</p>
       {!confirmar ? (
         <Boton variante="secundario" onClick={() => setConfirmar(true)} disabled={soloLectura}>
           Cancelar propuesta
@@ -544,6 +579,52 @@ function Cancelar({ p, viva, soloLectura }: VivaProps) {
         </Aviso>
       )}
       {error ? <ErrorCaja error={error} enfocar /> : null}
+    </section>
+  )
+}
+
+// ------------------------------------------------------------------ cierre: el encuentro ocurre
+
+/** Final del recorrido: el servidor confirmó el grupo. Llevarlo al calendario y avisar afuera de CRUXE. */
+function CierrePlan({ p }: { p: EstadoPropuesta }) {
+  const o = p.opcion!
+  const [nota, setNota] = useState<string | null>(null)
+  const cuando = franjaTexto(o.franja.inicio, o.franja.fin)
+  const quienes = o.aceptaron.map((a) => a.miembro.nombre).join(', ')
+  const texto = `Confirmado en CRUXE: ${p.titulo}, ${cuando} (hora de Santiago). Van: ${quienes}.`
+  function agendar() {
+    const ok = descargarCalendario({
+      id: `${p.id}-v${o.version}`,
+      titulo: p.titulo,
+      inicioUtc: o.franja.inicio.utc,
+      finUtc: o.franja.fin.utc,
+      descripcion: `Plan confirmado en CRUXE (versión ${o.version}). Van: ${quienes}.`,
+    })
+    setNota(ok ? 'Listo: se descargó el evento para tu calendario.' : 'No se pudo armar el evento en este navegador.')
+  }
+  return (
+    <section className="tarjeta cierre" aria-labelledby="cierre-titulo">
+      <Confeti />
+      <span className="cierre-icono" aria-hidden="true">
+        <Icono n="fiesta" tam={26} />
+      </span>
+      <h2 id="cierre-titulo">
+        <Resaltado tipo="marcador" color="var(--ok)">¡Se juntan!</Resaltado>
+      </h2>
+      <p className="cierre-cuando">{cuando}</p>
+      <p className="suave">
+        {o.aceptaron.length} {o.aceptaron.length === 1 ? 'persona confirmó' : 'personas confirmaron'} la versión {o.version}. CRUXE
+        coordina el plan; no reserva nada.
+      </p>
+      <div className="fila-botones">
+        <button type="button" className="btn btn-primario" onClick={agendar}>
+          <Icono n="agendar" tam={20} /> Agregar al calendario
+        </button>
+        <a className="btn btn-secundario" href={urlWhatsApp(texto)} target="_blank" rel="noopener noreferrer">
+          <Icono n="whatsapp" tam={20} /> Avisar por WhatsApp
+        </a>
+      </div>
+      {nota ? <p role="status">{nota}</p> : null}
     </section>
   )
 }

@@ -3,7 +3,7 @@ import { api, nuevoIntento } from '../lib/api'
 import type { CargarCasoOk } from '../lib/api'
 import type { ApiError, Disponibilidad, EstadoPropuesta, MiembroPanel } from '../lib/types'
 import { useBorradorCondiciones, useMutacion, useSondeo } from '../lib/hooks'
-import { Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
+import { Avatar, Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
 import { EditorCondiciones, ETIQUETA_VALOR } from '../components/Condiciones'
 import type { PestanaProps } from './tabs'
 
@@ -267,6 +267,7 @@ function TarjetaSimulado({
   return (
     <section className={`tarjeta tarjeta-sim sim-persona ${m.retirado ? 'sim-persona-baja' : ''}`} aria-label={`Simulación de ${m.miembro.nombre}`}>
       <div className="sim-cabeza">
+        <Avatar nombre={m.miembro.nombre} simulado={m.miembro.simulado} />
         <h2>
           <Nombre m={m.miembro} />
         </h2>

@@ -5,6 +5,7 @@ import { useAccion } from '../lib/hooks'
 import { franjaTexto, momentoCorto, ZONA_VISIBLE } from '../lib/format'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
+import { Icono } from '../components/Icono'
 import { tomarBorradorAgente } from '../agente/api'
 
 interface Formulario {
@@ -81,6 +82,11 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     void cargar()
   }, [cargar])
 
+  // Cada paso del formulario empieza arriba, como una pantalla nueva.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [paso])
+
   // Precarga solo una vez que se conoce el espacio. En el espacio demo se usan los valores del caso.
   // Si el agente dejó un borrador (se lee una sola vez), su título y sus dos franjas reemplazan esos valores.
   const precargado = useRef(false)
@@ -111,8 +117,16 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   }
   if (!espacio || !f) {
     return (
-      <div className="pantalla">
-        <Cargando texto="Preparando el formulario…" />
+      <div className="vista">
+        <section className="escena">
+          <a className="escena-volver" href={rutas.espacio(espacioId)}>
+            <Icono n="atras" tam={20} /> Volver al espacio
+          </a>
+          <h1>Nueva propuesta</h1>
+        </section>
+        <div className="hoja">
+          <Cargando texto="Preparando el formulario…" esqueleto />
+        </div>
       </div>
     )
   }
@@ -195,160 +209,226 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   }
 
   return (
-    <div className="pantalla">
-      <p>
-        <a href={rutas.espacio(espacioId)}>← {espacio.nombre}</a>
-      </p>
-      <h1>Nueva propuesta</h1>
-
-      {paso === 'editar' ? (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            revisar()
-          }}
-          noValidate
-        >
-          {desdeAgente ? (
-            <Aviso tono="info" titulo="Borrador del agente">
-              Título y franjas vienen del borrador que propuso el agente. Revisa mínimo, máximo, persona imprescindible y
-              cierre antes de crear: el agente no crea ni confirma nada.
-            </Aviso>
-          ) : null}
-          {espacio.demo && !desdeAgente ? (
-            <Aviso tono="info">
-              Valores precargados del caso "Los del asado". Puedes cambiarlos antes de revisar.{' '}
-              <button
-                type="button"
-                className="enlace"
-                onClick={() => {
-                  const tomi = espacio.miembros.find((m) => m.nombre.toLowerCase() === 'tomi')
-                  setF({ ...CASO, imprescindibleId: tomi?.miembro_id ?? form.imprescindibleId })
-                }}
-              >
-                Restablecer valores del caso
-              </button>
-            </Aviso>
-          ) : null}
-          {faltantes ? <Aviso tono="error">Completa todos los campos antes de revisar.</Aviso> : null}
-          {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} enfocar /> : null}
-
-          <label className="campo">
-            <span>Propósito de la propuesta</span>
-            <input
-              value={form.titulo}
-              onChange={(e) => poner('titulo', e.target.value)}
-              maxLength={80}
-              aria-invalid={marcado === 'titulo' || (faltantes && form.titulo.trim() === '') ? true : undefined}
-            />
-          </label>
-
-          <fieldset className={`grupo ${marcado === 'franjas' ? 'grupo-error' : ''}`}>
-            <legend>Franjas candidatas (hora de {ZONA_VISIBLE})</legend>
-            <p className="suave">Son exactamente dos. La primera tiene prioridad si ambas sirven.</p>
-            <div className="par-fechas">
-              <strong>Franja A</strong>
-              <label className="campo">
-                <span>Inicio</span>
-                <input type="datetime-local" value={form.aInicio} onChange={(e) => poner('aInicio', e.target.value)} />
-              </label>
-              <label className="campo">
-                <span>Fin</span>
-                <input type="datetime-local" value={form.aFin} onChange={(e) => poner('aFin', e.target.value)} />
-              </label>
-            </div>
-            <div className="par-fechas">
-              <strong>Franja B</strong>
-              <label className="campo">
-                <span>Inicio</span>
-                <input type="datetime-local" value={form.bInicio} onChange={(e) => poner('bInicio', e.target.value)} />
-              </label>
-              <label className="campo">
-                <span>Fin</span>
-                <input type="datetime-local" value={form.bFin} onChange={(e) => poner('bFin', e.target.value)} />
-              </label>
-            </div>
-          </fieldset>
-
-          <fieldset className={`grupo ${marcado === 'cupos' ? 'grupo-error' : ''}`}>
-            <legend>Cupos</legend>
-            <div className="par-campos">
-              <label className="campo">
-                <span>Mínimo (cuenta a quien es imprescindible)</span>
-                <input type="number" inputMode="numeric" min={2} max={20} value={form.minimo} onChange={(e) => poner('minimo', e.target.value)} />
-              </label>
-              <label className="campo">
-                <span>Máximo</span>
-                <input type="number" inputMode="numeric" min={2} max={20} value={form.maximo} onChange={(e) => poner('maximo', e.target.value)} />
-              </label>
-            </div>
-          </fieldset>
-
-          <label className={`campo ${marcado === 'imprescindible' ? 'campo-error' : ''}`}>
-            <span>Persona imprescindible (anfitrión)</span>
-            <select value={form.imprescindibleId} onChange={(e) => poner('imprescindibleId', e.target.value)}>
-              {espacio.miembros.map((m) => (
-                <option key={m.miembro_id} value={m.miembro_id}>
-                  {m.nombre}
-                  {m.simulado ? ' (Simulación)' : ''}
-                </option>
-              ))}
-            </select>
-            <small>Sin esta persona el grupo no puede confirmarse.</small>
-          </label>
-
-          <label className={`campo ${marcado === 'plazo' ? 'campo-error' : ''}`}>
-            <span>Cierre de aceptación (hora de {ZONA_VISIBLE})</span>
-            <input type="datetime-local" value={form.plazo} onChange={(e) => poner('plazo', e.target.value)} />
-            <small>El servidor decide si un plazo se cumplió; esta pantalla no lo calcula.</small>
-          </label>
-
-          <Boton type="submit" disabled={soloLectura}>
-            Revisar antes de crear
-          </Boton>
-        </form>
-      ) : (
-        <div>
-          <Aviso tono="info" titulo="Revisa antes de crear">
-            Nada se publica hasta que confirmes. Podrás volver y cambiar cualquier dato.
-          </Aviso>
-          <section className="tarjeta">
-            <dl className="datos">
-              <dt>Propósito</dt>
-              <dd>{form.titulo.trim()}</dd>
-              <dt>Franja A</dt>
-              <dd>{franjaTexto(form.aInicio, form.aFin)}</dd>
-              <dt>Franja B</dt>
-              <dd>{franjaTexto(form.bInicio, form.bFin)}</dd>
-              <dt>Zona horaria</dt>
-              <dd>{ZONA_VISIBLE}</dd>
-              <dt>Cupos</dt>
-              <dd>
-                Mínimo {form.minimo} (contando a {imprescindible?.nombre ?? 'quien es imprescindible'}), máximo {form.maximo}
-              </dd>
-              <dt>Imprescindible</dt>
-              <dd>{imprescindible?.nombre ?? '—'}</dd>
-              <dt>Cierre de aceptación</dt>
-              <dd>{momentoCorto(form.plazo)}</dd>
-            </dl>
-          </section>
-          {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} enfocar /> : null}
-          <div className="fila-botones">
-            <Boton onClick={() => void crear(true)} ocupado={ocupado || enCurso} ocupadoTexto="Creando…" disabled={soloLectura}>
-              Crear y abrir al grupo
-            </Boton>
-            <Boton variante="secundario" onClick={() => void crear(false)} ocupado={ocupado || enCurso} ocupadoTexto="Creando…" disabled={soloLectura}>
-              Crear solo el borrador
-            </Boton>
-            <Boton variante="secundario" onClick={() => setPaso('editar')} disabled={ocupado || enCurso}>
-              Volver a editar
-            </Boton>
-          </div>
-          <p className="suave">
-            "Abrir" permite que cada persona marque su interés y cargue sus condiciones. Marcar interés no suma confirmados.
-          </p>
+    <div className="vista">
+      <section className="escena" aria-labelledby="nueva-titulo">
+        <a className="escena-volver" href={rutas.espacio(espacioId)}>
+          <Icono n="atras" tam={20} /> {espacio.nombre}
+        </a>
+        <span className="escena-eyebrow">{paso === 'editar' ? 'Paso 1 de 2 · Los datos del plan' : 'Paso 2 de 2 · Revisar y crear'}</span>
+        <h1 id="nueva-titulo">Nueva propuesta</h1>
+        <p className="escena-sub">
+          {paso === 'editar'
+            ? 'Dos franjas, cupos y quién no puede faltar. Después, cada persona dice en privado si puede.'
+            : 'Nada se publica hasta que confirmes.'}
+        </p>
+        <div className="pasos-form" aria-hidden="true">
+          <span className="hecho" />
+          <span className={paso === 'revisar' ? 'hecho' : ''} />
         </div>
-      )}
+      </section>
+
+      <div className="hoja">
+        {paso === 'editar' ? (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              revisar()
+            }}
+            noValidate
+          >
+            {desdeAgente ? (
+              <Aviso tono="info" titulo="Borrador del agente">
+                Título y franjas vienen del borrador que propuso el agente. Revisa mínimo, máximo, persona imprescindible y
+                cierre antes de crear: el agente no crea ni confirma nada.
+              </Aviso>
+            ) : null}
+            {espacio.demo && !desdeAgente ? (
+              <Aviso tono="info">
+                Valores precargados del caso "Los del asado". Puedes cambiarlos antes de revisar.{' '}
+                <button
+                  type="button"
+                  className="enlace"
+                  onClick={() => {
+                    const tomi = espacio.miembros.find((m) => m.nombre.toLowerCase() === 'tomi')
+                    setF({ ...CASO, imprescindibleId: tomi?.miembro_id ?? form.imprescindibleId })
+                  }}
+                >
+                  Restablecer valores del caso
+                </button>
+              </Aviso>
+            ) : null}
+            {faltantes ? <Aviso tono="error">Completa todos los campos antes de revisar.</Aviso> : null}
+            {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} enfocar /> : null}
+
+            <fieldset className="form-seccion">
+              <legend>Qué</legend>
+              <label className="campo">
+                <span>Propósito de la propuesta</span>
+                <input
+                  value={form.titulo}
+                  onChange={(e) => poner('titulo', e.target.value)}
+                  maxLength={80}
+                  placeholder="Ej.: Asado en casa de Tomi"
+                  aria-invalid={marcado === 'titulo' || (faltantes && form.titulo.trim() === '') ? true : undefined}
+                />
+              </label>
+            </fieldset>
+
+            <fieldset className={`form-seccion ${marcado === 'franjas' ? 'grupo-error' : ''}`}>
+              <legend>Franjas candidatas (hora de {ZONA_VISIBLE})</legend>
+              <p className="suave" style={{ marginTop: 0 }}>
+                Son exactamente dos. La primera tiene prioridad si ambas sirven.
+              </p>
+              {(
+                [
+                  ['A', 'aInicio', 'aFin'],
+                  ['B', 'bInicio', 'bFin'],
+                ] as const
+              ).map(([clave, ini, fin]) => (
+                <div key={clave} className="franja-editor">
+                  <div className="franja-editor-cabeza">
+                    <span className="franja-letra" aria-hidden="true">
+                      {clave}
+                    </span>
+                    <strong>Franja {clave}</strong>
+                  </div>
+                  <div className="par-fechas-campos">
+                    <label className="campo">
+                      <span>Inicio</span>
+                      <input type="datetime-local" value={form[ini]} onChange={(e) => poner(ini, e.target.value)} />
+                    </label>
+                    <label className="campo">
+                      <span>Fin</span>
+                      <input type="datetime-local" value={form[fin]} onChange={(e) => poner(fin, e.target.value)} />
+                    </label>
+                  </div>
+                </div>
+              ))}
+            </fieldset>
+
+            <fieldset className={`form-seccion ${marcado === 'cupos' ? 'grupo-error' : ''}`}>
+              <legend>Cupos</legend>
+              <div className="cupos-fila">
+                <Contador id="cupo-minimo" etiqueta="Mínimo" ayuda="Cuenta a quien es imprescindible" valor={form.minimo} onCambio={(v) => poner('minimo', v)} />
+                <Contador id="cupo-maximo" etiqueta="Máximo" valor={form.maximo} onCambio={(v) => poner('maximo', v)} />
+              </div>
+            </fieldset>
+
+            <fieldset className="form-seccion">
+              <legend>Quién no puede faltar</legend>
+              <label className={`campo ${marcado === 'imprescindible' ? 'campo-error' : ''}`}>
+                <span>Persona imprescindible (anfitrión)</span>
+                <select value={form.imprescindibleId} onChange={(e) => poner('imprescindibleId', e.target.value)}>
+                  {espacio.miembros.map((m) => (
+                    <option key={m.miembro_id} value={m.miembro_id}>
+                      {m.nombre}
+                      {m.simulado ? ' (Simulación)' : ''}
+                    </option>
+                  ))}
+                </select>
+                <small>Sin esta persona el grupo no puede confirmarse.</small>
+              </label>
+              <label className={`campo ${marcado === 'plazo' ? 'campo-error' : ''}`}>
+                <span>Cierre de aceptación (hora de {ZONA_VISIBLE})</span>
+                <input type="datetime-local" value={form.plazo} onChange={(e) => poner('plazo', e.target.value)} />
+                <small>El servidor decide si un plazo se cumplió; esta pantalla no lo calcula.</small>
+              </label>
+            </fieldset>
+
+            <div className="barra-accion">
+              <Boton type="submit" disabled={soloLectura}>
+                Revisar antes de crear
+              </Boton>
+            </div>
+          </form>
+        ) : (
+          <div>
+            <div className="ticket">
+              <div className="ticket-cabeza">
+                <small>Propósito</small>
+                <strong>{form.titulo.trim()}</strong>
+              </div>
+              <dl className="datos">
+                <dt>Franja A</dt>
+                <dd>{franjaTexto(form.aInicio, form.aFin)}</dd>
+                <dt>Franja B</dt>
+                <dd>{franjaTexto(form.bInicio, form.bFin)}</dd>
+                <dt>Zona horaria</dt>
+                <dd>{ZONA_VISIBLE}</dd>
+                <dt>Cupos</dt>
+                <dd>
+                  Mínimo {form.minimo} (contando a {imprescindible?.nombre ?? 'quien es imprescindible'}), máximo {form.maximo}
+                </dd>
+                <dt>Imprescindible</dt>
+                <dd>{imprescindible?.nombre ?? '—'}</dd>
+                <dt>Cierre de aceptación</dt>
+                <dd>{momentoCorto(form.plazo)}</dd>
+              </dl>
+            </div>
+            <p className="suave" style={{ marginTop: 12 }}>
+              "Abrir" permite que cada persona marque su interés y cargue sus condiciones. Marcar interés no suma confirmados.
+            </p>
+            {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} enfocar /> : null}
+            <div className="fila-botones">
+              <Boton variante="secundario" onClick={() => void crear(false)} ocupado={ocupado || enCurso} ocupadoTexto="Creando…" disabled={soloLectura}>
+                Crear solo el borrador
+              </Boton>
+              <Boton variante="secundario" onClick={() => setPaso('editar')} disabled={ocupado || enCurso}>
+                Volver a editar
+              </Boton>
+            </div>
+            <div className="barra-accion">
+              <Boton onClick={() => void crear(true)} ocupado={ocupado || enCurso} ocupadoTexto="Creando…" disabled={soloLectura}>
+                Crear y abrir al grupo
+              </Boton>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/** Contador − n + para cupos. Solo ayuda a escribir el número; el servidor valida los cupos. */
+function Contador({
+  id,
+  etiqueta,
+  ayuda,
+  valor,
+  onCambio,
+}: {
+  id: string
+  etiqueta: string
+  ayuda?: string
+  valor: string
+  onCambio: (v: string) => void
+}) {
+  const n = Number(valor)
+  const mover = (d: number) => onCambio(String(Math.min(20, Math.max(2, (Number.isFinite(n) && valor !== '' ? n : 2) + d))))
+  return (
+    <div className="cupo">
+      <label htmlFor={id}>
+        <span style={{ fontWeight: 700, fontSize: '0.92rem' }}>{etiqueta}</span>
+      </label>
+      <div className="contador">
+        <button type="button" onClick={() => mover(-1)} disabled={valor !== '' && n <= 2} aria-label={`Restar uno al ${etiqueta.toLowerCase()}`}>
+          <Icono n="menos" tam={18} />
+        </button>
+        <input
+          id={id}
+          type="number"
+          inputMode="numeric"
+          min={2}
+          max={20}
+          value={valor}
+          onChange={(e) => onCambio(e.target.value)}
+          aria-describedby={ayuda ? `${id}-ayuda` : undefined}
+        />
+        <button type="button" onClick={() => mover(1)} disabled={valor !== '' && n >= 20} aria-label={`Sumar uno al ${etiqueta.toLowerCase()}`}>
+          <Icono n="mas" tam={18} />
+        </button>
+      </div>
+      {ayuda ? <small id={`${id}-ayuda`}>{ayuda}</small> : null}
     </div>
   )
 }

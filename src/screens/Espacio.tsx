@@ -2,11 +2,14 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../lib/api'
 import type { ApiError, Espacio as EspacioT, PropuestaResumen } from '../lib/types'
-import { CODIGOS_SIGUIENTE } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
 import { rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { momentoCorto } from '../lib/format'
-import { Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
+import { Avatar, AvatarPila, Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
+import { Icono } from '../components/Icono'
+import { PlanVivo } from '../components/PlanVivo'
+import { Tablero } from '../components/Tablero'
+import { enlaceInvitacion, textoInvitacion, urlWhatsApp } from '../lib/compartir'
 // El panel del agente va en su propia parte del paquete (mejora #14): se descarga solo al abrir el bloque.
 const AgentePanel = lazy(() => import('../agente/AgentePanel').then((m) => ({ default: m.AgentePanel })))
 
@@ -104,100 +107,171 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
   }
   if (!espacio) {
     return (
-      <div className="pantalla">
-        <Cargando texto="Cargando el espacio…" />
+      <div className="vista">
+        <section className="escena">
+          <a className="escena-volver" href={rutas.inicio()}>
+            <Icono n="atras" tam={20} /> Tus espacios
+          </a>
+        </section>
+        <div className="hoja">
+          <Cargando texto="Cargando el espacio…" esqueleto />
+        </div>
       </div>
     )
   }
 
   const esOrganizador = espacio.mi_rol === 'organizador'
 
+  const yoEnEspacio = espacio.miembros.find((m) => m.es_yo)
+
   return (
-    <div className="pantalla">
-      <p>
-        <a href={rutas.inicio()}>← Tus espacios</a>
-      </p>
-      {aviso ? (
-        <Aviso tono="ok" accion={<button type="button" className="btn btn-secundario" onClick={() => setAviso(null)}>Entendido</button>}>
-          {aviso}
-        </Aviso>
-      ) : null}
+    <div className="vista">
+      <section className="escena" aria-labelledby="espacio-titulo">
+        <a className="escena-volver" href={rutas.inicio()}>
+          <Icono n="atras" tam={20} /> Tus espacios
+        </a>
+        <span className="escena-eyebrow">{espacio.demo ? 'Espacio demo · datos ficticios' : 'Tu grupo'}</span>
+        <h1 id="espacio-titulo">{espacio.nombre}</h1>
+        <div className="espacio-cabeza">
+          <AvatarPila personas={espacio.miembros} max={6} />
+          <span className="suave">
+            {espacio.miembros.length} {espacio.miembros.length === 1 ? 'persona' : 'personas'}
+            {yoEnEspacio ? ` · tú: ${esOrganizador ? 'organizador' : 'miembro'}` : ''}
+          </span>
+        </div>
+        <div className="invitar">
+          <div className="invitar-codigo">
+            <span>Código de invitación</span>
+            <Tablero codigo={espacio.codigo_invitacion} />
+          </div>
+          <CopiarCodigo codigo={espacio.codigo_invitacion} espacioNombre={espacio.nombre} />
+        </div>
+      </section>
 
-      <h1>{espacio.nombre}</h1>
-
-      <section className="tarjeta">
-        <h2>Propuestas</h2>
-        {errorLista && propuestas === null ? <ErrorCaja error={errorLista} onReintentar={cargarLista} /> : null}
-        {errorLista && propuestas !== null ? (
-          <Aviso tono="aviso">No pudimos actualizar la lista. Se muestra la última información recibida.</Aviso>
+      <div className="hoja">
+        {aviso ? (
+          <Aviso tono="ok" accion={<button type="button" className="btn btn-secundario btn-chico" onClick={() => setAviso(null)}>Entendido</button>}>
+            {aviso}
+          </Aviso>
         ) : null}
-        {propuestas === null && !errorLista ? <Cargando texto="Cargando propuestas…" /> : null}
-        {propuestas && propuestas.length === 0 ? (
-          <Vacio
-            titulo="Todavía no hay propuestas"
-            texto="Crea la primera: eliges las franjas, los cupos y la persona imprescindible."
-            accion={
-              <a className="btn btn-primario" href={rutas.nueva(espacioId)} aria-disabled={soloLectura}>
-                Crear propuesta
+
+        {!espacio.demo && espacio.miembros.length < 3 ? (
+          <section className="tarjeta invitar-grupo" aria-labelledby="invitar-titulo">
+            <span className="agente-icono" aria-hidden="true">
+              <Icono n="invitar" tam={22} />
+            </span>
+            <div>
+              <h2 id="invitar-titulo">Invita a tu grupo</h2>
+              <p className="suave">
+                {espacio.miembros.length === 1 ? 'Por ahora estás solo' : `Por ahora son ${espacio.miembros.length}`} en «{espacio.nombre}».
+                Manda el enlace: cada persona entra desde su teléfono con su nombre, sin crear cuenta.
+              </p>
+              <a
+                className="btn btn-primario btn-chico"
+                href={urlWhatsApp(textoInvitacion(espacio.nombre, espacio.codigo_invitacion))}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Icono n="whatsapp" tam={18} /> Mandar invitación por WhatsApp
               </a>
-            }
-          />
+            </div>
+          </section>
         ) : null}
-        {propuestas && propuestas.length > 0 ? (
-          <>
-            <ul className="lista-tarjetas">
-              {propuestas.map((p) => (
-                <li key={p.id}>
-                  <TarjetaPropuesta p={p} espacioId={espacioId} />
-                </li>
-              ))}
-            </ul>
-            <a className="btn btn-primario" href={rutas.nueva(espacioId)}>
-              Nueva propuesta
-            </a>
-          </>
+
+        <section aria-labelledby="propuestas-titulo">
+          <div className="seccion-titulo" style={{ marginTop: 4 }}>
+            <h2 id="propuestas-titulo">Propuestas</h2>
+            {propuestas && propuestas.length > 0 ? <span className="etiqueta num">{propuestas.length}</span> : null}
+          </div>
+          {errorLista && propuestas === null ? <ErrorCaja error={errorLista} onReintentar={cargarLista} /> : null}
+          {errorLista && propuestas !== null ? (
+            <Aviso tono="aviso">No pudimos actualizar la lista. Se muestra la última información recibida.</Aviso>
+          ) : null}
+          {propuestas === null && !errorLista ? <Cargando texto="Cargando propuestas…" esqueleto /> : null}
+          {propuestas && propuestas.length === 0 ? (
+            <Vacio
+              titulo="Todavía no hay propuestas"
+              texto="Crea la primera: eliges las franjas, los cupos y la persona imprescindible."
+              accion={
+                <a className="btn btn-primario" href={rutas.nueva(espacioId)} aria-disabled={soloLectura}>
+                  <Icono n="mas" tam={20} /> Crear propuesta
+                </a>
+              }
+            />
+          ) : null}
+          {propuestas && propuestas.length > 0 ? (
+            <>
+              <ul className="lista-planes">
+                {propuestas.map((p) => (
+                  <li key={p.id}>
+                    <PlanVivo p={p} espacioId={espacioId} />
+                  </li>
+                ))}
+              </ul>
+              <div className="barra-accion">
+                <a className="btn btn-primario" href={rutas.nueva(espacioId)}>
+                  <Icono n="mas" tam={20} /> Nueva propuesta
+                </a>
+              </div>
+            </>
+          ) : null}
+        </section>
+
+        <section className="tarjeta" aria-labelledby="personas-titulo">
+          <div className="tarjeta-cabeza">
+            <h2 id="personas-titulo">Personas del espacio</h2>
+            <span className="etiqueta num">{espacio.miembros.length}</span>
+          </div>
+          <ul className="miembros">
+            {espacio.miembros.map((m) => (
+              <li key={m.miembro_id}>
+                <Avatar nombre={m.nombre} simulado={m.simulado} yo={m.es_yo} />
+                <Nombre m={m} yo={m.es_yo} />
+                {m.rol === 'organizador' ? <span className="etiqueta">organizador</span> : null}
+              </li>
+            ))}
+          </ul>
+          {espacio.demo ? <p className="suave">Espacio de demostración con datos ficticios.</p> : null}
+        </section>
+
+        {/* Agente del círculo (enmienda 4): plegado para no estorbar el recorrido de la demo. */}
+        <details className="tarjeta plegable agente-plegable" onToggle={(e) => setAgenteAbierto(e.currentTarget.open)}>
+          <summary>
+            <span className="agente-icono" aria-hidden="true">
+              <Icono n="chispa" tam={22} />
+            </span>
+            <span className="summary-texto">
+              <span>Agente del círculo</span>
+              <small>Opcional: tus preferencias y una idea de plan</small>
+            </span>
+          </summary>
+          {/* Se monta solo al abrir: plegado no hace llamadas al servidor. */}
+          {agenteAbierto ? (
+            <Suspense fallback={<Cargando texto="Cargando el agente…" />}>
+              <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} demo={espacio.demo} />
+            </Suspense>
+          ) : null}
+        </details>
+
+        {/* Enmienda 7 (E7.3): agregar simulados y reiniciar solo existen en espacios demo. */}
+        {esOrganizador && espacio.demo ? (
+          <HerramientasOrganizador espacio={espacio} deshabilitado={soloLectura} onCambio={cargarTodo} />
         ) : null}
-      </section>
-
-      <section className="tarjeta">
-        <h2>Personas del espacio</h2>
-        <ul className="miembros">
-          {espacio.miembros.map((m) => (
-            <li key={m.miembro_id}>
-              <Nombre m={m} yo={m.es_yo} />
-              {m.rol === 'organizador' ? <span className="etiqueta">organizador</span> : null}
-            </li>
-          ))}
-        </ul>
-        <p className="suave">
-          Código de invitación: <strong className="codigo">{espacio.codigo_invitacion}</strong> <CopiarCodigo codigo={espacio.codigo_invitacion} />
-        </p>
-        {espacio.demo ? <p className="suave">Espacio de demostración con datos ficticios.</p> : null}
-      </section>
-
-      {/* Agente del círculo (enmienda 4): plegado para no estorbar el recorrido de la demo. */}
-      <details className="tarjeta plegable agente-plegable" onToggle={(e) => setAgenteAbierto(e.currentTarget.open)}>
-        <summary>Agente del círculo (opcional): tus preferencias y una idea de plan</summary>
-        {/* Se monta solo al abrir: plegado no hace llamadas al servidor. */}
-        {agenteAbierto ? (
-          <Suspense fallback={<Cargando texto="Cargando el agente…" />}>
-            <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} demo={espacio.demo} />
-          </Suspense>
-        ) : null}
-      </details>
-
-      {/* Enmienda 7 (E7.3): agregar simulados y reiniciar solo existen en espacios demo. */}
-      {esOrganizador && espacio.demo ? (
-        <HerramientasOrganizador espacio={espacio} deshabilitado={soloLectura} onCambio={cargarTodo} />
-      ) : null}
+      </div>
     </div>
   )
 }
 
-function CopiarCodigo({ codigo }: { codigo: string }) {
+function CopiarCodigo({ codigo, espacioNombre }: { codigo: string; espacioNombre: string }) {
   const [copiado, setCopiado] = useState<'si' | 'no' | 'enlace' | null>(null)
+  // El botón confirma la copia por un momento ("¡Copiado!") y vuelve a su estado.
+  useEffect(() => {
+    if (copiado !== 'si') return
+    const t = window.setTimeout(() => setCopiado(null), 1800)
+    return () => window.clearTimeout(t)
+  }, [copiado])
   async function compartir() {
-    const url = `${window.location.origin}${window.location.pathname}${rutas.unirse(codigo)}`
+    const url = enlaceInvitacion(codigo)
     try {
       if (navigator.share) {
         await navigator.share({ title: 'CRUXE', text: 'Súmate al plan en CRUXE', url })
@@ -219,48 +293,34 @@ function CopiarCodigo({ codigo }: { codigo: string }) {
   }
   return (
     <>
-      <span className="fila-botones">
-        <button type="button" className="btn btn-secundario btn-chico" onClick={copiar}>
-          Copiar código
+      <div className="invitar-botones">
+        <button type="button" className={`btn btn-claro btn-chico ${copiado === 'si' ? 'btn-hecho' : ''}`} onClick={copiar}>
+          {copiado === 'si' ? (
+            <>
+              <Icono n="check" tam={18} /> ¡Copiado!
+            </>
+          ) : (
+            <>
+              <Icono n="copiar" tam={18} /> Copiar código
+            </>
+          )}
         </button>
-        <button type="button" className="btn btn-primario btn-chico" onClick={() => void compartir()}>
-          Compartir enlace
+        <button type="button" className="btn btn-blanco btn-chico" onClick={() => void compartir()}>
+          <Icono n="compartir" tam={18} /> Compartir enlace
         </button>
-      </span>
-      {copiado === 'si' ? <span role="status"> Copiado.</span> : null}
-      {copiado === 'no' ? <span role="status"> No se pudo copiar; selecciónalo a mano.</span> : null}
-      {copiado === 'enlace' ? <span role="status"> Enlace copiado: ábrelo en otro teléfono.</span> : null}
+        <a
+          className="btn btn-claro btn-chico"
+          href={urlWhatsApp(textoInvitacion(espacioNombre, codigo))}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icono n="whatsapp" tam={18} /> Invitar por WhatsApp
+        </a>
+      </div>
+      {copiado === 'si' ? <span role="status">Copiado.</span> : null}
+      {copiado === 'no' ? <span role="status">No se pudo copiar; selecciónalo a mano.</span> : null}
+      {copiado === 'enlace' ? <span role="status">Enlace copiado: ábrelo en otro teléfono.</span> : null}
     </>
-  )
-}
-
-function TarjetaPropuesta({ p, espacioId }: { p: PropuestaResumen; espacioId: string }) {
-  // Mejora #31: el estado destacado (color + punto) y "Tu turno" salen del servidor:
-  // estado de la propuesta y siguiente_accion.codigo (enmienda 3); el booleano solo como respaldo.
-  const cod = p.siguiente_accion.codigo
-  const conocido = (CODIGOS_SIGUIENTE as readonly string[]).includes(cod)
-  const turno = cod === 'te_toca_aceptar' || (!conocido && p.mi_situacion.puede_aceptar)
-  // Mejora #56: con más confirmaciones que el mínimo, "5 de 4 confirmaron" se lee raro.
-  const cuenta =
-    p.confirmados > p.minimo ? `${p.confirmados} confirmaron (mínimo ${p.minimo})` : `${p.confirmados} de ${p.minimo} confirmaron`
-  return (
-    <a className={`tarjeta tarjeta-enlace tarjeta-prop tarjeta-prop-${p.estado} ${turno ? 'tarjeta-prop-turno' : ''}`} href={rutas.propuesta(espacioId, p.id)}>
-      <span className="tarjeta-fila">
-        <span className="tarjeta-titulo">{p.titulo}</span>
-        {p.version != null ? <span className="etiqueta">Versión {p.version}</span> : null}
-      </span>
-      <span className="tp-estado">
-        <span className="estado-hero-punto" aria-hidden="true" />
-        <strong>{p.estado_etiqueta}</strong>
-        {turno ? <span className="pastilla pastilla-turno">Tu turno</span> : null}
-        {p.mi_situacion.retirado ? <span className="etiqueta">Te retiraste</span> : null}
-      </span>
-      <span className={`tarjeta-siguiente ${turno ? 'tp-siguiente-turno' : ''}`}>{p.siguiente_accion.texto}</span>
-      <span className="tarjeta-meta">
-        {p.version != null ? `${cuenta} · máx. ${p.maximo}` : `Mínimo ${p.minimo}, máximo ${p.maximo}`} ·{' '}
-        {p.plazo_vencido ? 'plazo cerrado' : `cierre ${momentoCorto(p.plazo)}`}
-      </span>
-    </a>
   )
 }
 
@@ -274,14 +334,21 @@ function HerramientasOrganizador({
   onCambio: () => Promise<void>
 }) {
   return (
-    <section className="tarjeta tarjeta-sim">
-      <h2>
-        Herramientas del organizador <span className="rotulo-sim">Simulación</span>
-      </h2>
-      <p className="suave">Solo las ves tú, como organizador del espacio.</p>
+    <details className="tarjeta tarjeta-sim plegable">
+      <summary>
+        <span className="fila-icono" aria-hidden="true">
+          <Icono n="llave" tam={20} />
+        </span>
+        <span className="summary-texto">
+          <span>
+            Herramientas del organizador <span className="rotulo-sim">Simulación</span>
+          </span>
+          <small>Solo las ves tú, como organizador del espacio.</small>
+        </span>
+      </summary>
       <AgregarSimulado espacioId={espacio.id} deshabilitado={deshabilitado} onCambio={onCambio} />
       <ReiniciarDemo espacio={espacio} deshabilitado={deshabilitado} onCambio={onCambio} />
-    </section>
+    </details>
   )
 }
 
