@@ -11,6 +11,11 @@ npm ci
 ```
 Para esta tarea NO hace falta `.env` ni acceso a Supabase: el typecheck y el build no lo necesitan. Si falta alguna dependencia, avisá; no agregues ninguna.
 
+## Coordinación (obligatoria, antes de seguir editando)
+Hay otros agentes trabajando a la vez. Leé la rama `coordinacion` de GitHub (`README.md`, `PROPIEDAD.md`, `TABLERO.md`, `agentes/`):
+`git fetch origin coordinacion && git worktree add ../cruce-coord coordinacion`.
+Editá solo `agentes/claude-b-interfaz.md` en esa rama: anotá en "Tocando ahora" las rutas de `src/` que modificás, tu estado y tus pedidos, y empujá a `coordinacion` cada ~20 minutos y al cerrar cada corte. Tus cambios de código siguen yendo a `wip/ui-enmienda`.
+
 ## Leer antes de cambiar nada
 `AGENTS.md`, `docs/contexto-proyecto.md`, `docs/contrato.md` y `docs/contrato-enmienda-2.md` (la enmienda prevalece sobre el contrato v1).
 
