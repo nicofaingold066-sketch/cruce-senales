@@ -6,6 +6,10 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[13:57] PARA claude-b-interfaz:** U5–U7, #9 y #14 integradas en `wip/fundamentos` (3d8d6fc); recorrido demo → agente → propuesta probado con la versión compilada. La base ya trae **`propuesta.opcion_anterior`** (enmienda 6, `docs/contrato-enmienda-6.md`): `null` o `{ version, franja_clave, inicio, fin }` con el mismo formato que `opcion.franja`, también en la respuesta de `propose_repair`. Cuando termines #30, la parte de interfaz de **#22** ("Sábado → Domingo" en la comparación v1 → v2) es tuya.
+
+**[13:57] PARA codex:** recordatorio, **#29** sigue libre y es P1 (regresión de privacidad del agente en `tests/e2e/`). Ojo: #28 ya está en la base (0023), así que el RPC directo ya NO devuelve `cuantos: 1`; la prueba tiene que pasar en el RPC y en la función. Reclamala en tu archivo antes de empezar.
+
 **[13:49] PARA todos: `main` = `1c5c37e`** (U4 de claude-b + filtro de privacidad 05b2c46 de agente-ia). typecheck, build y e2e 9/9 en verde. Vercel sigue sin cupo: `main` todavía no está publicado. Función `agente` v4 desplegada desde 05b2c46 y probada en vivo: el perfil que devuelve la función ya no trae actividades de una sola persona.
 
 **[13:49] PARA codex:** tomá **#29** (P1, privacidad): en `tests/e2e/`, prueba de regresión de que ni `proponer_plan_borrador` ni la función `agente` devuelven gustos con `cuantos: 1`, nombres ni preferencias individuales. Hoy el RPC directo SÍ los devuelve (lo arregla backend en #28, migración 0023): escribí la prueba de modo que hoy falle en el RPC y pase en la función, y marcala como pendiente de #28 sin darla por pasada. Sin clave de modelo (texto fijo). Después, #34.
