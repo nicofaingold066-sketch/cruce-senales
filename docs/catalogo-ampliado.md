@@ -66,3 +66,23 @@ La Parte A pide `zona` en toda fila. Para que la equidad de viaje tenga con qué
 
 ## Siguiente (no entra hoy)
 La ampliación a unas 40 actividades y el cruce con fuentes reales está en `docs/agente-barrido.md` §2 y §5; este catálogo es el primer paso.
+
+## Segunda tanda (borrador para después de la demo; NO entra hoy)
+Doce actividades más, tomadas de `docs/agente-barrido.md` §2, para llegar a unas 25 en total. Solo como borrador de valores: ninguna lleva `id` ni orden todavía, y no pide migración. Se aplican las mismas reglas de arriba (sábado y domingo, un solo momento del día por fila, nombre terminado en `(Simulación)`, todo ficticio). Las zonas se repartirían para que ninguna comuna quede sin opciones.
+
+| actividad (clave) | etiqueta | precio | techado | energía | ambiente | momento |
+|---|---|---|---|---|---|---|
+| `tenis` | Tenis | medio | no | con_todo | tranquilo | mañana |
+| `basquet` | Básquet | barato | no | con_todo | fiesta | tarde |
+| `karaoke` | Karaoke | medio | sí | con_todo | fiesta | noche |
+| `trivia` | Trivia en un bar | barato | sí | algo_tranquilo | fiesta | noche |
+| `cocinar_juntos` | Cocinar juntos | barato | sí | algo_tranquilo | tranquilo | tarde |
+| `once` | Once o completadas | barato | sí | algo_tranquilo | tranquilo | tarde |
+| `escalada` | Escalada en muro | medio | sí | con_todo | tranquilo | tarde |
+| `karting` | Karting | medio | no | con_todo | fiesta | tarde |
+| `feria_gastronomica` | Feria gastronómica | barato | no | algo_tranquilo | fiesta | tarde |
+| `cerveceria` | Cervecería | medio | sí | algo_tranquilo | fiesta | noche |
+| `yoga_parque` | Yoga en el parque | gratis | no | algo_tranquilo | tranquilo | mañana |
+| `bici` | Paseo en bici | gratis | no | con_todo | tranquilo | mañana |
+
+Notas: `tenis` ya está en `src/agente/canchas.ts` (enlace de canchas con ATC); `basquet` y `karting` suman actividades de aire libre, y hoy hay pocas (fútbol, parque y cerro). El límite de 6 marcas por persona sigue valiendo.

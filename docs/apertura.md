@@ -152,3 +152,15 @@ Cada fila dice qué falta, por qué importa y qué se encontró. No se inventa n
 - **front-juan:** usar `src/lib/ejemplos.ts` para que los placeholders y ayudas no asuman asado (detalle en la ficha `agentes/apertura.md`, mejora #92).
 - **backend:** la Parte B de la enmienda 10 (`docs/catalogo-ampliado.md`) hace que los escenarios 2.2, 2.6 y 2.8 tengan cena, juegos en casa, café y cine entre las candidatas.
 - **Para el pitch (agente-ia, dueño de `docs/pitch*.md`):** la lámina de §3 y la cinta de juntadas.
+
+## 6. Respuestas de 30 segundos para el jurado
+Cada una se dice en voz alta en menos de medio minuto. Ninguna promete lo que CRUXE no hace hoy.
+
+- **"¿Esto es solo para asados?"** No. El asado fue el caso de la demo porque ahí empezó el problema. Lo que CRUXE resuelve es que un grupo no logra cerrar un plan: cada uno pone sus condiciones en privado, el servidor propone una sola opción, cada uno confirma esa versión y, si alguien se baja, se rearma. Eso es igual para un cine, un pádel o una cena.
+- **"¿Y con un equipo de deporte?"** Es el caso más exigente en cupos: cuatro para dobles, ni uno más ni uno menos. CRUXE ya trabaja con mínimo y máximo, plazo y reparación cuando falta uno. El agente puede sugerir pádel o fútbol y un enlace a canchas, nunca "hay cancha".
+- **"¿Y con la familia?"** La familia mueve gente: el auto de uno lleva a tres. Con la enmienda 10, cada persona dice en privado cómo se mueve y hasta dónde viaja, y el plan elige un lugar al que todos llegan sin que nadie se entere de quién no tiene auto.
+- **"¿Y si alguien no puede pagar?"** El presupuesto es privado. El grupo ve "este plan cabe en el presupuesto del grupo", nunca de quién fue la restricción.
+- **"¿Funciona para un grupo grande?"** El cupo máximo es 20. A mayor tamaño, más peso tienen zona y tiempo máximo. Lo que no hacemos hoy es repartir gastos ni reservar.
+- **"¿Y si es algo que se repite, como un club de lectura?"** Cada reunión es un plan nuevo con su propia versión. Lo que falta es que el agente varíe el lugar según lo que el grupo ya hizo; eso está estudiado en `docs/agente-barrido.md` y no está construido.
+- **"¿Sirve para otras cosas, como turnos de cuidado?"** Es la misma lógica, pero no es lo que construimos: el caso 06 es social. Lo mencionamos como camino futuro, junto con auto compartido y voluntariado, y no lo prometemos.
+- **"¿Qué pasa si el catálogo no tiene mi actividad?"** El catálogo de la demo es de simulación (cada lugar dice "Simulación"). La fecha, el cupo y la confirmación funcionan igual para cualquier actividad que el organizador escriba; el agente solo sugiere sobre lo que tiene en el catálogo.
