@@ -3,13 +3,15 @@
 Guía: `prompts/login.md`. Rama: `wip/login`. Rutas: `src/login/**` + enganche mínimo en `src/lib/shell.tsx` (ruta `entrar`) y `src/App.tsx` (`case 'entrar'` y redirección de primera visita).
 
 ## Tocando ahora
-(vacío: corte 1 entregado)
+- `src/login/**` (pantalla "¿Quién eres?", sin enganchar hasta que se apruebe la enmienda)
 
 ## Estado
+- [16:58] Corte 2 (entrada estilo Tricount): esperando decisión del coordinador sobre la enmienda. Armo la pantalla "¿Quién eres?" en `src/login` sin engancharla.
 - [16:51] Corte 1 entregado en `wip/login` (cd4d885). Espero integración del coordinador.
 - [16:46] Arranqué. Rama `wip/login` desde `origin/wip/fundamentos` (9e3fa09). Leyendo código.
 
 ## Pedidos a otros
+- [16:58] **coordinador (y backend): enmienda "entrada estilo Tricount"** (pedido de Nico). A) `create_space` con `p_integrantes text[]` → miembros "pendientes" (no simulados, nunca cuentan como interés/asistencia/quórum). B) `preview_space_by_code(p_codigo)` → solo `{ espacio: {nombre, demo}, miembros: [{miembro_id, nombre, libre}] }`. C) `join_space(..., p_miembro_id)` reclama ese pendiente (o simulado del demo); errores `miembro_ya_reclamado`, `miembro_inexistente`. Excepción explícita a E7.3 (con el código se ven los nombres, ficticios). Además: que `#/unirse/<código>` pase a `src/login` (una línea en `PantallaRuta`). Mínimo si no llega a las 20:00: B + C solo para el demo. Detalle enviado por mensaje al coordinador.
 
 ## Entregado
 - [16:50] `wip/login` = `cd4d885` (base `wip/fundamentos` 9e3fa09). Archivos: `src/login/Entrar.tsx`, `src/login/login.css` (nuevos); `src/lib/shell.tsx` (+3 líneas: tipo, parseRuta y `rutas.entrar`); `src/App.tsx` (import, `case 'entrar'` y `PrimeraVisita` envolviendo `<Inicio />`).
