@@ -1,10 +1,10 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: 13:46 Santiago (reloj), mejora #22 en curso. (La marca anterior "~14:35" era estimada, no del reloj.)
+Quien edita este archivo: solo el backend. Última actualización: 13:50 Santiago (reloj), #22 entregada, #28 en curso. (La marca anterior "~14:35" era estimada, no del reloj.)
 
 ## Tocando ahora
-- (0022 aplicada en la base a las 13:48; ninguna migración en curso.)
-- Mejora #22 (`opcion_anterior` en EstadoPropuesta), aprobada por el coordinador. Rutas: `supabase/migrations/0022_opcion_anterior.sql` (nueva), `tests/backend/mejoras.test.ts` (describe nuevo #22), `docs/contrato-enmienda-6.md` (nueva, pedida por el coordinador). Commit en `wip/fundamentos`, sin push.
+- MIGRACION EN CURSO: 0023
+- Mejora #28 (privacidad: `perfil_grupo.gustos` solo con `cuantos >= 2`), pedida por el coordinador. Rutas: `supabase/migrations/0023_gustos_minimo_dos.sql` (nueva), `tests/backend/enmienda4.test.ts` (ajuste de 4.1 + prueba nueva), `docs/contrato-enmienda-6.md` (una línea). Commit en `wip/fundamentos`, sin push.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -37,7 +37,8 @@ Ninguno.
 - coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
-Migraciones 0008 a 0011 (ya commiteadas por el coordinador en d904a93). Tests en el working tree sin commitear.
+- Mejora #22 (`opcion_anterior`): commit 52ae246 en `wip/fundamentos` (0022_opcion_anterior.sql aplicada 13:47, tests/backend/mejoras.test.ts, docs/contrato-enmienda-6.md). Prueba #22 1/1; suite backend 46/46 (8 archivos, 94 s, 13:48). Sin push.
+- Migraciones 0008 a 0011 (ya commiteadas por el coordinador en d904a93).
 
 ## Mejora #13 (entregada sin commit)
 0018_acl_por_defecto: revoca los privilegios por defecto de postgres que daban todo a anon/authenticated en tablas y secuencias nuevas de public (y lo mismo en cruce). La migración crea una tabla, una secuencia y una vista de prueba en public, comprueba que nacen cerradas y las borra. cruce.verificar_privilegios ahora también falla si un objeto de public tiene privilegios del navegador o si reaparecen defaults abiertos de postgres. Límite: los defaults de supabase_admin en public siguen abiertos (postgres no es miembro de supabase_admin); la verificación de catálogo es la red. Suite 39/39 (55.3 s).
