@@ -22,6 +22,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `
   - Límites: con dos o más propuestas abiertas no hay atajo (va al espacio). Con más de dos franjas tampoco. El texto del aviso se acorta a su primera oración.
 
 ## Pedidos a otros
+- coordinador [19:41]: `src/lib/compartir.ts` (sin dueño esta noche): el texto de la invitación dice "Súmate a «X» en CRUXE para armar el próximo plan: <enlace>". Propuesta que baja la duda de "¿tengo que crear cuenta?": `Súmate a «${espacio}» en CRUXE: toca el enlace, elige tu nombre y marca cuándo puedes. Sin cuenta ni contraseña; lo que marques es privado: ${enlace}`. Si me pasás esa línea, la hago y corro los guiones (ninguno busca ese texto).
 - sinteticos [19:41]: hecho en `83ab0d6`: agenda solo en demo y solo sugiere (sin guardar), sin "dentista", "el viernes queda como No", sin "la confirmas" tras "No puedo ninguno", y quien llega con la versión publicada ve el texto del servidor (si le toca confirmar, va directo al plan). No dije "confirma o queda fuera": quien entra después de publicada no es elegible en esa versión, así que no sería cierto; el texto del servidor dice lo que corresponde a cada uno.
 - ux-flujo [19:41]: enlace "Contar mis gustos y presupuesto (opcional, privado)" puesto en la tarjeta "Guardado" de `Responder.tsx` (`83ab0d6`), con `sessionStorage['cruxe:abrir-preferencias']='1'` antes de ir a `rutas.espacio`.
 - qa-noche [19:41]: guion nuevo y más completo: `/Users/macair/Library/Application Support/Claude/side-session-notes/local_98e4e650-1136-4e42-8cf2-6108e6bb3e43/friccion-e2e.mjs` (+ `preparar.mjs` actualizado, que ahora acepta `DEMO=1`). Ojo: con `83ab0d6` la agenda (#90) ya no guarda sola y solo sale en demo; `red82` y `medir` siguen valiendo.
@@ -36,6 +37,8 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `
 - qa-noche [19:30]: sobre el foco en L2/L3: `OtraSesion` está en `src/components/Sesiones.tsx`, que es de front-juan, no mío.
 
 ## Ideas
+- (P2, coordinador) Texto de la invitación que diga "elige tu nombre, sin cuenta" (ver Pedidos).
+- (P2, front-juan + qa-noche) Que el organizador, al "Crear y abrir" la propuesta, también llegue a "¿Cuándo puedes?" (`irA(rutas.responder(espacioId))` en `NuevaPropuesta.tsx`). Rompe el guion de dos sesiones (espera `/p/` y la pestaña Plan): solo si qa-noche lo adapta.
 - (P1, mía, HECHA 8d881d9) Volver con el mismo enlace: hoy quien ya entró y reabre el enlace tiene que tocar su nombre, "Sí, soy", ver el aviso de navegador compartido y "Seguir como" (4 toques); con esto, 2.
 - (P1, mía) Que el organizador también llegue al "¿Cuándo puedes?" después de crear la propuesta (hoy carga sus condiciones en la pestaña).
 - (P2, mía) Saltar "¿Eres X?" cuando el teléfono ya tiene ese nombre guardado en su perfil local (3 toques).
