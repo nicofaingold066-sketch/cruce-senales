@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import { ayudaError } from '../lib/api'
 import type { ApiError, EstadoClave, MiembroRef } from '../lib/types'
 
 export function RotuloSimulacion() {
@@ -63,7 +64,11 @@ export function ErrorCaja({
   return (
     <Aviso
       tono="error"
-      titulo={titulo ?? (error.sinConexion ? 'Sin conexión' : 'No se pudo completar')}
+      titulo={titulo ?? (error.sinConexion
+          ? 'Sin conexión'
+          : error.resultadoIncierto
+            ? 'No pudimos confirmar el resultado'
+            : 'No se pudo completar')}
       accion={
         onReintentar && error.reintentable ? (
           <button type="button" className="btn btn-secundario" onClick={onReintentar}>
@@ -73,6 +78,7 @@ export function ErrorCaja({
       }
     >
       {error.mensaje}
+      {ayudaError(error) ? <p className="suave">{ayudaError(error)}</p> : null}
     </Aviso>
   )
 }
