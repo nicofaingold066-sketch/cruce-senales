@@ -41,6 +41,25 @@ function escaparIcs(t: string): string {
     .replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '')
 }
 
+/** RFC 5545 §3.1: líneas de hasta 75 octetos; las largas siguen en la línea siguiente, que empieza con un espacio. */
+function plegarIcs(linea: string): string {
+  const partes: string[] = []
+  let actual = ''
+  let bytes = 0
+  for (const c of linea) {
+    const n = new TextEncoder().encode(c).length
+    if (bytes + n > (partes.length ? 74 : 75)) {
+      partes.push(actual)
+      actual = ''
+      bytes = 0
+    }
+    actual += c
+    bytes += n
+  }
+  partes.push(actual)
+  return partes.join('\r\n ')
+}
+
 /** Descarga un .ics con la franja confirmada. Devuelve false si los datos no alcanzan para armarlo. */
 export function descargarCalendario(ev: { id: string; titulo: string; inicioUtc: string; finUtc: string; descripcion: string }): boolean {
   const ini = fechaIcs(ev.inicioUtc)
@@ -60,10 +79,23 @@ export function descargarCalendario(ev: { id: string; titulo: string; inicioUtc:
     `DTEND:${fin}`,
     `SUMMARY:${escaparIcs(ev.titulo)}`,
     `DESCRIPTION:${escaparIcs(ev.descripcion)}`,
+    // psico §12 U3/U4: dos recordatorios del propio calendario (la víspera y dos horas antes). CRUXE no manda avisos.
+    'BEGIN:VALARM',
+    'ACTION:DISPLAY',
+    'TRIGGER:-P1D',
+    `DESCRIPTION:${escaparIcs(`Mañana: ${ev.titulo}. Calcula tu viaje con unos 15 minutos de margen.`)}`,
+    'END:VALARM',
+    'BEGIN:VALARM',
+    'ACTION:DISPLAY',
+    'TRIGGER:-PT2H',
+    `DESCRIPTION:${escaparIcs(`En dos horas: ${ev.titulo}.`)}`,
+    'END:VALARM',
     'END:VEVENT',
     'END:VCALENDAR',
     '',
-  ].join('\r\n')
+  ]
+    .map(plegarIcs)
+    .join('\r\n')
   try {
     const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }))
     const a = document.createElement('a')
