@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- 14:12: actualizar Figma (pantallas reales con #2, #7, #8, #9, #22, #30, #31) para el pitch. Fuera del repo: no toco código mientras tanto.
+(vacío)
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
@@ -65,6 +65,8 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- Figma actualizado (14:18): página **"Pantallas v2"** en https://www.figma.com/design/RgQLomDluDvf2fBSlbaGUU con 10 pantallas reales del recorrido (portada, invitación, espacio, tu turno, Simulación, en revisión, v1 → v2, historial, tu plan, agente), para el pitch.
+- Arreglo `0fd761d` (14:18): con un plan activo la portada oculta los botones de demo (en el segundo teléfono, "Probar la demo" le creaba a Luna otra demo donde era Tomi). Recorrido 11/11.
 - **#15** sondeo liviano (interfaz): `6df9595` (14:12). La propuesta manda el último `rev_vista`; quieta → 3 de 3 sondeos cortos (~172 bytes); tras un cambio llega la completa. Recorrido 11/11.
 - **#22** comparación v1 → v2 con "Sábado → Domingo" (`opcion_anterior`, enmienda 6): `a294210` (14:09). En vivo; recorrido 11/11.
 - **#31** tarjetas del espacio con estado destacado: `a1fa96b` (14:07). Franja de color por estado, "Tu turno" por `siguiente_accion.codigo`, próxima acción del servidor en negrita en tu turno. En vivo con Luna y Tomi; recorrido 11/11.
