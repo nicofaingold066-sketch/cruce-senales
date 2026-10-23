@@ -238,6 +238,9 @@ function TarjetaPropuesta({ p, espacioId }: { p: PropuestaResumen; espacioId: st
   const cod = p.siguiente_accion.codigo
   const conocido = (CODIGOS_SIGUIENTE as readonly string[]).includes(cod)
   const turno = cod === 'te_toca_aceptar' || (!conocido && p.mi_situacion.puede_aceptar)
+  // Mejora #56: con más confirmaciones que el mínimo, "5 de 4 confirmaron" se lee raro.
+  const cuenta =
+    p.confirmados > p.minimo ? `${p.confirmados} confirmaron (mínimo ${p.minimo})` : `${p.confirmados} de ${p.minimo} confirmaron`
   return (
     <a className={`tarjeta tarjeta-enlace tarjeta-prop tarjeta-prop-${p.estado} ${turno ? 'tarjeta-prop-turno' : ''}`} href={rutas.propuesta(espacioId, p.id)}>
       <span className="tarjeta-fila">
@@ -252,7 +255,7 @@ function TarjetaPropuesta({ p, espacioId }: { p: PropuestaResumen; espacioId: st
       </span>
       <span className={`tarjeta-siguiente ${turno ? 'tp-siguiente-turno' : ''}`}>{p.siguiente_accion.texto}</span>
       <span className="tarjeta-meta">
-        {p.version != null ? `${p.confirmados} de ${p.minimo} confirmaron · máx. ${p.maximo}` : `Mínimo ${p.minimo}, máximo ${p.maximo}`} ·{' '}
+        {p.version != null ? `${cuenta} · máx. ${p.maximo}` : `Mínimo ${p.minimo}, máximo ${p.maximo}`} ·{' '}
         {p.plazo_vencido ? 'plazo cerrado' : `cierre ${momentoCorto(p.plazo)}`}
       </span>
     </a>
