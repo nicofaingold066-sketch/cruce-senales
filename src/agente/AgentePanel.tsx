@@ -4,6 +4,7 @@
 //    si quiere, lo lleva a la pantalla de nueva propuesta. El agente nunca crea ni confirma nada.
 // Para engancharla: <AgentePanel espacioId={...} esOrganizador={...} soloLectura={...} />.
 import { useCallback, useEffect, useState } from 'react'
+import { api } from '../lib/api'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto } from '../lib/format'
 import { irA, rutas } from '../lib/shell'
@@ -196,11 +197,30 @@ function CopiarMensaje({ texto }: { texto: string }) {
   )
 }
 
+/**
+ * Enlace wa.me con el mensaje del agente y el enlace de invitación (mejora #25). No es una integración:
+ * abre WhatsApp con el texto escrito y la persona decide si lo manda. El texto solo trae el plan, nada privado.
+ */
+function enlaceWhatsApp(mensaje: string, invitacion: string | null): string {
+  const texto = invitacion ? `${mensaje} ${invitacion}` : mensaje
+  return `https://wa.me/?text=${encodeURIComponent(texto)}`
+}
+
 function etiquetaOpcion(c: CandidataAgente): string {
   return `${c.actividad_etiqueta} · ${c.lugar.nombre.replace(' (Simulación)', '')}`
 }
 
-function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: BorradorAgente; soloLectura?: boolean }) {
+function BorradorTarjeta({
+  espacioId,
+  b,
+  soloLectura,
+  invitacion,
+}: {
+  espacioId: string
+  b: BorradorAgente
+  soloLectura?: boolean
+  invitacion: string | null
+}) {
   const [seleccion, setSeleccion] = useState(b.elegida_id)
   const elegida = b.candidatas.find((c) => c.id === seleccion) ?? b.candidatas[0]
   const esLaDestacada = elegida.id === b.elegida_id
@@ -278,7 +298,15 @@ function BorradorTarjeta({ espacioId, b, soloLectura }: { espacioId: string; b: 
           <strong>Mensaje para el grupo: </strong>
           {mensaje}
         </p>
-        <CopiarMensaje key={mensaje} texto={mensaje} />
+        <div className="fila-botones agente-compartir">
+          <CopiarMensaje key={mensaje} texto={mensaje} />
+          {soloLectura ? null : (
+            <a className="btn btn-primario btn-chico" href={enlaceWhatsApp(mensaje, invitacion)} target="_blank" rel="noopener noreferrer">
+              Compartir por WhatsApp
+            </a>
+          )}
+        </div>
+        <small>WhatsApp sirve para avisar; las respuestas y la confirmación se hacen en CRUXE.</small>
       </div>
       <p className="suave">
         {deModelo
@@ -301,7 +329,17 @@ const CLIMA_DEMO: { v: ClimaElegido; texto: string }[] = [
   { v: 'lluvia', texto: 'Simular lluvia' },
 ]
 
-function ProponerPlan({ espacioId, soloLectura, demo }: { espacioId: string; soloLectura?: boolean; demo?: boolean }) {
+function ProponerPlan({
+  espacioId,
+  soloLectura,
+  demo,
+  invitacion,
+}: {
+  espacioId: string
+  soloLectura?: boolean
+  demo?: boolean
+  invitacion: string | null
+}) {
   const [sabado, setSabado] = useState(SABADO_DEL_CASO)
   const [clima, setClima] = useState<ClimaElegido>('real')
   const [resultado, setResultado] = useState<ResultadoAgente | null>(null)
@@ -375,7 +413,7 @@ function ProponerPlan({ espacioId, soloLectura, demo }: { espacioId: string; sol
           Con las preferencias cargadas no hay un plan del catálogo que le sirva a todos. Por privacidad no se muestran los motivos.
         </Aviso>
       ) : null}
-      {resultado?.tipo === 'borrador' ? <BorradorTarjeta espacioId={espacioId} b={resultado} soloLectura={soloLectura} /> : null}
+      {resultado?.tipo === 'borrador' ? <BorradorTarjeta espacioId={espacioId} b={resultado} soloLectura={soloLectura} invitacion={invitacion} /> : null}
     </div>
   )
 }
@@ -392,6 +430,21 @@ export function AgentePanel({
   /** Espacio de demostración: muestra el selector de clima de simulación (la función igual lo comprueba). */
   demo?: boolean
 }) {
+  // Enlace de invitación del espacio, para sumarlo al mensaje de WhatsApp. Si no se puede leer, va sin enlace.
+  const [invitacion, setInvitacion] = useState<string | null>(null)
+  useEffect(() => {
+    if (!esOrganizador) return
+    let vivo = true
+    void api.getSpace(espacioId).then((r) => {
+      if (vivo && r.ok) {
+        setInvitacion(`${window.location.origin}${window.location.pathname}${rutas.unirse(r.data.espacio.codigo_invitacion)}`)
+      }
+    })
+    return () => {
+      vivo = false
+    }
+  }, [espacioId, esOrganizador])
+
   return (
     <>
       <section className="tarjeta">
@@ -404,7 +457,7 @@ export function AgentePanel({
           <p className="suave">
             Lee las preferencias de todo el grupo, mira el clima y un catálogo de lugares (de Simulación) y te propone opciones que le sirven a todos. Propone, pero no decide por nadie.
           </p>
-          <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} />
+          <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} invitacion={invitacion} />
         </section>
       ) : null}
     </>
