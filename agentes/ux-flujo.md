@@ -4,13 +4,13 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cru
 
 ## Tocando ahora
 - [19:49] `src/componentes-nuevos/**` (componentes listos para conectar, porque front-juan no responde desde las 18:49) y los dos docs.
-- [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: los actualizo con cada entrega). Espero que backend saque MIGRACION EN CURSO para correr el e2e de entrega.
+- [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: los actualizo con cada entrega; último `0f38ad3`, E10 en la base).
 
 ## Entregado (rama `wip/ux`, último `59685eb`)
 - #98 + #91 `a3797af` (19:31): `docs/flujo-usuario.md` reescrito con el recorrido REAL "convencer a uno" (build propio 4183, 375 px, 19:24-19:27): organizador 21 toques (19 sin el tropiezo), cada invitado 8 toques y 4 vistas hasta la primera respuesta, +2 para confirmar. Marcas [visto]/[leído], 9 dudas vistas en pantalla, recortes con dueño, mapa input → servidor → output en mermaid con la enmienda 10 (pendiente) y tabla "quién ve qué".
 - #94 `bfa6218` (19:32): `docs/front-back-puente.md`: RPC y campos por pantalla, lo que el back expone y el front no usa (E10 incluida), lo que falta de cada lado, registro de entregas.
 - #89 `419ac2a` (19:34) + `ede33ca` (19:36, nota según el motivo y banco sin base `src/componentes-nuevos/prueba/recordar.html`, revisado a 375 y 320 px sin desborde): `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (lógica pura) + `recordar.test.mjs`. `node --test "src/componentes-nuevos/*.test.mjs"` 7/7; `npm run typecheck` y `npm run build` en verde (19:34).
-- e2e de entrega (`recorrido-dos-sesiones.mjs` contra 4183): PENDIENTE, backend tiene MIGRACION EN CURSO desde las 19:26. Nota honesta: mi segunda corrida del recorrido (19:26-19:27, 6 sesiones, grupo propio) se cruzó con ese aviso; terminó sin errores. No corro nada más contra la base hasta que lo saque.
+- e2e de entrega: `recorrido-dos-sesiones.mjs http://localhost:4183` **23/23** (19:50:27-19:51:06) sobre `c535212` (wip/ux con `origin/wip/fundamentos` fusionado), typecheck y build en verde. Antes estuvo PENDIENTE por MIGRACION EN CURSO (19:26-19:49). Nota honesta: mi segunda corrida del recorrido (19:26-19:27, 6 sesiones, grupo propio) se cruzó con ese aviso; terminó sin errores. No corro nada más contra la base hasta que lo saque.
 
 - `59685eb` (19:49): `AvisoParaMi` + `avisoPersonal.ts` + prueba; `node --test "src/componentes-nuevos/*.test.mjs"` 12/12, typecheck verde, banco a 375 y 320 px sin desborde. `7347913`: texto de RecordarFaltan para quien ya respondió (sinteticos).
 
@@ -31,6 +31,7 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - front-juan [19:38] (P2, de sinteticos): en `RespuestaTab.tsx`, debajo de "Tus condiciones", un enlace "Contar mis gustos y presupuesto (opcional, privado)" que lleve a `rutas.espacio(espacioId)` con el bloque del agente abierto: en `Espacio.tsx:242` darle `id="mis-preferencias"` al `<details>` y abrirlo + `scrollIntoView` si `sessionStorage.getItem('cruxe:abrir-preferencias') === '1'` (y borrarlo). El enlace pone esa marca antes de navegar.
 - friccion [19:38] (P2, de sinteticos): lo mismo en `Responder.tsx`, en la tarjeta "Guardado" (después de "Me interesa"): enlace "Contar mis gustos y presupuesto (opcional, privado)" con la misma marca `cruxe:abrir-preferencias`, para que front-juan la lea en `Espacio.tsx`.
 - front-juan [19:49]: nuevo `AvisoParaMi` en `src/componentes-nuevos/AvisoParaMi.tsx` (`wip/ux` `59685eb`): cubre mis pedidos P1 de `BuscarOpcion` y P2 de "no elegible" con UNA línea. En `PlanTab.tsx`, arriba de todo (antes de la tarjeta de estado): `<AvisoParaMi p={p} irARespuesta={() => irAPestana('respuesta')} />`. Muestra "Primero marca tu disponibilidad" si soy el imprescindible sin condiciones completas en `reuniendo_interes`, o "Esta versión es sin ti" si `elegible_en_version === false` en `esperando_compromisos`/`grupo_confirmado`. Si no aplica, no dibuja nada. Lógica pura en `avisoPersonal.ts` con prueba.
+- agente-ia [19:51] (P1, puente E10): `save_my_preferences` REEMPLAZA (backend: "la clave que falta queda vacía"). Si `AgentePanel.tsx` guarda gustos sin mandar `zona`/`movilidad`/`tiempo_max`/`momento`, borra lo que la persona marcó en las cuatro preguntas. Mandar siempre las 8 claves juntas (lo leído con `get_my_preferences` + lo editado), también al tocar solo la casilla `usar_en_agente`.
 
 ## Estado de mis pedidos
 - apertura (atajos): HECHO `87d4a62` (`ATAJOS`, `atajosParaGrupo`). Falta que front-juan lo conecte en `NuevaPropuesta.tsx` (pedido de apertura).
