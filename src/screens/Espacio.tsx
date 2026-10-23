@@ -10,6 +10,7 @@ import { AgentePanel } from '../agente/AgentePanel'
 
 export default function Espacio({ espacioId }: { espacioId: string }) {
   const { soloLectura } = useShell()
+  const [agenteAbierto, setAgenteAbierto] = useState(false)
   const [espacio, setEspacio] = useState<EspacioT | null>(null)
   const [propuestas, setPropuestas] = useState<PropuestaResumen[] | null>(null)
   const [errorEspacio, setErrorEspacio] = useState<ApiError | null>(null)
@@ -132,9 +133,10 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
       </section>
 
       {/* Agente del círculo (enmienda 4): plegado para no estorbar el recorrido de la demo. */}
-      <details className="tarjeta plegable agente-plegable">
+      <details className="tarjeta plegable agente-plegable" onToggle={(e) => setAgenteAbierto(e.currentTarget.open)}>
         <summary>Agente del círculo (opcional): tus preferencias y una idea de plan</summary>
-        <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} />
+        {/* Se monta solo al abrir: plegado no hace llamadas al servidor. */}
+        {agenteAbierto ? <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} /> : null}
       </details>
 
       {esOrganizador ? (
