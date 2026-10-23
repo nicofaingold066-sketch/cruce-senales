@@ -3,9 +3,11 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-(vacío)
+- `src/styles.css`, `src/components/**`, `src/screens/**`, `src/App.tsx`, `src/lib/shell.tsx` (plan sin red del aviso 11:21: teléfono 320-430 px, estados de carga/vacío/error/sin conexión, accesibilidad, textos del caso canónico)
+- No toco `src/lib/api.ts` ni `src/lib/types.ts` salvo que haga falta (aviso antes).
 
 ## Estado
+11:2x: trabajando el plan sin red (aviso 11:21). Integrada mi rama en wip/fundamentos por el coordinador; yo traje `origin/wip/fundamentos` a `wip/ui-enmienda`.
 Corte "interfaz enmienda 2" (rama de código `wip/ui-enmienda`): los 7 puntos hechos. Ajuste de `mi_situacion.motivo_aceptar` hecho. `npm run typecheck` y `npm run build` pasan. Traída `origin/wip/fundamentos` (AGENTS.md actualizado) a mi rama.
 
 ## Hecho
