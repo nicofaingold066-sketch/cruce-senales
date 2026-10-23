@@ -23,7 +23,7 @@ Otro tipo o valor fuera de la lista: `entrada_incompleta/preferencias_invalidas`
 
 ### Cómo decide `proponer_plan_borrador` (reglas fijas, solo filas con `usar_en_agente`)
 1. **Minutos de cada persona** con `zona` y `movilidad` hacia la zona de cada candidata: `auto_*` → modo `auto`; `transporte_publico` → `transporte_publico`; `bici_o_pie` → `bici_o_pie`; `me_llevan` → `auto` si las personas con `auto_con_lugar` suman al menos `ceil(N_me_llevan / 3)` (cada auto con lugar lleva hasta 3), si no → `transporte_publico`.
-2. **Descarta** la candidata si a alguien con `tiempo_max` sus minutos lo superan (`60` no descarta nunca). Si todas quedan descartadas por viaje, responde igual que hoy cuando no hay candidatas, con un motivo nuevo en el borrador: `"sin_lugar_cerca_para_todos"` (sin decir para quién).
+2. **Descarta** la candidata si a alguien con `tiempo_max` sus minutos lo superan (`60` no descarta nunca). Si todas quedan descartadas por viaje, responde `sin_plan_compatible` con `motivo: "sin_lugar_cerca_para_todos"` (sin decir para quién; ver Aclaraciones).
 3. **Equidad**: entre las que quedan, a igualdad del puntaje actual gana la de **menor viaje máximo**, y después la de menor suma. Además resta 1 punto por cada 15 minutos de viaje máximo por encima de 30.
 4. **Momento del día** (no descarta): suma 2 puntos por cada persona cuyo `momento` coincide con el inicio de la franja de la candidata (`da_igual` no suma).
 5. Personas sin `zona` o sin `movilidad` no entran en el cálculo de viaje (no se les inventa nada).
@@ -33,6 +33,11 @@ Otro tipo o valor fuera de la lista: `entrada_incompleta/preferencias_invalidas`
 - `perfil_grupo` **no** suma totales de zona, movilidad ni momento (en un grupo chico delatan).
 - La función `agente` puede pasar al modelo **solo** `viaje.max_minutos`. Nada de zonas, modos ni "alguien necesita que lo lleven".
 - `simulate_save_preferences` y las semillas del demo: los simulados del demo reciben zona, movilidad, tiempo y momento ficticios para que el demo muestre "queda a menos de N minutos para todos". `reset_demo` los repone. Luna (reclamable) sigue sin semillas.
+
+### Aclaraciones de forma (coordinador, a pedido de agente-ia, antes de migrar)
+- **`tiempo_max` va como texto** (`"15"`, `"30"`, `"45"`, `"60"`), igual que las demás claves de lista cerrada. Un número (`15`) da `preferencias_invalidas`.
+- **`viaje` va en cada candidata**: `candidatas[i].viaje = { "max_minutos": n, "estimado": true }` o `null`, con la misma regla de 4 personas. El `viaje` de arriba del borrador es igual al de la primera candidata. La interfaz muestra el de la candidata elegida; la función `agente` pasa al modelo solo el `max_minutos` de cada opción.
+- **Sin candidatas por viaje**: `resultado = { "tipo": "sin_plan_compatible", "motivo": "sin_lugar_cerca_para_todos" }`. Si no quedan candidatas por otra razón, `resultado` sigue siendo `{ "tipo": "sin_plan_compatible" }` sin `motivo` (como hoy).
 
 ## Parte B (si entra antes de las 23:00): catálogo más amplio
 Para no quedar atados al asado: se amplía `catalogo_agente.actividad` y la lista cerrada de `me_gustaria` con, como mínimo: `cena` (restaurante), `bar`, `juegos_casa` (juegos de mesa o cocinar en casa), `cine`, `cultura` (museo, feria, charla), `juegos_salida` (bowling o escape room), `cerro` (trekking urbano), `cafe` (once o brunch). Una entrada ficticia por actividad, con `lugar_nombre` terminado en `(Simulación)`, zona, precio, techado, energía, ambiente y horarios (que haya de mañana, tarde y noche). Mismas reglas de privacidad y de "gustos solo con 2 o más". Migración aparte de la Parte A, para poder descartarla sola.
