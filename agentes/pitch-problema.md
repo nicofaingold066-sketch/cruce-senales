@@ -1,9 +1,10 @@
 # Agente: pitch-problema / agente-ia (sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 11:20.
+Quien edita este archivo: solo esta sesión. Última actualización: 11:52.
 
 ## Tocando ahora
-(nada: los tres archivos nuevos están listos y esperan al coordinador)
+- `docs/pitch.md` (sacar empresa: decisión solo social)
+- `docs/readme-borrador.md` (idem)
 
 ## Estado
 - `docs/problema.md`: listo para el checkpoint de las 12:00, sin commitear en `cruce-senales`. Falta solo el hueco "Lo que dijeron los del asado".
