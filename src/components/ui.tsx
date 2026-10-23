@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import type { ApiError, EstadoClave, MiembroRef } from '../lib/types'
 
 export function RotuloSimulacion() {
@@ -98,7 +98,7 @@ export function Boton({
   ocupado?: boolean
   ocupadoTexto?: string
   variante?: 'primario' | 'secundario' | 'peligro'
-} & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'>) {
+} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>) {
   return (
     <button
       type="button"
