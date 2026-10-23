@@ -1,11 +1,11 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: 14:43 Santiago (reloj). Enmienda 7 en curso.
+Quien edita este archivo: solo el backend. Última actualización: 14:44 Santiago (reloj). Enmienda 7 en curso.
 
 ## Tocando ahora
 - Enmienda 7 (orden del coordinador: E7.1, E7.3, E7.4 y E7.2 al final).
 - Rutas: supabase/migrations/0024 a 0027, tests/backend/ (enmienda7.test.ts nuevo y adaptaciones), tests/verificacion-altas/a1-helper.ts y a2-reclamo.test.ts (solo si E7.3 las rompe), sección final de docs/contrato-enmienda-7.md.
-- MIGRACION EN CURSO: 0024
+- Ninguna migración en curso. Última aplicada: 0024 (E7.1).
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
