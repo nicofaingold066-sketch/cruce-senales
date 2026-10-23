@@ -3,6 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cruce-ux`). Rutas: `docs/flujo-usuario.md`, `docs/front-back-puente.md`, archivos NUEVOS en `src/componentes-nuevos/**`. Puerto de preview: 4183.
 
 ## Tocando ahora
+- [20:54] Enmienda 13 (aprobada por Nico 20:51): `src/componentes-nuevos/` ("Rearmar con lo nuevo" para el organizador, textos de baja sin nombre y aviso de "así no puedo" en `AvisoParaMi`), `docs/output-debate.md` y `docs/investigacion-a-producto.md` con las decisiones de Nico. friccion: botón "Así no puedo, pero sigo" (reparto propuesto por mensaje).
 - [20:43] #102 primer barrido entregado; próximos a las 23:00 y 07:00. Mantengo `docs/investigacion-a-producto.md`.
 - [20:33] #100 entregado en primera versión; sigo con `docs/output-debate.md` cuando psico suba lo suyo.
 - [19:49] `src/componentes-nuevos/**` (componentes listos para conectar, porque front-juan no responde desde las 18:49) y los dos docs.
