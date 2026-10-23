@@ -5,7 +5,7 @@ Dueño: agente-ia. Estado al viernes 23 oct 2026, 16:55: **construido, integrado
 **En una frase:** el agente lee los gustos de todo el grupo, mira el clima y propone hasta 3 planes que le sirven a todos. Propone, pero no decide por nadie y nunca ve lo que puso cada uno.
 
 ## 1. Cómo funciona
-1. **Cada integrante carga sus preferencias, en privado,** con opciones cerradas: presupuesto, energía, ambiente, si prefiere techo y qué le gustaría (asado, pádel, fútbol, parque, fiesta). No hay texto libre ni datos de salud o de dinero.
+1. **Cada integrante carga sus preferencias, en privado,** con opciones cerradas: presupuesto, energía, ambiente, si prefiere techo y qué le gustaría (asado, pádel, fútbol, parque, fiesta). No hay texto libre ni datos de salud o de dinero. Una casilla, marcada por defecto, dice "Que el agente use mis preferencias": si la desmarca, el agente no las usa y nadie puede distinguirla de alguien que no guardó (enmienda 8, mejora #72).
 2. **El organizador toca "Que el agente proponga"** y elige el fin de semana.
 3. **El servidor (Postgres) elige con reglas fijas.** Lee las preferencias de todos y descarta lo que no le sirve a alguien: precio por encima del presupuesto más bajo, o aire libre si llueve y alguien pidió techo. Después ordena por gustos, ritmo, ambiente y clima. Devuelve hasta 3 **candidatas** y un **perfil del grupo** hecho solo de totales.
 4. **La IA coordina** (si hay clave). Con un carácter comprensivo, empático, amable, ejecutivo y de buen coordinador, elige una de las candidatas y escribe el porqué y un mensaje para invitar al grupo. Nunca recibe datos de una persona.
@@ -60,7 +60,7 @@ Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y
 |---|---|
 | Función del servidor (clima, candidatas, IA, validación) | `supabase/functions/agente/index.ts`; la lógica pura y sus pruebas en `logica.ts` y `logica.test.ts` |
 | Pantalla (preferencias, propuesta, opciones, WhatsApp) | `src/agente/AgentePanel.tsx`, `src/agente/api.ts`, `src/agente/agente.css` |
-| Base: tablas `cruce.preferencias` y `cruce.catalogo_agente`; RPC `save_my_preferences`, `get_my_preferences`, `proponer_plan_borrador` y `simulate_save_preferences` | `supabase/migrations/0014` a `0016`, `0019`, `0020` y `0023` (gustos de una sola persona) |
+| Base: tablas `cruce.preferencias` y `cruce.catalogo_agente`; RPC `save_my_preferences`, `get_my_preferences`, `proponer_plan_borrador` y `simulate_save_preferences` | `supabase/migrations/0014` a `0016`, `0019`, `0020`, `0023` (gustos de una sola persona) y `0031` (`usar_en_agente`, enmienda 8) |
 | Contrato | `docs/contrato-enmienda-4.md` (con la 4.1) y `docs/contrato-enmienda-5.md` |
 
 ## 6. Cómo se cuida la demo
