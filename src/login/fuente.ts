@@ -8,6 +8,4 @@ export const fuenteReal: FuenteEntrada = {
     return r.ok ? { ok: true, data: { espacio: r.data.espacio, miembros: r.data.miembros } } : r
   },
   unirse: (codigo, nombre, miembroId) => api.joinSpace(codigo, nombre, miembroId),
-  // Fase 2 (create_space con integrantes): todavía no aplicada; hasta entonces se crea sin integrantes.
-  crear: (nombre, tuNombre) => api.createSpace(nombre, 'amigos', tuNombre),
 }

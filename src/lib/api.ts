@@ -271,8 +271,14 @@ export const api = {
   serverInfo: () => llamar<ServerInfoOk>('server_info', {}, false),
 
   // 1.1 - 1.7 Espacios
-  createSpace: (nombre: string, tipo: TipoEspacio, nombreVisible: string) =>
-    llamar<CrearEspacioOk>('create_space', { p_nombre: nombre, p_tipo: tipo, p_nombre_visible: nombreVisible }, true),
+  createSpace: (nombre: string, tipo: TipoEspacio, nombreVisible: string, integrantes?: string[]) =>
+    llamar<CrearEspacioOk>(
+      'create_space',
+      integrantes && integrantes.length > 0
+        ? { p_nombre: nombre, p_tipo: tipo, p_nombre_visible: nombreVisible, p_integrantes: integrantes }
+        : { p_nombre: nombre, p_tipo: tipo, p_nombre_visible: nombreVisible },
+      true,
+    ),
   joinSpace: (codigo: string, nombreVisible: string, miembroId?: string | null) =>
     llamar<UnirseOk>(
       'join_space',

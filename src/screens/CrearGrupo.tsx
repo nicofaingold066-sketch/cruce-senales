@@ -7,6 +7,7 @@ import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { recordarNombreSiFalta, usePerfil } from '../lib/perfil'
 import { Aviso, Boton, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
+import { CampoIntegrantes } from '../login/Integrantes'
 
 // Crear un grupo propio (un "espacio" del contrato). Solo lo social: el tipo queda fijo en "amigos"
 // (decisión de Nico y Juan, 11:51). Después se invita con el enlace desde la pantalla del grupo.
@@ -16,6 +17,8 @@ export default function CrearGrupo() {
   const perfil = usePerfil()
   const [nombre, setNombre] = useState('')
   const [visible, setVisible] = useState(() => perfil?.nombre ?? '')
+  // Enmienda 9 (fase 2, sesión login): los nombres del grupo; cada uno elige el suyo al abrir la invitación.
+  const [integrantes, setIntegrantes] = useState<string[]>([])
   const tipo: TipoEspacio = 'amigos'
   const { ocupado, error, ejecutar } = useAccion()
   const faltan = nombre.trim() === '' || visible.trim() === ''
@@ -23,7 +26,9 @@ export default function CrearGrupo() {
   async function hacer(e: FormEvent) {
     e.preventDefault()
     if (faltan) return
-    const r = await ejecutar(`crear:${nombre}:${tipo}:${visible}`, () => api.createSpace(nombre.trim(), tipo, visible.trim()))
+    const r = await ejecutar(`crear:${nombre}:${tipo}:${visible}:${integrantes.join('|')}`, () =>
+      api.createSpace(nombre.trim(), tipo, visible.trim(), integrantes),
+    )
     if (r?.ok) {
       recordarNombreSiFalta(visible)
       dejarAviso(`Creaste «${nombre.trim()}». Ahora invita a tu grupo: comparte el enlace o el código.`)
@@ -55,6 +60,7 @@ export default function CrearGrupo() {
               <small>Así te van a ver los demás en este grupo.</small>
             </label>
           </fieldset>
+          <CampoIntegrantes integrantes={integrantes} cambiar={setIntegrantes} tuNombre={visible} />
           <Aviso tono="info">
             Vas a ser quien organiza: creas las propuestas y buscas la opción compatible. Las condiciones de cada persona son
             privadas, también para ti.

@@ -1,8 +1,10 @@
 // Banco de prueba de la entrada estilo Tricount, sin base: la API es falsa y en memoria (datos ficticios).
-// Abrir con el servidor de desarrollo: /src/login/prueba/quien.html?vista=quien | crear
+// Abrir con el servidor de desarrollo: /src/login/prueba/quien.html?vista=quien | crear (solo el campo de integrantes)
 import { createRoot } from 'react-dom/client'
 import '../../styles.css'
-import { CrearConIntegrantes, QuienEres } from '../QuienEres'
+import { QuienEres } from '../QuienEres'
+import { CampoIntegrantes } from '../Integrantes'
+import { useState } from 'react'
 import type { FuenteEntrada } from '../QuienEres'
 import type { ApiError } from '../../lib/types'
 
@@ -40,17 +42,18 @@ const fuente: FuenteEntrada = {
     }
     return { ok: false, error: fallo('banco', 'Banco de prueba: aquí se entraría al espacio.') }
   },
-  async crear(nombre, tuNombre, integrantes) {
-    llamadas.push(`crear:${nombre}:${tuNombre}:${integrantes.join('|')}`)
-    await espera(300)
-    return { ok: false, error: fallo('banco', 'Banco de prueba: aquí se crearía el espacio.') }
-  },
+}
+
+function Crear() {
+  const [lista, setLista] = useState<string[]>([])
+  ;(window as unknown as { lista: string[] }).lista = lista
+  return <CampoIntegrantes integrantes={lista} cambiar={setLista} tuNombre="Tomi" />
 }
 
 const p = new URLSearchParams(location.search)
 const vista = p.get('vista') ?? 'quien'
 createRoot(document.getElementById('root')!).render(
   <main className="contenido">
-    {vista === 'crear' ? <CrearConIntegrantes fuente={fuente} /> : <QuienEres codigo={p.get('codigo') ?? 'KQ7M2XPA'} fuente={fuente} />}
+    {vista === 'crear' ? <Crear /> : <QuienEres codigo={p.get('codigo') ?? 'KQ7M2XPA'} fuente={fuente} />}
   </main>,
 )

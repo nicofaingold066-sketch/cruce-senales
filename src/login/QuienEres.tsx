@@ -2,15 +2,18 @@
 // invitación (#/unirse/<código>), cada persona elige quién es. Desde ahí la sesión anónima de ese teléfono queda
 // ligada a ese miembro. Debajo de la lista sigue el formulario de siempre ("No estoy en la lista"), con los mismos
 // nombres accesibles que usan los guiones e2e, y el aviso de navegador compartido (#47).
-// Las pantallas reciben la API como `fuente` (src/login/fuente.ts), así el banco de prueba corre sin base.
+// La pantalla recibe la API como `fuente` (src/login/fuente.ts), así el banco de prueba corre sin base.
+// Crear un grupo con integrantes (fase 2) está en src/screens/CrearGrupo.tsx con CampoIntegrantes (src/login).
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
-import type { CrearEspacioOk, UnirseOk } from '../lib/api'
+import type { UnirseOk } from '../lib/api'
 import type { ApiError, ApiResult } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { entrarComoOtraPersona, leerGuardada } from '../lib/sesiones'
+import { leerPerfil, recordarNombreSiFalta, usePerfil } from '../lib/perfil'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
+import { Icono } from '../components/Icono'
 import { marcarConEspacios } from './estado'
 import './login.css'
 
@@ -31,13 +34,11 @@ export interface FuenteEntrada {
   verPorCodigo: (codigo: string) => Promise<ApiResult<VistaPorCodigo>>
   /** miembroId null: "No estoy en la lista" (se une con el nombre escrito, como siempre). */
   unirse: (codigo: string, nombre: string, miembroId: string | null) => Promise<ApiResult<UnirseOk>>
-  crear: (nombre: string, tuNombre: string, integrantes: string[]) => Promise<ApiResult<CrearEspacioOk>>
 }
 
-const MAX_INTEGRANTES = 12
-
-function entrarAlEspacio(r: UnirseOk['resultado'], nombre: string, porLista: boolean, sesionGuardada?: string) {
+function entrarAlEspacio(r: UnirseOk['resultado'], espacio: string, nombre: string, porLista: boolean, sesionGuardada?: string) {
   marcarConEspacios()
+  recordarNombreSiFalta(nombre)
   const extra = sesionGuardada ? ` ${sesionGuardada}` : ''
   if (r.reclamo_asiento_simulado) {
     // Mismo texto que la portada (los guiones lo buscan).
@@ -46,6 +47,8 @@ function entrarAlEspacio(r: UnirseOk['resultado'], nombre: string, porLista: boo
     dejarAviso(`Entraste como ${nombre}. Este teléfono queda como ${nombre}: lo que marques después es privado.${extra}`)
   } else if (sesionGuardada) {
     dejarAviso(`Entraste como ${nombre}.${extra}`)
+  } else {
+    dejarAviso(`Te uniste a «${espacio}» como ${nombre}. Cuando haya un plan, marca si te interesa y carga en privado cuándo puedes.`)
   }
   irA(rutas.espacio(r.espacio_id))
 }
@@ -97,7 +100,7 @@ function useUnirse(fuente: FuenteEntrada) {
       setYaMiembro({ intento: i, espacioId: r.data.resultado.espacio_id, espacio: r.data.espacio.nombre, nombreActual: yo?.nombre ?? 'otra persona' })
       return
     }
-    entrarAlEspacio(r.data.resultado, i.nombre, i.miembroId != null, sesionGuardada)
+    entrarAlEspacio(r.data.resultado, r.data.espacio.nombre, i.nombre, i.miembroId != null, sesionGuardada)
   }
   return { ocupado, error, origen, yaMiembro, setYaMiembro, unirse }
 }
@@ -207,86 +210,99 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
   const errorLista = u.origen === 'lista' ? u.error : null
   const yaLista = u.origen === 'lista' ? u.yaMiembro : null
   return (
-    <div className="pantalla entrada">
-      <h1 ref={titulo} tabIndex={-1} className="portada-lema">
-        {vista ? '¿Quién eres?' : 'Te invitaron a un plan'}
-      </h1>
-      {/* El nombre del espacio va fuera de los títulos: los guiones esperan el título del espacio para saber que ya se entró. */}
-      {vista ? <p className="quien-espacio">en «{vista.espacio.nombre}»</p> : null}
-      <p className="portada-sub">Elige tu nombre. Este teléfono quedará como esa persona; no pedimos correo ni contraseña.</p>
+    <div className="vista">
+      <section className="escena escena-invitacion" aria-labelledby="quien-titulo">
+        <span className="escena-eyebrow">Invitación a CRUXE</span>
+        <h1 id="quien-titulo" ref={titulo} tabIndex={-1}>
+          {vista ? '¿Quién eres?' : 'Te invitaron a un plan'}
+        </h1>
+        {/* El nombre del espacio va fuera de los títulos: los guiones esperan el título del espacio para saber que ya se entró. */}
+        {vista ? <p className="quien-espacio">en «{vista.espacio.nombre}»</p> : null}
+        <p className="escena-sub">Elige tu nombre. Este teléfono quedará como esa persona; no pedimos correo ni contraseña.</p>
+      </section>
+      <div className="hoja">
+        {!vista && !errorVista ? <Cargando texto="Buscando tu grupo…" /> : null}
+        {errorVista ? (
+          <ErrorCaja error={errorVista} onReintentar={() => void cargar()} titulo={vista ? 'No se pudo actualizar la lista' : 'No se pudo cargar la lista del grupo'} />
+        ) : null}
 
-      {!vista && !errorVista ? <Cargando texto="Buscando tu grupo…" /> : null}
-      {errorVista ? (
-        <ErrorCaja error={errorVista} onReintentar={() => void cargar()} titulo={vista ? 'No se pudo actualizar la lista' : 'No se pudo cargar la lista del grupo'} />
-      ) : null}
+        {vista && elegido ? (
+          <section className="tarjeta entrada-opcion entrada-principal" aria-labelledby="quien-confirmar">
+            <h2 id="quien-confirmar">¿Eres {elegido.nombre}?</h2>
+            <p className="suave">
+              Este teléfono queda como {elegido.nombre} en «{vista.espacio.nombre}». Lo que marques después es privado.
+            </p>
+            <div className="entrada-botones">
+              <Boton
+                autoFocus
+                onClick={() => void u.unirse({ codigo, nombre: elegido.nombre, miembroId: elegido.miembro_id, origen: 'lista' })}
+                ocupado={u.ocupado && u.origen === 'lista'}
+                ocupadoTexto="Entrando…"
+                disabled={soloLectura}
+              >
+                Sí, soy {elegido.nombre}
+              </Boton>
+              <Boton variante="secundario" onClick={() => setElegido(null)} disabled={u.ocupado}>
+                Elegir otro nombre
+              </Boton>
+            </div>
+            {errorLista ? <ErrorCaja error={errorLista} enfocar /> : null}
+            {yaLista ? <AvisoYaMiembro ya={yaLista} unirse={u.unirse} cerrar={() => u.setYaMiembro(null)} /> : null}
+          </section>
+        ) : null}
 
-      {vista && elegido ? (
-        <section className="tarjeta entrada-opcion entrada-principal" aria-labelledby="quien-confirmar">
-          <h2 id="quien-confirmar">¿Eres {elegido.nombre}?</h2>
-          <p className="suave">
-            Este teléfono queda como {elegido.nombre} en «{vista.espacio.nombre}». Lo que marques después es privado.
-          </p>
-          <div className="entrada-botones">
-            <Boton
-              autoFocus
-              onClick={() => void u.unirse({ codigo, nombre: elegido.nombre, miembroId: elegido.miembro_id, origen: 'lista' })}
-              ocupado={u.ocupado && u.origen === 'lista'}
-              ocupadoTexto="Entrando…"
-              disabled={soloLectura}
+        {vista && !elegido ? (
+          <section aria-labelledby="quien-lista">
+            <h2 id="quien-lista" className="entrada-subtitulo">
+              Integrantes
+            </h2>
+            {errorLista?.detalle === 'miembro_ya_reclamado' ? <ErrorCaja error={errorLista} /> : null}
+            <ul className="quien-lista">
+              {vista.miembros.map((m) => (
+                <li key={m.miembro_id}>
+                  <button
+                    type="button"
+                    className="btn btn-secundario quien-nombre"
+                    disabled={!m.libre || soloLectura}
+                    onClick={() => setElegido(m)}
+                    aria-describedby={m.libre ? undefined : `ya-${m.miembro_id}`}
+                  >
+                    {m.nombre}
+                  </button>
+                  {m.libre ? null : (
+                    <span id={`ya-${m.miembro_id}`} className="suave quien-tomado">
+                      no disponible
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+            {vista.miembros.every((m) => !m.libre) ? <p className="suave">Ya no queda ningún nombre libre en la lista.</p> : null}
+            <button
+              type="button"
+              className="btn btn-secundario entrada-enlace"
+              onClick={() => {
+                const f = document.getElementById('unirse')
+                f?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                campoNombre.current?.focus({ preventScroll: true })
+              }}
             >
-              Sí, soy {elegido.nombre}
-            </Boton>
-            <Boton variante="secundario" onClick={() => setElegido(null)} disabled={u.ocupado}>
-              Elegir otro nombre
-            </Boton>
+              No estoy en la lista
+            </button>
+          </section>
+        ) : null}
+
+        <UnirseConNombre codigoInicial={codigo} u={u} campoNombre={campoNombre} deshabilitado={soloLectura} />
+        <div className="privado" role="note">
+          <span className="privado-icono" aria-hidden="true">
+            <Icono n="candado" tam={20} />
+          </span>
+          <div>
+            <strong>Sin contraseña ni correo</strong>
+            <p>Tu sesión queda guardada en este teléfono. Lo que marques sobre cuándo puedes lo ve solo el servidor.</p>
           </div>
-          {errorLista ? <ErrorCaja error={errorLista} enfocar /> : null}
-          {yaLista ? <AvisoYaMiembro ya={yaLista} unirse={u.unirse} cerrar={() => u.setYaMiembro(null)} /> : null}
-        </section>
-      ) : null}
-
-      {vista && !elegido ? (
-        <section aria-labelledby="quien-lista">
-          <h2 id="quien-lista" className="entrada-subtitulo">
-            Integrantes
-          </h2>
-          {errorLista?.detalle === 'miembro_ya_reclamado' ? <ErrorCaja error={errorLista} /> : null}
-          <ul className="quien-lista">
-            {vista.miembros.map((m) => (
-              <li key={m.miembro_id}>
-                <button
-                  type="button"
-                  className="btn btn-secundario quien-nombre"
-                  disabled={!m.libre || soloLectura}
-                  onClick={() => setElegido(m)}
-                  aria-describedby={m.libre ? undefined : `ya-${m.miembro_id}`}
-                >
-                  {m.nombre}
-                </button>
-                {m.libre ? null : (
-                  <span id={`ya-${m.miembro_id}`} className="suave quien-tomado">
-                    no disponible
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-          {vista.miembros.every((m) => !m.libre) ? <p className="suave">Ya no queda ningún nombre libre en la lista.</p> : null}
-          <button
-            type="button"
-            className="btn btn-secundario entrada-enlace"
-            onClick={() => {
-              const f = document.getElementById('unirse')
-              f?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              campoNombre.current?.focus({ preventScroll: true })
-            }}
-          >
-            No estoy en la lista
-          </button>
-        </section>
-      ) : null}
-
-      <UnirseConNombre codigoInicial={codigo} u={u} campoNombre={campoNombre} deshabilitado={soloLectura} />
+        </div>
+      </div>
     </div>
   )
 }
@@ -304,7 +320,11 @@ function UnirseConNombre({
   deshabilitado: boolean
 }) {
   const [codigo, setCodigo] = useState(codigoInicial)
-  const [nombre, setNombre] = useState('')
+  const [nombre, setNombre] = useState(() => leerPerfil()?.nombre ?? '')
+  const perfil = usePerfil()
+  useEffect(() => {
+    if (perfil) setNombre((n) => n || perfil.nombre)
+  }, [perfil])
   const error = u.origen === 'formulario' ? u.error : null
   const ya = u.origen === 'formulario' ? u.yaMiembro : null
   const codigoMal = error?.detalle === 'codigo_inexistente'
@@ -322,7 +342,7 @@ function UnirseConNombre({
   }
 
   return (
-    <form id="unirse" className="tarjeta entrada-opcion" onSubmit={hacer} noValidate aria-labelledby="unirse-titulo">
+    <form id="unirse" className="tarjeta unirse" onSubmit={hacer} noValidate aria-labelledby="unirse-titulo">
       <h2 id="unirse-titulo">Unirme con un código</h2>
       <p className="suave">¿No estás en la lista? Escribe tu nombre y entras como una persona nueva.</p>
       <label className={`campo ${codigoMal ? 'campo-error' : ''}`}>
@@ -354,109 +374,6 @@ function UnirseConNombre({
       </Boton>
       {error ? <ErrorCaja error={error} enfocar={!nombreMal} /> : null}
       {ya ? <AvisoYaMiembro ya={ya} unirse={u.unirse} cerrar={() => u.setYaMiembro(null)} /> : null}
-    </form>
-  )
-}
-
-/** Crear el espacio con los nombres del grupo (cada uno se reclama después desde su teléfono). */
-export function CrearConIntegrantes({ fuente }: { fuente: FuenteEntrada }) {
-  const { soloLectura } = useShell()
-  const [nombre, setNombre] = useState('')
-  const [tuNombre, setTuNombre] = useState('')
-  const [nuevo, setNuevo] = useState('')
-  const [integrantes, setIntegrantes] = useState<string[]>([])
-  const [aviso, setAviso] = useState<string | null>(null)
-  const { ocupado, error, ejecutar } = useAccion()
-  const campoNuevo = useRef<HTMLInputElement>(null)
-  const faltan = nombre.trim() === '' || tuNombre.trim() === ''
-
-  function agregar() {
-    const n = nuevo.trim()
-    if (!n) return
-    const igual = (a: string) => a.trim().toLocaleLowerCase('es') === n.toLocaleLowerCase('es')
-    if (igual(tuNombre) || integrantes.some(igual)) {
-      setAviso(`${n} ya está en la lista.`)
-    } else if (integrantes.length >= MAX_INTEGRANTES) {
-      setAviso(`Hasta ${MAX_INTEGRANTES} personas por ahora.`)
-    } else {
-      setIntegrantes([...integrantes, n])
-      setNuevo('')
-      setAviso(`Agregaste a ${n}.`)
-    }
-    campoNuevo.current?.focus()
-  }
-
-  async function hacer(e: FormEvent) {
-    e.preventDefault()
-    if (faltan) return
-    const r = await ejecutar(`crear:${nombre}:${tuNombre}:${integrantes.join('|')}`, () =>
-      fuente.crear(nombre.trim(), tuNombre.trim(), integrantes),
-    )
-    if (r?.ok) {
-      marcarConEspacios()
-      irA(rutas.espacio(r.data.resultado.espacio_id))
-    }
-  }
-
-  return (
-    <form className="tarjeta entrada-opcion" onSubmit={hacer} noValidate aria-labelledby="crear-grupo">
-      <h2 id="crear-grupo">Crear un espacio</h2>
-      <label className="campo">
-        <span>Nombre del espacio</span>
-        <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} />
-      </label>
-      <label className="campo">
-        <span>Tu nombre en el espacio</span>
-        <input value={tuNombre} onChange={(e) => setTuNombre(e.target.value)} maxLength={30} autoComplete="off" />
-      </label>
-      <label className="campo">
-        <span>Agregar a alguien del grupo</span>
-        <input
-          ref={campoNuevo}
-          value={nuevo}
-          onChange={(e) => setNuevo(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              agregar()
-            }
-          }}
-          maxLength={30}
-          autoComplete="off"
-        />
-        <small>Solo un nombre o apodo. Cada persona elige el suyo al abrir la invitación.</small>
-      </label>
-      <Boton variante="secundario" onClick={agregar} disabled={nuevo.trim() === ''}>
-        Agregar
-      </Boton>
-      <p className="visualmente-oculto" aria-live="polite">
-        {aviso}
-      </p>
-      {integrantes.length > 0 ? (
-        <ul className="quien-integrantes" aria-label="Integrantes que agregaste">
-          {integrantes.map((n) => (
-            <li key={n}>
-              <span>{n}</span>
-              <button
-                type="button"
-                className="btn btn-secundario btn-chico"
-                aria-label={`Quitar a ${n}`}
-                onClick={() => {
-                  setIntegrantes(integrantes.filter((x) => x !== n))
-                  setAviso(`Quitaste a ${n}.`)
-                  campoNuevo.current?.focus()
-                }}
-              >
-                Quitar
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-      <Boton type="submit" ocupado={ocupado} ocupadoTexto="Creando…" disabled={faltan || soloLectura}>
-        Crear espacio
-      </Boton>
-      {error ? <ErrorCaja error={error} enfocar /> : null}
     </form>
   )
 }
