@@ -264,6 +264,12 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
 
 function CopiarCodigo({ codigo, espacioNombre }: { codigo: string; espacioNombre: string }) {
   const [copiado, setCopiado] = useState<'si' | 'no' | 'enlace' | null>(null)
+  // El botón confirma la copia por un momento ("¡Copiado!") y vuelve a su estado.
+  useEffect(() => {
+    if (copiado !== 'si') return
+    const t = window.setTimeout(() => setCopiado(null), 1800)
+    return () => window.clearTimeout(t)
+  }, [copiado])
   async function compartir() {
     const url = enlaceInvitacion(codigo)
     try {
@@ -288,8 +294,16 @@ function CopiarCodigo({ codigo, espacioNombre }: { codigo: string; espacioNombre
   return (
     <>
       <div className="invitar-botones">
-        <button type="button" className="btn btn-claro btn-chico" onClick={copiar}>
-          <Icono n="copiar" tam={18} /> Copiar código
+        <button type="button" className={`btn btn-claro btn-chico ${copiado === 'si' ? 'btn-hecho' : ''}`} onClick={copiar}>
+          {copiado === 'si' ? (
+            <>
+              <Icono n="check" tam={18} /> ¡Copiado!
+            </>
+          ) : (
+            <>
+              <Icono n="copiar" tam={18} /> Copiar código
+            </>
+          )}
         </button>
         <button type="button" className="btn btn-blanco btn-chico" onClick={() => void compartir()}>
           <Icono n="compartir" tam={18} /> Compartir enlace

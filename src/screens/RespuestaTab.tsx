@@ -4,6 +4,7 @@ import type { ApiError, Condiciones, EstadoPropuesta } from '../lib/types'
 import { useBorradorCondiciones, useMutacion } from '../lib/hooks'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
+import { vibrar } from '../lib/tacto'
 import { EditorCondiciones } from '../components/Condiciones'
 import type { PestanaProps } from './tabs'
 
@@ -50,7 +51,10 @@ function Interes({ p, viva, soloLectura }: VivaProps) {
   async function marcar(v: boolean) {
     setNota(null)
     const r = await correr(`interes:${p.id}:${v}`, () => api.markInterest(p.id, v))
-    if (r?.ok) setNota(v ? 'Marcaste "Me interesa". Esto no es una confirmación.' : 'Quitamos tu interés. Puedes volver a marcarlo cuando quieras.')
+    if (r?.ok) {
+      vibrar(10)
+      setNota(v ? 'Marcaste "Me interesa". Esto no es una confirmación.' : 'Quitamos tu interés. Puedes volver a marcarlo cuando quieras.')
+    }
   }
   return (
     <section className="tarjeta">
@@ -114,6 +118,7 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
     setGuardado(false)
     const r = await correr(`cond:${p.id}:${JSON.stringify(b.draft)}`, () => api.saveMyConditions(p.id, b.draft))
     if (r?.ok) {
+      vibrar(10)
       setCond(r.data.condiciones)
       setGuardado(true)
     }

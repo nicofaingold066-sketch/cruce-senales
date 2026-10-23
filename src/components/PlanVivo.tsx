@@ -29,7 +29,10 @@ export function PlanVivo({ p, espacioId, espacioNombre }: { p: PropuestaResumen;
         <InsigniaEstado estado={p.estado} etiqueta={p.estado_etiqueta} />
         {conVersion ? <span className="etiqueta num">Versión {p.version}</span> : null}
       </span>
-      <span className="pv-titulo">{p.titulo}</span>
+      {/* Mismo nombre de transición que el título de la pantalla del plan: el título "viaja" al abrirlo. */}
+      <span className="pv-titulo" style={{ viewTransitionName: `plan-${p.id}` }}>
+        {p.titulo}
+      </span>
       {turno || p.mi_situacion?.retirado ? (
         <span className="pv-estado">
           {turno ? <span className="pastilla pastilla-turno">Tu turno</span> : null}

@@ -9,6 +9,7 @@ import { Icono } from '../components/Icono'
 import { Confeti } from '../components/Confeti'
 import { Resaltado } from '../components/Resaltado'
 import { descargarCalendario, urlWhatsApp } from '../lib/compartir'
+import { vibrar } from '../lib/tacto'
 
 export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaProps) {
   const enRevision = p.estado === 'en_revision'
@@ -149,7 +150,8 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
 
   async function aceptar() {
     // Siempre se envía la versión que la persona está viendo, nunca una calculada.
-    await correr(`aceptar:${p.id}:${o.version}`, (intento) => api.acceptVersion(p.id, o.version, intento))
+    const r = await correr(`aceptar:${p.id}:${o.version}`, (intento) => api.acceptVersion(p.id, o.version, intento))
+    if (r?.ok) vibrar([14, 50, 22])
   }
 
   return (

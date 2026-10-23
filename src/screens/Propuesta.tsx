@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { api } from '../lib/api'
 import type { Espacio, EstadoPropuesta } from '../lib/types'
 import { CODIGOS_SIGUIENTE } from '../lib/types'
@@ -38,6 +39,20 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
   const p = viva.propuesta
   const [espacio, setEspacio] = useState<Espacio | null>(null)
   const [pestana, setPestana] = useState<Pestana>('plan')
+  // Indicador que se desliza bajo la pestaña activa (control segmentado). Se mide del DOM; no decide nada.
+  const carril = useRef<HTMLDivElement>(null)
+  const [indicador, setIndicador] = useState<CSSProperties>({ opacity: 0 })
+  const conDatos = viva.propuesta != null
+  useLayoutEffect(() => {
+    const medir = () => {
+      const el = carril.current?.querySelector<HTMLElement>('[aria-selected="true"]')
+      if (!el) return
+      setIndicador({ width: el.offsetWidth, transform: `translateX(${el.offsetLeft}px)`, opacity: 1 })
+    }
+    medir()
+    window.addEventListener('resize', medir)
+    return () => window.removeEventListener('resize', medir)
+  }, [pestana, conDatos, espacio?.demo])
   const [avisoVersion, setAvisoVersion] = useState<number | null>(null)
   // Aviso dejado por la pantalla anterior (por ejemplo, "se creó pero no se pudo abrir").
   const [avisoPrevio, setAvisoPrevio] = useState<string | null>(() => tomarAviso())
@@ -126,7 +141,9 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
         <a className="escena-volver" href={rutas.espacio(espacioId)}>
           <Icono n="atras" tam={20} /> {espacio?.nombre ?? 'Volver al espacio'}
         </a>
-        <h1 id="propuesta-titulo">{p.titulo}</h1>
+        <h1 id="propuesta-titulo" style={{ viewTransitionName: `plan-${p.id}` }}>
+          {p.titulo}
+        </h1>
         <Cuando p={p} />
         <Cruce nodos={escena.nodos} valor={escena.valor} etiqueta={escena.etiqueta} fraccion={escena.fraccion} tono={escena.tono} confirmado={p.estado === 'grupo_confirmado'} />
       </section>
@@ -177,6 +194,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
 
       <header className="propuesta-cabecera">
         <div
+          key={`${p.estado}-${cod}`}
           className={`estado-hero estado-hero-${p.estado} ${turno ? 'estado-hero-turno' : ''}`}
           data-codigo={cod}
           role="status"
@@ -206,11 +224,13 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
       </header>
 
       <div className="pestanas">
-        <div className="pestanas-carril" role="tablist" aria-label="Secciones de la propuesta">
+        <div className="pestanas-carril" role="tablist" aria-label="Secciones de la propuesta" ref={carril}>
+        <span className="pestana-indicador" aria-hidden="true" style={indicador} />
         {pestanas.map((t) => (
           <button
             key={t.id}
             id={`tab-${t.id}`}
+            data-tab={t.id}
             role="tab"
             type="button"
             aria-selected={activa === t.id}

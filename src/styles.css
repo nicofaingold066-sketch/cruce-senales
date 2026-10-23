@@ -3886,3 +3886,317 @@ fieldset:disabled .opcion-radio {
 .estado-hero-en_revision {
   --c-bg: var(--revision-suave);
 }
+
+/* ------------------------------------------------------------------ Pasada premium: movimiento y microinteracciones */
+/* Curvas compartidas: salida rápida y llegada suave (sensación nativa). */
+:root {
+  --curva-entrar: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --curva-resorte: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Transiciones entre pantallas (View Transitions API; sin soporte, el cambio es inmediato) */
+.barra {
+  view-transition-name: barra;
+}
+.nav-inferior {
+  view-transition-name: nav-inferior;
+}
+::view-transition-old(root) {
+  animation: vt-salir 0.2s ease-in both;
+}
+::view-transition-new(root) {
+  animation: vt-entrar 0.34s var(--curva-entrar) both;
+}
+::view-transition-group(*) {
+  animation-duration: 0.36s;
+  animation-timing-function: var(--curva-entrar);
+}
+@keyframes vt-salir {
+  to {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+@keyframes vt-entrar {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/* La escena aparece escalonada: volver, título, cuándo y cruce */
+.escena > * {
+  animation: aparecer 0.45s var(--curva-entrar) both;
+}
+.escena > :nth-child(2) {
+  animation-delay: 0.04s;
+}
+.escena > :nth-child(3) {
+  animation-delay: 0.08s;
+}
+.escena > :nth-child(4) {
+  animation-delay: 0.12s;
+}
+.escena > :nth-child(5) {
+  animation-delay: 0.16s;
+}
+.escena > :nth-child(n + 6) {
+  animation-delay: 0.2s;
+}
+
+/* Al subir la hoja, el cruce se aleja un poco (como el mapa bajo la hoja de una app de viajes) */
+@supports (animation-timeline: scroll()) {
+  @media (max-width: 959px) {
+    .escena .cruce,
+    .escena .portada-arte {
+      animation: escena-alejar linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 55vh;
+    }
+  }
+}
+@keyframes escena-alejar {
+  to {
+    opacity: 0.35;
+    transform: scale(0.92) translateY(18px);
+  }
+}
+
+/* Pestañas: indicador que se desliza */
+.pestanas-carril {
+  position: relative;
+}
+.pestana {
+  position: relative;
+  z-index: 1;
+}
+.pestana-activa {
+  background: transparent;
+  box-shadow: none;
+}
+.pestana-indicador {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  border-radius: 11px;
+  background: var(--hoja);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition:
+    transform 0.32s var(--curva-entrar),
+    width 0.32s var(--curva-entrar),
+    opacity 0.2s ease;
+  z-index: 0;
+}
+
+/* Elegir una opción: un pequeño rebote */
+.opcion-activa {
+  animation: elegir 0.32s var(--curva-resorte);
+}
+@keyframes elegir {
+  from {
+    transform: scale(0.92);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* La tarjeta de estado late cuando el servidor cambia el estado o "lo que sigue" */
+.estado-hero {
+  animation: hero-cambio 0.55s var(--curva-entrar) both;
+}
+@keyframes hero-cambio {
+  0% {
+    transform: scale(0.97);
+    box-shadow: 0 0 0 0 transparent;
+  }
+  40% {
+    box-shadow: 0 0 0 6px var(--c-bg, var(--relleno));
+  }
+  100% {
+    transform: none;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+.estado-hero-turno {
+  box-shadow: 0 0 0 1px var(--brasa);
+}
+
+/* El botón "te toca" tiene un brillo que pasa cada tanto */
+.btn-turno {
+  position: relative;
+  overflow: hidden;
+}
+.btn-turno::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.28) 50%, transparent 65%);
+  transform: translateX(-120%);
+  animation: brillo-boton 3.2s ease-in-out 0.8s infinite;
+  pointer-events: none;
+}
+@keyframes brillo-boton {
+  0%,
+  60% {
+    transform: translateX(-120%);
+  }
+  85%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+/* Botones: respuesta al toque más rica */
+.btn {
+  transition:
+    transform 0.14s var(--curva-entrar),
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+}
+.btn-primario:not(:disabled):active,
+.btn-turno:not(:disabled):active {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) inset;
+}
+.btn-hecho {
+  background: var(--ok) !important;
+  color: #fff !important;
+  animation: elegir 0.32s var(--curva-resorte);
+}
+
+/* Barras de cupos: crecen al aparecer */
+.progreso-relleno {
+  transform-origin: left center;
+  animation: crecer 0.8s var(--curva-entrar) both;
+}
+@keyframes crecer {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* Tarjetas: se levantan con el puntero y se hunden al tocar */
+@media (hover: hover) {
+  .plan-vivo:hover,
+  .acceso:hover,
+  a.fila:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-flota);
+  }
+}
+.plan-vivo,
+.acceso {
+  transition:
+    transform 0.18s var(--curva-entrar),
+    box-shadow 0.18s ease;
+}
+.plan-vivo:active,
+.acceso:active {
+  transform: scale(0.98);
+}
+
+/* Listas: las tarjetas entran escalonadas */
+.lista-planes > li,
+.filas > li,
+.sim-lista > section,
+.miembros > li {
+  animation: aparecer 0.4s var(--curva-entrar) both;
+}
+.lista-planes > li:nth-child(2),
+.filas > li:nth-child(2),
+.sim-lista > section:nth-child(2),
+.miembros > li:nth-child(2) {
+  animation-delay: 0.05s;
+}
+.lista-planes > li:nth-child(3),
+.filas > li:nth-child(3),
+.sim-lista > section:nth-child(3),
+.miembros > li:nth-child(3) {
+  animation-delay: 0.1s;
+}
+.lista-planes > li:nth-child(n + 4),
+.filas > li:nth-child(n + 4),
+.sim-lista > section:nth-child(n + 4),
+.miembros > li:nth-child(n + 4) {
+  animation-delay: 0.15s;
+}
+
+/* Barra inferior: el ícono activo salta y lleva un punto de brasa */
+.nav-item {
+  position: relative;
+  transition: color 0.18s ease;
+}
+.nav-activa svg {
+  animation: nav-salto 0.42s var(--curva-resorte);
+}
+.nav-activa::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--brasa);
+}
+@keyframes nav-salto {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-4px) scale(1.12);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* Campos: el foco se ilumina suave */
+.campo input,
+.campo select,
+.campo textarea {
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  box-shadow: 0 0 0 4px rgba(20, 18, 16, 0.08);
+}
+
+/* La acción fija entra desde abajo */
+.barra-accion > .btn {
+  animation: subir-boton 0.4s var(--curva-entrar) both;
+}
+@keyframes subir-boton {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+/* El avatar propio respira en el cruce */
+.cruce-anillo-yo {
+  animation: girar-anillo 14s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes girar-anillo {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+  .btn-turno::after {
+    display: none;
+  }
+}

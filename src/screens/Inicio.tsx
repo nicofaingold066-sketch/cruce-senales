@@ -7,6 +7,7 @@ import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { leerGuardada, sesionNueva } from '../lib/sesiones'
 import { OtraSesion } from '../components/Sesiones'
 import { guardarPerfil, leerPerfil, recordarNombreSiFalta, usePerfil } from '../lib/perfil'
+import { vibrar } from '../lib/tacto'
 import { Aviso, Boton, Cargando, ErrorCaja, colorAvatar, iniciales } from '../components/ui'
 import { PlanVivo, esTurno } from '../components/PlanVivo'
 import { Marca } from '../components/Marca'
@@ -236,6 +237,7 @@ function Ingreso() {
   function entrar(e: FormEvent) {
     e.preventDefault()
     if (!nombre.trim()) return
+    vibrar(10)
     if (!guardarPerfil(nombre)) setAviso('Este navegador no deja guardar datos: vas a escribir tu nombre al unirte a cada grupo.')
   }
   return (

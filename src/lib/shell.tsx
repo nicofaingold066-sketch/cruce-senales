@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+import { flushSync } from 'react-dom'
 import type { ReactNode } from 'react'
 
 export interface Identidad {
@@ -101,10 +102,23 @@ export function irA(hash: string) {
   window.location.hash = hash
 }
 
+type Transicion = { ready?: Promise<unknown>; finished?: Promise<unknown>; updateCallbackDone?: Promise<unknown> }
+type DocConTransicion = Document & { startViewTransition?: (cb: () => void) => Transicion }
+
 export function useRuta(): Ruta {
   const [ruta, setRuta] = useState<Ruta>(() => parseRuta(window.location.hash))
   useEffect(() => {
-    const f = () => setRuta(parseRuta(window.location.hash))
+    // Transición nativa entre pantallas (View Transitions API) donde exista; si no, el cambio es inmediato.
+    const f = () => {
+      const nueva = parseRuta(window.location.hash)
+      const doc = document as DocConTransicion
+      const reducido = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+      if (doc.startViewTransition && !reducido) {
+        const t = doc.startViewTransition(() => flushSync(() => setRuta(nueva)))
+        // Si el navegador salta la transición (otra navegación, pestaña oculta), sus promesas se rechazan: no es un error.
+        for (const pr of [t?.ready, t?.finished, t?.updateCallbackDone]) pr?.catch(() => {})
+      } else setRuta(nueva)
+    }
     window.addEventListener('hashchange', f)
     return () => window.removeEventListener('hashchange', f)
   }, [])
