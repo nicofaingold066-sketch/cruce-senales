@@ -5,10 +5,10 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cru
 ## Tocando ahora
 - [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: los actualizo con cada entrega). Espero que backend saque MIGRACION EN CURSO para correr el e2e de entrega.
 
-## Entregado (rama `wip/ux`, último `25f8abb`)
+## Entregado (rama `wip/ux`, último `ede33ca`)
 - #98 + #91 `a3797af` (19:31): `docs/flujo-usuario.md` reescrito con el recorrido REAL "convencer a uno" (build propio 4183, 375 px, 19:24-19:27): organizador 21 toques (19 sin el tropiezo), cada invitado 8 toques y 4 vistas hasta la primera respuesta, +2 para confirmar. Marcas [visto]/[leído], 9 dudas vistas en pantalla, recortes con dueño, mapa input → servidor → output en mermaid con la enmienda 10 (pendiente) y tabla "quién ve qué".
 - #94 `bfa6218` (19:32): `docs/front-back-puente.md`: RPC y campos por pantalla, lo que el back expone y el front no usa (E10 incluida), lo que falta de cada lado, registro de entregas.
-- #89 `419ac2a` (19:33): `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (lógica pura) + `recordar.test.mjs`. `node --test "src/componentes-nuevos/*.test.mjs"` 7/7; `npm run typecheck` y `npm run build` en verde (19:34).
+- #89 `419ac2a` (19:33) + `ede33ca` (19:41, nota según el motivo y banco sin base `src/componentes-nuevos/prueba/recordar.html`, revisado a 375 y 320 px sin desborde): `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (lógica pura) + `recordar.test.mjs`. `node --test "src/componentes-nuevos/*.test.mjs"` 7/7; `npm run typecheck` y `npm run build` en verde (19:34).
 - e2e de entrega (`recorrido-dos-sesiones.mjs` contra 4183): PENDIENTE, backend tiene MIGRACION EN CURSO desde las 19:26. Nota honesta: mi segunda corrida del recorrido (19:26-19:27, 6 sesiones, grupo propio) se cruzó con ese aviso; terminó sin errores. No corro nada más contra la base hasta que lo saque.
 
 ## Pedidos a otros
@@ -24,5 +24,14 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - front-juan [19:30] (P2): `NuevaPropuesta.tsx:430` ofrece como "No puede faltar" a los integrantes que todavía no entraron (verificado: Ana…Ema "por entrar" aparecen en la lista). Si se elige a uno que nunca entra, el motor no publica nunca. Pedido: rotular "(por entrar)" en el chip cuando `m.pendiente` y, si queda elegido, aviso "Si no entra y responde, no va a haber opción".
 - apertura [19:30]: en `NuevaPropuesta.tsx` el primer atajo es "Asado" (después Fútbol, Cena, Juntada, Cine, Cumple, Paseo): en un grupo "Los del pádel" el plan salió titulado "Asado". Para tu #92: ejemplos y orden de atajos que no arranquen por asado y alguno de raqueta (pádel/tenis).
 
+## Estado de mis pedidos
+- apertura (atajos): HECHO `87d4a62` (`ATAJOS`, `atajosParaGrupo`). Falta que front-juan lo conecte en `NuevaPropuesta.tsx` (pedido de apertura).
+- friccion (#88 condiciones primero, Pendiente, "Luna"): HECHO en `wip/friccion` (`2b9650d` "Luna" solo en demo; "¿Cuándo puedes?" sin Pendiente). Chip "Datos ficticios": friccion lo deja a propósito (todo dato es ficticio en el evento). De acuerdo; queda para el coordinador.
+- front-juan: 7 pedidos abiertos (arriba) + conectar `RecordarFaltan`. Sin respuesta todavía.
+- backend (`siguiente_accion` del imprescindible): abierto, P2, después de E10.
+- qa-noche [19:42]: el guion de #98 está en la carpeta compartida de notas de la sesión (`ux-flujo-convencer-uno.mjs`, fuera del repo). Si lo querés versionar en `tests/e2e/` es tuyo: crea 6 sesiones por corrida.
+
 ## Ideas
-(en preparación)
+- P2 (de sinteticos): "Me interesa, pero otro día" y una tercera fecha cuando no hay opción. Hoy "Sin opción compatible" solo ofrece esperar o cancelar; el organizador no puede sumar una franja C sin crear otra propuesta. Pide contrato (franjas nuevas en una propuesta viva = versión nueva). Al coordinador.
+- P2: el invitado que vuelve por el enlace del grupo pasa por "¿Quién eres?" → "Seguir como X" (+1 toque). Si el navegador ya es miembro, ir directo a la propuesta vigente. friccion (`QuienEres.tsx`).
+- P3: "Faltan por responder N personas" cuenta elegibles sin confirmar, no quienes no respondieron: renombrar a "Faltan por confirmar". front-juan (`PlanTab.tsx`).
