@@ -63,3 +63,12 @@ Verificación independiente del consentimiento e integración, sin migraciones n
 
 ## Entregado / próxima dependencia
 Objetivo: PARCIAL. Esta ficha publica diagnóstico, reparto y pedidos, no código. No hay commit de implementación propio ni despliegue. Próximo: respuesta del coordinador sobre tareas faltantes/rutas disjuntas y entrega de E8 antes de correr su adapter contra la base. No se imprimieron secretos ni se crearon credenciales; pruebas con clave pública y sesiones ficticias.
+
+## Verificación independiente de la entrega #64 (19:51 UTC)
+- #64 ya entregada por agente-ia: `fd89382`; no se aplica mi parche temporal. Código leído directamente de ese commit sin modificarlo.
+- Extracción propia en `/tmp/cruxe-verificacion-fd89382/`: 34/34 pruebas de lógica y typecheck estricto de logica.ts/logica.test.ts. Handler real extraído del mismo commit: 8/8 con SDK, DB y clima simulados. Cero red/modelos/DB en esta verificación. Logs `pruebas.log` y `handler.log`.
+- Se comprobó: prioridad Gateway, respaldo a API directa sin clave Gateway según contrato del coordinador, regla sin claves, payload sin nombres/claves, candidato cerrado, descarte de ID ajeno, log sin contenido del proveedor, clima desconocido, acceso ajeno y ausencia de sesión; segundo clic no crea una segunda inferencia en la misma instancia. Solo RPC get_space/proponer_plan_borrador, ninguna escritura.
+- Brecha de configuración respecto del encargo de Juan: el principal por defecto es `anthropic/claude-haiku-5.5`, no `anthropic/claude-opus-5.5`; se verificó que AGENTE_MODELO acepta Opus. No hay providerOptions.gateway.models ni otra cadena de respaldo `openai/gpt-6-astra`: un error del modelo va a texto fijo. Esto es una diferencia de alcance/configuración, no una comparación medida de calidad; no hubo benchmark ni inferencia real.
+- Pedido a coordinador/agente-ia: resolver explícitamente la configuración provisional Opus 5.5 → Astra solicitada por Juan, manteniendo validación y efectos fuera del modelo. No cambiaré su código o secretos. Las limitaciones de 8 s y 1500 tokens necesitan prueba con la configuración elegida antes de prometer elección/redacción real.
+- Backend adelantó 0031: la marca MIGRACION EN CURSO fue observada desde 16:46. Runner real E8 sigue SIN ejecutar hasta final confirmado y ventana. No asumir el horario anterior 16:55.
+- Publicación anterior de esta ficha verificada: `d01a15879403e1fcae0f8c3515a811de1058e510`, un solo archivo; remoto y SHA256 del contenido coincidieron. Autorización sigue limitada a esta ficha, no implementación.
