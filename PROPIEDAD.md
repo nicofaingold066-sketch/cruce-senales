@@ -11,6 +11,7 @@ Detalle y reglas: `prompts/equipo-noche.md`.
 | `docs/flujo-usuario.md`, `docs/front-back-puente.md`, nuevos en `src/componentes-nuevos/**` | ux-flujo (sesión nueva, Opus) | `wip/ux` |
 | `docs/apertura.md`, `docs/catalogo-ampliado.md`, `src/lib/ejemplos.ts` | apertura (sesión nueva, Sonnet) | `wip/apertura` |
 | `tests/e2e/**`, `docs/qa-noche.md` | qa-noche (sesión nueva, Sonnet) | `wip/qa` |
+| `tests/sinteticos/**`, `docs/usuarios-sinteticos.md` | sinteticos (sesión nueva, Sonnet) | `wip/sinteticos` |
 | `src/screens/**`, `src/components/**`, `src/styles.css` | front-juan (Juan) | `wip/front-juan` |
 | `src/agente/**`, `supabase/functions/agente/**`, `docs/agente*.md`, `docs/pitch*.md` | agente-ia | `wip/agente-ia` |
 | Lo demás de `src/` | nadie esta noche (pedir al coordinador) | — |
