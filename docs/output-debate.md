@@ -28,6 +28,8 @@ Lo que el grupo NO puede hacer hoy **[leído]**:
 - **Elegir entre dos planes.** El agente propone hasta 3 candidatas, pero las ve solo el organizador, que elige una y la convierte en propuesta. El grupo nunca ve la otra.
 - **Hablar del plan con datos.** En el chat solo circulan el enlace de invitación y el mensaje de cierre. Todo lo demás vuelve a ser "¿quién puede?" en el chat, que es el problema que CRUXE quiere cerrar.
 
+En curso esta noche: la enmienda 11 (agente social, migración 0041 autorizada por Nico a las 20:32; borrador en `docs/contrato-enmienda-11-borrador.md`). El organizador aprueba un borrador exacto y el servidor publica la propuesta e invita solo a quienes activaron "recibir invitaciones". No cambia nada de §2: la invitación es la propuesta, cada persona sigue confirmando cada versión, la reparación sigue siendo humana, y no hay forma de opinar sobre el borrador antes ni después.
+
 Lo que pasa en el chat después es una hipótesis, no algo medido: sin un mensaje al publicar la versión, el organizador escribe a mano "salió el sábado, confirmen", alguien responde "yo el sábado no puedo" en el chat (no en la app), y ese "no" no llega al servidor.
 
 ## 2. Opinar sin volver al caos del chat
