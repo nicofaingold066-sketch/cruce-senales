@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../lib/api'
 import type { ApiError, Espacio as EspacioT, PropuestaResumen } from '../lib/types'
@@ -6,7 +6,8 @@ import { useAccion, useSondeo } from '../lib/hooks'
 import { rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { momentoCorto } from '../lib/format'
 import { Aviso, Boton, Cargando, ErrorCaja, InsigniaEstado, Nombre, Vacio } from '../components/ui'
-import { AgentePanel } from '../agente/AgentePanel'
+// El panel del agente va en su propia parte del paquete (mejora #14): se descarga solo al abrir el bloque.
+const AgentePanel = lazy(() => import('../agente/AgentePanel').then((m) => ({ default: m.AgentePanel })))
 
 export default function Espacio({ espacioId }: { espacioId: string }) {
   const { soloLectura } = useShell()
@@ -169,7 +170,11 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
       <details className="tarjeta plegable agente-plegable" onToggle={(e) => setAgenteAbierto(e.currentTarget.open)}>
         <summary>Agente del círculo (opcional): tus preferencias y una idea de plan</summary>
         {/* Se monta solo al abrir: plegado no hace llamadas al servidor. */}
-        {agenteAbierto ? <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} demo={espacio.demo} /> : null}
+        {agenteAbierto ? (
+          <Suspense fallback={<Cargando texto="Cargando el agente…" />}>
+            <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} demo={espacio.demo} />
+          </Suspense>
+        ) : null}
       </details>
 
       {esOrganizador ? (
