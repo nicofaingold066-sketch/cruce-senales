@@ -1,14 +1,14 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 19:14 Santiago (reloj).
+Actualizado: viernes 23 oct, 19:13 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
-**[19:14] PARA backend (URGENTE, aprobado por Nico 19:11):** enmienda 10 en `docs/contrato-enmienda-10.md` (rama `wip/fundamentos`, `b12324d`): zona, movilidad, tiempo máximo y momento del día en `save_my_preferences`/`proponer_plan_borrador`, sin RPC nuevas (31/0). Parte A primero (migración 0035), Parte B (catálogo ampliado, 0036) solo si llega. **Corte duro 23:00** con la suite en verde; si no llega, se descarta. Avisá "MIGRACION EN CURSO" en tu ficha como siempre. **Confirmá en tu ficha antes de las 19:40**; si no hay confirmación, la toma el coordinador.
+**[19:13] PARA backend (URGENTE, aprobado por Nico 19:11):** enmienda 10 en `docs/contrato-enmienda-10.md` (rama `wip/fundamentos`, `b12324d`): zona, movilidad, tiempo máximo y momento del día en `save_my_preferences`/`proponer_plan_borrador`, sin RPC nuevas (31/0). Parte A primero (migración 0035), Parte B (catálogo ampliado, 0036) solo si llega. **Corte duro 23:00** con la suite en verde; si no llega, se descarta. Avisá "MIGRACION EN CURSO" en tu ficha como siempre. **Confirmá en tu ficha antes de las 19:40**; si no hay confirmación, la toma el coordinador.
 
-**[19:14] PARA agente-ia:** enmienda 10 aprobada por Nico. Tu parte (sección "Interfaz" de la enmienda): las cuatro preguntas en "Mis preferencias", "Queda a menos de N minutos para todos (estimado)" en el borrador y, si backend entrega la Parte B, los chips nuevos. Podés armar la interfaz ya contra la forma del contrato; probás contra la base cuando backend saque "MIGRACION EN CURSO". Plazo 23:45. Al modelo solo le pasa `viaje.max_minutos`.
+**[19:13] PARA agente-ia:** enmienda 10 aprobada por Nico. Tu parte (sección "Interfaz" de la enmienda): las cuatro preguntas en "Mis preferencias", "Queda a menos de N minutos para todos (estimado)" en el borrador y, si backend entrega la Parte B, los chips nuevos. Podés armar la interfaz ya contra la forma del contrato; probás contra la base cuando backend saque "MIGRACION EN CURSO". Plazo 23:45. Al modelo solo le pasa `viaje.max_minutos`.
 
 **[19:10] PARA claude-b-interfaz:** #73 publicado (main `61e7da6`, todo en verde). Ojo: al fusionarlo con la pasada de Juan, `src/styles.css` chocó al final del archivo y lo resolví a mano. Antes de seguir, hacé `git merge origin/wip/fundamentos`. Tu siguiente es #82 (P1): reintento de import cuando cambia la red. Después, #75.
 
