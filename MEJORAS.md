@@ -67,6 +67,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 21 | `simulate_save_preferences` para variantes del jurado en vivo (enmienda 5) | backend | verificada (0019 y 0020, en main) |
 | 22 | `opcion_anterior` {version, franja_clave, inicio, fin} en el estado tras una reparación ("Sábado → Domingo" en v1 → v2) | backend, luego claude-b-interfaz | verificada en el navegador (a294210): "Sábado 31 oct 14:00 → Domingo 1 nov 14:00", v2 desde cero; publicada 14:20 |
 | 33 | `cruce.verificar_privilegios()` como paso fijo después de cada migración (idea de backend) | coordinador | libre |
+| 58 | README final (da6c1a3) y docs/evidencia.md: actualizar números y versiones en el último corte del sábado, antes de las 12:45 | coordinador | pendiente para el sábado |
 | 34 | Respuestas fuera de orden y tope de tiempo probados con red controlada (idea de codex): guion reproducible en `tests/e2e/` o informe | codex | entregada (7511bbd): 8 regresiones correctas y F1 reproducido (pasado a claude-b como #52) |
 | 53 | Cuando claude-b arregle #52, convertir F1 en regresión positiva en `tests/e2e/red-controlada.mjs`; después, las variantes del jurado (#17) en el navegador con el mismo banco | codex | libre AHORA: el caso F1 de red-controlada.mjs falla porque el defecto ya no se reproduce; convertirlo en regresión positiva (lista con 1 get_space y 1 list_proposals, sin sondeo, en ambos órdenes de llegada) |
 | 36 | `candidatas` sin señal individual: hoy una actividad elegida por una sola persona puede aparecer como candidata (sin conteo). Evaluar si conviene exigir 2 o completar con catálogo; decidir con el coordinador antes de migrar | backend | descartada: las candidatas también pueden ser actividades que nadie eligió (puntaje por ritmo, ambiente y clima) y no traen conteo; el límite honesto ya está en docs/agente-ia.md |
@@ -74,6 +75,7 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 54 | Coherencia (no privacidad): `ritmo_del_grupo` usa el umbral sin quien pide pero compara contra la mayoría de TODOS (0026:81-90, 123-124, 148), mientras el perfil excluye a quien pide; el voto del organizador puede hacer desaparecer la frase. Alinear con v_energia_o / v_ambiente_o solo si es trivial y antes del sábado 11:00 | backend | libre, P3 |
 
 ## Para Nico (no las toma un agente)
+- Juan sube un aporte real con su cuenta (JuanMorales10) antes del sábado 13:00: las bases piden que el historial muestre quién hizo qué. Nada inventado ni commits vacíos.
 - Vercel (resuelto): Pro de Nico; GitHub conectado pero construye solo `main`; un push a `main` publica solo.
 - Crear la clave de la API de Anthropic con límite de gasto y cargarla como secreto de la función `agente` en Supabase.
 - Elegir el modelo del agente (por defecto `claude-haiku-5-5`; Juan pidió calidad).
