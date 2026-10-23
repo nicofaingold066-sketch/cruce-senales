@@ -1311,3 +1311,14 @@ input[aria-invalid='true'],
 .tp-siguiente-turno {
   font-weight: 700;
 }
+
+/* ---- Mejora #22: franja anterior → vigente ---- */
+.cv-resumen {
+  font-size: 1.05rem;
+  margin: 0 0 8px;
+}
+.cv-franja-vieja {
+  text-decoration: line-through;
+  text-decoration-color: var(--suave);
+  color: var(--suave);
+}

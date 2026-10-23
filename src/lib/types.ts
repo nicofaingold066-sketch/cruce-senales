@@ -103,6 +103,13 @@ export interface Opcion {
   cupos: Cupos
 }
 
+export interface OpcionAnterior {
+  version: number
+  franja_clave: string
+  inicio: Momento
+  fin: Momento
+}
+
 export interface Baja {
   miembro: MiembroRef
   en: Momento
@@ -172,6 +179,8 @@ export interface EstadoPropuesta {
   state_rev: number
   confirmados: number
   opcion: Opcion | null
+  /** Enmienda 6: la versión publicada inmediatamente anterior a la vigente (null si no hay o si la vigente es la 1). */
+  opcion_anterior?: OpcionAnterior | null
   ultima_evaluacion: UltimaEvaluacion | null
   interesados: { cantidad: number; miembros: MiembroRef[] }
   personas_con_condiciones: number

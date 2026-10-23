@@ -43,6 +43,13 @@ export function fechaCorta(local: string): string {
   return `${diaSemana(p).slice(0, 3)} ${p.d} ${MESES[p.mo - 1]}`
 }
 
+/** "Sábado 31 oct" (día de la semana con mayúscula, sin año), para resúmenes cortos. */
+export function diaDe(local: string): string {
+  const p = partes(local)
+  if (!p) return local
+  return `${cap(diaSemana(p))} ${p.d} ${MESES[p.mo - 1]}`
+}
+
 export function hora(local: string): string {
   const p = partes(local)
   return p ? `${p.hh}:${p.mm}` : local
