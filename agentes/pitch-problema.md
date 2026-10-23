@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 14:09.
+Quien edita este archivo: solo esta sesión. Última actualización: 14:12.
 
 ## Tocando ahora
-- Mejora #41 (recorrido del agente en producción a 375 px, con evidencia): `docs/agente-ia.md`
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[14:12] Mejora #41 entregada** (`deeea83`): recorrido del agente en PRODUCCIÓN (main 614b2c8, función v5) a 375 px, de 14:09 a 14:11: preferencias → sol (3 opciones, perfil sin actividades de una persona, por qué con "(4 de 5)" y ritmo y ambiente, Texto fijo) → lluvia (solo asado) → enlace WhatsApp revisado → "Usar esta opción" con título y franjas precargados. Sin errores de consola. Anotado en `docs/agente-ia.md` sección 8, con lo que no se probó (clave real, teléfono físico, crear la propuesta).
 - **[14:06] Mejora #40 entregada** (`487d2fc`): sin clave, el "por qué" fijo dice, por ejemplo: "…es lo que más eligieron (5 de 6) y va con lo que prefiere la mayoría: un plan algo tranquilo y con ambiente tranquilo." Solo totales y con 4 personas o más; con 3 o menos, o si la actividad la eligió una sola persona, vuelve al texto general. Está en la función (`logica.ts`) y en el respaldo de la pantalla. `logica.test.ts` 16/16; función contra la base real OK.
 - **[14:04] Mejora #38 entregada** (`837a126`): `supabase/functions/agente/logica.ts` (lógica pura, la importa `index.ts`) y `logica.test.ts` con `node:test`: 14/14 en verde con `node --test "supabase/functions/agente/*.test.ts"`, sin red, base ni modelo, y sin dependencias. Tipos estrictos con `tsc --ignoreConfig --strict`. Las pruebas encontraron que "Lo reservamos…" pasaba la validación: ahora se rechaza `reserv*` y `agend*`. La función completa, corrida en Node contra la base real, sigue igual (clima 5/5, perfil 2/2, Luna no organizadora, fecha inválida).
 - **[14:00] Mejora #37 entregada** (`71a2628`): `docs/agente-ia.md` reescrito con lo construido (cómo funciona, qué ve cada uno, real y simulado, cómo verificarlo en la app y con `tests/backend/enmienda4.test.ts` y `enmienda5.test.ts`, dónde está, cómo se cuida la demo, lo que falta). El enlace publicado queda [PENDIENTE] hasta que Vercel tenga cupo. Mi rama ya tiene `origin/wip/fundamentos` integrado (`184046a`).
@@ -35,6 +36,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 (vacío)
 
 ## Entregado
+- Mejora #41 (evidencia en producción): `wip/agente-ia` `deeea83`.
 - Mejora #40 (texto fijo con ritmo y ambiente del grupo): `wip/agente-ia` `487d2fc`.
 - Mejora #38 (pruebas de la función sin red ni modelo): `wip/agente-ia` `837a126`.
 - Mejora #37 (`docs/agente-ia.md` al día): `wip/agente-ia` `71a2628`.
