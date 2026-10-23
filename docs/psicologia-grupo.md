@@ -404,7 +404,7 @@ Todo lo de abajo depende de que backend tenga tiempo; después de las 12:00 no h
 |---|---|---|---|---|
 | E1 | Frase «Tu confirmación solo vale si llegan N; si no llegan, nadie queda comprometido» junto al botón de confirmar, y «Se cierra el jueves… si no están las N confirmaciones, el plan no se arma» (§8.9) | front-juan (PlanTab) | **Antes** | Bajo, alto valor |
 | E2 | «Hoy conviene recordar: faltan N y se cierra mañana» visible solo para quien organiza, sin enviar nada; y «Te lo recuerda CRUXE» en el texto del recordatorio | ux-flujo | **Antes** | Bajo |
-| E3 | `.ics` con `VALARM` (-1 día y -2 h) y `LOCATION`; margen de 15 minutos en el recordatorio (§12 U3, U4) | friccion (`compartir.ts`) | **Antes** | Bajo |
+| E3 | `.ics` con `VALARM` (-1 día y -2 h); margen de 15 minutos en el recordatorio (§12 U3, U4) | friccion (`compartir.ts`) | **Antes** | Bajo |
 | E4 | Botón «Buscar el lugar en el mapa» (solo el lugar; oculto o «(ejemplo)» si es simulación) y línea fija de día, hora y duración (§12 U1, U2) | front-juan | **Antes** | Bajo |
 | E5 | **Estilo** simple · normal · especial: selector para quien organiza, parámetro en la función `agente`, tabla fija actividad → nivel, frase fija; dos formas por estilo (§13) | agente-ia | **Antes** | Medio |
 | E6 | Tiempo estimado propio por persona (§12 U6) | backend | **Después** (enmienda) | Medio |
@@ -441,7 +441,7 @@ Todo lo de abajo depende de que backend tenga tiempo; después de las 12:00 no h
 Pedido de Nico (20:28): *«que la gente esté ubicada en tiempo y espacio»*. Regla de oro (no se negocia): **nunca la ubicación, la comuna ni el tiempo de viaje de otra persona.** Lo que se puede mostrar es **del plan** (día, hora, duración, lugar) y **de uno mismo, calculado en su propio teléfono**.
 
 ### Qué existe hoy [HOY]
-- **Tiempo:** la franja con día, hora de inicio y fin en hora de Santiago; el cierre de aceptación; "Calendario" que descarga un `.ics` (`descargarCalendario`, `src/lib/compartir.ts`, botón en `CierrePlan` de `PlanTab.tsx`). El `.ics` **no tiene alarma** (busqué `VALARM`, `TRIGGER` y `LOCATION` en `src/` y no están).
+- **Tiempo:** la franja con día, hora de inicio y fin en hora de Santiago; el cierre de aceptación; "Calendario" que descarga un `.ics` (`descargarCalendario`, `src/lib/compartir.ts`, botón en `CierrePlan` de `PlanTab.tsx`). El `.ics` **no tiene alarma** (busqué `VALARM`, `TRIGGER` y `LOCATION` en `src/` y no estaban; friccion agregó las alarmas en `ee27fc5`; `LOCATION` queda afuera a propósito: el plan no tiene lugar y el título no es una dirección).
 - **Espacio:** zona y movilidad privadas; "Queda a menos de N minutos para todos (estimado)" solo con 4 personas o más con zona [ENM10]. El lugar está **en el título** del plan (no hay campo de lugar: `docs/contrato.md`).
 - **Enlaces a mapas:** `src/agente/canchas.ts` ya arma enlaces de Google Maps **por categoría y sin ubicación** (Maps muestra lo que está cerca de quien toca; CRUXE no la conoce).
 
@@ -465,7 +465,7 @@ Pedido de Nico (20:28): *«que la gente esté ubicada en tiempo y espacio»*. Re
 
 ### Qué hace falta
 - **front-juan**: botón «Buscar el lugar en el mapa» en `PlanTab.tsx` (oculto o «(ejemplo)» si el lugar es de simulación) y línea fija U1.
-- **friccion**: `.ics` con `VALARM` (-1 día y -2 h) y `LOCATION` = título; texto de margen en el recordatorio.
+- **friccion**: `.ics` con `VALARM` (-1 día y -2 h); texto de margen en el recordatorio.
 - **ux-flujo**: línea U5 en la ficha del borrador cuando hay `viaje`.
 
 ## 13. Nivel de gasto y estilo, sin clase social
