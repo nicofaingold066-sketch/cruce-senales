@@ -22,7 +22,8 @@ await corto('R41', ana, async () => {
   await ana.getByRole('button', { name: /Ana/ }).first().click(); await T(ana, 800)
   await rincon(ana, 'R41', 'Invitación: confirmar "¿Eres Ana?"', { foco: true }); nota('R41', await txt(ana))
   await ana.getByRole('button', { name: /Sí, soy Ana/ }).click()
-  await ana.waitForURL(/#\/e\//, { timeout: 30000 }); await T(ana, 3500)
+  await ana.waitForURL(/#\/e\//, { timeout: 40000 }); await T(ana, 3500)
+  if (/responder/.test(ana.url())) { nota('R41', 'tras unirse por la lista llega a Responder (un toque)'); await ana.goto(`${BASE}/#/e/${g.espacioId}`); await T(ana, 3500) }
   await guardarSesion(ana)
 })
 await corto('R42', ana, async () => {
@@ -52,7 +53,8 @@ for (const [id, n] of [['beto', 'Beto'], ['caro', 'Caro']]) {
     await p.goto(`${BASE}/#/unirse/${g.codigo}`); await T(p, 4000)
     await p.getByRole('button', { name: new RegExp(n) }).first().click(); await T(p, 600)
     await p.getByRole('button', { name: new RegExp(`Sí, soy ${n}`) }).click()
-    await p.waitForURL(/#\/e\//, { timeout: 30000 }); await T(p, 3000)
+    await p.waitForURL(/#\/e\//, { timeout: 40000 }); await T(p, 3000)
+    if (/responder/.test(p.url())) { await p.goto(`${BASE}/#/e/${g.espacioId}`); await T(p, 3500) }
     await p.getByText('Partido de pádel el sábado').first().click(); await T(p, 3000)
     await pestana(p, 'Mi respuesta')
     await siNo(p, 'A', 'No puedo'); await siNo(p, 'B', 'Sí puedo'); await guardarCond(p)

@@ -24,7 +24,7 @@ await corto('R200', ana, async () => {
   await ana.goto(`${BASE}/#/unirse/${codigoC}`); await T(ana, 4000)
   await rincon(ana, 'R200', 'Invitación: lista con integrantes (propuesta ya abierta)', { foco: true })
   await ana.getByRole('button', { name: /^Ana/ }).click(); await T(ana, 600)
-  await ana.getByRole('button', { name: /Sí, soy Ana/ }).click(); await T(ana, 5000)
+  await ana.getByRole('button', { name: /Sí, soy Ana/ }).click(); await ana.waitForURL(/#\/e\//, { timeout: 40000 }); await T(ana, 3500)
   nota('R201', 'URL tras unirse: ' + ana.url().replace(BASE, '')); await guardarSesion(ana)
   await rincon(ana, 'R201', 'Responder en un paso: opciones de un toque ("Puedo los dos días", "Solo…", "No puedo")', { foco: true }); nota('R201', await txt(ana))
 })
