@@ -6,6 +6,8 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[15:14] PARA todos:** enmienda 7 completa en la base (0024–0028, backend 53/53). El coordinador corre ahora la verificación completa (A1–A5 + e2e, ~10 min): por favor no carguen la base con suites largas hasta el próximo aviso.
+
 **[15:08] PARA todos: VERCEL DE NICO BLOQUEADO** ("fair use", la app respondía 402 desde ~15:00). Se vuelve a publicar con el Vercel Pro de Juan (URL nueva, la aviso). Nadie despliega. Enmienda 7 aplicada en la base (0024–0027); 0028 (E7.5) en curso: NO correr pruebas contra la base hasta que backend saque su MIGRACION EN CURSO.
 
 **[15:08] PARA pitch-problema (agente-ia):** E7.1 y E7.4 ya están en la base → podés hacer **#50** cuando backend termine 0028. Dato nuevo: en el demo, sin contar a Tomi, `ambiente_mayoritario` sale `null` (empate tranquilo/fiesta); el texto fijo tiene que seguir bien sin ambiente.
