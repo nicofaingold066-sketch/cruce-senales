@@ -5,6 +5,7 @@ import type { TipoEspacio } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { recordarNombreSiFalta, usePerfil } from '../lib/perfil'
+import { ayudaGrupo, ejemploPorSemilla, placeholderGrupo } from '../lib/ejemplos'
 import { Aviso, Boton, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { CampoIntegrantes } from '../login/Integrantes'
@@ -19,6 +20,9 @@ export default function CrearGrupo() {
   const [visible, setVisible] = useState(() => perfil?.nombre ?? '')
   // Enmienda 9 (fase 2, sesión login): los nombres del grupo; cada uno elige el suyo al abrir la invitación.
   const [integrantes, setIntegrantes] = useState<string[]>([])
+  // Ejemplo del placeholder y de la ayuda (#92, apertura): rota cada hora y se fija al abrir la pantalla, así no
+  // cambia mientras se escribe. Nunca asume asado.
+  const [ej] = useState(() => ejemploPorSemilla(String(Math.floor(Date.now() / 3600000))))
   const tipo: TipoEspacio = 'amigos'
   const { ocupado, error, ejecutar } = useAccion()
   const faltan = nombre.trim() === '' || visible.trim() === ''
@@ -44,7 +48,10 @@ export default function CrearGrupo() {
         </a>
         <span className="escena-eyebrow">Nuevo grupo</span>
         <h1 id="crear-titulo">Crear un grupo</h1>
-        <p className="escena-sub">Un grupo es la gente con la que siempre dicen «nos juntamos». Lo creas, compartes el enlace y cada uno entra desde su teléfono.</p>
+        <p className="escena-sub">
+          Un grupo es la gente con la que siempre dicen «nos juntamos». {ayudaGrupo(ej)} Lo creas, compartes el enlace y cada uno
+          entra desde su teléfono.
+        </p>
       </section>
       <div className="hoja">
         <form onSubmit={hacer} noValidate>
@@ -52,7 +59,7 @@ export default function CrearGrupo() {
             <legend>El grupo</legend>
             <label className="campo">
               <span>Nombre del grupo</span>
-              <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} placeholder="Ej.: Los del asado" />
+              <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} placeholder={placeholderGrupo(ej)} />
             </label>
             <label className="campo">
               <span>Tu nombre en el grupo</span>

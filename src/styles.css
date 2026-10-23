@@ -5559,3 +5559,25 @@ li:has(> .plan-vivo) {
 .persona-por-entrar .avatar {
   opacity: 0.55;
 }
+
+/* ---- #89: "Recordar a quien falta" / "Avisar al grupo" (RecordarFaltan, ux-flujo), solo para quien organiza ----
+   Al pie de la tarjeta, separado de lo que cuenta el servidor. Son acciones secundarias: botones del tamaño chico,
+   para que a 320 px "Recordar a quien falta" quepa en una línea. Si los dos no entran en una fila (a 320-375 px
+   nunca), .fila-botones los baja uno bajo el otro, a todo el ancho. */
+.recordar-faltan {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--linea);
+}
+.recordar-faltan > .fila-botones {
+  margin-top: 0;
+}
+.recordar-faltan .btn {
+  min-height: 44px;
+  padding: 8px 14px;
+  font-size: 0.92rem;
+  border-radius: 12px;
+}
+.recordar-faltan > p {
+  margin: 8px 2px 0;
+}

@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../lib/api'
 import type { ApiError, Espacio } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto, momentoCorto, ZONA_VISIBLE } from '../lib/format'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
+import { atajosParaGrupo, ejemploPorSemilla, placeholderPlan } from '../lib/ejemplos'
+import type { Atajo } from '../lib/ejemplos'
 import { Avatar, Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
-import type { NombreIcono } from '../components/Icono'
 import { tomarBorradorAgente } from '../agente/api'
 
 // Una propuesta se arma con dos momentos posibles (A y B), cada uno un día y una hora de encuentro,
@@ -44,15 +45,6 @@ const CASO = {
   plazoOtro: '',
 }
 
-const ACTIVIDADES: { titulo: string; icono: NombreIcono; min: number }[] = [
-  { titulo: 'Asado', icono: 'asado', min: 180 },
-  { titulo: 'Fútbol', icono: 'futbol', min: 60 },
-  { titulo: 'Cena', icono: 'cena', min: 120 },
-  { titulo: 'Juntada', icono: 'juntada', min: 120 },
-  { titulo: 'Cine', icono: 'cine', min: 150 },
-  { titulo: 'Cumple', icono: 'cumple', min: 180 },
-  { titulo: 'Paseo', icono: 'paseo', min: 180 },
-]
 const HORAS = ['12:00', '13:00', '14:00', '17:00', '19:00', '20:00', '21:00']
 const DURACIONES = [60, 120, 180, 240]
 const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
@@ -130,6 +122,10 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const [enCurso, setEnCurso] = useState(false)
 
   const yo = espacio?.miembros.find((m) => m.es_yo) ?? null
+  // Atajos de actividad según el nombre del grupo (#92, apertura): «Los del pádel» ve Pádel primero; el demo
+  // («Los del asado») sigue con Asado primero. El ejemplo del placeholder sale del id del grupo: no cambia al escribir.
+  const actividades = useMemo(() => atajosParaGrupo(espacio?.nombre ?? ''), [espacio?.nombre])
+  const ej = useMemo(() => ejemploPorSemilla(espacioId), [espacioId])
   useIdentidad(espacio?.nombre ?? null, yo?.nombre ?? null, espacio ? (espacio.mi_rol === 'organizador' ? 'organizador' : 'miembro') : null)
 
   const cargar = useCallback(async () => {
@@ -221,8 +217,8 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     setF({ ...form, [k]: v })
     if (error) limpiarError()
   }
-  function elegirActividad(a: (typeof ACTIVIDADES)[number]) {
-    const esAtajo = form.titulo.trim() === '' || ACTIVIDADES.some((x) => x.titulo === form.titulo.trim())
+  function elegirActividad(a: Atajo) {
+    const esAtajo = form.titulo.trim() === '' || actividades.some((x) => x.titulo === form.titulo.trim())
     setF({ ...form, titulo: esAtajo ? a.titulo : form.titulo, duracion: a.min })
     if (error) limpiarError()
   }
@@ -232,6 +228,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const aFin = aInicio ? sumarMinutos(form.aDia, form.aHora, form.duracion) : ''
   const bFin = bInicio ? sumarMinutos(form.bDia, form.bHora, form.duracion) : ''
   const plazo = plazoDe(form)
+  // Como la hora «propia» de SelectorHora: si un atajo (Pádel 1 h 30 min, Cine 2 h 30 min) o el borrador del agente
+  // trae una duración fuera de la lista, aparece como opción más, marcada, y se puede volver a ella.
+  const duraciones = DURACIONES.includes(form.duracion) ? DURACIONES : [...DURACIONES, form.duracion].sort((x, y) => x - y)
 
   const completo =
     form.titulo.trim() !== '' &&
@@ -353,7 +352,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
             <fieldset className="form-seccion">
               <legend>Qué hacen</legend>
               <div className="carrusel" role="group" aria-label="Atajos de actividad">
-                {ACTIVIDADES.map((a) => (
+                {actividades.map((a) => (
                   <button
                     key={a.titulo}
                     type="button"
@@ -372,7 +371,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                   value={form.titulo}
                   onChange={(e) => poner('titulo', e.target.value)}
                   maxLength={80}
-                  placeholder="Ej.: Asado en casa de Tomi"
+                  placeholder={placeholderPlan(ej)}
                   aria-invalid={marcado === 'titulo' || (faltantes && form.titulo.trim() === '') ? true : undefined}
                 />
               </label>
@@ -405,7 +404,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                   <Icono n="reloj" tam={16} /> Dura aprox.
                 </span>
                 <div className="opciones opciones-compactas">
-                  {DURACIONES.map((d) => (
+                  {duraciones.map((d) => (
                     <label key={d} className={`opcion-radio ${form.duracion === d ? 'opcion-activa' : ''}`}>
                       <input type="radio" name="duracion" checked={form.duracion === d} onChange={() => poner('duracion', d)} />
                       {duracionTexto(d)}

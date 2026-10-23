@@ -10,8 +10,21 @@ import { Confeti } from '../components/Confeti'
 import { Resaltado } from '../components/Resaltado'
 import { descargarCalendario, urlWhatsApp } from '../lib/compartir'
 import { vibrar } from '../lib/tacto'
+import { AvisoParaMi } from '../componentes-nuevos/AvisoParaMi'
+import { avisoParaMi } from '../componentes-nuevos/avisoPersonal'
+import { RecordarFaltan } from '../componentes-nuevos/RecordarFaltan'
+import { FaltaTuRespuesta } from '../friccion/FaltaTuRespuesta'
 
-export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaProps) {
+export default function PlanTab({
+  p,
+  viva,
+  soloLectura,
+  irAPestana,
+  codigoInvitacion = null,
+}: PestanaProps & {
+  /** Código de invitación del espacio (Propuesta lo trae con get_space). Mientras no llega, no se ofrece recordar. */
+  codigoInvitacion?: string | null
+}) {
   const enRevision = p.estado === 'en_revision'
   const conOpcion = p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado'
   const reuniendo = p.estado === 'borrador' || p.estado === 'reuniendo_interes'
@@ -22,9 +35,19 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
     (p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado') &&
     p.ultima_evaluacion?.resultado === 'reparacion_publicada' &&
     p.ultima_evaluacion.version === p.opcion?.version
+  // Misma condición con que se muestra <FaltaTuRespuesta/>: mientras falte mi respuesta, esa tarjeta es la acción
+  // principal y "Buscar opción compatible" pasa a secundario (pedido P1 de ux-flujo; enmienda 12 a). El énfasis sigue
+  // al servidor: si su próxima acción ya es `buscar_opcion` ("Busca una opción compatible"), el botón sigue principal.
+  const buscarSecundario =
+    p.estado === 'reuniendo_interes' &&
+    p.mi_situacion.puede.guardar_condiciones &&
+    p.mi_situacion.condiciones !== 'completas' &&
+    p.siguiente_accion.codigo !== 'buscar_opcion'
 
   return (
     <div>
+      {verAvisoParaMi(p) ? <AvisoParaMi p={p} irARespuesta={() => irAPestana('respuesta')} /> : null}
+
       {p.estado === 'cancelado' || p.estado === 'expirado' ? (
         <Aviso tono="aviso" titulo={p.estado_etiqueta}>
           {p.siguiente_accion.texto}
@@ -40,7 +63,16 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
       {/* El cierre (calendario, aviso) es para quien va: quien confirmó esta versión. */}
       {p.estado === 'grupo_confirmado' && p.opcion && p.mi_situacion.acepte_version ? <CierrePlan p={p} /> : null}
 
-      {conOpcion && p.opcion ? <OpcionVigente key={p.opcion.version} p={p} viva={viva} soloLectura={soloLectura} /> : null}
+      {conOpcion && p.opcion ? (
+        <OpcionVigente
+          key={p.opcion.version}
+          p={p}
+          viva={viva}
+          soloLectura={soloLectura}
+          codigo={codigoInvitacion}
+          irAPestana={irAPestana}
+        />
+      ) : null}
 
       {enRevision ? (
         <AlternativaOrganizador p={p} viva={viva} soloLectura={soloLectura} sinAlternativa={sinAlternativa} />
@@ -48,10 +80,13 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
 
       {enRevision && p.opcion ? <OpcionAnterior p={p} /> : null}
 
-      {reuniendo ? <ReuniendoInteres p={p} irAPestana={irAPestana} /> : null}
+      {reuniendo ? <ReuniendoInteres p={p} codigo={codigoInvitacion} /> : null}
+
+      {/* Falta mi respuesta: una sola tarjeta (friccion), con el acceso de un toque. Se oculta sola si no corresponde. */}
+      <FaltaTuRespuesta p={p} espacioId={p.espacio_id} />
 
       {p.estado === 'reuniendo_interes' ? (
-        <BuscarOpcion p={p} viva={viva} soloLectura={soloLectura} sinOpcion={sinOpcion} />
+        <BuscarOpcion p={p} viva={viva} soloLectura={soloLectura} sinOpcion={sinOpcion} secundaria={buscarSecundario} />
       ) : null}
 
       {p.bajas.length > 0 ? <Bajas p={p} /> : null}
@@ -66,6 +101,31 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
 }
 
 type VivaProps = Pick<PestanaProps, 'p' | 'viva' | 'soloLectura'>
+
+// ------------------------------------------------------------------ aviso personal
+
+/**
+ * Un mensaje por situación. La próxima acción del servidor ya está en la cabecera (Propuesta.tsx, en todas las
+ * pestañas); acá se suma como mucho UNA tarjeta con lo que le toca a esta persona:
+ * - Falta su respuesta (reuniendo interés): <FaltaTuRespuesta/>, que distingue a quien no puede faltar y lleva a
+ *   responder en un toque. El caso 'primero_tu_disponibilidad' de AvisoParaMi diría lo mismo una segunda vez (y lo
+ *   decide solo por el imprescindible, mientras la enmienda 12 (a) pide además ser organizador): no se dibuja.
+ *   Pendiente (pedido a friccion): con 12 (a) en la cabecera, el texto de FaltaTuRespuesta para el imprescindible
+ *   repite "eres quien no puede faltar"; el cambio es de su componente, no de esta pantalla.
+ * - La versión es sin ella: <AvisoParaMi/> arriba, salvo que la próxima acción ya sea la de la enmienda 12 (b)
+ *   (`reunir_condiciones` con una opción publicada), que dice lo mismo casi con las mismas palabras. En ese caso el
+ *   texto queda solo en la cabecera y la acción que el aviso traía ("Ir a Mi respuesta") pasa sola a la opción
+ *   vigente (accionSinAviso): el texto no se repite y la persona no se queda sin el camino para completar.
+ */
+function verAvisoParaMi(p: EstadoPropuesta): boolean {
+  return avisoParaMi(p)?.clave === 'version_sin_ti' && p.siguiente_accion.codigo !== 'reunir_condiciones'
+}
+
+/** El aviso "Esta versión es sin ti" ofrecía ir a completar (`irARespuesta`), pero no se dibuja: se ofrece solo el botón. */
+function accionSinAviso(p: EstadoPropuesta): boolean {
+  const a = avisoParaMi(p)
+  return a?.clave === 'version_sin_ti' && a.irARespuesta && !verAvisoParaMi(p)
+}
 
 // ------------------------------------------------------------------ ficha
 
@@ -123,13 +183,15 @@ function PlazoInformativo({ p, viva, ahora }: { p: EstadoPropuesta; viva: Pestan
 
 // ------------------------------------------------------------------ opción vigente
 
-function razonNoAceptar(p: EstadoPropuesta): string {
+function razonNoAceptar(p: EstadoPropuesta): string | null {
   const s = p.mi_situacion
   const v = p.opcion?.version
   if (s.retirado) return 'Te retiraste de esta propuesta y ya no puedes participar en ella.'
   if (s.acepte_version) return `Ya confirmaste la versión ${v}. Tu confirmación vale solo para esa versión.`
   if (p.plazo_vencido) return 'El plazo de aceptación ya cerró.'
-  if (s.elegible_en_version === false) return 'No formas parte de las personas que pueden aceptar esta versión.'
+  // "Esta versión es sin ti" ya lo dice una vez AvisoParaMi arriba (o la próxima acción, enmienda 12 b): no se repite.
+  // Con 12 (b), en este lugar va solo el botón "Ir a Mi respuesta" (accionSinAviso).
+  if (s.elegible_en_version === false) return null
   if (s.motivo_aceptar === 'cupo_reservado') {
     return 'El último cupo está reservado para el anfitrión. Podrás confirmar si se libera un cupo para otros.'
   }
@@ -142,12 +204,19 @@ function cuentaConfirmados(confirmados: number, minimo: number): string {
   return confirmados > minimo ? `${confirmados} (mínimo ${minimo})` : `${confirmados} de ${minimo}`
 }
 
-function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
+function OpcionVigente({
+  p,
+  viva,
+  soloLectura,
+  codigo,
+  irAPestana,
+}: VivaProps & { codigo: string | null; irAPestana: PestanaProps['irAPestana'] }) {
   const o = p.opcion!
   const { ocupado, error, correr } = useMutacion(viva)
   const confirmado = p.estado === 'grupo_confirmado'
   const sobreMinimo = o.cupos.confirmados > o.cupos.minimo
   const cuenta = cuentaConfirmados(o.cupos.confirmados, o.cupos.minimo)
+  const razon = razonNoAceptar(p)
 
   async function aceptar() {
     // Siempre se envía la versión que la persona está viendo, nunca una calculada.
@@ -263,13 +332,31 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
             </p>
           )}
         </div>
-      ) : (
+      ) : razon ? (
         <p className="nota-linea" role="note">
           <Icono n={p.mi_situacion.acepte_version ? 'check' : 'candado'} tam={16} />
-          {razonNoAceptar(p)}
+          {razon}
         </p>
-      )}
+      ) : accionSinAviso(p) ? (
+        <div className="fila-botones">
+          <button type="button" className="btn btn-secundario" onClick={() => irAPestana('respuesta')}>
+            Ir a Mi respuesta
+          </button>
+        </div>
+      ) : null}
       {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} enfocar /> : null}
+
+      {/* #89 (ux-flujo): el organizador avisa al grupo de la versión publicada; el mensaje no nombra a nadie ni cuenta.
+          Solo si el servidor dice que queda lugar para otros: con el último cupo reservado al anfitrión, "si vas,
+          confírmala" invitaría a todo el grupo a algo que el servidor rechaza. */}
+      {p.estado === 'esperando_compromisos' && p.mi_situacion.es_organizador && codigo && o.cupos.libres_para_otros > 0 ? (
+        <RecordarFaltan
+          codigo={codigo}
+          titulo={p.titulo}
+          motivo={p.opcion_anterior ? 'reparacion' : 'version_nueva'}
+          cuando={franjaTexto(o.franja.inicio, o.franja.fin)}
+        />
+      ) : null}
     </section>
   )
 }
@@ -460,7 +547,7 @@ function HistorialResumido({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: 
 
 // ------------------------------------------------------------------ fase de interés y evaluación
 
-function ReuniendoInteres({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: PestanaProps['irAPestana'] }) {
+function ReuniendoInteres({ p, codigo }: { p: EstadoPropuesta; codigo: string | null }) {
   return (
     <section className="tarjeta">
       <h2>Interés del grupo</h2>
@@ -494,17 +581,10 @@ function ReuniendoInteres({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: P
           ))}
         </ul>
       ) : null}
-      {p.estado === 'reuniendo_interes' && p.mi_situacion.condiciones !== 'completas' && !p.mi_situacion.retirado ? (
-        <Aviso
-          tono="info"
-          accion={
-            <button type="button" className="btn btn-secundario" onClick={() => irAPestana('respuesta')}>
-              Ir a Mi respuesta
-            </button>
-          }
-        >
-          Aún no completaste tus condiciones.
-        </Aviso>
+      {/* #89 (ux-flujo): el organizador recuerda al grupo que responda, sin nombrar a nadie ni dar conteos.
+          Lo que le falta a uno mismo lo dice <FaltaTuRespuesta/>, debajo de esta tarjeta. */}
+      {p.estado === 'reuniendo_interes' && p.mi_situacion.es_organizador && codigo ? (
+        <RecordarFaltan codigo={codigo} titulo={p.titulo} />
       ) : null}
     </section>
   )
@@ -530,7 +610,7 @@ function AbrirPropuesta({ p, viva, soloLectura }: VivaProps) {
   )
 }
 
-function BuscarOpcion({ p, viva, soloLectura, sinOpcion }: VivaProps & { sinOpcion: boolean }) {
+function BuscarOpcion({ p, viva, soloLectura, sinOpcion, secundaria }: VivaProps & { sinOpcion: boolean; secundaria: boolean }) {
   const { ocupado, error, correr } = useMutacion(viva)
   if (!p.mi_situacion.puede.evaluar && !sinOpcion) return null
   async function evaluar() {
@@ -552,7 +632,13 @@ function BuscarOpcion({ p, viva, soloLectura, sinOpcion }: VivaProps & { sinOpci
       )}
       {p.mi_situacion.puede.evaluar ? (
         <div className="barra-accion">
-          <Boton onClick={evaluar} ocupado={ocupado} ocupadoTexto="Buscando…" disabled={soloLectura}>
+          <Boton
+            variante={secundaria ? 'secundario' : 'primario'}
+            onClick={evaluar}
+            ocupado={ocupado}
+            ocupadoTexto="Buscando…"
+            disabled={soloLectura}
+          >
             {error?.reintentable ? 'Reintentar búsqueda' : sinOpcion ? 'Volver a buscar opción' : 'Buscar opción compatible'}
           </Boton>
         </div>

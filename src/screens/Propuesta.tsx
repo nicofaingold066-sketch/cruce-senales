@@ -250,7 +250,8 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
       </div>
 
       <div id={`panel-${activa}`} className="panel-pestana" role="tabpanel" aria-labelledby={`tab-${activa}`} key={activa}>
-        {activa === 'plan' ? <PlanTab {...props} /> : null}
+        {/* El código de invitación es para "Recordar a quien falta" / "Avisar al grupo" del organizador. */}
+        {activa === 'plan' ? <PlanTab {...props} codigoInvitacion={espacio?.codigo_invitacion ?? null} /> : null}
         {activa === 'respuesta' ? <RespuestaTab {...props} /> : null}
         {activa === 'historial' ? <HistorialTab {...props} /> : null}
         {activa === 'simulacion' ? <SimulacionTab {...props} /> : null}

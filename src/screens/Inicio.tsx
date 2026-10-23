@@ -8,6 +8,8 @@ import { leerGuardada, sesionNueva } from '../lib/sesiones'
 import { OtraSesion } from '../components/Sesiones'
 import { guardarPerfil, leerPerfil, recordarNombreSiFalta, usePerfil } from '../lib/perfil'
 import { vibrar } from '../lib/tacto'
+import { destinoPorCodigo } from '../friccion/porCodigo'
+import type { DestinoPorCodigo } from '../friccion/porCodigo'
 import { Aviso, Boton, Cargando, ErrorCaja, colorAvatar, iniciales } from '../components/ui'
 import { PlanVivo, esTurno } from '../components/PlanVivo'
 import { Marca } from '../components/Marca'
@@ -335,6 +337,14 @@ function irAUnirse() {
   form?.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true })
 }
 
+/**
+ * El código para #/unirse/<código>: el servidor lo aceptó sin espacios ni invisibles (un U+200B pegado de WhatsApp),
+ * pero esa ruta solo admite letras y números; con el texto tal cual mostraría "Ese enlace de invitación no es válido".
+ */
+function codigoParaRuta(codigo: string) {
+  return codigo.replace(/[^A-Za-z0-9]/g, '')
+}
+
 function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: boolean; codigoInicial?: string }) {
   const [codigo, setCodigo] = useState(codigoInicial ?? '')
   // Por un enlace de invitación puede llegar otra persona al teléfono de alguien: ahí el nombre NO se precarga
@@ -354,7 +364,9 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
     setSeparando(false)
     if (!s.ok) setErrorCambio(s.mensaje)
   }
-  const { ocupado, error, ejecutar } = useAccion()
+  const { ocupado, error, ejecutar, limpiarError } = useAccion()
+  // Antes de unirse se mira la lista del grupo con el código (destinoPorCodigo); mientras tanto el botón ya trabaja.
+  const [mirando, setMirando] = useState(false)
   // Navegador compartido: la sesión guardada ya es miembro de este espacio con otro nombre.
   const [yaMiembro, setYaMiembro] = useState<{ espacioId: string; espacio: string; nombreActual: string } | null>(null)
   const [confirmar, setConfirmar] = useState(false)
@@ -362,26 +374,40 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
   const [errorCambio, setErrorCambio] = useState<string | null>(null)
   const faltan = codigo.trim() === '' || nombre.trim() === ''
 
-  function entrar(r: { espacio_id: string; reclamo_asiento_simulado: boolean }, espacio: string, sesionGuardada?: string) {
-    recordarNombreSiFalta(nombre)
+  // `d.nombre` es el nombre con que quedó (el que anotó el organizador, si se reclamó ese lugar).
+  function entrar(r: { espacio_id: string; reclamo_asiento_simulado: boolean }, espacio: string, d: DestinoPorCodigo, sesionGuardada?: string) {
+    recordarNombreSiFalta(d.nombre)
     if (r.reclamo_asiento_simulado) {
-      dejarAviso(`Reclamaste el lugar de ${nombre.trim()}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.${sesionGuardada ? ` ${sesionGuardada}` : ''}`)
-    } else if (sesionGuardada) {
-      dejarAviso(`Entraste como ${nombre.trim()}. ${sesionGuardada}`)
+      dejarAviso(`Reclamaste el lugar de ${d.nombre}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.${sesionGuardada ? ` ${sesionGuardada}` : ''}`)
+    } else if (sesionGuardada || d.miembroId) {
+      // Un lugar anotado va a responder, que suma este aviso al texto del servidor sobre el plan: no se anticipa nada.
+      dejarAviso(`Entraste como ${d.nombre}.${sesionGuardada ? ` ${sesionGuardada}` : ''}`)
     } else {
-      dejarAviso(`Te uniste a «${espacio}» como ${nombre.trim()}. Cuando haya un plan, marca si te interesa y carga en privado cuándo puedes.`)
+      dejarAviso(`Te uniste a «${espacio}» como ${d.nombre}. Cuando haya un plan, marca si te interesa y carga en privado cuándo puedes.`)
     }
-    irA(rutas.espacio(r.espacio_id))
+    // #88: quien entró a un lugar anotado va a responder la propuesta abierta, como desde la lista; si no hay una sola
+    // por responder, esa pantalla lo deja en el espacio. Con un nombre nuevo se sigue entrando al espacio.
+    irA(d.miembroId ? rutas.responder(r.espacio_id) : rutas.espacio(r.espacio_id))
   }
 
   async function hacer(e: FormEvent) {
     e.preventDefault()
-    if (faltan) return
+    if (faltan || mirando) return
     setYaMiembro(null)
     setConfirmar(false)
     setErrorCambio(null)
+    limpiarError()
+    // Entrada por código (flujo-usuario §6.6): con el nombre de un integrante anotado se reclama ese lugar (antes daba
+    // "nombre en uso"); en un grupo real con lugares libres y otro nombre, se elige en "¿Quién eres?". En la demo no
+    // desvía nunca. Si la lista no se puede mirar, se une como siempre y join_space da el error que corresponde.
+    setMirando(true)
+    const d = await destinoPorCodigo(codigo.trim(), nombre.trim()).finally(() => setMirando(false))
+    if (d.elegir) {
+      irA(rutas.unirse(codigoParaRuta(codigo)))
+      return
+    }
     const r = await ejecutar(`join:${codigo.trim()}:${nombre.trim()}`, () =>
-      api.joinSpace(codigo.trim(), nombre.trim()),
+      api.joinSpace(codigo.trim(), d.nombre, d.miembroId),
     )
     if (!r?.ok) return
     if (r.data.resultado.ya_era_miembro) {
@@ -390,7 +416,7 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
       setYaMiembro({ espacioId: r.data.resultado.espacio_id, espacio: r.data.espacio.nombre, nombreActual: yo?.nombre ?? 'otra persona' })
       return
     }
-    entrar(r.data.resultado, r.data.espacio.nombre)
+    entrar(r.data.resultado, r.data.espacio.nombre, d)
   }
 
   async function entrarComoOtra() {
@@ -399,6 +425,14 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
     setCambiando(true)
     setErrorCambio(null)
     try {
+      // El mismo destino que en `hacer` (el nombre pudo cambiar mientras se veía el aviso), mirado antes de cambiar de
+      // sesión: la lista no depende de quién pregunta. Si toca elegir, se va sin abrir otra sesión; "¿Quién eres?" ya
+      // ofrece "Ya estás en este grupo como…" y su propio cambio de persona.
+      const d = await destinoPorCodigo(codigo.trim(), nombre.trim())
+      if (d.elegir) {
+        irA(rutas.unirse(codigoParaRuta(codigo)))
+        return
+      }
       const s = await sesionNueva(previa.nombreActual)
       if (!s.ok) {
         setErrorCambio(s.mensaje)
@@ -406,11 +440,12 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
       }
       setYaMiembro(null)
       setConfirmar(false)
-      const r = await ejecutar(`join-nueva:${codigo.trim()}:${nombre.trim()}`, () => api.joinSpace(codigo.trim(), nombre.trim()))
+      const r = await ejecutar(`join-nueva:${codigo.trim()}:${nombre.trim()}`, () => api.joinSpace(codigo.trim(), d.nombre, d.miembroId))
       if (r?.ok) {
         entrar(
           r.data.resultado,
           r.data.espacio.nombre,
+          d,
           s.guardada ? `La sesión de ${previa.nombreActual} quedó guardada en este navegador: para volver a ella, ve a tus espacios.` : undefined,
         )
       }
@@ -461,7 +496,7 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
         />
         <small>Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.</small>
       </label>
-      <Boton type="submit" className="btn-bloque" ocupado={ocupado} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado || cambiando}>
+      <Boton type="submit" className="btn-bloque" ocupado={ocupado || mirando} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado || cambiando}>
         Unirme
       </Boton>
       {error ? <ErrorCaja error={error} enfocar /> : null}
