@@ -125,6 +125,11 @@ function Marco({
 
 function Pantalla({ ruta }: { ruta: Ruta }) {
   usePrecargaPantallas(true)
+  // La navegación por hash conserva el scroll de la pantalla anterior: cada pantalla nueva empieza arriba.
+  const claveRuta = JSON.stringify(ruta)
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [claveRuta])
   return (
     <Suspense fallback={<Cargando texto="Cargando…" />}>
       <PantallaRuta ruta={ruta} />

@@ -1228,3 +1228,35 @@ input[aria-invalid='true'],
   font-size: 0.75rem;
   padding: 0 8px;
 }
+
+/* ---- Mejora #30: plan activo en la portada ---- */
+.tu-plan {
+  margin: 12px 0 4px;
+}
+.tu-plan h2 {
+  margin-bottom: 8px;
+}
+.plan-activo {
+  border-width: 2px;
+}
+.plan-activo-turno {
+  border-color: var(--primario);
+  box-shadow: inset 5px 0 0 var(--primario);
+}
+.plan-activo .pastilla {
+  align-self: flex-start;
+  margin: 2px 0;
+}
+.portada-compacta {
+  padding-top: 8px;
+}
+.portada-compacta .marca-grande .marca-nombre {
+  font-size: 1.8rem;
+}
+.portada-compacta .portada-lema {
+  font-size: 1.15rem;
+}
+.plan-activo-turno .tarjeta-meta {
+  color: var(--texto);
+  font-weight: 700;
+}
