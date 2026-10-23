@@ -32,7 +32,7 @@ Esta tabla va tal cual al README y al pitch.
 |---|---|---|
 | Preferencias privadas de cada uno | Real, con datos ficticios | Opciones cerradas (sección 4). |
 | Elección del plan | Real | Reglas fijas en el servidor (sección 5). |
-| Redacción de la explicación | Real si Nico aprueba el modelo | Si no, o si el modelo falla, texto fijo. |
+| Redacción de la explicación | Real si se construye el agente | Proveedor: API de Anthropic, modelo sugerido `claude-haiku-5-5`. Si no se construye, o si el modelo falla, texto fijo. |
 | Clima | Real | Pronóstico de Santiago con Open-Meteo, que es gratis y no pide clave. Si no responde, se sigue "sin pronóstico". Con la semilla de la demo no cambia el plan, solo la explicación (sección 7.1). |
 | Canchas de pádel, fútbol y tenis, y otros lugares | **Simulado**, con rótulo "Simulación" | Catálogo ficticio. No conocemos una API pública de reservas de canchas en Chile. |
 | Eventos, charlas y fiestas | **Simulado**, con rótulo "Simulación" | Catálogo ficticio del fin de semana. |
@@ -140,7 +140,10 @@ El puntaje vive en Postgres y la función del servidor queda solo para lo que ne
 | Función del servidor `proponer-plan` | Solo trae el clima, arma las frases del grupo, llama al modelo y valida la respuesta. Lee los insumos con la RPC anterior | `supabase/functions/agente/**` | agente-ia, rama `wip/agente-ia` |
 | Pantalla de preferencias y botón | Formulario y borrador | `src/agente/**`; el enganche lo hace claude-b-interfaz | agente-ia y claude-b |
 | Cambio de contrato (operaciones nuevas) | Enmienda 3, después de la puerta de las 14:30 | `docs/contrato-enmienda-*.md` | coordinador |
-| Clave del modelo | Secreto de Supabase, solo en el servidor | — | la pone Nico |
+| Clave del modelo | Secreto de Supabase, solo en el servidor; nunca en el repo, el chat ni el cliente | — | la pone Nico |
+
+**Modelo (decidido por Nico, viernes ~11:10):** API de Anthropic. El modelo sugerido es `claude-haiku-5-5`, porque solo redacta una o dos frases a partir de un plan ya elegido.
+**Tope de gasto: pendiente.** Lo decide Nico. Hasta entonces no se pide ni se pone ninguna clave y no se escribe código. Faltan además la aprobación de construirlo y la puerta de las 14:30.
 
 **Privilegios (A5 ampliado):** toda RPC nueva entra a la lista permitida, que hoy tiene 25 operaciones, con `SECURITY DEFINER`, `search_path` vacío y `EXECUTE` solo para `authenticated`. La excepción es la RPC de insumos, que va solo a `service_role`. La prueba de catálogo del backend se actualiza para que la lista siga siendo exacta. El pedido formal lo hace el coordinador como enmienda 3.
 
