@@ -44,7 +44,11 @@ export function RecordarFaltan({
         </button>
       </div>
       <p className="suave" role="status">
-        {copiado ? 'Mensaje copiado.' : 'El mensaje va a todo el grupo: no nombra a nadie ni dice cuántos faltan.'}
+        {copiado
+          ? 'Mensaje copiado.'
+          : motivo === 'faltan'
+            ? 'El mensaje va a todo el grupo: no nombra a nadie ni dice cuántos faltan.'
+            : 'El mensaje va a todo el grupo y no nombra a nadie.'}
       </p>
     </div>
   )
