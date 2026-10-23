@@ -119,7 +119,9 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
         { inicio: `${sabado}T14:00`, fin: `${sabado}T17:00` },
         { inicio: `${domingo}T14:00`, fin: `${domingo}T17:00` },
       ])
-      expect(r.frases_grupo).toEqual(['presupuesto_todos', 'bajo_techo', 'el_mas_elegido', 'ritmo_del_grupo'])
+      // Mejora #54: ritmo_del_grupo usa la mayoría sin quien pide (como el perfil, E7.4). Sin Tomi el ambiente
+      // empata (Caro tranquilo, Fede fiesta), así que la frase ya no sale; antes la ponía el voto de Tomi.
+      expect(r.frases_grupo).toEqual(['presupuesto_todos', 'bajo_techo', 'el_mas_elegido'])
     }
   })
 
@@ -132,7 +134,7 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
       id: seco.lugar.id, actividad: seco.actividad, actividad_etiqueta: seco.actividad_etiqueta, lugar: seco.lugar,
       titulo: seco.titulo, franjas: seco.franjas, frases_grupo: seco.frases_grupo,
     })
-    expect(seco.candidatas[1].frases_grupo).toEqual(['presupuesto_todos', 'al_aire_libre_con_buen_tiempo', 'ritmo_del_grupo'])
+    expect(seco.candidatas[1].frases_grupo).toEqual(['presupuesto_todos', 'al_aire_libre_con_buen_tiempo']) // #54: sin ritmo_del_grupo
     for (const c of seco.candidatas) expect(Object.keys(c).sort()).toEqual(['actividad', 'actividad_etiqueta', 'franjas', 'frases_grupo', 'id', 'lugar', 'titulo'])
     expect(JSON.stringify(seco)).not.toMatch(/lugar-sim-02|evento-sim-01|puntaje/)
     // Mejora #28: Fiesta (1 persona) no sale en gustos. Enmienda 7 (E7.4): el perfil no cuenta a quien lo pide
