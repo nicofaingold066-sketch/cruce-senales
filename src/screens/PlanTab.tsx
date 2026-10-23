@@ -175,8 +175,13 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
             {o.cupos.imprescindible_acepto ? 'Confirmado' : 'Pendiente'}
           </span>
         </dd>
-        <dt>Faltan por responder</dt>
-        <dd>{o.cupos.pendientes} persona(s)</dd>
+        {/* Enmienda 7 (E7.2): solo el organizador recibe este conteo; con null no se muestra. */}
+        {o.cupos.pendientes != null ? (
+          <>
+            <dt>Faltan por responder</dt>
+            <dd>{o.cupos.pendientes} persona(s)</dd>
+          </>
+        ) : null}
         {o.cupos.reservado_imprescindible ? (
           <>
             <dt>Cupo del anfitrión</dt>
@@ -422,8 +427,12 @@ function ReuniendoInteres({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: P
         <dd>
           <strong>{p.confirmados}</strong> · el interés no es una confirmación
         </dd>
-        <dt>Con condiciones cargadas</dt>
-        <dd>{p.personas_con_condiciones} persona(s) (sus condiciones son privadas)</dd>
+        {p.personas_con_condiciones != null ? (
+          <>
+            <dt>Con condiciones cargadas</dt>
+            <dd>{p.personas_con_condiciones} persona(s) (sus condiciones son privadas)</dd>
+          </>
+        ) : null}
       </dl>
       {p.estado === 'reuniendo_interes' && p.mi_situacion.condiciones !== 'completas' && !p.mi_situacion.retirado ? (
         <Aviso

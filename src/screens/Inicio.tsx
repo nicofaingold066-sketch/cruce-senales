@@ -277,7 +277,7 @@ function CrearEspacio({ deshabilitado }: { deshabilitado: boolean }) {
     <details className="tarjeta plegable">
       <summary>Crear un espacio de prueba</summary>
       <form onSubmit={hacer} noValidate>
-        <Aviso tono="info">Sirve para probar con otro grupo. Un espacio propio no incluye personas simuladas hasta que las agregues.</Aviso>
+        <Aviso tono="info">Sirve para un grupo de verdad: invitas con el código y cada persona responde desde su teléfono. La Simulación (personas ficticias) es solo para la demo.</Aviso>
         <label className="campo">
           <span>Nombre del espacio</span>
           <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} />

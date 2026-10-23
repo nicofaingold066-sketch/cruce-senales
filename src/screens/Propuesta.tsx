@@ -76,11 +76,13 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
   }
 
   const esOrganizadorEspacio = p.mi_situacion.es_organizador_espacio
+  // Enmienda 7 (E7.3): la Simulación solo existe en espacios demo; mientras no se sabe, no se muestra.
+  const conSimulacion = esOrganizadorEspacio && espacio?.demo === true
   const pestanas: { id: Pestana; texto: string }[] = [
     { id: 'plan', texto: 'Plan' },
     { id: 'respuesta', texto: 'Mi respuesta' },
     { id: 'historial', texto: 'Historial' },
-    ...(esOrganizadorEspacio ? [{ id: 'simulacion' as Pestana, texto: 'Simulación' }] : []),
+    ...(conSimulacion ? [{ id: 'simulacion' as Pestana, texto: 'Simulación' }] : []),
   ]
   const activa = pestanas.some((t) => t.id === pestana) ? pestana : 'plan'
   // Misma condición con que PlanTab muestra la comparación "versión anterior → vigente".
