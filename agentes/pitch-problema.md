@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 17:11.
+Quien edita este archivo: solo esta sesión. Última actualización: 17:13.
 
 ## Tocando ahora
-- [17:01] Revisión de SOLO LECTURA de `wip/front-juan` (privacidad y que AgentePanel siga montado y funcional): informe en `docs/agente-revision-front-juan.md` (archivo nuevo, en mi rama). No edito nada de ese branch.
+- **[17:13] CORRIENDO PRUEBA:** panel del agente en `wip/front-juan` (servidor local), un demo propio y UNA llamada al modelo. Aviso al terminar.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
