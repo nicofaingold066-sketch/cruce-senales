@@ -3,8 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- **#48** (interfaz de la enmienda 7: conteos null para no organizadores, Simulación solo en demo), desde 14:45: `src/lib/types.ts`, `src/screens/PlanTab.tsx`, `src/screens/Propuesta.tsx`, `src/screens/SimulacionTab.tsx`, `src/screens/Espacio.tsx`, `src/screens/Inicio.tsx`.
-- Después **#47** (navegador compartido): `src/screens/Inicio.tsx`, `src/lib/sesiones.ts` (nuevo). Y **#44** parte 2 (visual 320/375 px): `src/styles.css`.
+(vacío desde 14:55: pausa por traspaso de esta sesión a una sesión local en la computadora de Nico. Lo que sigue está en "Siguiente".)
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
@@ -47,12 +46,56 @@ Además: `NODE_USE_ENV_PROXY=1 npm run test:backend` → 10 archivos, 100 prueba
 - LÍMITE: todo eso con respuestas ficticias interceptadas, NO contra el servidor real. El recorrido en vivo sigue bloqueado por la red (ver Bloqueos).
 
 ## Siguiente
-Esperando a Nico (llega en un rato) para seguir juntos. Ideas en cola: pulir la pantalla de Simulación para la demo (es la que más se usa en vivo) y la pantalla del espacio (lista de propuestas con el estado destacado).
+Orden del coordinador (14:37): #48 (hecha) → **#47** → **#44 parte 2**.
+
+**#47 navegador compartido. Plan listo, sin código todavía.** Rutas: `src/screens/Inicio.tsx` (UnirsePorCodigo y la portada) y `src/lib/sesiones.ts` (nuevo).
+- Si `join_space` responde `ya_era_miembro`, NO navegar. En el formulario va un aviso: "Este navegador ya está en este espacio como <nombre>". El nombre sale de `r.data.espacio.miembros` con `miembro_id === r.data.espacio.mi_miembro_id`. Dos botones:
+  - "Entrar como otra persona": primario si el nombre escrito es otro.
+  - "Seguir como <nombre>": navega al espacio.
+- "Entrar como otra persona" NO usa `supabase.auth.signOut()`: en auth-js 2.118, `_signOut` llama a `/logout` y REVOCA la sesión anónima, que no se recupera. En la notebook de la demo Tomi se perdería.
+  - En su lugar se guarda el `refresh_token` de la sesión actual en `localStorage` (`cruxe:sesion-guardada`, con una etiqueta "Tomi en «Los del asado»").
+  - Después `supabase.auth.signInAnonymously()`, que solo reemplaza la sesión local, y se repite `join_space` con OTRA clave de intento.
+  - Si `signInAnonymously` falla: se borra lo guardado y sigue la sesión de antes.
+  - Si falla el segundo `join_space` (por ejemplo, nombre en uso): el error queda en el formulario, que se puede corregir y reenviar.
+- En la portada, si hay una sesión guardada: "Este navegador guarda otra sesión: Tomi en «Los del asado»" con "Volver a esa sesión" y "Olvidarla".
+  - "Volver" hace `supabase.auth.refreshSession({ refresh_token })` y después `location.reload()`.
+  - Si el token no sirve, se borra y se avisa.
+- El código de antes ya avisaba sin navegar distinto. El texto viejo "Este teléfono ya estaba en este espacio…" se reemplaza.
+- Probar en vivo:
+  1. Tomi abre `#/unirse/<su código>` en SU navegador y escribe "Luna": aviso y no entra.
+  2. "Entrar como otra persona" → reclama a Luna con sesión nueva.
+  3. En el inicio, "Volver a esa sesión" → otra vez Tomi organizador.
+  - Además: doble clic sin duplicar y recorrido 11/11.
+
+**#44 parte 2: arreglos visuales a 320 px.** Salen de la revisión de las 28 pantallas, de 14:30 a 14:45. Nada se rompe; todo es apretado o desprolijo.
+- **Medio:**
+  1. Leyenda de fieldset de dos líneas cruzada por el borde (`.grupo legend`, `.franja-cond legend`): leyenda con `float:left; width:100%` + `clear`.
+  2. Radios "Sí puedo / No puedo / Pendiente" con anchos desparejos (`.opcion-radio`): a ≤400 px, `flex:1 1 calc(50% - 4px)`.
+  3. Candidatas del agente con el radio solo en su línea: es `src/agente/agente.css`, se PIDE a agente-ia (grid `auto 1fr`).
+  4. Pestañas del organizador en dos filas a 320 px, con "Simulación" sola: a ≤360 px, nowrap y letra 0.875rem, o grid 2×2.
+  5. Encabezado de 3 líneas (~92 px): a ≤400 px, ocultar la `/` y `margin-left:auto` en "Datos ficticios".
+  6. La barra fija `cta-fija` mide ~137 px: a ≤400 px, letra del texto 0.8rem y botón de 48 px.
+  7. `html{scroll-padding-top}` para el encabezado fijo (la parte 1 solo puso el de abajo).
+  8. Los `summary` de `.plegable` y `.sim-editar` sin indicador de abrir: el patrón `+/–` de `.ficha` y título de 1.15rem.
+  9. Botones apilados de anchos desparejos ("Copiar código / Compartir enlace", "Sí, X se baja / Volver"): `.fila-botones` con gap 8 y `flex:1 1 auto`, y envolver Copiar/Compartir en `.fila-botones`.
+  10. Fechas cortadas a la mitad en listas: `white-space:nowrap` en el `.suave` de la fecha.
+  11. Rótulo SIMULACIÓN pegado al texto en "Historial resumido": espacio en `PlanTab.tsx` ~389.
+  12. Columna del historial angosta: a ≤400 px, `3rem 12px 1fr` y `text-wrap:pretty`.
+- **Menor:**
+  - `text-wrap:balance` en botones, títulos y `.franja-grande`.
+  - Borde izquierdo doble en `.estado-hero-turno` y `.plan-activo-turno`: usar `border-left` en vez de `box-shadow`.
+  - "Versión N" sola a la derecha.
+  - `.etiqueta` corrida 4 px en las tarjetas.
+  - `small` del agente con interlineado suelto: es de agente-ia.
+  - `.btn:disabled` lavado: estilo propio sin opacidad, sin tocar `[aria-disabled]`, que ahora significa "ocupado".
+- Verificar con la auditoría a 320 y 375 px (28 pantallas, mide desborde, toques de 44 px y letra de 12 px) y el recorrido 11/11.
 
 ## Bloqueos
 Ninguno. Red a Supabase habilitada por Nico (14:2x).
 
 ## Pedidos a otros
+- backend (E7.3, 14:50): que `mi_situacion.puede.simular` sea false fuera de los espacios demo (hoy = organizador y activa y hay simulados). La interfaz ya oculta la Simulación con `espacio.demo` (`b2adc4d`); así el permiso del servidor y la interfaz dicen lo mismo.
+- agente-ia (#44, 14:50): a 320 px, en `src/agente/agente.css`, `.agente-candidatas .opcion-radio` deja el radio solo en su línea ("Asado · Quincho de Tomi", SIMULACIÓN y "Recomendada" bajan). Propuesta: `display:grid; grid-template-columns:auto 1fr; column-gap:8px` y los `span` en la columna 2. También `.agente-panel small{display:block; line-height:1.4}`.
 - coordinador (re aviso 12:23, nombre): Nico confirmó CRUXE en ESTA sesión (claude-b, ~12:15: "pongámosle nombre cruxe") y me autorizó a avanzar sin preguntar. Si querés confirmarlo con él en persona, llega en un rato. Mientras, dentro de `src/` ya está CRUXE; fuera de `src/` no toco nada.
 - coordinador (nombre CRUXE, rutas tuyas): en `index.html` poner `<title>CRUXE</title>`, `<link rel="icon" type="image/svg+xml" href="/src/assets/cruxe-icono.svg">` y `<meta name="theme-color" content="#b4400f">`; cambiar CRUCE→CRUXE en README, AGENTS.md, docs/contexto-proyecto.md, docs/como-correr.md y textos del contrato. El esquema interno `cruce`, el repo y la URL de Vercel pueden quedar (decidilo vos).
 - pitch-problema (nombre CRUXE, cuando retomes el sábado): `docs/pitch.md`, `docs/checkpoint-1.md`, `docs/readme-borrador.md` → CRUXE. El logo está en Figma (links en Estado).
@@ -66,6 +109,16 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- **#48** interfaz de la enmienda 7: `b2adc4d` (14:52).
+  - E7.2: `pendientes` y `personas_con_condiciones` son `number | null`; con null no aparecen "Faltan por responder" ni "Con condiciones cargadas", y queda "N de M necesarias".
+  - E7.3: la pestaña Simulación y las herramientas del organizador solo aparecen en espacios demo; el texto de "Crear un espacio" ya no promete simulados.
+  - En vivo, con los conteos en null en las respuestas de Luna: 14/14. El organizador sigue viendo los números reales y un espacio propio no muestra Simulación en ningún lado. Recorrido 11/11.
+- **#44 parte 1**: `23331e2` (14:35).
+  - `Boton` ocupado usa aria-disabled: con `disabled` el foco caía en BODY después de cada acción.
+  - Foco útil tras errores de acciones ("Reintentar", o el aviso si el foco se perdió), nunca en errores de sondeo.
+  - `.btn-chico` a 44 px; la barra fija no tapa el foco; el estado de la propuesta se anuncia completo.
+  - Auditoría de 28 pantallas a 375 y 320 px sin desborde. Error, sin red y 3 Enter seguidos (= 1 llamada) probados en vivo. Recorrido 11/11.
+- **#43** textos sin promesa de unanimidad: `0445771` (14:28).
 - Cinco arreglos de mi revisión adversarial propia: `c95952d` (14:21). Aviso al unirse si la sesión ya era miembro; tarjeta de opción reiniciada por versión; aviso de versión nueva consistente con la comparación; texto de "En revisión" preciso; atajo de simulación según `puede.simular`. En vivo; recorrido 11/11.
 - Figma actualizado (14:18): página **"Pantallas v2"** en https://www.figma.com/design/RgQLomDluDvf2fBSlbaGUU con 10 pantallas reales del recorrido (portada, invitación, espacio, tu turno, Simulación, en revisión, v1 → v2, historial, tu plan, agente), para el pitch.
 - Arreglo `0fd761d` (14:18): con un plan activo la portada oculta los botones de demo (en el segundo teléfono, "Probar la demo" le creaba a Luna otra demo donde era Tomi). Recorrido 11/11.
