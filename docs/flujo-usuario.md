@@ -1,7 +1,7 @@
 # Flujo de usuario e información de CRUXE
 
 Dueño: ux-flujo (rama `wip/ux`). Base: `wip/fundamentos` `95def89` (migraciones `0001` a `0034`).
-Actualizado: viernes 23 oct 2026, 19:40 (hora de `date`).
+Actualizado: viernes 23 oct 2026, 19:34 (hora de `date`).
 
 Cómo leer las marcas:
 - **[visto]**: lo recorrí en la app compilada (`vite build` + `vite preview`, 375 px, base real) el viernes 23 entre 19:24 y 19:27, con un grupo ficticio. Guion propio fuera del repo; capturas en mi carpeta temporal (no se suben).
@@ -115,7 +115,7 @@ Sin el tropiezo del paso 14 (organizador que responde antes de buscar) son 19. L
 | 7 | Sí/No en franja B | |
 | 8 | "Guardar condiciones" (bajo el pliegue) | "Guardado. Solo tú ves estas condiciones." |
 
-Resultado igual para los cinco: **8 toques y 4 vistas** (¿Quién eres?, espacio, Plan, Mi respuesta). Coincide con la cuenta leída del código y con la medición de friccion (19:40).
+Resultado igual para los cinco: **8 toques y 4 vistas** (¿Quién eres?, espacio, Plan, Mi respuesta). Coincide con la cuenta leída del código y con la medición que friccion anotó en su ficha.
 
 Para confirmar, cada invitado vuelve a abrir la app (nadie se lo avisa): portada con "Tu plan · Te toca confirmar la versión 1" → tarjeta → "Confirmar versión 1" = **2 toques + abrir la app**. A Ana, Beto y Diego les tocó; a Coni y Ema no.
 
@@ -126,7 +126,7 @@ Para confirmar, cada invitado vuelve a abrir la app (nadie se lo avisa): portada
 3. **Una franja en Pendiente deja fuera sin aviso.** Ema guarda Sí/Pendiente, ve "Guardado" y la etiqueta "Incompletas"; nada le dice que así no entra en la búsqueda. Después no es elegible. Pedido: friccion (#88) y front-juan.
 4. **El invitado aterriza en el espacio, no en el plan.** Arriba ve el código y "Compartir/Copiar/WhatsApp" (acciones del organizador), y abajo el botón fijo "Nueva propuesta". La tarjeta de su plan queda a media pantalla. Lo resuelve en parte #88 de friccion (ir directo a responder).
 5. **Quien queda fuera de la versión no se entera.** Coni y Ema ven en la portada "Grupo confirmado · Cupos disponibles: 2" y la órbita "4 se juntan"; el "No formas parte de las personas que pueden aceptar esta versión" está más abajo. Pedido: front-juan.
-6. **Nadie avisa que hay opción.** Al publicar la versión 1 no aparece ningún WhatsApp; recién en "¡Se juntan!" (después de confirmar) hay "Calendario" (.ics) y "WhatsApp". Pedido: componente `RecordarFaltan` / aviso de versión nueva (#89, mío) que conecta front-juan.
+6. **Nadie avisa que hay opción.** Al publicar la versión 1 no aparece ningún WhatsApp; recién en "¡Se juntan!" (después de confirmar) hay "Calendario" (.ics) y "WhatsApp". Componente `RecordarFaltan` entregado (`419ac2a`, #89); falta que front-juan lo conecte.
 7. **Textos del demo en un grupo real.** Chip "Datos ficticios" en el encabezado; "Imprescindible (anfitrión)" y "Anfitrión (Vale)" para un pádel; "Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna")" en "Unirme con un código". Pedidos: friccion (`App.tsx`, `QuienEres.tsx`) y front-juan.
 8. **"No puede faltar" ofrece a quienes no entraron.** En la creación de la propuesta aparecen Ana…Ema cuando todavía estaban "por entrar". Si se elige a una que nunca entra, el motor no publica nunca. Pedido: front-juan.
 9. **El primer atajo es "Asado".** En un grupo de pádel el plan quedó "Asado" con un toque. Pedido: apertura (#92).
@@ -135,10 +135,10 @@ Para confirmar, cada invitado vuelve a abrir la app (nadie se lo avisa): portada
 
 | Recorte | Ahorra | Dueño | Estado |
 |---|---|---|---|
-| Después de "Sí, soy X", directo a responder la propuesta vigente | 2 toques al invitado (8 → 6) | friccion #88 | en curso (friccion, 19:45) |
+| Después de "Sí, soy X", directo a responder la propuesta vigente | 2 toques al invitado (8 → 6) | friccion #88 | en curso (friccion) |
 | En la pantalla de responder, guardar al marcar las dos franjas (sin botón aparte) | 1 toque (6 → 5) | friccion #88 | propuesto |
 | "¿Eres X?" en el mismo toque del nombre (confirmación en línea, deshacer) | 1 toque (5 → 4) | friccion | propuesto; ojo con el rótulo "Sí, soy X" de los guiones |
-| Avisar al grupo por WhatsApp al publicar o reparar una versión | el organizador no escribe a mano | ux-flujo #89 + front-juan | en curso |
+| Avisar al grupo por WhatsApp al publicar o reparar una versión | el organizador no escribe a mano | ux-flujo #89 + front-juan | componente entregado (`419ac2a`); falta conectarlo |
 | El organizador responde antes de buscar (la pantalla se lo pide) | 1 búsqueda fallida | front-juan + backend | pedido |
 
 ## 4. Recorrido del organizador, paso por paso

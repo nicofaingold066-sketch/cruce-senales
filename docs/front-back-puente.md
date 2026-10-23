@@ -1,7 +1,7 @@
 # Puente front ↔ back de CRUXE
 
 Dueño: ux-flujo (rama `wip/ux`). Se actualiza con cada entrega del equipo. Flujo y fricciones: `docs/flujo-usuario.md`.
-Base: `wip/fundamentos` `95def89`, migraciones `0001` a `0034`. Actualizado: viernes 23 oct 2026, 19:50.
+Base: `wip/fundamentos` `95def89`, migraciones `0001` a `0034`. Actualizado: viernes 23 oct 2026, 19:34.
 
 Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegibilidad y estado; la interfaz solo muestra. Todas las respuestas tienen la forma `{ok:true, contrato:2, servidor_ahora, …}` o `{ok:false, error:{codigo, detalle, mensaje}}`. Las escrituras que pueden repetirse llevan `p_intento_id`. Lista permitida: 31 funciones para `authenticated`, 0 para `anon`.
 
@@ -37,22 +37,23 @@ Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegib
 
 | Necesidad (vista en el recorrido) | Pedido | Estado |
 |---|---|---|
-| El organizador que no puede faltar busca opción antes de responder: el texto del servidor lo invita ("Busca una opción compatible") | `siguiente_accion` del organizador: si quien consulta es el imprescindible y no completó condiciones, decirlo primero. No revela nada de otros | pedido a backend 19:35 (P2, después de E10) |
-| Avisar al grupo que hay versión nueva o reparación (WhatsApp) | nada del back: alcanza con `version`, `opcion_vigente` y el código del espacio | lo arma ux-flujo (#89) en `src/componentes-nuevos/` |
-| Recordar a quien falta sin nombres ni conteos | nada del back (el mensaje es genérico, para todo el grupo) | ux-flujo #89 |
+| El organizador que no puede faltar busca opción antes de responder: el texto del servidor lo invita ("Busca una opción compatible") | `siguiente_accion` del organizador: si quien consulta es el imprescindible y no completó condiciones, decirlo primero. No revela nada de otros | pedido a backend 19:30 (P2, después de E10) |
+| Avisar al grupo que hay versión nueva o reparación (WhatsApp) | nada del back: alcanza con `version`, `opcion_vigente` y el código del espacio | entregado: `<RecordarFaltan motivo="version_nueva" …/>` (`419ac2a`); falta que front-juan lo conecte |
+| Recordar a quien falta sin nombres ni conteos | nada del back (el mensaje es genérico, para todo el grupo) | entregado: `<RecordarFaltan motivo="faltan" …/>` (`419ac2a`) |
 | Reenviar la invitación solo a quien está "por entrar" | no hay contacto por persona (solo nombres, a propósito). Se reenvía el mismo enlace al grupo | sin pedido: decisión de producto |
 
 ## 4. Lo que le falta al back y habría que pedir al front
 
 | Qué tiene el back | Qué falta en pantalla | Pedido |
 |---|---|---|
-| `mi_situacion.elegible_en_version = false` | decirle claro a quien quedó fuera de la versión que es sin él/ella (hoy la portada le dice "Grupo confirmado") | front-juan 19:35 (P2) |
-| `p.imprescindible` + `mi_situacion.condiciones` | aviso "Primero marca tu disponibilidad" si soy el imprescindible | front-juan 19:35 (P1) |
-| `miembros[].pendiente` | no ofrecer a un "por entrar" como "No puede faltar" sin aviso | front-juan 19:38 (P2) |
-| `espacio.demo` | chip "Datos ficticios" y textos del demo solo en el demo | friccion (`App.tsx`), front-juan (`Inicio.tsx:462`) 19:35 |
+| `mi_situacion.elegible_en_version = false` | decirle claro a quien quedó fuera de la versión que es sin él/ella (hoy la portada le dice "Grupo confirmado") | front-juan 19:30 (P2) |
+| `p.imprescindible` + `mi_situacion.condiciones` | aviso "Primero marca tu disponibilidad" si soy el imprescindible | front-juan 19:30 (P1) |
+| `miembros[].pendiente` | no ofrecer a un "por entrar" como "No puede faltar" sin aviso | front-juan 19:30 (P2) |
+| `espacio.demo` | chip "Datos ficticios" y textos del demo solo en el demo | friccion (`App.tsx`), front-juan (`Inicio.tsx:462`) 19:30 |
 
 ## 5. Registro de entregas que cambian el puente
 
 | Hora | Quién | Qué | Efecto en este documento |
 |---|---|---|---|
 | 19:31 | apertura `87d4a62` (`wip/apertura`) | `src/lib/ejemplos.ts`: `ATAJOS` y `atajosParaGrupo(nombreGrupo)` | sin RPC; front-juan lo conecta en `NuevaPropuesta.tsx` |
+| 19:33 | ux-flujo `419ac2a` (`wip/ux`) | `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (prueba 7/7) | sin RPC; usa `espacio.codigo_invitacion`, `titulo` y la franja vigente |
