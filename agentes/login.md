@@ -8,6 +8,7 @@ Guía: `prompts/login.md`. Rama: `wip/login`. Rutas: `src/login/**` + enganche m
 - `src/lib/api.ts`: SOLO `VistaPorCodigoOk`, `previewSpaceByCode` y `p_miembro_id` opcional en `joinSpace` (autorizado)
 
 ## Estado
+- [17:03] CONGELADO src/ por orden del coordinador (entra el rediseño de Juan; él unifica #/entrar con "Ingreso con nombre"). No empujo ni rebaso; wip/login queda en a7ab1a9. Sigo probando la fase 1 contra la base, sin empujar, cuando backend la aplique.
 - [17:01] Enmienda 9 fase 1: interfaz lista en `wip/login` = `a7ab1a9` (rebasada sobre `wip/fundamentos` 55194f2). **NO INTEGRAR TODAVÍA:** espero que backend aplique la fase 1 para correr recorrido-dos-sesiones y jurado-navegador. typecheck, build y red-controlada (10/10) en verde; banco sin base `src/login/prueba/quien.html` probado a 320 y 375 px.
 - [16:58] Corte 2 (entrada estilo Tricount): esperando decisión del coordinador sobre la enmienda. Armo la pantalla "¿Quién eres?" en `src/login` sin engancharla.
 - [16:51] Corte 1 entregado en `wip/login` (cd4d885). Espero integración del coordinador.
