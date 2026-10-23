@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 17:57.
+Quien edita este archivo: solo esta sesión. Última actualización: 19:05.
 
 ## Tocando ahora
-(nada)
+- **[19:05] CORRIENDO PRUEBA:** botones de posibles canchas en PRODUCCIÓN (demo propio, UNA llamada al modelo). Aviso al terminar.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
