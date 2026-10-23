@@ -203,7 +203,7 @@ Etiquetas: `types.ts:28-36`. Textos de "Próxima acción": `0013`, `0029`.
 | Borrador | "El organizador debe abrir la propuesta." | `create_proposal` sin abrir |
 | Reuniendo interés | "Cada persona marca su disponibilidad en privado. Luego el organizador busca una opción." **[visto]**. Al organizador con suficientes condiciones: "Ya hay N personas con condiciones. Busca una opción compatible." **[visto]**. Desde la enmienda 12 (0039, 19:57), si el organizador es el imprescindible y no completó lo suyo: "Primero marca tu disponibilidad: eres quien no puede faltar." **[leído]** | `open_proposal` |
 | (sigue en Reuniendo interés) "Sin opción compatible" | "Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar." **[visto]** | `evaluate_and_publish` sin franja viable; es un resultado, no un estado |
-| Esperando compromisos | "Te toca confirmar la versión N." **[visto]** / "Ya confirmaste… Faltan X para el mínimo" / "Falta la aceptación de [imprescindible]" / E12 (b), a quien tiene la disponibilidad incompleta: "Completa tu disponibilidad para poder entrar en la opción." **[leído; ver nota]** | opción publicada o `propose_repair` |
+| Esperando compromisos | "Te toca confirmar la versión N." **[visto]** / "Ya confirmaste… Faltan X para el mínimo" / "Falta la aceptación de [imprescindible]" / E12 (b), a quien tiene la disponibilidad incompleta: "Tu disponibilidad está incompleta: no entraste en esta versión. Si la completas, cuenta si el plan se rearma." (contrato `b8e19ae`, migración 0040 de backend) **[leído]** | opción publicada o `propose_repair` |
 | Grupo confirmado | "Grupo confirmado en la versión N. Cupos disponibles: X." **[visto]** | confirmados ≥ mínimo con el imprescindible |
 | En revisión | "Hubo una baja… El organizador debe buscar una alternativa" | baja que deja menos que el mínimo o saca al imprescindible |
 | Expirado | "Venció el plazo sin grupo confirmado." | pasa el cierre sin grupo confirmado |
@@ -211,7 +211,7 @@ Etiquetas: `types.ts:28-36`. Textos de "Próxima acción": `0013`, `0029`.
 
 Reparación: En revisión → Esperando compromisos con versión N+1 y cero confirmaciones heredadas.
 
-Nota sobre E12 (b): los elegibles de una versión se fijan al publicarla (`0002_utilidades.sql:262`) y `accept_version` los revisa (`0005_api_motor.sql:135`). Completar la disponibilidad después NO suma a esa versión: solo cuenta si el plan se rearma. Pedí corregir el texto a backend y al coordinador (19:59).
+Nota sobre E12 (b): los elegibles de una versión se fijan al publicarla (`0002_utilidades.sql:262`) y `accept_version` los revisa (`0005_api_motor.sql:135`). Completar la disponibilidad después NO suma a esa versión: solo cuenta si el plan se rearma. Texto corregido en el contrato (coordinador `b8e19ae`) a pedido de ux-flujo; backend lo aplica como 0040.
 
 ## 7. Fricciones y su estado
 
