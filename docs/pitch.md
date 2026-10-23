@@ -1,6 +1,6 @@
 # Guion del pitch (5 min de demo y pitch + 3 min de preguntas)
 
-Dueño: pitch-problema. Borrador del viernes 23 oct 2026, ~12:10. Fuentes: `docs/problema.md`, `docs-drive/00-sintesis-para-el-pitch.md`, `docs/caso-canonico.md` y `docs/agente-ia.md`.
+Dueño: pitch-problema. Borrador del viernes 23 oct 2026. Fuentes: `docs/problema.md`, `docs-drive/00-sintesis-para-el-pitch.md`, `docs/caso-canonico.md` y `docs/agente-ia.md`.
 
 **Regla:** en el pitch se dice solo lo que funciona en vivo. Lo que no está construido se dice como siguiente paso.
 

@@ -54,6 +54,6 @@ Decisión:
 ## Cómo se da por corregido
 Un hallazgo solo cuenta como corregido cuando la prueba de regresión correspondiente se ejecutó contra el proyecto real y pasó, con la salida registrada en `docs/correcciones-altas-1.md`. Actualizar este documento o pasar las pruebas de andamiaje no cuenta.
 
-## Aclaraciones del coordinador (viernes 11:30)
+## Aclaraciones del coordinador
 - **Ubicación del motivo (A1):** el motivo por el que `aceptar` es false vive en `mi_situacion.motivo_aceptar` (string o null; valor `"cupo_reservado"` cuando el último cupo está reservado al imprescindible). `puede` sigue siendo un mapa de booleanos y NO lleva `motivo`. La interfaz lee `mi_situacion.motivo_aceptar`.
 - **Pares código/detalle confirmados:** `asiento_en_uso` / `asiento_en_uso`; `intento_obsoleto` / `intento_obsoleto`; `cupo_completo` / `reservado_imprescindible`. Los textos son los que quedaron en la tabla de mensajes del backend (migración 0008).

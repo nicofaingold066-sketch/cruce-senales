@@ -1,6 +1,6 @@
 # Especificación: el agente del círculo (corte chico)
 
-Dueño: agente-ia (sesión "Pitch y Agente IA del círculo"). Estado: **solo especificación, sin código**. Viernes 23 oct 2026, ~12:00.
+Dueño: agente-ia (sesión "Pitch y Agente IA del círculo"). Estado: **solo especificación, sin código**. Viernes 23 oct 2026.
 
 Idea original de Nico: `/Users/macair/cruse/ideas-nico/01-agente-del-circulo.md` (fuera del repo).
 
@@ -142,7 +142,7 @@ El puntaje vive en Postgres y la función del servidor queda solo para lo que ne
 | Cambio de contrato (operaciones nuevas) | Enmienda 3, después de la puerta de las 14:30 | `docs/contrato-enmienda-*.md` | coordinador |
 | Clave del modelo | Secreto de Supabase, solo en el servidor; nunca en el repo, el chat ni el cliente | — | la pone Nico |
 
-**Modelo (decidido por Nico, viernes ~11:10):** API de Anthropic. El modelo sugerido es `claude-haiku-5-5`, porque solo redacta una o dos frases a partir de un plan ya elegido.
+**Modelo (decidido por Nico, viernes 23 oct):** API de Anthropic. El modelo sugerido es `claude-haiku-5-5`, porque solo redacta una o dos frases a partir de un plan ya elegido.
 **Tope de gasto: pendiente.** Lo decide Nico. Hasta entonces no se pide ni se pone ninguna clave y no se escribe código. Faltan además la aprobación de construirlo y la puerta de las 14:30.
 
 **Privilegios (A5 ampliado):** toda RPC nueva entra a la lista permitida, que hoy tiene 25 operaciones, con `SECURITY DEFINER`, `search_path` vacío y `EXECUTE` solo para `authenticated`. La excepción es la RPC de insumos, que va solo a `service_role`. La prueba de catálogo del backend se actualiza para que la lista siga siendo exacta. El pedido formal lo hace el coordinador como enmienda 3.
