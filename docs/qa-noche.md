@@ -28,6 +28,10 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 19:27 | recorrido-dos-sesiones | producción | 23/23 |
 | 19:28 | red-controlada | producción | 10/10 |
 | 19:27 | jurado-navegador | producción | no corrió: backend ya había avisado `MIGRACION EN CURSO` (19:26) |
+| 19:31 | sesiones-recuperacion con el código de `wip/friccion` `efede20` | Vite local (copia descartable) | 12/12; typecheck ok |
+| 19:32 | red-controlada con `wip/friccion` `efede20` (build + preview) | localhost | 10/10 |
+| 19:31 | sesiones-recuperacion con `wip/agente-ia` `d5d913e` | Vite local | 12/12; typecheck ok |
+| — | recorrido y jurado con friccion / agente-ia / apertura / ux | base | pendiente: backend con MIGRACION EN CURSO (desde 19:26) |
 
 ## Regresiones abiertas
 (ninguna)
