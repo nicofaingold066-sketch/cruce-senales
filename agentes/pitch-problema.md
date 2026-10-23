@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 17:15.
+Quien edita este archivo: solo esta sesión. Última actualización: 17:24.
 
 ## Tocando ahora
-(nada)
+- [17:24] #77: `docs/agente-qa-enmienda9.md` (archivo nuevo, evidencia). QA de la enmienda 9 fase 2 solo por RPC, con espacio propio (`t-qa77-…`) y 4 sesiones anónimas; marco CORRIENDO PRUEBA al correr.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
