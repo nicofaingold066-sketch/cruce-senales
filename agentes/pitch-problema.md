@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 16:00.
+Quien edita este archivo: solo esta sesión. Última actualización: 16:02.
 
 ## Tocando ahora
-(nada)
+- [16:02] #53: `tests/e2e/red-controlada.mjs`, SOLO el caso F1 (pasa a regresión positiva); N1 a N8 sin tocar. Asignación temporal del coordinador (Codex quieto).
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
