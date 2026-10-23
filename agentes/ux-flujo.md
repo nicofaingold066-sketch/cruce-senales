@@ -3,17 +3,17 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cruce-ux`). Rutas: `docs/flujo-usuario.md`, `docs/front-back-puente.md`, archivos NUEVOS en `src/componentes-nuevos/**`. Puerto de preview: 4183.
 
 ## Tocando ahora
-- [20:03] recorrido #98 sobre fusión local `wip/ux` + `wip/friccion` (build 4183; 6 sesiones; CORRIENDO PRUEBA contra la base mientras dure).
 - [19:49] `src/componentes-nuevos/**` (componentes listos para conectar, porque front-juan no responde desde las 18:49) y los dos docs.
 - [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: los actualizo con cada entrega; último `0f38ad3`, E10 en la base).
 
-## Entregado (rama `wip/ux`, último `59685eb`)
+## Entregado (rama `wip/ux`, último `49f803a`)
 - #98 + #91 `a3797af` (19:31): `docs/flujo-usuario.md` reescrito con el recorrido REAL "convencer a uno" (build propio 4183, 375 px, 19:24-19:27): organizador 21 toques (19 sin el tropiezo), cada invitado 8 toques y 4 vistas hasta la primera respuesta, +2 para confirmar. Marcas [visto]/[leído], 9 dudas vistas en pantalla, recortes con dueño, mapa input → servidor → output en mermaid con la enmienda 10 (pendiente) y tabla "quién ve qué".
 - #94 `bfa6218` (19:32): `docs/front-back-puente.md`: RPC y campos por pantalla, lo que el back expone y el front no usa (E10 incluida), lo que falta de cada lado, registro de entregas.
 - #89 `419ac2a` (19:34) + `ede33ca` (19:36, nota según el motivo y banco sin base `src/componentes-nuevos/prueba/recordar.html`, revisado a 375 y 320 px sin desborde): `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (lógica pura) + `recordar.test.mjs`. `node --test "src/componentes-nuevos/*.test.mjs"` 7/7; `npm run typecheck` y `npm run build` en verde (19:34).
 - e2e de entrega: `recorrido-dos-sesiones.mjs http://localhost:4183` **23/23** (19:50:27-19:51:06) sobre `c535212` (wip/ux con `origin/wip/fundamentos` fusionado), typecheck y build en verde. Antes estuvo PENDIENTE por MIGRACION EN CURSO (19:26-19:49). Nota honesta: mi segunda corrida del recorrido (19:26-19:27, 6 sesiones, grupo propio) se cruzó con ese aviso; terminó sin errores. No corro nada más contra la base hasta que lo saque.
 
 - `59685eb` (19:49): `AvisoParaMi` + `avisoPersonal.ts` + prueba; `node --test "src/componentes-nuevos/*.test.mjs"` 12/12, typecheck verde, banco a 375 y 320 px sin desborde. `7347913`: texto de RecordarFaltan para quien ya respondió (sinteticos).
+- `49f803a` (20:06): #98 segunda corrida REAL sobre fusión local `wip/ux` + `wip/friccion` (`05e148d`, sin subir), 20:04-20:05, 6 sesiones: los 5 invitados llegan a la primera respuesta en **4 toques** (verifica el #88 de friccion); Ema ya no queda fuera por "Pendiente" y confirmó. Organizador sin cambios (21). Detalle en `docs/flujo-usuario.md` §3.5. Sin errores de la app en consola.
 
 ## Pedidos a otros
 Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo ficticio "Los del pádel": Vale organiza, Ana, Beto, Coni, Diego y Ema entran por el enlace). Detalle en `docs/flujo-usuario.md` §3 (rama `wip/ux`).
@@ -38,7 +38,7 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 
 ## Estado de mis pedidos
 - apertura (atajos): HECHO `87d4a62` (`ATAJOS`, `atajosParaGrupo`). Falta que front-juan lo conecte en `NuevaPropuesta.tsx` (pedido de apertura).
-- friccion (#88 condiciones primero, Pendiente, "Luna"): HECHO en `wip/friccion` (`2b9650d` "Luna" solo en demo; "¿Cuándo puedes?" sin Pendiente). Chip "Datos ficticios": friccion lo deja a propósito (todo dato es ficticio en el evento). De acuerdo; queda para el coordinador.
+- friccion (#88 condiciones primero, Pendiente, "Luna"): HECHO y VERIFICADO por mí en pantalla (20:06, fusión local) en `wip/friccion` (`2b9650d` "Luna" solo en demo; "¿Cuándo puedes?" sin Pendiente). Chip "Datos ficticios": friccion lo deja a propósito (todo dato es ficticio en el evento). De acuerdo; queda para el coordinador.
 - friccion (enlace a preferencias en `Responder.tsx`): HECHO `83ab0d6` (19:41). Falta el lado de front-juan: abrir el bloque en `Espacio.tsx` al leer `cruxe:abrir-preferencias`.
 - front-juan: 8 pedidos abiertos (arriba) + conectar `RecordarFaltan`. Sin respuesta todavía.
 - backend + coordinador (E12 (b), texto que promete de más): APROBADO por el coordinador (contrato `b8e19ae`, 20:03); backend lo aplica como 0040.
