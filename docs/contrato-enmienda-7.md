@@ -23,7 +23,7 @@ Aprobada por el coordinador el 23 oct 2026, a partir de `docs/agente-revision-pr
 - `perfil_grupo` se calcula sobre los miembros con preferencias **distintos de quien llama**: `personas`, los umbrales (`personas > 3`, `cuantos >= 2`) y los totales de `gustos`, energía y ambiente.
 - Así, el voto propio del organizador no puede hacer visible una actividad que eligió una sola persona más.
 - `presupuesto_grupo` sale de `perfil_grupo` (hallazgo 7): el servidor ya descarta por presupuesto y nadie más lo necesita.
-- En el demo, Tomi pide y quedan los 5 simulados: el perfil se sigue viendo (5 personas).
+- En el demo, Tomi pide y quedan los simulados con preferencias (4: Luna no tiene semilla): el perfil se sigue viendo (4 personas).
 
 ## E7.5 · Ajustes de cierre (migración 0028)
 - `mi_situacion.puede.simular` es `false` fuera de espacios demo (pedido de claude-b), coherente con E7.3.
