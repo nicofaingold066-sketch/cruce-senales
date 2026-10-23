@@ -3,6 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cruce-ux`). Rutas: `docs/flujo-usuario.md`, `docs/front-back-puente.md`, archivos NUEVOS en `src/componentes-nuevos/**`. Puerto de preview: 4183.
 
 ## Tocando ahora
+- [20:30] #100 (pedido de Nico vía coordinador): `docs/output-debate.md` (nuevo) y, si sirve, un componente nuevo en `src/componentes-nuevos/`. No conecto `AvisoParaMi`/`RecordarFaltan` hasta la decisión de Nico.
 - [19:49] `src/componentes-nuevos/**` (componentes listos para conectar, porque front-juan no responde desde las 18:49) y los dos docs.
 - [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: los actualizo con cada entrega; último `e73d93c`).
 
@@ -37,6 +38,8 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - backend y coordinador [19:59] (P1, enmienda 12 (b)): el texto "Completa tu disponibilidad para poder entrar en la opción." promete algo que el servidor no hace: los elegibles de la versión se fijan al publicarla (`0002_utilidades.sql:262`) y `accept_version` los revisa (`0005_api_motor.sql:135`), así que completar después NO te deja confirmar ESA versión. Propuesta de texto: "Tu disponibilidad está incompleta: no entraste en esta versión. Si la completas, cuenta si el plan se rearma." (mismo sentido que `AvisoParaMi`, `e10a5b0`). Si el coordinador prefiere que completar SÍ sume a la versión vigente, eso es otro cambio de motor, no de texto.
 - coordinador [20:03]: #98 en MEJORAS dice "corrida real esperando la base", pero la corrida real ya está hecha (19:24-19:27, antes de la migración; ver Entregado y `docs/flujo-usuario.md` §3). Ahora repito el recorrido sobre una fusión LOCAL de `wip/ux` + `wip/friccion` (sin subirla) para medir #88 con 5 invitados.
 - coordinador [20:19] (P1, destrabar): front-juan no responde desde las 18:49 y tiene 8 pedidos míos abiertos en `src/screens/**`. Los dos de más efecto ya están armados como componentes que no tocan nada más: en `PlanTab.tsx`, (1) `<AvisoParaMi p={p} irARespuesta={() => irAPestana('respuesta')} />` arriba de todo y (2) `<RecordarFaltan codigo={espacio.codigo_invitacion} titulo={p.titulo} />` para el organizador en `reuniendo_interes` (el código hay que pasarlo desde `Propuesta.tsx`, que ya tiene `espacio`). Propuesta: que vos lo conectes al integrar, o que me autorices esas líneas puntuales en `PlanTab.tsx`/`Propuesta.tsx` (como hiciste con login en `CrearGrupo.tsx`). Corro los tres guiones antes de entregar.
+- psico [20:30]: tomo #100 "cómo se discute el output" (`docs/output-debate.md`). Te leo antes de cerrar: me sirve lo tuyo sobre "no ser absolutista" (dos planes parecidos con distinto concepto), quién pone la casa y cómo un grupo llega a un sí sin que alguien quede expuesto. Si tenés una conclusión corta, ponela en tu ficha nombrándome.
+- apertura [20:30]: en #100 armo una respuesta corta para el jurado a "¿y cómo se discute la propuesta?"; la dejo en `docs/output-debate.md` §4 para que la sumes a tu §6 si te sirve.
 
 ## Estado de mis pedidos
 - apertura (atajos): HECHO `87d4a62` (`ATAJOS`, `atajosParaGrupo`). Falta que front-juan lo conecte en `NuevaPropuesta.tsx` (pedido de apertura).
