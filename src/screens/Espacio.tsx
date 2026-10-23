@@ -8,6 +8,7 @@ import { momentoCorto } from '../lib/format'
 import { Avatar, AvatarPila, Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { PlanVivo } from '../components/PlanVivo'
+import { enlaceInvitacion, textoInvitacion, urlWhatsApp } from '../lib/compartir'
 // El panel del agente va en su propia parte del paquete (mejora #14): se descarga solo al abrir el bloque.
 const AgentePanel = lazy(() => import('../agente/AgentePanel').then((m) => ({ default: m.AgentePanel })))
 
@@ -136,7 +137,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
             <span>Código de invitación</span>
             <strong className="codigo">{espacio.codigo_invitacion}</strong>
           </div>
-          <CopiarCodigo codigo={espacio.codigo_invitacion} />
+          <CopiarCodigo codigo={espacio.codigo_invitacion} espacioNombre={espacio.nombre} />
         </div>
       </section>
 
@@ -145,6 +146,29 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
           <Aviso tono="ok" accion={<button type="button" className="btn btn-secundario btn-chico" onClick={() => setAviso(null)}>Entendido</button>}>
             {aviso}
           </Aviso>
+        ) : null}
+
+        {!espacio.demo && espacio.miembros.length < 3 ? (
+          <section className="tarjeta invitar-grupo" aria-labelledby="invitar-titulo">
+            <span className="agente-icono" aria-hidden="true">
+              <Icono n="invitar" tam={22} />
+            </span>
+            <div>
+              <h2 id="invitar-titulo">Invita a tu grupo</h2>
+              <p className="suave">
+                {espacio.miembros.length === 1 ? 'Por ahora estás solo' : `Por ahora son ${espacio.miembros.length}`} en «{espacio.nombre}».
+                Manda el enlace: cada persona entra desde su teléfono con su nombre, sin crear cuenta.
+              </p>
+              <a
+                className="btn btn-primario btn-chico"
+                href={urlWhatsApp(textoInvitacion(espacio.nombre, espacio.codigo_invitacion))}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Icono n="whatsapp" tam={18} /> Mandar invitación por WhatsApp
+              </a>
+            </div>
+          </section>
         ) : null}
 
         <section aria-labelledby="propuestas-titulo">
@@ -231,10 +255,10 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
   )
 }
 
-function CopiarCodigo({ codigo }: { codigo: string }) {
+function CopiarCodigo({ codigo, espacioNombre }: { codigo: string; espacioNombre: string }) {
   const [copiado, setCopiado] = useState<'si' | 'no' | 'enlace' | null>(null)
   async function compartir() {
-    const url = `${window.location.origin}${window.location.pathname}${rutas.unirse(codigo)}`
+    const url = enlaceInvitacion(codigo)
     try {
       if (navigator.share) {
         await navigator.share({ title: 'CRUXE', text: 'Súmate al plan en CRUXE', url })
@@ -263,6 +287,14 @@ function CopiarCodigo({ codigo }: { codigo: string }) {
         <button type="button" className="btn btn-blanco btn-chico" onClick={() => void compartir()}>
           <Icono n="compartir" tam={18} /> Compartir enlace
         </button>
+        <a
+          className="btn btn-claro btn-chico"
+          href={urlWhatsApp(textoInvitacion(espacioNombre, codigo))}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icono n="whatsapp" tam={18} /> Invitar por WhatsApp
+        </a>
       </div>
       {copiado === 'si' ? <span role="status">Copiado.</span> : null}
       {copiado === 'no' ? <span role="status">No se pudo copiar; selecciónalo a mano.</span> : null}

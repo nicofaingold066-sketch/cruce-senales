@@ -3185,3 +3185,49 @@ fieldset:disabled .opcion-radio {
     display: block;
   }
 }
+.invitar-grupo {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  border-color: var(--brasa);
+  background: linear-gradient(135deg, var(--brasa-suave), var(--hoja) 70%);
+}
+.invitar-grupo .agente-icono {
+  background: var(--brasa);
+}
+.invitar-grupo h2 {
+  margin-bottom: 4px;
+}
+.invitar-grupo .btn {
+  margin-top: 10px;
+}
+.cierre {
+  text-align: center;
+  border-color: var(--ok);
+  background: linear-gradient(180deg, var(--ok-suave), var(--hoja) 60%);
+}
+.cierre-icono {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 4px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--ok);
+  color: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  .cierre-icono {
+    color: #0c0b0a;
+  }
+}
+.cierre h2 {
+  font-size: 1.6rem;
+}
+.cierre-cuando {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+.cierre .fila-botones {
+  justify-content: center;
+}

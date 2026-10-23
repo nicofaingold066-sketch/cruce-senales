@@ -5,6 +5,8 @@ import { useAhora, useMutacion } from '../lib/hooks'
 import { cuentaRegresiva, describirEvento, diaDe, franjaTexto, hora, momentoCorto, ZONA_VISIBLE } from '../lib/format'
 import { Avatar, Aviso, Boton, DiaTile, ErrorCaja, Nombre, Progreso } from '../components/ui'
 import type { PestanaProps } from './tabs'
+import { Icono } from '../components/Icono'
+import { descargarCalendario, urlWhatsApp } from '../lib/compartir'
 
 export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaProps) {
   const enRevision = p.estado === 'en_revision'
@@ -31,6 +33,8 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
       {versionReparada && p.opcion ? <CambioDeVersion p={p} /> : null}
 
       {p.estado === 'borrador' ? <AbrirPropuesta p={p} viva={viva} soloLectura={soloLectura} /> : null}
+
+      {p.estado === 'grupo_confirmado' && p.opcion ? <CierrePlan p={p} /> : null}
 
       {conOpcion && p.opcion ? <OpcionVigente key={p.opcion.version} p={p} viva={viva} soloLectura={soloLectura} /> : null}
 
@@ -551,6 +555,49 @@ function Cancelar({ p, viva, soloLectura }: VivaProps) {
         </Aviso>
       )}
       {error ? <ErrorCaja error={error} enfocar /> : null}
+    </section>
+  )
+}
+
+// ------------------------------------------------------------------ cierre: el encuentro ocurre
+
+/** Final del recorrido: el servidor confirmó el grupo. Llevarlo al calendario y avisar afuera de CRUXE. */
+function CierrePlan({ p }: { p: EstadoPropuesta }) {
+  const o = p.opcion!
+  const [nota, setNota] = useState<string | null>(null)
+  const cuando = franjaTexto(o.franja.inicio, o.franja.fin)
+  const quienes = o.aceptaron.map((a) => a.miembro.nombre).join(', ')
+  const texto = `Confirmado en CRUXE: ${p.titulo}, ${cuando} (hora de Santiago). Van: ${quienes}.`
+  function agendar() {
+    const ok = descargarCalendario({
+      id: `${p.id}-v${o.version}`,
+      titulo: p.titulo,
+      inicioUtc: o.franja.inicio.utc,
+      finUtc: o.franja.fin.utc,
+      descripcion: `Plan confirmado en CRUXE (versión ${o.version}). Van: ${quienes}.`,
+    })
+    setNota(ok ? 'Listo: se descargó el evento para tu calendario.' : 'No se pudo armar el evento en este navegador.')
+  }
+  return (
+    <section className="tarjeta cierre" aria-labelledby="cierre-titulo">
+      <span className="cierre-icono" aria-hidden="true">
+        <Icono n="fiesta" tam={26} />
+      </span>
+      <h2 id="cierre-titulo">¡Se juntan!</h2>
+      <p className="cierre-cuando">{cuando}</p>
+      <p className="suave">
+        {o.aceptaron.length} {o.aceptaron.length === 1 ? 'persona confirmó' : 'personas confirmaron'} la versión {o.version}. CRUXE
+        coordina el plan; no reserva nada.
+      </p>
+      <div className="fila-botones">
+        <button type="button" className="btn btn-primario" onClick={agendar}>
+          <Icono n="agendar" tam={20} /> Agregar al calendario
+        </button>
+        <a className="btn btn-secundario" href={urlWhatsApp(texto)} target="_blank" rel="noopener noreferrer">
+          <Icono n="whatsapp" tam={20} /> Avisar por WhatsApp
+        </a>
+      </div>
+      {nota ? <p role="status">{nota}</p> : null}
     </section>
   )
 }
