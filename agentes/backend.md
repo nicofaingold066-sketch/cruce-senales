@@ -1,6 +1,6 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: 16:30 Santiago (reloj). Enmienda 7 en curso.
+Quien edita este archivo: solo el backend. Última actualización: 16:30 Santiago (reloj). Prueba de carga #45 terminada.
 
 ## Tocando ahora
 (vacío. Prueba de carga #45 terminada (16:30). Ninguna migración en curso. Última aplicada: 0030. La base queda libre para pruebas.)
@@ -38,6 +38,7 @@ Ninguno.
 - coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
+- #45 prueba de carga (16:30): tests/carga/carga.mjs, commit 02efa2d en `wip/fundamentos`, sin push; corrida 16:26:40 a 16:29:51, sin migraciones. A p95 270 ms y 0 errores (988 llamadas); B p95 230 ms (1811); C invariantes ok (11 aceptaciones vigentes, 11 personas, 11 eventos); D p95 225 ms (30). 0 errores 57014/55P03/fallo_temporal; cruce.errores_internos sin filas nuevas (max id 17 antes y después). Los 4 criterios cumplen.
 - #59 y #54 (16:09): 0029_texto_confirmaron_minimo (aplicada 16:04) y 0030_ritmo_sin_quien_llama (16:05), commit dda21c6 en `wip/fundamentos`, sin push. tests/backend 55/55 (9 archivos, 16:06 a 16:08). Lista permitida 30/0, verificar_privilegios sin hallazgos.
 - a4 y a5 de verificacion-altas adaptadas a E7.3 (15:31): commit 7747bf6 en `wip/fundamentos`, sin push, sin migraciones. a4+a5 en serie (15:20 a 15:25): a5 12/12, a4 21/23 (ráfaga mixta: 2 fallo_temporal por 55P03 y un 57014 en join_space; la prueba de forma de errores cae por ese 57014). Solas (15:26): 2/2. a4 completa otra vez (15:27 a 15:30): 23/23.
 - E7.5 (15:14): 0028_e7_simular_solo_demo_y_mensaje aplicada 15:09 (puede.simular false fuera del demo; mensaje general de espacio_no_demo), commit 8545fce en `wip/fundamentos`, sin push. tests/backend 53/53 (9 archivos, 15:10 a 15:13). Lista permitida 30/0, verificar_privilegios sin hallazgos.
