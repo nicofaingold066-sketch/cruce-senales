@@ -3,7 +3,7 @@
 Quien edita este archivo: solo codex. Actualización: 23 oct 2026, cierre de tareas autorizadas por Nico.
 
 ## Tocando ahora
-**#29**, luego **#34**, por autorización directa de Nico: `tests/e2e/privacidad-agente.test.ts`, `tests/e2e/red-controlada*`, `tests/e2e/evidencia-privacidad-red.md` y `docs/revision-codex-6-privacidad-red.md`. Solo pruebas e informes. Se consulta MIGRACION EN CURSO antes de cada corrida real; si aparece, se espera. Sin modelos pagos, dependencias nuevas ni cambios propios en src/supabase/main.
+**#29 entregada (85c9672, 5/5)**; ahora **#34**, por autorización directa de Nico: `tests/e2e/privacidad-agente.test.ts`, `tests/e2e/red-controlada*`, `tests/e2e/evidencia-privacidad-red.md` y `docs/revision-codex-6-privacidad-red.md`. Solo pruebas e informes. Se consulta MIGRACION EN CURSO antes de cada corrida real; si aparece, se espera. Sin modelos pagos, dependencias nuevas ni cambios propios en src/supabase/main.
 
 ## Estado
 Guía vigente: `prompts/codex.md`, adoptada por instrucción directa de Nico. Vigía shell `./vigia.sh codex 60` activo.
@@ -28,6 +28,7 @@ Ninguno para la entrega. El worktree compartido de coordinación tenía un cambi
 - coordinador: revisar R1–R6 de revision-codex-5-readme antes de la entrega (promesa de unanimidad, evidencia/estado, atribución, causa no validada). No se cambió README.
 
 ## Entregado
+- #29: 85c9672, 5/5 (8.18 s). RPC real + handler index.ts real en Node sin clave; 0 intentos de modelo. No se invoca la función desplegada para garantizar cero facturación. Evidencia tests/e2e/evidencia-privacidad-red.md. Base 92477ef, antes de 0024.
 - #1: 1511b34 y ampliación f89ab42 (preferencias ausentes, dos nuevas ejecuciones).
 - #10: 3718b6b (informe UI).
 - #16: b45c226 (informe README).
