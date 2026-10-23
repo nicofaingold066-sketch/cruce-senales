@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- **Mejora #7** (primera pantalla en 5 segundos), desde 12:55: `src/screens/Inicio.tsx`, `src/components/Marca.tsx`, `src/styles.css`.
+- **Mejora #8** (reparación obvia v1 → v2), desde 12:57: `src/screens/PlanTab.tsx`, `src/screens/Propuesta.tsx`, `src/styles.css`.
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
@@ -65,11 +65,13 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- **#7** primera pantalla en 5 segundos: `764b1cb` (12:57). Arriba del pliegue en 375×812 y 320×640: logo, lema, qué hace en una frase, "Probar la demo «Los del asado»" y "Tengo un código de invitación"; tres pasos numerados. Recorrido en vivo 11/11.
 - **#2** botones por persona en Simulación con nombre y aria-label: `75f41c4` (wip/ui-enmienda). Verificado en vivo 11/11.
 - **#4** enganche del agente (AgentePanel en el espacio, precarga con tomarBorradorAgente): `0fe1b55` + `dd66806` + merge `3e81c69`. Verificado en vivo con la base del agente publicada.
 - Antes (fuera de MEJORAS): `08a87c3` simulate_load_case con resumen, `a890f11` enmienda 3 + logo X v2 + invitación por enlace, `68f4b71`/`b6578ce` identidad y UX móvil.
 
 ## Ideas
+- En la portada, si la sesión ya tiene la demo, mostrar directo la tarjeta de la propuesta activa con su estado ("Te toca confirmar") para que el segundo teléfono llegue en un toque. Dueño: claude-b-interfaz.
 - Tarjetas de propuestas en la pantalla del espacio con el mismo estado destacado (color + punto) y "Tu turno" según `siguiente_accion.codigo`: hoy son texto plano. Dueño: claude-b-interfaz.
 - Actualizar el archivo de Figma con la Simulación compacta y el agente plegado, para el pitch. Dueño: claude-b-interfaz.
 - Timeout de RPC en el cliente (U3 de Codex): una llamada colgada congela botones y sondeo durante la demo. Dueño: claude-b-interfaz (lo tomo con U1–U7).
