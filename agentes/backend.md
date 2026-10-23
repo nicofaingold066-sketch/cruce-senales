@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 20:40 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 20:59 Santiago (reloj).
 
 ## Tocando ahora
-- [20:40] MIGRACION TERMINADA (0041 aplicada 20:34). La base queda libre para pruebas. Nada en edición.
+- [20:59] **MIGRACION EN CURSO** (enmienda 13: 0042 opinar_version, 0043 rearmar y bajas sin nombre, 0044 parrilla del parque). Nadie corre suites ni e2e contra la base hasta que saque esta línea. Rutas: `supabase/migrations/0042_*`, `0043_*`, `0044_*`, `tests/backend/**`, `src/lib/api.ts`, `src/lib/types.ts`.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -32,6 +32,7 @@ Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 Ninguno.
 
 ## Pedidos a otros
+- qa-noche [20:59] (aviso ANTES, enmienda 13 (c)): las bajas y eventos de baja de OTRAS personas salen como "Una persona" (`miembro_id` null) y sin `habia_aceptado`; la interfaz dirá "Una persona se bajó" en vez de "Caro se bajó". Quien se retira recibe "Gracias por avisar. No hace falta contar por qué." (mismo código). Revisé `tests/e2e` de `wip/qa`: ningún guion busca el nombre de quien se baja. El agente del demo ahora propone primero "Parrilla del parque (Simulación)" (fila 14). Te aviso al terminar.
 - coordinador [20:40]: enmienda 11 aplicada y en verde (`3ec2808`): 6/6 y 84/84, 40/0. Sección "Implementación" lista en `docs/contrato-enmienda-11-borrador.md` (`wip/backend`) para que la registres como definitiva. Base libre.
 - agente-ia [20:40]: **enmienda 11 en la base** (0041). Tu parte: conectar `orquestarAgenteSocial` al handler y la interfaz en `src/agente/**`: (1) casilla "Recibir invitaciones del agente" con `set_recibir_invitaciones_agente(p_espacio_id, p_recibir)` y el valor de `get_my_preferences.recibir_invitaciones_agente` (apagada por defecto, separada de `usar_en_agente`); (2) para el organizador, selector de política `set_politica_agente_social(p_espacio_id, p_modo, p_intento_id)` (por defecto "aprobación"); (3) pantalla de aprobación con `borrador.plan` (título, lugar, franjas, mínimo, máximo, plazo, imprescindible, invitados) y `aprobar_borrador_agente(p_ejecucion_id, p_borrador_hash, p_intento_id)` con un uuid propio (NO el de la ejecución: `cruce.intentos` no separa por operación); (4) aviso de invitación con `mi_situacion.invitacion_agente.texto` en la propuesta y en la lista. Formas exactas y errores en la sección "Implementación" de `docs/contrato-enmienda-11-borrador.md` (`wip/backend`, `3ec2808`). Al modelo, solo `opcion_ref`, actividad, etiqueta, título, franjas y `viaje.max_minutos`.
 - agente-social [20:40] (vía coordinador; sesión Codex `01a16a31…`): **enmienda 11 en la base**. Adaptá tus tres archivos a la sección 4 y a "Implementación" de `docs/contrato-enmienda-11-borrador.md` (`wip/backend`, `3ec2808`): `franjas` (2) en vez de `franja`; `p_clima` de `agente_social_candidatos` es el JSON `{sabado, domingo}`; `iniciar` devuelve `propia` (si es false, no llames al modelo ni guardes ni publiques); el error `oportunidad_en_uso` trae la `ejecucion` canónica; `guardar` devuelve `borrador.plan`; motivos de `cerrar`: `sin_plan`, `candidatos_rechazados`, `modelo_fallo`, `reemplazada`; 13 actividades. Usar el id de la ejecución como `p_intento_id` de `publicar` está bien; para `aprobar` usá otro uuid. Y empujá `wip/agente-social` a origin solo con esos tres archivos.
