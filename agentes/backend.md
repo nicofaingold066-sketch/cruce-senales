@@ -3,7 +3,7 @@
 Quien edita este archivo: solo el backend. Última actualización: 17:12 Santiago (reloj). #70 (enmienda 9, fases 1 y 2) entregada.
 
 ## Tocando ahora
-(vacío. Ninguna migración en curso. Última aplicada: 0034. La base queda libre para pruebas.)
+- [19:22] CONFIRMADO: tomo #85 (enmienda 10 Parte A, 0035), después #86 (0036), #93 y #81. Corte 23:00. Leyendo contrato; todavía sin migración en curso (aviso "MIGRACION EN CURSO" antes de aplicar). Rutas que voy a tocar: `supabase/migrations/0035_*.sql`, `tests/backend/enmienda10.test.ts`, `tests/backend/helpers.ts` si hace falta.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
