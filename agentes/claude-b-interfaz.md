@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-(vacío desde 14:55: pausa por traspaso de esta sesión a una sesión local en la computadora de Nico. Lo que sigue está en "Siguiente".)
+(vacío desde 14:55: pausa por traspaso de esta sesión a una sesión local en la computadora de Nico. Lo que sigue está en "Siguiente"; el traspaso completo, con los scripts de prueba, está en la última sección: "Traspaso a la sesión local".)
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
@@ -150,3 +150,414 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
 - Actualizar el archivo de Figma con la Simulación compacta y el agente plegado, para el pitch. Dueño: claude-b-interfaz.
 - Timeout de RPC en el cliente (U3 de Codex): una llamada colgada congela botones y sondeo durante la demo. Dueño: claude-b-interfaz (lo tomo con U1–U7).
 
+## Traspaso a la sesión local (vie 23 oct, 14:55)
+
+Sección para la sesión de claude-b-interfaz que sigue en la computadora de Nico. **Si sos esa sesión, leé todo lo de abajo y seguilo al pie de la letra.** Todo el resto de este archivo (Siguiente, Entregado, Pedidos) también es tuyo.
+
+### Traspaso: sos claude-b-interfaz (CRUXE)
+
+Sos **claude-b-interfaz**, el agente de INTERFAZ de **CRUXE** (antes "CRUCE") en la hackatón Señales de Makana (23 y 24 oct 2026). La entrega es el **sábado 24 a las 13:00** y se guarda el último commit de `main`. El **sábado a las 11:00 se congelan las funciones**: desde ahí, solo se arreglan defectos. Tomá la hora siempre del reloj: `TZ=America/Santiago date`.
+
+Retomás el trabajo de otra sesión que ya no está. Este documento es todo lo que sabés. **Antes de tocar nada, leé TODO lo que se indica en el paso 1.** No adivines: si algo no está acá ni en el repo, preguntale a Nico.
+
+---
+
+#### 0. Quién es quién y qué es tuyo
+- **Usuario humano:** Nico Faingold (decide). En el equipo también está Juan Morales (`JuanMorales10`).
+- **Repo:** https://github.com/nicofaingold066-sketch/cruce-senales
+- **Tu rama de código:** `wip/ui-enmienda`. Empujá SOLO ahí. Nunca a `main`, `wip/fundamentos` ni a otra rama; el coordinador integra.
+- **Tus rutas:** todo `src/**` **salvo `src/agente/**`**, que es de la sesión agente-ia.
+- **No tocás:** `supabase/`, `tests/`, `docs/`, `package.json`, `package-lock.json`, configuración (Vite, TS, Vitest), `index.html`, `README.md`, `AGENTS.md`. Si necesitás algo ahí, pedilo en tu archivo de coordinación (sección 3).
+- **Otros agentes:**
+  - coordinador: sesión "Coordinador CRUCE", computadora A. Integra, despliega y decide el contrato.
+  - backend: dueño de `supabase/` y `tests/backend/`.
+  - codex: revisiones y E2E en la rama `codex/revisiones`.
+  - agente-ia: `src/agente/**` y `supabase/functions/agente/**`, en la rama `wip/agente-ia`.
+  - pitch-problema: docs del pitch.
+- **Identidad de git** (regla de las bases), configurada en las DOS copias:
+  ```
+  git config user.name "Nico Faingold"
+  git config user.email "296561131+nicofaingold066-sketch@users.noreply.github.com"
+  ```
+
+#### 1. Arranque: hacelo en orden y leé absolutamente todo
+1. Clonar o actualizar, y pasarte a tu rama:
+   ```
+   git clone https://github.com/nicofaingold066-sketch/cruce-senales.git && cd cruce-senales
+   git fetch origin && git switch wip/ui-enmienda && git pull
+   git merge origin/wip/fundamentos && git merge origin/wip/agente-ia
+   npm ci
+   ```
+2. Coordinación. Es una rama sin código y es el canal con los demás agentes:
+   ```
+   git fetch origin coordinacion && git worktree add ../cruce-coord coordinacion
+   ```
+   Si ya existe: `git -C ../cruce-coord pull --rebase`.
+3. **Leé enteros**, en este orden:
+   - En `../cruce-coord`:
+     - `prompts/claude-b.md`: **tu guía oficial; seguila al pie de la letra.**
+     - `README.md`: reglas de coordinación, el vigía y la "bola de nieve".
+     - `PROPIEDAD.md`: quién escribe cada ruta.
+     - `TABLERO.md`: todos los avisos `PARA claude-b-interfaz` y `PARA todos`.
+     - `MEJORAS.md`: la lista viva y priorizada de mejoras.
+     - `agentes/claude-b-interfaz.md`: tu archivo, con estado, entregas, pedidos e ideas.
+     - El resto de `agentes/*.md`.
+     - `entorno-publico.txt`.
+   - En el repo de código:
+     - `AGENTS.md` y `CLAUDE.md`.
+     - `docs/caso-canonico.md`: el caso de la demo, "Los del asado".
+     - `docs/contexto-proyecto.md`.
+     - `docs/contrato.md` con TODAS las enmiendas `docs/contrato-enmienda-*.md` (2, 3, 4 con la 4.1, 5, 6 y 7). **Mandan las enmiendas.** Desde `origin/wip/fundamentos`.
+     - `docs/correcciones-altas-1.md`.
+   - Las revisiones de Codex en `origin/codex/revisiones` (`docs/revision-codex-*.md`). U1–U7 ya están entregados; mirá si hay hallazgos nuevos.
+   - Todo `src/`: pantallas en `src/screens`, componentes en `src/components`, y `src/lib/{api,types,hooks,format,shell,supabase}.ts(x)`, `src/App.tsx`, `src/styles.css`. Leé `src/agente/` también, sin editarlo.
+4. Creá el `.env` en la raíz del repo de código con las dos líneas `VITE_` de `entorno-publico.txt`. Es la clave *publishable*, que no es secreta. **Nunca lo commitees**; ya está en `.gitignore`.
+5. Dejá corriendo el vigía, con la herramienta Monitor o en segundo plano: `cd ../cruce-coord && bash ./vigia.sh claude-b-interfaz 60`. En la primera pasada repite TODOS los avisos viejos, que ya están resueltos. Después solo avisa lo nuevo. Cada línea nueva es un aviso: leelo y actuá si es tuyo.
+
+#### 2. Producto: reglas que no se rompen
+- Solo lo **social** (caso 06, "Los del asado"). **Nada de "Empresa"**: ya se quitó del formulario.
+- **Interés no es confirmación.** El silencio nunca es asistencia.
+- Las condiciones y preferencias de cada persona son **privadas**: nunca aparecen para otros, en errores ni en logs.
+- **El servidor decide** cupos, plazos, elegibilidad, estado y confirmación. La interfaz **nunca calcula autoridad**: solo muestra lo que devuelve el servidor.
+- Una confirmación vale para **una versión**. La reparación crea una **versión nueva sin aceptaciones heredadas**. Nunca mostrar "Reparado" ni "Confirmado" antes de que lo diga el servidor.
+- Usá `siguiente_accion.codigo` para colores e íconos, nunca el texto. La lista cerrada está en `src/lib/types.ts` (`CODIGOS_SIGUIENTE`) y en la enmienda 3.
+- **No hay datos reales ni secretos.** **No agregues dependencias.** Nada de servicios pagos.
+- La IA (el agente) **solo propone y explica**: no crea ni confirma nada.
+
+#### 3. Protocolo de coordinación (README de `coordinacion`)
+1. **Reclamá antes de tocar.** En `../cruce-coord/agentes/claude-b-interfaz.md`, sección "Tocando ahora", poné la mejora (#) y las rutas exactas. Después commit (`claude-b-interfaz: <qué>`) y `git push origin coordinacion`. Si da error de fast-forward: `git pull --rebase` y repetí el push.
+2. Solo escribís TU archivo de `agentes/`. `TABLERO.md`, `PROPIEDAD.md` y `MEJORAS.md` son del coordinador.
+3. Reportá cada ~20 minutos y al cerrar cada corte. Al terminar:
+   - vaciá "Tocando ahora";
+   - en "Entregado", anotá el número de mejora y el commit;
+   - en "Ideas", agregá una o dos mejoras nuevas (qué, por qué y dueño probable).
+4. **Bola de nieve:** al terminar, tomá la siguiente mejora `libre` tuya de `MEJORAS.md` (P1 antes que P2, P2 antes que P3) y seguí sin parar.
+5. Si algo es de otro dueño, va en "Pedidos a otros" y seguís con otra cosa. **Nunca edites rutas ajenas.**
+6. **No dejes cambios sin commitear en el repo de código.** Un hook de cierre exige el árbol limpio. Por eso los scripts de prueba van FUERA del repo, en un temporal.
+
+#### 4. Cómo verificar (obligatorio antes de cada push a `wip/ui-enmienda`)
+1. Corré `npm run typecheck` y `npm run build`, y que den verde.
+2. **Probá en vivo contra el backend real, con dos sesiones distintas.** Dos pestañas del mismo perfil comparten sesión; usá dos contextos de navegador o dos teléfonos. Se hace así:
+   - Corré `npm run build` y después `npx vite preview --port 4173`, y abrí http://localhost:4173.
+   - Usá el script `e2e-recorrido.js` (está al final de esta sección, en "Scripts de prueba", con el comando para extraerlo) junto con `a375.js` (auditoría de 28 pantallas a 375 y 320 px: `ANCHO=320 node a375.js`, deja capturas e `informe-<ancho>.json` en `./a375/`) y `v48.js`/`v48b.js` (verificación de la enmienda 7). Ponelo fuera del repo y correlo con `node e2e-recorrido.js`. Tiene que dar **11/11 PASÓ** y "(ninguna)" respuesta `ok:false` o con `contrato` distinto de 2.
+   - Los pasos:
+     1. Tomi carga la demo con "Probar la demo «Los del asado»".
+     2. Luna entra por el enlace `#/unirse/<código>`, que se comparte desde el espacio con "Compartir enlace", y reclama su asiento.
+     3. Tomi crea la propuesta y la abre con "Revisar antes de crear" → "Crear y abrir al grupo".
+     4. Los dos marcan interés y los confirmados siguen en 0.
+     5. Cada uno carga sus condiciones: Tomi y Luna "Sí puedo" en A y B. Los simulados se cargan con "Cargar condiciones del caso a las personas simuladas".
+     6. Tomi pulsa "Buscar opción compatible" y sale la versión 1 en la franja A. Luna ve "Te toca confirmar".
+     7. Confirman Tomi y Luna (Luna con doble clic, sin duplicar), y después "Aceptar versión 1 por Mati, Caro". Resultado: grupo confirmado en las dos sesiones.
+     8. "Se baja: Caro" → "Sí, Caro se baja". El plan pasa a "En revisión".
+     9. "Buscar alternativa" → versión 2 en la franja B con cero heredadas. Aparece la tarjeta "El plan cambió: versión 1 → versión 2".
+     10. Confirman Tomi, Luna, "Aceptar versión 2 por Mati" y "por Fede". Grupo confirmado.
+     11. En una propuesta nueva, Tomi marca "No puedo" en A y B. Resultado: "Sin opción compatible".
+   - Para la demo, el segundo teléfono **siempre entra como Luna**. En demos viejos, Mati, Caro, Fede y Sofi ya no se pueden reclamar porque tienen preferencias.
+   - Si trabajás en la nube de Claude Code:
+     - el dominio `tjkfdnvzsikncjbskufm.supabase.co` tiene que estar permitido en la red del entorno;
+     - para las pruebas de Node usá `NODE_USE_ENV_PROXY=1 npm run test:backend`;
+     - lanzá Chromium con `proxy: { server: process.env.HTTPS_PROXY }`. El script ya lo hace solo.
+3. Capturá pantallas a 320, 375 y 430 px y miralas: sin desborde horizontal, zonas tocables de 44 px como mínimo y foco visible.
+
+#### 5. Estado al traspaso (vie 23 oct, ~14:55 Santiago)
+- `wip/ui-enmienda` está en **`b2adc4d`**. Todo commiteado y empujado; el árbol queda limpio.
+- `main` ya integra hasta la #43 y la #44 parte 1 (aviso del coordinador de 14:37). Publica solo el coordinador: GitHub está desconectado de Vercel y empujar no despliega.
+- Lo último entregado:
+  - **#48** `b2adc4d`: interfaz de la enmienda 7. Los conteos `pendientes` y `personas_con_condiciones` pueden llegar en null para quien no organiza; la Simulación solo aparece en espacios demo.
+  - **#44 parte 1** `23331e2`:
+    - `Boton` ocupado usa `aria-disabled`, para no perder el foco;
+    - `ErrorCaja enfocar` en los errores de acciones;
+    - `.btn-chico` a 44 px;
+    - `aria-atomic` en el estado de la propuesta.
+  - **#43** `0445771`: textos sin promesa de unanimidad.
+  - Antes: U1–U7, #2, #4, #7, #8, #9, #14, #15, #22, #24, #30 y #31. El detalle está en "Entregado" de tu archivo de coordinación.
+- **Enmienda 7 en curso en backend** (migraciones 0024–0027). **Mientras `agentes/backend.md` diga "MIGRACION EN CURSO", no corras pruebas contra la base.**
+- **Identidad visual:**
+  - Logo: X con un trazo grueso de brasa (el plan) y uno fino partido en dos personas. Nombre CRU✕E. Está en `src/components/Marca.tsx` y el ícono en `src/assets/cruxe-icono.svg`.
+  - Colores: brasa `#B4400F`, carbón `#1F1A17`, papel `#FAF6F1`.
+- **Figma:**
+  - User flow (FigJam): https://www.figma.com/board/sqWhMOQEdpT80S7YhXPtCl
+  - Identidad y pantallas: https://www.figma.com/design/RgQLomDluDvf2fBSlbaGUU. Las páginas son "Identidad", "Pantallas móviles" y **"Pantallas v2"** (10 pantallas reales).
+  - **Figma y pitch quedan para el sábado** (pedido de Nico): hoy no se trabajan.
+
+#### 6. Lo que queda, en este orden (orden del coordinador de 14:37)
+Todo el detalle está en la sección **"Siguiente"** de `../cruce-coord/agentes/claude-b-interfaz.md`. Leela entera.
+
+**A. #47 Navegador compartido.** El plan completo está en "Siguiente".
+- Reclamala con la hora y hacela.
+- **Clave:** NO uses `supabase.auth.signOut()`, que revoca la sesión anónima de Tomi sin vuelta. Guardá el `refresh_token` de la sesión actual en `localStorage` y después llamá a `signInAnonymously()`, que solo reemplaza la sesión local. En la portada va "Volver a esa sesión", que usa `refreshSession({ refresh_token })` y recarga.
+
+**B. #44 parte 2: arreglos visuales a 320 px.** Son 12 de prioridad media y 6 menores, listados en "Siguiente".
+- Corrí `a375.js` antes y después y miralo en las capturas.
+- Lo de `src/agente/agente.css` ya está pedido a agente-ia: no lo toques.
+
+**C. Después:** las mejoras `libre` tuyas de `MEJORAS.md` y los avisos del vigía (bola de nieve).
+
+#### 7. Trampas conocidas
+- **Router por hash** (`#/`, `#/e/<id>`, `#/e/<id>/nueva`, `#/e/<id>/p/<id>`, `#/unirse/<código>`). Cualquier `<a href="#algo">` rompe la navegación; usá botones con scroll o foco.
+- `tomarBorradorAgente` **borra** el borrador al leerlo. La guarda con `useRef` en NuevaPropuesta evita que el doble efecto de StrictMode lo pise.
+- Las RPC del agente devuelven `PGRST202` si no están publicadas. La interfaz muestra "todavía no está disponible" y no se rompe.
+- Hay que **mantener los nombres accesibles de los botones**, porque las pruebas en vivo y Codex los usan:
+  - "Probar la demo «Los del asado»", "Compartir enlace", "Unirme";
+  - "Revisar antes de crear", "Crear y abrir al grupo";
+  - "Me interesa", "Guardar condiciones", "Buscar opción compatible", "Confirmar versión N", "Buscar alternativa";
+  - "Cargar condiciones del caso a las personas simuladas", "Aceptar versión N por X", "Se baja: X", "Sí, X se baja".
+- `mi_situacion.motivo_aceptar` (no `puede.motivo`) da `"cupo_reservado"`.
+- Cada push tuyo a `coordinacion` vuelve como evento del vigía. No es un pedido nuevo.
+- El vigía hace `fetch` en `../cruce-coord`: antes de `git pull --rebase` ahí, esperá 1 s (`sleep 1`). Si sale "Cannot rebase onto multiple branches", reintentá.
+- `Boton` con `ocupado` ya NO pone `disabled` (usa `aria-disabled` y bloquea el clic): en Playwright no esperes `toBeDisabled()` mientras trabaja.
+- `ErrorCaja` lleva `enfocar` SOLO en errores de acciones de la persona, nunca en errores de carga o sondeo, que se repiten cada 10 s y robarían el foco.
+- Solo hacé commit si el recorrido da 11/11 (`if [ "$P" = "11" ]`). No encadenes el commit sin mirar el resultado.
+
+Empezá por el paso 1 completo. Después reclamá la #47 con la hora actual en tu archivo de coordinación y seguí la sección 6 sin parar, reportando cada ~20 minutos.
+
+### Scripts de prueba (van FUERA del repo de código)
+
+Para extraerlos, parado en una carpeta fuera del repo (por ejemplo, `../cruxe-pruebas`, hermana de `cruce-senales` y `cruce-coord`), corré este comando, que escribe los cuatro archivos:
+
+```
+node -e "const fs=require('fs');const s=fs.readFileSync(process.argv[1],'utf8');for(const m of s.matchAll(/<!-- archivo: (\S+) -->\n\x60\x60\x60js\n([\s\S]*?)\n\x60\x60\x60/g)){fs.writeFileSync(m[1],m[2]+'\n');console.log('escrito',m[1])}" ../cruce-coord/agentes/claude-b-interfaz.md
+```
+
+Ajustá la ruta del final si tu copia de `coordinacion` está en otro lado. Se corren con `node <script>` contra `npx vite preview --port 4173` (después de `npm run build`, con `.env`). Usan Playwright: el global (`npm i -g playwright` + `npx playwright install chromium`) o el del proyecto si está. En local no hace falta proxy.
+
+<details><summary><code>e2e-recorrido.js</code>: recorrido canónico de 11 pasos con dos sesiones (Tomi y Luna). Tiene que dar 11/11 PASÓ y "(ninguna)".</summary>
+
+<!-- archivo: e2e-recorrido.js -->
+```js
+// Recorrido canónico de CRUXE EN VIVO por la interfaz (dos sesiones: Tomi y Luna) contra el backend real.
+// Uso: 1) npm run build && npx vite preview --port 4173  (con .env)  2) node e2e-recorrido.js
+// Requiere Playwright (global o local) y Chromium. En la nube de Claude Code: PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers
+// y el proxy de HTTPS_PROXY; en local no hace falta proxy. Registra toda respuesta RPC con ok:false o contrato != 2.
+// Script de prueba descartable de claude-b-interfaz: NO va en src/ (tests/e2e es de Codex).
+let pw; try { pw = require('playwright'); } catch { pw = require(require('child_process').execSync('npm root -g').toString().trim() + '/playwright'); }
+const BASE = process.env.BASE || 'http://localhost:4173/';
+const res = []; const errs = [];
+const ok = (paso, extra = '') => { res.push(`PASÓ  ${paso}${extra ? ' — ' + extra : ''}`); console.log(res.at(-1)); };
+const fail = (paso, e) => { res.push(`FALLÓ ${paso} — ${String(e).split('\n')[0].slice(0, 300)}`); console.log(res.at(-1)); };
+async function abrir(br, quien) {
+  const ctx = await br.newContext({ viewport: { width: 390, height: 900 } });
+  const p = await ctx.newPage();
+  p.on('response', async (r) => {
+    const m = r.url().match(/rpc\/(\w+)/); if (!m) return;
+    try { const j = await r.json(); if (j && j.ok === false) errs.push(`${quien} ${m[1]} -> ${JSON.stringify({ contrato: j.contrato, error: j.error, state_rev: j.state_rev })}`);
+      if (j && j.contrato !== 2) errs.push(`${quien} ${m[1]} contrato=${j.contrato}`); } catch {}
+  });
+  p.on('pageerror', (e) => errs.push(`${quien} pageerror ${e.message}`));
+  return p;
+}
+const texto = (p) => p.locator('main').innerText();
+const esperaTexto = (p, t, ms = 15000) => p.getByText(t, { exact: false }).first().waitFor({ timeout: ms });
+const tab = (p, n) => p.getByRole('tab', { name: n, exact: true }).click();
+const btn = (p, n, exact = true) => p.getByRole('button', { name: n, exact }).first();
+async function misCondiciones(p, a, b) {
+  await tab(p, 'Mi respuesta');
+  for (const [k, v] of [['A', a], ['B', b]]) await p.locator('fieldset', { has: p.locator('legend', { hasText: `Franja ${k}:` }) }).first().getByLabel(v, { exact: true }).check();
+  await btn(p, 'Guardar condiciones').click();
+  await p.waitForTimeout(1500);
+}
+async function simAceptar(p, nombre, v) { await tab(p, 'Simulación'); const b = btn(p, `Aceptar versión ${v} por ${nombre}`); await b.waitFor({ timeout: 10000 }); await b.click(); await p.waitForTimeout(1500); }
+async function crearPropuesta(T, espacioUrl) {
+  await T.goto(espacioUrl); await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta/ }).first().click();
+  await btn(T, 'Revisar antes de crear').click(); await btn(T, 'Crear y abrir al grupo').click();
+  await T.waitForURL(/#\/e\/[^/]+\/p\//, { timeout: 15000 }); await esperaTexto(T, 'Reuniendo interés');
+  return T.url();
+}
+(async () => {
+  const opts = { args: ['--no-sandbox'] }; if (require('fs').existsSync('/opt/pw-browsers/chromium')) opts.executablePath = '/opt/pw-browsers/chromium'; if (process.env.HTTPS_PROXY) opts.proxy = { server: process.env.HTTPS_PROXY, bypass: 'localhost,127.0.0.1' };
+  const br = await pw.chromium.launch(opts);
+  const T = await abrir(br, 'Tomi'); const L = await abrir(br, 'Luna');
+  let espacioUrl, codigo, propUrl;
+  const pasos = [
+    ['1. Cargar demo "Los del asado" (Tomi)', async () => { await T.goto(BASE + '#/'); await btn(T, 'Probar la demo «Los del asado»').click(); await T.waitForURL(/#\/e\//, { timeout: 15000 }); await esperaTexto(T, 'Código de invitación'); espacioUrl = T.url(); codigo = (await T.locator('strong.codigo').innerText()).trim(); const t = await texto(T); for (const n of ['Tomi', 'Luna', 'Mati', 'Caro', 'Fede', 'Sofi']) if (!t.includes(n)) throw 'falta ' + n; return 'código ' + codigo.replace(/./g, (c, i) => (i < 2 ? c : '•')); }],
+    ['2. Luna entra por el ENLACE de invitación y reclama un asiento limpio (otra sesión)', async () => { if (!(await T.getByRole('button', { name: 'Compartir enlace' }).count())) throw 'falta Compartir enlace'; await L.goto(BASE + '#/unirse/' + codigo); await L.getByText('Te invitaron a un plan').waitFor(); if ((await L.getByLabel('Código de invitación').first().inputValue()) !== codigo) throw 'código no precargado'; const f = L.locator('form', { has: L.getByRole('heading', { name: 'Unirme con un código' }) }); await f.getByLabel('Tu nombre en el espacio').fill('Luna'); await f.getByRole('button', { name: 'Unirme', exact: true }).click(); await L.waitForURL(/#\/e\//, { timeout: 15000 }); await esperaTexto(L, 'Reclamaste el lugar de Luna'); }],
+    ['3. Tomi crea la propuesta con A y B y la abre', async () => { propUrl = await crearPropuesta(T, espacioUrl); const t = await texto(T); if (!/Sábado 31 oct 2026, 14:00 a 17:00/.test(t) || !/Domingo 1 nov 2026, 14:00 a 17:00/.test(t) || !t.includes('America/Santiago')) throw 'franjas/zona no visibles'; }],
+    ['4. Interés de Tomi y Luna no suma confirmados', async () => { await tab(T, 'Mi respuesta'); await btn(T, 'Me interesa').click(); await L.goto(propUrl); await L.getByRole('tab', { name: 'Mi respuesta', exact: true }).waitFor({ timeout: 15000 }); await tab(L, 'Mi respuesta'); await btn(L, 'Me interesa').click(); await L.waitForTimeout(1500); await tab(T, 'Plan'); await T.waitForTimeout(3500); const t = await texto(T); const m = t.match(/Confirmados\s*\n?\s*(\d+)/); if (!m || m[1] !== '0') throw 'Confirmados no es 0: ' + (m ? m[1] : 'no visible'); return 'Confirmados 0 con interés marcado'; }],
+    ['5. Condiciones privadas: Tomi A+B, Luna A+B (cada uno en su sesión), simulados con el atajo del caso', async () => { await misCondiciones(T, 'Sí puedo', 'Sí puedo'); await misCondiciones(L, 'Sí puedo', 'Sí puedo'); await tab(T, 'Simulación'); await btn(T, 'Cargar condiciones del caso a las personas simuladas').click(); await T.waitForTimeout(4000); const tl = await texto(L); if (/Caro[^\n]*(A: Sí|Solo A)/.test(tl)) throw 'Luna ve condiciones de Caro'; const st = await T.locator('[role=status]').allInnerTexts(); return 'atajo: ' + (st.find((x) => /En una sola operación|Guardadas:/.test(x)) || '?').slice(0, 200); }],
+    ['6. Buscar opción: versión 1 en franja A', async () => { await tab(T, 'Plan'); await btn(T, 'Buscar opción compatible').click(); await esperaTexto(T, 'Opción vigente · Versión 1'); const t = await texto(T); if (!t.includes('Sábado 31 oct 2026, 14:00 a 17:00')) throw 'v1 no es franja A'; await tab(L, 'Plan'); await esperaTexto(L, 'Opción vigente · Versión 1'); const h = await L.locator('.estado-hero').innerText(); if (!/Tu turno|Te toca confirmar/.test(h)) throw 'Luna no ve que es su turno: ' + h.replace(/\s+/g, ' '); return 'Luna: ' + h.replace(/\s+/g, ' ').slice(0, 110); }],
+    ['7. Tomi, Luna, Mati y Caro aceptan v1 (doble clic de Luna) → Grupo confirmado en las dos sesiones', async () => { await btn(T, 'Confirmar versión 1').click(); await T.waitForTimeout(1500); await tab(L, 'Plan'); await btn(L, 'Confirmar versión 1').dblclick(); await L.waitForTimeout(2000); await tab(T, 'Simulación'); const bt = T.getByRole('button', { name: 'Aceptar versión 1 por Mati, Caro', exact: true }); await bt.waitFor({ timeout: 10000 }); await bt.click(); await T.getByText('Confirmaron la versión 1: Mati, Caro.').waitFor({ timeout: 15000 }); await tab(T, 'Plan'); await esperaTexto(T, 'Grupo confirmado'); await esperaTexto(L, 'Grupo confirmado', 10000); const t = await texto(L); const m = t.match(/(\d+) de 4\s*\n?\s*necesarias/); return 'Luna ve ' + (m ? m[0].replace(/\s+/g, ' ') : '?'); }],
+    ['8. Caro se baja → En revisión, baja registrada', async () => { await tab(T, 'Simulación'); const c = T.locator('section[aria-label="Simulación de Caro"]'); await c.getByRole('button', { name: 'Se baja: Caro', exact: true }).click(); await c.getByRole('button', { name: 'Sí, Caro se baja', exact: true }).click(); await T.waitForTimeout(1500); await tab(T, 'Plan'); await esperaTexto(T, 'En revisión'); await esperaTexto(T, 'Bajas registradas'); await esperaTexto(L, 'En revisión', 10000); const t = await texto(L); if (/Reparado/.test(t)) throw 'Luna ve "Reparado"'; }],
+    ['9. Buscar alternativa → v2 en franja B con cero aceptaciones heredadas', async () => { await btn(T, 'Buscar alternativa').click(); await esperaTexto(T, 'Opción vigente · Versión 2'); const t = await texto(T); if (!t.includes('Domingo 1 nov 2026, 14:00 a 17:00')) throw 'v2 no es franja B'; if (!t.includes('Todavía nadie confirmó la versión 2')) throw 'v2 no empieza en cero'; await esperaTexto(L, 'Opción vigente · Versión 2', 10000); const tl = await texto(L); if (/Reparado|Grupo confirmado/.test(tl)) throw 'Luna ve confirmado/reparado antes de aceptar'; const cv = (await L.locator('.cambio-version').innerText()).replace(/\s+/g, ' '); if (!/versión 1 → versión 2/.test(cv) || !/Sábado 31 oct 14:00 → Domingo 1 nov 14:00/.test(cv) || !/Caro( SIMULACIÓN)? se bajó/.test(cv) || !/Nadie confirmó todavía/.test(cv)) throw 'comparación v1→v2 incompleta: ' + cv; await L.locator('.cambio-version').screenshot({ path: 'cv-L.png' }); return 'Luna: ' + cv.slice(0, 170); }],
+    ['10. Tomi, Luna, Mati y Fede aceptan v2 → Grupo confirmado de nuevo', async () => { await btn(T, 'Confirmar versión 2').click(); await T.waitForTimeout(1500); await btn(L, 'Confirmar versión 2').click(); await L.waitForTimeout(1500); await simAceptar(T, 'Mati', 2); await simAceptar(T, 'Fede', 2); await tab(T, 'Plan'); await esperaTexto(T, 'Grupo confirmado'); await esperaTexto(L, 'Grupo confirmado', 10000); }],
+    ['11. Rama "sin opción": nueva propuesta, Tomi no puede A ni B → Sin opción compatible', async () => { await crearPropuesta(T, espacioUrl); await tab(T, 'Mi respuesta'); await btn(T, 'Me interesa').click(); await misCondiciones(T, 'No puedo', 'No puedo'); await tab(T, 'Simulación'); await btn(T, 'Cargar condiciones del caso a las personas simuladas').click(); await T.waitForTimeout(4000); await tab(T, 'Plan'); await btn(T, 'Buscar opción compatible').click(); await esperaTexto(T, 'Sin opción compatible'); const t = await texto(T); if (/Opción vigente/.test(t)) throw 'publicó opción sin Tomi'; if (!/Mínimo 4/.test(t)) throw 'mínimo cambió'; }],
+  ];
+  for (const [n, f] of pasos) { try { const x = await f(); ok(n, x); } catch (e) { fail(n, e); await T.screenshot({ path: 'fallo-T.png', fullPage: true }); await L.screenshot({ path: 'fallo-L.png', fullPage: true }); break; } }
+  console.log('\n--- respuestas ok:false o contrato≠2 del servidor ---\n' + (errs.length ? [...new Set(errs)].join('\n') : '(ninguna)'));
+  await br.close();
+})();
+```
+
+</details>
+
+<details><summary><code>a375.js</code>: auditoría de 28 pantallas: `ANCHO=375 node a375.js` y `ANCHO=320 node a375.js`. Deja capturas e `informe-<ancho>.json` en `./a375/`.</summary>
+
+<!-- archivo: a375.js -->
+```js
+// Auditoría #44: todas las pantallas y estados a 375 y 320 px, en vivo. Capturas de página completa + mediciones.
+let pw; try { pw = require('playwright'); } catch { pw = require(require('child_process').execSync('npm root -g').toString().trim() + '/playwright'); }
+const BASE = 'http://localhost:4173/';
+const ANCHO = Number(process.env.ANCHO || 375);
+const fs = require('fs');
+const DIR = __dirname + '/a375';
+fs.mkdirSync(DIR, { recursive: true });
+const medir = () => {
+  const vw = document.documentElement.clientWidth;
+  const out = { ancho: vw, desbordeDoc: document.documentElement.scrollWidth > vw, fueraDePantalla: [], recortados: [], tocablesChicos: [], letraChica: [] };
+  const desc = (el) => el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : '') + (el.textContent ? ' «' + el.textContent.trim().replace(/\s+/g, ' ').slice(0, 40) + '»' : '');
+  for (const el of document.querySelectorAll('body *')) {
+    const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue; const cs = getComputedStyle(el); if (cs.visibility === 'hidden') continue;
+    if (r.right > vw + 1 || r.left < -1) out.fueraDePantalla.push(desc(el) + ` [${Math.round(r.left)}..${Math.round(r.right)}]`);
+    if ((cs.overflowX === 'hidden' || cs.overflowX === 'auto' || cs.overflowX === 'scroll') && el.scrollWidth > el.clientWidth + 2) out.recortados.push(desc(el) + ` [${el.scrollWidth}>${el.clientWidth}]`);
+    if (el.matches('button, a.btn, input:not([type=radio]):not([type=checkbox]), select, summary, [role=tab]') && r.height < 44) out.tocablesChicos.push(desc(el) + ` [${Math.round(r.height)}px]`);
+    if ([...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()) && parseFloat(cs.fontSize) < 12) out.letraChica.push(desc(el) + ` [${cs.fontSize}]`);
+  }
+  for (const k of ['fueraDePantalla', 'recortados', 'tocablesChicos', 'letraChica']) out[k] = [...new Set(out[k])].slice(0, 15);
+  return out;
+};
+(async () => {
+  const opts = { args: ['--no-sandbox'] }; if (require('fs').existsSync('/opt/pw-browsers/chromium')) opts.executablePath = '/opt/pw-browsers/chromium'; if (process.env.HTTPS_PROXY) opts.proxy = { server: process.env.HTTPS_PROXY, bypass: 'localhost,127.0.0.1' };
+  const br = await pw.chromium.launch(opts);
+  const nueva = async () => (await br.newContext({ viewport: { width: ANCHO, height: 812 } })).newPage();
+  const T = await nueva(); const L = await nueva(); const N = await nueva();
+  const informe = {};
+  const foto = async (pg, nombre) => { await pg.waitForTimeout(700); await pg.screenshot({ path: `${DIR}/${ANCHO}-${nombre}.png`, fullPage: true }); informe[nombre] = await pg.evaluate(medir); };
+  const btn = (pg, n) => pg.getByRole('button', { name: n, exact: true }).first();
+  const tab = (pg, n) => pg.getByRole('tab', { name: n, exact: true }).click();
+  const cond = async (pg, a, b) => { await tab(pg, 'Mi respuesta'); for (const [k, v] of [['A', a], ['B', b]]) await pg.locator('fieldset', { has: pg.locator('legend', { hasText: `Franja ${k}:` }) }).first().getByLabel(v, { exact: true }).check(); await btn(pg, 'Guardar condiciones').click(); await pg.waitForTimeout(1200); };
+  try {
+    await N.goto(BASE + '#/'); await btn(N, 'Probar la demo «Los del asado»').waitFor(); await foto(N, '01-portada-nueva');
+    await N.goto(BASE + '#/unirse/%'); await N.getByText('Ese enlace de invitación no es válido').waitFor(); await foto(N, '02-invitacion-invalida');
+    await T.goto(BASE + '#/'); await btn(T, 'Probar la demo «Los del asado»').click(); await T.waitForURL(/#\/e\//); const espacioUrl = T.url();
+    await T.locator('strong.codigo').waitFor(); await foto(T, '03-espacio-vacio-organizador');
+    const codigo = (await T.locator('strong.codigo').innerText()).trim();
+    await L.goto(BASE + '#/unirse/' + codigo); await L.getByText('Te invitaron a un plan').waitFor(); await foto(L, '04-invitacion');
+    const f = L.locator('form', { has: L.getByRole('heading', { name: 'Unirme con un código' }) }); await f.getByLabel('Tu nombre en el espacio').fill('Luna'); await f.getByRole('button', { name: 'Unirme', exact: true }).click(); await L.waitForURL(/#\/e\//); await foto(L, '05-espacio-miembro-recien-unida');
+    await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta/ }).first().click(); await btn(T, 'Revisar antes de crear').waitFor(); await foto(T, '06-nueva-propuesta-form');
+    await btn(T, 'Revisar antes de crear').click(); await btn(T, 'Crear y abrir al grupo').waitFor(); await foto(T, '07-nueva-propuesta-revisar');
+    await btn(T, 'Crear y abrir al grupo').click(); await T.waitForURL(/\/p\//); const propUrl = T.url(); await tab(T, 'Plan'); await foto(T, '08-reuniendo-plan-organizador');
+    await tab(T, 'Mi respuesta'); await foto(T, '09-mi-respuesta'); await tab(T, 'Simulación'); await T.locator('section[aria-label="Simulación de Mati"]').waitFor(); await foto(T, '10-simulacion-reuniendo');
+    await T.locator('section[aria-label="Simulación de Mati"] summary').click(); await foto(T, '11-simulacion-editar-abierto');
+    await cond(T, 'Sí puedo', 'Sí puedo'); await tab(T, 'Simulación'); await btn(T, 'Cargar condiciones del caso a las personas simuladas').click(); await T.waitForTimeout(2500);
+    await L.goto(propUrl); await L.getByRole('tab', { name: 'Mi respuesta', exact: true }).waitFor(); await cond(L, 'Sí puedo', 'Sí puedo');
+    await tab(T, 'Plan'); await btn(T, 'Buscar opción compatible').click(); await T.getByText('Opción vigente · Versión 1').waitFor(); await foto(T, '12-v1-organizador');
+    await tab(L, 'Plan'); await L.getByText('Opción vigente · Versión 1').waitFor(); await foto(L, '13-v1-luna-tu-turno');
+    await btn(T, 'Confirmar versión 1').click(); await T.waitForTimeout(1500); await btn(L, 'Confirmar versión 1').click(); await L.waitForTimeout(1500);
+    await tab(T, 'Simulación'); await btn(T, 'Aceptar versión 1 por Mati, Caro').click(); await T.getByText('Confirmaron la versión 1').waitFor(); await foto(T, '14-simulacion-v1-confirmada');
+    await tab(T, 'Plan'); await T.locator('.estado-hero-etiqueta', { hasText: 'Grupo confirmado' }).waitFor(); await foto(T, '15-grupo-confirmado-organizador'); await L.locator('.estado-hero-etiqueta', { hasText: 'Grupo confirmado' }).waitFor({ timeout: 15000 }); await foto(L, '16-grupo-confirmado-luna');
+    await tab(T, 'Simulación'); const c = T.locator('section[aria-label="Simulación de Caro"]'); await c.getByRole('button', { name: 'Se baja: Caro', exact: true }).click(); await foto(T, '17-simulacion-confirmar-baja'); await c.getByRole('button', { name: 'Sí, Caro se baja', exact: true }).click(); await T.waitForTimeout(1500);
+    await tab(T, 'Plan'); await T.locator('.estado-hero-etiqueta', { hasText: 'En revisión' }).waitFor(); await foto(T, '18-en-revision-organizador'); await L.locator('.estado-hero-etiqueta', { hasText: 'En revisión' }).waitFor({ timeout: 15000 }); await foto(L, '19-en-revision-luna');
+    await btn(T, 'Buscar alternativa').click(); await T.getByText('Opción vigente · Versión 2').waitFor(); await foto(T, '20-v2-organizador'); await L.getByText('Opción vigente · Versión 2').waitFor({ timeout: 15000 }); await foto(L, '21-v2-luna-comparacion');
+    await tab(L, 'Historial'); await foto(L, '22-historial-luna'); await tab(L, 'Mi respuesta'); await foto(L, '23-mi-respuesta-luna-con-version');
+    await L.goto(BASE + '#/'); await L.locator('.tu-plan').waitFor({ timeout: 15000 }); await foto(L, '24-portada-tu-plan');
+    await T.goto(espacioUrl); await T.locator('a.tarjeta-prop').first().waitFor(); await T.locator('summary', { hasText: 'Agente del círculo' }).click(); await btn(T, 'Que el agente proponga').waitFor({ timeout: 15000 }); await btn(T, 'Que el agente proponga').click(); await T.getByRole('button', { name: /^Usar (este borrador|esta opción)$/ }).first().waitFor({ timeout: 20000 }).catch(() => {}); await foto(T, '25-espacio-con-propuesta-y-agente');
+    await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta/ }).first().click(); await btn(T, 'Revisar antes de crear').click(); await btn(T, 'Crear y abrir al grupo').click(); await T.waitForURL(/\/p\//);
+    await cond(T, 'No puedo', 'No puedo'); await tab(T, 'Simulación'); await btn(T, 'Cargar condiciones del caso a las personas simuladas').click(); await T.waitForTimeout(2500); await tab(T, 'Plan'); await btn(T, 'Buscar opción compatible').click(); await T.getByText('Sin opción compatible').first().waitFor(); await foto(T, '26-sin-opcion');
+    await btn(T, 'Cancelar propuesta').click(); await foto(T, '27-confirmar-cancelar'); await T.getByRole('button', { name: /^Sí, cancelar/ }).first().click(); await T.locator('.estado-hero-etiqueta', { hasText: 'Cancelado' }).waitFor(); await foto(T, '28-cancelado');
+  } catch (e) {
+    console.log('CORTE:', e.message.split('\n')[0]);
+  }
+  fs.writeFileSync(`${DIR}/informe-${ANCHO}.json`, JSON.stringify(informe, null, 1));
+  const resumen = Object.fromEntries(Object.entries(informe).map(([k, v]) => [k, [v.desbordeDoc ? 'DESBORDA' : 'ok', v.fueraDePantalla.length, v.recortados.length, v.tocablesChicos.length, v.letraChica.length].join('/')]));
+  console.log(ANCHO, Object.keys(informe).length, 'pantallas', JSON.stringify(resumen));
+  await br.close();
+})();
+```
+
+</details>
+
+<details><summary><code>v48.js</code>: verificación de la enmienda 7 (#48): conteos null para Luna y Simulación solo en demo (13 comprobaciones).</summary>
+
+<!-- archivo: v48.js -->
+```js
+// Verificación #48 en vivo: conteos null para no organizadores (E7.2, simulado en la respuesta) y Simulación solo en demo (E7.3).
+let pw; try { pw = require('playwright'); } catch { pw = require(require('child_process').execSync('npm root -g').toString().trim() + '/playwright'); }
+const BASE = 'http://localhost:4173/';
+const res = []; const ok = (c, t) => { res.push((c ? 'PASÓ  ' : 'FALLÓ ') + t); };
+(async () => {
+  const opts = { args: ['--no-sandbox'] }; if (require('fs').existsSync('/opt/pw-browsers/chromium')) opts.executablePath = '/opt/pw-browsers/chromium'; if (process.env.HTTPS_PROXY) opts.proxy = { server: process.env.HTTPS_PROXY, bypass: 'localhost,127.0.0.1' };
+  const br = await pw.chromium.launch(opts);
+  const nueva = async () => (await br.newContext({ viewport: { width: 375, height: 812 } })).newPage();
+  const T = await nueva(); const L = await nueva(); const N = await nueva();
+  let nuleadas = 0;
+  // Luna: como hará el servidor con E7.2, los dos conteos llegan en null.
+  await L.route(/\/rest\/v1\/rpc\//, async (route) => {
+    const r = await route.fetch(); let body = await r.text();
+    try { const j = JSON.parse(body); const pr = j && j.propuesta; if (pr) { if ('personas_con_condiciones' in pr) { pr.personas_con_condiciones = null; nuleadas++; } if (pr.opcion && pr.opcion.cupos) pr.opcion.cupos.pendientes = null; body = JSON.stringify(j); } } catch {}
+    await route.fulfill({ response: r, body });
+  });
+  const btn = (pg, n) => pg.getByRole('button', { name: n, exact: true }).first();
+  const tab = (pg, n) => pg.getByRole('tab', { name: n, exact: true }).click();
+  const tabs = async (pg) => (await pg.getByRole('tab').allInnerTexts()).map((s) => s.trim());
+  const cond = async (pg, a, b) => { await tab(pg, 'Mi respuesta'); for (const [k, v] of [['A', a], ['B', b]]) await pg.locator('fieldset', { has: pg.locator('legend', { hasText: `Franja ${k}:` }) }).first().getByLabel(v, { exact: true }).check(); await btn(pg, 'Guardar condiciones').click(); await pg.waitForTimeout(1200); };
+  try {
+    await T.goto(BASE + '#/'); await btn(T, 'Probar la demo «Los del asado»').click(); await T.waitForURL(/#\/e\//);
+    await T.locator('strong.codigo').waitFor(); const codigo = (await T.locator('strong.codigo').innerText()).trim();
+    ok(await T.getByRole('heading', { name: /Herramientas del organizador/ }).isVisible(), 'Demo: el organizador ve "Herramientas del organizador"');
+    await L.goto(BASE + '#/unirse/' + codigo); const f = L.locator('form', { has: L.getByRole('heading', { name: 'Unirme con un código' }) }); await f.getByLabel('Tu nombre en el espacio').fill('Luna'); await f.getByRole('button', { name: 'Unirme', exact: true }).click(); await L.waitForURL(/#\/e\//);
+    ok(!(await L.getByRole('heading', { name: /Herramientas del organizador/ }).count()), 'Demo: un miembro común no ve herramientas del organizador');
+    await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta/ }).first().click(); await btn(T, 'Revisar antes de crear').click(); await btn(T, 'Crear y abrir al grupo').click(); await T.waitForURL(/\/p\//); const propUrl = T.url();
+    await T.getByRole('tab', { name: 'Simulación', exact: true }).waitFor(); ok((await tabs(T)).includes('Simulación'), 'Demo: el organizador tiene la pestaña Simulación — ' + (await tabs(T)).join(' | '));
+    await cond(T, 'Sí puedo', 'Sí puedo'); await tab(T, 'Simulación'); await btn(T, 'Cargar condiciones del caso a las personas simuladas').click(); await T.waitForTimeout(2500);
+    await L.goto(propUrl); await L.getByRole('tab', { name: 'Mi respuesta', exact: true }).waitFor(); await cond(L, 'Sí puedo', 'Sí puedo');
+    await tab(L, 'Plan'); await L.waitForTimeout(800);
+    ok(!(await L.getByText('Con condiciones cargadas').count()), 'E7.2 Luna (reuniendo, conteo null): sin "Con condiciones cargadas"');
+    ok(!(await L.getByText('null', { exact: false }).count()), 'E7.2 Luna: no aparece el texto "null" en la pantalla');
+    await tab(T, 'Plan'); await T.waitForTimeout(800);
+    ok(await T.getByText('Con condiciones cargadas').isVisible(), 'Organizador (conteo real): ve "Con condiciones cargadas" — ' + (await T.locator('dt:has-text("Con condiciones cargadas") + dd').innerText().catch(() => '?')));
+    await btn(T, 'Buscar opción compatible').click(); await T.getByText('Opción vigente · Versión 1').waitFor();
+    await L.getByText('Opción vigente · Versión 1').waitFor({ timeout: 15000 }); await L.waitForTimeout(500);
+    ok(!(await L.getByText('Faltan por responder').count()), 'E7.2 Luna (v1, pendientes null): sin "Faltan por responder"');
+    ok(await L.getByText(/de 4/).first().isVisible(), 'E7.2 Luna: sigue viendo "N de M necesarias" — ' + (await L.locator('dt:has-text("Aceptaciones") + dd').innerText()).replace(/\s+/g, ' '));
+    ok(!(await L.getByRole('tab', { name: 'Simulación', exact: true }).count()), 'Demo: Luna (miembro) no tiene pestaña Simulación');
+    ok(await T.getByText('Faltan por responder').isVisible(), 'Organizador (v1): ve "Faltan por responder" — ' + (await T.locator('dt:has-text("Faltan por responder") + dd').innerText()));
+    ok(nuleadas > 0, `Se interceptaron ${nuleadas} respuestas de propuesta de Luna con los conteos en null`);
+    await L.screenshot({ path: __dirname + '/a375/v48-luna-v1.png', fullPage: true });
+    // Espacio propio (no demo)
+    await N.goto(BASE + '#/'); await N.locator('summary', { hasText: 'Crear un espacio de prueba' }).click();
+    ok(await N.getByText('La Simulación (personas ficticias) es solo para la demo').isVisible(), 'Crear espacio: el texto ya no promete agregar personas simuladas');
+    const fc = N.locator('details.plegable form'); await fc.getByLabel('Nombre del espacio').fill('Los del club'); await fc.getByLabel('Tu nombre en el espacio').fill('Ana'); await fc.getByRole('button', { name: 'Crear espacio', exact: true }).click(); await N.waitForURL(/#\/e\//);
+    await N.getByRole('heading', { name: 'Personas del espacio' }).waitFor();
+    ok(!(await N.getByRole('heading', { name: /Herramientas del organizador/ }).count()) && !(await N.getByText('Agregar persona simulada').count()), 'No demo: el organizador no ve herramientas de Simulación ni "Agregar persona simulada"');
+    await N.getByRole('link', { name: /Crear propuesta|Nueva propuesta/ }).first().click(); await btn(N, 'Revisar antes de crear').waitFor(); await btn(N, 'Revisar antes de crear').click();
+    await btn(N, 'Crear y abrir al grupo').waitFor({ timeout: 8000 }).then(() => btn(N, 'Crear y abrir al grupo').click()).catch(async () => { res.push('(nota) no se pudo crear propuesta en el espacio propio: ' + (await N.locator('main').innerText()).slice(0, 200).replace(/\s+/g, ' ')); });
+    if (/\/p\//.test(await N.url()) || await N.waitForURL(/\/p\//, { timeout: 8000 }).then(() => true).catch(() => false)) {
+      await N.getByRole('tab', { name: 'Plan', exact: true }).waitFor(); await N.waitForTimeout(1500);
+      const t = await tabs(N); ok(!t.includes('Simulación'), 'No demo: el organizador NO tiene pestaña Simulación — ' + t.join(' | '));
+      await N.screenshot({ path: __dirname + '/a375/v48-no-demo-propuesta.png', fullPage: true });
+    }
+  } catch (e) { res.push('CORTE: ' + e.message.split('\n')[0]); }
+  console.log(res.join('\n')); await br.close();
+})();
+```
+
+</details>
+
+<details><summary><code>v48b.js</code>: propuesta en un espacio propio sin pestaña Simulación (1 comprobación).</summary>
+
+<!-- archivo: v48b.js -->
+```js
+let pw; try { pw = require('playwright'); } catch { pw = require(require('child_process').execSync('npm root -g').toString().trim() + '/playwright'); }
+const BASE = 'http://localhost:4173/';
+(async () => {
+  const opts = { args: ['--no-sandbox'] }; if (require('fs').existsSync('/opt/pw-browsers/chromium')) opts.executablePath = '/opt/pw-browsers/chromium'; if (process.env.HTTPS_PROXY) opts.proxy = { server: process.env.HTTPS_PROXY, bypass: 'localhost,127.0.0.1' };
+  const br = await pw.chromium.launch(opts);
+  const N = await (await br.newContext({ viewport: { width: 375, height: 812 } })).newPage();
+  const btn = (n) => N.getByRole('button', { name: n, exact: true }).first();
+  try {
+    await N.goto(BASE + '#/'); await N.locator('summary', { hasText: 'Crear un espacio de prueba' }).click();
+    const fc = N.locator('details.plegable form'); await fc.getByLabel('Nombre del espacio').fill('Los del club'); await fc.getByLabel('Tu nombre en el espacio').fill('Ana'); await btn('Crear espacio').click(); await N.waitForURL(/#\/e\//);
+    await N.getByRole('link', { name: /Crear propuesta|Nueva propuesta/ }).first().click(); await btn('Revisar antes de crear').waitFor();
+    await N.getByLabel('Propósito de la propuesta').fill('Partido del sábado');
+    const dt = N.locator('input[type=datetime-local]');
+    await dt.nth(0).fill('2026-10-31T14:00'); await dt.nth(1).fill('2026-10-31T17:00'); await dt.nth(2).fill('2026-11-01T14:00'); await dt.nth(3).fill('2026-11-01T17:00'); await dt.nth(4).fill('2026-10-30T20:00');
+    await N.getByLabel(/Mínimo/).fill('2'); await N.getByLabel('Máximo').fill('6');
+    await btn('Revisar antes de crear').click(); await btn('Crear y abrir al grupo').click(); await N.waitForURL(/\/p\//, { timeout: 15000 });
+    await N.getByRole('tab', { name: 'Plan', exact: true }).waitFor(); await N.waitForTimeout(2000);
+    const t = (await N.getByRole('tab').allInnerTexts()).map((s) => s.trim());
+    console.log((t.includes('Simulación') ? 'FALLÓ ' : 'PASÓ  ') + 'No demo: el organizador NO tiene pestaña Simulación — ' + t.join(' | '));
+  } catch (e) { console.log('CORTE: ' + e.message.split('\n')[0] + ' | ' + (await N.locator('main').innerText()).slice(0, 300).replace(/\s+/g, ' ')); }
+  await br.close();
+})();
+```
+
+</details>
