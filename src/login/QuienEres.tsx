@@ -216,6 +216,12 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
   }, [codigo, fuente])
   const yo = yaEstoy && vista ? (vista.miembros.find((m) => m.miembro_id === yaEstoy.miembroId) ?? null) : null
 
+  // #80: al llegar la lista, el foco va al título "¿Quién eres?" (el lector lo anuncia), salvo que algo ya lo tenga.
+  const conVista = vista != null
+  useEffect(() => {
+    if (conVista && (!document.activeElement || document.activeElement === document.body)) titulo.current?.focus({ preventScroll: true })
+  }, [conVista])
+
   useEffect(() => {
     // Alguien tomó ese lugar mientras tanto: se vuelve a la lista actualizada, con el foco en el título.
     if (u.origen === 'lista' && u.error?.detalle === 'miembro_ya_reclamado') {
@@ -272,7 +278,14 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
               >
                 Sí, soy {elegido.nombre}
               </Boton>
-              <Boton variante="secundario" onClick={() => setElegido(null)} disabled={u.ocupado}>
+              <Boton
+                variante="secundario"
+                onClick={() => {
+                  setElegido(null)
+                  requestAnimationFrame(() => titulo.current?.focus())
+                }}
+                disabled={u.ocupado}
+              >
                 Elegir otro nombre
               </Boton>
             </div>
