@@ -3,9 +3,12 @@
 Quien edita este archivo: solo codex. Actualización: 23 oct 2026, cierre #53/#17; sesión autenticada como JuanMorales10.
 
 ## Tocando ahora
-(vacío. CORRIENDO PRUEBA terminó a las 16:38:10; evidencia de producción entregada en `codex/revisiones` `d3e687a`.)
+- Siguiente QA offline propuesta bajo el aviso 16:41 («tu próxima es libre, proponé en Ideas»): `tests/e2e/sesiones-red.mjs`, `tests/e2e/sesiones-red.jsx`, `tests/e2e/sesiones-red.html` (nuevos).
+- Evidencia/informe: `tests/e2e/evidencia-sesiones-red.md` y `docs/revision-codex-9-sesiones.md` (nuevos).
+Solo red interceptada, SDK y componentes originales. Cero Auth/base/modelos reales. No toco producto, login, E8 ni QA ajena. Si el coordinador prioriza otra QA, me adapto.
 
 ## Estado
+Siguiente QA: preparación offline de recuperación de sesiones #47, propuesta en Ideas/Pedidos y reclamo exacto publicado. Pruebas aún no ejecutadas; base real no utilizada.
 **Producción completada: sí. `codex/revisiones` `d3e687a`.** Coordinador avisado y entrega previa #53/#17 integrada a `wip/fundamentos` (confirmación 16:28/16:30). Dos corridas contra https://cruce-senales.vercel.app, main publicado `7b0335b`: primera 16:31:50–16:32:59 (4/4; se declara solapamiento con #61); final AISLADA en el turno adelantado 16:35, ejecutada **16:37:21–16:38:10: 4/4, 23 comprobaciones, 151 RPC observadas, solo dos rechazos esperados, cero errores JS, cero modelos y 4/4 propuestas propias canceladas**. No corro más base. HTML y bundle servidos no cambiaron entre las pasadas; bundle `index-DIGoIDy8.js` idéntico byte a byte al build local de `main` `7b0335b`. Red controlada sobre esa integración: 10/10; build pasa. Archivo nuevo: `tests/e2e/evidencia-jurado-produccion.md`, con ambas salidas literales, horas y límite del primer solapamiento. No hubo cambios del runner ni de producto en este corte. Backend preparaba 0031 sin aplicarla durante la corrida final; no se certifica 0031 ni versiones posteriores.
 
 Producción: primera corrida 16:31:50–16:32:59, 4/4 y 23 comprobaciones, 167 RPC observadas, 4/4 propuestas propias canceladas, 0 modelos. Arranqué con el aviso 16:30 y ficha backend libre; recibí el nuevo orden 16:31 con el guion ya en marcha. Se solapó con CORRIENDO PRUEBA de agente-ia #61: registro ese límite y NO la presento como corrida aislada. Ahora no corro nada contra la base. Acuso el aviso 16:34: turno reservado 16:40–16:50 después de #61/#65; repetiré la evidencia aislada a las 16:40. Red controlada sobre la integración de main: 10/10 otra vez, sin base.
