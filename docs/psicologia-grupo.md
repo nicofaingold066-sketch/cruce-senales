@@ -23,6 +23,14 @@ Marcas, como en `docs/problema.md` y `docs/apertura.md`:
 12. **Ubicación** (§12): día, hora y duración siempre visibles; «buscar el lugar en el mapa» con un enlace al LUGAR, nunca a las personas; el tiempo de cada uno lo calcula su propio teléfono; alarma en el calendario; nunca la comuna ni la ubicación de otro.
 13. **Nivel de gasto sin clase social** (§13): no se pide ni se infiere (es dato sensible, la comuna es un mal proxy y delata). La intención —que un plan no quede mal— se cubre con un **estilo de la ocasión** elegido por quien organiza (simple · normal · especial), dos formas con distinto estilo y, después, un presupuesto privado que también empuje hacia arriba. El plan nunca supera el tope del que menos quiere gastar.
 
+> **Estado al viernes 23 oct, 20:54 (reloj).** Nico aceptó lo recomendado a las 20:51:
+> - **D1:** sí. La fila «Parrilla del parque (Simulación)» entra en la enmienda 13 (d).
+> - **D2:** sí. El género y la pareja de una persona no se piden ni se infieren; la composición es una regla del grupo.
+> - **D3:** la modalidad («solo el grupo / con parejas / abierta») va en el título.
+> - **D4:** la oferta de casa es privada, y queda para después de la demo.
+>
+> La enmienda 13 (`docs/contrato-enmienda-13.md`, corte a la 01:00) suma además «Así no puedo, pero sigo» (opinar sin bajarse), «Rearmar con lo nuevo» y la baja sin nombre («Una persona se retiró»), con el texto de psico para quien se retira. Textos de esas pantallas: §8.10. Siguen pendientes D5 a D10 (ficha `agentes/psico.md`).
+
 ## 0b. El cierre: por qué los planes de grupo no se cierran (eje del documento)
 Pedido de Nico (20:28): *«Somos seres sociales y a todos nos gusta estar con gente, pero el máximo problema es terminar de coordinar una juntada.»* Es el mismo problema de `docs/problema.md` §3, visto desde la psicología. Todo lo demás de este documento (casa, comida, parejas, plata, distancia) importa **porque cada una de esas tensiones es una razón para no cerrar**.
 
@@ -37,7 +45,7 @@ Lectura honesta: casi toda la evidencia viene de **otras situaciones** (emergenc
 | **4** | **Parálisis por exceso de opciones.** | La idea popular **no se sostiene sola**: el metaanálisis de 50 experimentos da un efecto promedio casi nulo [F30, A]. Lo que sí se observa en agendas de grupo es otra cosa: en encuestas abiertas (Doodle) la gente aprueba los horarios muy populares o muy impopulares y se ve evidencia de razonamiento estratégico según lo que ya votaron los demás [F34, A, CSCW, 340.000 encuestas de EE.UU.]. | **Una** opción por versión; las dos franjas (A/B) son lo máximo que se pide. | "Dos formas de juntarse" (§7) es **para quien organiza**, nunca para el grupo, para no reabrir la negociación. **No** justificarla como "evitar la sobrecarga". |
 | **5** | **Esperar a ver quién va** (nadie quiere ir primero). | Modelo de umbrales: cada persona se suma cuando ya se sumó una cantidad de otras; quien tiene umbral cero arranca, y el resultado depende de **cómo se distribuyen** los umbrales, no del promedio [F35, A, teórico]. [ANALOGÍA]. El mínimo de un plan es parecido a un **contrato de aseguramiento**: se compromete solo si se llega a la cantidad necesaria, y si no, se devuelve todo [F36, A, economía]. Ese diseño es lo que quita el miedo a ir primero. | **El mínimo ya funciona así**: "Grupo confirmado" solo con N confirmaciones; si no llegan, no hay plan. La barra muestra "3 de 4 necesarias". | **Decirlo.** Hoy la pantalla dice "Ya confirmaste… vale solo para esa versión", pero **no dice** que *"tu confirmación solo vale si llegan 4; si no, nadie queda comprometido"*. Esa frase le quita el riesgo de ser el primero. Es solo texto (§8.9). |
 | **6** | **Sin plazo, todo se posterga.** | Las personas aceptan voluntariamente plazos costosos y les sirven, aunque los impuestos desde afuera funcionan mejor que los propios [F37, A, 2002]; **una réplica de 2026 reportó que cambiar los plazos tuvo un efecto despreciable en uno de los estudios** [F37]: la evidencia está disputada. Se mantiene como [HIPÓTESIS]. | El **servidor** pone el plazo y rechaza lo que llega fuera de plazo. | La pantalla debe decir **qué pasa si no se llega** ("si el jueves a las 20:00 no están las 4 confirmaciones, el plan no se arma y nadie queda comprometido"). Aclarar el final reduce el miedo. |
-| **7** | **La baja de último momento.** | Cancelar duele menos de lo que se teme si es sincero y con aviso [F1]. La víspera aumenta las ganas de evitar [F5]. | Reparación a versión 2, sin aceptaciones heredadas; "No voy" sin motivo. | Texto (§8.1) y, después, la "otra forma" como versión 2 (§7). |
+| **7** | **La baja de último momento.** | Cancelar duele menos de lo que se teme si es sincero y con aviso [F1]. La víspera aumenta las ganas de evitar [F5]. | Reparación a versión 2, sin aceptaciones heredadas; "No voy" sin motivo. | **Aprobado en la enmienda 13** (a aplicar antes de la 01:00): «Así no puedo, pero sigo» deja decir que *esta* versión no sirve **sin retirarse** (la «voz» en lugar de la «salida» [F42]); «Rearmar con lo nuevo» arma la versión siguiente con la disponibilidad actualizada, con tope de 3 versiones; la baja se muestra sin nombre. Textos en §8.10. Después: la "otra forma" como versión 2 (§7). |
 
 ### Lo que CRUXE no resuelve
 - **El cierre humano sigue necesitando a alguien que toque "enviar".** La app baja el costo, no lo elimina (causa 2).
@@ -54,6 +62,7 @@ Lectura honesta: casi toda la evidencia viene de **otras situaciones** (emergenc
 | Plazo del servidor | 6 |
 | Aviso personal "falta tu respuesta" | 1, 2 |
 | Reparación a versión 2 sin aceptaciones heredadas | 7 |
+| «Así no puedo, pero sigo» y «Rearmar con lo nuevo» (enmienda 13) | 3, 7 |
 | Texto de recordatorio armado por la app | 2 |
 
 ## 1. Principios de diseño (salen de todo lo que sigue)
@@ -134,7 +143,7 @@ Ver §5. En una línea: **no se pide ni se infiere el género.** Lo que la evide
 ### 3.9 El que nunca puede / cancelar
 - **Se sabe.** Con más de 1.100 encuestados: el 80 % dijo que cancelar no afectaría la amistad pero que se enojaría si supiera que el motivo era mentira; casi el 60 % quería aviso con tiempo y un medio rápido; solo el 10 % esperaba una disculpa; más de la mitad puso entre las peores excusas haber elegido un plan mejor [F1, A/B, EE.UU.]. **No hay datos de cancelaciones en Chile** (`problema.md`).
 - **Riesgo.** Quien sufre de plata, de ánimo o de ganas **inventa una excusa** si la app se la pide. Quien siempre dice "no puedo" queda marcado en el grupo.
-- **La app.** [HOY] **ya cumple lo central**: "No voy" sin motivo, "Hoy paso" que quita el interés sin anunciarlo, "No puedo ninguno" sin explicación. Lo que falta: (a) separar **"no puedo" de "no quiero"** como señales distintas (`docs/usuarios-sinteticos.md` ya lo marca como hueco: "avísenme la próxima"); (b) nunca mostrar frecuencia ni historial de bajas por persona; (c) texto de salida sin culpa (§8).
+- **La app.** [HOY] **ya cumple lo central**: "No voy" sin motivo, "Hoy paso" que quita el interés sin anunciarlo, "No puedo ninguno" sin explicación. Lo que falta: (a) separar **"esta fecha no" de "no voy"**. **Aprobado en la enmienda 13 (a):** «Así no puedo, pero sigo» (`opinar_version`) deja decir que la versión no sirve sin retirarse, y el organizador ve solo el total con 2 o más. Es la idea clásica de dar **voz** para que no quede solo la **salida** [F42, concepto]. Sigue faltando «avísenme la próxima» (`docs/usuarios-sinteticos.md`); (b) nunca mostrar frecuencia ni historial de bajas por persona; (c) texto de salida sin culpa (§8).
 
 ### 3.10 Plata
 - **Se sabe.** La tensión por plata entre amigos se menciona en encuestas comerciales y comentarios de prensa [F29, **C**]; **no encontré un estudio revisado**. Lo más cercano: la ansiedad de contribuir de F7. En Chile, la Ley 21.719 clasifica la "situación socioeconómica" entre los datos sensibles [F27, fuente secundaria; entra en plena vigencia el 1 dic 2026].
@@ -188,6 +197,8 @@ Quién la pone: **Persona** (privada), **Organizador** (decisión del grupo, pú
 5. **Límite que hay que decir** (ya está en `agente-ia.md` §2 y en el pitch): el plan elegido también informa. Si el plan sale sin alcohol, alguien puede sospechar. No se promete ausencia total de inferencia en grupos chicos.
 
 ## 5. Composición del grupo (hombres, mujeres, parejas) con cuidado
+> **Estado:** aprobado por Nico a las 20:51 (D2 y D3). Es regla de producto y va en el título, sin migración.
+
 **Propuesta.** CRUXE **no pide, no infiere y no usa el género** de nadie para armar un plan. La composición se trata como **una decisión explícita del grupo al crear la juntada**:
 
 | Opción de la juntada | Qué significa | Qué cubre del pedido de Nico |
@@ -233,7 +244,7 @@ Hay tres situaciones distintas y cada una pide algo distinto:
 1. **Hablar del plan, no de la casa ni de la persona.** "Esta vez toca un lugar neutro" y no "como nadie quiere recibir…".
 2. **Sin porque.** F1: si no se pide motivo, nadie lo inventa.
 3. **Futuro sin deuda.** "La próxima puede ser en una casa", no "ya que no fue en la de X".
-4. **Positivo: ofrecer es regalo.** Si la oferta es pública ("Fede ofreció su casa"), el valor está en quien da; la persona que no ofreció no aparece. *Trade-off de V6:* una oferta **privada** cuida a quien no puede recibir, pero hace que el motor sepa de casas; una oferta **pública** es simple, pero la ausencia de oferta se nota. Dejamos las dos descritas porque la elección es de producto (**decisión D4**).
+4. **Positivo: ofrecer es regalo.** Si la oferta es pública ("Fede ofreció su casa"), el valor está en quien da; la persona que no ofreció no aparece. *Trade-off de V6:* una oferta **privada** cuida a quien no puede recibir, pero hace que el motor sepa de casas; una oferta **pública** es simple, pero la ausencia de oferta se nota. Dejamos las dos descritas porque la elección es de producto (**decisión D4**). **Nico eligió privada, después de la demo (20:51).**
 5. **El texto lo dice CRUXE, no una persona.** Si lo dice la app, nadie queda como "el que sacó la casa".
 
 ## 7. "No ser absolutista": dos planes parecidos con distinto concepto
@@ -270,6 +281,11 @@ Estructura fija de texto (la redacta la IA con estos límites, §8.7):
 ### Qué se descarta y por qué
 - **Que el grupo vote entre las dos.** Reintroduce la negociación en el chat que CRUXE evita y expone a quien pierde. Además hay más pasos antes de que alguien se comprometa. No recomendado para el sábado. Un "sondeo liviano" con totales solo desde 4 personas es una idea para después.
 - **Publicar dos versiones a la vez.** Rompe "una opción por versión". No.
+- **Si después de la demo se construye «dos planes» para el grupo** (E-d de ux-flujo, `docs/output-debate.md` §2.4: cada persona responde Sí/No por plan en privado y gana el que más «Sí» junta), cuatro resguardos:
+  1. **Nunca publicar el marcador** («4 a 2»), tampoco al organizador, cuando uno de los dos planes es la casa de alguien. Se publica solo el plan que quedó.
+  2. **El nombre de una casa solo aparece si su dueño la ofreció** (D4: oferta privada).
+  3. **El plan que no quedó se presenta como futuro, no como derrota**: «Esta vez toca la parrilla del parque. La otra forma queda para la próxima.»
+  4. **El empate no se anuncia**: se resuelve con la regla fija (la más temprana) y no se dice que hubo empate.
 - **Ofrecer cuatro.** Sin fundamento: el metaanálisis de sobrecarga de opciones da efecto promedio casi cero [F30]. Dos es una decisión de diseño nuestra [HIPÓTESIS]: da una salida real sin reabrir la negociación. Lo mediría `sinteticos` si hubiera tiempo (pregunta: ¿quien organiza elige distinto con dos conceptos que con tres puntajes?).
 
 ### Qué hace falta
@@ -277,8 +293,8 @@ Estructura fija de texto (la redacta la IA con estos límites, §8.7):
   - **En casa:** `asado`, `juegos_casa`.
   - **Afuera / neutro:** `cena`, `bar`, `cine`, `cultura`, `juegos_salida`, `cafe`, `parque`, `padel`, `futbol`, `cerro`, `fiesta`.
   - **Ritmo (tranquilo / con movimiento):** no se mapea a mano: sale del campo `energia` que ya tiene cada fila del catálogo (`algo_tranquilo` / `con_todo`).
-- **Un hueco que hay que decir:** el catálogo tiene **un solo asado**, "Quincho de Tomi (Simulación)", que es de casa. Para que "asado en casa" y "parrilla en un lugar neutro" compitan, hace falta **una fila nueva** de asado en lugar neutro. Es una fila de datos, **no una función**: ver §9 B1.
-- Si el servidor devuelve tres candidatas del mismo concepto (por puntaje), hoy no hay segunda forma que mostrar. La garantía de que haya al menos una de cada concepto cuando existan es una regla de `proponer_plan_borrador` (migración de función): §9 B2.
+- **El hueco del catálogo, resuelto en la enmienda 13 (d):** había **un solo asado**, "Quincho de Tomi (Simulación)", que es de casa. Nico aprobó (20:51) la fila `lugar-sim-14` «Parrilla del parque (Simulación)»: asado, Providencia, barato, techado, algo tranquilo, ambiente tranquilo, 14:00–17:00. La aplica backend antes de la 01:00. Tiene los mismos atributos que el quincho salvo el nombre y la zona, así que las dos compiten de verdad y **las desempata el viaje** (E10). Con eso, «asado en casa» y «parrilla en un lugar neutro» pueden salir juntas entre las candidatas.
+- Si el servidor devuelve tres candidatas del mismo concepto (por puntaje), hoy no hay segunda forma que mostrar. La garantía de que haya al menos una de cada concepto cuando existan es una regla de `proponer_plan_borrador` (migración de función): §9 B2. **Queda para después de la demo**: la enmienda 13 no trae `tipo_lugar`.
 
 ## 8. Textos sugeridos
 Tono rioplatense neutro, cálido y sin culpas. **La app habla de «tú»** (`rincones` y `sinteticos` ya marcaron el voseo como incoherencia), así que los textos van en «tú». Si el equipo decide voseo, se cambia en bloque. Cada texto dice **quién lo ve** y **dónde viviría** (el dueño de la ruta decide si lo aplica).
@@ -361,6 +377,21 @@ Tono rioplatense neutro, cálido y sin culpas. **La app habla de «tú»** (`rin
 | **Quien organiza, solo en la app** | «Hoy conviene recordar: faltan 2 y se cierra mañana a las 20:00.» | No envía nada (causa 2). |
 | **Recordatorio de la víspera** | «Mañana a las 14:00 en [lugar]. Calcula tu viaje con unos 15 minutos de margen. Si no puedes ir, avisa: no hace falta contar por qué.» | Une U4 y §8.1. |
 
+### 8.10 «Así no puedo, pero sigo», rearmar y baja sin nombre (enmienda 13)
+Los rótulos los fija la enmienda 13 y las pantallas son de front-juan. Si alguno cambia, **avisar antes a qa-noche**, porque los guiones de prueba buscan rótulos.
+| Quién ve | Texto | Notas |
+|---|---|---|
+| **Quien responde** (botón junto a confirmar) | «Así no puedo, pero sigo» | Rótulo de la enmienda 13. |
+| **Quien responde** (ayuda bajo el botón) | «Si esta fecha no te sirve pero quieres ir, márcalo: sigues en el plan y puedes cambiar cuándo puedes. Nadie ve que fuiste tú.» | El organizador ve solo el total, y solo con 2 o más. |
+| **Quien lo marcó** | «Anotado. Sigues en el plan. Cambia cuándo puedes: si se rearma, lo vas a ver acá.» | No promete avisos (la app no los manda). |
+| **Quien responde** (junto a «Retirarme») | «Si solo esta fecha no te sirve, usa "Así no puedo, pero sigo". Retirarte es para no participar más en este plan.» | Actualiza el pedido de ux-flujo (`output-debate.md` §3.1). |
+| **Quien organiza** (con 2 o más) | «Algunos no pueden así: puedes rearmar con lo nuevo.» | Texto de la enmienda 13. |
+| **Quien organiza** (con 0 o 1) | El texto de siempre. | Con 1, mostrar algo delataría a esa persona. |
+| **El grupo** (versión nueva) | «Hay una versión nueva con lo que cambió. Las confirmaciones anteriores no cuentan; si te sirve, confirma de nuevo.» | §8.4. |
+| **Quien organiza** (tope de 3 versiones) | «Ya van tres versiones. Pueden quedarse con esta o probar otro día con un plan nuevo.» | Sin culpa, sin «no se pusieron de acuerdo». |
+| **El grupo** (baja) | «Una persona se retiró.» | Enmienda 13 (c): sin nombre, sin motivo, sin decir si había confirmado. |
+| **Quien se retira** | «Gracias por avisar. No hace falta contar por qué.» | §8.1, tomado por la enmienda 13. |
+
 ## 9. Priorización
 ### A. Antes de la entrega del sábado 13:00, **sin migración** (textos, agente, interfaz)
 | # | Qué | Dueño | Esfuerzo | Valor |
@@ -383,7 +414,9 @@ Todo lo de abajo depende de que backend tenga tiempo; después de las 12:00 no h
 | **B3** | **Clave `comida`** en `p_preferencias` (V2). | Variable guardada, para filtros futuros. Hoy no tiene efecto sin catálogo con propiedades de comida. | Medio, bajo valor hoy |
 | **B4** | **Columna `modalidad` en la propuesta** (V1) y que `get_proposal_state` la devuelva. | Que sea un campo y no un texto en el título. Cambia `create_proposal` (firma) → choca con la lista permitida 31/0. | Alto riesgo |
 
-**Mi recomendación:** pedir **solo B1** (y B2 si backend lo ve chico). B3 y B4 no valen el riesgo antes del sábado; mientras tanto A1 y A4 cubren lo esencial con texto.
+**Resuelto por Nico (20:51):** B1 sí (enmienda 13 d, `lugar-sim-14`), B2 después de la demo, B3 no por ahora, B4 no (D3: va en el título).
+
+**Mi recomendación original:** pedir **solo B1** (y B2 si backend lo ve chico). B3 y B4 no valen el riesgo antes del sábado; mientras tanto A1 y A4 cubren lo esencial con texto.
 
 ### C. Para después de la entrega (anotar como «siguiente paso» en el README)
 | # | Qué |
