@@ -120,5 +120,26 @@ Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y
 
 No se probó: la IA con clave real, un teléfono físico ni crear la propuesta (para no tocar el plan confirmado de ese demo).
 
+### 8.2 Recorrido completo en producción con dos sesiones (mejora #55)
+**Viernes 23 oct 2026, de 15:36:03 a 15:36:44 (hora del reloj).** https://cruce-senales.vercel.app, `main` `7747bf6` (publicado solo según el coordinador; incluye la enmienda 7, #52, #47 y #51). Chrome sin ventana con Playwright, dos contextos separados a 375 × 812: Tomi en uno, como ventana normal, y Luna en otro, como ventana privada, sin almacenamiento compartido. Demo nueva con datos ficticios (código `JT364B3E`), sin clave de IA. Resultado: 16 de 16.
+
+| Paso | Observado |
+|---|---|
+| Tomi abre la demo y crea la propuesta del caso ("Crear y abrir al grupo") | Entra como organizador; la propuesta se crea y se abre |
+| Luna abre el enlace de invitación en su ventana privada y escribe "Luna" | Reclama su lugar. **La lista de propuestas aparece sola**, a 181 ms del título, sin recargar ni esperar el sondeo (#52) |
+| Luna, en su teléfono | No tiene la pestaña Simulación |
+| Condiciones: Tomi y Luna cargan las suyas en privado; Tomi usa el atajo para los simulados | Guardadas |
+| "Buscar opción compatible" → v1 (sábado); confirman Tomi, Mati, Caro y Luna | **Grupo confirmado** en el teléfono de Luna. Luna no ve "Faltan por responder" ni "Con condiciones cargadas" (E7.2) |
+| "Se baja: Caro" | **En revisión** |
+| "Buscar alternativa" → v2 (domingo) | La pantalla muestra "Versión 1 · ya no vale" y "Estas confirmaciones no pasan a la versión 2". Vuelven a confirmar y queda **Grupo confirmado** en la v2, con la confirmación de Luna ("Ya confirmaste la versión 2") |
+| **Navegador compartido:** en el navegador de Tomi, alguien abre el enlace y escribe "Pepe" | "Este navegador ya está en este espacio como Tomi", con "Seguir como Tomi" y "Entrar como otra persona"; la confirmación advierte que la sesión de Tomi no se recupera. Al confirmar: "Sesión activa: Pepe · miembro", sin herramientas del organizador (#47) |
+| Consola y diseño | Sin errores de la app; sin desborde horizontal |
+
+Capturas (8, de la sesión agente-ia; no están en el repo): espacio de Tomi, espacio de Luna, simulación cargada, v1 confirmada, v2, v2 confirmada, aviso del navegador compartido y Pepe dentro.
+
+**Nota de interfaz (no es un defecto del recorrido):** con 5 confirmados y un mínimo de 4, la tarjeta dice "5 de 4 confirmaron" y la versión vigente "Confirmaron 5 de 4". Se lee raro; sugerencia para claude-b: "5 confirmaron (mínimo 4)".
+
+**No probado en esta corrida:** un teléfono físico, la IA con clave real y la publicación automática del agente.
+
 ## Historia
 Idea de Nico. Diseño de privacidad del coordinador: el servidor elige y la IA solo ve totales. Enmienda 4 (preferencias, catálogo y elección por reglas), 4.1 (candidatas, perfil del grupo y la IA como coordinadora, pedido de Nico) y 5 (preferencias simuladas). Mejoras #11, #23, #25, #26, #28, #32 y #35.
