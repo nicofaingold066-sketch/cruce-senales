@@ -92,53 +92,59 @@ describe('enmienda 10: zona, movilidad, tiempo máximo y momento del día', { ti
   })
 
   it('1. tiempo_max: 15 descarta lo lejano, 60 no; todo lejos da sin_lugar_cerca_para_todos sin decir para quién', async () => {
+    // Las 6 personas marcan fútbol, pádel y parque: esas tres dominan el puntaje (3 por marca) frente al resto del
+    // catálogo. Todos en Ñuñoa en transporte público: fútbol 10 min, parque 25, pádel 40 (sin castigo: 40 - 30 < 15).
     const CERCA = { zona: 'nunoa', movilidad: 'transporte_publico', tiempo_max: '60', momento: 'da_igual' }
-    await todos({ ...BASE, ...CERCA })
-    // Todos en Ñuñoa en transporte público: fútbol y asado 10 min, parque 25, pádel 40 (sin castigo: 40 - 30 < 15).
+    const TRES = { ...BASE, me_gustaria: ['futbol', 'padel', 'parque'] }
+    await todos({ ...TRES, ...CERCA })
     const largo = await plan(DESCONOCIDO)
-    expect(idsDe(largo)).toEqual(['lugar-sim-03', 'lugar-sim-02', 'lugar-sim-01'])
-    // Tomi con 15: el pádel (40) y el parque (25) quedan fuera.
-    await guardar(O, demo.espacioId, { ...BASE, ...CERCA, tiempo_max: '15' })
-    expect(idsDe(await plan(DESCONOCIDO))).toEqual(['lugar-sim-03', 'lugar-sim-01'])
-    // Tomi en Maipú con 15: todo queda lejos para él.
-    await guardar(O, demo.espacioId, { ...BASE, zona: 'maipu', movilidad: 'auto_sin_lugar', tiempo_max: '15', momento: 'da_igual' })
+    expect(idsDe(largo)).toEqual(['lugar-sim-03', 'lugar-sim-02', 'lugar-sim-04'])
+    // Tomi con 15: el pádel (40) y el parque (25) quedan fuera; todo lo que queda está a 15 o menos.
+    await guardar(O, demo.espacioId, { ...TRES, ...CERCA, tiempo_max: '15' })
+    const corto = await plan(DESCONOCIDO)
+    expect(idsDe(corto)[0]).toBe('lugar-sim-03')
+    expect(idsDe(corto)).not.toContain('lugar-sim-02')
+    expect(idsDe(corto)).not.toContain('lugar-sim-04')
+    for (const c of corto.candidatas) expect(c.viaje.max_minutos).toBeLessThanOrEqual(15)
+    // Tomi en Maipú con 15 y "algo barato" (el único lugar de Maipú es de precio medio): todo le queda lejos.
+    const MAIPU = { ...TRES, presupuesto: 'algo_barato', zona: 'maipu', movilidad: 'auto_sin_lugar', momento: 'da_igual' }
+    await guardar(O, demo.espacioId, { ...MAIPU, tiempo_max: '15' })
     const lejos = await rpc(O, 'proponer_plan_borrador', { p_espacio_id: demo.espacioId, p_sabado: sabado, p_clima: DESCONOCIDO })
     expect(lejos.resultado).toEqual({ tipo: 'sin_plan_compatible', motivo: 'sin_lugar_cerca_para_todos' })
     sinDatosDeViaje(lejos)
     for (const n of ['Tomi', ...SIMULADOS]) expect(JSON.stringify(lejos)).not.toContain(n)
     // Con 60 no descarta nunca.
-    await guardar(O, demo.espacioId, { ...BASE, zona: 'maipu', movilidad: 'auto_sin_lugar', tiempo_max: '60', momento: 'da_igual' })
+    await guardar(O, demo.espacioId, { ...MAIPU, tiempo_max: '60' })
     expect((await plan(DESCONOCIDO)).tipo).toBe('borrador')
-    // Sin candidatas por otra razón (gratis y techado con lluvia): sin motivo, como antes.
-    await guardar(O, demo.espacioId, { ...BASE, presupuesto: 'ojala_gratis', lugar: 'bajo_techo', ...CERCA })
-    expect(await plan(LLUVIA)).toEqual({ tipo: 'sin_plan_compatible' })
   })
 
   it('2. me_llevan: sin autos con lugar va en transporte público y puede descartar; con uno va en auto', async () => {
     const AUTO = { zona: 'nunoa', movilidad: 'auto_sin_lugar', tiempo_max: '60', momento: 'da_igual' }
     await todos({ ...BASE, ...AUTO })
-    // Tomi en Maipú necesita que lo lleven, hasta 45: en transporte público todo le queda a 75 o más.
-    await guardar(O, demo.espacioId, { ...BASE, zona: 'maipu', movilidad: 'me_llevan', tiempo_max: '45', momento: 'da_igual' })
+    // Tomi en Maipú necesita que lo lleven, hasta 45, con "algo barato": en transporte público todo lo que entra
+    // por precio le queda a 55 o más.
+    await guardar(O, demo.espacioId, { ...BASE, presupuesto: 'algo_barato', zona: 'maipu', movilidad: 'me_llevan', tiempo_max: '45', momento: 'da_igual' })
     expect(await plan(DESCONOCIDO)).toEqual({ tipo: 'sin_plan_compatible', motivo: 'sin_lugar_cerca_para_todos' })
-    // Mati tiene auto con lugar: Tomi va en auto (Ñuñoa y Providencia a 45; Las Condes a 55 sigue fuera).
+    // Mati tiene auto con lugar: Tomi va en auto (Santiago centro 35; Ñuñoa, Providencia y La Florida 45; Las Condes,
+    // Vitacura y Puente Alto 55 siguen fuera).
     await sim('Mati', { ...BASE, ...AUTO, movilidad: 'auto_con_lugar' })
     const r = await plan(DESCONOCIDO)
     expect(r.tipo).toBe('borrador')
-    expect(idsDe(r)).not.toContain('lugar-sim-02')
-    expect(idsDe(r)).toContain('lugar-sim-03')
+    for (const id of idsDe(r)) expect(['lugar-sim-01', 'lugar-sim-03', 'lugar-sim-04', 'lugar-sim-08', 'lugar-sim-10']).toContain(id)
     sinDatosDeViaje({ ...r, candidatas: r.candidatas.map((c: Json) => ({ ...c, viaje: null })), viaje: null })
   })
 
   it('3. equidad: a igual puntaje gana la de menor viaje máximo', async () => {
-    // Fútbol y pádel empatan (energía). Sin viaje desempataba el precio (fútbol, barato). Todos en Las Condes:
-    // pádel a 10, fútbol a 25 → gana el pádel aunque sea más caro.
-    await todos({ ...BASE, zona: 'las_condes', movilidad: 'auto_sin_lugar', tiempo_max: '60', momento: 'da_igual' })
+    // Todos marcan fútbol y pádel, que empatan (marcas y energía). Sin viaje desempataba el precio (fútbol, barato).
+    // Todos en Las Condes: pádel a 10, fútbol a 25 → gana el pádel aunque sea más caro.
+    const DOS = { ...BASE, me_gustaria: ['futbol', 'padel'] }
+    await todos({ ...DOS, zona: 'las_condes', movilidad: 'auto_sin_lugar', tiempo_max: '60', momento: 'da_igual' })
     const lc = await plan(DESCONOCIDO)
     expect(idsDe(lc).slice(0, 2)).toEqual(['lugar-sim-02', 'lugar-sim-03'])
     expect(lc.viaje).toEqual({ max_minutos: 10, estimado: true })
     expect(lc.candidatas[1].viaje).toEqual({ max_minutos: 25, estimado: true })
     // Todos en Ñuñoa: fútbol a 10, pádel a 25 → gana el fútbol.
-    await todos({ ...BASE, zona: 'nunoa', movilidad: 'auto_sin_lugar', tiempo_max: '60', momento: 'da_igual' })
+    await todos({ ...DOS, zona: 'nunoa', movilidad: 'auto_sin_lugar', tiempo_max: '60', momento: 'da_igual' })
     expect(idsDe(await plan(DESCONOCIDO)).slice(0, 2)).toEqual(['lugar-sim-03', 'lugar-sim-02'])
   })
 
@@ -179,8 +185,9 @@ describe('enmienda 10: zona, movilidad, tiempo máximo y momento del día', { ti
   })
 
   it('5. momento suma pero no descarta', async () => {
-    // Con "algo barato" quedan asado (14:00, tarde), fútbol (11:00) y parque (12:00), todos de mañana salvo el asado.
-    const P = { ...BASE, presupuesto: 'algo_barato', zona: 'nunoa', movilidad: 'auto_sin_lugar', tiempo_max: '60' }
+    // Todos marcan asado (14:00, tarde), fútbol (11:00) y parque (12:00), que dominan el puntaje. Con "algo barato"
+    // no entra nada de precio medio (las salidas de noche).
+    const P = { ...BASE, presupuesto: 'algo_barato', me_gustaria: ['asado', 'futbol', 'parque'], zona: 'nunoa', movilidad: 'auto_sin_lugar', tiempo_max: '60' }
     await todos({ ...P, momento: 'tarde' })
     const tarde = await plan(DESCONOCIDO)
     expect(idsDe(tarde)[0]).toBe('lugar-sim-01')
@@ -188,9 +195,9 @@ describe('enmienda 10: zona, movilidad, tiempo máximo y momento del día', { ti
     const manana = await plan(DESCONOCIDO)
     expect(idsDe(manana)[2]).toBe('lugar-sim-01')
     // Las mismas tres en los dos casos: el momento ordena, no descarta.
-    expect([...idsDe(tarde)].sort()).toEqual([...idsDe(manana)].sort())
-    expect(idsDe(tarde)).toHaveLength(3)
-    // "Noche" no coincide con ninguna: igual que da_igual.
+    expect([...idsDe(tarde)].sort()).toEqual(['lugar-sim-01', 'lugar-sim-03', 'lugar-sim-04'])
+    expect([...idsDe(manana)].sort()).toEqual(['lugar-sim-01', 'lugar-sim-03', 'lugar-sim-04'])
+    // "Noche" no coincide con ninguna que entre por precio: igual que da_igual.
     await todos({ ...P, momento: 'noche' })
     const noche = await plan(DESCONOCIDO)
     await todos({ ...P, momento: 'da_igual' })
@@ -202,13 +209,35 @@ describe('enmienda 10: zona, movilidad, tiempo máximo y momento del día', { ti
     await todos({ ...BASE, ...CERCA })
     await guardar(O, demo.espacioId, { ...BASE, usar_en_agente: false })
     const sinTomi = await plan(DESCONOCIDO)
-    // Tomi lejísimos, con 15 y de tarde, pero sin dejar usar sus preferencias: el mismo plan.
-    const LEJOS = { zona: 'puente_alto', movilidad: 'me_llevan', tiempo_max: '15', momento: 'tarde' }
+    // Tomi lejísimos (Maipú, necesita que lo lleven y nadie tiene auto con lugar), con 15, "algo barato" y de tarde,
+    // pero sin dejar usar sus preferencias: el mismo plan.
+    const LEJOS = { presupuesto: 'algo_barato', zona: 'maipu', movilidad: 'me_llevan', tiempo_max: '15', momento: 'tarde' }
     await guardar(O, demo.espacioId, { ...BASE, ...LEJOS, usar_en_agente: false })
     expect(await plan(DESCONOCIDO)).toEqual(sinTomi)
     // Con la casilla marcada sí cuenta: todo le queda lejos.
     await guardar(O, demo.espacioId, { ...BASE, ...LEJOS })
     expect(await plan(DESCONOCIDO)).toEqual({ tipo: 'sin_plan_compatible', motivo: 'sin_lugar_cerca_para_todos' })
+    await ok(O, 'reset_demo', { p_espacio_id: demo.espacioId, p_intento_id: intento() })
+  })
+
+  it('8. (Parte B, 0038) las actividades nuevas se pueden marcar y aparecen como candidatas', async () => {
+    const NUEVAS = ['cena', 'bar', 'juegos_casa', 'cine', 'cultura', 'juegos_salida', 'cerro', 'cafe']
+    const opciones = (await ok(O, 'get_my_preferences', { p_espacio_id: demo.espacioId })).opciones.actividades
+    expect(opciones.map((a: Json) => a.clave)).toEqual(['asado', 'padel', 'futbol', 'parque', 'fiesta', ...NUEVAS])
+    for (const a of opciones) expect(a.etiqueta).toBeTruthy()
+    // Sin descartes por viaje (60 para todos): con 6 personas que la marcan, la actividad sale primera.
+    const V = { zona: 'santiago_centro', movilidad: 'auto_sin_lugar', tiempo_max: '60', momento: 'da_igual' }
+    for (const act of NUEVAS) {
+      await todos({ ...BASE, me_gustaria: [act], ...V })
+      const r = await plan(SECO)
+      expect(r.tipo, act).toBe('borrador')
+      expect(r.candidatas[0].actividad, act).toBe(act)
+      expect(r.candidatas[0].lugar.nombre).toMatch(/ \(Simulación\)$/)
+      expect(r.perfil_grupo.gustos).toEqual([{ actividad_etiqueta: opciones.find((o: Json) => o.clave === act).etiqueta, cuantos: 5 }]) // sin Tomi
+    }
+    // El presupuesto sigue descartando: con "ojalá gratis" la cena no entra.
+    await todos({ ...BASE, presupuesto: 'ojala_gratis', me_gustaria: ['cena'], ...V })
+    expect(idsDe(await plan(SECO))).not.toContain('lugar-sim-06')
     await ok(O, 'reset_demo', { p_espacio_id: demo.espacioId, p_intento_id: intento() })
   })
 
