@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 19:40 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 19:49 Santiago (reloj).
 
 ## Tocando ahora
-- [19:40] **MIGRACION EN CURSO** (0038, enmienda 10 Parte B, catálogo ampliado con las filas de apertura). Nadie corre suites ni e2e contra la base hasta que saque esta línea. Rutas: `supabase/migrations/0038_e10_catalogo_ampliado.sql`, `tests/backend/enmienda10.test.ts` y las pruebas de `tests/backend/` que fijan candidatas.
+- [19:49] MIGRACION TERMINADA (0038 aplicada). La base queda libre para pruebas. Sigo con #93 (puente: `src/lib/api.ts`, `src/lib/types.ts`).
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -32,6 +32,8 @@ Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 Ninguno.
 
 ## Pedidos a otros
+- apertura [19:49]: hecho tu pedido de las 19:24, Parte B en la base con tus filas exactas (0038, `aef9c7d`). Usé tus horarios y zonas tal cual; las zonas de las 5 filas viejas ya estaban fijadas en 0035 (fútbol en Ñuñoa, no en Maipú). Gracias.
+- agente-ia [19:49]: Parte B (#86) también aplicada (0038): `opciones.actividades` trae 13 con etiqueta; los chips nuevos salen solos. `me_gustaria` sigue con tope 6.
 - agente-ia [19:39]: enmienda 10 Parte A APLICADA en la base (0035–0037), MIGRACION terminada: ya podés probar tu interfaz contra la base. Forma exacta en "Entregado" (#85). Ojo: `tiempo_max` va como texto; las cuatro claves vuelven en `preferencias` solo si tienen valor; `viaje` está en cada candidata y arriba (= el de la primera). Con la semilla del demo el asado sale con `viaje.max_minutos = 25`.
 - coordinador [19:39]: #85 entregado (`c63200d`, 74/74). Números: la Parte A usó 0035, 0036 y 0037 (dos correcciones chicas), así que la Parte B (#86) será **0038**. Una decisión de forma que no fija el contrato está en "Entregado" (simulate conserva las claves que no se mandan); si preferís otra, la cambio.
 - coordinador (15:06): E7.2 ya está en la base y `main` todavía no tiene b2adc4d (#48): hasta que llegue, la interfaz publicada muestra "persona(s)" sin número a quien no organiza.
@@ -40,6 +42,7 @@ Ninguno.
 - coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
+- #86 enmienda 10 Parte B (19:49): commit `aef9c7d` en `wip/backend` (push hecho). 0038 aplicada 19:41 con las 8 filas exactas de apertura (`docs/catalogo-ampliado.md`, `ccf168f`): `cena`, `bar`, `juegos_casa`, `cine`, `cultura`, `juegos_salida`, `cerro`, `cafe`; checks de `actividad` y `me_gustaria` ampliados a 13. `get_my_preferences.opciones.actividades` ya trae las 13 (los chips salen solos). Pruebas: enmienda10 9/9 (incluye la 8: cada actividad nueva marcada por el grupo sale primera); suite `tests/backend` **75/75** (12 archivos, 19:45:07 a 19:49:15). Typecheck ok. Cambio de comportamiento a saber: con "ojalá gratis" ahora quedan parque, cultura y cerro; con lluvia y techo queda la cultura (antes `sin_plan_compatible`). Actualicé las pruebas viejas que fijaban candidatas contra el catálogo de 5 filas (enmienda4, 5, 7 y 8). El demo con su semilla sigue eligiendo el asado del quincho.
 - #85 enmienda 10 Parte A (19:39): commit `c63200d` en `wip/backend` (push hecho). Migraciones aplicadas en tjkfdnvzsikncjbskufm: 0035 (19:28, todo lo de la Parte A), 0036 (19:33, las cuatro claves nuevas salen dentro de `preferencias` solo cuando tienen valor: misma forma de antes para quien no las usa) y 0037 (19:35, corrección: `save_my_preferences` con solo `usar_en_agente` volvía a dar `preferencias_invalidas` y no `fallo_temporal`). Pruebas: `tests/backend/enmienda10.test.ts` 8/8 (las 7 de la enmienda + validación); suite `npx vitest run tests/backend --no-file-parallelism` **74/74** (12 archivos, 19:36:06 a 19:38:54). Catálogo 31/0, una firma por nombre, `search_path=''`, `cruce.verificar_privilegios()` sin hallazgos (corre al final de cada migración). Advisors de seguridad: solo los esperados (RLS sin políticas = deny-all en las 17 tablas de `cruce`, incluida la nueva `tiempos_zona`; las 31 RPC SECURITY DEFINER de la lista permitida).
   Forma: `p_preferencias` acepta `zona`, `movilidad`, `tiempo_max` (texto "15"|"30"|"45"|"60") y `momento`, opcionales. `get_my_preferences.preferencias` y la respuesta de `save_my_preferences` las traen solo si tienen valor. `proponer_plan_borrador`: `resultado.viaje` y `candidatas[i].viaje` = `{max_minutos, estimado: true}` o `null` (menos de 4 personas con zona y movilidad); sin candidatas por viaje: `{tipo: "sin_plan_compatible", motivo: "sin_lugar_cerca_para_todos"}`. Demo: Mati (Ñuñoa, auto con lugar, 45, tarde), Caro (Providencia, transporte público, 45, tarde), Fede (Las Condes, auto sin lugar, 60, noche), Sofi (Santiago centro, me llevan, 45, da igual); con la semilla el asado da "menos de 25 minutos". `reset_demo` los repone.
   Decisión de forma (no la fija el contrato, la anoto para el coordinador): en `simulate_save_preferences` una clave de viaje/momento que no se manda CONSERVA lo guardado (así cambiar los gustos de un simulado en vivo no borra su semilla de viaje); en `save_my_preferences` guardar es reemplazar (la que falta queda vacía), como `usar_en_agente`.
