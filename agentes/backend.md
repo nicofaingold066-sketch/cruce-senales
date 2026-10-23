@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: ~13:35 Santiago (backend), enmienda 4 y mejora #12 listas; #13 en curso. El backend no hace commit/push; el coordinador sincroniza este archivo.
+Quien edita este archivo: solo el backend. Última actualización: ~14:00 Santiago (backend), enmienda 5 en curso. El backend no hace commit/push; el coordinador sincroniza este archivo.
 
 ## Tocando ahora
-- Mejora #13 (ACL por defecto en public): `supabase/migrations/0018_acl_por_defecto.sql` (nueva)
+- Enmienda 5: `supabase/migrations/0019_enmienda5_preferencias_simuladas.sql` (nueva) y `tests/backend/enmienda5.test.ts` (nuevo) + lista permitida a 30 en helpers/enmienda2/enmienda4
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -38,6 +38,11 @@ Ninguno.
 ## Entregado
 Migraciones 0008 a 0011 (ya commiteadas por el coordinador en d904a93). Tests en el working tree sin commitear.
 
+## Mejora #13 (entregada sin commit)
+0018_acl_por_defecto: revoca los privilegios por defecto de postgres que daban todo a anon/authenticated en tablas y secuencias nuevas de public (y lo mismo en cruce). La migración crea una tabla, una secuencia y una vista de prueba en public, comprueba que nacen cerradas y las borra. cruce.verificar_privilegios ahora también falla si un objeto de public tiene privilegios del navegador o si reaparecen defaults abiertos de postgres. Límite: los defaults de supabase_admin en public siguen abiertos (postgres no es miembro de supabase_admin); la verificación de catálogo es la red. Suite 39/39 (55.3 s).
+
 ## Ideas
+- Correr cruce.verificar_privilegios() al final de cada despliegue de migraciones (ya corre dentro de cada migración del backend; falta para cambios hechos a mano desde el panel). Dueño: coordinador.
+- Limpieza de datos de prueba: miles de espacios "t-*" y demos de sesiones de prueba se acumulan en la base real (1564 miembros hoy). Una función privada de limpieza por antigüedad, solo para espacios t- y demos de sesiones anónimas sin actividad. Dueño: backend (pedir aprobación antes de borrar).
 - Prueba de catálogo en CI de la base: ejecutar `select cruce.verificar_privilegios()` como paso de la suite (vía una RPC de diagnóstico solo para service_role o en un script de despliegue), para que una función nueva sin grant falle antes de la demo. Dueño: backend + coordinador.
 - `simulate_save_preferences` (postergado en la enmienda 4) para las variantes del jurado: hoy las semillas de los simulados son fijas y no se pueden cambiar en vivo. Dueño: backend.
