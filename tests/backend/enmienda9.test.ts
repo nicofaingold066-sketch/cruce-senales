@@ -123,3 +123,93 @@ describe('enmienda 9, fase 1: ¿quién eres? (preview y reclamo por integrante)'
     expect(err(con.data)).toBe('fuera_de_audiencia/codigo_inexistente')
   })
 })
+
+describe('enmienda 9, fase 2: integrantes pendientes', { timeout: 120_000 }, () => {
+  let O: Sesion // organizador
+  let E: Sesion // entra por "No estoy en la lista"
+  let R: Sesion // reclama a Ana
+  let esp: Json
+  let ids: Record<string, string>
+  const SI = { A: 'si', B: 'si' }
+
+  beforeAll(async () => {
+    ;[O, E, R] = await Promise.all([nuevaSesion(), nuevaSesion(), nuevaSesion()])
+  }, 60_000)
+
+  it('4. espacio con 3 pendientes: no cuentan en nada; simulate_* los rechaza; reclamarlo lo vuelve real', async () => {
+    const c = await ok(O, 'create_space', { p_nombre: `t-e9-pend-${intento().slice(0, 6)}`, p_tipo: 'amigos', p_nombre_visible: 'Org t', p_integrantes: ['Ana t', ' beto  T ', 'Cata t'] })
+    esp = c.resultado
+    expect(esp.pendientes.map((p: Json) => p.nombre)).toEqual(['Ana t', 'beto T', 'Cata t']) // normalizados, en orden
+    ids = Object.fromEntries(c.espacio.miembros.map((m: Json) => [m.nombre, m.miembro_id]))
+    expect(c.espacio.miembros.map((m: Json) => [m.nombre, m.pendiente, m.simulado, m.rol])).toEqual([
+      ['Org t', false, false, 'organizador'], ['Ana t', true, false, 'miembro'], ['beto T', true, false, 'miembro'], ['Cata t', true, false, 'miembro'],
+    ])
+    expect(esp.pendientes.map((p: Json) => p.miembro_id)).toEqual([ids['Ana t'], ids['beto T'], ids['Cata t']])
+    // Vista previa: los tres libres, el organizador no.
+    const pv = await ok(R, 'preview_space_by_code', { p_codigo: esp.codigo_invitacion })
+    expect(pv.espacio).toEqual({ nombre: c.espacio.nombre, demo: false })
+    expect(pv.miembros.map((m: Json) => [m.nombre, m.libre])).toEqual([['Org t', false], ['Ana t', true], ['beto T', true], ['Cata t', true]])
+
+    // E entra por nombre; escribir el nombre de un pendiente no lo reclama (nombre_en_uso).
+    expect(err(await rpc(E, 'join_space', { p_codigo: esp.codigo_invitacion, p_nombre_visible: 'ana T' }))).toBe('entrada_incompleta/nombre_en_uso')
+    await ok(E, 'join_space', { p_codigo: esp.codigo_invitacion, p_nombre_visible: 'Dos t' })
+    const prop = await crearPropuesta(O, esp.espacio_id, esp.miembro_id, { minimo: 2, maximo: 6, titulo: 't-e9-pendientes' })
+    for (const s of [O, E]) await ok(s, 'save_my_conditions', { p_propuesta_id: prop, p_disponibilidad: SI })
+    // Nunca cuentan: ni interés, ni condiciones, ni elegibles, ni cupos.
+    for (const n of ['Ana t', 'beto T', 'Cata t']) {
+      const r = await rpc(O, 'simulate_mark_interest', { p_propuesta_id: prop, p_miembro_id: ids[n], p_interesado: true })
+      expect(['no_autorizado/espacio_no_demo', 'no_autorizado/miembro_no_simulado']).toContain(err(r)) // E7.3 rechaza antes, fuera del demo
+      expect(err(await rpc(O, 'simulate_save_conditions', { p_propuesta_id: prop, p_miembro_id: ids[n], p_disponibilidad: SI }))).toMatch(/^no_autorizado\//)
+    }
+    const ev = await ok(O, 'evaluate_and_publish', { p_propuesta_id: prop, p_intento_id: intento() })
+    expect(ev.resultado).toMatchObject({ tipo: 'opcion_publicada', version: 1 })
+    const st = ev.propuesta
+    expect(st.personas_con_condiciones).toBe(2)
+    expect(st.interesados.cantidad).toBe(0)
+    expect(st.opcion.cupos).toMatchObject({ confirmados: 0, pendientes: 2, disponibles: 6 }) // solo O y E son elegibles
+    expect(JSON.stringify(st)).not.toContain(ids['Ana t'])
+    const panel = await ok(O, 'get_simulation_panel', { p_propuesta_id: prop })
+    expect(panel.simulacion.miembros).toEqual([]) // los pendientes no son simulados: el panel no los lista
+    // Confirmación con O y E: el quórum no espera a los pendientes.
+    await ok(E, 'accept_version', { p_propuesta_id: prop, p_version: 1, p_intento_id: intento() })
+    const fin = await ok(O, 'accept_version', { p_propuesta_id: prop, p_version: 1, p_intento_id: intento() })
+    expect(fin.propuesta.estado).toBe('grupo_confirmado')
+    expect(fin.propuesta.opcion.cupos.pendientes).toBe(0)
+
+    // R reclama a Ana: pasa a real con la sesión de R, mismo miembro_id, y ya no está libre ni pendiente.
+    const j = await ok(R, 'join_space', { p_codigo: esp.codigo_invitacion, p_nombre_visible: '', p_miembro_id: ids['Ana t'] })
+    expect(j.resultado).toMatchObject({ miembro_id: ids['Ana t'], reclamo_pendiente: true, reclamo_asiento_simulado: false, ya_era_miembro: false })
+    expect(j.espacio.mi_miembro_id).toBe(ids['Ana t'])
+    expect(j.espacio.miembros.find((m: Json) => m.miembro_id === ids['Ana t'])).toMatchObject({ nombre: 'Ana t', pendiente: false, simulado: false, es_yo: true })
+    const pv2 = await ok(E, 'preview_space_by_code', { p_codigo: esp.codigo_invitacion })
+    expect(pv2.miembros.map((m: Json) => [m.nombre, m.libre])).toEqual([['Org t', false], ['Ana t', false], ['beto T', true], ['Cata t', true], ['Dos t', false]])
+    // Otra sesión nueva que intente a Ana ahora: ya reclamada.
+    expect(err(await rpc(await nuevaSesion(), 'join_space', { p_codigo: esp.codigo_invitacion, p_nombre_visible: '', p_miembro_id: ids['Ana t'] }))).toBe('no_autorizado/miembro_ya_reclamado')
+    // Ana real opera como persona: nueva propuesta, sus condiciones cuentan.
+    const p2 = await crearPropuesta(O, esp.espacio_id, esp.miembro_id, { minimo: 2, maximo: 6, titulo: 't-e9-ana' })
+    await ok(R, 'save_my_conditions', { p_propuesta_id: p2, p_disponibilidad: SI })
+    expect((await ok(O, 'get_proposal_state', { p_propuesta_id: p2 })).propuesta.personas_con_condiciones).toBe(1)
+    for (const p of [prop, p2]) await ok(O, 'cancel_proposal', { p_propuesta_id: p })
+  })
+
+  it('validación de p_integrantes: tope 12, nombres, repetidos y choque con el organizador; sin el parámetro, igual que antes', async () => {
+    const base = { p_tipo: 'amigos', p_nombre_visible: 'Org t' }
+    const nombre = () => `t-e9-val-${intento().slice(0, 6)}`
+    const trece = Array.from({ length: 13 }, (_, i) => `Int ${i}`)
+    expect(err(await rpc(O, 'create_space', { ...base, p_nombre: nombre(), p_integrantes: trece }))).toBe('entrada_incompleta/formato_invalido')
+    expect(err(await rpc(O, 'create_space', { ...base, p_nombre: nombre(), p_integrantes: ['Ana t', ' '] }))).toBe('entrada_incompleta/campo_faltante')
+    expect(err(await rpc(O, 'create_space', { ...base, p_nombre: nombre(), p_integrantes: ['x'.repeat(31)] }))).toBe('entrada_incompleta/formato_invalido')
+    expect(err(await rpc(O, 'create_space', { ...base, p_nombre: nombre(), p_integrantes: ['Ana t', 'ANA  t'] }))).toBe('entrada_incompleta/nombre_en_uso')
+    expect(err(await rpc(O, 'create_space', { ...base, p_nombre: nombre(), p_integrantes: ['org T'] }))).toBe('entrada_incompleta/nombre_en_uso')
+    // Ninguno de los rechazos creó un espacio.
+    const mios = (await ok(O, 'list_my_spaces')).espacios.filter((e: Json) => String(e.nombre).startsWith('t-e9-val-'))
+    expect(mios).toEqual([])
+    // Doce justos pasan; sin p_integrantes, la respuesta de siempre más `pendientes: []`.
+    const doce = await ok(O, 'create_space', { ...base, p_nombre: nombre(), p_integrantes: trece.slice(0, 12) })
+    expect(doce.resultado.pendientes).toHaveLength(12)
+    const sin = await ok(O, 'create_space', { ...base, p_nombre: nombre() })
+    expect(sin.resultado.pendientes).toEqual([])
+    expect(Object.keys(sin.resultado).sort()).toEqual(['codigo_invitacion', 'espacio_id', 'miembro_id', 'pendientes'])
+    expect(sin.espacio.miembros).toHaveLength(1)
+  })
+})

@@ -64,3 +64,18 @@ Lista permitida: 31 para `authenticated`, 0 para `anon`; `join_space` tiene una 
 - Errores con `p_miembro_id`: no existe o es de otro espacio → `entrada_incompleta/miembro_inexistente` ("Ese integrante no existe en este espacio."); es una persona real, o un simulado fuera del demo → `no_autorizado/miembro_ya_reclamado` ("Ese lugar ya lo tomó otra persona."); simulado del demo con actividad → `asiento_en_uso/asiento_en_uso` (igual que por nombre). Dos reclamos a la vez del mismo lugar: uno gana, el otro recibe `miembro_ya_reclamado`.
 - Si la sesión ya era miembro del espacio, responde `ya_era_miembro: true` con su `miembro_id` de siempre, aunque mande otro `p_miembro_id` (la sesión no cambia de persona).
 - Sin `p_miembro_id`: idéntico a antes ("No estoy en la lista"), salvo la clave nueva `reclamo_pendiente: false`. Escribir el nombre de un pendiente por ese camino da `nombre_en_uso`, como cualquier nombre tomado: para entrar como un pendiente se usa `p_miembro_id`.
+
+### Fase 2 (`0033_e9_integrantes_pendientes` y `0034_e9_pendiente_sin_sesion`, aplicadas a las 17:06 y 17:07)
+0034 es una corrección de 0033: la restricción de `cruce.miembros` de 0001 exigía sesión a todo miembro no simulado y rechazaba a los pendientes (`create_space` con integrantes devolvía `fallo_temporal`). Ahora hay tres estados disjuntos: real (con sesión), simulado y pendiente (ambos sin sesión). Catálogo 31/0, `create_space` con una sola firma.
+
+**`create_space(p_nombre, p_tipo, p_nombre_visible, p_integrantes text[] default '{}')`**: `resultado` siempre trae cuatro claves:
+```json
+{ "espacio_id": "uuid", "codigo_invitacion": "ABCDEFGH", "miembro_id": "uuid",
+  "pendientes": [ { "miembro_id": "uuid", "nombre": "Ana" }, ... ] }
+```
+- `pendientes` va en el orden recibido, con los nombres ya normalizados (espacios colapsados, NFC); `[]` sin el parámetro o con la lista vacía. `null` cuenta como lista vacía.
+- Errores, antes de crear nada: más de 12 nombres → `entrada_incompleta/formato_invalido`; un nombre vacío → `campo_faltante`; más de 30 caracteres → `formato_invalido`; repetido entre ellos (sin mayúsculas) o igual al del organizador → `nombre_en_uso`.
+
+**`get_space` y toda respuesta con `espacio`**: cada miembro suma `pendiente` (booleano). Un pendiente viene como `{ miembro_id, nombre, rol: "miembro", simulado: false, pendiente: true, es_yo: false }`.
+
+**Qué hacen los pendientes**: nada. No tienen sesión, condiciones ni preferencias, así que no aparecen en `elegibles`, `interesados`, `aceptaron`, `cupos` (ni en `pendientes` de cupos) ni en `personas_con_condiciones`; el quórum no los espera. `get_simulation_panel` no los lista. `simulate_*` sobre un pendiente responde `no_autorizado/espacio_no_demo` (E7.3 se evalúa antes; fuera del demo nunca hay simulación) y, si alguna vez hubiera pendientes en un demo, `miembro_no_simulado`. En `preview_space_by_code` salen con `libre: true` hasta que alguien los reclama con `join_space(..., p_miembro_id)`; ahí pasan a reales (`pendiente: false`, `es_yo: true` para quien reclamó) con el mismo `miembro_id` y su nombre, y responden `reclamo_pendiente: true`. Escribir el nombre de un pendiente en "No estoy en la lista" da `nombre_en_uso`.
