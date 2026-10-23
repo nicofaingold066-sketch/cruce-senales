@@ -8,8 +8,8 @@ Detalle y reglas: `prompts/equipo-noche.md`.
 |---|---|---|
 | `supabase/**` (salvo `functions/agente/**`), `tests/backend/**`, `src/lib/api.ts`, `src/lib/types.ts`, `docs/seguridad-final.md` | backend (sesión nueva, Opus) | `wip/backend` |
 | `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, `src/lib/compartir.ts` (desde las 19:42), nuevos en `src/friccion/**` | friccion (sesión nueva, Opus) | `wip/friccion` |
-| `docs/flujo-usuario.md`, `docs/front-back-puente.md`, nuevos en `src/componentes-nuevos/**` | ux-flujo (sesión nueva, Opus) | `wip/ux` |
-| `docs/apertura.md`, `docs/catalogo-ampliado.md`, `src/lib/ejemplos.ts` | apertura (sesión nueva, Sonnet) | `wip/apertura` |
+| `docs/flujo-usuario.md`, `docs/front-back-puente.md`, `docs/output-debate.md`, nuevos en `src/componentes-nuevos/**` | ux-flujo (sesión nueva, Opus) | `wip/ux` |
+| `docs/apertura.md`, `docs/catalogo-ampliado.md`, `src/lib/ejemplos.ts`, `docs/preguntas-jurado.md` | apertura (sesión nueva, Sonnet) | `wip/apertura` |
 | `tests/e2e/**`, `docs/qa-noche.md` | qa-noche (sesión nueva, Sonnet) | `wip/qa` |
 | `tests/sinteticos/**`, `docs/usuarios-sinteticos.md` | sinteticos (sesión nueva, Sonnet) | `wip/sinteticos` |
 | `tests/rincones/**`, `docs/rincones.md` | rincones (sesión nueva, Sonnet) | `wip/rincones` |
