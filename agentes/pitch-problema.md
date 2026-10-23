@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 17:26.
+Quien edita este archivo: solo esta sesión. Última actualización: 17:37.
 
 ## Tocando ahora
-(nada)
+- [17:37] `docs/agente-barrido.md` (archivo nuevo, pedido de Nico): barrido de actividades para grupos de amigos, variables del agente y fuentes a las que podría conectarse (canchas, eventos, restaurantes, contexto). Solo investigación; no toca código.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
