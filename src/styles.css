@@ -5510,6 +5510,10 @@ fieldset:disabled .opcion-radio {
   .con-nav .hoja {
     padding-bottom: 112px;
   }
+  /* El lugar para la navegación lo da la hoja: sin el relleno de main no queda una franja clara bajo la escena al final */
+  .con-nav {
+    padding-bottom: 0;
+  }
 }
 
 /* Tiras deslizables: los chips se desvanecen en los bordes en vez de cortarse en seco */
