@@ -53,7 +53,15 @@ export type CargarCasoOk = PropuestaOk<{
   repetido: boolean
 }>
 export type ListaPropuestasOk = OkBase & { propuestas: PropuestaResumen[] }
-export type VerPropuestaOk = OkBase & { propuesta: EstadoPropuesta }
+/**
+ * Mejora #15 (migración 0021): con p_desde_rev igual al último rev_vista, si nada de lo que ve esta persona
+ * cambió, llega la respuesta corta sin la propuesta. Si no, la de siempre con su rev_vista.
+ */
+export type VerPropuestaOk = OkBase &
+  (
+    | { sin_cambios?: false; rev_vista?: number; propuesta: EstadoPropuesta }
+    | { sin_cambios: true; state_rev: number; rev_vista: number }
+  )
 export type InteresOk = PropuestaOk<{ interesado: boolean; repetido: boolean; simulado?: boolean }>
 export type GuardarCondicionesOk = PropuestaOk<{ repetido: boolean; simulado?: boolean }> & {
   condiciones: Condiciones
@@ -295,8 +303,12 @@ export const api = {
     llamar<RepetidoOk>('open_proposal', { p_propuesta_id: propuestaId }, true),
   listProposals: (espacioId: string) =>
     llamar<ListaPropuestasOk>('list_proposals', { p_espacio_id: espacioId }, false),
-  getProposalState: (propuestaId: string) =>
-    llamar<VerPropuestaOk>('get_proposal_state', { p_propuesta_id: propuestaId }, false),
+  getProposalState: (propuestaId: string, desdeRev?: number | null) =>
+    llamar<VerPropuestaOk>(
+      'get_proposal_state',
+      desdeRev == null ? { p_propuesta_id: propuestaId } : { p_propuesta_id: propuestaId, p_desde_rev: desdeRev },
+      false,
+    ),
   markInterest: (propuestaId: string, interesado: boolean) =>
     llamar<InteresOk>('mark_interest', { p_propuesta_id: propuestaId, p_interesado: interesado }, true),
   saveMyConditions: (propuestaId: string, disponibilidad: Disponibilidad) =>

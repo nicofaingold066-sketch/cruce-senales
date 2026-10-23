@@ -181,6 +181,7 @@ export function usePropuestaViva(propuestaId: string): PropuestaViva {
   const [fuera, setFuera] = useState(false)
   const [cargando, setCargando] = useState(true)
   const rev = useRef(-1)
+  const revVista = useRef<number | null>(null)
   const enVuelo = useRef(false)
   const repetir = useRef(false)
 
@@ -204,9 +205,15 @@ export function usePropuestaViva(propuestaId: string): PropuestaViva {
     try {
       do {
         repetir.current = false
-        const r = await api.getProposalState(propuestaId)
+        // Mejora #15: se manda el último rev_vista; si nada cambió, llega una respuesta corta sin la propuesta.
+        const r = await api.getProposalState(propuestaId, revVista.current)
         if (r.ok) {
-          aplicar(r.data.propuesta, r.data.servidor_ahora)
+          if (r.data.sin_cambios === true) {
+            setServidor((s) => (s ? { ahora: r.data.servidor_ahora, recibido: Date.now() } : s))
+          } else {
+            aplicar(r.data.propuesta, r.data.servidor_ahora)
+            revVista.current = typeof r.data.rev_vista === 'number' ? r.data.rev_vista : null
+          }
           setSinActualizar(null)
           setErrorInicial(null)
         } else if (r.error.codigo === 'fuera_de_audiencia') {
