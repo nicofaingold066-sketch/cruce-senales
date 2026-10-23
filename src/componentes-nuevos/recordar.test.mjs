@@ -17,9 +17,18 @@ test('faltan: mensaje genérico con el enlace, sin nombres ni conteos', () => {
   assert.doesNotMatch(t.replace(enlace, ''), /\d/)
 })
 
-test('versión nueva con fecha', () => {
+test('versión nueva con fecha: dice qué hacer si no puede', () => {
   const t = textoAviso({ motivo: 'version_nueva', titulo: 'Cine', cuando: 'sábado 31 oct, 20:00', enlace })
-  assert.equal(t, 'Hay opción para «Cine»: sábado 31 oct, 20:00. Si vas, toca y confírmala: ' + enlace)
+  assert.equal(t, 'Hay opción para «Cine»: sábado 31 oct, 20:00. Si vas, toca y confírmala; si no puedes, no confirmes: el plan sale solo con quienes confirman. ' + enlace)
+})
+
+test('confirmado: lleva el enlace y los cupos libres, sin nombres', () => {
+  const t = textoAviso({ motivo: 'confirmado', titulo: 'Pádel', cuando: 'sábado 31 oct, 20:00', enlace, cuposLibres: 2 })
+  assert.equal(t, 'Se juntan: «Pádel», sábado 31 oct, 20:00. Quedan 2 cupos. Si vas y no confirmaste, toca y confirma: ' + enlace)
+  assert.match(textoAviso({ motivo: 'confirmado', titulo: 'Pádel', enlace, cuposLibres: 1 }), /Queda 1 cupo\./)
+  const lleno = textoAviso({ motivo: 'confirmado', titulo: 'Pádel', enlace, cuposLibres: 0 })
+  assert.doesNotMatch(lleno, /cupo/)
+  assert.equal(rotuloAviso('confirmado'), 'Avisar al grupo')
 })
 
 test('reparación dice que las confirmaciones anteriores no cuentan', () => {
@@ -30,9 +39,9 @@ test('reparación dice que las confirmaciones anteriores no cuentan', () => {
 })
 
 test('sin fecha, versión nueva y reparación no dejan huecos', () => {
-  for (const motivo of ['version_nueva', 'reparacion']) {
+  for (const motivo of ['version_nueva', 'reparacion', 'confirmado']) {
     const t = textoAviso({ motivo, titulo: 'Cumple', cuando: null, enlace })
-    assert.doesNotMatch(t, /: \.|ahora \.|undefined|null/)
+    assert.doesNotMatch(t, /: \.|ahora \.|, \.|undefined|null/)
   }
 })
 

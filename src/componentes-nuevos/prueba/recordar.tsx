@@ -30,6 +30,10 @@ function Banco() {
           <RecordarFaltan codigo="ABCD1234" titulo="Pádel y algo después" motivo="version_nueva" cuando="sábado 31 oct, 20:00" />
         </section>
         <section className="tarjeta">
+          <h2>Confirmado</h2>
+          <RecordarFaltan codigo="ABCD1234" titulo="Pádel y algo después" motivo="confirmado" cuando="sábado 31 oct, 20:00" cuposLibres={2} />
+        </section>
+        <section className="tarjeta">
           <h2>Reparación</h2>
           <RecordarFaltan codigo="ABCD1234" titulo="Pádel y algo después" motivo="reparacion" cuando="domingo 1 nov, 20:00" />
         </section>
