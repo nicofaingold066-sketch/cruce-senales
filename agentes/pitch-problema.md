@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 14:36.
+Quien edita este archivo: solo esta sesión. Última actualización: 14:37.
 
 ## Tocando ahora
-- Mejora #49 (respaldo de privacidad de los hallazgos 5 y 7 en mis rutas): `supabase/functions/agente/**`, `src/agente/**`, `docs/agente*.md`
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[14:37] Mejora #49 entregada** (`c5b0085`): "es lo que más eligieron" solo con 4 o más personas y actividad de 2 o más (texto fijo, pantalla y entrada del modelo); `presupuesto_grupo` fuera de la respuesta de la función, del respaldo y del modelo, con y sin el campo en la base; `PROHIBIDAS` con palabras de presupuesto. `logica.test.ts` 17/17 sin red; contra la base real (sin migración en curso, 14:37) la respuesta ya no trae `presupuesto_grupo`.
 - **[14:33] Mejora #42 entregada** (`4f3ab72`): `docs/agente-revision-privacidad.md`. Sin exposición directa. 6 inferencias medias más allá del límite declarado y 2 bajas, con archivo y línea, dueño y arreglo. Verificadas en vivo: #1 (pendientes delata a quien se baja) y #5 (con 2 personas las candidatas delatan los gustos del otro).
 - **[14:12] Mejora #41 entregada** (`deeea83`): recorrido del agente en PRODUCCIÓN (main 614b2c8, función v5) a 375 px, de 14:09 a 14:11: preferencias → sol (3 opciones, perfil sin actividades de una persona, por qué con "(4 de 5)" y ritmo y ambiente, Texto fijo) → lluvia (solo asado) → enlace WhatsApp revisado → "Usar esta opción" con título y franjas precargados. Sin errores de consola. Anotado en `docs/agente-ia.md` sección 8, con lo que no se probó (clave real, teléfono físico, crear la propuesta).
 - **[14:06] Mejora #40 entregada** (`487d2fc`): sin clave, el "por qué" fijo dice, por ejemplo: "…es lo que más eligieron (5 de 6) y va con lo que prefiere la mayoría: un plan algo tranquilo y con ambiente tranquilo." Solo totales y con 4 personas o más; con 3 o menos, o si la actividad la eligió una sola persona, vuelve al texto general. Está en la función (`logica.ts`) y en el respaldo de la pantalla. `logica.test.ts` 16/16; función contra la base real OK.
@@ -34,9 +35,10 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-(vacío)
+- **[14:37] coordinador:** redesplegar la función `agente` desde `wip/agente-ia` `c5b0085` (v6: respaldo de los hallazgos 5 y 7). La pantalla entra en el próximo lote de Vercel.
 
 ## Entregado
+- Mejora #49 (respaldo de privacidad 5 y 7): `wip/agente-ia` `c5b0085`.
 - Mejora #42 (revisión de privacidad): `wip/agente-ia` `4f3ab72`.
 - Mejora #41 (evidencia en producción): `wip/agente-ia` `deeea83`.
 - Mejora #40 (texto fijo con ritmo y ambiente del grupo): `wip/agente-ia` `487d2fc`.
