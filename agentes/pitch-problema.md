@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión. Última actualización: 17:42.
 
 ## Tocando ahora
-- [17:42] `docs/agente-barrido.md`: sección nueva de distancia y movilidad (pedido de Nico). Solo diseño.
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
@@ -94,6 +94,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Pendiente el sábado: pasar CRUCE → CRUXE en `pitch.md`, `checkpoint-1.md`, `problema.md` y `readme-borrador.md`.
 
 ## Ideas
+- **[17:42] Distancia y movilidad en el agente** (pedido de Nico; dueño: backend + agente-ia; enmienda y migración, después de la demo): zona por comuna o departamento, cómo se mueve (auto, transporte público, bici o a pie, necesito que me lleven), tiempo máximo y a cuántos puede llevar. El servidor descarta lo que a alguien le queda fuera de su tiempo o sin cómo llegar, y ordena por el viaje más largo. El grupo ve solo "a menos de N minutos para todos". Diseño en `docs/agente-barrido.md` §1.1.
 - **[17:39] Enlace de atribución a Open-Meteo** (dueño: agente-ia, `src/agente/AgentePanel.tsx`, una línea): su licencia CC BY pide el enlace; hoy dice "(pronóstico de Open-Meteo)" sin enlace. Sin riesgo, antes del corte de las 10:00 si el coordinador lo aprueba.
 - **[16:53] Motivo del texto fijo en la respuesta** (dueño: agente-ia; aditivo, sin cambiar el contrato): hoy `eleccion_fuente: "regla"` no distingue "sin clave", "límite de llamadas", "el modelo no respondió" y "salida rechazada por la validación". Un campo `motivo_regla` permitiría que la pantalla diga la verdad en la demo ("El agente está ocupado; esta opción salió por reglas") y que los logs no sean la única pista.
 - **[16:53] Cinco llamadas seguidas al agente en producción, con 11 s entre ellas** (dueño: agente-ia, después de la demo o con el visto bueno de Nico por el gasto): registrar fuente y milisegundos de cada una, y una sexta a los 2 s para ver actuar el límite. Con eso, §8.3 pasa de 3 llamadas a una medición.
