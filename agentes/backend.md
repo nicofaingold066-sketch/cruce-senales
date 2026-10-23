@@ -1,31 +1,29 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: ~10:55 Santiago (backend).
-
-> Aviso: el backend NO hace commit ni push (regla dura de su encargo: "el humano integra y commitea"). Este archivo queda actualizado en el worktree local `cruce-coord`; el commit/push lo hace el humano o el coordinador con su autorización.
+Quien edita este archivo: solo el backend. Última actualización: ~11:05 Santiago (backend). El backend no hace commit/push; el coordinador sincroniza este archivo.
 
 ## Tocando ahora
-- `tests/backend/**` (adaptar pruebas existentes a contrato 2 y agregar regresiones A1..A5)
-- Próxima migración, si hace falta tras advisors/pruebas: `supabase/migrations/0012_*`
+(vacío: corte de la enmienda 2 cerrado)
 
 ## Estado
-Aplicadas en la base (tjkfdnvzsikncjbskufm): 0001 a 0007 (v1) y 0008 a 0011 (enmienda 2).
-- 0008_enmienda2_esquema: generacion y demo_de en espacios, tombstones de intentos (FK SET NULL), instante de decisión post-bloqueo (cruce.fijar_ahora/ahora), contrato 2, mensajes nuevos, cupos.reservado_imprescindible/libres_para_otros, mi_situacion.motivo_aceptar, historial.origen.
-- 0009_enmienda2_privilegios: A5 (anon sin EXECUTE, solo authenticated en la lista de 25, defaults restrictivos, verificación de catálogo cruce.verificar_privilegios()).
-- 0010_enmienda2_espacios: A2 (asiento_en_uso), A3 reset_demo(p_espacio_id, p_intento_id), A4 (seed único por usuario, orden de bloqueos).
-- 0011_enmienda2_propuestas: A1 (reserva del imprescindible), A3 (intento_obsoleto), A4 (espacio → intento → miembro → propuesta en todas las escrituras).
+Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
 
-## Hecho
-Migraciones de la enmienda 2 aplicadas. Pendiente: pruebas reales A1..A5 y advisors.
+## Hecho (por hallazgo: migración · prueba)
+- A5: 0009_enmienda2_privilegios (+ verificación en 0010 y 0011) · enmienda2.test.ts "A5: sin sesión ninguna de las 25..." y "A5: una sesión ajena..."; catálogo: 25 en public, anon 0, authenticated 25, helpers ejecutables 0.
+- Contrato 2: 0008 (cruce.ok/err) · privacidad-audiencia "C0" y enmienda2 A5 (las 25 responden contrato 2).
+- A1: 0008 (cupos y motivo_aceptar) + 0011 (op_accept y trigger) · enmienda2 "A1: mínimo 2, máximo 2..." y "A1: si el imprescindible se retira...".
+- A2: 0010 (join_space, asiento_en_uso) + 0008 (asiento_usado, origen) · enmienda2 "A2: reclamo tardío..." y "A2/A4: reclamo concurrente...".
+- A3: 0008 (generacion, tombstones SET NULL) + 0010 (reset_demo(p_espacio_id, p_intento_id)) + 0011 (intento_obsoleto) · enmienda2 "A3: repetir el MISMO reinicio..." y reinicio-demo.
+- A4: 0008 (fijar_ahora, vencer revalidado, bloqueos) + 0010 + 0011 · enmienda2 "A4: seed/seed...", "A4: reset/create...", "A2/A4..."; experimento de bloqueo que cruza el cierre: plazo_vencido.
 
 ## Siguiente
-Pruebas Vitest contra la base real (A1..A5 y pruebas críticas del caso), get_advisors, reporte por hallazgo.
+Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 
 ## Bloqueos
-Ninguno técnico. Commit/push de esta rama: requiere autorización humana (ver aviso).
+Ninguno.
 
 ## Pedidos a otros
-- coordinador: confirmar códigos y textos de los errores nuevos (`asiento_en_uso/asiento_en_uso`, `intento_obsoleto/intento_obsoleto`, `cupo_completo/reservado_imprescindible`) y la ubicación de `motivo_aceptar` (hoy en `mi_situacion.motivo_aceptar`).
+- coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
-(nada commiteado por el backend; archivos en el working tree de cruce-senales)
+Migraciones 0008 a 0011 (ya commiteadas por el coordinador en d904a93). Tests en el working tree sin commitear.

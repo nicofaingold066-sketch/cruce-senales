@@ -1,6 +1,6 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 10:57 Santiago (hora real del reloj).
+Actualizado: viernes 23 oct, ~11:10 Santiago (reloj).
 
 ## Hitos de hoy
 - 12:00 checkpoint 1: Problema. 17:15 checkpoint 2: algo funcionando. Sábado 13:00 entrega (último commit de `main`).
@@ -30,6 +30,10 @@ Contrato v1 enmendado por `docs/contrato-enmienda-2.md`. Sofi elegible en la fra
 ## Incidentes
 - ~10:35 un duplicado del agente de backend escribió a la vez en la base; se detuvo el workflow original. Quedó un único backend. Auditoría de duplicados ~10:50: sin migraciones repetidas (disco 0001 a 0011 = base), un solo subagente corriendo, tres worktrees esperados, ramas sin repetir.
 
+## Decisiones de Nico sobre el agente de IA
+- **Proveedor del modelo: API de Anthropic** (decidido por Nico, viernes ~11:10). Modelo sugerido para redactar la explicación: `claude-haiku-5-5` (corto, barato, rápido; timeout ~8 s con texto fijo de respaldo).
+- **Tope de gasto: AÚN NO DEFINIDO.** Mientras no lo defina Nico no se pide ni se crea ninguna clave y no se escribe código del agente. La clave irá solo como secreto de Supabase, puesta por Nico, nunca en el repo, el chat ni el cliente.
+
 ## Decisiones pendientes de Nico
-- **IA dentro del producto.** El tema es cambiar hábitos "con IA" y hoy el producto no usa IA (fuera de alcance). La sesión de pitch advierte que el jurado puede preguntar dónde está. Opciones: (a) responder con honestidad: IA en la construcción y, en el producto, solo opcional para explicar el plan; (b) agregar al final una explicación opcional con texto de respaldo, sin gasto, solo si sobra tiempo después de las 17:15.
+- **IA dentro del producto** (la especificación está aprobada y subida; falta aprobar CONSTRUIRLA, definir el tope de gasto y pasar la puerta de las 14:30). El tema es cambiar hábitos "con IA" y hoy el producto no usa IA (fuera de alcance). La sesión de pitch advierte que el jurado puede preguntar dónde está. Opciones: (a) responder con honestidad: IA en la construcción y, en el producto, solo opcional para explicar el plan; (b) agregar al final una explicación opcional con texto de respaldo, sin gasto, solo si sobra tiempo después de las 17:15.
 - **Idea de Nico "agente del círculo"** (`/Users/macair/cruse/ideas-nico/01-agente-del-circulo.md`, en bruto): un agente de IA que lee la situación privada de cada uno (presupuesto, ánimo, gustos) y mira afuera (clima, canchas, eventos) para proponer el plan. Resolvería la pregunta de "dónde está la IA", pero agrega alcance (servicios externos, posible costo). Hay que decidir si entra y cómo, sin romper la regla de no abarcar todo. Estado: la sesión de pitch escribe SOLO la especificación `docs/agente-ia.md` (sin código). Reservadas las rutas del agente en `PROPIEDAD.md`. Alerta de privacidad: si un modelo externo lee la situación individual de cada persona se contradice la promesa de privacidad y la regla del manual ("nunca restricciones individuales a la IA"); diseño propuesto: puntaje determinista en el servidor con los datos privados y el modelo solo redacta/explica sobre el plan ya elegido y datos agregados. Postura del coordinador: la base privada y de versiones va primero; el agente entra como una capa que SOLO propone y explica, con respaldo de texto fijo, después de que el recorrido de punta a punta pase verificado.
