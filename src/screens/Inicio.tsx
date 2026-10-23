@@ -9,7 +9,10 @@ import { Marca } from '../components/Marca'
 
 const TIPO: Record<TipoEspacio, string> = { amigos: 'Amigos', empresa: 'Empresa' }
 
-export default function Inicio({ codigoInvitacion }: { codigoInvitacion?: string } = {}) {
+export default function Inicio({
+  codigoInvitacion,
+  invitacionInvalida,
+}: { codigoInvitacion?: string; invitacionInvalida?: boolean } = {}) {
   useIdentidad(null, null, null)
   const { soloLectura } = useShell()
   const [espacios, setEspacios] = useState<EspacioResumen[] | null>(null)
@@ -31,6 +34,11 @@ export default function Inicio({ codigoInvitacion }: { codigoInvitacion?: string
 
   return (
     <div className="pantalla">
+      {invitacionInvalida ? (
+        <Aviso tono="aviso" titulo="Ese enlace de invitación no es válido">
+          Puede haberse copiado mal. Pide uno nuevo o escribe el código a mano en "Unirme con un código", más abajo.
+        </Aviso>
+      ) : null}
       {codigoInvitacion ? (
         <div className="invitacion">
           <Aviso tono="info" titulo="Te invitaron a un plan">
