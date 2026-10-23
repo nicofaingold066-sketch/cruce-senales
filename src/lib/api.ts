@@ -134,6 +134,16 @@ function falloDeRed(escritura: boolean) {
     : fallo('sin_conexion', MENSAJE_SIN_CONEXION, { sinConexion: true })
 }
 
+/** Tope de espera de cada RPC (U3 de la revisión de Codex): una llamada colgada no congela botones ni sondeo. */
+export const TOPE_RPC_MS = 10_000
+
+/** El servidor no respondió a tiempo. Una escritura ya enviada puede haberse registrado: resultado incierto. */
+function falloPorTope(escritura: boolean) {
+  return escritura
+    ? fallo('tope_de_espera', MENSAJE_RESULTADO_INCIERTO, { resultadoIncierto: true })
+    : fallo('tope_de_espera', 'El servidor tarda en responder. Seguimos intentando.')
+}
+
 function esErrorDeRed(msg: string): boolean {
   return /failed to fetch|networkerror|network request failed|load failed|fetch failed|timeout/i.test(msg)
 }
@@ -159,13 +169,19 @@ async function llamar<T extends OkBase>(
     return fallo('sin_conexion', MENSAJE_SIN_CONEXION, { sinConexion: true })
   }
   let res: { data: unknown; error: { message?: string; code?: string } | null }
+  const control = new AbortController()
+  const tope = setTimeout(() => control.abort(), TOPE_RPC_MS)
   try {
-    res = (await supabase.rpc(fn as never, args as never)) as typeof res
+    res = (await supabase.rpc(fn as never, args as never).abortSignal(control.signal)) as typeof res
   } catch (e) {
+    if (control.signal.aborted) return falloPorTope(escritura)
     const msg = e instanceof Error ? e.message : String(e)
     if (esErrorDeRed(msg)) return falloDeRed(escritura)
     return fallo('reintentar', 'Falla temporal. Intenta de nuevo.')
+  } finally {
+    clearTimeout(tope)
   }
+  if (res.error && control.signal.aborted) return falloPorTope(escritura)
   if (res.error) {
     const msg = res.error.message ?? ''
     if (esErrorDeRed(msg)) return falloDeRed(escritura)

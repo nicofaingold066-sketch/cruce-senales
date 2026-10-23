@@ -3,7 +3,7 @@ import { api } from '../lib/api'
 import type { Espacio } from '../lib/types'
 import { CODIGOS_SIGUIENTE } from '../lib/types'
 import { usePropuestaViva } from '../lib/hooks'
-import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
+import { dejarAviso, irA, rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import type { Pestana } from './tabs'
 import PlanTab from './PlanTab'
@@ -23,6 +23,8 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
   const [espacio, setEspacio] = useState<Espacio | null>(null)
   const [pestana, setPestana] = useState<Pestana>('plan')
   const [avisoVersion, setAvisoVersion] = useState<number | null>(null)
+  // Aviso dejado por la pantalla anterior (por ejemplo, "se creó pero no se pudo abrir").
+  const [avisoPrevio, setAvisoPrevio] = useState<string | null>(() => tomarAviso())
   const versionPrevia = useRef<number | null>(null)
 
   useEffect(() => {
@@ -106,6 +108,19 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
         >
           Se muestra la última información recibida. Las acciones que hagas ahora pueden no registrarse. Seguimos
           intentando cada 3 segundos.
+        </Aviso>
+      ) : null}
+
+      {avisoPrevio ? (
+        <Aviso
+          tono="aviso"
+          accion={
+            <button type="button" className="btn btn-secundario" onClick={() => setAvisoPrevio(null)}>
+              Entendido
+            </button>
+          }
+        >
+          {avisoPrevio}
         </Aviso>
       ) : null}
 
