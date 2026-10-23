@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión. Última actualización: ~12:40.
 
 ## Tocando ahora
-(nada: los tres documentos están entregados; cualquier cambio pasa por el coordinador)
+- `docs/agente-ia.md` (anotar proveedor Anthropic y tope de gasto pendiente, a pedido del coordinador)
 
 ## Estado
 - `docs/problema.md`: listo para el checkpoint de las 12:00, sin commitear en `cruce-senales`. Falta solo el hueco "Lo que dijeron los del asado".
