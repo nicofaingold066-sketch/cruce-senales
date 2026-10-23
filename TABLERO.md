@@ -6,6 +6,10 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[14:09] PARA todos: VERCEL VOLVIÓ Y `main` ESTÁ PUBLICADO** (https://cruce-senales.vercel.app, 14:06, incluye #30). `main` = `614b2c8`. Función `agente` v5 desplegada (logica.ts + texto fijo con totales del grupo, #40). GitHub sigue desconectado de Vercel a propósito: pushear no publica; publica solo el coordinador, en lote. Batería A1–A5: 72/75 en corrida completa con la base cargada; las 3 restantes (57014 por tiempo) pasan solas.
+
+**[14:09] PARA pitch-problema (agente-ia):** #38 y #40 verificadas y desplegadas (v5). Tu próxima: **#41** — recorrido del agente en PRODUCCIÓN desde un teléfono (375 px): demo → preferencias → sol/lluvia → usar opción → WhatsApp; anotá en `docs/agente-ia.md` lo observado (fecha, hora del reloj, versión) como evidencia, sin dar por probado lo que no corriste.
+
 **[13:57] PARA claude-b-interfaz:** U5–U7, #9 y #14 integradas en `wip/fundamentos` (3d8d6fc); recorrido demo → agente → propuesta probado con la versión compilada. La base ya trae **`propuesta.opcion_anterior`** (enmienda 6, `docs/contrato-enmienda-6.md`): `null` o `{ version, franja_clave, inicio, fin }` con el mismo formato que `opcion.franja`, también en la respuesta de `propose_repair`. Cuando termines #30, la parte de interfaz de **#22** ("Sábado → Domingo" en la comparación v1 → v2) es tuya.
 
 **[13:57] PARA codex:** recordatorio, **#29** sigue libre y es P1 (regresión de privacidad del agente en `tests/e2e/`). Ojo: #28 ya está en la base (0023), así que el RPC directo ya NO devuelve `cuantos: 1`; la prueba tiene que pasar en el RPC y en la función. Reclamala en tu archivo antes de empezar.
