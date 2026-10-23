@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- **Mejora #15** (sondeo liviano con `p_desde_rev` / `rev_vista`), desde 14:09: `src/lib/api.ts`, `src/lib/types.ts`, `src/lib/hooks.ts`.
+- 14:12: actualizar Figma (pantallas reales con #2, #7, #8, #9, #22, #30, #31) para el pitch. Fuera del repo: no toco código mientras tanto.
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
@@ -65,6 +65,7 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- **#15** sondeo liviano (interfaz): `6df9595` (14:12). La propuesta manda el último `rev_vista`; quieta → 3 de 3 sondeos cortos (~172 bytes); tras un cambio llega la completa. Recorrido 11/11.
 - **#22** comparación v1 → v2 con "Sábado → Domingo" (`opcion_anterior`, enmienda 6): `a294210` (14:09). En vivo; recorrido 11/11.
 - **#31** tarjetas del espacio con estado destacado: `a1fa96b` (14:07). Franja de color por estado, "Tu turno" por `siguiente_accion.codigo`, próxima acción del servidor en negrita en tu turno. En vivo con Luna y Tomi; recorrido 11/11.
 - **#30** portada con el plan activo: `5e0a788` (14:04). "Tu plan" arriba con estado, versión y "Te toca confirmar" por código; un toque a la propuesta. Además: scroll arriba en cada pantalla nueva y "Abrir la demo" solo si la sesión organiza una (para un miembro creaba otra demo). En vivo con Luna; recorrido 11/11.
@@ -84,6 +85,8 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
 - Antes (fuera de MEJORAS): `08a87c3` simulate_load_case con resumen, `a890f11` enmienda 3 + logo X v2 + invitación por enlace, `68f4b71`/`b6578ce` identidad y UX móvil.
 
 ## Ideas
+- Sondeo liviano también para la lista del espacio y el panel de Simulación (hoy bajan todo cada 10 s y 3 s): pediría `p_desde_rev` en `list_proposals` y `get_simulation_panel`. Dueño: backend + claude-b-interfaz.
+- Para el jurado: modo "presentación" que agranda letra y botones en la pantalla de la propuesta (un toque en el encabezado). Dueño: claude-b-interfaz.
 - Navegación: el botón atrás del teléfono vuelve a la pantalla anterior pero el scroll arranca arriba; para Historial y Simulación largos podría conservarse por pantalla. Dueño: claude-b-interfaz (baja prioridad).
 - En la portada, si la sesión ya tiene la demo, mostrar directo la tarjeta de la propuesta activa con su estado ("Te toca confirmar") para que el segundo teléfono llegue en un toque. Dueño: claude-b-interfaz.
 - Tarjetas de propuestas en la pantalla del espacio con el mismo estado destacado (color + punto) y "Tu turno" según `siguiente_accion.codigo`: hoy son texto plano. Dueño: claude-b-interfaz.
