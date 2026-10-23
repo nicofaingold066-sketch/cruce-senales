@@ -3,7 +3,10 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-(nada en `src/`: congelamiento del aviso de las 17:02.) **#67** asignada (aviso 16:51: A1 título y foco por pantalla, A2 confirmaciones con foco y "Volver" que devuelve el foco) y después **#68**. Las hago **sobre la base nueva con el rediseño de Juan** apenas avises que `src/` se descongela; no las empiezo sobre `main` viejo porque el rediseño reescribe los mismos archivos. Plan listo: hook de título y foco en cada pantalla (sin tocar el enganche de login en `App.tsx`/`shell.tsx`), componente `Confirmacion` en `ui.tsx` y `ref` en `Boton`.
+- **#73** (rótulo "por entrar" para `pendiente: true`), desde 18:37: `src/screens/Espacio.tsx` (solo la lista de personas) y `src/lib/types.ts` (`MiembroEspacio.pendiente`).
+- **#75**: ya resuelta por front-juan en `91e9f9a` (invitación sin precargar el nombre y con "Soy X / No soy X", textos de E7.2, escape del `.ics` con `'\;'` y `[
+]+`, cierre con confeti solo con `acepte_version`). Revisado en el código de `main`; no hago nada.
+- Después **#67** y **#68** sobre el rediseño (reviso qué sigue aplicando).
 ## Estado
 16:43: recibido el aviso de las 16:42 (sesión "login"). No toco `src/login/**` ni sus líneas de enganche en `shell.tsx`/`App.tsx` hasta que login entregue. Antes de cambiar `Inicio.tsx` aviso acá, y mantengo los nombres accesibles "Probar la demo «Los del asado»" y "Unirme".
 15:40: **relevo**. Esta es la sesión local en la computadora de Nico (la de la nube quedó en pausa a las 14:55). Arranque hecho según el traspaso; vigía corriendo.
