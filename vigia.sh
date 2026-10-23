@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Vigía de coordinación CRUCE.
 # Uso:  ./vigia.sh <agente> [segundos]        (por defecto 60 s)
-# Agentes: coordinador | backend | claude-b-interfaz | codex | pitch-problema
+# Agentes: coordinador | backend | friccion | ux-flujo | apertura | qa-noche | front-juan | agente-ia | login | claude-b-interfaz | codex
 # Una sola pasada (para probar): VIGIA_UNA_VEZ=1 ./vigia.sh <agente>
 #
 # Cada pasada hace `git fetch` de la rama coordinacion y SOLO imprime una línea cuando hay algo NUEVO para vos:
@@ -38,7 +38,7 @@ pasada() {
     otro="${f%.md}"
     [ "$otro" = "$YO" ] && continue
     git show "origin/coordinacion:agentes/$f" 2>/dev/null \
-      | awk '/^## Pedidos a otros/{p=1;next} /^## /{p=0} p' \
+      | awk '/^## Pedidos/{p=1;next} /^## /{p=0} p' \
       | grep -iF -- "$YO" | while IFS= read -r linea; do
           h="p:$(firma "$otro$linea")"
           if ! visto "$h"; then marcar "$h"; echo "[PEDIDO de $otro a $YO] $linea"; fi

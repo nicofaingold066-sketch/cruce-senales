@@ -1,10 +1,16 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 19:13 Santiago (reloj).
+Actualizado: viernes 23 oct, 19:20 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[19:20] PARA todos:** EQUIPO DE LA NOCHE (pedido de Nico). Leé `prompts/equipo-noche.md` y el "MAPA DE LA NOCHE" de `PROPIEDAD.md`: sesiones nuevas backend, friccion, ux-flujo, apertura y qa-noche, cada una con su rama y sus rutas. Front y back se adaptan entre sí: se pide y se anuncia en "## Pedidos a otros" de cada ficha, y la vigía lo entrega (`./vigia.sh <nombre> 60`; ahora también lee "## Pedidos"). Publico a main solo con todo en verde. Hasta las 08:30.
+
+**[19:20] PARA front-juan:** seguís siendo el único dueño de `src/screens/**`, `src/components/**` y `src/styles.css`. Instrucciones para tu sesión en `prompts/front-juan-noche.md`. Lo que necesites (botón, dato, función), pedilo en tu ficha nombrando a backend, friccion, ux-flujo, apertura o qa-noche; ellos lo arman. Lo que ellos agreguen te llega por la vigía como "front-juan [hh:mm]: nuevo …".
+
+**[19:20] PARA claude-b-interfaz:** esta noche `src/App.tsx` es de friccion (incluye #82) y las pantallas son de Juan. Si volvés, pedí tarea al coordinador en tu ficha.
 
 **[19:14] PARA backend:** la enmienda 10 tiene "Aclaraciones de forma" (`95def89`): `tiempo_max` va como texto, `viaje` va en cada candidata (el de arriba es igual al de la primera), y sin candidatas por viaje responde `resultado.motivo = "sin_lugar_cerca_para_todos"`. Migrá sobre esa versión.
 

@@ -2,6 +2,21 @@
 
 Solo el coordinador edita este archivo. Si una ruta no figura acá, es del coordinador hasta que se asigne.
 
+## MAPA DE LA NOCHE (vie 23 19:30 → sáb 24 09:00; manda sobre la tabla de abajo donde choque)
+Detalle y reglas: `prompts/equipo-noche.md`.
+| Ruta | Único escritor esta noche | Rama |
+|---|---|---|
+| `supabase/**` (salvo `functions/agente/**`), `tests/backend/**`, `src/lib/api.ts`, `src/lib/types.ts` | backend (sesión nueva, Opus) | `wip/backend` |
+| `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, nuevos en `src/friccion/**` | friccion (sesión nueva, Opus) | `wip/friccion` |
+| `docs/flujo-usuario.md`, `docs/front-back-puente.md`, nuevos en `src/componentes-nuevos/**` | ux-flujo (sesión nueva, Opus) | `wip/ux` |
+| `docs/apertura.md`, `docs/catalogo-ampliado.md`, `src/lib/ejemplos.ts` | apertura (sesión nueva, Sonnet) | `wip/apertura` |
+| `tests/e2e/**`, `docs/qa-noche.md` | qa-noche (sesión nueva, Sonnet) | `wip/qa` |
+| `src/screens/**`, `src/components/**`, `src/styles.css` | front-juan (Juan) | `wip/front-juan` |
+| `src/agente/**`, `supabase/functions/agente/**`, `docs/agente*.md`, `docs/pitch*.md` | agente-ia | `wip/agente-ia` |
+| Lo demás de `src/` | nadie esta noche (pedir al coordinador) | — |
+Claude B, login y codex: sin rutas esta noche; si vuelven, piden tarea al coordinador.
+
+## Mapa de la tarde (vigente fuera de la noche)
 | Ruta (en el repo de código) | Único escritor | Rama donde empuja |
 |---|---|---|
 | `supabase/**` (migraciones y todo lo de base) | backend | `wip/fundamentos` (vía coordinador) / ver su archivo |
