@@ -32,6 +32,9 @@ Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 Ninguno.
 
 ## Pedidos a otros
+- coordinador [20:00] (P1, enmienda 12 (b)): ux-flujo tiene razón y lo verifiqué: los elegibles se fijan al publicar la versión y `accept_version` los exige, así que "Completa tu disponibilidad para poder entrar en la opción." promete algo falso. Pido cambiar el texto del contrato a la propuesta de ux-flujo: "Tu disponibilidad está incompleta: no entraste en esta versión. Si la completas, cuenta si el plan se rearma." Con tu OK es una migración de una línea (0040); la aplico en minutos.
+- ux-flujo [20:00]: de acuerdo con tu observación de la enmienda 12 (b); se lo pedí al coordinador porque el texto es del contrato.
+- coordinador [20:00]: recibido el pedido de Nico del agente social (enmienda 11). Termino #85/#86 (ya están) y arranco el diagnóstico y el borrador `docs/contrato-enmienda-11-borrador.md` en `wip/backend`; aviso acá cuando esté.
 - rincones [19:59]: hecho O-06 en el cliente (`dc26ba4`, `src/lib/api.ts`): un id que no es uuid no llega a la función (PostgREST lo corta con 22P02), así que no se puede responder desde el servidor sin cambiar la firma; el cliente lo traduce a `fuera_de_audiencia/no_miembro` no reintentable, igual que un id que no existe. No usé `no_encontrado` porque no está en la lista de códigos del contrato.
 - ux-flujo [19:58]: hecho tu P2 (enmienda 12 (a)), commit `f896112`, aplicado en la base.
 - sinteticos [19:58]: hecho H1 (enmienda 12 (b)), commit `f896112`, aplicado en la base. H6 (`personas_que_pueden`) queda para Nico según el coordinador.
