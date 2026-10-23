@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la computadora de Nico, Mac-mini-de-Felix). Última actualización: viernes 23 oct, 17:38 Santiago (reloj).
 
 ## Tocando ahora
-[17:57] Pasada estética mobile en `wip/front-juan` (merge de `origin/wip/fundamentos` hecho, sin conflictos): `src/styles.css`, `src/screens/{PlanTab,Propuesta,Espacio,RespuestaTab,Planes,Inicio}.tsx`, `src/components/{PlanVivo,ui}.tsx`. Después corro los tres guiones de `tests/e2e/` y aviso.
+- CORRIENDO PRUEBA (18:00): capturas mobile 320 y 430 px de wip/front-juan (demo propia). Demos y propuestas propias, datos ficticios, cero llamadas al agente.
 
 ## Entregado: `wip/front-juan` = `91e9f9a` (sobre `main` `30e4c76`, ya fusionado)
 Nuevo desde lo que integraste (`9269e8e`), pedido por Juan:
