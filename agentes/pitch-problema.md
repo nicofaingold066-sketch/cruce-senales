@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 17:42.
+Quien edita este archivo: solo esta sesión. Última actualización: 17:44.
 
 ## Tocando ahora
-(nada)
+- [17:44] `src/agente/AgentePanel.tsx`, `src/agente/agente.css` y `src/agente/canchas.ts` (nuevo): botones "Posibles canchas" (Google Maps, EasyCancha, ATC) en la opción de deporte, pedido y aprobado por Nico. Sin claves ni costo; solo enlaces.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
