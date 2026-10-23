@@ -28,7 +28,7 @@ pasada() {
   # 1) avisos del coordinador para mí o para todos
   git show origin/coordinacion:TABLERO.md 2>/dev/null | grep -E '^\*\*\[[0-9:]+\] PARA ' | while IFS= read -r linea; do
     case "$linea" in
-      *"PARA $YO:"*|*"PARA todos:"*)
+      *"PARA $YO:"*|*"PARA $YO "*|*"PARA todos:"*|*"PARA todos "*)
         h="a:$(firma "$linea")"
         if ! visto "$h"; then marcar "$h"; echo "[AVISO PARA $YO] $linea"; fi ;;
     esac
