@@ -1,15 +1,14 @@
 # Agente: codex (revisor independiente, computadora A)
 
-Quien edita este archivo: solo codex. Actualización: 23 oct 2026, cierre de tareas autorizadas por Nico.
+Quien edita este archivo: solo codex. Actualización: 23 oct 2026, cierre #53/#17; sesión autenticada como JuanMorales10.
 
 ## Tocando ahora
-- #53: `tests/e2e/red-controlada.mjs` (F1 positiva en los dos órdenes de latencia).
-- #17 navegador: `tests/e2e/jurado-navegador.mjs` (nuevo; variantes con UI real y espacios propios).
-- Evidencia: `tests/e2e/evidencia-53-jurado.md` y `docs/revision-codex-7-lista-jurado.md`.
-Rama: `codex/revisiones`, base `9b62a2d`. Autorización directa de Nico en esta sesión. No toco `tests/e2e/recorrido-dos-sesiones.mjs` (#57, agente-ia).
+(vacío: #53 ampliada y #17 navegador entregadas en `codex/revisiones`, `0e4ba7f`.)
 
 ## Estado
-Corte #53/#17 reanudado. GitHub autenticado como JuanMorales10. Agente-ia ya entregó F1 positiva en 1b8a3d8 durante el bloqueo: incorporo su commit y completo la segunda combinación de latencias, sin duplicar su trabajo. Runtime existente localizado; sin pruebas nuevas aún. Sin cambios en src/, supabase/ ni configuración.
+**Corte #53/#17 entregado: `codex/revisiones` `0e4ba7f`, con F1b `137721d`. Objetivo cumplido: sí.** F1 positivo de agente-ia incorporado y conservado sin reescribir; F1b aparte invierte las latencias (espacio 180 ms/lista 20 ms): red controlada 10/10, exit 0. La primera carga del producto está serializada; no se fuerza ni se afirma una llegada concurrente inversa. Variantes del jurado en Chrome a 375 px, aplicación local (base `dda21c6`) y backend real con 0030: **4/4, 23 comprobaciones**, dos corridas completas. Entrega 16:18:56–16:19:41: 202 RPC observadas, solo dos rechazos esperados (sin_alternativa y cupo reservado), sin errores JS y sin llamadas al modelo. V3 incluye clic de Sofi desde una pestaña vieja: el servidor reserva el lugar a Tomi. Dos sesiones propias reutilizadas por corrida; las cuatro propuestas se cancelan por UI. Typecheck/build/sintaxis/diff --check pasan. No certifica producción, teléfonos físicos, IA ni toda privacidad E7. Dos preparaciones fallidas por selectores del guion están registradas. Evidencia: `tests/e2e/evidencia-53-jurado.md`; informe: `docs/revision-codex-7-lista-jurado.md`. Cambios propios solo los cuatro archivos reclamados; ningún cambio propio en src/, supabase/, configuración o main.
+
+Antecedente de arranque del corte #53/#17: GitHub autenticado como JuanMorales10. Agente-ia ya entregó F1 positiva en 1b8a3d8 durante el bloqueo: incorporo su commit y completo la segunda combinación de latencias, sin duplicar su trabajo. Runtime existente localizado; sin pruebas nuevas aún. Sin cambios en src/, supabase/ ni configuración.
 **Nuevo corte #29/#34: codex/revisiones 7511bbd (23 oct, horas literales en evidencia).** #29 85c9672: 5/5, 8.18 s, RPC real y handler real en Node sin clave (0 intentos de modelo). #34 7511bbd: 8 regresiones de red correctas + F1 reproducido, Chrome con red externa interceptada; NO son 9 garantías de comportamiento sano. Typecheck y build pasan. Informe docs/revision-codex-6-privacidad-red.md y evidencia tests/e2e/evidencia-privacidad-red.md. Base incorporada 92477ef; cambios propios solo tests/e2e y el informe. No se prueba endpoint desplegado ni IA. La corrida real fue antes de 0024; no se volvió a probar contra la base mientras avanzaba E7.
 Guía vigente: `prompts/codex.md`, adoptada por instrucción directa de Nico. Vigía shell `./vigia.sh codex 60` activo.
 **Nuevo corte #1/#17: f89ab42 en codex/revisiones.** #1 agrega ausencia de preferencias en sobres compartidos: 3/3 dos veces consecutivas (8.80 s y 12.97 s, 63 RPC cada vez). #17 convierte docs/jurado-variantes.md en 4 pruebas: mínimo 5, anfitrión no disponible antes de evaluar y tras baja, máximo 4/cupo reservado. 4/4 (11.04 s, 53 RPC). Typecheck y build pasan; persiste aviso del chunk >500 KB. Salida literal: tests/e2e/evidencia-guia-y-jurado.md. Base b7ac38c, merge e017ac5. Ninguna llamada al modelo ni dependencia nueva.
@@ -21,13 +20,15 @@ Tareas del aviso 12:39 completadas en orden, con autorización directa de Nico.
 Base revisada 4477919 (merge ya presente en codex/revisiones, HEAD inicial 7eb5965). No hubo cambios propios en src/, supabase/, README, configuración o main. Sin instalación de dependencias; .env local ignorado. El E2E verifica RPC, no render ni despliegue. Las pruebas cancelan propuestas propias y cierran sesión; quedan usuarios/demos ficticios de prueba. No se usaron credenciales administrativas.
 
 ## Siguiente
-#1/#10/#16/#17 entregadas. Seguir la primera mejora libre de mis rutas cuando MEJORAS.md se actualice; no duplicar tareas ya entregadas aunque su casilla siga libre. Esperar evidencia estable para revisar las migraciones nuevas del agente. No editar código ajeno.
+Coordinador: integrar `0e4ba7f` (incluye `137721d`) y actualizar #17 como verificada también en navegador local. Si se necesita certificar producción, correr el nuevo guion con la URL publicada. No correr suites mientras backend marque prueba de carga #45 o migración.
 
 ## Bloqueos
-Ninguno para la entrega. El worktree compartido de coordinación tenía un cambio ajeno sin guardar en agentes/backend.md; se publicó esta ficha desde un worktree temporal aislado sin tocarlo.
+Ninguno para esta entrega. Se resolvió la autenticación de GitHub antes de publicar el reclamo. No se ejecutaron suites durante una migración ni prueba de carga.
 
 ## Pedidos a otros
-- interfaz/coordinador: F1 medio reproducido en Espacio.tsx:32–38,53–69,74–82 (base 92477ef): get_space llega primero, fija generacion, y list_proposals inicial válida queda descartada porque capturó null. Pantalla queda en Cargando propuestas hasta refresco/sondeo. Caso F1 en tests/e2e/red-controlada.mjs, informe revisión 6 con arreglo propuesto. No se editó src.
+- coordinador: integrar `codex/revisiones` `0e4ba7f` (F1b `137721d`, nuevo guion #17 e informes). #53 conserva el F1 de agente-ia; solo añade el caso aparte solicitado a las 16:11. Red 10/10; jurado navegador local + backend real 4/4. Ningún defecto nuevo del producto en este alcance.
+- coordinador/pitch-problema: actualizar `docs/jurado-variantes.md`, que aún dice «Nada de esto está verificado», citando `tests/e2e/evidencia-53-jurado.md` y sus límites (no producción ni teléfonos físicos). No edité ese archivo ajeno.
+- [RESUELTO por #52/#53] interfaz/coordinador: F1 medio reproducido en Espacio.tsx:32–38,53–69,74–82 (base 92477ef): get_space llega primero, fija generacion, y list_proposals inicial válida queda descartada porque capturó null. Pantalla queda en Cargando propuestas hasta refresco/sondeo. Caso F1 en tests/e2e/red-controlada.mjs, informe revisión 6 con arreglo propuesto. No se editó src.
 - coordinador: integrar 7511bbd (incluye 85c9672) y marcar #29/#34 entregadas con sus límites. Mantener revisión separada de migraciones E7 y función desplegada.
 - coordinador: integrar f89ab42 y actualizar MEJORAS.md #1/#10/#16/#17 con los commits entregados; actualizar las marcas de docs/jurado-variantes.md citando la evidencia API, sin dar por comprobada la UI.
 - coordinador: integrar 1511b34, 3718b6b y b45c226 desde codex/revisiones. La evidencia API no sustituye el navegador.
@@ -35,6 +36,8 @@ Ninguno para la entrega. El worktree compartido de coordinación tenía un cambi
 - coordinador: revisar R1–R6 de revision-codex-5-readme antes de la entrega (promesa de unanimidad, evidencia/estado, atribución, causa no validada). No se cambió README.
 
 ## Entregado
+- #53 ampliación: `137721d`, F1b como caso aparte; banco de red final 10 PASS/0 FAIL, exit 0. F1 de agente-ia se conserva.
+- #17 navegador: `0e4ba7f`, cuatro variantes por UI real, 23 comprobaciones, dos sesiones y propuestas propias canceladas. Dos corridas completas 4/4 (16:16 y 16:18–16:19). Informe revisión 7 y evidencia versionados. `npm run typecheck`, `npm run build`, `node --check` y `git diff --check` pasan. Push solo a `codex/revisiones`.
 - #34: 7511bbd; 8 regresiones correctas y reproducción F1 (defecto presente). Código original con red bloqueada, cero llamadas reales. Typecheck/build pasan.
 - #29: 85c9672, 5/5 (8.18 s). RPC real + handler index.ts real en Node sin clave; 0 intentos de modelo. No se invoca la función desplegada para garantizar cero facturación. Evidencia tests/e2e/evidencia-privacidad-red.md. Base 92477ef, antes de 0024.
 - #1: 1511b34 y ampliación f89ab42 (preferencias ausentes, dos nuevas ejecuciones).
@@ -44,6 +47,8 @@ Ninguno para la entrega. El worktree compartido de coordinación tenía un cambi
 `codex/revisiones`, HEAD b45c226: E2E + evidencia y revisiones 4/5. Informes 1–3 previos conservados (revisión 3: a2c5d35). Ningún push a main.
 
 ## Ideas
+- Agregar `node tests/e2e/jurado-navegador.mjs <URL publicada>` al corte de verificación del coordinador antes de congelar la demo; ahora hay guion repetible para las cuatro variantes, con guard de migración/carga. Dueño probable: coordinador/Codex.
+- Extender el banco de pantalla vieja al último cupo con dos participantes reales concurrentes, para complementar el rechazo de Sofi simulada ya verificado. Dueño probable: Codex/backend, después de #45.
 - Convertir F1 en regresión positiva tras el arreglo: primera lista aparece sin sondeo; repetir con lista primero y espacio primero. Dueño: interfaz/Codex.
 - Al terminar 0024–0027, una corrida de privacidad E7 con umbrales sin organizador y contadores null por rol; mantener una aserción separada del límite aceptado de inferencias. Dueño: Codex/backend.
 - Probar respuestas fuera de orden y timeout desde navegador con red controlada (interfaz; U1–U4).
