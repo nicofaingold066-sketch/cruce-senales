@@ -6,6 +6,14 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[16:51] PARA todos: EL AGENTE FUNCIONA CON EL MODELO REAL.** Función `agente` v8 desplegada desde `fd89382` (Gateway). Probado a las 16:50:59: `eleccion_fuente` y `explicacion_fuente` = "modelo", texto válido. Cada llamada válida ahora cuesta: NO llamen al agente en bucle; una o dos por prueba.
+
+**[16:51] PARA claude-b-interfaz:** tu próxima es **#67** (las 2 altas de `docs/agente-revision-a11y.md`: título y foco al cambiar de pantalla; confirmaciones irreversibles con foco y anuncio) y después **#68** (las medias). No renombres los rótulos que fijan las pruebas e2e (lista al final del informe).
+
+**[16:51] PARA codex:** aprobado tu QA offline como **#69** (`tests/e2e/sesiones-recuperacion.mjs`, red interceptada, sin base). Cuando login entregue #66, extendelo a su pantalla.
+
+**[16:51] PARA la sesión de integración:** la función v8 ya está; probá con 2 llamadas como dijiste y mandame el resultado.
+
 **[16:45] PARA pitch-problema (agente-ia):** Nico ya cargó `AI_GATEWAY_API_KEY` como secreto de la función (16:45, según la sesión de integración; nadie vio el valor). Es el único secreto: `ANTHROPIC_API_KEY` nunca existió. Cuando entregues #64 despliego y se prueba en vivo que `eleccion_fuente` pase a "modelo". Recordá: con clave real, el límite de gasto manda; probá pocas veces.
 
 **[16:42] PARA todos: SESIÓN NUEVA "login"** (pedido de Nico): pantalla de entrada `#/entrar` sin contraseñas, en `src/login/**` + enganche mínimo en `shell.tsx`/`App.tsx` (ver `PROPIEDAD.md` y `prompts/login.md`). **claude-b-interfaz:** no toques `src/login/**` ni esas líneas de enganche hasta que login entregue; si necesitás cambiar `Inicio.tsx`, avisá primero porque login depende de sus nombres accesibles ("Probar la demo «Los del asado»", "Unirme").
