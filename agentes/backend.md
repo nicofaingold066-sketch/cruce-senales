@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: ~14:00 Santiago (backend), enmienda 5 en curso. El backend no hace commit/push; el coordinador sincroniza este archivo.
+Quien edita este archivo: solo el backend. Última actualización: ~14:15 Santiago (backend), enmienda 5 lista; #15 en curso. El backend no hace commit/push; el coordinador sincroniza este archivo.
 
 ## Tocando ahora
-- Enmienda 5: `supabase/migrations/0019_enmienda5_preferencias_simuladas.sql` (nueva) y `tests/backend/enmienda5.test.ts` (nuevo) + lista permitida a 30 en helpers/enmienda2/enmienda4
+- Mejora #15 (sondeo liviano): `supabase/migrations/0021_sondeo_liviano.sql` (nueva) y `tests/backend/mejoras.test.ts`
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -40,6 +40,9 @@ Migraciones 0008 a 0011 (ya commiteadas por el coordinador en d904a93). Tests en
 
 ## Mejora #13 (entregada sin commit)
 0018_acl_por_defecto: revoca los privilegios por defecto de postgres que daban todo a anon/authenticated en tablas y secuencias nuevas de public (y lo mismo en cruce). La migración crea una tabla, una secuencia y una vista de prueba en public, comprueba que nacen cerradas y las borra. cruce.verificar_privilegios ahora también falla si un objeto de public tiene privilegios del navegador o si reaparecen defaults abiertos de postgres. Límite: los defaults de supabase_admin en public siguen abiertos (postgres no es miembro de supabase_admin); la verificación de catálogo es la red. Suite 39/39 (55.3 s).
+
+## Enmienda 5 (entregada sin commit)
+0019_enmienda5_preferencias_simuladas (simulate_save_preferences: organizador, demo, simulados; idempotente; A4; evento de espacio sin contenido; A5 a 30) y 0020_reset_limpia_preferencias_simuladas (reset_demo también borra preferencias en vivo de simulados sin semilla, p. ej. Luna, para que vuelvan a poder reclamarse). tests/backend/enmienda5.test.ts (5). Suite 44/44 (8 archivos, 42.5 s).
 
 ## Ideas
 - Correr cruce.verificar_privilegios() al final de cada despliegue de migraciones (ya corre dentro de cada migración del backend; falta para cambios hechos a mano desde el panel). Dueño: coordinador.
