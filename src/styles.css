@@ -1260,3 +1260,54 @@ input[aria-invalid='true'],
   color: var(--texto);
   font-weight: 700;
 }
+
+/* ---- Mejora #31: tarjetas de propuestas con estado destacado ---- */
+.tarjeta-prop {
+  border-left: 6px solid var(--info-borde);
+}
+.tarjeta-prop-grupo_confirmado {
+  border-left-color: var(--ok-borde);
+}
+.tarjeta-prop-en_revision {
+  border-left-color: var(--aviso-borde);
+}
+.tarjeta-prop-cancelado,
+.tarjeta-prop-expirado {
+  border-left-color: var(--error-borde);
+}
+.tarjeta-prop-borrador {
+  border-left-color: var(--borde);
+}
+.tarjeta-prop-turno {
+  border-color: var(--primario);
+  border-left-color: var(--primario);
+}
+.tp-estado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin: 2px 0;
+}
+.tarjeta-prop .estado-hero-punto {
+  background: var(--info-borde);
+}
+.tarjeta-prop-grupo_confirmado .estado-hero-punto {
+  background: var(--ok-borde);
+}
+.tarjeta-prop-en_revision .estado-hero-punto {
+  background: var(--aviso-borde);
+}
+.tarjeta-prop-cancelado .estado-hero-punto,
+.tarjeta-prop-expirado .estado-hero-punto {
+  background: var(--error-borde);
+}
+.tarjeta-prop-borrador .estado-hero-punto {
+  background: var(--suave);
+}
+.tarjeta-prop .pastilla {
+  margin-top: 0;
+}
+.tp-siguiente-turno {
+  font-weight: 700;
+}
