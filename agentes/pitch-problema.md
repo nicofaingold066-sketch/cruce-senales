@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 13:50.
+Quien edita este archivo: solo esta sesión. Última actualización: 13:52.
 
 ## Tocando ahora
-- Mejora #32 (panel del agente a prueba de demo): `src/agente/**`
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[13:52] Mejora #32 entregada** (`40710d5`, solo `src/agente/`, no requiere redesplegar la función): tiempo límite de 10 s para la función y 8 s para el respaldo RPC; "El agente está leyendo las preferencias del grupo y el clima…" mientras espera; errores claros ("Faltan preferencias", "Sin conexión", "El agente tardó demasiado", "El agente no respondió") con Reintentar y "Crear la propuesta a mano", también en "Sin plan compatible"; barrera de errores para que una falla del panel no tire la pantalla del espacio. Probado en el navegador colgando a propósito la función y el RPC: a los 18 s aparece "El agente tardó demasiado" con las dos salidas, y Reintentar con la red normal trae la propuesta.
 - **[13:45] #26 probada en vivo con la función v3:** "Lo que eligió el grupo (5 personas): Asado 4 de 5 · Fútbol 2 de 5 · …". Endurecido (`05b2c46`): ya no se muestran ni se mandan al modelo las actividades que eligió una sola persona ("Fiesta 1 de 5" dejaba adivinar quién fue). Probado contra la base: perfil de 5 personas trae solo Asado (4) y Fútbol (2).
 - **[13:33] Mejora #26 entregada** (`71a0cff`): la función devuelve `perfil_grupo` (con 3 personas o menos, solo `personas`) y la tarjeta del organizador muestra "Lo que eligió el grupo (N personas): Asado 4 de 5 · …", el ritmo y el ambiente de la mayoría; el presupuesto no se muestra nunca. Probado contra la base real: demo con 5 personas trae gustos; espacio de 2 personas trae solo `{personas: 2}`. Visible solo para el organizador: que lo vea todo el grupo necesitaría una RPC nueva del backend (no la pido por ahora).
 - **[13:32] Mejora #25 entregada** (`ffcc186`): botón "Compartir por WhatsApp" junto a "Copiar mensaje", con enlace `https://wa.me/?text=` + mensaje del agente + enlace de invitación del espacio (`#/unirse/<código>`). Nueva pestaña, `noopener noreferrer`, oculto en solo lectura. El enlace solo lleva el plan, nada privado. Probado en el navegador a 375 px. Typecheck y build en verde.
@@ -30,6 +31,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 (vacío)
 
 ## Entregado
+- Mejora #32 (panel a prueba de demo): `wip/agente-ia` `40710d5`.
 - Filtro de privacidad en el perfil del grupo (actividades con una sola persona): `wip/agente-ia` `05b2c46`.
 - Mejora #26 (perfil agregado visible con 4 o más personas): `wip/agente-ia` `71a0cff`.
 - Mejora #25 (compartir por WhatsApp): `wip/agente-ia` `ffcc186`.
@@ -43,3 +45,4 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - **[13:18] Mensaje del agente para pegar en WhatsApp** (dueño: agente-ia + claude-b): un botón "Compartir por WhatsApp" con el `mensaje_al_grupo` y el enlace de invitación, para que el plan salga del chat de siempre y vuelva a CRUXE. Encaja con la respuesta a "¿por qué no WhatsApp?": conviven.
 - **[13:18] "Ritmo del grupo" visible para todos** (dueño: backend + agente-ia): mostrar al grupo solo el perfil agregado (por ejemplo "Asado: lo marcaron 5 de 6") cuando hay 4 personas o más, para que cada uno vea que el plan sale de todos. Ojo con la inferencia en grupos chicos: con 3 o menos, no se muestra.
 - **[13:23] Clima de simulación en la demo** (dueño: agente-ia, con una prop nueva de claude-b): con lluvia real queda una sola candidata; un selector rotulado Simulación permite mostrar en vivo las 3 opciones con sol y el cambio con lluvia, sin depender del clima del sábado.
+- **[13:52] Ensayo del agente en 30 segundos** (dueño: agente-ia, en `docs/agente-ia.md`): guion corto y probado para la demo (sol simulado → 3 opciones → elegir → WhatsApp → usar), con qué decir si la IA no responde. Así el bloque del agente del pitch es repetible.
