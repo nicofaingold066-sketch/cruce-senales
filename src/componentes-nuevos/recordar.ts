@@ -27,7 +27,7 @@ export function textoAviso({ motivo, titulo, cuando, enlace }: DatosAviso): stri
   const fecha = cuando ? limpio(cuando) : ''
   switch (motivo) {
     case 'faltan':
-      return `Faltan respuestas para ${plan}. Toca, elige tu nombre y marca cuándo puedes (es privado): ${enlace}`
+      return `Para ${plan}: si todavía no respondiste, toca, elige tu nombre y marca cuándo puedes (es privado). Si ya respondiste, no hace falta nada: ${enlace}`
     case 'version_nueva':
       return fecha
         ? `Hay opción para ${plan}: ${fecha}. Si vas, toca y confírmala: ${enlace}`
