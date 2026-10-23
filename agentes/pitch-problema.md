@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión. Última actualización: 15:20.
 
 ## Tocando ahora
-(nada)
+- Mejora #52 (F1 de `docs/revision-codex-6-privacidad-red.md`, reasignada temporalmente por el coordinador): SOLO `src/screens/Espacio.tsx`
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
