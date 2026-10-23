@@ -238,8 +238,30 @@ try {
     assert.deepEqual({ espacios, listas }, { espacios: 1, listas: 1 }, 'Una lectura de cada una, sin refresco ni sondeo')
   }, 'espacio')
 
+  // #53, caso aparte: latencias invertidas. El arreglo serializa la primera carga,
+  // así que la lista rápida se pide recién después de conocer la generación del espacio lento.
+  let espaciosLentos = 0, listasRapidas = 0
+  await caso('F1b espacio lento / lista rápida: lista inicial sin refresco ni sondeo', async ({ route, fn }) => {
+    if (fn === 'get_space') {
+      espaciosLentos++; await esperar(180)
+      await fulfill(route, espacio(1)); return
+    }
+    if (fn === 'list_proposals') {
+      listasRapidas++; await esperar(20)
+      await fulfill(route, sobre({ propuestas: [propuesta(5, 'LISTA_INICIAL_VALIDA')] }))
+      return
+    }
+    throw new Error(`RPC inesperada ${fn}`)
+  }, async page => {
+    await page.getByRole('heading', { name: 'ESPACIO_GEN_1' }).waitFor()
+    await page.getByText('LISTA_INICIAL_VALIDA', { exact: true }).waitFor({ timeout: 2000 })
+    assert.equal(await page.getByText('Cargando propuestas…', { exact: true }).count(), 0)
+    await esperar(300)
+    assert.deepEqual({ espaciosLentos, listasRapidas }, { espaciosLentos: 1, listasRapidas: 1 })
+  }, 'espacio')
+
 } finally {
   await browser.close(); await server.close()
-  console.log(`#34: ${aprobadas} PASS, ${fallidas} FAIL. Incluye 9 regresiones: N1 a N8 y F1 (desde #53, regresión positiva del arreglo #52). Red externa interceptada; cero llamadas reales a Supabase.`)
+  console.log(`#34: ${aprobadas} PASS, ${fallidas} FAIL. Incluye 10 regresiones: N1 a N8, F1 y F1b (latencias invertidas; #53, arreglo #52). Red externa interceptada; cero llamadas reales a Supabase.`)
 }
 if (fallidas) process.exitCode = 1
