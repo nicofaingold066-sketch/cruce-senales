@@ -3,11 +3,26 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-(vacío)
+- `src/styles.css` (barra de pestañas: "Simulación" queda cortada a 390 px)
 
 ## Estado
 11:2x: trabajando el plan sin red (aviso 11:21). Integrada mi rama en wip/fundamentos por el coordinador; yo traje `origin/wip/fundamentos` a `wip/ui-enmienda`.
 Corte "interfaz enmienda 2" (rama de código `wip/ui-enmienda`): los 7 puntos hechos. Ajuste de `mi_situacion.motivo_aceptar` hecho. `npm run typecheck` y `npm run build` pasan. Traída `origin/wip/fundamentos` (AGENTS.md actualizado) a mi rama.
+
+## Recorrido EN VIVO contra el backend real (14:3x, build de `wip/ui-enmienda` = `wip/fundamentos` 615ef0f + mi e7d868d)
+Chromium sin cabeza, dos contextos = dos sesiones anónimas (Tomi y Luna), 390 px, a través de la interfaz (clics reales, sin tocar la API a mano). Se registró toda respuesta RPC con `ok:false` o `contrato` distinto de 2: **ninguna**.
+1. Cargar demo "Los del asado" (Tomi): PASÓ (seis personas visibles).
+2. Luna se une por código a un asiento limpio, otra sesión: PASÓ ("Reclamaste el lugar de Luna").
+3. Tomi crea la propuesta A sáb 31 oct / B dom 1 nov 14:00-17:00, America/Santiago, y la abre: PASÓ.
+4. Interés de Tomi y Luna: Confirmados = 0: PASÓ.
+5. Condiciones privadas (Tomi y Luna cada uno en su sesión; simulados con el atajo del caso); Luna no ve condiciones ajenas: PASÓ.
+6. Buscar opción → versión 1 franja A (con "Cupo del anfitrión reservado, libres para el resto: 5"): PASÓ.
+7. Tomi, Luna (doble clic), Mati y Caro aceptan v1 → Grupo confirmado en las dos sesiones, 4 de 4 (sin duplicar): PASÓ.
+8. Caro se baja → En revisión, "Bajas registradas", Luna no ve "Reparado": PASÓ.
+9. Buscar alternativa → v2 franja B, "Todavía nadie confirmó la versión 2", Luna no ve confirmado: PASÓ.
+10. Tomi, Luna, Mati y Fede aceptan v2 → Grupo confirmado otra vez en las dos sesiones: PASÓ.
+11. Rama sin opción (propuesta nueva, Tomi "No puedo" A y B) → "Sin opción compatible", sin opción publicada, mínimo 4 intacto: PASÓ. (Variante: por evaluación inicial, no por reparación tras la baja.)
+Además: `NODE_USE_ENV_PROXY=1 npm run test:backend` → 10 archivos, 100 pruebas pasan.
 
 ## Hecho
 - Corte enmienda 2 (rama `wip/ui-enmienda`): contrato 2, `reset_demo` con intento, cupos reservados (`mi_situacion.motivo_aceptar`), errores `asiento_en_uso`/`intento_obsoleto`/`cupo_completo` con ayuda, falla antes/después de enviar.
@@ -22,10 +37,10 @@ Corte "interfaz enmienda 2" (rama de código `wip/ui-enmienda`): los 7 puntos he
 Esperar indicaciones del coordinador (probar contra el backend con migraciones 0008-0011 requiere `.env`).
 
 ## Bloqueos
-- 11:2x: la tarea del aviso de las 11:19 (recorrido en vivo) NO se pudo empezar. El entorno cloud de esta computadora bloquea `tjkfdnvzsikncjbskufm.supabase.co`: el proxy responde `CONNECT tunnel failed, response 403` (curl a `/auth/v1/health`, código 000). El `.env` ya está creado con `entorno-publico.txt`. Nico tiene que habilitar el dominio en Network access del entorno (o darme otro entorno con salida a Supabase). Sin esto no hay respuestas del servidor que reportar y no voy a inventarlas.
+Ninguno. Red a Supabase habilitada por Nico (14:2x).
 
 ## Pedidos a otros
-- Al coordinador/Nico: habilitar `tjkfdnvzsikncjbskufm.supabase.co` en la red del entorno de claude-b-interfaz (ver Bloqueos). Mientras tanto avanzo solo con lo que no necesita red.
+(vacío)
 
 ## Entregado
 Rama `wip/ui-enmienda`: 4 commits de código + merge de `origin/wip/fundamentos` (ver `git log`).
