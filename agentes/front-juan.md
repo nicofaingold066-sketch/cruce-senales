@@ -1,42 +1,23 @@
 # Agente: front-juan (rediseño del front pedido por Juan Morales)
 
-Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la computadora de Nico, Mac-mini-de-Felix). Última actualización: viernes 23 oct, 16:40 Santiago (reloj).
+Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la computadora de Nico, Mac-mini-de-Felix). Última actualización: viernes 23 oct, 17:38 Santiago (reloj).
 
 ## Tocando ahora
 (vacío. CORRIENDO PRUEBA terminado a las 17:36: e2e-recorrido 11/11 y recorrido-invitacion 9/9 con main 30e4c76 fusionado, sin ok:false.)
 
-## Entregado: `wip/front-juan` = `a7b56ed`, lista para integrar
-Pedido de Juan: rehacer todo el front, mobile-first, con estilo de app de viaje en curso (Uber), y el flujo completo desde el ingreso hasta el final de una invitación. Ya trae fusionado `main` `7b0335b`: #47, #52, #56 y #51 de `main` quedaron adentro del rediseño (se descartaron las versiones locales viejas de #47 y #52).
-- **Sistema visual nuevo** (`src/styles.css`, fuente del sistema, modo oscuro): arriba una escena oscura con el estado en vivo; encima sube una hoja clara con el detalle; la acción principal queda fija abajo. En escritorio, la escena va fija a la izquierda.
-- **"El cruce"** (`src/components/Cruce.tsx`): las personas del espacio alrededor del plan. Solo dibuja datos del servidor (`opcion.aceptaron`, `interesados`, `bajas`, cupos). Nunca muestra condiciones.
-- **Flujo completo:**
-  - Ingreso con nombre, sin contraseña ni correo. Es la sesión anónima del contrato 0.1; el nombre queda solo en el navegador (`src/lib/perfil.ts`).
-  - Perfil, con "Entrar como otra persona" sin `signOut` (usa `sesionNueva` de #47).
-  - Mis planes: Te toca / En curso / Confirmados / Cerrados.
-  - Crear un grupo.
-  - Invitación con pantalla propia, invitar por WhatsApp y tarjeta "Invita a tu grupo".
-  - Cierre "¡Se juntan!" con "Agregar al calendario" (`.ics` armado en el teléfono) y aviso por WhatsApp.
-  - "Ir a confirmar" cuando te toca y estás en otra pestaña.
-  - Barra inferior Inicio / Planes / Perfil.
-- **Legibilidad:**
-  - Gris terciario a ~5,3:1 y textos de ~12 px como mínimo.
-  - Ícono por estado del plan, no solo color.
-  - Texto anotado a mano, código de invitación en tablero de aeropuerto y confeti al confirmarse el grupo. Todo con CSS y SVG propios; se apaga con movimiento reducido.
-- **Reglas:**
-  - El servidor decide cupos, estado y confirmación; la interfaz no calcula autoridad.
-  - Interés no es confirmación.
-  - No se tocó `src/agente/**`.
-  - Se conservan los nombres accesibles de botones y pestañas, `strong.codigo`, `.estado-hero` y `.cambio-version`, que usan las pruebas.
+## Entregado: `wip/front-juan` = `91e9f9a` (sobre `main` `30e4c76`, ya fusionado)
+Nuevo desde lo que integraste (`9269e8e`), pedido por Juan:
+- **Nueva propuesta simple:** cada opción (A y B) es un día de una tira de próximos días + una hora de encuentro (o una propia); la duración se elige una vez (1–4 h) y el fin se calcula solo, sin convertir zonas. Atajos de actividad (Asado 3 h, Fútbol 1 h…). Mínimo y máximo en la misma fila, anfitrión tocando su avatar, cierre por defecto "el día antes, 20:00". En la demo, el caso exacto (A sáb 31 y B dom 1, 14–17; cierre jue 29 20:00). El contrato no cambia.
+- **Menos scroll** (medido a 375 px): plan con reparación y grupo confirmado 3593 → 2663 px; grupo 1526 → 1385 px; mi respuesta 1975 → 1796 px (datos en grilla 2 × 2, personas como chips, sin avisos duplicados, comparación v1 → v2 lado a lado).
+- **Portada:** cruce 3D en CSS (órbita en perspectiva, esferas con luz y sombra, rayos hacia la X, paralaje con el dedo). Quieta con movimiento reducido.
+- **Respuesta a `docs/agente-revision-front-juan.md`:** P1, "Sin confirmar" y el paso "Encuentro" ya venían arreglados en `main` (80b8444). En esta rama: la invitación no precarga el nombre del dueño del navegador y ofrece "Soy X" / "No soy X" (P2); textos según E7.2, solo quien organiza ve cuántas personas respondieron (P3); aviso en "Volver a esa sesión" y etiqueta solo con el nombre (P3); `.ics` con `;`, saltos y caracteres de control bien tratados (P3); "¡Se juntan!" solo para quien confirmó la versión; el cruce avisa "+N más" con más de 10 personas.
 
-## Cómo se probó (backend real, sin MIGRACION EN CURSO en `backend.md`)
+## Cómo se probó (backend real, sin MIGRACION EN CURSO, con CORRIENDO PRUEBA anotado)
 - `npm run typecheck` y `npm run build` en verde.
-- `cruxe-pruebas/e2e-recorrido.js` (11 pasos, Tomi y Luna, versión compilada): **11/11**, ninguna respuesta `ok:false` ni `contrato` distinto de 2. Última corrida: ~16:30.
-- `cruxe-pruebas/recorrido-invitacion.js` (9 pasos, grupo propio Ana y Bruno, versión compilada): **9/9**, ninguna `ok:false` ni error de página. Cubre ingreso, crear grupo, invitar, unirse por enlace, propuesta con campos a mano, condiciones, opción, confirmar, ¡Se juntan!, `.ics` y perfil.
-- Capturas a 320, 375 y 430 px y en escritorio: sin desborde horizontal. Modo oscuro revisado.
-- No corrí `tests/e2e/red-controlada.mjs` (usa el Playwright y el Chrome de la computadora A). La lógica que prueba en `Espacio.tsx` y `SimulacionTab.tsx` es la de `main`; solo cambió el marcado.
-- No corro nada contra la base durante la 0031 (16:55).
+- 17:34–17:35, versión compilada de `91e9f9a` sin la pasada estética de la órbita (solo CSS decorativo, aria-hidden): `cruxe-pruebas/e2e-recorrido.js` **11/11** y `cruxe-pruebas/recorrido-invitacion.js` **9/9** (actualizado al formulario nuevo), ninguna `ok:false` ni `contrato` distinto de 2.
+- Auditoría responsive de 11 pantallas a 320, 375, 430, 768 y 1280 px: sin desborde y toques de al menos 44 × 44 px.
 
 ## Pedidos
 - **coordinador:** integrar `wip/front-juan` cuando lo decidan con Nico. La rama reescribe casi todo `src/` (menos `src/agente/**`). Antes de fusionar conviene volver a correr los dos recorridos de arriba.
-- **coordinador (componentes externos):** registrar en `docs/componentes-externos.md` **Lucide** (`lucide-react` 1.53.0, versión fija, licencia ISC, https://lucide.dev). Es la única dependencia nueva; está en `package.json` y `package-lock.json` de la rama. Las ideas tomadas de componentry.dev (texto anotado y tablero tipo split-flap) son implementación propia, sin código copiado; se pueden mencionar como inspiración.
+- **coordinador (componentes externos):** (hecho por vos en ce05e5e, gracias) **Lucide** (`lucide-react` 1.53.0, versión fija, licencia ISC, https://lucide.dev). Es la única dependencia nueva; está en `package.json` y `package-lock.json` de la rama. Las ideas tomadas de componentry.dev (texto anotado y tablero tipo split-flap) son implementación propia, sin código copiado; se pueden mencionar como inspiración.
 - **claude-b-interfaz:** aviso de solapamiento. Esta rama reescribe pantallas y estilos de `src/`; si seguís con mejoras en `src/`, coordinemos antes de la fusión para no pisarnos.
