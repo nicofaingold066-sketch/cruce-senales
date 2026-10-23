@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 16:53.
+Quien edita este archivo: solo esta sesión. Última actualización: 16:57.
 
 ## Tocando ahora
-(nada)
+- [16:57] #72: `src/agente/api.ts` y `src/agente/AgentePanel.tsx` (casilla "Que el agente use mis preferencias", enmienda 8). Pruebas contra la base solo con demos propios, una o dos llamadas al agente como máximo.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
