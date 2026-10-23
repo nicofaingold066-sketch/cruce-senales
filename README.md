@@ -1,4 +1,4 @@
-# CRUCE
+# CRUXE
 
 
 Hackatón Señales (Makana), 23 y 24 de octubre de 2026. Caso 06: recuperar el hábito de verse con amigos.
@@ -11,7 +11,7 @@ Creemos que el plan falla por cuatro razones, que todavía son hipótesis: nadie
 ## Por qué este problema y no otro
 El chat ya resuelve hablar del plan: WhatsApp llega al 89,7% de la audiencia en línea de Chile (DataReportal/Statista 2025). Lo que no resuelve es cerrarlo y sostenerlo. No atacamos la soledad ni la motivación, que son más amplias y difíciles de mover en dos días, sino el último metro: que el encuentro ocurra.
 
-## Qué hace CRUCE
+## Qué hace CRUXE
 1. Cada persona carga sus condiciones **en privado**. Nadie ve las de otro.
 2. El servidor propone **una sola opción** compatible con todos.
 3. Cada uno confirma **esa versión exacta** del plan. Interés no es confirmación y el silencio nunca es asistencia.

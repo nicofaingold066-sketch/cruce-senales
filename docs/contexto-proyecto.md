@@ -1,4 +1,4 @@
-# Contexto del proyecto CRUCE (para Codex, Juan y cualquier agente)
+# Contexto del proyecto CRUXE (para Codex, Juan y cualquier agente)
 
 Última actualización: viernes 23 oct 2026. Este archivo describe el estado real; si algo no está acá, no está hecho.
 
@@ -7,7 +7,7 @@ Hackatón Señales de Makana (23 y 24 oct 2026, Las Condes). Equipo: Nico Faingo
 
 ## 2. Problema y solución
 Caso 06 (problema propio): recuperar el hábito de verse con amigos. Origen: un asado con seis interesados que dejaron de responder y no se hizo. Hipótesis (sin demostrar): no faltan amigos ni ganas, falta cerrar la coordinación.
-CRUCE: cada persona carga condiciones PRIVADAS; el servidor propone UNA opción compatible; cada uno confirma esa VERSIÓN exacta del plan; si alguien se baja y se rompe el mínimo, el plan pasa a "En revisión" y se propone una alternativa que todos deben volver a aceptar, con cero aceptaciones heredadas. Interés no es confirmación; el silencio nunca es asistencia.
+CRUXE: cada persona carga condiciones PRIVADAS; el servidor propone UNA opción compatible; cada uno confirma esa VERSIÓN exacta del plan; si alguien se baja y se rompe el mínimo, el plan pasa a "En revisión" y se propone una alternativa que todos deben volver a aceptar, con cero aceptaciones heredadas. Interés no es confirmación; el silencio nunca es asistencia.
 Detalle del escenario y del recorrido: `docs/caso-canonico.md`. Reglas de trabajo: `AGENTS.md`.
 
 ## 3. Arquitectura

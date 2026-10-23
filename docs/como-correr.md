@@ -1,4 +1,4 @@
-# Cómo correr CRUCE
+# Cómo correr CRUXE
 
 1. Instalar: `npm install` (Node 24).
 2. Variables: copiá `.env.example` a `.env` y completá `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` (solo clave publishable, nunca service_role). `.env` está ignorado por git.

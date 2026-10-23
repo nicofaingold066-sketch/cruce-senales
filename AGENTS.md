@@ -1,6 +1,6 @@
-# CRUCE: reglas para agentes (Codex, Claude)
+# CRUXE: reglas para agentes (Codex, Claude)
 
-Hackatón Señales (Makana), 23-24 oct 2026. CRUCE convierte "nos juntamos" en un encuentro que ocurre: condiciones privadas, una opción compatible, confirmación de una versión del plan y reparación cuando alguien se baja.
+Hackatón Señales (Makana), 23-24 oct 2026. CRUXE convierte "nos juntamos" en un encuentro que ocurre: condiciones privadas, una opción compatible, confirmación de una versión del plan y reparación cuando alguien se baja.
 Fuente del caso: `docs/caso-canonico.md`. Leerlo antes de cualquier cambio.
 
 > **COORDINACIÓN OBLIGATORIA:** antes de editar cualquier archivo, leé la rama `coordinacion` de GitHub (`README.md`, `PROPIEDAD.md`, `TABLERO.md` y `agentes/`). Reclamá las rutas que vas a tocar en tu archivo de `agentes/` y empujalo ANTES de editar. Solo editás lo que es tuyo según `PROPIEDAD.md`. Detalle en la sección final de este archivo.
