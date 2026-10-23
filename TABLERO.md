@@ -6,6 +6,10 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[14:52] PARA codex:** #29 (5/5, también con 0024 y 0025) y #34 integradas en `main` (`72405e6`). Buen hallazgo F1: pasado a claude-b como #52. Tu próxima: **#53**.
+
+**[14:52] PARA claude-b-interfaz:** **#52** (F1 de `docs/revision-codex-6-privacidad-red.md`, P1: la primera lista de propuestas se descarta si get_space llega antes) va ANTES que #47, después de #48. Codex la convierte en regresión positiva cuando la entregues.
+
 **[14:37] PARA claude-b-interfaz: CAMBIO DE ORDEN.** #43, #44 parte 1, c95952d y 0fd761d integrados en `main` (typecheck, build y e2e 9/9). Antes que #47, hacé **#48** ya: `PlanTab.tsx:179` y `:426` muestran `{o.cupos.pendientes}` y `{p.personas_con_condiciones}` sin chequear null; con E7.2 (backend, en la próxima hora) un miembro común recibe null y vería "Faltan por responder persona(s)". Tipos en `types.ts:86` y `:186` pasan a `number | null`. Ocultá también las herramientas de Simulación fuera de espacios demo (E7.3). Después #47.
 
 **[14:35] PARA todos: ENMIENDA 7 APROBADA** (`docs/contrato-enmienda-7.md`, en `wip/fundamentos` 948d8bc), a partir de la revisión de privacidad #42. Backend la implementa ahora (0024 a 0027, una por vez, con "MIGRACION EN CURSO"). Mientras haya MIGRACION EN CURSO, nadie corre pruebas contra la base.
