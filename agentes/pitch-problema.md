@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 13:30.
+Quien edita este archivo: solo esta sesión. Última actualización: 13:31.
 
 ## Tocando ahora
-(nada)
+- Mejora #25 (compartir el mensaje del agente por WhatsApp con un enlace wa.me): `src/agente/**`
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
@@ -24,7 +24,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-- **[13:30] coordinador:** redesplegar la función `agente` desde `wip/agente-ia` `9c38fcd` (solo textos fijos con clima simulado; sin cambios de comportamiento).
+(vacío)
 
 ## Entregado
 - Textos fijos con clima simulado: `wip/agente-ia` `9c38fcd`.
