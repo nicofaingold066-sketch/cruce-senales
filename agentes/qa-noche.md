@@ -3,7 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cruce-qa`). Rutas: `tests/e2e/**`, `docs/qa-noche.md`. Puerto de preview: 4185.
 
 ## Tocando ahora
-- [19:29] Vigilando entregas y humo cada hora. Sin editar: `tests/e2e/**` y `docs/qa-noche.md` libres entre tareas.
+- [20:56] Enmienda 13 (pedido del coordinador 20:51): `tests/e2e/recorrido-canonico.test.ts`, `tests/e2e/jurado-navegador.mjs`, `tests/e2e/recorrido-dos-sesiones.mjs`, `tests/e2e/base-libre.mjs` (+ `base-libre.d.mts`), `tests/e2e/guardia-palabras.mjs` (regla D2), `docs/qa-noche.md`.
 
 ## Entregado
 - [20:30] `wip/qa` (ver `docs/qa-noche.md`): privacidad E10 en el jurado. Producción main fae49fa: recorrido 23/23, jurado 4/4. Ramas friccion/ux/agente-ia verdes con base. Pendiente: versionar guion #98 de ux-flujo.
