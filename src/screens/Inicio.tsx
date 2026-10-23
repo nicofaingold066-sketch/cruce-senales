@@ -12,7 +12,7 @@ import { Aviso, Boton, Cargando, ErrorCaja, colorAvatar, iniciales } from '../co
 import { PlanVivo, esTurno } from '../components/PlanVivo'
 import { Marca } from '../components/Marca'
 import { Icono } from '../components/Icono'
-import { ArteCruce } from '../components/Cruce'
+import { Orbita } from '../components/Orbita'
 import { Resaltado } from '../components/Resaltado'
 import { Tablero } from '../components/Tablero'
 
@@ -72,7 +72,7 @@ export default function Inicio({
             </div>
           </div>
           <div className="solo-ancho">
-            <ArteCruce />
+            <Orbita compacta />
           </div>
         </section>
         <div className="hoja">
@@ -105,9 +105,7 @@ export default function Inicio({
           <p className="portada-sub">
             Cada uno dice en privado cuándo puede. CRUXE propone <strong>un solo plan</strong> y cada uno lo confirma.
           </p>
-          <div className={nuevo ? 'solo-ancho' : undefined}>
-            <ArteCruce />
-          </div>
+          <Orbita compacta={nuevo} />
         </section>
       ) : (
         <section className="escena escena-portada" aria-labelledby="portada-titulo">
@@ -116,7 +114,7 @@ export default function Inicio({
             {perfil ? `Hola, ${perfil.nombre}.` : 'Hola.'} <em>¿Qué plan armamos?</em>
           </h1>
           <p className="portada-sub">Del «nos juntamos» al encuentro que ocurre.</p>
-          <ArteCruce />
+          <Orbita compacta />
         </section>
       )}
 

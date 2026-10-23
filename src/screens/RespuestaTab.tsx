@@ -18,16 +18,13 @@ export default function RespuestaTab({ p, viva, soloLectura }: PestanaProps) {
   const s = p.mi_situacion
   return (
     <div>
-      <div className="privado" role="note">
+      <div className="privado privado-linea" role="note">
         <span className="privado-icono" aria-hidden="true">
-          <Icono n="candado" tam={20} />
+          <Icono n="candado" tam={16} />
         </span>
         <div>
           <strong>Tus condiciones no se muestran al grupo</strong>
-          <p>
-            Lo que marques aquí lo ve solo el servidor para armar la opción. El grupo solo ve cuántas personas cargaron
-            condiciones, nunca cuáles son.
-          </p>
+          <p>Solo el servidor las ve para armar la opción; el grupo ve cuántas personas cargaron, nunca cuáles son.</p>
         </div>
       </div>
       {s.retirado ? (
@@ -147,7 +144,7 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
             deshabilitado={!s.puede.guardar_condiciones || soloLectura}
             prefijo={`mi-${p.id}`}
           />
-          <p className="suave">"Pendiente" significa que aún no lo sabes. Con alguna franja pendiente tus condiciones quedan incompletas.</p>
+          <p className="suave nota-seccion">"Pendiente" = aún no lo sabes (tus condiciones quedan incompletas).</p>
           {!s.puede.guardar_condiciones ? <p className="aviso-linea">{razonSinGuardar(p)}</p> : null}
           <div className={`fila-botones ${b.sucio ? 'barra-accion' : ''}`}>
             <Boton
