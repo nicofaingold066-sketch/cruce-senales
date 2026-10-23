@@ -40,8 +40,33 @@ test('no elegible en la versión: "Esta versión es sin ti", con o sin grupo con
 test('elegible o sin versión: sin aviso; retirado: sin aviso', () => {
   const ana = yo({ miembro_id: 'm-ana', condiciones: 'completas', elegible_en_version: true })
   assert.equal(avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: ana }), null)
-  assert.equal(avisoParaMi({ estado: 'en_revision', imprescindible: vale, mi_situacion: { ...ana, elegible_en_version: false } }), null)
-  assert.equal(avisoParaMi({ estado: 'reuniendo_interes', imprescindible: vale, mi_situacion: yo({ retirado: true }) }), null)
+  })
+
+test('quien se retiró: gracias, sin pedir motivo', () => {
+  const a = avisoParaMi({ estado: 'reuniendo_interes', imprescindible: vale, mi_situacion: yo({ retirado: true }) })
+  assert.equal(a?.clave, 'te_retiraste')
+  assert.match(a.texto, /No hace falta contar por qué/)
+})
+
+test('en revisión: sin nombre ni motivo; organizador con dos salidas', () => {
+  const opcion = { cupos: { faltan_para_minimo: 1 } }
+  const org = avisoParaMi({ estado: 'en_revision', imprescindible: vale, mi_situacion: yo({ condiciones: 'completas' }), opcion })
+  assert.equal(org?.clave, 'cambio_el_plan')
+  assert.equal(org.texto, 'Falta 1 para el mínimo. Puedes buscar otra fecha o ver otra forma de juntarse.')
+  const ana = yo({ miembro_id: 'm-ana', es_organizador: false, condiciones: 'completas', elegible_en_version: true })
+  const a = avisoParaMi({ estado: 'en_revision', imprescindible: vale, mi_situacion: ana, opcion: { cupos: { faltan_para_minimo: 2 } } })
+  assert.match(a.texto, /^Faltan 2 para el mínimo\. Si sale una versión nueva/)
+  assert.doesNotMatch(a.titulo + a.texto, /Vale|Ana|porque|se bajó/)
+  const sinOpcion = avisoParaMi({ estado: 'en_revision', imprescindible: vale, mi_situacion: ana })
+  assert.match(sinOpcion.texto, /^Si sale/)
+})
+
+test('grupo confirmado: gracias al organizador, nada a los demás', () => {
+  const org = avisoParaMi({ estado: 'grupo_confirmado', imprescindible: vale, mi_situacion: yo({ condiciones: 'completas', elegible_en_version: true }) })
+  assert.equal(org?.clave, 'gracias_por_moverlo')
+  assert.equal(org?.tono, 'ok')
+  const ana = yo({ miembro_id: 'm-ana', es_organizador: false, condiciones: 'completas', elegible_en_version: true })
+  assert.equal(avisoParaMi({ estado: 'grupo_confirmado', imprescindible: vale, mi_situacion: ana }), null)
 })
 
 test('no elegible con disponibilidad incompleta: no promete entrar en esta versión', () => {

@@ -21,6 +21,8 @@ function Banco() {
         <AvisoParaMi
           p={{ estado: 'grupo_confirmado', imprescindible: vale, mi_situacion: yo({ miembro_id: 'm-coni', condiciones: 'completas', elegible_en_version: false }) }}
         />
+        <AvisoParaMi p={{ estado: 'reuniendo_interes', imprescindible: vale, mi_situacion: yo({ retirado: true }) }} />
+        <AvisoParaMi p={{ estado: 'grupo_confirmado', imprescindible: vale, mi_situacion: yo({ condiciones: 'completas', elegible_en_version: true }) }} />
         <section className="tarjeta">
           <h2>Reuniendo interés (organizador)</h2>
           <RecordarFaltan codigo="ABCD1234" titulo="Pádel y algo después" />

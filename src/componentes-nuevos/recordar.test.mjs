@@ -9,7 +9,7 @@ const enlace = 'https://ejemplo.test/#/unirse/ABCD1234'
 
 test('faltan: mensaje genérico con el enlace, sin nombres ni conteos', () => {
   const t = textoAviso({ motivo: 'faltan', titulo: 'Pádel y algo después', enlace })
-  assert.equal(t, 'Para «Pádel y algo después»: si todavía no respondiste, toca, elige tu nombre y marca cuándo puedes (es privado). Si ya respondiste, no hace falta nada: ' + enlace)
+  assert.equal(t, 'Para «Pádel y algo después»: si todavía no respondiste, sin apuro: toca, elige tu nombre y marca cuándo puedes (es privado). Si ya respondiste, no hace falta nada: ' + enlace)
   // Llega también a quien ya respondió o se bajó (pedido de sinteticos): no le reclama nada.
   assert.match(t, /si todavía no respondiste/i)
   assert.match(t, /Si ya respondiste, no hace falta nada/)
@@ -33,7 +33,8 @@ test('confirmado: lleva el enlace y los cupos libres, sin nombres', () => {
 
 test('reparación dice que las confirmaciones anteriores no cuentan', () => {
   const t = textoAviso({ motivo: 'reparacion', titulo: 'Cena', cuando: 'domingo 1 nov, 20:00', enlace })
-  assert.match(t, /^Cambió «Cena»: ahora domingo 1 nov, 20:00\./)
+  assert.match(t, /^Hay una versión nueva de «Cena»: ahora domingo 1 nov, 20:00\./)
+  assert.doesNotMatch(t, /porque|se bajó|baja/)
   assert.match(t, /no cuentan/)
   assert.ok(t.endsWith(enlace))
 })

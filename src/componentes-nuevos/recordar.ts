@@ -30,14 +30,13 @@ export function textoAviso({ motivo, titulo, cuando, enlace, cuposLibres }: Dato
   const fecha = cuando ? limpio(cuando) : ''
   switch (motivo) {
     case 'faltan':
-      return `Para ${plan}: si todavía no respondiste, toca, elige tu nombre y marca cuándo puedes (es privado). Si ya respondiste, no hace falta nada: ${enlace}`
+      return `Para ${plan}: si todavía no respondiste, sin apuro: toca, elige tu nombre y marca cuándo puedes (es privado). Si ya respondiste, no hace falta nada: ${enlace}`
     case 'version_nueva':
       // #100: decir qué hacer si NO puede (no confirmar), para que el "no" no vuelva al chat ni al silencio ambiguo.
       return `Hay opción para ${plan}${fecha ? `: ${fecha}` : ''}. Si vas, toca y confírmala; si no puedes, no confirmes: el plan sale solo con quienes confirman. ${enlace}`
     case 'reparacion':
-      return fecha
-        ? `Cambió ${plan}: ahora ${fecha}. Las confirmaciones anteriores no cuentan; si vas, toca y confirma de nuevo: ${enlace}`
-        : `Cambió ${plan}. Las confirmaciones anteriores no cuentan; si vas, toca y confirma de nuevo: ${enlace}`
+      // psico §8.1 y §8.4: qué cambió, nunca quién ni por qué.
+      return `Hay una versión nueva de ${plan}${fecha ? `: ahora ${fecha}` : ''}. Las confirmaciones anteriores no cuentan; si te sirve, confirma de nuevo: ${enlace}`
     case 'confirmado': {
       // #100: el cierre lleva el enlace (el mensaje de hoy no lo trae) para que quien no confirmó pueda sumarse.
       const quedan = typeof cuposLibres === 'number' && cuposLibres > 0
