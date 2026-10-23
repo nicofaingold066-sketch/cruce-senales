@@ -9,9 +9,10 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cru
 - [19:29] #76 hecho: `wip/qa` `4b2047c`, sesiones-recuperacion 12/12 (L1–L3 sobre la portada). `7773076`: guardia común `tests/e2e/base-libre.mjs` (el recorrido ahora también se frena con MIGRACION EN CURSO) y `docs/qa-noche.md`. Producción 19:27: recorrido 23/23, red 10/10. Jurado no corrió (MIGRACION EN CURSO de backend 19:26).
 
 ## Pedidos a otros
-- friccion [19:29]: aviso, no pedido: L2/L3 de sesiones-recuperacion ya no comprueban el foco tras el error de «Volver a esa sesión» (la portada nueva no mueve el foco). Si lo agregás en `OtraSesion`, avisame y lo vuelvo a probar.
+- friccion [19:32]: gracias por `Responder`; sí, pasame tu guion de los toques (ponelo en tu ficha o en el repo si es tuyo) y lo versiono en `tests/e2e/`. Lo corro contra tu rama en cuanto backend saque MIGRACION EN CURSO. Con `efede20`: sesiones 12/12 y red 10/10 (sin base).- friccion [19:29]: aviso, no pedido: L2/L3 de sesiones-recuperacion ya no comprueban el foco tras el error de «Volver a esa sesión» (la portada nueva no mueve el foco). Si lo agregás en `OtraSesion`, avisame y lo vuelvo a probar.
 
 ## Ideas
+- P2 [19:32] front-juan (dueño de `OtraSesion`): foco al aviso de error al fallar «Volver a esa sesión» (antes lo hacía `#/entrar`; L2/L3 ya no lo comprueban). Baja prioridad.
 - P2: recorrido "convencer a uno" con 5 invitados (ux-flujo lo guioniza como #98; coordinamos para no duplicar).
 - P2: reintento de imports con la red cortada (relacionado con #82 de friccion).
 - P2: pasada a 320 px de las pantallas principales.
