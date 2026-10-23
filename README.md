@@ -27,6 +27,7 @@ Verificación: el servidor tiene 98 pruebas automáticas que pasan contra la bas
 | Pagos y reparto de costos | Agregan riesgo y datos sensibles; no son la causa del plan que no se cierra. |
 | Reservas reales, calendarios, mapas | Cada integración es un proyecto en sí y podía romper la demo. |
 | Notificaciones push | No hacían falta para demostrar el cierre y la reparación. |
+| Uso en empresas | Decidimos enfocarnos solo en lo social: un caso, bien resuelto. |
 | Rankings o estadísticas individuales | Van contra la privacidad, que es parte de la solución. |
 | Agente de IA que propone el plan | Diseñado en `docs/agente-ia.md`, sin construir en este corte. **[PENDIENTE]** si se construye y se prueba antes del sábado a las 10:00. |
 
@@ -36,7 +37,6 @@ Verificación: el servidor tiene 98 pruebas automáticas que pasan contra la bas
 | Espacio "Los del asado", condiciones privadas, propuesta, confirmación | Real, con datos ficticios. **[PENDIENTE]** verificación de punta a punta. |
 | Baja y reparación | Real, con datos ficticios. **[PENDIENTE]** verificación de punta a punta. |
 | Mati, Caro, Fede y Sofi | Personas ficticias, marcadas "Simulación" y controladas desde el teléfono del organizador. |
-| Espacio de empresa | Se presenta de palabra; no está sembrado ni probado. |
 | Agente de IA | Solo especificación. **[PENDIENTE]** |
 
 Todos los datos son ficticios. No hay datos de personas reales.
