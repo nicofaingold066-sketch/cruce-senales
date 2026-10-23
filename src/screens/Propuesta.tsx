@@ -3,7 +3,7 @@ import { api } from '../lib/api'
 import type { Espacio } from '../lib/types'
 import { usePropuestaViva } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
-import { Aviso, Boton, Cargando, ErrorCaja, InsigniaEstado } from '../components/ui'
+import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import type { Pestana } from './tabs'
 import PlanTab from './PlanTab'
 import RespuestaTab from './RespuestaTab'
@@ -80,6 +80,10 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
     ...(esOrganizadorEspacio ? [{ id: 'simulacion' as Pestana, texto: 'Simulación' }] : []),
   ]
   const activa = pestanas.some((t) => t.id === pestana) ? pestana : 'plan'
+  // Enmienda 3: el código decide el acento; mientras el servidor no lo envíe, se usan sus mismos booleanos.
+  const cod = p.siguiente_accion.codigo
+  const turno = cod === 'te_toca_aceptar' || (cod !== 'ya_aceptaste' && p.mi_situacion.puede.aceptar)
+  const yaAcepte = cod === 'ya_aceptaste' || (!turno && p.mi_situacion.acepte_version && p.opcion != null)
   const props = { p, viva, soloLectura, irAPestana: setPestana }
 
   return (
@@ -103,7 +107,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
         </Aviso>
       ) : null}
 
-      {avisoVersion != null ? (
+      {avisoVersion != null && !(activa === 'plan' && p.ultima_evaluacion?.resultado === 'reparacion_publicada') ? (
         <Aviso
           tono="aviso"
           titulo={`Hay una versión nueva (versión ${avisoVersion})`}
@@ -119,13 +123,23 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
 
       <header className="propuesta-cabecera">
         <h1>{p.titulo}</h1>
-        <div className="fila-chips">
-          <InsigniaEstado estado={p.estado} etiqueta={p.estado_etiqueta} />
-          {p.opcion ? <span className="etiqueta">Versión {p.opcion.version}</span> : null}
-        </div>
-        <div className="siguiente">
-          <span className="siguiente-rotulo">Próxima acción</span>
-          <p>{p.siguiente_accion.texto}</p>
+        <div
+          className={`estado-hero estado-hero-${p.estado} ${turno ? 'estado-hero-turno' : ''}`}
+          data-codigo={cod}
+          role="status"
+          aria-live="polite"
+        >
+          <div className="estado-hero-fila">
+            <span className="estado-hero-punto" aria-hidden="true" />
+            <strong className="estado-hero-etiqueta">{p.estado_etiqueta}</strong>
+            {p.opcion ? <span className="estado-hero-version">Versión {p.opcion.version}</span> : null}
+          </div>
+          {turno && cod !== 'te_toca_aceptar' ? <span className="pastilla pastilla-turno">Tu turno: confirma la versión {p.opcion?.version}</span> : null}
+          {yaAcepte && cod !== 'ya_aceptaste' ? <span className="pastilla pastilla-ok">Ya confirmaste la versión {p.opcion?.version}</span> : null}
+          <p className="estado-hero-siguiente">
+            <span className="visualmente-oculto">Próxima acción: </span>
+            {p.siguiente_accion.texto}
+          </p>
         </div>
       </header>
 

@@ -138,7 +138,20 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
 }
 
 function CopiarCodigo({ codigo }: { codigo: string }) {
-  const [copiado, setCopiado] = useState<'si' | 'no' | null>(null)
+  const [copiado, setCopiado] = useState<'si' | 'no' | 'enlace' | null>(null)
+  async function compartir() {
+    const url = `${window.location.origin}${window.location.pathname}${rutas.unirse(codigo)}`
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'CRUXE', text: 'Súmate al plan en CRUXE', url })
+        return
+      }
+      await navigator.clipboard.writeText(url)
+      setCopiado('enlace')
+    } catch {
+      // Cancelar el menú de compartir no es un error para la persona.
+    }
+  }
   async function copiar() {
     try {
       await navigator.clipboard.writeText(codigo)
@@ -151,9 +164,13 @@ function CopiarCodigo({ codigo }: { codigo: string }) {
     <>
       <button type="button" className="btn btn-secundario btn-chico" onClick={copiar}>
         Copiar código
+      </button>{' '}
+      <button type="button" className="btn btn-primario btn-chico" onClick={() => void compartir()}>
+        Compartir enlace
       </button>
       {copiado === 'si' ? <span role="status"> Copiado.</span> : null}
       {copiado === 'no' ? <span role="status"> No se pudo copiar; selecciónalo a mano.</span> : null}
+      {copiado === 'enlace' ? <span role="status"> Enlace copiado: ábrelo en otro teléfono.</span> : null}
     </>
   )
 }

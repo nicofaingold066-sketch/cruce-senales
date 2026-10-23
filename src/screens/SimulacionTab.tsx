@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { api } from '../lib/api'
+import { api, nuevoIntento } from '../lib/api'
 import type { ApiError, Disponibilidad, EstadoPropuesta, MiembroPanel } from '../lib/types'
 import { normalizar, useBorradorCondiciones, useMutacion, useSondeo } from '../lib/hooks'
 import { Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
@@ -97,10 +97,28 @@ function useGuardarTodos(
 ) {
   const [ocupado, setOcupado] = useState(false)
   const [resumen, setResumen] = useState<string | null>(null)
+  const intento = useRef<string | null>(null)
   async function ejecutar() {
     if (!miembros || ocupado) return
     setOcupado(true)
     setResumen(null)
+    // Enmienda 3: una sola operación atómica. El intento se reutiliza si hay que reintentar el mismo clic.
+    intento.current ??= nuevoIntento()
+    const atomica = await api.simulateLoadCase(p.id, intento.current)
+    if (atomica.ok || !atomica.error.reintentable) intento.current = null
+    if (atomica.ok || atomica.error.detalle !== 'operacion_no_publicada') {
+      viva.aplicarResultado(atomica)
+      setResumen(
+        atomica.ok
+          ? 'Condiciones del caso cargadas a las personas simuladas, en una sola operación.'
+          : atomica.error.mensaje,
+      )
+      setOcupado(false)
+      await recargar()
+      return
+    }
+    // El servidor todavía no publicó simulate_load_case: se guarda persona por persona, como antes.
+    intento.current = null
     let ok = 0
     let omitidos = 0
     let fallos = 0

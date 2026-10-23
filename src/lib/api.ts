@@ -321,6 +321,9 @@ export const api = {
     ),
   simulateWithdraw: (propuestaId: string, miembroId: string) =>
     llamar<BajaOk>('simulate_withdraw', { p_propuesta_id: propuestaId, p_miembro_id: miembroId }, true),
+  // Enmienda 3: carga en UNA transacción las condiciones del caso a todos los simulados que puedan cambiarlas.
+  simulateLoadCase: (propuestaId: string, intentoId: string) =>
+    llamar<RepetidoOk>('simulate_load_case', { p_propuesta_id: propuestaId, p_intento_id: intentoId }, true),
   getSimulationPanel: (propuestaId: string) =>
     llamar<PanelOk>('get_simulation_panel', { p_propuesta_id: propuestaId }, false),
 }

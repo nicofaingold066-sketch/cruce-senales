@@ -56,9 +56,11 @@ export type Ruta =
   | { nombre: 'espacio'; espacioId: string }
   | { nombre: 'nueva'; espacioId: string }
   | { nombre: 'propuesta'; espacioId: string; propuestaId: string }
+  | { nombre: 'unirse'; codigo: string }
 
 export function parseRuta(hash: string): Ruta {
   const partes = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
+  if (partes[0] === 'unirse' && partes[1]) return { nombre: 'unirse', codigo: decodeURIComponent(partes[1]) }
   if (partes[0] === 'e' && partes[1]) {
     if (partes[2] === 'nueva') return { nombre: 'nueva', espacioId: partes[1] }
     if (partes[2] === 'p' && partes[3]) return { nombre: 'propuesta', espacioId: partes[1], propuestaId: partes[3] }
@@ -72,6 +74,7 @@ export const rutas = {
   espacio: (id: string) => `#/e/${id}`,
   nueva: (id: string) => `#/e/${id}/nueva`,
   propuesta: (e: string, p: string) => `#/e/${e}/p/${p}`,
+  unirse: (codigo: string) => `#/unirse/${encodeURIComponent(codigo)}`,
 }
 
 export function irA(hash: string) {
