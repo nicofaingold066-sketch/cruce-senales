@@ -12,10 +12,9 @@ import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { leerGuardada, volverAGuardada } from '../lib/sesiones'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Marca } from '../components/Marca'
+import { conEspacios, marcarConEspacios } from './estado'
 import './login.css'
 
-// En esta carga de la página ya se vio que la sesión tiene espacios: no se vuelve a preguntar al servidor.
-let conEspacios = false
 // "Crear un espacio" lleva a la portada una vez sin redirigir, y abre allí su formulario.
 let abrirCrear = false
 
@@ -28,17 +27,17 @@ type Comprobacion = { fase: 'comprobando' } | { fase: 'sin_espacios' } | { fase:
 
 /** ¿La sesión ya tiene espacios? Sin `activa` no pregunta al servidor y responde que sí (se muestra la portada). */
 function useComprobacion(activa = true) {
-  const [estado, setEstado] = useState<Comprobacion>(() => (conEspacios || !activa ? { fase: 'con_espacios' } : { fase: 'comprobando' }))
+  const [estado, setEstado] = useState<Comprobacion>(() => (conEspacios() || !activa ? { fase: 'con_espacios' } : { fase: 'comprobando' }))
   const secuencia = useRef(0)
   const comprobar = useCallback(async () => {
-    if (conEspacios) return setEstado({ fase: 'con_espacios' })
+    if (conEspacios()) return setEstado({ fase: 'con_espacios' })
     const mia = ++secuencia.current
     setEstado({ fase: 'comprobando' })
     const r = await api.listMySpaces()
     if (mia !== secuencia.current) return
     if (!r.ok) return setEstado({ fase: 'error', error: r.error })
     if (r.data.espacios.length > 0) {
-      conEspacios = true
+      marcarConEspacios()
       setEstado({ fase: 'con_espacios' })
     } else {
       setEstado({ fase: 'sin_espacios' })
@@ -204,7 +203,7 @@ function EntradaDemo({ deshabilitado, enfocar }: { deshabilitado: boolean; enfoc
   async function hacer() {
     const r = await ejecutar('seed', () => api.seedDemoSpace())
     if (r?.ok) {
-      conEspacios = true
+      marcarConEspacios()
       irA(rutas.espacio(r.data.resultado.espacio_id))
     }
   }
@@ -248,7 +247,7 @@ function EntradaCodigo({ deshabilitado }: { deshabilitado: boolean }) {
       irA(rutas.unirse(c))
       return
     }
-    conEspacios = true
+    marcarConEspacios()
     if (r.data.resultado.reclamo_asiento_simulado) {
       dejarAviso(`Reclamaste el lugar de ${n}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.`)
     }
