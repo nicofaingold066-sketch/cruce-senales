@@ -129,7 +129,7 @@ Ver §5. En una línea: **no se pide ni se infiere el género.** Lo que la evide
 ### 3.8 Quién organiza siempre
 - **Se sabe.** En registros de llamadas y mensajes, en una relación promedio uno inicia casi el doble que el otro, y quien ya inicia tiende a seguir; los autores señalan que el desequilibrio puede llevar a que la relación se discontinúe [F3, A, no mide planes]. Quien contacta subestima cuánto se lo agradecen [F2, A, no es sobre invitaciones]. Cuando no hay quien cierre, la responsabilidad se difunde (`problema.md`). **Ninguna medición sobre quién organiza los planes entre amigos** [S/F].
 - **Riesgo.** CRUXE baja la fricción a "basta convencer a uno", lo que **concentra el trabajo en esa persona**. Si siempre es la misma, se cansa y el grupo se vuelve dependiente de ella.
-- **La app.** (a) Que CRUXE haga el seguimiento: recordar a quien falta lo hace la app, no la persona ([HOY] "Recordar a quien falta", ux-flujo #89). (b) Texto que reconoce el trabajo sin cargarlo: "Tú armas el plan; CRUXE hace el seguimiento" (§8). (c) **Después:** "pasar la organización": un botón para que otra persona tome la próxima [PEDIDO a ux-flujo, idea].
+- **La app.** (a) Que CRUXE arme el seguimiento: el texto del recordatorio lo escribe la app y la persona solo lo envía (la app **no manda avisos por sí sola**; [HOY] "Recordar a quien falta", ux-flujo #89). (b) Texto que reconoce el trabajo sin cargarlo: "Tú armas el plan; CRUXE hace el seguimiento" (§8). (c) **Después:** "pasar la organización": un botón para que otra persona tome la próxima [PEDIDO a ux-flujo, idea].
 
 ### 3.9 El que nunca puede / cancelar
 - **Se sabe.** Con más de 1.100 encuestados: el 80 % dijo que cancelar no afectaría la amistad pero que se enojaría si supiera que el motivo era mentira; casi el 60 % quería aviso con tiempo y un medio rápido; solo el 10 % esperaba una disculpa; más de la mitad puso entre las peores excusas haber elegido un plan mejor [F1, A/B, EE.UU.]. **No hay datos de cancelaciones en Chile** (`problema.md`).
@@ -328,7 +328,7 @@ Tono rioplatense neutro, cálido y sin culpas. **La app habla de «tú»** (`rin
 ### 8.6 Sobre quien organiza
 | Quién ve | Texto |
 |---|---|
-| **Quien organiza** (al crear) | «Tú armas el plan. CRUXE avisa a quien falta y hace el seguimiento.» |
+| **Quien organiza** (al crear) | «Tú armas el plan; CRUXE te deja listos los avisos para el grupo.» |
 | **Quien organiza** (al confirmarse) | «Se armó la juntada. Gracias por moverlo.» |
 | **El grupo** (cuando el organizador ya organizó varias veces — después) | «¿Quién arma la próxima?» (con botón de pasar la organización) |
 
