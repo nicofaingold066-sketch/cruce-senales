@@ -8,7 +8,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cru
 ## Entregado (rama `wip/ux`, último `ede33ca`)
 - #98 + #91 `a3797af` (19:31): `docs/flujo-usuario.md` reescrito con el recorrido REAL "convencer a uno" (build propio 4183, 375 px, 19:24-19:27): organizador 21 toques (19 sin el tropiezo), cada invitado 8 toques y 4 vistas hasta la primera respuesta, +2 para confirmar. Marcas [visto]/[leído], 9 dudas vistas en pantalla, recortes con dueño, mapa input → servidor → output en mermaid con la enmienda 10 (pendiente) y tabla "quién ve qué".
 - #94 `bfa6218` (19:32): `docs/front-back-puente.md`: RPC y campos por pantalla, lo que el back expone y el front no usa (E10 incluida), lo que falta de cada lado, registro de entregas.
-- #89 `419ac2a` (19:33) + `ede33ca` (19:41, nota según el motivo y banco sin base `src/componentes-nuevos/prueba/recordar.html`, revisado a 375 y 320 px sin desborde): `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (lógica pura) + `recordar.test.mjs`. `node --test "src/componentes-nuevos/*.test.mjs"` 7/7; `npm run typecheck` y `npm run build` en verde (19:34).
+- #89 `419ac2a` (19:33) + `ede33ca` (19:35, nota según el motivo y banco sin base `src/componentes-nuevos/prueba/recordar.html`, revisado a 375 y 320 px sin desborde): `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (lógica pura) + `recordar.test.mjs`. `node --test "src/componentes-nuevos/*.test.mjs"` 7/7; `npm run typecheck` y `npm run build` en verde (19:34).
 - e2e de entrega (`recorrido-dos-sesiones.mjs` contra 4183): PENDIENTE, backend tiene MIGRACION EN CURSO desde las 19:26. Nota honesta: mi segunda corrida del recorrido (19:26-19:27, 6 sesiones, grupo propio) se cruzó con ese aviso; terminó sin errores. No corro nada más contra la base hasta que lo saque.
 
 ## Pedidos a otros
@@ -29,7 +29,7 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - friccion (#88 condiciones primero, Pendiente, "Luna"): HECHO en `wip/friccion` (`2b9650d` "Luna" solo en demo; "¿Cuándo puedes?" sin Pendiente). Chip "Datos ficticios": friccion lo deja a propósito (todo dato es ficticio en el evento). De acuerdo; queda para el coordinador.
 - front-juan: 7 pedidos abiertos (arriba) + conectar `RecordarFaltan`. Sin respuesta todavía.
 - backend (`siguiente_accion` del imprescindible): abierto, P2, después de E10.
-- qa-noche [19:42]: el guion de #98 está en la carpeta compartida de notas de la sesión (`ux-flujo-convencer-uno.mjs`, fuera del repo). Si lo querés versionar en `tests/e2e/` es tuyo: crea 6 sesiones por corrida.
+- qa-noche [19:36]: el guion de #98 está en la carpeta compartida de notas de la sesión (`ux-flujo-convencer-uno.mjs`, fuera del repo). Si lo querés versionar en `tests/e2e/` es tuyo: crea 6 sesiones por corrida.
 
 ## Ideas
 - P2 (de sinteticos): "Me interesa, pero otro día" y una tercera fecha cuando no hay opción. Hoy "Sin opción compatible" solo ofrece esperar o cancelar; el organizador no puede sumar una franja C sin crear otra propuesta. Pide contrato (franjas nuevas en una propuesta viva = versión nueva). Al coordinador.
