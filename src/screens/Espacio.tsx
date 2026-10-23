@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../lib/api'
 import type { ApiError, Espacio as EspacioT, PropuestaResumen } from '../lib/types'
@@ -20,21 +20,54 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
   const yo = espacio?.miembros.find((m) => m.es_yo) ?? null
   useIdentidad(espacio?.nombre ?? null, yo?.nombre ?? null, espacio ? (espacio.mi_rol === 'organizador' ? 'organizador' : 'miembro') : null)
 
-  const cargarEspacio = useCallback(async () => {
-    const r = await api.getSpace(espacioId)
-    if (r.ok) {
-      setEspacio(r.data.espacio)
-      setErrorEspacio(null)
-    } else setErrorEspacio(r.error)
-  }, [espacioId])
+  // U1 (revisión de Codex): las cargas se solapan (sondeo, volver a la pestaña, refresco tras reiniciar).
+  // Se aplica solo la respuesta más nueva de cada carga, una lista pedida en otra generación del espacio
+  // se descarta, y dentro de la misma generación ninguna propuesta retrocede a un state_rev menor.
+  const secEspacio = useRef(0)
+  const aplEspacio = useRef(0)
+  const secLista = useRef(0)
+  const aplLista = useRef(0)
+  const generacion = useRef<number | null>(null)
 
   const cargarLista = useCallback(async () => {
+    const mia = ++secLista.current
+    const gen = generacion.current
     const r = await api.listProposals(espacioId)
+    if (mia < aplLista.current || gen !== generacion.current) return
+    aplLista.current = mia
     if (r.ok) {
-      setPropuestas(r.data.propuestas)
+      const nuevas = r.data.propuestas
+      setPropuestas((previas) => {
+        const porId = new Map((previas ?? []).map((x) => [x.id, x]))
+        return nuevas.map((n) => {
+          const v = porId.get(n.id)
+          return v && v.state_rev > n.state_rev ? v : n
+        })
+      })
       setErrorLista(null)
     } else setErrorLista(r.error)
   }, [espacioId])
+
+  const cargarEspacio = useCallback(async () => {
+    const mia = ++secEspacio.current
+    const r = await api.getSpace(espacioId)
+    if (mia < aplEspacio.current) return
+    aplEspacio.current = mia
+    if (r.ok) {
+      // La generación ACTUAL sale de espacio.generacion (enmienda 2, O1), nunca del eco de reset_demo.
+      const g = r.data.espacio.generacion
+      if (generacion.current != null && g < generacion.current) return // respuesta de antes de un reinicio
+      const reinicio = generacion.current != null && g > generacion.current
+      generacion.current = g
+      setEspacio(r.data.espacio)
+      setErrorEspacio(null)
+      if (reinicio) {
+        // Hubo un reinicio real: la lista vieja y las pedidas antes ya no valen.
+        setPropuestas([])
+        void cargarLista()
+      }
+    } else setErrorEspacio(r.error)
+  }, [espacioId, cargarLista])
 
   const cargarTodo = useCallback(async () => {
     await Promise.all([cargarEspacio(), cargarLista()])
