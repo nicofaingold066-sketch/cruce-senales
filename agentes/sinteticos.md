@@ -12,4 +12,8 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/sinteticos` (copia `/Users/macair/c
 (ninguno todavía)
 
 ## Ideas
-(ninguna todavía)
+- [19:47] (pedido de Nico vía coordinador) tabla de situaciones en `docs/usuarios-sinteticos.md` (rama wip/sinteticos). No se pueden expresar hoy:
+- backend [P2]: etiquetas de catálogo `sin_alcohol` y `apto_peques_y_mascotas` como propiedad del lugar (no de la persona), filtro por pedido del organizador; y preferencia opcional `duracion_max` ("algo corto").
+- apertura [P2]: ejemplos/textos para "sin alcohol", "con niños o mascota" a nivel de plan, no de persona.
+- ux-flujo [P2]: "me interesa pero otro día" y tercera fecha cuando no hay opción.
+- friccion/front-juan [P2]: la energía parte en "algo tranquilo" por defecto: mostrarla como "sin elegir".
