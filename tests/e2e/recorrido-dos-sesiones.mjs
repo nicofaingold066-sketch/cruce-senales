@@ -1,5 +1,6 @@
 // #57. Recorrido completo en el navegador a 375 px con dos sesiones separadas: Tomi (ventana normal)
-// y Luna (ventana privada), más el navegador compartido. Es el guion de la evidencia #55 (docs/agente-ia.md §8.2).
+// y Luna (ventana privada), más el navegador compartido y la vuelta a la sesión de Tomi ("Volver a esa sesión").
+// Es el guion de la evidencia #55 (docs/agente-ia.md §8.2).
 //
 //   node tests/e2e/recorrido-dos-sesiones.mjs [url]
 //
@@ -94,6 +95,7 @@ try {
   await tocar(T, 'Probar la demo «Los del asado»')
   await T.getByRole('heading', { name: 'Los del asado' }).waitFor({ timeout: 20000 })
   const codigo = (await T.locator('.codigo').first().textContent())?.trim()
+  const urlEspacio = T.url()
   verificar('Tomi entra a su demo como organizador', !!codigo && (await T.getByText('Herramientas del organizador').count()) > 0, `código ${enmascarar(codigo)}`)
   await captura(T, 'tomi-espacio')
 
@@ -193,7 +195,9 @@ try {
     await esperarTexto(T, 'Este navegador ya está en este espacio como Tomi').then(() => true, () => false))
   await captura(T, 'compartido-aviso')
   await tocar(T, 'Entrar como otra persona')
-  await esperarTexto(T, 'no se puede volver a entrar como Tomi')
+  // Mejora #47 (arreglo 5204837): la sesión de Tomi no se revoca; queda guardada para volver a ella.
+  verificar('Confirmación: la sesión de Tomi queda guardada en este navegador',
+    await esperarTexto(T, 'queda guardada en este navegador').then(() => true, () => false))
   await tocar(T, 'Sí, entrar como Pepe')
   await T.getByRole('heading', { name: 'Los del asado' }).waitFor({ timeout: 20000 })
   const cab = await T.locator('header').innerText()
@@ -207,6 +211,24 @@ try {
     imposiblesTarjeta.length === 0 && /\d+ confirmaron \(mínimo \d+\)/.test(tarjeta), imposiblesTarjeta.length ? imposiblesTarjeta.join(', ') : tarjeta)
   await captura(T, 'compartido-pepe')
   verificar('Sin desborde horizontal a 375 px (Pepe)', !(await T.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)))
+
+  // 8. Vuelta (mejora #61): desde la portada, "Volver a esa sesión" devuelve a Tomi como organizador.
+  await T.goto(`${BASE}/#/`)
+  verificar('Portada: ofrece volver a la sesión de Tomi',
+    await esperarTexto(T, 'Este navegador guarda otra sesión: Tomi').then(() => true, () => false))
+  await captura(T, 'volver-a-esa-sesion')
+  await tocar(T, 'Volver a esa sesión')
+  // La pantalla se recarga con la sesión recuperada: el aviso desaparece porque ya no hay nada guardado.
+  await T.getByText('Este navegador guarda otra sesión', { exact: false }).first().waitFor({ state: 'detached', timeout: 20000 }).catch(() => {})
+  await T.goto(urlEspacio)
+  await T.getByRole('heading', { name: 'Los del asado' }).waitFor({ timeout: 20000 })
+  const cabTomi = (await T.locator('header').innerText()).replace(/\s+/g, ' ')
+  const herramientas = await T.getByText('Herramientas del organizador').first().waitFor({ timeout: 15000 }).then(() => true, () => false)
+  verificar('Vuelve a ser Tomi, organizador, con sus herramientas', /Tomi/.test(cabTomi) && /organizador/.test(cabTomi) && herramientas, cabTomi.slice(0, 80))
+  await T.goto(`${BASE}/#/`)
+  await T.waitForTimeout(1500)
+  verificar('Ya no queda otra sesión guardada', (await T.getByText('Este navegador guarda otra sesión', { exact: false }).count()) === 0)
+  await captura(T, 'tomi-de-vuelta')
 } catch (e) {
   fallidas++
   paso(`ERROR: ${String(e?.message ?? e).split('\n')[0]}`)
