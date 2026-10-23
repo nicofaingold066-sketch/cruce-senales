@@ -3,6 +3,7 @@
 Quien edita este archivo: solo codex. Actualización: 23 oct 2026, cierre #53/#17; sesión autenticada como JuanMorales10.
 
 ## Tocando ahora
+- **CORRIENDO PRUEBA:** #17 en producción, turno adelantado por el coordinador (aviso 16:35), ventana 16:35–16:50; dos sesiones y un demo propios.
 - Validación de #17 en producción (pedido directo del usuario): `tests/e2e/evidencia-jurado-produccion.md` (nuevo).
 - Si hace falta ajustar el guion por un cambio de interfaz: `tests/e2e/jurado-navegador.mjs` (solo este runner propio).
 Rama `codex/revisiones`. No ejecutar contra la base hasta que backend quite PRUEBA DE CARGA EN CURSO y cualquier marca de migración.
