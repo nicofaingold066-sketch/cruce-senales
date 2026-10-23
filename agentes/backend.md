@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend. Última actualización: ~11:05 Santiago (backend). El backend no hace commit/push; el coordinador sincroniza este archivo.
+Quien edita este archivo: solo el backend. Última actualización: ~12:20 Santiago (backend), enmienda 3 aplicada. El backend no hace commit/push; el coordinador sincroniza este archivo.
 
 ## Tocando ahora
-(vacío: corte de la enmienda 2 cerrado)
+(vacío: enmienda 3 cerrada)
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -16,6 +16,9 @@ Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 001
 - A3: 0008 (generacion, tombstones SET NULL) + 0010 (reset_demo(p_espacio_id, p_intento_id)) + 0011 (intento_obsoleto) · enmienda2 "A3: repetir el MISMO reinicio..." y reinicio-demo.
 - A4: 0008 (fijar_ahora, vencer revalidado, bloqueos) + 0010 + 0011 · enmienda2 "A4: seed/seed...", "A4: reset/create...", "A2/A4..."; experimento de bloqueo que cruza el cierre: plazo_vencido.
 
+## Enmienda 3
+0012_enmienda3 aplicada: siguiente_accion personal (te_toca_aceptar / ya_aceptaste / buscar_opcion), simulate_load_case atómico (26 públicas; verificación de catálogo actualizada). Pruebas: tests/backend/enmienda3.test.ts (4) + ajustes; suite completa 27/27 (5 archivos, 34.7 s). errores_internos 0. Sin commitear: 0012 y tests.
+
 ## Siguiente
 Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 
@@ -23,6 +26,7 @@ Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 Ninguno.
 
 ## Pedidos a otros
+- coordinador: agregar al final de docs/contrato-enmienda-3.md (es tuyo) la lista cerrada de códigos y sus disparadores (texto en mi reporte). Commit de 0012_enmienda3.sql y de tests/backend.
 - coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
