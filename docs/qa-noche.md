@@ -11,6 +11,9 @@ Dueña: sesión `qa-noche` (rama `wip/qa`). Las horas son del reloj de Santiago.
 | `sesiones-recuperacion.mjs` | S1–S9 y L1–L3 (12): sesión guardada, volver, identidad conservada; Auth ficticio | no | `node tests/e2e/sesiones-recuperacion.mjs` (levanta su propio Vite) |
 
 Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/backend.md` dice `MIGRACION EN CURSO` o `PRUEBA DE CARGA EN CURSO`; la guardia común está en `tests/e2e/base-libre.mjs`. Una falla 57014 o de tiempo se reintenta antes de concluir.
+| `toques-invitacion.mjs` | Toques del enlace de invitación a la primera respuesta, 375 px (de friccion) | sí | `node tests/e2e/toques-invitacion.mjs <url> <etiqueta>` |
+| `red-import-cortada.mjs` | #82: corte de red al importar una pantalla (reintento `?r=1`, barrera «Recargar», precarga) | sí (caso C) | `node tests/e2e/red-import-cortada.mjs <url>` |
+| `preparar-grupo.mjs` | Ayudante: crea grupo ficticio (Orga, Ana, Beto) y propuesta abierta | sí | lo llaman los dos anteriores |
 
 ## Cambios en los guiones
 - 19:26 #76: L1–L3 de `sesiones-recuperacion.mjs` apuntan a la portada actual (`#/entrar` ya no es una pantalla aparte). Siguen probando sesión guardada, volver a esa sesión e identidad conservada. Lo que cambió:
@@ -32,6 +35,8 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 19:32 | red-controlada con `wip/friccion` `efede20` (build + preview) | localhost | 10/10 |
 | 19:31 | sesiones-recuperacion con `wip/agente-ia` `d5d913e` | Vite local | 12/12; typecheck ok |
 | — | recorrido y jurado con friccion / agente-ia / apertura / ux | base | pendiente: backend con MIGRACION EN CURSO (desde 19:26) |
+| 19:38 | red-controlada con `wip/friccion` cac56d8 (#90), `wip/ux` c444bea, `wip/agente-ia` 27bc499 (build + preview) | localhost | 10/10 en las tres; builds ok |
+| 19:38 | guiones de friccion versionados (`toques-invitacion`, `red-import-cortada`, `preparar-grupo`) | — | solo `node --check`; sin correr (esperan fin de MIGRACION EN CURSO) |
 
 ## Regresiones abiertas
 (ninguna)
