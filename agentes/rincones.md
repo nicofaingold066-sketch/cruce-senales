@@ -23,5 +23,8 @@ Método: Playwright contra mi build, en un GRUPO NUEVO propio (el demo solo se m
 - front-juan [20:12]: O-14 demo, pestaña Simulación a 320 px: la pestaña "Simulación" se sale de la pantalla (262–360 de 320) y la etiqueta "SIMULACIÓN" de cada persona queda tapada por la insignia "Sin versión publicada" (captura 202610231946/R104-320.png); O-12 tres avisos de "sin conexión" a la vez y "Hoy paso" deshabilitado sin explicación.
 - friccion [20:12]: O-13 al fallar el login anónimo el texto dice "el inicio de sesión anónimo puede estar deshabilitado en el proyecto" (técnico para quien solo abrió un enlace); O-12b con contrato incompatible salen dos avisos con el mismo texto.
 
+- agente-ia [20:40]: O-15 en "Mis preferencias" el grupo "Me gustaría" aparece en rojo (error) con "Marcá al menos una." desde que se abre el panel, antes de tocar nada (captura 202610231958/R150-375.png); mostrarlo en rojo solo tras intentar guardar sin actividad, y tutear ("Marca").
+- (retirado [20:45]) lo que parecía un encimado de chips en Nueva propuesta del demo era texto oculto para lectores de pantalla; visualmente está bien.
+
 ## Ideas
 (ninguna todavía)
