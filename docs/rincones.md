@@ -1,10 +1,10 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: viernes 23 oct, 20:10 (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: viernes 23 oct, 20:12 (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
-Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 13 (3 ya corregidos en `wip/friccion`)** (ninguno impide completar el recorrido canónico), el resto APROBADO.
+Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 14 (3 ya corregidos en `wip/friccion`)** (ninguno impide completar el recorrido canónico), el resto APROBADO.
 Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no de función):
 1. **O-01** Cabecera a 320 px: el avatar de la sesión tapa el chip "Datos ficticios" en TODAS las pantallas con nombre.
 2. **O-02** Entrada por enlace en un navegador que ya es miembro: "¿Quién eres?" lo muestra "no disponible" y dice "Ya no queda ningún nombre libre", sin "Seguir como X".
@@ -35,6 +35,7 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | O-11 | OBSERVADO | Agente del círculo, resultado en un grupo real | Voseo ("Elegís vos", "completás") en una app que tutea; la opción "Asado · Quincho de Tomi" y los lugares marcados "SIMULACIÓN" aparecen en un grupo que no es el demo | `202610231958/R154-375.png` | agente-ia |
 | O-12 | OBSERVADO (leve) | Avisos repetidos | (a) Sin red en un plan: banner global + banner "Sin conexión" del plan + error del botón (R161); (b) contrato incompatible: "Versión incompatible" arriba y "No se pudo completar · Versión incompatible" debajo (R170); (c) "Hoy paso" aparece deshabilitado sin explicación mientras no se marque "Me interesa" (R162) | `202610232002/R161-375.png`, `202610232004/R170-375.png` | front-juan (a, c) / friccion (b) |
 | O-13 | OBSERVADO (leve) | Falla al iniciar la sesión anónima | El texto dice "el inicio de sesión anónimo puede estar deshabilitado en el proyecto": lenguaje técnico para una persona que solo abrió el enlace (R173) | `202610232004/R173-375.png` | friccion |
+| O-14 | OBSERVADO | Demo, pestaña Simulación a **320 px** | (a) La pestaña "Simulación" se sale de la pantalla (262–360 de 320); (b) en cada persona simulada la etiqueta "SIMULACIÓN" queda tapada por la insignia "Sin versión publicada" ("SIMUL…") | `202610231946/R104-320.png` | front-juan |
 
 ## Inventario de rincones
 (Estado: A = APROBADO, O = OBSERVADO, R = ROTO, — = pendiente de recorrer.)
@@ -129,7 +130,7 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | R101 | Herramientas del organizador | auto | A |
 | R102 | Nueva propuesta precargada con el caso | auto | A |
 | R103 | Propuesta abierta | auto | A |
-| R104/R105 | Pestaña Simulación; tras "Cargar condiciones del caso" ("Ya hay 5 personas con condiciones") | auto | A |
+| R104/R105 | Pestaña Simulación; tras "Cargar condiciones del caso" ("Ya hay 5 personas con condiciones") | ojo | A en 375/768/1280; O (O-14) en 320 |
 | R106/R107 | Tomi carga condiciones; v1 publicada (0/4) | auto | A |
 | R108 | Simulación tras "Aceptar versión 1 por…" (3/4) | ojo | A |
 | R109a | "¿Dar de baja a Luna?" pide confirmación | auto | A |
