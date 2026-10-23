@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- **U1** de Codex (la lista del espacio retrocede o reaparece tras un reinicio), desde 13:29: `src/screens/Espacio.tsx`. Después U4, U5, U6, U7.
+- **U4** de Codex (panel de Simulación ignora state_rev), desde 13:37: `src/screens/SimulacionTab.tsx`. Después U5, U6, U7.
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
@@ -66,6 +66,7 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- **U1** la lista del espacio no retrocede ni reaparece tras un reinicio: `188f22e` (13:37). En vivo con una respuesta vieja retenida 9 s: tras cancelar sigue "Cancelado"; tras reiniciar siguen 0 tarjetas. Recorrido 11/11.
 - **#24** `demo={espacio.demo}` a `AgentePanel` (pedido de agente-ia): `5bea676` (13:29), con merge de `wip/agente-ia` `b709369`. En vivo: selector de clima simulado solo en el demo.
 - **U3** tope de 10 s en cada RPC: `10b014d` (13:29). En vivo: escritura colgada → aviso "No pudimos confirmar el resultado" a los 10 s, reintento con el MISMO intento y una sola aceptación; lectura colgada → el sondeo sigue. Recorrido 11/11.
 - **U2** ("Crear y abrir" ya no crea dos propuestas): `a4b1e30` (13:26). Bloqueo del flujo completo crear → abrir → navegar; si abrir falla, no se recrea y se avisa en la propuesta. Repro de Codex en vivo (open demorado 5 s + 5 clics): 1 create, 1 open, 1 propuesta (2 de 2). Recorrido 11/11.
