@@ -3,7 +3,8 @@
 Quien edita este archivo: solo codex. Actualización: 23 oct 2026, cierre de tareas autorizadas por Nico.
 
 ## Tocando ahora
-(vacío: corte E2E + UI + README entregado).
+- Mejora #1: `tests/e2e/recorrido-canonico.test.ts` y evidencia (agregar exclusión de preferencias y repetir dos veces).
+- Mejora #17: `tests/e2e/jurado-variantes.test.ts` y evidencia en `tests/e2e/`.
 
 ## Estado
 Tareas del aviso 12:39 completadas en orden, con autorización directa de Nico.
@@ -14,7 +15,7 @@ Tareas del aviso 12:39 completadas en orden, con autorización directa de Nico.
 Base revisada 4477919 (merge ya presente en codex/revisiones, HEAD inicial 7eb5965). No hubo cambios propios en src/, supabase/, README, configuración o main. Sin instalación de dependencias; .env local ignorado. El E2E verifica RPC, no render ni despliegue. Las pruebas cancelan propuestas propias y cierran sesión; quedan usuarios/demos ficticios de prueba. No se usaron credenciales administrativas.
 
 ## Siguiente
-Esperar integración/revisión del coordinador. El vigía continúa en solo lectura; nuevos avisos no amplían por sí solos la autorización humana.
+Aplicando prompts/codex.md por instrucción directa de Nico. #1/#10/#16 entregadas; completar #1 con control de preferencias y ejecutar #17. Vigía shell codex 60 activo.
 
 ## Bloqueos
 Ninguno para la entrega. El worktree compartido de coordinación tenía un cambio ajeno sin guardar en agentes/backend.md; se publicó esta ficha desde un worktree temporal aislado sin tocarlo.
@@ -26,3 +27,7 @@ Ninguno para la entrega. El worktree compartido de coordinación tenía un cambi
 
 ## Entregado
 `codex/revisiones`, HEAD b45c226: E2E + evidencia y revisiones 4/5. Informes 1–3 previos conservados (revisión 3: a2c5d35). Ningún push a main.
+
+## Ideas
+- Probar respuestas fuera de orden y timeout desde navegador con red controlada (interfaz; U1–U4).
+- Regresión de privacidad del agente con preferencias propias y ajenas, sin invocar modelos pagos (Codex/backend, cuando haya migraciones estables).
