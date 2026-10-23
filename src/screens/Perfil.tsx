@@ -4,7 +4,7 @@ import { api } from '../lib/api'
 import type { ApiError, EspacioResumen } from '../lib/types'
 import { irA, rutas, useIdentidad } from '../lib/shell'
 import { guardarPerfil, olvidarPerfil, usePerfil } from '../lib/perfil'
-import { entrarComoOtraPersona, leerGuardada } from '../lib/sesiones'
+import { leerGuardada, sesionNueva } from '../lib/sesiones'
 import { Avatar, Aviso, Boton, Cargando, ErrorCaja, colorAvatar, iniciales } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { OtraSesion } from '../components/Sesiones'
@@ -144,7 +144,7 @@ function CambiarPersona({ nombre }: { nombre: string | null }) {
     if (ocupado) return
     setOcupado(true)
     setError(null)
-    const r = await entrarComoOtraPersona(`${nombre ?? 'Tu sesión anterior'} en este navegador`)
+    const r = await sesionNueva(`${nombre ?? 'Tu sesión anterior'} en este navegador`)
     if (!r.ok) {
       setOcupado(false)
       setError(r.mensaje)

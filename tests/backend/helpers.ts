@@ -124,6 +124,17 @@ export async function crearEspacioPrueba(s: Sesion, nombre: string, visible: str
   return { espacioId: r.resultado.espacio_id as string, codigo: r.resultado.codigo_invitacion as string, miembroId: r.resultado.miembro_id as string }
 }
 
+/**
+ * Enmienda 7 (E7.3): la simulación solo existe en espacios demo. Para pruebas con simulados se usa el demo
+ * propio de la sesión (seed_demo_space es idempotente: la misma sesión siempre recibe el mismo demo), con la
+ * misma forma que crearEspacioPrueba. El organizador del demo es "Tomi" y ya trae 5 simulados sin
+ * condiciones (Luna, Mati, Caro, Fede, Sofi): los simulados de la prueba necesitan nombres distintos.
+ */
+export async function demoPrueba(s: Sesion) {
+  const r = await ok(s, 'seed_demo_space')
+  return { espacioId: r.espacio.id as string, codigo: r.espacio.codigo_invitacion as string, miembroId: r.espacio.mi_miembro_id as string }
+}
+
 export async function simulado(s: Sesion, espacioId: string, nombre: string): Promise<string> {
   const r = await ok(s, 'add_simulated_member', { p_espacio_id: espacioId, p_nombre_visible: nombre })
   return r.resultado.miembro_id

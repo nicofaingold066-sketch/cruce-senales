@@ -13,6 +13,9 @@ const LUNA: Pref = { presupuesto: 'da_igual', energia: 'algo_tranquilo', ambient
 const SECO = { sabado: 'seco', domingo: 'seco' }
 const LLUVIA = { sabado: 'lluvia', domingo: 'lluvia' }
 const NOMBRES = ['Tomi', 'Luna', 'Mati', 'Caro', 'Fede', 'Sofi']
+// Dos sesiones más, compartidas por la prueba de #28 y la de "3 y 4" (tope de sesiones anónimas por hora).
+let extrasP: Promise<Sesion[]> | null = null
+const extras = () => (extrasP ??= Promise.all([nuevaSesion(), nuevaSesion()]))
 
 const fecha = (d: Date) => d.toISOString().slice(0, 10)
 const masDias = (iso: string, n: number) => { const d = new Date(`${iso}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return fecha(d) }
@@ -116,7 +119,9 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
         { inicio: `${sabado}T14:00`, fin: `${sabado}T17:00` },
         { inicio: `${domingo}T14:00`, fin: `${domingo}T17:00` },
       ])
-      expect(r.frases_grupo).toEqual(['presupuesto_todos', 'bajo_techo', 'el_mas_elegido', 'ritmo_del_grupo'])
+      // Mejora #54: ritmo_del_grupo usa la mayoría sin quien pide (como el perfil, E7.4). Sin Tomi el ambiente
+      // empata (Caro tranquilo, Fede fiesta), así que la frase ya no sale; antes la ponía el voto de Tomi.
+      expect(r.frases_grupo).toEqual(['presupuesto_todos', 'bajo_techo', 'el_mas_elegido'])
     }
   })
 
@@ -129,54 +134,63 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
       id: seco.lugar.id, actividad: seco.actividad, actividad_etiqueta: seco.actividad_etiqueta, lugar: seco.lugar,
       titulo: seco.titulo, franjas: seco.franjas, frases_grupo: seco.frases_grupo,
     })
-    expect(seco.candidatas[1].frases_grupo).toEqual(['presupuesto_todos', 'al_aire_libre_con_buen_tiempo', 'ritmo_del_grupo'])
+    expect(seco.candidatas[1].frases_grupo).toEqual(['presupuesto_todos', 'al_aire_libre_con_buen_tiempo']) // #54: sin ritmo_del_grupo
     for (const c of seco.candidatas) expect(Object.keys(c).sort()).toEqual(['actividad', 'actividad_etiqueta', 'franjas', 'frases_grupo', 'id', 'lugar', 'titulo'])
     expect(JSON.stringify(seco)).not.toMatch(/lugar-sim-02|evento-sim-01|puntaje/)
-    // Mejora #28: Pádel y Fiesta (1 persona cada una) no salen en gustos.
+    // Mejora #28: Fiesta (1 persona) no sale en gustos. Enmienda 7 (E7.4): el perfil no cuenta a quien lo pide
+    // (Tomi): 5 personas, Asado 4, Pádel 0 (solo Tomi); ambiente sin mayoría (Caro tranquilo, Fede fiesta);
+    // sin presupuesto_grupo.
     expect(seco.perfil_grupo).toEqual({
-      personas: 6,
+      personas: 5,
       gustos: [
-        { actividad_etiqueta: 'Asado', cuantos: 5 }, { actividad_etiqueta: 'Fútbol', cuantos: 2 },
+        { actividad_etiqueta: 'Asado', cuantos: 4 }, { actividad_etiqueta: 'Fútbol', cuantos: 2 },
         { actividad_etiqueta: 'Parque', cuantos: 2 },
       ],
-      energia_mayoritaria: 'algo_tranquilo', ambiente_mayoritario: 'tranquilo', presupuesto_grupo: 'moderado',
+      energia_mayoritaria: 'algo_tranquilo', ambiente_mayoritario: null,
     })
     // Con lluvia, Caro pidió techo: la cancha y el parque quedan fuera.
     const lluvia = (await ok(O, 'proponer_plan_borrador', { p_espacio_id: demo.id, p_sabado: sabado, p_clima: LLUVIA })).resultado
     expect(lluvia.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-01'])
   })
 
-  it('mejora #28: con 4 personas, una actividad elegida por una sola no aparece en perfil_grupo.gustos', async () => {
+  it('mejora #28: con 4 personas (sin contar a quien pide), una actividad elegida por una sola no aparece en perfil_grupo.gustos', async () => {
     const Y = await nuevaSesion()
+    const [Z] = await extras()
     const esp = await crearEspacioPrueba(O, 'e28-gustos', 'Org t')
     await ok(L, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Uno t' })
     await ok(X, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Dos t' })
     await ok(Y, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Tres t' })
+    await ok(Z, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Cuatro t' })
     const pref = (me_gustaria: string[]) => ({ presupuesto: 'da_igual', energia: 'algo_tranquilo', ambiente: 'tranquilo', lugar: 'da_igual', me_gustaria })
-    // Asado 3, Parque 2; Pádel solo O y Fútbol solo Y.
+    // Sin contar a O (enmienda 7, E7.4): Asado 3, Parque 2; Fútbol solo Y; Pádel solo O, que no cuenta.
     await ok(O, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['asado', 'padel']) })
     await ok(L, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['asado', 'parque']) })
     await ok(X, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['asado', 'parque']) })
     await ok(Y, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['futbol']) })
+    await ok(Z, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['asado']) })
 
     const r = await ok(O, 'proponer_plan_borrador', { p_espacio_id: esp.espacioId, p_sabado: sabado, p_clima: SECO })
-    expect(r.resultado.personas_consideradas).toBe(4)
+    expect(r.resultado.personas_consideradas).toBe(5)
     expect(r.resultado.perfil_grupo).toEqual({
       personas: 4,
       gustos: [{ actividad_etiqueta: 'Asado', cuantos: 3 }, { actividad_etiqueta: 'Parque', cuantos: 2 }],
-      energia_mayoritaria: 'algo_tranquilo', ambiente_mayoritario: 'tranquilo', presupuesto_grupo: 'cualquiera',
+      energia_mayoritaria: 'algo_tranquilo', ambiente_mayoritario: 'tranquilo',
     })
     const perfil = JSON.stringify(r.resultado.perfil_grupo)
     expect(perfil).not.toMatch(/Pádel|Fútbol|padel|futbol|"cuantos":1\b/)
 
-    // Con una segunda persona, Pádel aparece (2, antes que Parque por orden del catálogo); Fútbol sigue fuera.
+    // Y suma Pádel: con el voto de O serían 2, pero O no cuenta (E7.4) y sigue fuera.
     await ok(Y, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['futbol', 'padel']) })
     const r2 = await ok(O, 'proponer_plan_borrador', { p_espacio_id: esp.espacioId, p_sabado: sabado, p_clima: SECO })
-    expect(r2.resultado.perfil_grupo.gustos).toEqual([
+    expect(r2.resultado.perfil_grupo).toEqual(r.resultado.perfil_grupo)
+    // Con una segunda persona además de O, Pádel aparece (2, antes que Parque por orden del catálogo); Fútbol sigue fuera.
+    await ok(Z, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['asado', 'padel']) })
+    const r3 = await ok(O, 'proponer_plan_borrador', { p_espacio_id: esp.espacioId, p_sabado: sabado, p_clima: SECO })
+    expect(r3.resultado.perfil_grupo.gustos).toEqual([
       { actividad_etiqueta: 'Asado', cuantos: 3 }, { actividad_etiqueta: 'Pádel', cuantos: 2 },
       { actividad_etiqueta: 'Parque', cuantos: 2 },
     ])
-    for (const g of r2.resultado.perfil_grupo.gustos) expect(g.cuantos).toBeGreaterThanOrEqual(2)
+    for (const g of r3.resultado.perfil_grupo.gustos) expect(g.cuantos).toBeGreaterThanOrEqual(2)
   })
 
   it('5. rol y fecha: solo el organizador; sábado futuro dentro de 16 días; clima con formato', async () => {
@@ -192,7 +206,7 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
   })
 
   it('3 y 4. presupuesto ojalá gratis: solo entradas gratis; con todo descartado, sin_plan_compatible sin motivo; 4.1 con 3 personas', async () => {
-    const [U1, U2] = await Promise.all([nuevaSesion(), nuevaSesion()])
+    const [U1, U2] = await extras()
     const esp = await crearEspacioPrueba(O, 'e4-gratis', 'Org t')
     await ok(U1, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Uno t' })
     await ok(U2, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Dos t' })
@@ -209,9 +223,10 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
     const r = (await ok(O, 'proponer_plan_borrador', { p_espacio_id: esp.espacioId, p_sabado: sabado, p_clima: SECO })).resultado
     expect(r).toMatchObject({ tipo: 'borrador', actividad: 'parque', lugar: { id: 'lugar-sim-04' }, personas_consideradas: 3 })
     expect(r.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-04'])
-    // Con 3 personas o menos: sin presupuesto_todos ni ritmo_del_grupo, y perfil_grupo solo con personas.
+    // Con 3 personas o menos: sin presupuesto_todos ni ritmo_del_grupo, y perfil_grupo solo con personas
+    // (enmienda 7, E7.4: sin contar a quien pide, 2).
     expect(r.frases_grupo).toEqual(['al_aire_libre_con_buen_tiempo'])
-    expect(r.perfil_grupo).toEqual({ personas: 3 })
+    expect(r.perfil_grupo).toEqual({ personas: 2 })
 
     // 4. Lluvia (o clima desconocido) y alguien pidió techo: el parque cae y no queda nada.
     for (const clima of [LLUVIA, { sabado: 'seco', domingo: 'desconocido' }]) {

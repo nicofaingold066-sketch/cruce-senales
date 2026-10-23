@@ -37,9 +37,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
     const mia = ++secLista.current
     const gen = generacion.current
     const r = await api.listProposals(espacioId)
-    // #52 (F1 de revision-codex-6): en la carga inicial la lista sale antes de conocer la generación (null).
-    // Si get_space responde primero, esa lista no es de una generación anterior: se aplica igual, sin otra petición.
-    if (mia < aplLista.current || (gen !== null && gen !== generacion.current)) return
+    if (mia < aplLista.current || gen !== generacion.current) return
     aplLista.current = mia
     if (r.ok) {
       const nuevas = r.data.propuestas
@@ -76,6 +74,14 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
   }, [espacioId, cargarLista])
 
   const cargarTodo = useCallback(async () => {
+    // F1 (revisión 6 de Codex): mientras no se conoce la generación, la lista se pide después de get_space.
+    // Si se pidieran juntas, la lista quedaría con generación null y se descartaría al llegar get_space primero.
+    // Con la generación fijada, se piden en paralelo como siempre.
+    if (generacion.current == null) {
+      await cargarEspacio()
+      await cargarLista()
+      return
+    }
     await Promise.all([cargarEspacio(), cargarLista()])
   }, [cargarEspacio, cargarLista])
 

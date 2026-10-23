@@ -128,7 +128,8 @@ describe('enmienda 2: regresiones A1 a A5', { timeout: 120_000 }, () => {
   })
 
   it('A1: si el imprescindible se retira, desaparece la reserva y la propuesta pasa a revisión', async () => {
-    const esp = await crearEspacioPrueba(O, 'a1-retiro', 'Anfitrion t')
+    // Enmienda 7 (E7.3): con simulados, el demo propio de O (anfitrión = organizador).
+    const esp = { espacioId: demo.id as string, miembroId: demo.mi_miembro_id as string }
     const [s1, s2] = await Promise.all(['S1 t', 'S2 t'].map((n) => simulado(O, esp.espacioId, n)))
     const prop = await crearPropuesta(O, esp.espacioId, esp.miembroId, { minimo: 2, maximo: 3 })
     await ok(O, 'save_my_conditions', { p_propuesta_id: prop, p_disponibilidad: { A: 'si', B: 'si' } })

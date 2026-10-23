@@ -19,6 +19,9 @@ export function esTurno(p: PropuestaResumen): boolean {
 export function PlanVivo({ p, espacioId, espacioNombre }: { p: PropuestaResumen; espacioId: string; espacioNombre?: string }) {
   const turno = esTurno(p)
   const conVersion = p.version != null
+  // Mejora #56: con más confirmaciones que el mínimo, "5 de 4 confirmaron" se lee raro.
+  const cuenta =
+    p.confirmados > p.minimo ? `${p.confirmados} confirmaron (mínimo ${p.minimo})` : `${p.confirmados} de ${p.minimo} confirmaron`
   return (
     <a className={`plan-vivo plan-vivo-${p.estado} ${turno ? 'plan-vivo-turno' : ''}`} href={rutas.propuesta(espacioId, p.id)}>
       {espacioNombre ? <span className="pv-espacio">{espacioNombre}</span> : null}
@@ -41,13 +44,13 @@ export function PlanVivo({ p, espacioId, espacioNombre }: { p: PropuestaResumen;
             minimo={p.minimo}
             maximo={p.maximo}
             ok={p.estado === 'grupo_confirmado'}
-            etiqueta={`${p.confirmados} de ${p.minimo} confirmaron`}
+            etiqueta={cuenta}
           />
         </span>
       ) : null}
       <span className="pv-meta">
         <span className="num">
-          {conVersion ? `${p.confirmados} de ${p.minimo} confirmaron · máx. ${p.maximo}` : `Mínimo ${p.minimo}, máximo ${p.maximo}`} ·{' '}
+          {conVersion ? `${cuenta} · máx. ${p.maximo}` : `Mínimo ${p.minimo}, máximo ${p.maximo}`} ·{' '}
           {p.plazo_vencido ? 'plazo cerrado' : `cierre ${momentoCorto(p.plazo)}`}
         </span>
         <span className="pv-abrir" aria-hidden="true">

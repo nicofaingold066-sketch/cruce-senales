@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../lib/api'
-import type { UnirseOk } from '../lib/api'
 import type { ApiError, EspacioResumen, PropuestaResumen, TipoEspacio } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
-import { entrarComoOtraPersona, leerGuardada } from '../lib/sesiones'
+import { leerGuardada, sesionNueva } from '../lib/sesiones'
 import { OtraSesion } from '../components/Sesiones'
 import { guardarPerfil, leerPerfil, recordarNombreSiFalta, usePerfil } from '../lib/perfil'
 import { Aviso, Boton, Cargando, ErrorCaja, colorAvatar, iniciales } from '../components/ui'
@@ -329,12 +328,6 @@ function irAUnirse() {
   form?.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true })
 }
 
-function errorLocal(mensaje: string): ApiError {
-  return { codigo: 'fallo_temporal', detalle: 'sesion_nueva', mensaje, reintentable: false, state_rev: null }
-}
-
-const mismoNombre = (a: string, b: string) => a.trim().toLocaleLowerCase('es') === b.trim().toLocaleLowerCase('es')
-
 function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: boolean; codigoInicial?: string }) {
   const [codigo, setCodigo] = useState(codigoInicial ?? '')
   const [nombre, setNombre] = useState(() => leerPerfil()?.nombre ?? '')
@@ -344,92 +337,70 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
     if (perfil) setNombre((n) => n || perfil.nombre)
   }, [perfil])
   const { ocupado, error, ejecutar } = useAccion()
-  const cambio = useAccion()
-  // Mejora #47: el servidor dice que esta sesión ya era miembro (e ignora el nombre). No se entra en silencio
-  // con la identidad de otra persona: se pregunta si seguir como ella o entrar con una sesión nueva.
-  const [yaEra, setYaEra] = useState<{ espacio: string; espacioId: string; nombre: string } | null>(null)
-  const avisoYaEra = useRef<HTMLDivElement>(null)
+  // Navegador compartido: la sesión guardada ya es miembro de este espacio con otro nombre.
+  const [yaMiembro, setYaMiembro] = useState<{ espacioId: string; espacio: string; nombreActual: string } | null>(null)
+  const [confirmar, setConfirmar] = useState(false)
+  const [cambiando, setCambiando] = useState(false)
+  const [errorCambio, setErrorCambio] = useState<string | null>(null)
   const faltan = codigo.trim() === '' || nombre.trim() === ''
 
-  useEffect(() => {
-    if (yaEra) avisoYaEra.current?.querySelector<HTMLElement>('button')?.focus()
-  }, [yaEra])
-
-  function entrar(r: UnirseOk, nom: string, sesionNueva?: string) {
-    recordarNombreSiFalta(nom)
-    if (r.resultado.reclamo_asiento_simulado) {
-      dejarAviso(`Reclamaste el lugar de ${nom}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.${sesionNueva ? ` ${sesionNueva}` : ''}`)
-    } else if (sesionNueva) {
-      dejarAviso(`Entraste como ${nom}. ${sesionNueva}`)
-    } else if (!r.resultado.ya_era_miembro) {
-      dejarAviso(`Te uniste a «${r.espacio.nombre}» como ${nom}. Cuando haya un plan, marca si te interesa y carga en privado cuándo puedes.`)
+  function entrar(r: { espacio_id: string; reclamo_asiento_simulado: boolean }, espacio: string, sesionGuardada?: string) {
+    recordarNombreSiFalta(nombre)
+    if (r.reclamo_asiento_simulado) {
+      dejarAviso(`Reclamaste el lugar de ${nombre.trim()}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.${sesionGuardada ? ` ${sesionGuardada}` : ''}`)
+    } else if (sesionGuardada) {
+      dejarAviso(`Entraste como ${nombre.trim()}. ${sesionGuardada}`)
+    } else {
+      dejarAviso(`Te uniste a «${espacio}» como ${nombre.trim()}. Cuando haya un plan, marca si te interesa y carga en privado cuándo puedes.`)
     }
-    irA(rutas.espacio(r.resultado.espacio_id))
+    irA(rutas.espacio(r.espacio_id))
   }
 
   async function hacer(e: FormEvent) {
     e.preventDefault()
     if (faltan) return
-    cambio.limpiarError()
+    setYaMiembro(null)
+    setConfirmar(false)
+    setErrorCambio(null)
     const r = await ejecutar(`join:${codigo.trim()}:${nombre.trim()}`, () =>
       api.joinSpace(codigo.trim(), nombre.trim()),
     )
     if (!r?.ok) return
     if (r.data.resultado.ya_era_miembro) {
-      const esp = r.data.espacio
-      const yo = esp.miembros.find((m) => m.miembro_id === esp.mi_miembro_id)
-      setYaEra({ espacio: esp.nombre, espacioId: r.data.resultado.espacio_id, nombre: yo?.nombre ?? 'otra persona' })
+      // El servidor no cambia el nombre ni crea a otra persona: no se entra en silencio como quien estaba antes.
+      const yo = r.data.espacio.miembros.find((m) => m.es_yo)
+      setYaMiembro({ espacioId: r.data.resultado.espacio_id, espacio: r.data.espacio.nombre, nombreActual: yo?.nombre ?? 'otra persona' })
       return
     }
-    entrar(r.data, nombre.trim())
+    entrar(r.data.resultado, r.data.espacio.nombre)
   }
 
-  async function comoOtraPersona() {
-    const cod = codigo.trim()
-    const nom = nombre.trim()
-    if (!yaEra || !cod || !nom) return
-    const previa = yaEra
-    let guardada = false
-    const r = await cambio.ejecutar(`otra:${cod}:${nom}`, async () => {
-      const s = await entrarComoOtraPersona(`${previa.nombre} en «${previa.espacio}»`)
-      if (!s.ok) return { ok: false as const, error: errorLocal(s.mensaje) }
-      guardada = s.guardada
-      // Desde acá la sesión es otra: si el ingreso falla, se corrige el formulario y se usa "Unirme".
-      setYaEra(null)
-      return api.joinSpace(cod, nom)
-    })
-    if (r?.ok) {
-      entrar(
-        r.data,
-        nom,
-        guardada
-          ? `La sesión de ${previa.nombre} quedó guardada en este navegador: para volver a ella, ve a tus espacios.`
-          : 'Entraste con una sesión nueva.',
-      )
+  async function entrarComoOtra() {
+    if (!yaMiembro || cambiando) return
+    const previa = yaMiembro
+    setCambiando(true)
+    setErrorCambio(null)
+    try {
+      const s = await sesionNueva(`${previa.nombreActual} en «${previa.espacio}»`)
+      if (!s.ok) {
+        setErrorCambio(s.mensaje)
+        return
+      }
+      setYaMiembro(null)
+      setConfirmar(false)
+      const r = await ejecutar(`join-nueva:${codigo.trim()}:${nombre.trim()}`, () => api.joinSpace(codigo.trim(), nombre.trim()))
+      if (r?.ok) {
+        entrar(
+          r.data.resultado,
+          r.data.espacio.nombre,
+          s.guardada ? `La sesión de ${previa.nombreActual} quedó guardada en este navegador: para volver a ella, ve a tus espacios.` : undefined,
+        )
+      }
+    } finally {
+      setCambiando(false)
     }
   }
-
-  const otraGuardada = yaEra ? leerGuardada() : null
-  const otraPrimero = yaEra != null && !mismoNombre(nombre, yaEra.nombre)
-  const botonOtra = (
-    <Boton
-      key="otra"
-      variante={otraPrimero ? 'primario' : 'secundario'}
-      onClick={comoOtraPersona}
-      ocupado={cambio.ocupado}
-      ocupadoTexto="Creando una sesión nueva…"
-      disabled={faltan || deshabilitado}
-    >
-      Entrar como otra persona
-    </Boton>
-  )
-  const botonSeguir = yaEra ? (
-    <Boton key="seguir" variante={otraPrimero ? 'secundario' : 'primario'} onClick={() => irA(rutas.espacio(yaEra.espacioId))} disabled={cambio.ocupado}>
-      Seguir como {yaEra.nombre}
-    </Boton>
-  ) : null
-  const errorVisible = cambio.error ?? error
-
+  const otraGuardada = yaMiembro && confirmar ? leerGuardada() : null
   return (
     <form id="unirse" className="tarjeta unirse" onSubmit={hacer} noValidate>
       <h2>Unirme con un código</h2>
@@ -451,28 +422,51 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
           autoFocus={codigoInicial != null}
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
-          autoComplete="off"
+          autoComplete="nickname"
           maxLength={30}
           aria-invalid={error?.detalle === 'nombre_en_uso' ? true : undefined}
         />
         <small>Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.</small>
       </label>
-      <Boton type="submit" className="btn-bloque" ocupado={ocupado} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado || cambio.ocupado}>
+      <Boton type="submit" className="btn-bloque" ocupado={ocupado} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado || cambiando}>
         Unirme
       </Boton>
-      {yaEra ? (
-        <Aviso
-          ref={avisoYaEra}
-          tono="aviso"
-          titulo={`Este navegador ya está en este espacio como ${yaEra.nombre}`}
-          accion={<div className="fila-botones">{otraPrimero ? [botonOtra, botonSeguir] : [botonSeguir, botonOtra]}</div>}
-        >
-          {otraGuardada
-            ? `Si eres otra persona, entra con una sesión nueva. Este navegador ya guarda la sesión de ${otraGuardada.etiqueta}; la de ${yaEra.nombre} no se guardará.`
-            : `Si eres otra persona, entra con una sesión nueva: la de ${yaEra.nombre} queda guardada en este navegador y se puede retomar desde tus espacios.`}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
+      {yaMiembro ? (
+        <Aviso tono="aviso" titulo={`Este navegador ya está en este espacio como ${yaMiembro.nombreActual}`}>
+          {confirmar ? (
+            <>
+              <p>
+                {otraGuardada
+                  ? `Este navegador ya guarda la sesión de ${otraGuardada.etiqueta}; la de ${yaMiembro.nombreActual} no se guardará y no se podrá volver a ella desde acá.`
+                  : `Se abre una sesión nueva para ti. La de ${yaMiembro.nombreActual} queda guardada en este navegador: se puede retomar desde tus espacios con "Volver a esa sesión".`}
+              </p>
+              <div className="fila-botones">
+                <Boton variante={otraGuardada ? 'peligro' : 'primario'} onClick={() => void entrarComoOtra()} ocupado={cambiando} ocupadoTexto="Cambiando de persona…">
+                  Sí, entrar como {nombre.trim() || 'otra persona'}
+                </Boton>
+                <Boton variante="secundario" onClick={() => setConfirmar(false)} disabled={cambiando}>
+                  Cancelar
+                </Boton>
+              </div>
+            </>
+          ) : (
+            <>
+              <p>
+                Si eres {yaMiembro.nombreActual}, sigue. Si eres otra persona, entra con una sesión nueva: así no ves ni cambias lo que
+                cargó {yaMiembro.nombreActual}.
+              </p>
+              <div className="fila-botones">
+                <Boton onClick={() => irA(rutas.espacio(yaMiembro.espacioId))}>Seguir como {yaMiembro.nombreActual}</Boton>
+                <Boton variante="secundario" onClick={() => setConfirmar(true)}>
+                  Entrar como otra persona
+                </Boton>
+              </div>
+            </>
+          )}
+          {errorCambio ? <p role="alert">{errorCambio}</p> : null}
         </Aviso>
       ) : null}
-      {errorVisible ? <ErrorCaja error={errorVisible} enfocar /> : null}
     </form>
   )
 }

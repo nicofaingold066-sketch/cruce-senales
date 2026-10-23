@@ -133,10 +133,17 @@ function razonNoAceptar(p: EstadoPropuesta): string {
   return 'Ahora no puedes confirmar esta versión.'
 }
 
+// Mejora #56: con más confirmaciones que el mínimo, "5 de 4" se lee raro; se dice "5 (mínimo 4)".
+function cuentaConfirmados(confirmados: number, minimo: number): string {
+  return confirmados > minimo ? `${confirmados} (mínimo ${minimo})` : `${confirmados} de ${minimo}`
+}
+
 function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
   const o = p.opcion!
   const { ocupado, error, correr } = useMutacion(viva)
   const confirmado = p.estado === 'grupo_confirmado'
+  const sobreMinimo = o.cupos.confirmados > o.cupos.minimo
+  const cuenta = cuentaConfirmados(o.cupos.confirmados, o.cupos.minimo)
 
   async function aceptar() {
     // Siempre se envía la versión que la persona está viendo, nunca una calculada.
@@ -168,7 +175,7 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
           minimo={o.cupos.minimo}
           maximo={o.cupos.maximo}
           ok={confirmado}
-          etiqueta={`Confirmaron ${o.cupos.confirmados} de ${o.cupos.minimo} necesarias`}
+          etiqueta={`Confirmaron ${cuenta}${sobreMinimo ? '' : ' necesarias'}`}
         />
         <div className="progreso-leyenda" aria-hidden="true">
           <span>
@@ -180,10 +187,19 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
       <dl className="datos">
         <dt>Aceptaciones</dt>
         <dd>
-          <strong>
-            {o.cupos.confirmados} de {o.cupos.minimo}
-          </strong>{' '}
-          necesarias (máximo {o.cupos.maximo}, disponibles {o.cupos.disponibles})
+          {sobreMinimo ? (
+            <>
+              <strong>{o.cupos.confirmados}</strong> (mínimo {o.cupos.minimo}, máximo {o.cupos.maximo}, disponibles{' '}
+              {o.cupos.disponibles})
+            </>
+          ) : (
+            <>
+              <strong>
+                {o.cupos.confirmados} de {o.cupos.minimo}
+              </strong>{' '}
+              necesarias (máximo {o.cupos.maximo}, disponibles {o.cupos.disponibles})
+            </>
+          )}
         </dd>
         <dt>Anfitrión ({p.imprescindible.nombre})</dt>
         <dd>
@@ -217,7 +233,7 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
             <li key={a.miembro.miembro_id}>
               <Avatar nombre={a.miembro.nombre} simulado={a.miembro.simulado} yo={a.miembro.miembro_id === p.mi_situacion.miembro_id} />
               <Nombre m={a.miembro} yo={a.miembro.miembro_id === p.mi_situacion.miembro_id} />
-              <span className="suave"> · {momentoCorto(a.aceptado_en)}</span>
+              <span className="suave fecha"> · {momentoCorto(a.aceptado_en)}</span>
             </li>
           ))}
         </ul>
@@ -328,7 +344,8 @@ function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
             </p>
           ) : (
             <p className="cv-pie">
-              Confirmaron {o.cupos.confirmados} de {o.cupos.minimo}: {o.aceptaron.map((a) => a.miembro.nombre).join(', ')}.
+              Confirmaron {cuentaConfirmados(o.cupos.confirmados, o.cupos.minimo)}:{' '}
+              {o.aceptaron.map((a) => a.miembro.nombre).join(', ')}.
             </p>
           )}
         </div>
@@ -344,7 +361,10 @@ function OpcionAnterior({ p }: { p: EstadoPropuesta }) {
       <h2>Versión {o.version} (en revisión, no confirmada)</h2>
       <p>{franjaTexto(o.franja.inicio, o.franja.fin)}</p>
       <p className="suave">
-        Conserva {o.cupos.confirmados} confirmación(es) de {o.cupos.minimo} necesarias. No se transfiere a la próxima versión.
+        {o.cupos.confirmados > o.cupos.minimo
+          ? `Conserva ${o.cupos.confirmados} confirmaciones (mínimo ${o.cupos.minimo}).`
+          : `Conserva ${o.cupos.confirmados} confirmación(es) de ${o.cupos.minimo} necesarias.`}{' '}
+        No se transfiere a la próxima versión.
       </p>
     </section>
   )
@@ -392,7 +412,7 @@ function Bajas({ p }: { p: EstadoPropuesta }) {
             <Nombre m={b.miembro} /> se bajó
             {b.version != null ? ` (versión ${b.version})` : ''}
             {b.habia_aceptado ? ' · había confirmado' : ''}
-            <span className="suave"> · {momentoCorto(b.en)}</span>
+            <span className="suave fecha"> · {momentoCorto(b.en)}</span>
           </li>
         ))}
       </ul>
@@ -410,8 +430,8 @@ function HistorialResumido({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: 
         {ultimos.map((e) => (
           <li key={e.state_rev + e.tipo + e.en.utc}>
             <span>{describirEvento(e)}</span>
-            {e.actor_tipo === 'simulacion' ? <span className="rotulo-sim">Simulación</span> : null}
-            <span className="suave"> · {momentoCorto(e.en)}</span>
+            {e.actor_tipo === 'simulacion' ? <> <span className="rotulo-sim">Simulación</span></> : null}
+            <span className="suave fecha"> · {momentoCorto(e.en)}</span>
           </li>
         ))}
       </ul>

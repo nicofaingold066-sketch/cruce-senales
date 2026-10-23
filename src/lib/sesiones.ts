@@ -84,3 +84,21 @@ export async function volverAGuardada(g: SesionGuardada): Promise<{ ok: true } |
   olvidarGuardada()
   return { ok: true }
 }
+
+/**
+ * Abre una sesión anónima nueva en este navegador (hallazgo 8 de la revisión de privacidad, mejora #47) SIN revocar
+ * la anterior: signOut, aun con scope 'local', llama a /logout y la sesión anónima de Tomi no se recupera nunca.
+ * La anterior queda guardada para volver desde el inicio (lib/sesiones). Borra también lo que la app guardó en
+ * sessionStorage (por ejemplo, el borrador del agente).
+ */
+export async function sesionNueva(etiqueta: string) {
+  const r = await entrarComoOtraPersona(etiqueta)
+  if (r.ok) {
+    try {
+      for (const k of Object.keys(sessionStorage)) if (k.startsWith('cruxe:')) sessionStorage.removeItem(k)
+    } catch {
+      // Sin almacenamiento: no hay nada que borrar.
+    }
+  }
+  return r
+}

@@ -1,6 +1,6 @@
 // Mejoras de la bola de nieve (MEJORAS.md en la rama coordinacion), contra la base real.
 import { beforeAll, describe, expect, it } from 'vitest'
-import { crearEspacioPrueba, crearPropuesta, err, intento, nuevaSesion, ok, rpc, simulado, type Json, type Sesion } from './helpers'
+import { crearPropuesta, demoPrueba, err, intento, nuevaSesion, ok, rpc, simulado, type Json, type Sesion } from './helpers'
 
 describe('mejora #12: nombres y código normalizados', { timeout: 60_000 }, () => {
   let O: Sesion
@@ -41,9 +41,13 @@ describe('mejora #12: nombres y código normalizados', { timeout: 60_000 }, () =
     const esp = { espacioId: c.resultado.espacio_id as string, codigo: c.resultado.codigo_invitacion as string }
     expect(c.espacio.nombre).toBe('t-e12 normalizado')
     expect(c.espacio.miembros[0].nombre).toBe('Org t')
-    await simulado(O, esp.espacioId, 'José t') // NFC
-    expect(err(await rpc(O, 'add_simulated_member', { p_espacio_id: esp.espacioId, p_nombre_visible: 'José t' })))
+    // Enmienda 7 (E7.3): los simulados solo se crean en el demo; esa mitad se prueba en el demo de O.
+    await simulado(O, demo.id, 'José t') // NFC
+    expect(err(await rpc(O, 'add_simulated_member', { p_espacio_id: demo.id, p_nombre_visible: 'José t' })))
       .toBe('entrada_incompleta/nombre_en_uso')
+    // En el espacio no demo, contra un miembro real: U2 entra como "José t" compuesto y U1 (descompuesto,
+    // mayúsculas y espacio no separable) choca igual. U1 todavía no es miembro de este espacio.
+    await ok(U2, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'José t' })
     expect(err(await rpc(U1, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'JOSÉ t' })))
       .toBe('entrada_incompleta/nombre_en_uso')
   })
@@ -111,7 +115,7 @@ describe('mejora #22: opcion_anterior en EstadoPropuesta', { timeout: 90_000 }, 
     const respuestas: Json[] = []
     const guardar = <T>(r: T): T => (respuestas.push(r), r)
 
-    const esp = await crearEspacioPrueba(O, 'e22-anterior', 'Org t')
+    const esp = await demoPrueba(O) // enmienda 7 (E7.3): con simulados, el demo propio de O
     await ok(U, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Uno t' })
     const [s1, s2] = await Promise.all(['S1 t', 'S2 t'].map((n) => simulado(O, esp.espacioId, n)))
     const prop = await crearPropuesta(O, esp.espacioId, esp.miembroId, { minimo: 3, maximo: 6, titulo: 't-e22' })

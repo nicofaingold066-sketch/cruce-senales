@@ -332,13 +332,20 @@ describe('A2 variantes adversariales propias', () => {
     expect(a2Cod(r)).toBe('asiento_en_uso/asiento_en_uso')
   }, T)
 
-  it('espacio NO demo: nunca se reclama un simulado (nombre_en_uso)', async () => {
+  // Enmienda 7 (E7.3): en un espacio no demo ya no se puede crear un simulado, así que no hay asiento que
+  // reclamar. La guarda de join_space para simulados viejos en espacios no demo (nombre_en_uso) sigue en la
+  // base, pero desde la API ya no se puede preparar ese caso.
+  it('espacio NO demo: no se crean simulados (espacio_no_demo) y entrar con ese nombre no reclama nada', async () => {
     const e = a2Esperar(await a2Rpc(org.c, 'create_space', { p_nombre: 'ver-A2 espacio no demo', p_tipo: 'amigos', p_nombre_visible: 'ver-A2 org' }), 'create_space')
     const nom = a2Nombre('nd')
-    a2Esperar(await a2Rpc(org.c, 'add_simulated_member', { p_espacio_id: e.resultado.espacio_id, p_nombre_visible: nom }), 'add sim')
+    const add = await a2Rpc(org.c, 'add_simulated_member', { p_espacio_id: e.resultado.espacio_id, p_nombre_visible: nom })
+    console.log('[A2 no demo] add_simulated_member ->', a2Cod(add))
+    expect(a2Cod(add)).toBe('no_autorizado/espacio_no_demo')
     const r = await a2Rpc(intruso, 'join_space', { p_codigo: e.resultado.codigo_invitacion, p_nombre_visible: nom })
     console.log('[A2 no demo] join ->', a2Cod(r))
-    expect(a2Cod(r)).toBe('entrada_incompleta/nombre_en_uso')
+    expect(a2Cod(r)).toBe('ok')
+    expect(r.resultado.reclamo_asiento_simulado).toBe(false)
+    expect((r.espacio.miembros as any[]).some((m) => m.simulado)).toBe(false)
   }, T)
 
   it('observacion: reclamo tras solo simulate_mark_interest (fuera de las 3 prohibiciones)', async () => {

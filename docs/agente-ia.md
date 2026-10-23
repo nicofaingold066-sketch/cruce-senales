@@ -94,5 +94,54 @@ Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y
 - Un teléfono físico.
 - Crear la propuesta: para no tocar el plan confirmado que había en ese espacio demo.
 
+### 8.1 Enmienda 7 en la base: grupos de 2 y de 5 (mejora #50)
+**Viernes 23 oct 2026, 15:10 a 15:11 (hora del reloj).** Base con las migraciones 0024 a 0028 aplicadas y sin migración en curso, según `agentes/backend.md`. Función `agente` (`index.ts` y `logica.ts` de `c5b0085`) corrida en Node contra la base real, sin clave y con espacios de prueba nuevos (`t-50-…`). Resultado: 13 de 13.
+
+| Caso | Observado |
+|---|---|
+| Grupo de 2 (Tere organiza y marca fiesta; Ana marca parque) | Ninguna candidata trae `el_mas_elegido`. El por qué queda "Es bajo techo por si cambia el tiempo." El perfil trae solo `{"personas":1}` (sin contar a Tere). Si Ana cambia sus gustos a fútbol, el orden de las candidatas no cambia (pádel, asado, fútbol): E7.1 |
+| Demo, sin contar a Tomi | 4 personas: los simulados con semilla son Mati, Caro, Fede y Sofi; Luna no tiene semilla a propósito, por eso no son 5. Perfil "Asado 3 · Fútbol 2", con `ambiente_mayoritario` null por empate y sin `presupuesto_grupo`. Con sol simulado, 3 candidatas. Por qué: "…es lo que más eligieron (3 de 4) y va con lo que prefiere la mayoría: un plan algo tranquilo." |
+| Demo: Tomi marca todo y cambia su energía y su ambiente | El perfil no cambia: su voto no cuenta (E7.4) |
+| Grupo de 5 sin contar a quien pide (Luna con preferencias simuladas) | Perfil de 5: "Asado 4 · Fútbol 2 · Parque 2", ambiente tranquilo, sin `presupuesto_grupo`. Por qué: "…y es lo que más eligieron (4 de 5)." |
+
+**Nota:** la frase del ritmo del grupo (`ritmo_del_grupo`) sale del puntaje, que cuenta a todos los que cargaron preferencias, incluido quien pide (`0026:123-124` y `148`). En el último caso, Tomi había cambiado su ambiente a "fiesta" en el paso anterior, así que el ambiente general quedó empatado y la frase no aparece. Es el diseño de la enmienda 7 y no tiene que ver con privacidad.
+
+**Pantalla en producción, viernes 23 oct 2026, de 15:19 a 15:20 (hora del reloj).** https://cruce-senales.vercel.app, `main` `3313790` (publicado a las 15:17 según el coordinador), función v6, vista de teléfono de 375 × 812 en el navegador del panel (no un teléfono físico), sin clave.
+
+| Paso | Observado |
+|---|---|
+| "Simular sol" → "Que el agente proponga" (15:19) | 3 opciones: Asado (Recomendada), Fútbol y Parque, con rótulo Simulación |
+| Perfil del grupo | "Lo que eligió el grupo (4 personas): Asado 3 de 4 · Fútbol 2 de 4. La mayoría prefiere algo tranquilo." Sin Tomi (E7.4) y sin ambiente, que está empatado |
+| Por qué | "…es lo que más eligieron (3 de 4) y va con lo que prefiere la mayoría: un plan algo tranquilo." Marcado "Texto fijo" |
+| Respuesta de la función, leída en el navegador | `perfil_grupo` sin `presupuesto_grupo`; `clima.fuente` = simulacion; `eleccion_fuente` = regla; `explicacion_fuente` = texto_fijo. En la pantalla no aparece ningún dato de presupuesto |
+| "Simular lluvia" (15:19) | Una sola opción, el asado; clima de prueba con lluvia |
+| WhatsApp y "Usar esta opción" (15:19) | El enlace mide 44 px y abre en una pestaña nueva. "Nueva propuesta" llega con el título y las franjas del sábado 31 y el domingo 1 de 14:00 a 17:00, y con el aviso de que el agente no crea ni confirma nada |
+| Consola y diseño | Sin errores; sin desborde horizontal |
+
+No se probó: la IA con clave real, un teléfono físico ni crear la propuesta (para no tocar el plan confirmado de ese demo).
+
+### 8.2 Recorrido completo en producción con dos sesiones (mejora #55)
+**Viernes 23 oct 2026, de 15:36:03 a 15:36:44 (hora del reloj).** https://cruce-senales.vercel.app, `main` `7747bf6` (publicado solo según el coordinador; incluye la enmienda 7, #52, #47 y #51). Chrome sin ventana con Playwright, dos contextos separados a 375 × 812: Tomi en uno, como ventana normal, y Luna en otro, como ventana privada, sin almacenamiento compartido. Demo nueva con datos ficticios (código `JT364B3E`), sin clave de IA. Resultado: 16 de 16.
+
+| Paso | Observado |
+|---|---|
+| Tomi abre la demo y crea la propuesta del caso ("Crear y abrir al grupo") | Entra como organizador; la propuesta se crea y se abre |
+| Luna abre el enlace de invitación en su ventana privada y escribe "Luna" | Reclama su lugar. **La lista de propuestas aparece sola**, a 181 ms del título, sin recargar ni esperar el sondeo (#52) |
+| Luna, en su teléfono | No tiene la pestaña Simulación |
+| Condiciones: Tomi y Luna cargan las suyas en privado; Tomi usa el atajo para los simulados | Guardadas |
+| "Buscar opción compatible" → v1 (sábado); confirman Tomi, Mati, Caro y Luna | **Grupo confirmado** en el teléfono de Luna. Luna no ve "Faltan por responder" ni "Con condiciones cargadas" (E7.2) |
+| "Se baja: Caro" | **En revisión** |
+| "Buscar alternativa" → v2 (domingo) | La pantalla muestra "Versión 1 · ya no vale" y "Estas confirmaciones no pasan a la versión 2". Vuelven a confirmar y queda **Grupo confirmado** en la v2, con la confirmación de Luna ("Ya confirmaste la versión 2") |
+| **Navegador compartido:** en el navegador de Tomi, alguien abre el enlace y escribe "Pepe" | "Este navegador ya está en este espacio como Tomi", con "Seguir como Tomi" y "Entrar como otra persona"; la confirmación advierte que la sesión de Tomi no se recupera. Al confirmar: "Sesión activa: Pepe · miembro", sin herramientas del organizador (#47) |
+| Consola y diseño | Sin errores de la app; sin desborde horizontal |
+
+Capturas (8, de la sesión agente-ia; no están en el repo): espacio de Tomi, espacio de Luna, simulación cargada, v1 confirmada, v2, v2 confirmada, aviso del navegador compartido y Pepe dentro.
+
+**Nota de interfaz (no es un defecto del recorrido):** con 5 confirmados y un mínimo de 4, la tarjeta dice "5 de 4 confirmaron" y la versión vigente "Confirmaron 5 de 4". Se lee raro; sugerencia para claude-b: "5 confirmaron (mínimo 4)".
+
+**No probado en esta corrida:** un teléfono físico, la IA con clave real y la publicación automática del agente.
+
+**Corrección (mejora #57, 15:58 del mismo día):** una revisión independiente del guion mostró que dos comprobaciones de esta corrida medían menos de lo que dice la tabla. "Las confirmaciones no pasan a la v2" solo buscaba la frase, que aparece siempre después de una reparación. Y E7.2 miraba la pantalla de Luna en un estado donde "Con condiciones cargadas" no se dibuja para nadie. El guion versionado `tests/e2e/recorrido-dos-sesiones.mjs` las mide bien: la v2 dice "Nadie confirmó todavía" antes de que alguien confirme, y cada conteo se mira en el estado donde aparece, con control positivo (Tomi lo ve y Luna no). Corrido contra producción (`main` 7747bf6) de 15:58:04 a 15:58:30: esas comprobaciones pasaron. Fallaron solo las dos de la mejora #56, porque producción todavía decía "5 de 4". Con el arreglo de #56, en mi rama: 19/19.
+
 ## Historia
 Idea de Nico. Diseño de privacidad del coordinador: el servidor elige y la IA solo ve totales. Enmienda 4 (preferencias, catálogo y elección por reglas), 4.1 (candidatas, perfil del grupo y la IA como coordinadora, pedido de Nico) y 5 (preferencias simuladas). Mejoras #11, #23, #25, #26, #28, #32 y #35.

@@ -3251,3 +3251,6 @@ fieldset:disabled .opcion-radio {
   margin-top: 12px;
   width: 100%;
 }
+.fecha {
+  white-space: nowrap;
+}
