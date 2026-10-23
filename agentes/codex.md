@@ -3,9 +3,10 @@
 Quien edita este archivo: solo codex. Actualización: 23 oct 2026, cierre de tareas autorizadas por Nico.
 
 ## Tocando ahora
-**#29 entregada (85c9672, 5/5)**; ahora **#34**, por autorización directa de Nico: `tests/e2e/privacidad-agente.test.ts`, `tests/e2e/red-controlada*`, `tests/e2e/evidencia-privacidad-red.md` y `docs/revision-codex-6-privacidad-red.md`. Solo pruebas e informes. Se consulta MIGRACION EN CURSO antes de cada corrida real; si aparece, se espera. Sin modelos pagos, dependencias nuevas ni cambios propios en src/supabase/main.
+(vacío: #29 y #34 entregadas, por instrucción directa de Nico).
 
 ## Estado
+**Nuevo corte #29/#34: codex/revisiones 7511bbd (23 oct, horas literales en evidencia).** #29 85c9672: 5/5, 8.18 s, RPC real y handler real en Node sin clave (0 intentos de modelo). #34 7511bbd: 8 regresiones de red correctas + F1 reproducido, Chrome con red externa interceptada; NO son 9 garantías de comportamiento sano. Typecheck y build pasan. Informe docs/revision-codex-6-privacidad-red.md y evidencia tests/e2e/evidencia-privacidad-red.md. Base incorporada 92477ef; cambios propios solo tests/e2e y el informe. No se prueba endpoint desplegado ni IA. La corrida real fue antes de 0024; no se volvió a probar contra la base mientras avanzaba E7.
 Guía vigente: `prompts/codex.md`, adoptada por instrucción directa de Nico. Vigía shell `./vigia.sh codex 60` activo.
 **Nuevo corte #1/#17: f89ab42 en codex/revisiones.** #1 agrega ausencia de preferencias en sobres compartidos: 3/3 dos veces consecutivas (8.80 s y 12.97 s, 63 RPC cada vez). #17 convierte docs/jurado-variantes.md en 4 pruebas: mínimo 5, anfitrión no disponible antes de evaluar y tras baja, máximo 4/cupo reservado. 4/4 (11.04 s, 53 RPC). Typecheck y build pasan; persiste aviso del chunk >500 KB. Salida literal: tests/e2e/evidencia-guia-y-jurado.md. Base b7ac38c, merge e017ac5. Ninguna llamada al modelo ni dependencia nueva.
 Tareas del aviso 12:39 completadas en orden, con autorización directa de Nico.
@@ -22,12 +23,15 @@ Base revisada 4477919 (merge ya presente en codex/revisiones, HEAD inicial 7eb59
 Ninguno para la entrega. El worktree compartido de coordinación tenía un cambio ajeno sin guardar en agentes/backend.md; se publicó esta ficha desde un worktree temporal aislado sin tocarlo.
 
 ## Pedidos a otros
+- interfaz/coordinador: F1 medio reproducido en Espacio.tsx:32–38,53–69,74–82 (base 92477ef): get_space llega primero, fija generacion, y list_proposals inicial válida queda descartada porque capturó null. Pantalla queda en Cargando propuestas hasta refresco/sondeo. Caso F1 en tests/e2e/red-controlada.mjs, informe revisión 6 con arreglo propuesto. No se editó src.
+- coordinador: integrar 7511bbd (incluye 85c9672) y marcar #29/#34 entregadas con sus límites. Mantener revisión separada de migraciones E7 y función desplegada.
 - coordinador: integrar f89ab42 y actualizar MEJORAS.md #1/#10/#16/#17 con los commits entregados; actualizar las marcas de docs/jurado-variantes.md citando la evidencia API, sin dar por comprobada la UI.
 - coordinador: integrar 1511b34, 3718b6b y b45c226 desde codex/revisiones. La evidencia API no sustituye el navegador.
 - interfaz: revisar U1–U7 en revision-codex-4-ui, primero U1/U2/U3. No se editó tu código. La corrección 08a87c3 del resumen de carga se reconoce como ya publicada en tu rama.
 - coordinador: revisar R1–R6 de revision-codex-5-readme antes de la entrega (promesa de unanimidad, evidencia/estado, atribución, causa no validada). No se cambió README.
 
 ## Entregado
+- #34: 7511bbd; 8 regresiones correctas y reproducción F1 (defecto presente). Código original con red bloqueada, cero llamadas reales. Typecheck/build pasan.
 - #29: 85c9672, 5/5 (8.18 s). RPC real + handler index.ts real en Node sin clave; 0 intentos de modelo. No se invoca la función desplegada para garantizar cero facturación. Evidencia tests/e2e/evidencia-privacidad-red.md. Base 92477ef, antes de 0024.
 - #1: 1511b34 y ampliación f89ab42 (preferencias ausentes, dos nuevas ejecuciones).
 - #10: 3718b6b (informe UI).
@@ -36,5 +40,7 @@ Ninguno para la entrega. El worktree compartido de coordinación tenía un cambi
 `codex/revisiones`, HEAD b45c226: E2E + evidencia y revisiones 4/5. Informes 1–3 previos conservados (revisión 3: a2c5d35). Ningún push a main.
 
 ## Ideas
+- Convertir F1 en regresión positiva tras el arreglo: primera lista aparece sin sondeo; repetir con lista primero y espacio primero. Dueño: interfaz/Codex.
+- Al terminar 0024–0027, una corrida de privacidad E7 con umbrales sin organizador y contadores null por rol; mantener una aserción separada del límite aceptado de inferencias. Dueño: Codex/backend.
 - Probar respuestas fuera de orden y timeout desde navegador con red controlada (interfaz; U1–U4).
 - Regresión de privacidad del agente con preferencias propias y ajenas, sin invocar modelos pagos (Codex/backend, cuando haya migraciones estables).
