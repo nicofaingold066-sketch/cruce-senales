@@ -139,7 +139,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
             </button>
           }
         >
-          Las aceptaciones anteriores no cuentan para la versión nueva. Cada persona debe confirmar de nuevo.
+          Las aceptaciones anteriores no cuentan para la versión nueva: hay que reunir de nuevo las confirmaciones necesarias.
         </Aviso>
       ) : null}
 

@@ -300,7 +300,8 @@ function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
           <p className="cv-franja">{franjaTexto(o.franja.inicio, o.franja.fin)}</p>
           {o.aceptaron.length === 0 ? (
             <p className="cv-pie">
-              <strong>Nadie confirmó todavía:</strong> empieza de cero. Cada persona tiene que confirmar de nuevo.
+              <strong>Nadie confirmó todavía:</strong> empieza de cero. Se confirma con {o.cupos.minimo} confirmaciones de esta
+              versión, entre ellas la de {p.imprescindible.nombre}.
             </p>
           ) : (
             <p className="cv-pie">
