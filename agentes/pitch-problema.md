@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 16:02.
+Quien edita este archivo: solo esta sesión. Última actualización: 16:05.
 
 ## Tocando ahora
-- [16:02] #53: `tests/e2e/red-controlada.mjs`, SOLO el caso F1 (pasa a regresión positiva); N1 a N8 sin tocar. Asignación temporal del coordinador (Codex quieto).
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[16:05] Mejora #53 entregada** (`1b8a3d8`, solo el caso F1 de `tests/e2e/red-controlada.mjs` y la línea de resumen; N1 a N8 sin cambios, los hunks empiezan después de N8). F1 pasa de reproducción a regresión positiva del arreglo #52, con las mismas demoras (get_space a 20 ms, list_proposals a 180 ms): la lista aparece antes de 2 s (el sondeo es de 10 s), sin "Cargando propuestas…", con una sola lectura de cada una. `node tests/e2e/red-controlada.mjs`: 9 PASS, 0 FAIL, exit 0, dos veces (16:03 y 16:05). Control negativo: con el arreglo #52 revertido en la copia local (sin commitear, restaurado), F1 falla por tiempo y el banco da 8/1.
 - **[16:00] Mejora #57 entregada** (`cd0a362`, archivo nuevo `tests/e2e/recorrido-dos-sesiones.mjs`; no toqué otros de tests/e2e). `node tests/e2e/recorrido-dos-sesiones.mjs [url]`, por defecto producción (o `CRUXE_URL`). Un demo propio y tres identidades anónimas reutilizadas (Tomi, Luna y Pepe, que hace falta para el navegador compartido); capturas solo con `CRUXE_CAPTURAS`, en una subcarpeta por corrida; el código de invitación sale enmascarado. 19 comprobaciones. Una revisión independiente (3 enfoques, Sonnet) encontró falsos verdes en mi guion de #55 y los corregí: "cero heredadas" ahora se mide en la v2 antes de que nadie confirme ("Nadie confirmó todavía", estado no confirmado); E7.2 con control positivo (Tomi sí ve "Con condiciones cargadas" y "Faltan por responder", Luna no, cada uno en el estado donde aparece); la ausencia de Simulación en Luna se mira después de que llega el espacio; sin esperas fijas tras escribir en el servidor; "abierta" se comprueba con el estado "Reuniendo interés". Contra mi rama (servidor local, base real): 19/19 tres veces seguidas (15:57 a 15:59, ~24 s cada una). Contra producción (15:58, main 7747bf6): 17/19, fallan solo las dos de #56 porque producción todavía dice "5 de 4": el guion detecta el defecto. En una corrida previa salió un 401 en la consola de Tomi que no se repitió en 6 corridas; ahora el guion anota la ruta del pedido que falla.
 - **[16:00] Mejora #56 entregada** (`7107902`, solo `src/screens/Espacio.tsx` y `src/screens/PlanTab.tsx`): con más confirmaciones que el mínimo, la tarjeta dice "5 confirmaron (mínimo 4) · máx. 6"; el plan, "5 (mínimo 4)" junto a los puntos, aria-label "Confirmaron 5 (mínimo 4)", Aceptaciones "5 (mínimo 4, máximo 6, disponibles 1)" y la comparación de versiones "Confirmaron 5 (mínimo 4): …"; la versión en revisión, "Conserva 5 confirmaciones (mínimo 4)". Con el mínimo o menos queda igual. Solo formatea números del servidor. Typecheck y build en verde; visto en el navegador a 375 px. **Límite:** el texto del servidor `siguiente_accion` (ver Pedidos) todavía puede decir "5 de 4".
 - **[15:37] Mejora #55 entregada** (`dfa3698`): recorrido completo en producción (main 7747bf6, 15:36:03–15:36:44) con dos sesiones separadas a 375 px (Playwright, contextos aislados = ventana normal y privada): 16/16. Lista sola (181 ms), Luna sin Simulación, v1 confirmado, E7.2 sin conteos para Luna, baja de Caro → En revisión, v2 con "no pasan a la versión 2" y confirmado, navegador compartido con "Entrar como otra persona" → Pepe. Sin errores. Evidencia en `docs/agente-ia.md` §8.2.
@@ -49,6 +50,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - **[15:37] coordinador:** el guion del recorrido (Playwright, dos contextos, 16 comprobaciones) está en mi carpeta temporal; si lo querés como prueba versionada en `tests/e2e/`, te lo paso.
 
 ## Entregado
+- Mejora #53 (F1 como regresión positiva): `wip/agente-ia` `1b8a3d8`.
 - Mejora #57 (guion del recorrido con dos sesiones versionado): `wip/agente-ia` `cd0a362`.
 - Mejora #56 ("5 confirmaron (mínimo 4)"): `wip/agente-ia` `7107902`.
 - Mejora #55 (recorrido completo en producción con dos sesiones): `wip/agente-ia` `dfa3698`.
