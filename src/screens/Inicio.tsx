@@ -5,10 +5,11 @@ import type { ApiError, EspacioResumen, TipoEspacio } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { Aviso, Boton, Cargando, ErrorCaja, Vacio } from '../components/ui'
+import { Marca } from '../components/Marca'
 
 const TIPO: Record<TipoEspacio, string> = { amigos: 'Amigos', empresa: 'Empresa' }
 
-export default function Inicio() {
+export default function Inicio({ codigoInvitacion }: { codigoInvitacion?: string } = {}) {
   useIdentidad(null, null, null)
   const { soloLectura } = useShell()
   const [espacios, setEspacios] = useState<EspacioResumen[] | null>(null)
@@ -30,6 +31,31 @@ export default function Inicio() {
 
   return (
     <div className="pantalla">
+      {codigoInvitacion ? (
+        <div className="invitacion">
+          <Aviso tono="info" titulo="Te invitaron a un plan">
+            El código ya está cargado. Escribe tu nombre y únete: lo que marques después es privado.
+          </Aviso>
+          <UnirsePorCodigo deshabilitado={soloLectura} codigoInicial={codigoInvitacion} />
+        </div>
+      ) : null}
+      <section className="portada" aria-labelledby="portada-titulo">
+        <Marca grande />
+        <p id="portada-titulo" className="portada-lema">
+          Del «nos juntamos» al encuentro que ocurre.
+        </p>
+        <ol className="portada-pasos">
+          <li>
+            <strong>Cada uno</strong> marca en privado cuándo puede.
+          </li>
+          <li>
+            <strong>El servidor</strong> propone una sola opción compatible.
+          </li>
+          <li>
+            <strong>Confirmas</strong> esa versión. Si alguien se baja, se repara y se vuelve a confirmar.
+          </li>
+        </ol>
+      </section>
       <h1>Tus espacios</h1>
       <p className="suave">
         Un espacio es el grupo con el que coordinas. Todo lo que ves aquí es ficticio.
@@ -65,7 +91,7 @@ export default function Inicio() {
 
       <div className="grilla-acciones">
         <CargarDemo deshabilitado={soloLectura} />
-        <UnirsePorCodigo deshabilitado={soloLectura} />
+        {codigoInvitacion ? null : <UnirsePorCodigo deshabilitado={soloLectura} />}
       </div>
       <CrearEspacio deshabilitado={soloLectura} />
     </div>
@@ -94,8 +120,8 @@ function CargarDemo({ deshabilitado }: { deshabilitado: boolean }) {
   )
 }
 
-function UnirsePorCodigo({ deshabilitado }: { deshabilitado: boolean }) {
-  const [codigo, setCodigo] = useState('')
+function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: boolean; codigoInicial?: string }) {
+  const [codigo, setCodigo] = useState(codigoInicial ?? '')
   const [nombre, setNombre] = useState('')
   const { ocupado, error, ejecutar } = useAccion()
   const faltan = codigo.trim() === '' || nombre.trim() === ''
@@ -130,6 +156,7 @@ function UnirsePorCodigo({ deshabilitado }: { deshabilitado: boolean }) {
       <label className="campo">
         <span>Tu nombre en el espacio</span>
         <input
+          autoFocus={codigoInicial != null}
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
           autoComplete="off"
@@ -148,7 +175,8 @@ function UnirsePorCodigo({ deshabilitado }: { deshabilitado: boolean }) {
 
 function CrearEspacio({ deshabilitado }: { deshabilitado: boolean }) {
   const [nombre, setNombre] = useState('')
-  const [tipo, setTipo] = useState<TipoEspacio>('amigos')
+  // Solo lo social (decisión de Nico y Juan, 11:51): el tipo queda fijo en "amigos".
+  const tipo: TipoEspacio = 'amigos'
   const [visible, setVisible] = useState('')
   const { ocupado, error, ejecutar } = useAccion()
   const faltan = nombre.trim() === '' || visible.trim() === ''
@@ -166,13 +194,6 @@ function CrearEspacio({ deshabilitado }: { deshabilitado: boolean }) {
         <label className="campo">
           <span>Nombre del espacio</span>
           <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} />
-        </label>
-        <label className="campo">
-          <span>Tipo</span>
-          <select value={tipo} onChange={(e) => setTipo(e.target.value as TipoEspacio)}>
-            <option value="amigos">Amigos</option>
-            <option value="empresa">Empresa</option>
-          </select>
         </label>
         <label className="campo">
           <span>Tu nombre en el espacio</span>

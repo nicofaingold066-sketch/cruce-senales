@@ -43,7 +43,8 @@ describe('aceptación, baja y reparación', { timeout: 90_000 }, () => {
     expect(r.propuesta.estado).toBe('esperando_compromisos')
     expect(r.propuesta.opcion.cupos.faltan_para_minimo).toBe(0)
     expect(r.propuesta.opcion.cupos.imprescindible_acepto).toBe(false)
-    expect(r.propuesta.siguiente_accion.texto).toBe('Versión 1: confirmaron 3 de 3 necesarias. Falta la aceptación de Anfitrion t.')
+    // Enmienda 3: siguiente_accion es personal; el anfitrión (que puede aceptar) ve que le toca.
+    expect(r.propuesta.siguiente_accion).toEqual({ codigo: 'te_toca_aceptar', texto: 'Te toca confirmar la versión 1.' })
 
     // Doble clic de U1 (mismo intento, concurrente): una sola aceptación.
     const iu = intento()

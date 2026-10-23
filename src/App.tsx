@@ -3,6 +3,7 @@ import type { FaseSesion } from './lib/hooks'
 import { rutas, ShellProvider, useRuta, useShell } from './lib/shell'
 import type { Ruta } from './lib/shell'
 import { Aviso, Boton, Cargando } from './components/ui'
+import { Marca } from './components/Marca'
 import Inicio from './screens/Inicio'
 import Espacio from './screens/Espacio'
 import NuevaPropuesta from './screens/NuevaPropuesta'
@@ -38,8 +39,8 @@ function Marco({
       </a>
       <header className="encabezado">
         <div className="encabezado-linea">
-          <a className="marca" href={rutas.inicio()} aria-label="CRUCE, ir a tus espacios">
-            CRUCE
+          <a className="marca" href={rutas.inicio()} aria-label="CRUXE, ir a tus espacios">
+            <Marca />
           </a>
           <span className="sep" aria-hidden="true">
             /
@@ -111,6 +112,8 @@ function Pantalla({ ruta }: { ruta: Ruta }) {
       return <NuevaPropuesta key={ruta.espacioId} espacioId={ruta.espacioId} />
     case 'propuesta':
       return <Propuesta espacioId={ruta.espacioId} propuestaId={ruta.propuestaId} />
+    case 'unirse':
+      return <Inicio key={ruta.codigo} codigoInvitacion={ruta.codigo} />
     default:
       return <Inicio />
   }

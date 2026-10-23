@@ -41,8 +41,24 @@ export interface Franja {
   fin: Momento
 }
 
+/** Códigos cerrados de `siguiente_accion` (enmienda 3). La interfaz elige color o ícono por código, nunca por texto. */
+export type CodigoSiguiente =
+  | 'abrir_propuesta'
+  | 'reunir_condiciones'
+  | 'buscar_opcion'
+  | 'sin_opcion'
+  | 'aceptar_version'
+  | 'te_toca_aceptar'
+  | 'ya_aceptaste'
+  | 'grupo_confirmado'
+  | 'buscar_alternativa'
+  | 'sin_alternativa'
+  | 'expirado'
+  | 'cancelado'
+
 export interface SiguienteAccion {
-  codigo: string
+  /** Un código de `CodigoSiguiente`; se acepta cualquier otro como respaldo (se muestra solo el texto). */
+  codigo: CodigoSiguiente | (string & {})
   texto: string
 }
 
