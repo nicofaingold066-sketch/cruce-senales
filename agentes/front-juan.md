@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la computadora de Nico, Mac-mini-de-Felix). Última actualización: viernes 23 oct, 17:38 Santiago (reloj).
 
 ## Tocando ahora
-- CORRIENDO PRUEBA (18:32): capturas 375/430/1024/1440 contra el build final de wip/front-juan. Demos y propuestas propias, datos ficticios, cero llamadas al agente.
+(vacío. CORRIENDO PRUEBA terminado a las 18:36: capturas finales: sin desborde a 320, 375, 430, 768, 1024, 1280 y 1440.)
 
 ## Entregado: `wip/front-juan` = `91e9f9a` (sobre `main` `30e4c76`, ya fusionado)
 Nuevo desde lo que integraste (`9269e8e`), pedido por Juan:
