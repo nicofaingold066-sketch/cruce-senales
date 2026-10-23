@@ -1,6 +1,6 @@
 # El agente del círculo (CRUXE)
 
-Dueño: agente-ia. Estado al viernes 23 oct 2026: **construido, integrado y probado sin clave de IA.** La función `agente` está desplegada en Supabase (v4, commit `05b2c46`) y la pantalla está en `wip/fundamentos`.
+Dueño: agente-ia. Estado al viernes 23 oct 2026: **construido, integrado y probado sin clave de IA.** La función `agente` está desplegada en Supabase (v4, commit `05b2c46`) y la pantalla está en `wip/fundamentos`. **El cliente del modelo por el Vercel AI Gateway (#64) está construido y no está probado con el modelo real:** falta que Nico cargue `AI_GATEWAY_API_KEY` y que se pruebe en vivo.
 
 **En una frase:** el agente lee los gustos de todo el grupo, mira el clima y propone hasta 3 planes que le sirven a todos. Propone, pero no decide por nadie y nunca ve lo que puso cada uno.
 
@@ -35,7 +35,7 @@ Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y
 |---|---|
 | Preferencias privadas, reglas de elección, candidatas y perfil del grupo | **Real**, con datos ficticios |
 | Clima | **Real** (pronóstico de Santiago de Open-Meteo, sin clave). En el espacio demo se puede elegir "Simular sol" o "Simular lluvia"; la pantalla lo rotula como clima de prueba y la función solo lo acepta si el servidor confirma que el espacio es demo |
-| Elección y redacción de la IA | **Construida, sin probar con el modelo real:** falta la clave de Anthropic. Sin clave sale siempre la primera candidata con texto fijo, y la pantalla lo dice ("Texto fijo") |
+| Elección y redacción de la IA | **Construida, sin probar con el modelo real:** falta la clave del Vercel AI Gateway (#64). Sin clave sale siempre la primera candidata con texto fijo, y la pantalla lo dice ("Texto fijo") |
 | Canchas, lugares y eventos | **Simulados**, con el rótulo "Simulación": catálogo ficticio de 5 entradas |
 | Compartir por WhatsApp | **Real:** un enlace `wa.me` con el mensaje y el enlace de invitación. La persona decide si lo manda |
 | Búsqueda de eventos en internet, reservas, pagos | **Fuera** de este corte |
@@ -67,10 +67,18 @@ Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y
 - **Tiempos límite:** 10 s para la función y 8 s para el respaldo, que llama directo a la base si la función no responde.
 - **Errores claros,** siempre con "Crear la propuesta a mano" y con "Reintentar" cuando sirve. Si el panel falla, el resto del espacio sigue funcionando.
 - **Accesible en el teléfono:** toques de 44 px, anuncios para lector de pantalla y el foco en "Reintentar" después de un error. Probado a 375 px.
+- **Costo de la IA (#64), protección parcial:** el modelo puede escribir como máximo 1500 tokens (antes 2048; el JSON ocupa unos 250, pero Haiku 5.5 piensa por defecto y ese pensamiento cuenta en el tope, así que un tope justo cortaría la respuesta y se cobraría igual) y la llamada se corta a los 8 s, sin reintentos. Además, la función deja una sola llamada al modelo por persona cada 10 s y 30 por minuto por instancia. Pasado eso, responde igual con la regla y el texto fijo ("Texto fijo"), nunca con un error. Lo que no cubre: las sesiones son anónimas, así que quien abre sesiones nuevas tiene un usuario nuevo cada vez; el límite vive en la memoria de cada instancia de la función (otra instancia lleva su propia cuenta y se reinicia con la función); y si varias personas agotan el tope por minuto, las demás reciben texto fijo sin aviso. **El tope real es el límite de gasto de la clave, que pone Nico.** Un contador en la base (compartido entre instancias, por minuto y por día) sería el paso siguiente si hace falta.
 - **Validación de lo que escribe la IA:** largo máximo; sin nombres de integrantes; sin palabras que aludan a la situación de alguien ("plata", "salud", "alguien") ni a cosas que no pasaron ("confirmado", "reservado"). El id elegido tiene que estar entre las candidatas. Si algo no pasa la validación, va el texto fijo.
 
 ## 7. Lo que falta
-- **Clave de Anthropic.** La crea Nico con un límite de gasto y la carga como secreto `ANTHROPIC_API_KEY` de la función. El modelo por defecto es `claude-haiku-5-5` y se cambia con `AGENTE_MODELO`. Hasta entonces, la elección y la redacción de la IA no están probadas con el modelo real.
+- **Clave del Vercel AI Gateway (#64, aprobado por Nico).** La crea Nico con un límite de gasto y la carga como secreto `AI_GATEWAY_API_KEY` de la función en Supabase. Nadie más la pide, la escribe ni la imprime. Sin ella, la elección y la redacción de la IA no están probadas con el modelo real. Cómo elige la función:
+  - Con `AI_GATEWAY_API_KEY`: Gateway (`https://ai-gateway.vercel.sh`), modelo `anthropic/claude-haiku-5.5`.
+  - Sin ella y con `ANTHROPIC_API_KEY`: API de Anthropic directa, modelo `claude-haiku-5-5`, como antes.
+  - Sin ninguna: regla y texto fijo.
+  - `AGENTE_MODELO` cambia el modelo, si tiene el formato del proveedor elegido (`creador/modelo` en el Gateway, sin barra en la directa). Si no lo tiene, se usa el modelo por defecto.
+  - La salida pide JSON con esquema (`output_config.format`), que Vercel documenta para su API compatible con Messages. Si el Gateway lo rechaza, el registro de la función dice `agente: el modelo no respondió gateway … 400` y va el texto fijo; se arregla sin tocar código, con el secreto `AGENTE_SALIDA=herramienta`, que fuerza una herramienta. Eso solo sirve con Haiku 5.5: Sonnet 5.5, Opus 5.5 y Fable 5.1 rechazan un `tool_choice` forzado.
+  - Lo confirmado en la documentación de Vercel (sin clave, sin llamada real): la URL, el formato de salida y el nombre del modelo, que sale de su página de modelos.
+  - Probado sin red: `node --test "supabase/functions/agente/*.test.ts"` (34 pruebas: elección de proveedor, pedido, lectura de la respuesta, límite) y la función entera con la base y el SDK simulados (10 casos).
 - **Temperatura.** `claude-haiku-5-5` no acepta una temperatura distinta de la predeterminada. La repetibilidad la dan el esfuerzo bajo, la salida con esquema fijo y la lista cerrada de candidatas.
 - **Corte duro:** sábado 10:00. Si algo del agente no está estable, sale de la demo y se cuenta como siguiente paso.
 
@@ -144,4 +152,4 @@ Capturas (8, de la sesión agente-ia; no están en el repo): espacio de Tomi, es
 **Corrección (mejora #57, 15:58 del mismo día):** una revisión independiente del guion mostró que dos comprobaciones de esta corrida medían menos de lo que dice la tabla. "Las confirmaciones no pasan a la v2" solo buscaba la frase, que aparece siempre después de una reparación. Y E7.2 miraba la pantalla de Luna en un estado donde "Con condiciones cargadas" no se dibuja para nadie. El guion versionado `tests/e2e/recorrido-dos-sesiones.mjs` las mide bien: la v2 dice "Nadie confirmó todavía" antes de que alguien confirme, y cada conteo se mira en el estado donde aparece, con control positivo (Tomi lo ve y Luna no). Corrido contra producción (`main` 7747bf6) de 15:58:04 a 15:58:30: esas comprobaciones pasaron. Fallaron solo las dos de la mejora #56, porque producción todavía decía "5 de 4". Con el arreglo de #56, en mi rama: 19/19.
 
 ## Historia
-Idea de Nico. Diseño de privacidad del coordinador: el servidor elige y la IA solo ve totales. Enmienda 4 (preferencias, catálogo y elección por reglas), 4.1 (candidatas, perfil del grupo y la IA como coordinadora, pedido de Nico) y 5 (preferencias simuladas). Mejoras #11, #23, #25, #26, #28, #32 y #35.
+Idea de Nico. Diseño de privacidad del coordinador: el servidor elige y la IA solo ve totales. Enmienda 4 (preferencias, catálogo y elección por reglas), 4.1 (candidatas, perfil del grupo y la IA como coordinadora, pedido de Nico) y 5 (preferencias simuladas). Mejoras #11, #23, #25, #26, #28, #32 y #35. #64: el modelo pasa por el Vercel AI Gateway (pedido de Nico), con un tope de tokens y un límite de llamadas por persona (pedido del coordinador por costo).

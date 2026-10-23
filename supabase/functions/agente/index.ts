@@ -2,24 +2,31 @@
 // 1) Trae el clima. 2) Pide a proponer_plan_borrador, con el JWT de quien llama, las opciones que
 // le sirven a todo el grupo (el servidor las filtra y ordena con reglas fijas, leyendo las
 // preferencias de cada uno). 3) Si hay clave, Claude hace de coordinador del grupo: elige UNA de esas
-// opciones mirando el perfil del grupo entero y redacta por qué y un mensaje para invitar.
+// opciones mirando el perfil del grupo entero y redacta por qué y un mensaje para invitar. Con
+// AI_GATEWAY_API_KEY va por el Vercel AI Gateway; sin ella y con ANTHROPIC_API_KEY, por la API directa.
 // El modelo nunca recibe datos de una persona: solo opciones ya validadas, el clima y totales del grupo.
 // Sin clave, con error, con una elección fuera de la lista o pasados ~8 s: primera opción y texto fijo.
 // Nunca crea, invita ni confirma nada.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import Anthropic from 'npm:@anthropic-ai/sdk@1.2.0'
 import {
+  armarPedido,
   candidatasDe,
   climaPedido,
   climaSimulado,
+  crearLimiteModelo,
+  elegirProveedor,
   entradaModelo,
   esSabado,
   leerPronostico,
   mensajeFijo,
+  modoSalida,
   perfilParaRespuesta,
   resumenClima,
   sumarDia,
+  textoDeRespuesta,
   unirFrases,
+  usuarioDe,
   validarSalidaModelo,
   type Candidata,
   type Clima,
@@ -29,7 +36,8 @@ import {
 
 const PLAZO_TOTAL_MS = 8000
 const PLAZO_CLIMA_MS = 3000
-const MODELO_POR_DEFECTO = 'claude-haiku-5-5'
+// Una llamada al modelo por persona cada 10 s y un tope por minuto, en la memoria de esta instancia (mejor esfuerzo).
+const limiteModelo = crearLimiteModelo()
 // Centro de Santiago: el clima es del lugar del encuentro, nunca de la ubicación de una persona.
 const LATITUD = -33.45
 const LONGITUD = -70.66
@@ -103,41 +111,40 @@ async function coordinarConModelo(
   nombres: string[],
   restanteMs: number,
   simulado: boolean,
+  usuario: string,
 ): Promise<{ eleccion: Candidata; explicacion: string; mensaje: string } | null> {
-  const clave = Deno.env.get('ANTHROPIC_API_KEY')
-  if (!clave || restanteMs < 1500 || candidatas.length === 0 || candidatas.some((c) => typeof c.id !== 'string')) return null
-  const modelo = Deno.env.get('AGENTE_MODELO') || MODELO_POR_DEFECTO
-  const client = new Anthropic({ apiKey: clave, timeout: restanteMs, maxRetries: 0 })
+  const proveedor = elegirProveedor((n) => Deno.env.get(n))
+  if (!proveedor || restanteMs < 1500 || candidatas.length === 0 || candidatas.some((c) => typeof c.id !== 'string')) return null
+  const clave = Deno.env.get(proveedor.variableClave)
+  if (!clave) return null
+  // Costo: pasado el límite, el agente responde igual, con la regla y el texto fijo (no es un error).
+  if (!limiteModelo.permitir(usuario, Date.now())) {
+    console.info('agente: límite de llamadas al modelo; va la regla', proveedor.tipo)
+    return null
+  }
+  const modo = modoSalida(Deno.env.get('AGENTE_SALIDA'))
+  const client = new Anthropic({ apiKey: clave, baseURL: proveedor.baseURL, timeout: restanteMs, maxRetries: 0 })
   try {
-    const respuesta = await client.messages.create({
-      model: modelo,
-      max_tokens: 2048,
-      system: SISTEMA,
-      output_config: {
-        effort: 'low',
-        format: {
-          type: 'json_schema',
-          schema: {
-            type: 'object',
-            properties: {
-              eleccion_id: { type: 'string', enum: candidatas.map((c) => c.id) },
-              explicacion: { type: 'string' },
-              mensaje_al_grupo: { type: 'string' },
-            },
-            required: ['eleccion_id', 'explicacion', 'mensaje_al_grupo'],
-            additionalProperties: false,
-          },
-        },
-      },
-      messages: [{ role: 'user', content: JSON.stringify(entradaModelo(candidatas, perfil, clima, nombres, simulado)) }],
-    })
-    if (respuesta.stop_reason !== 'end_turn') return null
-    const texto = respuesta.content.map((b) => (b.type === 'text' ? b.text : '')).join('')
+    // El `timeout` del SDK cubre hasta las cabeceras; el `signal` corta también la lectura del cuerpo.
+    const respuesta = await client.messages.create(
+      armarPedido(proveedor, modo, candidatas, SISTEMA, entradaModelo(candidatas, perfil, clima, nombres, simulado)),
+      { signal: AbortSignal.timeout(restanteMs) },
+    )
+    const texto = textoDeRespuesta(respuesta, modo)
+    if (texto === null) {
+      // Solo el motivo de corte y cuántos tokens escribió: sirve para ver si el tope corta respuestas.
+      console.error('agente: respuesta del modelo descartada', proveedor.tipo, respuesta.stop_reason, respuesta.usage?.output_tokens ?? null)
+      return null
+    }
     // La elección tiene que ser una de las opciones que el servidor ya validó, y los textos, válidos.
-    return validarSalidaModelo(texto, candidatas, nombres)
+    const valida = validarSalidaModelo(texto, candidatas, nombres)
+    if (!valida) console.error('agente: salida del modelo rechazada por la validación', proveedor.tipo)
+    return valida
   } catch (e) {
-    // Solo el tipo de error: nunca el contenido ni datos del grupo.
-    console.error('agente: el modelo no respondió', e instanceof Error ? e.name : 'desconocido')
+    // Solo el proveedor, el tipo de error y el código HTTP: nunca el contenido, la clave ni datos del grupo.
+    const estado = e instanceof Error && typeof (e as { status?: unknown }).status === 'number' ? (e as { status: number }).status : 0
+    // constructor.name: las clases de error del SDK no fijan `name` (queda "Error").
+    console.error('agente: el modelo no respondió', proveedor.tipo, e instanceof Error ? e.constructor.name : 'desconocido', estado)
     return null
   }
 }
@@ -207,7 +214,15 @@ Deno.serve(async (req) => {
   const resumen = resumenClima(clima)
 
   const simulado = clima.fuente === 'simulacion'
-  const delModelo = await coordinarConModelo(candidatas, perfil, resumen, nombres, PLAZO_TOTAL_MS - (Date.now() - inicio), simulado)
+  const delModelo = await coordinarConModelo(
+    candidatas,
+    perfil,
+    resumen,
+    nombres,
+    PLAZO_TOTAL_MS - (Date.now() - inicio),
+    simulado,
+    usuarioDe(autorizacion),
+  )
   const elegida = delModelo?.eleccion ?? candidatas[0]
 
   // Los campos de primer nivel describen la opción destacada; `candidatas` trae todas para que el
