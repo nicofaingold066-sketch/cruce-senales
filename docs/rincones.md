@@ -1,10 +1,10 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: viernes 23 oct, 20:05 (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: viernes 23 oct, 20:10 (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
-Todavía en curso: 115 de ~135 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 11 (3 ya corregidos en `wip/friccion`)** (ninguno impide completar el recorrido canónico), el resto APROBADO.
+Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 13 (3 ya corregidos en `wip/friccion`)** (ninguno impide completar el recorrido canónico), el resto APROBADO.
 Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no de función):
 1. **O-01** Cabecera a 320 px: el avatar de la sesión tapa el chip "Datos ficticios" en TODAS las pantallas con nombre.
 2. **O-02** Entrada por enlace en un navegador que ya es miembro: "¿Quién eres?" lo muestra "no disponible" y dice "Ya no queda ningún nombre libre", sin "Seguir como X".
@@ -33,6 +33,8 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | O-09 | OBSERVADO (leve) | Propuesta cancelada | "Cancelado" dos veces seguidas (tarjeta de estado y aviso) | `202610231944/R89-375.png` | front-juan |
 | O-10 | OBSERVADO | Nueva propuesta, "No puede faltar" | Con integrantes que todavía no entraron ("por entrar"), la lista los ofrece igual que a los demás y no avisa que, si el elegido no entra, no se puede publicar una opción (R141/R143/R144) | `202610231956/R141-375.png` | front-juan |
 | O-11 | OBSERVADO | Agente del círculo, resultado en un grupo real | Voseo ("Elegís vos", "completás") en una app que tutea; la opción "Asado · Quincho de Tomi" y los lugares marcados "SIMULACIÓN" aparecen en un grupo que no es el demo | `202610231958/R154-375.png` | agente-ia |
+| O-12 | OBSERVADO (leve) | Avisos repetidos | (a) Sin red en un plan: banner global + banner "Sin conexión" del plan + error del botón (R161); (b) contrato incompatible: "Versión incompatible" arriba y "No se pudo completar · Versión incompatible" debajo (R170); (c) "Hoy paso" aparece deshabilitado sin explicación mientras no se marque "Me interesa" (R162) | `202610232002/R161-375.png`, `202610232004/R170-375.png` | front-juan (a, c) / friccion (b) |
+| O-13 | OBSERVADO (leve) | Falla al iniciar la sesión anónima | El texto dice "el inicio de sesión anónimo puede estar deshabilitado en el proyecto": lenguaje técnico para una persona que solo abrió el enlace (R173) | `202610232004/R173-375.png` | friccion |
 
 ## Inventario de rincones
 (Estado: A = APROBADO, O = OBSERVADO, R = ROTO, — = pendiente de recorrer.)
@@ -161,5 +163,18 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | R154 | Agente: 3 opciones, recomendada, título editable, mensaje para el grupo, "Usar esta opción" (una sola llamada) | ojo | O (O-11) |
 | R155 | Nueva propuesta precargada desde el agente ("Borrador del agente") | auto | A |
 
+### Sin red, fallas y límites (`f9` 20:02, `f10` 20:04; la falla se inyecta en el navegador, no en la base)
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| R160 | Mi respuesta con la red cortada (banner global) | auto | A |
+| R161 | Guardar condiciones SIN red: "Sin conexión con el servidor. La acción no quedó registrada. Lo que escribiste se conserva", botón y "Descartar cambios" | ojo | A (O-12) |
+| R162 | Vuelve la red: reintentar guarda ("Completas", "Guardado") | ojo | A (O-12c) |
+| R164/R165 | Nueva propuesta con título de 100+ caracteres (se corta a 80) y cupos cambiados | auto | A |
+| R166 | Perfil: "Entrar como otra persona" | auto | A |
+| R170 | Contrato incompatible: "Recargar la aplicación", acciones bloqueadas | ojo | A (O-12b) |
+| R171 | 500 al abrir un espacio: "Falla temporal. Intenta de nuevo." + Reintentar (sana al reintentar) | auto | A |
+| R172 | Respuesta lenta: "Cargando el espacio…" con esqueleto | auto | A |
+| R173 | No se pudo iniciar la sesión anónima: Reintentar | ojo | O (O-13) |
+
 ## Pendiente de recorrer
-"Entrar como otra persona" (tras O-02), reclamar un lugar simulado libre del demo, "Hoy paso", agente con preferencias de invitados y una llamada al agente en un grupo real, Nueva propuesta con valores inválidos (mínimo > máximo, cierre vencido, imprescindible pendiente), expirado (plazo vencido), acciones sin red a mitad (guardar condiciones, confirmar), contrato incompatible, y los cuatro anchos de cada rincón mirados a ojo (hoy `auto` en varios). Se repite lo afectado tras cada publicación en `main`.
+"Entrar como otra persona" confirmado, reclamar un lugar simulado libre del demo, "Hoy paso" ya marcado, plazo vencido (expirado), cierre elegido a mano con fecha pasada, y los cuatro anchos de cada rincón mirados a ojo (hoy `auto` en varios). Se repite lo afectado tras cada publicación en `main`.
