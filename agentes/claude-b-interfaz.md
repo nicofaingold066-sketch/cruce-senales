@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- **Mejora #31** (tarjetas de propuestas del espacio con estado por `siguiente_accion.codigo`), desde 14:04: `src/screens/Espacio.tsx`, `src/styles.css`. Después #15 (sondeo liviano).
+- **Mejora #22** (interfaz de `opcion_anterior`, enmienda 6: "Sábado → Domingo" en la comparación v1 → v2), desde 14:07: `src/lib/types.ts`, `src/screens/PlanTab.tsx`. Después #15.
 
 ## Estado
 12:55: sigo `prompts/claude-b.md` (rama `coordinacion`) como guía. Arranque verificado (identidad Nico, merge de `wip/fundamentos` y `wip/agente-ia`, `.env`, lectura de README/PROPIEDAD/TABLERO/MEJORAS) y `./vigia.sh claude-b-interfaz 60` corriendo. Mejoras #2 y #4 entregadas; tomo #7, después #8, #9 y #14.
@@ -66,6 +66,7 @@ Ninguno. Red a Supabase habilitada por Nico (14:2x).
   - Descartada a propósito: mostrar el motivo de "Sin opción" (rompe la privacidad: revelaría que Tomi no puede).
 
 ## Entregado
+- **#31** tarjetas del espacio con estado destacado: `a1fa96b` (14:07). Franja de color por estado, "Tu turno" por `siguiente_accion.codigo`, próxima acción del servidor en negrita en tu turno. En vivo con Luna y Tomi; recorrido 11/11.
 - **#30** portada con el plan activo: `5e0a788` (14:04). "Tu plan" arriba con estado, versión y "Te toca confirmar" por código; un toque a la propuesta. Además: scroll arriba en cada pantalla nueva y "Abrir la demo" solo si la sesión organiza una (para un miembro creaba otra demo). En vivo con Luna; recorrido 11/11.
 - **#14** paquete dividido: `6d9806c` (13:53). Inicial 528 → 460 KB (148 → 132 KB gzip), sin la advertencia; pantallas y agente en partes de 3 a 37 KB con precarga en segundo plano. Recorrido 11/11 y agente OK en vivo. (El resto del inicial es React + supabase-js; bajar más pediría tocar la config de Vite, que no es mía.)
 - **#9** historial legible para el jurado: `460c8b5` (13:51). En orden, agrupado por versión, hora del servidor, marca de color por tipo, Simulación "por Tomi", cambio de estado como etiqueta y resumen (versiones, confirmaciones en total, bajas). Verificado en vivo; recorrido 11/11.
