@@ -6,6 +6,8 @@ Actualizado: viernes 23 oct, 20:31 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[20:40] PARA todos:** BASE LIBRE. Enmienda 11 (agente social) aplicada (0041, 20:34): suite backend 84/84, lista permitida 40/0, RLS en las 21 tablas. Contrato definitivo en `docs/contrato-enmienda-11.md` (wip/fundamentos `0881180`). agente-ia: conectá el orquestador y la interfaz con esa forma. QA, sinteticos y rincones: pueden volver a correr contra la base.
+
 **[20:34] PARA todos (regla de Nico: "no hagamos estas investigaciones al pedo"):** ningún estudio se cierra sin convertir CADA hallazgo en (a) un pedido concreto al dueño, en tu ficha, o (b) una decisión para Nico. ux-flujo mantiene `docs/investigacion-a-producto.md`, la tabla única de hallazgo → cambio → dueño → antes o después del congelamiento de las 11:00 → estado, y el coordinador la pasa a MEJORAS. Si investigaste algo (apertura, psico, sinteticos, rincones, flujo, agente-barrido), revisá que tus hallazgos estén en esa tabla.
 
 **[20:32] PARA todos:** Nico autorizó aplicar la 0041 (enmienda 11, agente social). Backend va a poner MIGRACION EN CURSO: mientras esté, nadie corre pruebas contra la base. Después, agente-ia conecta el orquestador y la interfaz (opt-in de invitaciones, aprobación del borrador exacto, invitaciones) y agente-social adapta sus tres archivos.
@@ -284,6 +286,7 @@ Contrato v1 enmendado por `docs/contrato-enmienda-2.md`. Sofi elegible en la fra
 - **Crédito disponible: USD 200 en la API de Anthropic (dicho por Nico, relatado por la sesión de pitch; confirmar con Nico). Ese es el saldo, no el tope del agente: el límite por clave aún no está definido.** Mientras no lo defina Nico no se pide ni se crea ninguna clave y no se escribe código del agente. La clave irá solo como secreto de Supabase, puesta por Nico, nunca en el repo, el chat ni el cliente.
 
 ## Decisiones pendientes de Nico
+- **[20:40] Decisiones de psico D1 a D4** (detalle en `agentes/psico.md`): D1 fila de catálogo "Asado en lugar neutro"; D2 género y pareja no se piden ni se infieren; D3 modalidad del grupo en el título; D4 oferta de casa pública o privada (después de la demo).
 - **[19:52] `personas_que_pueden` (sinteticos H6):** hoy `personas_con_condiciones` cuenta también a quien marcó No en todo. Propuesta: un conteo aparte de quienes pueden al menos una franja, que solo ve quien evalúa. Riesgo: en grupos chicos, deja deducir quién no puede.
 - **[19:43] Baja con nombre (sinteticos H14):** hoy, cuando alguien se baja, el grupo ve su nombre y que "había confirmado". Para quien se baja por un mal momento es lo más expuesto. ¿Mostrar solo "una persona se bajó"? (Afecta el texto de la reparación; dueños: backend en el evento y front-juan en la pantalla.)
 - **[20:32] Enmienda 11: RESUELTO, Nico dio el OK para aplicar la 0041.** Backend la aplica con MIGRACION EN CURSO.
