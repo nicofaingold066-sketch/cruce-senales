@@ -303,7 +303,7 @@ function AgregarSimulado({
         Agregar a la simulación
       </Boton>
       {hecho ? <p role="status">{hecho}</p> : null}
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </form>
   )
 }
@@ -358,7 +358,7 @@ function ReiniciarDemo({
         </Aviso>
       )}
       {hecho ? <p role="status">{hecho}</p> : null}
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </div>
   )
 }

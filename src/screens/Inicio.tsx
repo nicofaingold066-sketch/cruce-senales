@@ -66,7 +66,8 @@ export default function Inicio({
         <p className="portada-sub">
           Cada uno dice en privado cuándo puede. CRUXE propone <strong>un solo plan</strong> y cada uno lo confirma.
         </p>
-        {codigoInvitacion ? null : (
+        {/* Con un plan activo, lo principal es el plan: sin botones grandes que creen otra demo por error. */}
+        {codigoInvitacion || conPlan ? null : (
           <div className="portada-acciones">
             <CargarDemo deshabilitado={soloLectura} yaCargada={espacios?.some((e) => e.demo && e.mi_rol === 'organizador') ?? false} />
             <button type="button" className="btn btn-secundario" onClick={irAUnirse}>
@@ -191,7 +192,7 @@ function CargarDemo({ deshabilitado, yaCargada }: { deshabilitado: boolean; yaCa
         {yaCargada ? 'Abrir la demo «Los del asado»' : 'Probar la demo «Los del asado»'}
       </Boton>
       <p className="suave">Serás Tomi, quien organiza. Las otras cinco personas son simuladas (datos ficticios).</p>
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </div>
   )
 }
@@ -217,6 +218,9 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
     if (r?.ok) {
       if (r.data.resultado.reclamo_asiento_simulado) {
         dejarAviso(`Reclamaste el lugar de ${nombre.trim()}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.`)
+      } else if (r.data.resultado.ya_era_miembro) {
+        // Esta sesión ya estaba en el espacio: el servidor no cambia el nombre. Se avisa en vez de entrar en silencio.
+        dejarAviso('Este teléfono ya estaba en este espacio: sigues con tu nombre de antes (lo ves arriba). Para entrar como otra persona, usa otro teléfono o una ventana privada.')
       }
       irA(rutas.espacio(r.data.resultado.espacio_id))
     }
@@ -251,7 +255,7 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
       <Boton type="submit" ocupado={ocupado} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado}>
         Unirme
       </Boton>
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </form>
   )
 }
@@ -285,7 +289,7 @@ function CrearEspacio({ deshabilitado }: { deshabilitado: boolean }) {
         <Boton type="submit" ocupado={ocupado} ocupadoTexto="Creando…" disabled={faltan || deshabilitado}>
           Crear espacio
         </Boton>
-        {error ? <ErrorCaja error={error} /> : null}
+        {error ? <ErrorCaja error={error} enfocar /> : null}
       </form>
     </details>
   )

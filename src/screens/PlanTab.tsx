@@ -32,7 +32,7 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
 
       {p.estado === 'borrador' ? <AbrirPropuesta p={p} viva={viva} soloLectura={soloLectura} /> : null}
 
-      {conOpcion && p.opcion ? <OpcionVigente p={p} viva={viva} soloLectura={soloLectura} /> : null}
+      {conOpcion && p.opcion ? <OpcionVigente key={p.opcion.version} p={p} viva={viva} soloLectura={soloLectura} /> : null}
 
       {enRevision ? (
         <AlternativaOrganizador p={p} viva={viva} soloLectura={soloLectura} sinAlternativa={sinAlternativa} />
@@ -225,7 +225,7 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
       ) : (
         <Aviso tono="info">{razonNoAceptar(p)}</Aviso>
       )}
-      {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} /> : null}
+      {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }
@@ -234,10 +234,10 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
 
 function BloqueRevision({ p }: { p: EstadoPropuesta }) {
   return (
-    <Aviso tono="aviso" titulo="El grupo quedó por debajo del mínimo">
-      {p.opcion ? `La versión ${p.opcion.version} dejó de cumplir el mínimo o la presencia del anfitrión. ` : ''}
+    <Aviso tono="aviso" titulo="Una baja dejó el plan sin cumplir">
+      {p.opcion ? `La versión ${p.opcion.version} ya no alcanza el mínimo o perdió al anfitrión. ` : ''}
       Sus confirmaciones ya no bastan para confirmar el encuentro. El plan está <strong>En revisión</strong> hasta que se
-      publique una alternativa y todas las personas la confirmen de nuevo.
+      publique una alternativa y se reúnan de nuevo las confirmaciones necesarias.
     </Aviso>
   )
 }
@@ -300,7 +300,8 @@ function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
           <p className="cv-franja">{franjaTexto(o.franja.inicio, o.franja.fin)}</p>
           {o.aceptaron.length === 0 ? (
             <p className="cv-pie">
-              <strong>Nadie confirmó todavía:</strong> empieza de cero. Cada persona tiene que confirmar de nuevo.
+              <strong>Nadie confirmó todavía:</strong> empieza de cero. Se confirma con {o.cupos.minimo} confirmaciones de esta
+              versión, entre ellas la de {p.imprescindible.nombre}.
             </p>
           ) : (
             <p className="cv-pie">
@@ -352,7 +353,7 @@ function AlternativaOrganizador({ p, viva, soloLectura, sinAlternativa }: VivaPr
       ) : (
         <p className="suave">El organizador ({p.organizador.nombre}) debe buscar una alternativa. Mientras tanto puedes actualizar tus condiciones en "Mi respuesta".</p>
       )}
-      {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} /> : null}
+      {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }
@@ -453,7 +454,7 @@ function AbrirPropuesta({ p, viva, soloLectura }: VivaProps) {
       ) : (
         <p className="suave">Solo el organizador puede abrirla.</p>
       )}
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }
@@ -483,7 +484,7 @@ function BuscarOpcion({ p, viva, soloLectura, sinOpcion }: VivaProps & { sinOpci
           {error?.reintentable ? 'Reintentar búsqueda' : sinOpcion ? 'Volver a buscar opción' : 'Buscar opción compatible'}
         </Boton>
       ) : null}
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }
@@ -515,7 +516,7 @@ function Cancelar({ p, viva, soloLectura }: VivaProps) {
           </div>
         </Aviso>
       )}
-      {error ? <ErrorCaja error={error} /> : null}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
 }
