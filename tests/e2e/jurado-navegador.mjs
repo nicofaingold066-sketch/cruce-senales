@@ -260,7 +260,7 @@ try {
       })
       await aceptar('Fede')
       await tab(T, 'Plan'); await estado(T, 'Esperando compromisos')
-      await texto(T, 'Cupos libres para el resto: 0')
+      await texto(T, 'Libres para el resto: 0')
       const r = await accion(vieja, 'simulate_accept', () => tocar(vieja, 'Aceptar versión 1 por Sofi'), false)
       comprobar(r.error.codigo === 'cupo_completo' && r.error.detalle === 'reservado_imprescindible', 'Servidor revalida y reserva a Tomi')
       await texto(vieja, 'reservado')
