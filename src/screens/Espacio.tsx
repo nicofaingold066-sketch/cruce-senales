@@ -8,6 +8,7 @@ import { momentoCorto } from '../lib/format'
 import { Avatar, AvatarPila, Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { PlanVivo } from '../components/PlanVivo'
+import { Tablero } from '../components/Tablero'
 import { enlaceInvitacion, textoInvitacion, urlWhatsApp } from '../lib/compartir'
 // El panel del agente va en su propia parte del paquete (mejora #14): se descarga solo al abrir el bloque.
 const AgentePanel = lazy(() => import('../agente/AgentePanel').then((m) => ({ default: m.AgentePanel })))
@@ -141,7 +142,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
         <div className="invitar">
           <div className="invitar-codigo">
             <span>Código de invitación</span>
-            <strong className="codigo">{espacio.codigo_invitacion}</strong>
+            <Tablero codigo={espacio.codigo_invitacion} />
           </div>
           <CopiarCodigo codigo={espacio.codigo_invitacion} espacioNombre={espacio.nombre} />
         </div>

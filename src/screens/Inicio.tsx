@@ -12,6 +12,8 @@ import { PlanVivo, esTurno } from '../components/PlanVivo'
 import { Marca } from '../components/Marca'
 import { Icono } from '../components/Icono'
 import { ArteCruce } from '../components/Cruce'
+import { Resaltado } from '../components/Resaltado'
+import { Tablero } from '../components/Tablero'
 
 const TIPO: Record<TipoEspacio, string> = { amigos: 'Amigos', empresa: 'Empresa' }
 
@@ -56,14 +58,16 @@ export default function Inicio({
       <div className="vista">
         <section className="escena escena-invitacion" aria-labelledby="invitacion-titulo">
           <span className="escena-eyebrow">Invitación a CRUXE</span>
-          <h1 id="invitacion-titulo">Te invitaron a un plan</h1>
+          <h1 id="invitacion-titulo">
+            Te invitaron a <Resaltado tipo="circulo">un plan</Resaltado>
+          </h1>
           <p className="escena-sub">
             Súmate al grupo con tu nombre. Después marcas en privado cuándo puedes y confirmas el plan que salga.
           </p>
           <div className="invitar">
             <div className="invitar-codigo">
               <span>Código de la invitación</span>
-              <span className="codigo invitacion-codigo">{codigoInvitacion}</span>
+              <Tablero codigo={codigoInvitacion} como="span" />
             </div>
           </div>
           <div className="solo-ancho">
@@ -92,7 +96,10 @@ export default function Inicio({
         <section className="escena escena-portada" aria-labelledby="portada-titulo">
           <Marca grande />
           <h1 id="portada-titulo" className="portada-lema">
-            Del «nos juntamos» al <em>encuentro que ocurre</em>.
+            Del «nos juntamos» al{' '}
+            <em className="sin-corte">
+              <Resaltado>encuentro que ocurre</Resaltado>.
+            </em>
           </h1>
           <p className="portada-sub">
             Cada uno dice en privado cuándo puede. CRUXE propone <strong>un solo plan</strong> y cada uno lo confirma.

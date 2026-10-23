@@ -2972,7 +2972,7 @@ fieldset:disabled .opcion-radio {
   font-size: 12px;
 }
 .avatar-pila > .avatar + .avatar {
-  margin-left: -8px;
+  margin-left: -6px;
 }
 .contador button {
   width: 40px;
@@ -3253,4 +3253,314 @@ fieldset:disabled .opcion-radio {
 }
 .fecha {
   white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ pasada visual: legibilidad y detalles vivos */
+
+/* Contraste: el gris terciario pasa de 3,6:1 a ~5,3:1 sobre blanco (AA para texto chico). */
+:root {
+  --tinta-3: #6c665f;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tinta-3: #9a938b;
+  }
+}
+/* Tamaños mínimos: nada útil por debajo de ~12 px. */
+.paso {
+  font-size: 0.78rem;
+  color: var(--tinta-2);
+}
+.paso-actual {
+  color: var(--tinta);
+}
+.rotulo-sim {
+  font-size: 0.72rem;
+}
+.chip-ficticio {
+  font-size: 0.75rem;
+}
+.hl-dia,
+.dia-tile-dia,
+.dia-tile-mes {
+  font-size: 0.76rem;
+}
+.cruce-nombre {
+  font-size: 12px;
+}
+.cruce-etiqueta {
+  font-size: 11.5px;
+}
+.nav-item {
+  font-size: 0.78rem;
+  color: var(--tinta-2);
+}
+.suave {
+  font-size: 0.94rem;
+}
+.estado-hero-siguiente {
+  font-size: 1.06rem;
+  line-height: 1.4;
+}
+
+/* Ícono de estado (además del color y el texto) con latido en los estados vivos */
+.estado-hero-icono {
+  position: relative;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+}
+.estado-hero-reuniendo_interes .estado-hero-icono::after,
+.estado-hero-esperando_compromisos .estado-hero-icono::after,
+.estado-hero-en_revision .estado-hero-icono::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 15px;
+  border: 2px solid var(--c);
+  animation: latido 2s ease-out infinite;
+}
+
+/* El brillo de la escena toma el color del estado del plan */
+.escena[data-tono='ok']::before {
+  background: radial-gradient(closest-side, rgba(76, 201, 138, 0.26), transparent);
+}
+.escena[data-tono='revision']::before {
+  background: radial-gradient(closest-side, rgba(240, 180, 76, 0.24), transparent);
+}
+.escena[data-tono='info']::before {
+  background: radial-gradient(closest-side, rgba(134, 179, 255, 0.2), transparent);
+}
+.escena[data-tono='neutro']::before {
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.08), transparent);
+}
+.escena::before {
+  transition: background 0.6s ease;
+}
+
+/* Contador del cruce: salta cuando el servidor informa un número nuevo */
+.cruce-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+@keyframes pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Texto anotado a mano */
+.resaltado {
+  --res-color: var(--brasa-viva);
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+.resaltado-trazo {
+  position: absolute;
+  left: -2%;
+  width: 104%;
+  pointer-events: none;
+  overflow: visible;
+}
+.resaltado-trazo path {
+  fill: none;
+  stroke: var(--res-color);
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: dibujar 0.75s var(--res-retraso, 0.35s) cubic-bezier(0.6, 0, 0.3, 1) forwards;
+}
+.resaltado-subrayado .resaltado-trazo {
+  bottom: -0.16em;
+  height: 0.32em;
+}
+.resaltado-subrayado .resaltado-trazo path {
+  stroke-width: 6;
+}
+.resaltado-circulo {
+  padding: 0 0.12em;
+}
+.resaltado-circulo .resaltado-trazo {
+  top: -0.22em;
+  left: -8%;
+  width: 116%;
+  height: 1.5em;
+}
+.resaltado-circulo .resaltado-trazo path {
+  stroke-width: 3;
+}
+.resaltado-marcador .resaltado-trazo {
+  bottom: 0.05em;
+  height: 0.55em;
+  z-index: -1;
+}
+.resaltado-marcador .resaltado-trazo path {
+  stroke-width: 14;
+  opacity: 0.28;
+}
+.resaltado-marcador {
+  isolation: isolate;
+}
+@keyframes dibujar {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Código en tablero de aeropuerto */
+.tablero {
+  display: inline-block;
+  white-space: nowrap;
+  letter-spacing: 0;
+  perspective: 400px;
+}
+.tablero-celda + .tablero-celda {
+  margin-left: 4px;
+}
+.tablero-celda {
+  position: relative;
+  display: inline-block;
+  min-width: 1.32em;
+  padding: 0.18em 0.08em;
+  border-radius: 6px;
+  text-align: center;
+  background: linear-gradient(180deg, #3a352f 0 49%, #2e2a25 51% 100%);
+  color: #fff;
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.35);
+  transform-origin: top center;
+  animation: paleta 0.5s cubic-bezier(0.3, 1.3, 0.5, 1) both;
+}
+.tablero-celda::after {
+  /* Línea del medio de la paleta */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.55);
+}
+.invitar .tablero {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-top: 6px;
+}
+.invitacion-tablero .tablero,
+.escena-invitacion .tablero {
+  font-size: 1.45rem;
+}
+@media (max-width: 359px) {
+  .invitar .tablero {
+    font-size: 1.05rem;
+  }
+  .tablero-celda + .tablero-celda {
+    margin-left: 3px;
+  }
+}
+@keyframes paleta {
+  from {
+    transform: rotateX(-95deg);
+    opacity: 0.2;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Confeti del final */
+.cierre {
+  position: relative;
+  overflow: hidden;
+}
+.confeti {
+  position: absolute;
+  left: 50%;
+  top: 46px;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.confeti i {
+  position: absolute;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: confeti 1.4s cubic-bezier(0.2, 0.7, 0.4, 1) forwards;
+}
+.confeti i:nth-child(3n) {
+  width: 10px;
+  height: 6px;
+}
+.confeti i:nth-child(4n) {
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+}
+@keyframes confeti {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--cx), calc(var(--cy) + 90px)) rotate(var(--cr));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .confeti {
+    display: none;
+  }
+}
+
+/* "Tu turno" late suave para que se vea en la lista */
+.pastilla-turno {
+  animation: llamar 2.4s ease-in-out infinite;
+}
+@keyframes llamar {
+  0%,
+  70%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--brasa) 55%, transparent);
+  }
+  85% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+.portada-lema {
+  max-width: 20ch;
+}
+.sin-corte {
+  white-space: nowrap;
+}
+.resaltado-circulo .resaltado-trazo {
+  top: -0.16em;
+  left: -5%;
+  width: 110%;
+  height: 1.38em;
+}
+
+/* En 320 px el título entra en dos líneas sin dejar "al" suelto */
+@media (max-width: 359px) {
+  .portada-lema {
+    font-size: 1.55rem;
+  }
 }

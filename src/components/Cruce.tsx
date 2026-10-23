@@ -126,7 +126,8 @@ export function Cruce({
         <g transform={`translate(${CX - 9} ${CY - 31}) scale(0.18)`} style={{ color }} opacity="0.9">
           <Trazos />
         </g>
-        <text className="cruce-texto cruce-valor" x={CX} y={CY + 12} textAnchor="middle">
+        {/* key: al cambiar el número del servidor, el contador "salta" (sin pasar por números intermedios). */}
+        <text key={valor} className="cruce-texto cruce-valor cruce-pop" x={CX} y={CY + 12} textAnchor="middle">
           {valor}
         </text>
         <text className="cruce-texto cruce-etiqueta" x={CX} y={CY + 27} textAnchor="middle">

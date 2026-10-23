@@ -6,6 +6,8 @@ import { cuentaRegresiva, describirEvento, diaDe, franjaTexto, hora, momentoCort
 import { Avatar, Aviso, Boton, DiaTile, ErrorCaja, Nombre, Progreso } from '../components/ui'
 import type { PestanaProps } from './tabs'
 import { Icono } from '../components/Icono'
+import { Confeti } from '../components/Confeti'
+import { Resaltado } from '../components/Resaltado'
 import { descargarCalendario, urlWhatsApp } from '../lib/compartir'
 
 export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaProps) {
@@ -600,10 +602,13 @@ function CierrePlan({ p }: { p: EstadoPropuesta }) {
   }
   return (
     <section className="tarjeta cierre" aria-labelledby="cierre-titulo">
+      <Confeti />
       <span className="cierre-icono" aria-hidden="true">
         <Icono n="fiesta" tam={26} />
       </span>
-      <h2 id="cierre-titulo">¡Se juntan!</h2>
+      <h2 id="cierre-titulo">
+        <Resaltado tipo="marcador" color="var(--ok)">¡Se juntan!</Resaltado>
+      </h2>
       <p className="cierre-cuando">{cuando}</p>
       <p className="suave">
         {o.aceptaron.length} {o.aceptaron.length === 1 ? 'persona confirmó' : 'personas confirmaron'} la versión {o.version}. CRUXE

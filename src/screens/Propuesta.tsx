@@ -9,6 +9,18 @@ import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { Cruce } from '../components/Cruce'
 import type { NodoCruce, TonoCruce } from '../components/Cruce'
+import type { NombreIcono } from '../components/Icono'
+
+/** Ícono por estado: el estado nunca se distingue solo por color. */
+const ICONO_ESTADO: Record<string, NombreIcono> = {
+  borrador: 'borrador',
+  reuniendo_interes: 'grupo',
+  esperando_compromisos: 'esperando',
+  grupo_confirmado: 'confirmado',
+  en_revision: 'alerta',
+  expirado: 'cerrado',
+  cancelado: 'cerrado',
+}
 import type { Pestana } from './tabs'
 import PlanTab from './PlanTab'
 import RespuestaTab from './RespuestaTab'
@@ -110,7 +122,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
 
   return (
     <div className="vista">
-      <section className="escena" aria-labelledby="propuesta-titulo">
+      <section className="escena" data-tono={escena.tono} aria-labelledby="propuesta-titulo">
         <a className="escena-volver" href={rutas.espacio(espacioId)}>
           <Icono n="atras" tam={20} /> {espacio?.nombre ?? 'Volver al espacio'}
         </a>
@@ -172,7 +184,9 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
           aria-atomic="true"
         >
           <div className="estado-hero-fila">
-            <span className="estado-hero-punto" aria-hidden="true" />
+            <span className="estado-hero-icono" aria-hidden="true">
+              <Icono n={ICONO_ESTADO[p.estado] ?? 'esperando'} tam={20} />
+            </span>
             <strong className="estado-hero-etiqueta">{p.estado_etiqueta}</strong>
             {p.opcion ? <span className="estado-hero-version">Versión {p.opcion.version}</span> : null}
           </div>
@@ -273,11 +287,16 @@ function escenaDe(
           : 'pendiente',
   }))
   const c = p.opcion?.cupos
+  const confirmados = c?.confirmados ?? 0
+  const minimo = c?.minimo ?? p.minimo
+  // Mejora #56 también en el cruce: con más confirmaciones que el mínimo, "5/4" se lee raro; va "5" y "mín. 4".
+  const sobre = confirmados > minimo
+  const cuenta = sobre ? String(confirmados) : `${confirmados}/${minimo}`
   switch (p.estado) {
     case 'esperando_compromisos':
-      return { nodos, valor: `${c?.confirmados ?? 0}/${c?.minimo ?? p.minimo}`, etiqueta: 'confirmaron', fraccion: c ? c.confirmados / c.minimo : 0, tono: 'vivo' }
+      return { nodos, valor: cuenta, etiqueta: sobre ? `mín. ${minimo}` : 'confirmaron', fraccion: c ? c.confirmados / c.minimo : 0, tono: 'vivo' }
     case 'grupo_confirmado':
-      return { nodos, valor: `${c?.confirmados ?? 0}/${c?.minimo ?? p.minimo}`, etiqueta: 'se juntan', fraccion: 1, tono: 'ok' }
+      return { nodos, valor: cuenta, etiqueta: 'se juntan', fraccion: 1, tono: 'ok' }
     case 'en_revision':
       return { nodos, valor: `v${p.opcion?.version ?? ''}`, etiqueta: 'en revisión', fraccion: c ? c.confirmados / c.minimo : 0, tono: 'revision' }
     case 'reuniendo_interes':
