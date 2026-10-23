@@ -645,6 +645,17 @@ input[aria-invalid='true'],
 .pestana-sim {
   color: var(--sim-texto);
 }
+/* Teléfono: las cuatro pestañas (incluida Simulación) entran sin quedar cortadas. */
+@media (max-width: 480px) {
+  .pestanas {
+    flex-wrap: wrap;
+    gap: 0;
+  }
+  .pestana {
+    flex: 1 1 auto;
+    padding: 8px 6px;
+  }
+}
 .linea {
   list-style: none;
   padding: 0;
