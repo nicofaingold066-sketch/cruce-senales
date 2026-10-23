@@ -12,17 +12,20 @@ export function RecordarFaltan({
   titulo,
   motivo = 'faltan',
   cuando,
+  cuposLibres,
 }: {
   /** `espacio.codigo_invitacion`. */
   codigo: string
   /** Título de la propuesta. */
   titulo: string
   motivo?: MotivoAviso
-  /** Franja vigente ya formateada, para 'version_nueva' y 'reparacion'. */
+  /** Franja vigente ya formateada, para 'version_nueva', 'reparacion' y 'confirmado'. */
   cuando?: string | null
+  /** Solo 'confirmado': `p.opcion.cupos.disponibles`. */
+  cuposLibres?: number | null
 }) {
   const [copiado, setCopiado] = useState(false)
-  const datos = { motivo, titulo, cuando, enlace: enlaceInvitacion(codigo) }
+  const datos = { motivo, titulo, cuando, cuposLibres, enlace: enlaceInvitacion(codigo) }
 
   async function copiar() {
     try {
