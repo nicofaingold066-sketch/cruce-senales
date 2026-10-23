@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la computadora de Nico, Mac-mini-de-Felix). Última actualización: viernes 23 oct, 17:38 Santiago (reloj).
 
 ## Tocando ahora
-[18:22] Pasada estética tablet y compu en `wip/front-juan` (mobile ya subido en `ac75563`): `src/styles.css` y pantallas de `src/screens/`. Guiones de `tests/e2e/` al cerrar.
+- CORRIENDO PRUEBA (18:24): tests/e2e (dos sesiones, jurado, red) y capturas 320/768/1280 contra el build de wip/front-juan. Demos y propuestas propias, datos ficticios, cero llamadas al agente.
 
 ## Entregado: `wip/front-juan` = `91e9f9a` (sobre `main` `30e4c76`, ya fusionado)
 Nuevo desde lo que integraste (`9269e8e`), pedido por Juan:
