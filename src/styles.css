@@ -1,5 +1,5 @@
 :root {
-  /* Identidad CRUCE: brasa (acción) sobre papel cálido y carbón. */
+  /* Identidad CRUXE: brasa (acción) sobre papel cálido y carbón. */
   --fondo: #faf6f1;
   --superficie: #ffffff;
   --texto: #1f1a17;
@@ -701,21 +701,27 @@ input[aria-invalid='true'],
 .marca-bloque {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   color: var(--primario);
 }
 .marca-nombre {
+  display: inline-flex;
+  align-items: center;
   font-weight: 800;
   letter-spacing: 0.12em;
+  line-height: 1;
 }
-.logo-punto {
-  fill: var(--punto);
+/* La X del nombre es el logo: misma altura que las mayúsculas. */
+.marca-x {
+  height: 0.86em;
+  width: auto;
+  margin: 0 0.1em 0 0.02em;
+  overflow: visible;
 }
-.marca-grande {
-  gap: 12px;
+.logo-b {
+  stroke: var(--punto);
 }
 .marca-grande .marca-nombre {
-  font-size: 2.2rem;
+  font-size: 2.6rem;
   letter-spacing: 0.14em;
 }
 .portada {

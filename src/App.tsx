@@ -39,7 +39,7 @@ function Marco({
       </a>
       <header className="encabezado">
         <div className="encabezado-linea">
-          <a className="marca" href={rutas.inicio()} aria-label="CRUCE, ir a tus espacios">
+          <a className="marca" href={rutas.inicio()} aria-label="CRUXE, ir a tus espacios">
             <Marca />
           </a>
           <span className="sep" aria-hidden="true">

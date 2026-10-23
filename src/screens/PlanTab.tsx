@@ -148,7 +148,7 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
       <h2 id="opcion-titulo">Opción vigente · Versión {o.version}</h2>
       {confirmado ? (
         <Aviso tono="ok" titulo={`Grupo confirmado en la versión ${o.version}`}>
-          Quienes confirmaron aparecen abajo. CRUCE coordina el plan; no reserva nada.
+          Quienes confirmaron aparecen abajo. CRUXE coordina el plan; no reserva nada.
         </Aviso>
       ) : null}
       <p className="franja-grande">{franjaTexto(o.franja.inicio, o.franja.fin)}</p>
