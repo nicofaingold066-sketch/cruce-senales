@@ -3,7 +3,7 @@
 Quien edita este archivo: solo el backend. Última actualización: 13:50 Santiago (reloj), #22 entregada, #28 en curso. (La marca anterior "~14:35" era estimada, no del reloj.)
 
 ## Tocando ahora
-- MIGRACION EN CURSO: 0023
+- (0023 aplicada en la base a las 13:51; ninguna migración en curso.)
 - Mejora #28 (privacidad: `perfil_grupo.gustos` solo con `cuantos >= 2`), pedida por el coordinador. Rutas: `supabase/migrations/0023_gustos_minimo_dos.sql` (nueva), `tests/backend/enmienda4.test.ts` (ajuste de 4.1 + prueba nueva), `docs/contrato-enmienda-6.md` (una línea). Commit en `wip/fundamentos`, sin push.
 
 ## Estado
