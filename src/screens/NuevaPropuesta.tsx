@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../lib/api'
 import type { ApiError, Espacio } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto, momentoCorto, ZONA_VISIBLE } from '../lib/format'
-import { irA, rutas, useIdentidad, useShell } from '../lib/shell'
+import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
+import { tomarBorradorAgente } from '../agente/api'
 
 interface Formulario {
   titulo: string
@@ -61,6 +62,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const { ocupado, error, ejecutar, limpiarError } = useAccion()
   const [faltantes, setFaltantes] = useState(false)
   const [abrirUltimo, setAbrirUltimo] = useState(true)
+  const [desdeAgente, setDesdeAgente] = useState(false)
+  const flujo = useRef(false)
+  const [enCurso, setEnCurso] = useState(false)
 
   const yo = espacio?.miembros.find((m) => m.es_yo) ?? null
   useIdentidad(espacio?.nombre ?? null, yo?.nombre ?? null, espacio ? (espacio.mi_rol === 'organizador' ? 'organizador' : 'miembro') : null)
@@ -78,25 +82,24 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   }, [cargar])
 
   // Precarga solo una vez que se conoce el espacio. En el espacio demo se usan los valores del caso.
+  // Si el agente dejó un borrador (se lee una sola vez), su título y sus dos franjas reemplazan esos valores.
+  const precargado = useRef(false)
   useEffect(() => {
-    if (!espacio || f) return
+    if (!espacio || f || precargado.current) return
+    precargado.current = true
     const yoM = espacio.miembros.find((m) => m.es_yo)
     const tomi = espacio.miembros.find((m) => m.nombre.toLowerCase() === 'tomi')
-    if (espacio.demo) {
-      setF({ ...CASO, imprescindibleId: (tomi ?? yoM)?.miembro_id ?? '' })
-    } else {
-      setF({
-        titulo: '',
-        aInicio: '',
-        aFin: '',
-        bInicio: '',
-        bFin: '',
-        minimo: '2',
-        maximo: '6',
-        imprescindibleId: yoM?.miembro_id ?? '',
-        plazo: '',
-      })
+    const borrador = tomarBorradorAgente(espacio.id)
+    const base: Formulario = espacio.demo
+      ? { ...CASO, imprescindibleId: (tomi ?? yoM)?.miembro_id ?? '' }
+      : { titulo: '', aInicio: '', aFin: '', bInicio: '', bFin: '', minimo: '2', maximo: '6', imprescindibleId: yoM?.miembro_id ?? '', plazo: '' }
+    if (borrador) {
+      const [a, b] = borrador.franjas
+      setDesdeAgente(true)
+      setF({ ...base, titulo: borrador.titulo, aInicio: a.inicio, aFin: a.fin, bInicio: b.inicio, bFin: b.fin })
+      return
     }
+    setF(base)
   }, [espacio, f])
 
   if (errorEspacio && !espacio) {
@@ -144,6 +147,20 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   }
 
   async function crear(abrir: boolean) {
+    // U2 (revisión de Codex): un solo flujo crear → abrir → navegar. El bloqueo cubre también la apertura,
+    // así un segundo clic no puede pedir otra creación con otro intento.
+    if (flujo.current) return
+    flujo.current = true
+    setEnCurso(true)
+    try {
+      await crearYAbrir(abrir)
+    } finally {
+      flujo.current = false
+      setEnCurso(false)
+    }
+  }
+
+  async function crearYAbrir(abrir: boolean) {
     setAbrirUltimo(abrir)
     // La huella incluye todos los datos: si cambian, es otro intento (contrato 0.7).
     const huella = JSON.stringify(form)
@@ -170,7 +187,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     }
     const propuestaId = r.data.resultado.propuesta_id
     if (abrir) {
-      await api.openProposal(propuestaId) // si falla, la propuesta queda en borrador con el botón "Abrir"
+      const o = await api.openProposal(propuestaId)
+      // Si abrir falla, no se vuelve a crear: se va a ESA propuesta, que queda en borrador con el botón "Abrir".
+      if (!o.ok) dejarAviso(`La propuesta se creó, pero no se pudo abrir al grupo (${o.error.mensaje}). Ábrela con el botón "Abrir".`)
     }
     irA(rutas.propuesta(espacioId, propuestaId))
   }
@@ -190,7 +209,13 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
           }}
           noValidate
         >
-          {espacio.demo ? (
+          {desdeAgente ? (
+            <Aviso tono="info" titulo="Borrador del agente">
+              Título y franjas vienen del borrador que propuso el agente. Revisa mínimo, máximo, persona imprescindible y
+              cierre antes de crear: el agente no crea ni confirma nada.
+            </Aviso>
+          ) : null}
+          {espacio.demo && !desdeAgente ? (
             <Aviso tono="info">
               Valores precargados del caso "Los del asado". Puedes cambiarlos antes de revisar.{' '}
               <button
@@ -309,13 +334,13 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
           </section>
           {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} /> : null}
           <div className="fila-botones">
-            <Boton onClick={() => void crear(true)} ocupado={ocupado} ocupadoTexto="Creando…" disabled={soloLectura}>
+            <Boton onClick={() => void crear(true)} ocupado={ocupado || enCurso} ocupadoTexto="Creando…" disabled={soloLectura}>
               Crear y abrir al grupo
             </Boton>
-            <Boton variante="secundario" onClick={() => void crear(false)} ocupado={ocupado} ocupadoTexto="Creando…" disabled={soloLectura}>
+            <Boton variante="secundario" onClick={() => void crear(false)} ocupado={ocupado || enCurso} ocupadoTexto="Creando…" disabled={soloLectura}>
               Crear solo el borrador
             </Boton>
-            <Boton variante="secundario" onClick={() => setPaso('editar')} disabled={ocupado}>
+            <Boton variante="secundario" onClick={() => setPaso('editar')} disabled={ocupado || enCurso}>
               Volver a editar
             </Boton>
           </div>

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../lib/api'
 import type { Espacio } from '../lib/types'
+import { CODIGOS_SIGUIENTE } from '../lib/types'
 import { usePropuestaViva } from '../lib/hooks'
-import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
+import { dejarAviso, irA, rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import type { Pestana } from './tabs'
 import PlanTab from './PlanTab'
@@ -22,6 +23,8 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
   const [espacio, setEspacio] = useState<Espacio | null>(null)
   const [pestana, setPestana] = useState<Pestana>('plan')
   const [avisoVersion, setAvisoVersion] = useState<number | null>(null)
+  // Aviso dejado por la pantalla anterior (por ejemplo, "se creó pero no se pudo abrir").
+  const [avisoPrevio, setAvisoPrevio] = useState<string | null>(() => tomarAviso())
   const versionPrevia = useRef<number | null>(null)
 
   useEffect(() => {
@@ -80,10 +83,11 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
     ...(esOrganizadorEspacio ? [{ id: 'simulacion' as Pestana, texto: 'Simulación' }] : []),
   ]
   const activa = pestanas.some((t) => t.id === pestana) ? pestana : 'plan'
-  // Enmienda 3: el código decide el acento; mientras el servidor no lo envíe, se usan sus mismos booleanos.
+  // Enmienda 3: el código decide el acento. Solo si llega un código desconocido se usan los booleanos del servidor.
   const cod = p.siguiente_accion.codigo
-  const turno = cod === 'te_toca_aceptar' || (cod !== 'ya_aceptaste' && p.mi_situacion.puede.aceptar)
-  const yaAcepte = cod === 'ya_aceptaste' || (!turno && p.mi_situacion.acepte_version && p.opcion != null)
+  const conocido = (CODIGOS_SIGUIENTE as readonly string[]).includes(cod)
+  const turno = cod === 'te_toca_aceptar' || (!conocido && p.mi_situacion.puede.aceptar)
+  const yaAcepte = cod === 'ya_aceptaste' || (!conocido && !turno && p.mi_situacion.acepte_version && p.estado === 'esperando_compromisos')
   const props = { p, viva, soloLectura, irAPestana: setPestana }
 
   return (
@@ -104,6 +108,19 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
         >
           Se muestra la última información recibida. Las acciones que hagas ahora pueden no registrarse. Seguimos
           intentando cada 3 segundos.
+        </Aviso>
+      ) : null}
+
+      {avisoPrevio ? (
+        <Aviso
+          tono="aviso"
+          accion={
+            <button type="button" className="btn btn-secundario" onClick={() => setAvisoPrevio(null)}>
+              Entendido
+            </button>
+          }
+        >
+          {avisoPrevio}
         </Aviso>
       ) : null}
 

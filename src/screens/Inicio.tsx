@@ -4,7 +4,7 @@ import { api } from '../lib/api'
 import type { ApiError, EspacioResumen, TipoEspacio } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
-import { Aviso, Boton, Cargando, ErrorCaja, Vacio } from '../components/ui'
+import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Marca } from '../components/Marca'
 
 const TIPO: Record<TipoEspacio, string> = { amigos: 'Amigos', empresa: 'Empresa' }
@@ -41,83 +41,94 @@ export default function Inicio({ codigoInvitacion }: { codigoInvitacion?: string
       ) : null}
       <section className="portada" aria-labelledby="portada-titulo">
         <Marca grande />
-        <p id="portada-titulo" className="portada-lema">
+        <h1 id="portada-titulo" className="portada-lema">
           Del «nos juntamos» al encuentro que ocurre.
+        </h1>
+        <p className="portada-sub">
+          Cada uno dice en privado cuándo puede. CRUXE propone <strong>un solo plan</strong> y cada uno lo confirma.
         </p>
-        <ol className="portada-pasos">
+        {codigoInvitacion ? null : (
+          <div className="portada-acciones">
+            <CargarDemo deshabilitado={soloLectura} yaCargada={espacios?.some((e) => e.demo) ?? false} />
+            <button type="button" className="btn btn-secundario" onClick={irAUnirse}>
+              Tengo un código de invitación
+            </button>
+          </div>
+        )}
+        <ol className="portada-pasos" aria-label="Cómo funciona">
           <li>
-            <strong>Cada uno</strong> marca en privado cuándo puede.
+            <span className="paso-num" aria-hidden="true">1</span>
+            <span>
+              <strong>Cada uno</strong> marca en privado cuándo puede.
+            </span>
           </li>
           <li>
-            <strong>El servidor</strong> propone una sola opción compatible.
+            <span className="paso-num" aria-hidden="true">2</span>
+            <span>
+              <strong>El servidor</strong> propone una sola opción compatible.
+            </span>
           </li>
           <li>
-            <strong>Confirmas</strong> esa versión. Si alguien se baja, se repara y se vuelve a confirmar.
+            <span className="paso-num" aria-hidden="true">3</span>
+            <span>
+              <strong>Confirmas</strong> esa versión. Si alguien se baja, se repara y se vuelve a confirmar.
+            </span>
           </li>
         </ol>
       </section>
-      <h1>Tus espacios</h1>
-      <p className="suave">
-        Un espacio es el grupo con el que coordinas. Todo lo que ves aquí es ficticio.
-      </p>
 
-      {espacios === null && !error ? <Cargando texto="Cargando tus espacios…" /> : null}
+      {espacios === null && !error ? <Cargando texto="Buscando tus espacios…" /> : null}
       {error && espacios === null ? <ErrorCaja error={error} onReintentar={cargar} /> : null}
       {error && espacios !== null ? <ErrorCaja error={error} onReintentar={cargar} titulo="No se pudo actualizar" /> : null}
 
-      {espacios && espacios.length === 0 ? (
-        <Vacio
-          titulo="Aún no estás en ningún espacio"
-          texto="Carga el espacio demo para empezar el recorrido, o únete con un código de invitación."
-        />
-      ) : null}
-
       {espacios && espacios.length > 0 ? (
-        <ul className="lista-tarjetas">
-          {espacios.map((e) => (
-            <li key={e.id}>
-              <a className="tarjeta tarjeta-enlace" href={rutas.espacio(e.id)}>
-                <span className="tarjeta-titulo">{e.nombre}</span>
-                <span className="tarjeta-meta">
-                  {TIPO[e.tipo]} · {e.cantidad_miembros} personas · Tú: {e.mi_rol === 'organizador' ? 'organizador' : 'miembro'}
-                  {e.demo ? ' · Demo' : ''}
-                </span>
-                <span className="tarjeta-accion">Abrir espacio</span>
-              </a>
-            </li>
-          ))}
-        </ul>
+        <section aria-labelledby="mis-espacios">
+          <h2 id="mis-espacios">Tus espacios</h2>
+          <ul className="lista-tarjetas">
+            {espacios.map((e) => (
+              <li key={e.id}>
+                <a className="tarjeta tarjeta-enlace" href={rutas.espacio(e.id)}>
+                  <span className="tarjeta-titulo">{e.nombre}</span>
+                  <span className="tarjeta-meta">
+                    {TIPO[e.tipo]} · {e.cantidad_miembros} personas · Tú: {e.mi_rol === 'organizador' ? 'organizador' : 'miembro'}
+                    {e.demo ? ' · Demo' : ''}
+                  </span>
+                  <span className="tarjeta-accion">Abrir espacio</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
       ) : null}
 
-      <div className="grilla-acciones">
-        <CargarDemo deshabilitado={soloLectura} />
-        {codigoInvitacion ? null : <UnirsePorCodigo deshabilitado={soloLectura} />}
-      </div>
+      {codigoInvitacion ? null : <UnirsePorCodigo deshabilitado={soloLectura} />}
       <CrearEspacio deshabilitado={soloLectura} />
     </div>
   )
 }
 
-function CargarDemo({ deshabilitado }: { deshabilitado: boolean }) {
+function CargarDemo({ deshabilitado, yaCargada }: { deshabilitado: boolean; yaCargada: boolean }) {
   const { ocupado, error, ejecutar } = useAccion()
   async function hacer() {
     const r = await ejecutar('seed', () => api.seedDemoSpace())
     if (r?.ok) irA(rutas.espacio(r.data.resultado.espacio_id))
   }
   return (
-    <section className="tarjeta">
-      <h2>Espacio demo</h2>
-      <p>
-        Crea "Los del asado" con sus seis personas. Tú serás Tomi, el organizador; las demás quedan como{' '}
-        <strong>Simulación</strong> hasta que alguien reclame su lugar con el código.
-      </p>
-      <p className="suave">Si ya lo cargaste, se abre el mismo espacio.</p>
-      <Boton onClick={hacer} ocupado={ocupado} ocupadoTexto="Cargando demo…" disabled={deshabilitado}>
-        Cargar espacio demo
+    <div className="portada-demo">
+      <Boton onClick={hacer} ocupado={ocupado} ocupadoTexto="Preparando la demo…" disabled={deshabilitado}>
+        {yaCargada ? 'Abrir la demo «Los del asado»' : 'Probar la demo «Los del asado»'}
       </Boton>
+      <p className="suave">Serás Tomi, quien organiza. Las otras cinco personas son simuladas (datos ficticios).</p>
       {error ? <ErrorCaja error={error} /> : null}
-    </section>
+    </div>
   )
+}
+
+/** Lleva al formulario de unirse sin tocar la ruta (la navegación usa el hash). */
+function irAUnirse() {
+  const form = document.getElementById('unirse')
+  form?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  form?.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true })
 }
 
 function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: boolean; codigoInicial?: string }) {
@@ -139,7 +150,7 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
     }
   }
   return (
-    <form className="tarjeta" onSubmit={hacer} noValidate>
+    <form id="unirse" className="tarjeta" onSubmit={hacer} noValidate>
       <h2>Unirme con un código</h2>
       <label className="campo">
         <span>Código de invitación</span>

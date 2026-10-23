@@ -42,19 +42,21 @@ export interface Franja {
 }
 
 /** Códigos cerrados de `siguiente_accion` (enmienda 3). La interfaz elige color o ícono por código, nunca por texto. */
-export type CodigoSiguiente =
-  | 'abrir_propuesta'
-  | 'reunir_condiciones'
-  | 'buscar_opcion'
-  | 'sin_opcion'
-  | 'aceptar_version'
-  | 'te_toca_aceptar'
-  | 'ya_aceptaste'
-  | 'grupo_confirmado'
-  | 'buscar_alternativa'
-  | 'sin_alternativa'
-  | 'expirado'
-  | 'cancelado'
+export const CODIGOS_SIGUIENTE = [
+  'abrir_propuesta',
+  'reunir_condiciones',
+  'buscar_opcion',
+  'sin_opcion',
+  'aceptar_version',
+  'te_toca_aceptar',
+  'ya_aceptaste',
+  'grupo_confirmado',
+  'buscar_alternativa',
+  'sin_alternativa',
+  'expirado',
+  'cancelado',
+] as const
+export type CodigoSiguiente = (typeof CODIGOS_SIGUIENTE)[number]
 
 export interface SiguienteAccion {
   /** Un código de `CodigoSiguiente`; se acepta cualquier otro como respaldo (se muestra solo el texto). */

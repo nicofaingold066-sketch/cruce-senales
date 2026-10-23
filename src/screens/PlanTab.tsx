@@ -12,8 +12,9 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
   const reuniendo = p.estado === 'borrador' || p.estado === 'reuniendo_interes'
   const sinOpcion = p.estado === 'reuniendo_interes' && p.ultima_evaluacion?.resultado === 'sin_opcion'
   const sinAlternativa = enRevision && p.ultima_evaluacion?.resultado === 'sin_alternativa'
-  const alternativaNueva =
-    p.estado === 'esperando_compromisos' &&
+  // La versión vigente salió de una reparación (mejora #8: se muestra la comparación con la anterior).
+  const versionReparada =
+    (p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado') &&
     p.ultima_evaluacion?.resultado === 'reparacion_publicada' &&
     p.ultima_evaluacion.version === p.opcion?.version
 
@@ -27,12 +28,7 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
 
       {enRevision ? <BloqueRevision p={p} /> : null}
 
-      {alternativaNueva && p.opcion ? (
-        <Aviso tono="info" titulo={`Nueva versión ${p.opcion.version} del plan`}>
-          Es una alternativa propuesta tras una baja. Ninguna aceptación anterior se hereda: el grupo se confirma
-          solo cuando se reúnan las nuevas confirmaciones de esta versión.
-        </Aviso>
-      ) : null}
+      {versionReparada && p.opcion ? <CambioDeVersion p={p} /> : null}
 
       {p.estado === 'borrador' ? <AbrirPropuesta p={p} viva={viva} soloLectura={soloLectura} /> : null}
 
@@ -243,6 +239,70 @@ function BloqueRevision({ p }: { p: EstadoPropuesta }) {
       Sus confirmaciones ya no bastan para confirmar el encuentro. El plan está <strong>En revisión</strong> hasta que se
       publique una alternativa y todas las personas la confirmen de nuevo.
     </Aviso>
+  )
+}
+
+/**
+ * Comparación versión anterior → vigente tras una reparación. Solo reordena datos del servidor:
+ * quién confirmó la anterior sale del historial, quién se bajó de `bajas`, y la vigente de `opcion`.
+ * La franja de la versión anterior no viene en el estado, así que no se muestra.
+ */
+function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
+  const o = p.opcion!
+  const reparacion = [...p.historial].reverse().find((e) => e.tipo === 'reparacion_publicada' && e.version_nueva === o.version)
+  const vAnt = reparacion?.version_previa ?? o.version - 1
+  const vistos = new Set<string>()
+  const confirmaronAnt = p.historial
+    .filter((e) => e.tipo === 'aceptacion' && (e.version_nueva ?? e.version_previa) === vAnt && e.actor)
+    .map((e) => e.actor!)
+    .filter((m) => (vistos.has(m.miembro_id) ? false : (vistos.add(m.miembro_id), true)))
+  const bajasAnt = p.bajas.filter((b) => b.version === vAnt)
+  const seBajo = new Set(bajasAnt.map((b) => b.miembro.miembro_id))
+  return (
+    <section className="tarjeta cambio-version" aria-labelledby="cambio-version-titulo">
+      <h2 id="cambio-version-titulo">
+        El plan cambió: versión {vAnt} → versión {o.version}
+      </h2>
+      <div className="cv-grilla">
+        <div className="cv-col cv-vieja">
+          <span className="cv-rotulo">Versión {vAnt} · ya no vale</span>
+          {confirmaronAnt.length > 0 ? (
+            <ul className="cv-personas">
+              {confirmaronAnt.map((m) => (
+                <li key={m.miembro_id} className={seBajo.has(m.miembro_id) ? 'cv-bajo' : ''}>
+                  <Nombre m={m} />
+                  {seBajo.has(m.miembro_id) ? <span className="cv-nota"> se bajó</span> : <span className="cv-nota"> había confirmado</span>}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {bajasAnt
+            .filter((b) => !confirmaronAnt.some((m) => m.miembro_id === b.miembro.miembro_id))
+            .map((b) => (
+              <p key={b.miembro.miembro_id} className="cv-bajo">
+                <Nombre m={b.miembro} /> <span className="cv-nota">se bajó</span>
+              </p>
+            ))}
+          <p className="cv-pie">Estas confirmaciones no pasan a la versión {o.version}.</p>
+        </div>
+        <span className="cv-flecha" aria-hidden="true">
+          →
+        </span>
+        <div className="cv-col cv-nueva">
+          <span className="cv-rotulo">Versión {o.version} · vigente</span>
+          <p className="cv-franja">{franjaTexto(o.franja.inicio, o.franja.fin)}</p>
+          {o.aceptaron.length === 0 ? (
+            <p className="cv-pie">
+              <strong>Nadie confirmó todavía:</strong> empieza de cero. Cada persona tiene que confirmar de nuevo.
+            </p>
+          ) : (
+            <p className="cv-pie">
+              Confirmaron {o.cupos.confirmados} de {o.cupos.minimo}: {o.aceptaron.map((a) => a.miembro.nombre).join(', ')}.
+            </p>
+          )}
+        </div>
+      </div>
+    </section>
   )
 }
 
