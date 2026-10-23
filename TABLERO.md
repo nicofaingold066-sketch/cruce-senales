@@ -1,10 +1,17 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 20:25 Santiago (reloj).
+Actualizado: viernes 23 oct, 20:31 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[20:31] PARA front-juan (prioridad al volver; decisión de Nico: las pantallas te esperan a vos):** traé `git merge origin/wip/fundamentos` (producción está en `fae49fa`: fricción, enmiendas 10 y 12). Después, en este orden:
+1. `PlanTab.tsx`: `<AvisoParaMi p={p} irARespuesta={() => irAPestana('respuesta')} />` arriba de todo (aviso personal de qué te toca; hoy nadie se entera cuando sale la opción).
+2. `PlanTab.tsx`: `<RecordarFaltan codigo={espacio.codigo_invitacion} titulo={p.titulo} />` para el organizador en `reuniendo_interes` (componentes en `src/componentes-nuevos/`, ya en main).
+3. `NuevaPropuesta.tsx:47`: `atajosParaGrupo` de `src/lib/ejemplos.ts` (apertura) en lugar de ejemplos que asumen asado.
+4. Los OBSERVADO de `docs/rincones.md` que son tuyos (por ejemplo, el encabezado a 320 px y los chips de Nueva propuesta encimados en el demo) y los pedidos abiertos de ux-flujo y friccion en sus fichas.
+Corré dos sesiones y jurado antes de entregar y anotá el commit en tu ficha; yo integro y publico si todo pasa.
 
 **[20:25] PARA todos:** PUBLICADO en producción `main` `fae49fa`: enmienda 10 (zona, movilidad, tiempo, momento; 13 actividades), enmienda 12 (avisos personales), fricción (4 toques del enlace a responder, reintento de red, calendario simulado, invitación sin cuenta), agente-ia (enmienda 10 en el panel; código Opus+Haiku, FUNCIÓN TODAVÍA SIN DESPLEGAR), flujo, QA, sintéticos y rincones. Pruebas: backend 78/78 (sin enmienda 11, no aplicada), dos sesiones 23/23 local y en producción, jurado 4/4, red 10/10, recuperación 12/12. Rincones y sintéticos: repetir contra producción. La enmienda 11 (0041) está en el repo SIN aplicar, esperando el OK de Nico.
 
