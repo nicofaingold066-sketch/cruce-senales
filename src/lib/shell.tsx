@@ -63,6 +63,7 @@ export type Ruta =
   | { nombre: 'propuesta'; espacioId: string; propuestaId: string }
   | { nombre: 'unirse'; codigo: string; invalida?: boolean }
   | { nombre: 'entrar' }
+  | { nombre: 'invalida' }
 
 /** U6 (revisión de Codex): un enlace mal copiado no puede romper la app; se avisa y se ofrece escribir el código. */
 function rutaUnirse(crudo: string): Ruta {
@@ -75,6 +76,8 @@ function rutaUnirse(crudo: string): Ruta {
   return { nombre: 'unirse', codigo: '', invalida: true }
 }
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 export function parseRuta(hash: string): Ruta {
   const partes = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
   if (partes[0] === 'unirse' && partes[1]) return rutaUnirse(partes[1])
@@ -82,6 +85,10 @@ export function parseRuta(hash: string): Ruta {
   if (partes[0] === 'planes') return { nombre: 'planes' }
   if (partes[0] === 'perfil') return { nombre: 'perfil' }
   if (partes[0] === 'crear') return { nombre: 'crear' }
+  // rincones O-06: un enlace a un grupo o plan mal copiado no se manda al servidor (respondía "Falla temporal").
+  if (partes[0] === 'e' && partes[1] && (!UUID.test(partes[1]) || (partes[2] === 'p' && partes[3] && !UUID.test(partes[3])))) {
+    return { nombre: 'invalida' }
+  }
   if (partes[0] === 'e' && partes[1]) {
     if (partes[2] === 'nueva') return { nombre: 'nueva', espacioId: partes[1] }
     if (partes[2] === 'responder') return { nombre: 'responder', espacioId: partes[1], ...(partes[3] ? { propuestaId: partes[3] } : {}) }

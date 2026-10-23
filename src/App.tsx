@@ -234,6 +234,17 @@ function PantallaRuta({ ruta }: { ruta: Ruta }) {
       return <CrearGrupo />
     case 'unirse':
       return ruta.invalida ? <Inicio key="invitacion-invalida" invitacionInvalida /> : <QuienEres key={ruta.codigo} codigo={ruta.codigo} fuente={fuenteReal} />
+    case 'invalida':
+      return (
+        <div className="pantalla">
+          <Aviso tono="aviso" titulo="Este enlace no lleva a ningún grupo">
+            Puede que se haya copiado incompleto. Pide el enlace de nuevo a quien organiza o vuelve a tus espacios.
+          </Aviso>
+          <a className="btn btn-primario" href={rutas.inicio()}>
+            Ir a tus espacios
+          </a>
+        </div>
+      )
     case 'entrar':
       // Una sola puerta: la portada del rediseño ya resuelve el ingreso (nombre, demo, código o grupo nuevo).
       return <Inicio />

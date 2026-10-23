@@ -230,6 +230,8 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
     }
   }, [u.error, u.origen, cargar])
 
+  // rincones O-08: con un código que no existe, el título no invita a elegir un nombre.
+  const codigoMalo = !vista && errorVista?.detalle === 'codigo_inexistente'
   const errorLista = u.origen === 'lista' ? u.error : null
   const yaLista = u.origen === 'lista' ? u.yaMiembro : null
   return (
@@ -237,11 +239,15 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
       <section className="escena escena-invitacion" aria-labelledby="quien-titulo">
         <span className="escena-eyebrow">Invitación a CRUXE</span>
         <h1 id="quien-titulo" ref={titulo} tabIndex={-1}>
-          {vista ? '¿Quién eres?' : 'Te invitaron a un plan'}
+          {vista ? '¿Quién eres?' : codigoMalo ? 'Esta invitación no existe' : 'Te invitaron a un plan'}
         </h1>
         {/* El nombre del espacio va fuera de los títulos: los guiones esperan el título del espacio para saber que ya se entró. */}
         {vista ? <p className="quien-espacio">en «{vista.espacio.nombre}»</p> : null}
-        <p className="escena-sub">Elige tu nombre. Este teléfono quedará como esa persona; no pedimos correo ni contraseña.</p>
+        <p className="escena-sub">
+          {codigoMalo
+            ? 'Revisa que el enlace esté completo o pide uno nuevo a quien organiza. También puedes escribir el código abajo.'
+            : 'Elige tu nombre. Este teléfono quedará como esa persona; no pedimos correo ni contraseña.'}
+        </p>
       </section>
       <div className="hoja">
         {!vista && !errorVista ? <Cargando texto="Buscando tu grupo…" /> : null}
