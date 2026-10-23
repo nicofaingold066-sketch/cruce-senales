@@ -43,11 +43,12 @@ describe('enmienda 5: preferencias simuladas en vivo', { timeout: 90_000 }, () =
     const a = await ok(O, 'simulate_save_preferences', { p_espacio_id: demo.id, p_miembro_id: id.Sofi, p_preferencias: SOFI_GRATIS })
     expect(a.resultado).toEqual({ repetido: false, simulado: true })
     expect(a.miembro).toMatchObject({ miembro_id: id.Sofi, nombre: 'Sofi', simulado: true })
-    expect(a.preferencias).toEqual(SOFI_GRATIS)
-    // Con Sofi en "ojalá gratis" solo queda el parque.
+    // E10: simulate conserva la semilla de viaje y momento de Sofi (las claves que no se mandan).
+    expect(a.preferencias).toEqual({ ...SOFI_GRATIS, zona: 'santiago_centro', movilidad: 'me_llevan', tiempo_max: '45', momento: 'da_igual' })
+    // Con Sofi en "ojalá gratis" solo quedan entradas gratis: el parque primero (E10 Parte B: cultura y cerro).
     const p = await plan()
     expect(p).toMatchObject({ actividad: 'parque', lugar: { id: 'lugar-sim-04' } })
-    expect(p.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-04'])
+    expect(p.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-04', 'lugar-sim-10', 'lugar-sim-12'])
     // Repetir lo mismo: repetido, sin cambiar la fecha.
     const b = await ok(O, 'simulate_save_preferences', { p_espacio_id: demo.id, p_miembro_id: id.Sofi, p_preferencias: SOFI_GRATIS })
     expect(b.resultado.repetido).toBe(true)

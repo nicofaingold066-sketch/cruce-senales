@@ -42,6 +42,12 @@ const fuente: FuenteEntrada = {
     }
     return { ok: false, error: fallo('banco', 'Banco de prueba: aquí se entraría al espacio.') }
   },
+  // ?ya=<miembro_id>: este teléfono ya es ese miembro (vuelve con el mismo enlace).
+  async yaEstoy() {
+    const ya = new URLSearchParams(location.search).get('ya')
+    await espera(100)
+    return ya ? { espacioId: 'e1', miembroId: ya } : null
+  },
 }
 
 function Crear() {

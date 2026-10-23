@@ -70,7 +70,7 @@ describe('enmienda 8: el agente solo usa las preferencias de quien lo permite', 
     // Con la casilla marcada sus preferencias vuelven a contar: solo queda la entrada gratis y suma una persona.
     await guardar(E, demo.espacioId, GRATIS, true)
     const conLuna = await plan(O, demo.espacioId)
-    expect(conLuna.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-04'])
+    expect(conLuna.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-04', 'lugar-sim-10', 'lugar-sim-12']) // E10 Parte B: también cultura y cerro
     expect(conLuna.personas_consideradas).toBe(6)
     expect(conLuna.perfil_grupo.personas).toBe(5)
     expect((await mias(O, demo.espacioId)).personas_con_preferencias).toBe(cuentaAntes + 1)

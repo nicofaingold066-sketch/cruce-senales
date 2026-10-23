@@ -313,3 +313,96 @@ export interface ApiError {
 }
 
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; error: ApiError }
+
+// ---- Preferencias privadas (enmiendas 4, 8 y 10; migraciones 0035 a 0038) ----
+// Solo las ve la propia persona (get_my_preferences). El grupo nunca ve zona, movilidad, tiempo ni momento de nadie:
+// del viaje sale un solo número por opción (`ViajeEstimado`), y solo con 4 o más personas que lo cargaron.
+
+export type Presupuesto = 'da_igual' | 'algo_barato' | 'ojala_gratis'
+export type Energia = 'con_todo' | 'algo_tranquilo'
+export type Ambiente = 'fiesta' | 'tranquilo' | 'da_igual'
+export type LugarPreferido = 'da_igual' | 'bajo_techo'
+/** Enmienda 10: comuna de Santiago (nunca dirección ni coordenadas). */
+export type Zona =
+  | 'providencia'
+  | 'nunoa'
+  | 'las_condes'
+  | 'santiago_centro'
+  | 'maipu'
+  | 'la_florida'
+  | 'puente_alto'
+  | 'vitacura'
+export type Movilidad = 'auto_con_lugar' | 'auto_sin_lugar' | 'transporte_publico' | 'bici_o_pie' | 'me_llevan'
+/** Minutos como texto, igual que las demás claves de lista cerrada ("60" = 60 o más, nunca descarta). */
+export type TiempoMax = '15' | '30' | '45' | '60'
+/** "Momento" ya es la marca de tiempo del servidor: este es el momento del día preferido. */
+export type MomentoDia = 'manana' | 'tarde' | 'noche' | 'da_igual'
+
+export interface PreferenciasPropias {
+  presupuesto: Presupuesto
+  energia: Energia
+  ambiente: Ambiente
+  lugar: LugarPreferido
+  /** Claves de `opciones.actividades` (1 a 6, sin repetir). */
+  me_gustaria: string[]
+  /** Enmienda 10: opcionales. La que falta no aporta esa variable; al guardar sin ella se borra. */
+  zona?: Zona
+  movilidad?: Movilidad
+  tiempo_max?: TiempoMax
+  momento?: MomentoDia
+}
+
+/** Enmienda 10: lo único que sale del viaje, por opción. null con menos de 4 personas con zona y movilidad. */
+export interface ViajeEstimado {
+  max_minutos: number
+  estimado: true
+}
+
+/** Enmienda 10: motivo de `sin_plan_compatible` cuando todo quedó lejos para alguien (no dice para quién). */
+export type MotivoSinPlan = 'sin_lugar_cerca_para_todos'
+
+export const ZONA_ETIQUETA: Record<Zona, string> = {
+  providencia: 'Providencia',
+  nunoa: 'Ñuñoa',
+  las_condes: 'Las Condes',
+  santiago_centro: 'Santiago centro',
+  maipu: 'Maipú',
+  la_florida: 'La Florida',
+  puente_alto: 'Puente Alto',
+  vitacura: 'Vitacura',
+}
+
+export const MOVILIDAD_ETIQUETA: Record<Movilidad, string> = {
+  auto_con_lugar: 'Tengo auto y puedo llevar gente',
+  auto_sin_lugar: 'Tengo auto, sin lugar para llevar',
+  transporte_publico: 'Transporte público',
+  bici_o_pie: 'Bici o a pie',
+  me_llevan: 'Necesito que me lleven',
+}
+
+export const TIEMPO_MAX_ETIQUETA: Record<TiempoMax, string> = {
+  '15': 'Hasta 15 minutos',
+  '30': 'Hasta 30 minutos',
+  '45': 'Hasta 45 minutos',
+  '60': '60 minutos o más',
+}
+
+export const MOMENTO_DIA_ETIQUETA: Record<MomentoDia, string> = {
+  manana: 'Mañana (antes de las 13)',
+  tarde: 'Tarde (de 13 a 19)',
+  noche: 'Noche (después de las 19)',
+  da_igual: 'Me da igual',
+}
+
+/** Texto fijo de la enmienda 10 junto a las cuatro preguntas. */
+export const TEXTO_PRIVACIDAD_VIAJE =
+  'Solo lo usa el servidor para elegir un lugar que te quede a mano. Nadie del grupo ve tu zona ni cómo te movés.'
+
+/** "Queda a menos de N minutos para todos (estimado)", o null si el servidor no lo informó. */
+export function textoViaje(v: ViajeEstimado | null | undefined): string | null {
+  return v ? `Queda a menos de ${v.max_minutos} minutos para todos (estimado)` : null
+}
+
+export const MOTIVO_SIN_PLAN_TEXTO: Record<MotivoSinPlan, string> = {
+  sin_lugar_cerca_para_todos: 'Ningún lugar les queda cerca a todos. Prueben con más tiempo de viaje u otro plan.',
+}

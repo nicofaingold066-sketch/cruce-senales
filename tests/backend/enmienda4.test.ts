@@ -48,7 +48,7 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
     expect(p.preferencias).toBeNull()
     expect(p.actualizadas_en).toBeNull()
     expect(p.personas_con_preferencias).toBe(4) // semillas de Mati, Caro, Fede y Sofi
-    expect(p.opciones.actividades).toEqual([
+    expect(p.opciones.actividades.slice(0, 5)).toEqual([ // E10 Parte B (0038): siguen las 8 nuevas
       { clave: 'asado', etiqueta: 'Asado' }, { clave: 'padel', etiqueta: 'Pádel' }, { clave: 'futbol', etiqueta: 'Fútbol' },
       { clave: 'parque', etiqueta: 'Parque' }, { clave: 'fiesta', etiqueta: 'Fiesta' },
     ])
@@ -132,10 +132,10 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
     const [primera] = seco.candidatas
     expect(primera).toEqual({
       id: seco.lugar.id, actividad: seco.actividad, actividad_etiqueta: seco.actividad_etiqueta, lugar: seco.lugar,
-      titulo: seco.titulo, franjas: seco.franjas, frases_grupo: seco.frases_grupo,
+      titulo: seco.titulo, franjas: seco.franjas, frases_grupo: seco.frases_grupo, viaje: seco.viaje, // E10: viaje en cada candidata
     })
     expect(seco.candidatas[1].frases_grupo).toEqual(['presupuesto_todos', 'al_aire_libre_con_buen_tiempo']) // #54: sin ritmo_del_grupo
-    for (const c of seco.candidatas) expect(Object.keys(c).sort()).toEqual(['actividad', 'actividad_etiqueta', 'franjas', 'frases_grupo', 'id', 'lugar', 'titulo'])
+    for (const c of seco.candidatas) expect(Object.keys(c).sort()).toEqual(['actividad', 'actividad_etiqueta', 'franjas', 'frases_grupo', 'id', 'lugar', 'titulo', 'viaje'])
     expect(JSON.stringify(seco)).not.toMatch(/lugar-sim-02|evento-sim-01|puntaje/)
     // Mejora #28: Fiesta (1 persona) no sale en gustos. Enmienda 7 (E7.4): el perfil no cuenta a quien lo pide
     // (Tomi): 5 personas, Asado 4, Pádel 0 (solo Tomi); ambiente sin mayoría (Caro tranquilo, Fede fiesta);
@@ -150,7 +150,8 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
     })
     // Con lluvia, Caro pidió techo: la cancha y el parque quedan fuera.
     const lluvia = (await ok(O, 'proponer_plan_borrador', { p_espacio_id: demo.id, p_sabado: sabado, p_clima: LLUVIA })).resultado
-    expect(lluvia.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-01'])
+    // E10 Parte B (0038): entran también el cine (barato) y la cultura (gratis), bajo techo.
+    expect(lluvia.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-01', 'lugar-sim-09', 'lugar-sim-10'])
   })
 
   it('mejora #28: con 4 personas (sin contar a quien pide), una actividad elegida por una sola no aparece en perfil_grupo.gustos', async () => {
@@ -219,19 +220,21 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
     await ok(U1, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: { presupuesto: 'da_igual', energia: 'con_todo', ambiente: 'fiesta', lugar: 'da_igual', me_gustaria: ['asado'] } })
     await ok(U2, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: { presupuesto: 'da_igual', energia: 'algo_tranquilo', ambiente: 'da_igual', lugar: 'bajo_techo', me_gustaria: ['futbol'] } })
 
-    // 3. Aunque el asado es lo más elegido, es "barato": solo queda el parque (gratis).
+    // 3. Aunque el asado es lo más elegido, es "barato": solo quedan entradas gratis (parque; con la Parte B de
+    // la enmienda 10, también cultura y cerro).
     const r = (await ok(O, 'proponer_plan_borrador', { p_espacio_id: esp.espacioId, p_sabado: sabado, p_clima: SECO })).resultado
     expect(r).toMatchObject({ tipo: 'borrador', actividad: 'parque', lugar: { id: 'lugar-sim-04' }, personas_consideradas: 3 })
-    expect(r.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-04'])
+    expect(r.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-04', 'lugar-sim-10', 'lugar-sim-12'])
     // Con 3 personas o menos: sin presupuesto_todos ni ritmo_del_grupo, y perfil_grupo solo con personas
     // (enmienda 7, E7.4: sin contar a quien pide, 2).
     expect(r.frases_grupo).toEqual(['al_aire_libre_con_buen_tiempo'])
     expect(r.perfil_grupo).toEqual({ personas: 2 })
 
-    // 4. Lluvia (o clima desconocido) y alguien pidió techo: el parque cae y no queda nada.
+    // 4. Lluvia (o clima desconocido) y alguien pidió techo: el parque y el cerro caen. Antes no quedaba nada
+    // (sin_plan_compatible sin motivo); con la Parte B de la enmienda 10 queda la cultura, gratis y bajo techo.
     for (const clima of [LLUVIA, { sabado: 'seco', domingo: 'desconocido' }]) {
       const s = await ok(O, 'proponer_plan_borrador', { p_espacio_id: esp.espacioId, p_sabado: sabado, p_clima: clima })
-      expect(s.resultado).toEqual({ tipo: 'sin_plan_compatible' })
+      expect(s.resultado.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-10'])
     }
   })
 

@@ -9,6 +9,12 @@ export type Presupuesto = 'da_igual' | 'algo_barato' | 'ojala_gratis'
 export type Energia = 'con_todo' | 'algo_tranquilo'
 export type Ambiente = 'fiesta' | 'tranquilo' | 'da_igual'
 export type LugarPref = 'da_igual' | 'bajo_techo'
+// Enmienda 10: opcionales. Si faltan, esa persona no aporta esa variable.
+export type Zona = 'providencia' | 'nunoa' | 'las_condes' | 'santiago_centro' | 'maipu' | 'la_florida' | 'puente_alto' | 'vitacura'
+export type Movilidad = 'auto_con_lugar' | 'auto_sin_lugar' | 'transporte_publico' | 'bici_o_pie' | 'me_llevan'
+/** Va como texto: un número da preferencias_invalidas (aclaración de forma de la enmienda 10). */
+export type TiempoMax = '15' | '30' | '45' | '60'
+export type MomentoDia = 'manana' | 'tarde' | 'noche' | 'da_igual'
 
 export interface Preferencias {
   presupuesto: Presupuesto
@@ -16,6 +22,16 @@ export interface Preferencias {
   ambiente: Ambiente
   lugar: LugarPref
   me_gustaria: string[]
+  zona?: Zona
+  movilidad?: Movilidad
+  tiempo_max?: TiempoMax
+  momento?: MomentoDia
+}
+
+/** Enmienda 10: viaje máximo estimado del grupo hacia una opción (solo con 4 personas o más con zona). */
+export interface Viaje {
+  max_minutos: number
+  estimado: boolean
 }
 
 export interface ActividadOpcion {
@@ -46,6 +62,7 @@ export interface CandidataAgente {
   titulo: string
   franjas: FranjaBorrador[]
   frases_grupo: string[]
+  viaje?: Viaje | null
 }
 
 /** Totales del grupo (enmienda 4.1). Con 3 personas o menos solo trae `personas`. */
@@ -68,10 +85,15 @@ export interface BorradorAgente extends CandidataAgente {
   mensaje_al_grupo: string
   eleccion_fuente: 'modelo' | 'regla'
   explicacion_fuente: 'modelo' | 'texto_fijo'
+  /** Qué modelo escribió: "opus", "haiku" (respaldo) u otro; null con la regla y el texto fijo. */
+  modelo_usado?: string | null
   perfil_grupo?: PerfilGrupo | null
+  /** Enmienda 10: el de la opción destacada. */
+  viaje?: Viaje | null
 }
 
-export type ResultadoAgente = BorradorAgente | { tipo: 'sin_plan_compatible' }
+/** `motivo: "sin_lugar_cerca_para_todos"` cuando el tiempo de viaje descartó todas las opciones (enmienda 10). */
+export type ResultadoAgente = BorradorAgente | { tipo: 'sin_plan_compatible'; motivo?: string }
 
 /** Clima de simulación para la demo (mejora #23). */
 export type ClimaSimulado = 'seco' | 'lluvia'
@@ -165,10 +187,25 @@ function perfilSeguro(perfil: PerfilGrupo | null | undefined): PerfilGrupo | nul
   }
 }
 
+/** Enmienda 10: de un viaje solo se toman los minutos y si es estimado; cualquier otra cosa se descarta. */
+export function viajeSeguro(v: unknown): Viaje | null {
+  if (!v || typeof v !== 'object') return null
+  const m = (v as { max_minutos?: unknown }).max_minutos
+  if (typeof m !== 'number' || !Number.isFinite(m) || m <= 0 || m > 600) return null
+  return { max_minutos: Math.round(m), estimado: (v as { estimado?: unknown }).estimado !== false }
+}
+
+/** El viaje de una opción: el suyo, o el de arriba solo si es la primera (respuesta sin viaje por candidata). */
+export function viajeDeOpcion(c: CandidataAgente, b: Pick<BorradorAgente, 'candidatas' | 'viaje'>): Viaje | null {
+  if (c.viaje !== undefined) return viajeSeguro(c.viaje)
+  return b.candidatas[0]?.id === c.id ? viajeSeguro(b.viaje) : null
+}
+
 /** Completa una respuesta que no trae los campos de la 4.1 (función vieja o RPC directa sin función). */
 function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
   // Sin la 4.1 la única opción es la del servidor; su id es el del catálogo.
-  const candidatas = Array.isArray(r.candidatas) && r.candidatas.length > 0 ? r.candidatas : [{ ...r, id: r.id ?? r.lugar.id }]
+  const crudas = Array.isArray(r.candidatas) && r.candidatas.length > 0 ? r.candidatas : [{ ...r, id: r.id ?? r.lugar.id }]
+  const candidatas = crudas.map((c) => (c.viaje === undefined ? c : { ...c, viaje: viajeSeguro(c.viaje) }))
   const elegidaId = r.elegida_id && candidatas.some((c) => c.id === r.elegida_id) ? r.elegida_id : candidatas[0].id
   const elegida = candidatas.find((c) => c.id === elegidaId) ?? candidatas[0]
   const fijo = sinFuncion || !r.explicacion
@@ -185,14 +222,17 @@ function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
     explicacion: fijo ? textoFijo(elegida.frases_grupo, true, false, r.perfil_grupo, elegida.actividad_etiqueta) : (r.explicacion as string),
     mensaje_al_grupo: fijo || !r.mensaje_al_grupo ? mensajeFijo(elegida) : r.mensaje_al_grupo,
     perfil_grupo: perfilSeguro(r.perfil_grupo),
+    viaje: viajeDeOpcion(elegida, { candidatas, viaje: r.viaje }),
     eleccion_fuente: !sinFuncion && r.eleccion_fuente === 'modelo' ? 'modelo' : 'regla',
+    modelo_usado: !fijo && typeof r.modelo_usado === 'string' ? r.modelo_usado : null,
     explicacion_fuente: !fijo && r.explicacion_fuente === 'modelo' ? 'modelo' : 'texto_fijo',
   }
 }
 
 // Tiempos límite del cliente (mejora #32): la demo nunca queda esperando para siempre.
 // La función del servidor corta sola a los ~8 s; si igual tarda más, se usa el respaldo por RPC.
-const TIEMPO_FUNCION_MS = 10000
+// Con Opus la función puede tardar hasta unos 30 s (20 s Opus y, si falla, unos 8 s Haiku): el cliente espera un poco más.
+const TIEMPO_FUNCION_MS = 35000
 const TIEMPO_RPC_MS = 8000
 
 function tiempoAgotado(): { ok: false; error: ApiError } {

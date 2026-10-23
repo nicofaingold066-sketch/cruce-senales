@@ -34,6 +34,8 @@ export interface FuenteEntrada {
   verPorCodigo: (codigo: string) => Promise<ApiResult<VistaPorCodigo>>
   /** miembroId null: "No estoy en la lista" (se une con el nombre escrito, como siempre). */
   unirse: (codigo: string, nombre: string, miembroId: string | null) => Promise<ApiResult<UnirseOk>>
+  /** Si la sesión de este teléfono ya es miembro del espacio de ese código (list_my_spaces), cuál. Opcional. */
+  yaEstoy?: (codigo: string) => Promise<{ espacioId: string; miembroId: string } | null>
 }
 
 function entrarAlEspacio(r: UnirseOk['resultado'], espacio: string, nombre: string, porLista: boolean, sesionGuardada?: string) {
@@ -50,7 +52,9 @@ function entrarAlEspacio(r: UnirseOk['resultado'], espacio: string, nombre: stri
   } else {
     dejarAviso(`Te uniste a «${espacio}» como ${nombre}. Cuando haya un plan, marca si te interesa y carga en privado cuándo puedes.`)
   }
-  irA(rutas.espacio(r.espacio_id))
+  // #88: quien eligió su nombre de la lista va directo a responder la propuesta abierta (un toque). Si no hay una sola
+  // propuesta por responder, esa pantalla lo deja en el espacio. Por el formulario se sigue entrando al espacio.
+  irA(porLista ? rutas.responder(r.espacio_id) : rutas.espacio(r.espacio_id))
 }
 
 /**
@@ -157,7 +161,7 @@ function AvisoYaMiembro({ ya, unirse, cerrar }: { ya: YaMiembro; unirse: (i: Int
             {ya.nombreActual}.
           </p>
           <div className="fila-botones">
-            <Boton autoFocus onClick={() => irA(rutas.espacio(ya.espacioId))}>
+            <Boton autoFocus onClick={() => irA(ya.intento.origen === 'lista' ? rutas.responder(ya.espacioId) : rutas.espacio(ya.espacioId))}>
               Seguir como {ya.nombreActual}
             </Boton>
             <Boton variante="secundario" onClick={() => setConfirmar(true)}>
@@ -178,6 +182,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
   const [vista, setVista] = useState<VistaPorCodigo | null>(null)
   const [errorVista, setErrorVista] = useState<ApiError | null>(null)
   const [elegido, setElegido] = useState<MiembroPorReclamar | null>(null)
+  const [yaEstoy, setYaEstoy] = useState<{ espacioId: string; miembroId: string } | null>(null)
   const u = useUnirse(fuente)
   const titulo = useRef<HTMLHeadingElement>(null)
   const campoNombre = useRef<HTMLInputElement>(null)
@@ -199,6 +204,24 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
     void cargar()
   }, [cargar])
 
+  // Quien ya entró desde este teléfono y vuelve a abrir el enlace (por ejemplo, un recordatorio) sigue con un toque.
+  useEffect(() => {
+    let vivo = true
+    void fuente.yaEstoy?.(codigo).then((y) => {
+      if (vivo) setYaEstoy(y)
+    })
+    return () => {
+      vivo = false
+    }
+  }, [codigo, fuente])
+  const yo = yaEstoy && vista ? (vista.miembros.find((m) => m.miembro_id === yaEstoy.miembroId) ?? null) : null
+
+  // #80: al llegar la lista, el foco va al título "¿Quién eres?" (el lector lo anuncia), salvo que algo ya lo tenga.
+  const conVista = vista != null
+  useEffect(() => {
+    if (conVista && (!document.activeElement || document.activeElement === document.body)) titulo.current?.focus({ preventScroll: true })
+  }, [conVista])
+
   useEffect(() => {
     // Alguien tomó ese lugar mientras tanto: se vuelve a la lista actualizada, con el foco en el título.
     if (u.origen === 'lista' && u.error?.detalle === 'miembro_ya_reclamado') {
@@ -207,6 +230,8 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
     }
   }, [u.error, u.origen, cargar])
 
+  // rincones O-08: con un código que no existe, el título no invita a elegir un nombre.
+  const codigoMalo = !vista && errorVista?.detalle === 'codigo_inexistente'
   const errorLista = u.origen === 'lista' ? u.error : null
   const yaLista = u.origen === 'lista' ? u.yaMiembro : null
   return (
@@ -214,16 +239,33 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
       <section className="escena escena-invitacion" aria-labelledby="quien-titulo">
         <span className="escena-eyebrow">Invitación a CRUXE</span>
         <h1 id="quien-titulo" ref={titulo} tabIndex={-1}>
-          {vista ? '¿Quién eres?' : 'Te invitaron a un plan'}
+          {vista ? '¿Quién eres?' : codigoMalo ? 'Esta invitación no existe' : 'Te invitaron a un plan'}
         </h1>
         {/* El nombre del espacio va fuera de los títulos: los guiones esperan el título del espacio para saber que ya se entró. */}
         {vista ? <p className="quien-espacio">en «{vista.espacio.nombre}»</p> : null}
-        <p className="escena-sub">Elige tu nombre. Este teléfono quedará como esa persona; no pedimos correo ni contraseña.</p>
+        <p className="escena-sub">
+          {codigoMalo
+            ? 'Revisa que el enlace esté completo o pide uno nuevo a quien organiza. También puedes escribir el código abajo.'
+            : 'Elige tu nombre. Este teléfono quedará como esa persona; no pedimos correo ni contraseña.'}
+        </p>
       </section>
       <div className="hoja">
         {!vista && !errorVista ? <Cargando texto="Buscando tu grupo…" /> : null}
         {errorVista ? (
           <ErrorCaja error={errorVista} onReintentar={() => void cargar()} titulo={vista ? 'No se pudo actualizar la lista' : 'No se pudo cargar la lista del grupo'} />
+        ) : null}
+
+        {yo && yaEstoy && !elegido ? (
+          <section className="tarjeta entrada-opcion entrada-principal" aria-labelledby="quien-ya">
+            <h2 id="quien-ya">Ya estás en este grupo como {yo.nombre}</h2>
+            <p className="suave">Este teléfono ya entró como {yo.nombre}. Sigue para responder o ver el plan.</p>
+            <div className="entrada-botones">
+              <Boton autoFocus onClick={() => irA(rutas.responder(yaEstoy.espacioId))}>
+                Seguir como {yo.nombre}
+              </Boton>
+            </div>
+            <p className="suave">¿No eres {yo.nombre}? Elige tu nombre abajo y entra con una sesión nueva.</p>
+          </section>
         ) : null}
 
         {vista && elegido ? (
@@ -242,7 +284,14 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
               >
                 Sí, soy {elegido.nombre}
               </Boton>
-              <Boton variante="secundario" onClick={() => setElegido(null)} disabled={u.ocupado}>
+              <Boton
+                variante="secundario"
+                onClick={() => {
+                  setElegido(null)
+                  requestAnimationFrame(() => titulo.current?.focus())
+                }}
+                disabled={u.ocupado}
+              >
                 Elegir otro nombre
               </Boton>
             </div>
@@ -292,7 +341,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
           </section>
         ) : null}
 
-        <UnirseConNombre codigoInicial={codigo} u={u} campoNombre={campoNombre} deshabilitado={soloLectura} />
+        <UnirseConNombre codigoInicial={codigo} u={u} campoNombre={campoNombre} deshabilitado={soloLectura} demo={vista?.espacio.demo === true} />
         <div className="privado" role="note">
           <span className="privado-icono" aria-hidden="true">
             <Icono n="candado" tam={20} />
@@ -313,11 +362,14 @@ function UnirseConNombre({
   u,
   campoNombre,
   deshabilitado,
+  demo,
 }: {
   codigoInicial: string
   u: ReturnType<typeof useUnirse>
   campoNombre: React.RefObject<HTMLInputElement | null>
   deshabilitado: boolean
+  /** La ayuda de "reclamar a una persona simulada" solo tiene sentido en la demo (en un grupo real confunde). */
+  demo: boolean
 }) {
   const [codigo, setCodigo] = useState(codigoInicial)
   const [nombre, setNombre] = useState(() => leerPerfil()?.nombre ?? '')
@@ -367,7 +419,7 @@ function UnirseConNombre({
           maxLength={30}
           aria-invalid={nombreMal || undefined}
         />
-        <small>Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.</small>
+        {demo ? <small>Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.</small> : null}
       </label>
       <Boton type="submit" variante="secundario" ocupado={u.ocupado && u.origen === 'formulario'} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado}>
         Unirme

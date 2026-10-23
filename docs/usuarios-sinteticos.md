@@ -145,9 +145,35 @@ Una persona real tarda más que la máquina (leer, buscar con el dedo): 7 toques
 - Reparación: v2 empezó con 0 confirmaciones, con el cuadro «versión 1 → versión 2 · Estas confirmaciones no pasan a la versión 2».
 - Un toque de ida y vuelta: Joaco confirmó desde la portada en 2 toques (tarjeta «Tu plan» y «Confirmar versión 1»).
 
+## Corrida de las 20:06: build integrado (qué mejoró y qué no)
+
+Build local: `wip/fundamentos` + `wip/friccion` + `wip/ux` + `wip/agente-ia` + `wip/front-juan` (merge sin conflictos, sin publicar), contra la base ya con 0035–0039. Capturas en `tests/sinteticos/capturas/2006/`. Sin fugas de privacidad de Bruno en los teléfonos de los demás.
+
+| Persona | 19:40 | 20:06 | Cambio |
+|---|---|---|---|
+| Joaco (320 px) | 7 toques, 6,2 s | **3 toques**, 5,6 s (nombre, «Sí, soy Joaco», «Puedo los dos días») | de 8 a 4 contando el enlace (#88 de friccion) |
+| Renata | 7 toques | **3 toques** («No puedo ninguno») | idem |
+| Gonza («Me interesa» + 2 franjas) | 8 toques | **4 toques** (la tarjeta «¿Avisar al grupo que te interesa?» lo ofrece después) | idem |
+| Bruno (no sabe la franja B) | 6 toques | 6 toques: «Todavía no sé: ver el plan» → «Mi respuesta» → A → Guardar | sin cambio: el camino de un toque no sirve a quien no sabe |
+| Joaco confirma desde la portada | 2 toques | 2 toques | igual |
+
+Qué mejoró:
+- **H2 (en parte)**: el enlace lleva directo a «¿Cuándo puedes?» (títulos claros: «Puedo los dos días», «Solo el sábado 31 oct · el domingo queda como No», «No puedo ninguno · Puedes cambiarlo después»). Ya no pasa por el código de invitación.
+- **H4**: la nota «Luna…» ya no sale en «¿Quién eres?» de un grupo real.
+- **H1 (en parte)**: «Próxima acción» de Bruno dice «Completa tu disponibilidad para poder entrar en la opción.» (enmienda 12 de backend, f896112). Pero en la misma pantalla sigue «No formas parte de las personas que pueden aceptar esta versión.», que contradice y no dice cómo entrar. → front-juan: ocultar esa línea cuando las condiciones están incompletas.
+- Tras guardar, la tarjeta ofrece «Contar mis gustos y presupuesto (opcional, privado)» (pedido de ux-flujo). Falta probar su destino.
+- «Recordar a quien falta» ya dice «si todavía no respondiste…» (ux-flujo, `7347913`); no la muestra ninguna pantalla todavía en este build.
+
+Qué no mejoró (sigue abierto): H5 («Marcá al menos una» bloquea guardar presupuesto/techo; voseo; las preguntas nuevas de la enmienda 10 dicen «movés», «viajás»), H6 («Ya hay 4 personas con condiciones» cuenta a Renata, que no puede), H7 (Joaco respondió y el grupo ve «2 con interés»: solo Gonza y Vale tocaron el botón), H8 («Sábado 31 oct 20:00 → Sábado 31 oct 20:00»), H9–H13, H14.
+
+Nuevo en esta corrida:
+- **H15 (media)**: en la enmienda 10 la zona solo tiene 8 comunas de Santiago y «Necesito que me lleven» es muy directo; ya anotado a agente-ia. Con 6 amigos y la regla de 4 personas, nunca aparece «Queda a menos de N minutos» en un grupo real de 6 donde no todos cargaron zona.
+
 ## Corridas
 
 | Hora | Contra | Resultado |
 |---|---|---|
 | 19:28 | build `95def89` (parcial: el guion se cortó al confirmar Gonza; corrió durante MIGRACION EN CURSO) | descartada |
 | 19:40 | build `95def89`, base libre | completa; hallazgos H1–H14 |
+| 20:12 | mismo build integrado, rehecho con `b8e19ae` (enmienda 12 b), friccion `05e148d` | completa, sin fugas; Joaco 3 toques (3,5 s), Renata 3, Gonza 4, Bruno 6. **H1 cerrado en lo importante**: Bruno lee «Tu disponibilidad está incompleta: no entraste en esta versión. Si la completas, cuenta si el plan se rearma.» (queda además la línea repetida «No formas parte de las personas…», menor) |
+| 20:06 | build integrado local (fundamentos + friccion + ux + agente-ia + front-juan), base con 0035–0039 | completa; Joaco 3 toques; H1 y H4 en parte arreglados |
