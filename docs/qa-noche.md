@@ -38,6 +38,9 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | — | recorrido y jurado con friccion / agente-ia / apertura / ux | base | pendiente: backend con MIGRACION EN CURSO (desde 19:26) |
 | 19:38 | red-controlada con `wip/friccion` cac56d8 (#90), `wip/ux` c444bea, `wip/agente-ia` 27bc499 (build + preview) | localhost | 10/10 en las tres; builds ok |
 | 19:38 | guiones de friccion versionados (`toques-invitacion`, `red-import-cortada`, `preparar-grupo`) | — | solo `node --check`; sin correr (esperan fin de MIGRACION EN CURSO) |
+| 19:52 | recorrido-dos-sesiones | producción, base con 0035–0038 | 23/23 |
+| 19:59 | jurado-navegador | producción | 4/4 (23 comprobaciones, privacidad de sobres sin hallazgos); se había frenado 19:53 por MIGRACION 0039 |
+| 20:02 | `wip/friccion` 05e148d: recorrido 23/23, jurado 4/4, toques-invitacion = 4 toques, friccion-flujo 19/19, red-import-cortada 4/4 (tras corregir el patrón de hash con guion) | localhost, base | verde |
 
 ## Regresiones abiertas
 (ninguna)
