@@ -8,7 +8,7 @@ Marcas, como en `docs/problema.md` y `docs/apertura.md`:
 - **[HOY]** = ya está en el producto o en el contrato aprobado. **[ENM10]** = enmienda 10 (zona, movilidad, tiempo, momento, 13 actividades).
 - **[PEDIDO a …]** = ya está como pedido al dueño en `agentes/psico.md`.
 
-## 0. En diez líneas
+## 0. En pocas líneas
 1. Un grupo de amigos no pelea por el plan: pelea por **lo que el plan dice de cada uno** (mi casa, lo que como, lo que gasto, con quién vengo). Casi todo lo delicado es **identidad y reciprocidad**, no logística.
 2. Por eso la regla de diseño es una sola: **el servidor resuelve la tensión sin nombrarla.** Cada persona dice lo suyo con opciones cerradas y en privado; el grupo ve un plan que sirve y que no se explica.
 3. Lo que más daña no es cancelar sino **mentir sobre por qué** [F1]. CRUXE no pide motivos: ya cumple.
@@ -19,6 +19,42 @@ Marcas, como en `docs/problema.md` y `docs/apertura.md`:
 8. Antes del sábado 13:00, sin migración: **textos, agente (prompt y presentación de dos caminos), ayudas en la interfaz y una lámina de pitch** (§9). Lo que necesita enmienda es mínimo y va a Nico.
 9. Casi nada de lo que sigue está medido en Chile: la evidencia es de EE.UU. y Europa. Se dice como "creemos que", nunca como cifra nuestra.
 10. Lo que CRUXE **no** hace: no resuelve conflictos entre personas, no media peleas, no promete que nadie se sienta bien. Evita ser la causa de uno.
+11. **El eje de todo es el cierre** (§0b): cada tensión de arriba es una razón para no cerrar. De las siete causas de que un plan no se cierre, CRUXE ya tiene algún mecanismo contra todas; las más débiles son recordar (2) y **decir** lo que ya hace (5). Lo que más falta es **decir** que la confirmación solo vale si se llega al mínimo («si no llegan 4, nadie queda comprometido»), que le quita el miedo a ir primero (§8.9).
+12. **Ubicación** (§12): día, hora y duración siempre visibles; «buscar el lugar en el mapa» con un enlace al LUGAR, nunca a las personas; el tiempo de cada uno lo calcula su propio teléfono; alarma en el calendario; nunca la comuna ni la ubicación de otro.
+13. **Nivel de gasto sin clase social** (§13): no se pide ni se infiere (es dato sensible, la comuna es un mal proxy y delata). La intención —que un plan no quede mal— se cubre con un **estilo de la ocasión** elegido por quien organiza (simple · normal · especial), dos formas con distinto estilo y, después, un presupuesto privado que también empuje hacia arriba. El plan nunca supera el tope del que menos quiere gastar.
+
+## 0b. El cierre: por qué los planes de grupo no se cierran (eje del documento)
+Pedido de Nico (20:28): *«Somos seres sociales y a todos nos gusta estar con gente, pero el máximo problema es terminar de coordinar una juntada.»* Es el mismo problema de `docs/problema.md` §3, visto desde la psicología. Todo lo demás de este documento (casa, comida, parejas, plata, distancia) importa **porque cada una de esas tensiones es una razón para no cerrar**.
+
+### Las siete causas, el mecanismo de CRUXE que ataca cada una y lo que falta
+Lectura honesta: casi toda la evidencia viene de **otras situaciones** (emergencias, crowdfunding, encuestas de calendario) y se aplica acá **por analogía**. Está marcado [ANALOGÍA]. Lo que no se probó con grupos de amigos se dice como [HIPÓTESIS].
+
+| # | Causa | Qué se sabe | Qué la ataca hoy [HOY] | Qué falta |
+|---|---|---|---|---|
+| **1** | **Difusión de la responsabilidad**: con muchos, cada uno espera que otro cierre. | En el experimento clásico, ayudar se volvió menos probable y más lento cuanto más personas creía el participante que había [F31, A]. [ANALOGÍA]: era una emergencia, no un plan; en `problema.md` ya se usa como analogía. | **Una** persona arma el plan y el **servidor** propone: nadie "decide" por el grupo. Aviso personal a quien falta (`FaltaTuRespuesta`, enmienda 12). | Un recordatorio dirigido a **todo el grupo** vuelve a difundir la responsabilidad. El aviso debe llegarle **a cada persona pendiente por su nombre en su pantalla** ("Falta tu respuesta"), no solo un texto al chat. Hoy "Recordar a quien falta" es un texto al grupo: sirve, pero es lo más débil. |
+| **2** | **Nadie quiere ser el pesado**: pedir una respuesta cuesta. | Quien pide ayuda directa **subestima hasta en un 50 %** cuántos dirán que sí, porque sobrepesa el costo de decir sí y descuenta el costo social de negarse [F32, A; el 48 % viene de una revisión posterior, vía prensa]. Quien contacta a un amigo subestima cuánto se lo agradecen [F2, A]. | CRUXE arma el texto del recordatorio ("Faltan respuestas para «X»…", `compartir.ts`): el organizador solo lo manda. | **La app no puede enviar nada por sí sola** (notificaciones están fuera de alcance, `problema.md` §4): el recordatorio lo sigue mandando una persona por WhatsApp. Se reduce el costo, no desaparece. Propuesta: el texto dice "te lo recuerda CRUXE" y el organizador ve en la app, **sin enviar nada**, "Hoy conviene recordar: faltan 2, cierra mañana a las 20:00" [HIPÓTESIS: baja la incomodidad]. |
+| **3** | **"Me interesa" no compromete** (la intención no es conducta). | Aumentar la intención produjo un efecto de d = 0,66 sobre la intención pero solo d = 0,36 sobre la conducta, en 47 experimentos [F33, A]. Los planes concretos ("dónde, cuándo") ayudan a cumplir (Gollwitzer y Sheeran 2006, d≈0,65, `problema.md`). | **Interés no es confirmación**: solo cuenta confirmar **una versión concreta** (día, hora, lugar). El silencio nunca es asistencia. | La confirmación pesa más si se ve **qué pasa con ella**. Ver causa 5. |
+| **4** | **Parálisis por exceso de opciones.** | La idea popular **no se sostiene sola**: el metaanálisis de 50 experimentos da un efecto promedio casi nulo [F30, A]. Lo que sí se observa en agendas de grupo es otra cosa: en encuestas abiertas (Doodle) la gente aprueba los horarios muy populares o muy impopulares y se ve evidencia de razonamiento estratégico según lo que ya votaron los demás [F34, A, CSCW, 340.000 encuestas de EE.UU.]. | **Una** opción por versión; las dos franjas (A/B) son lo máximo que se pide. | "Dos formas de juntarse" (§7) es **para quien organiza**, nunca para el grupo, para no reabrir la negociación. **No** justificarla como "evitar la sobrecarga". |
+| **5** | **Esperar a ver quién va** (nadie quiere ir primero). | Modelo de umbrales: cada persona se suma cuando ya se sumó una cantidad de otras; quien tiene umbral cero arranca, y el resultado depende de **cómo se distribuyen** los umbrales, no del promedio [F35, A, teórico]. [ANALOGÍA]. El mínimo de un plan es parecido a un **contrato de aseguramiento**: se compromete solo si se llega a la cantidad necesaria, y si no, se devuelve todo [F36, A, economía]. Ese diseño es lo que quita el miedo a ir primero. | **El mínimo ya funciona así**: "Grupo confirmado" solo con N confirmaciones; si no llegan, no hay plan. La barra muestra "3 de 4 necesarias". | **Decirlo.** Hoy la pantalla dice "Ya confirmaste… vale solo para esa versión", pero **no dice** que *"tu confirmación solo vale si llegan 4; si no, nadie queda comprometido"*. Esa frase le quita el riesgo de ser el primero. Es solo texto (§8.9). |
+| **6** | **Sin plazo, todo se posterga.** | Las personas aceptan voluntariamente plazos costosos y les sirven, aunque los impuestos desde afuera funcionan mejor que los propios [F37, A, 2002]; **una réplica de 2026 reportó que cambiar los plazos tuvo un efecto despreciable en uno de los estudios** [F37]: la evidencia está disputada. Se mantiene como [HIPÓTESIS]. | El **servidor** pone el plazo y rechaza lo que llega fuera de plazo. | La pantalla debe decir **qué pasa si no se llega** ("si el jueves a las 20:00 no están las 4 confirmaciones, el plan no se arma y nadie queda comprometido"). Aclarar el final reduce el miedo. |
+| **7** | **La baja de último momento.** | Cancelar duele menos de lo que se teme si es sincero y con aviso [F1]. La víspera aumenta las ganas de evitar [F5]. | Reparación a versión 2, sin aceptaciones heredadas; "No voy" sin motivo. | Texto (§8.1) y, después, la "otra forma" como versión 2 (§7). |
+
+### Lo que CRUXE no resuelve
+- **El cierre humano sigue necesitando a alguien que toque "enviar".** La app baja el costo, no lo elimina (causa 2).
+- **No hay compromiso sin consecuencias.** CRUXE no multa ni "devuelve con bono" como el contrato de aseguramiento dominante [F36]; solo evita que alguien se quede solo.
+- **No podemos decir que cierre más planes.** Es [HIPÓTESIS]; `problema.md` §4 ya declara que lo medible es la tasa de encuentros concretados.
+
+### Resumen: qué mecanismo ataca qué
+| Mecanismo de CRUXE | Causas que ataca |
+|---|---|
+| Una persona arma el plan, el servidor propone | 1, 2 |
+| Condiciones privadas antes de ver el plan | 4, 5 |
+| Una sola versión concreta | 3, 4 |
+| Confirmación **solo vale si se llega al mínimo** | 5 |
+| Plazo del servidor | 6 |
+| Aviso personal "falta tu respuesta" | 1, 2 |
+| Reparación a versión 2 sin aceptaciones heredadas | 7 |
+| Texto de recordatorio armado por la app | 2 |
 
 ## 1. Principios de diseño (salen de todo lo que sigue)
 | # | Principio | Por qué | Cómo se ve |
@@ -30,6 +66,7 @@ Marcas, como en `docs/problema.md` y `docs/apertura.md`:
 | P5 | **No explicar el porqué de una restricción ni de una baja.** | F1: lo que duele es la mentira; si nadie pide el motivo, nadie necesita inventarlo. | "Esta vez toca un lugar neutro." "Cambió el plan." Sin "porque". |
 | P6 | **Dos conceptos, no cuatro.** | La psicología no demuestra que menos opciones eviten la sobrecarga [F30]. Se justifica por otra razón: una versión concreta a la que comprometerse y un "otra forma" que da salida sin votar. | §7. |
 | P7 | **El servidor decide; la IA solo explica.** | Regla del producto. | Todo lo de abajo que "elige" lo elige una regla fija; la IA redacta. |
+| P8 | **Cada dato se usa solo para lo que se pidió.** | Usar un dato pedido para una cosa en otra es discriminación por proxy [F41]. | La zona sirve para el viaje y nada más; no se infiere nivel de gasto, ni de ninguna otra cosa, de la comuna ni de nada (§13). |
 
 ## 2. La línea de tiempo de una juntada: qué pasa antes, durante y después
 Pedido de Nico: estudiar los comportamientos **antes** de una juntada. Los siete momentos de abajo son una lectura del equipo apoyada en literatura general, **no un estudio de campo**. Lo marcado [HIPÓTESIS] lo tiene que confirmar la gente (la pregunta a los del asado sigue sin respuesta, `docs/problema.md` §2).
@@ -129,6 +166,8 @@ Quién la pone: **Persona** (privada), **Organizador** (decisión del grupo, pú
 | **V7** | **Acompañantes al aceptar** | Persona, al aceptar | `0` · `1` | Cuenta para el cupo; el acompañante no tiene datos. | **Enmienda** (cambia `accept_version`) | Después |
 | **V8** | **Historial de dónde fue cada juntada** | Servidor | derivado | Propone rotación sin personas ("las últimas tres fueron en casa"). | **Enmienda** (campo `tipo_lugar` en la propuesta) | Después |
 | **V9** | **Esta vez algo corto** | Persona | `si` · `da_igual` | Ya propuesto por sinteticos; misma lógica que energía. | Enmienda | Baja |
+| **V10** | **Estilo de la juntada** | Organizador | `simple` · `normal` · `especial` | Acerca la elección al estilo **dentro del tope del grupo**; nunca lo supera (§13). Texto fijo: «Elegimos lo más especial que le sirve a todos.» | **Sin migración** (parámetro de la función `agente` + tabla fija actividad → nivel) | **Alta** |
+| **V11** | **Presupuesto que también empuja hacia arriba** | Persona | se suma `algo_especial` a `da_igual` · `algo_barato` · `ojala_gratis` | Empuje (puntos), no tope. Nadie ve el presupuesto de otro. | **Enmienda** (lista cerrada + puntaje) | Después |
 
 ### Lo que NO se pide (y por qué)
 | No pedir | Motivo |
@@ -213,7 +252,7 @@ El agente presenta a quien organiza **dos** de las candidatas elegidas para que 
 | **Ritmo** (ya existe `energia`) | Tranquilo (café, juegos, cultura) | Con movimiento (pádel, fútbol, cerro) | "Tarde de café y juegos" ↔ "Pádel" | Mismo motivo. |
 | **Momento** (ya existe `momento`) | De día | De noche | | Mismo motivo. |
 
-**No se usa el eje precio**: "algo más barato / algo más caro" delata el presupuesto del grupo.
+**El eje precio, con cuidado**: se evita decir «más barato / más caro» (delata el presupuesto del grupo). Sí se puede ofrecer como **estilo** («más simple / más especial») cuando **ambas** formas ya pasaron el tope del grupo; ver §13.
 
 ### Cómo se explica sin herir
 Estructura fija de texto (la redacta la IA con estos límites, §8.7):
@@ -312,6 +351,16 @@ Tono rioplatense neutro, cálido y sin culpas. **La app habla de «tú»** (`rin
 | Después de la juntada | El grupo | «¿Cómo les fue? Se juntaron / No se pudo / La próxima.» (una pregunta cerrada) |
 | Un grupo que quiere sorteo | Quien organiza | «Si varios quieren recibir, acuerden de antemano cómo decidir: turnos o sorteo. Es más fácil de aceptar si se decide antes.» (F10) |
 
+### 8.9 El cierre: que nadie tenga que ir primero
+| Quién ve | Texto | Notas |
+|---|---|---|
+| **Quien va a confirmar** (junto al botón) | «Tu confirmación solo vale si llegan 4. Si no llegan, nadie queda comprometido.» | Lo central de la causa 5 (§0b). Es la frase que más falta hoy. |
+| **Todos** (cuenta atrás) | «Se cierra el jueves a las 20:00. Si para entonces no están las 4 confirmaciones, el plan no se arma y no pasa nada.» | Dice el final con claridad (causa 6). |
+| **Quien falta, en su pantalla** | «Falta tu respuesta.» | El aviso por nombre propio (causa 1). |
+| **El grupo, en el recordatorio** | «Te lo recuerda CRUXE: faltan 2 respuestas y se cierra mañana a las 20:00.» | Sin nombres. |
+| **Quien organiza, solo en la app** | «Hoy conviene recordar: faltan 2 y se cierra mañana a las 20:00.» | No envía nada (causa 2). |
+| **Recordatorio de la víspera** | «Mañana a las 14:00 en [lugar]. Calcula tu viaje con unos 15 minutos de margen. Si no puedes ir, avisa: no hace falta contar por qué.» | Une U4 y §8.1. |
+
 ## 9. Priorización
 ### A. Antes de la entrega del sábado 13:00, **sin migración** (textos, agente, interfaz)
 | # | Qué | Dueño | Esfuerzo | Valor |
@@ -350,16 +399,28 @@ Todo lo de abajo depende de que backend tenga tiempo; después de las 12:00 no h
 | C9 | Revisión del texto de privacidad y consentimiento por la **Ley 21.719** (vigente desde el 1 dic 2026). |
 | C10 | Validación **con gente real** de las hipótesis de §2 y §3 (hoy son de escritorio). |
 
+### D. Cierre, ubicación y nivel de gasto (pedido de las 20:28)
+| # | Qué | Dueño | Cuándo | Esfuerzo |
+|---|---|---|---|---|
+| D1 | Frase «Tu confirmación solo vale si llegan N; si no llegan, nadie queda comprometido» junto al botón de confirmar, y «Se cierra el jueves… si no están las N confirmaciones, el plan no se arma» (§8.9) | front-juan (PlanTab) | **Antes** | Bajo, alto valor |
+| D2 | «Hoy conviene recordar: faltan N y se cierra mañana» visible solo para quien organiza, sin enviar nada; y «Te lo recuerda CRUXE» en el texto del recordatorio | ux-flujo | **Antes** | Bajo |
+| D3 | `.ics` con `VALARM` (-1 día y -2 h) y `LOCATION`; margen de 15 minutos en el recordatorio (§12 U3, U4) | friccion (`compartir.ts`) | **Antes** | Bajo |
+| D4 | Botón «Buscar el lugar en el mapa» (solo el lugar; oculto o «(ejemplo)» si es simulación) y línea fija de día, hora y duración (§12 U1, U2) | front-juan | **Antes** | Bajo |
+| D5 | **Estilo** simple · normal · especial: selector para quien organiza, parámetro en la función `agente`, tabla fija actividad → nivel, frase fija; dos formas por estilo (§13) | agente-ia | **Antes** | Medio |
+| D6 | Tiempo estimado propio por persona (§12 U6) | backend | **Después** (enmienda) | Medio |
+| D7 | Presupuesto con `algo_especial` (V11) | backend | **Después** (enmienda) | Medio |
+
 ## 10. Lámina de pitch: «CRUXE entiende la dinámica de un grupo»
 **Título:** *Un grupo no discute el plan: discute lo que el plan dice de cada uno.*
 
-**Cuatro tensiones, cuatro respuestas de diseño** (una fila cada una; íconos de personas, sin caras):
+**Cinco tensiones, cinco respuestas de diseño** (una fila cada una; íconos de personas, sin caras):
 | La tensión de un grupo real | Lo que hace CRUXE |
 |---|---|
 | «¿En la casa de quién?» | Dos formas de juntarse: *en casa* o *en un lugar neutro*, las dos ya válidas para todos. Sin decir por qué. |
 | «Yo no como carne / yo no tomo» | Se pregunta por *la comida de esta juntada*, no por la persona. El plan dice siempre «habrá opción sin carne». |
 | «¿Puedo ir con mi pareja?» | Una regla del grupo, no un dato de cada uno: *solo el grupo · con parejas · abierta*. |
 | «Me bajo» | «Gracias por avisar. No hace falta contar por qué.» La versión nueva no hereda confirmaciones. |
+| «Que confirme otro primero» | «Tu confirmación solo vale si llegan 4. Si no llegan, nadie queda comprometido.» Nadie va primero con riesgo. |
 
 **Frase para decir en voz alta (≤ 25 segundos):** «Lo difícil de juntar amigos casi nunca es la fecha. Es que nadie quiere ser el que dice "no quiero ir a tu casa", "no como carne", "no me alcanza" o "no voy". CRUXE deja que cada uno lo diga en privado, y el grupo ve solo un plan que sirve, sin explicar por qué.»
 
@@ -373,4 +434,76 @@ Todo lo de abajo depende de que backend tenga tiempo; después de las 12:00 no h
 - **Dos números del proyecto vienen con cautela:** el 80 % de F1 es de una encuesta de EE.UU. y los datos de dieta de F17 son de encuestas de opinión citadas por prensa.
 - **Lo que no pude verificar:** el tamaño de muestra de F13, la página de F15, el texto de la Ley 21.719 (solo guías secundarias), el original de F20, el libro de Oldenburg (F8) y las publicaciones de F23.
 - **La privacidad tiene un límite que ya está declarado** (`docs/agente-ia.md` §2): el plan elegido también informa. «Habrá opción sin carne» siempre reduce ese límite en comida; «esta vez toca un lugar neutro» lo reduce en lugar. No lo elimina.
+- **El cierre se apoya en analogías.** Difusión de responsabilidad, umbrales y contratos de aseguramiento vienen de emergencias, modelos teóricos y economía; no hay un estudio de planes entre amigos. Y la réplica de 2026 sobre plazos [F37] mantiene esa causa como hipótesis.
 - **No hay mediación.** CRUXE no resuelve una pelea ni evita que alguien se ofenda. Evita ser la causa.
+
+## 12. Ubicación: que cada uno se ubique en tiempo y espacio sin exponer a nadie
+Pedido de Nico (20:28): *«que la gente esté ubicada en tiempo y espacio»*. Regla de oro (no se negocia): **nunca la ubicación, la comuna ni el tiempo de viaje de otra persona.** Lo que se puede mostrar es **del plan** (día, hora, duración, lugar) y **de uno mismo, calculado en su propio teléfono**.
+
+### Qué existe hoy [HOY]
+- **Tiempo:** la franja con día, hora de inicio y fin en hora de Santiago; el cierre de aceptación; "Calendario" que descarga un `.ics` (`descargarCalendario`, `src/lib/compartir.ts`, botón en `CierrePlan` de `PlanTab.tsx`). El `.ics` **no tiene alarma** (busqué `VALARM`, `TRIGGER` y `LOCATION` en `src/` y no están).
+- **Espacio:** zona y movilidad privadas; "Queda a menos de N minutos para todos (estimado)" solo con 4 personas o más con zona [ENM10]. El lugar está **en el título** del plan (no hay campo de lugar: `docs/contrato.md`).
+- **Enlaces a mapas:** `src/agente/canchas.ts` ya arma enlaces de Google Maps **por categoría y sin ubicación** (Maps muestra lo que está cerca de quien toca; CRUXE no la conoce).
+
+### Propuestas
+| # | Qué | Cómo se ve | Privacidad | Costo |
+|---|---|---|---|---|
+| **U1** | **Día, hora y duración siempre juntas y en grande** en la ficha del plan y en el aviso de confirmación: «Sáb 31 oct · 14:00 a 17:00 (3 h) · hora de Santiago». | Una línea fija arriba de todo. | Es del plan. | Texto/interfaz, sin migración |
+| **U2** | **«Buscar el lugar en el mapa»**: enlace de Google Maps con **solo el lugar** (el título del plan) como búsqueda. Quien lo toca ve **su propio** tiempo, ruta y hora de salida **en Maps**, calculado en su dispositivo. | Botón en la ficha. | CRUXE **no recibe** de dónde sale nadie. Maps URLs no pide clave y se arma con `api=1` [F39]. | Sin migración |
+| **U3** | **Alarma en el calendario**: el `.ics` suma dos recordatorios (1 día antes y 2 h antes). | Mismo botón «Calendario». | Todo ocurre en el teléfono. `VALARM` está en el estándar iCalendar [F39]. | Sin migración (`compartir.ts`, friccion) |
+| **U4** | **«Sal con margen»**: texto fijo en el recordatorio: «Calcula tu viaje con unos 15 minutos de margen.» | Línea en `CierrePlan` y en el recordatorio. | Texto igual para todos. | Sin migración |
+| **U5** | **«Punto medio»**: ya existe, **como regla del servidor**: se elige el lugar con **menor viaje máximo** (equidad, E10). No se dibuja un mapa con puntos de personas. Se dice: «Elegido para que nadie viaje demasiado» y, con 4 o más, el número. | Una línea. | Nada por persona. | Texto |
+| **U6** | **Tu tiempo estimado, solo tuyo** calculado por el servidor y devuelto **solo a esa persona**: «Desde tu zona, unos 25 minutos (estimado)». | Línea en la ficha. | Es una salida nueva del servidor (minutos propios): **hoy no existe** y E10 prohíbe minutos por persona en respuestas **compartidas**. | **Enmienda** (nuevo campo propio en `get_proposal_state` o RPC nueva): no antes del sábado |
+
+**Por qué U2 y no U6 para el sábado.** U2 da lo mismo (cada uno ve su tiempo) sin tocar el servidor ni mover datos de nadie. U6 es más prolijo (no depende de Maps ni de una dirección) pero cambia una respuesta del contrato.
+
+### Límites que hay que decir
+- **El lugar está en el título, no en un campo.** El enlace busca el texto del título: sirve para sitios públicos («Parrilla El Sabor, Ñuñoa»). **Para una casa no sirve, y está bien**: CRUXE no guarda direcciones de nadie. Los lugares del catálogo de la demo son de **simulación**: en la demo el botón debe decir «(ejemplo)» o quedar escondido. Pedido a front-juan.
+- **El «hora de salida» exacto no se calcula acá.** Sale de Maps. Lo que se agrega es margen (U4). El respaldo es que las personas **subestiman cuánto tardan** en lo que planean: en un estudio con 37 estudiantes de psicología, la estimación promedio fue de 33,9 días y la realidad de 55,5, y solo cerca del 30 % terminó cuando lo había previsto [F38, A, tareas y no viajes: [ANALOGÍA]].
+- **No hay ubicación en vivo** ni «mira dónde está cada uno» ni «voy en camino» con mapa. Mostrar dónde está alguien convierte una juntada en vigilancia y es justo lo contrario de «nadie ve tu zona». Una versión sin ubicación («Voy en camino» como botón de un toque que manda un texto) queda para después.
+- **No mostrar la comuna de nadie** ni un mapa de zonas del grupo, aunque sea «anonimizado»: con 5 personas y 8 comunas, el mapa delata.
+
+### Qué hace falta
+- **front-juan**: botón «Buscar el lugar en el mapa» en `PlanTab.tsx` (oculto o «(ejemplo)» si el lugar es de simulación) y línea fija U1.
+- **friccion**: `.ics` con `VALARM` (-1 día y -2 h) y `LOCATION` = título; texto de margen en el recordatorio.
+- **ux-flujo**: línea U5 en la ficha del borrador cuando hay `viaje`.
+
+## 13. Nivel de gasto y estilo, sin clase social
+Pedido de Nico (20:28): que un plan no quede mal, por ejemplo proponer algo muy barato a un grupo que prefiere otra cosa. **Con una condición que él mismo fijó: no preguntar ni inferir la clase social.** Este apartado explica por qué y cómo se cubre la intención sin ese dato.
+
+### 13.1 Por qué NO se usa la clase social
+1. **Es dato sensible por ley.** La Ley 21.719 lista la «situación socioeconómica» entre los datos sensibles, con consentimiento como regla general [F27, guía secundaria; vigencia plena 1 dic 2026; verificar el texto oficial].
+2. **La comuna es un proxy, y es un mal proxy.** Santiago tiene segregación residencial por ingresos documentada (la de los más pobres es mayor que la de los más ricos, y varía mucho entre comunas) [F40, A]. Pero **una comuna no dice cuánto gasta una persona**: se mezcla gente de muchos niveles, y usarla así es un caso de **discriminación por proxy**: un dato pedido para una cosa (viaje) se usa para otra [F41, A: analiza el caso del código postal en EE.UU.; [ANALOGÍA]]. En CRUXE esto se traduce en una regla: **la zona se usa solo para el viaje.** Se agrega como principio P8 (§1).
+3. **Delata.** En un grupo de 5, «el grupo es de nivel alto» identifica a la persona que no lo es.
+4. **Se equivoca.** Inferir mal hace exactamente lo que Nico no quiere: ofrecer algo que no va.
+5. **Ya tenemos lo que sirve.** El presupuesto que la persona dice (tres niveles) es una **preferencia de esta juntada** y es mejor que cualquier inferencia: la persona lo decide, lo cambia cuando quiere y no queda como etiqueta.
+
+**Lo que tampoco se infiere, aunque sea técnicamente posible:** nombre, apellido, comuna, modelo de teléfono, horario de uso, tipo de actividad que le gusta, o cómo responde.
+
+### 13.2 La intención de Nico, cubierta sin ese dato
+Hoy el presupuesto tiene **un solo sentido**: baja el tope. Valores: «ojalá gratis», «algo barato», «da igual». El plan nunca supera el presupuesto más bajo del grupo [HOY]. Eso protege a quien menos puede gastar, pero **no empuja hacia arriba**: un grupo donde todos eligieron «da igual» y quiere festejar algo igual puede recibir lo más simple. Son dos fallas distintas del mismo mecanismo: (a) el plan queda **por debajo** de lo que el grupo quería y (b) el plan queda **por encima** de lo que alguien puede. La (b) ya está cubierta. La (a) se cubre con tres capas, de la más rápida a la más completa.
+
+| Capa | Qué es | Quién la pone | Qué hace el servidor / agente | Costo | Cuándo |
+|---|---|---|---|---|---|
+| **E1. Estilo de la juntada** | «Simple · Normal · Especial». Es el *tono de la ocasión* (un cumpleaños suele ser especial; un martes de pádel, simple). | **Quien organiza**, al pedirle al agente o al crear el plan. No es dato de ninguna persona. | El servidor **ya filtró** las candidatas por el tope del grupo. El agente **ordena las que quedaron** acercando la elección al estilo y lo dice con una frase fija: «Elegimos lo más especial que le sirve a todos.» | **Sin migración**: parámetro de la función `agente` y tabla fija actividad → nivel en `src/agente` (ver abajo) | **Antes del sábado** |
+| **E2. Dos planes parecidos con distinto estilo** | Entre las candidatas, dos que difieren en estilo, ambas dentro del tope. Con el mismo diseño de «dos formas de juntarse» (§7), ahora con el eje **estilo**. | Quien organiza **elige una** (no vota el grupo) | Mismo mecanismo que §7. | Sin migración | **Antes del sábado**, junto con §7 |
+| **E3. Presupuesto privado hacia arriba** | Un valor nuevo `algo_especial` («me gustaría algo especial esta vez»). Es un **empuje**, no un tope. | **Cada persona**, en privado | El tope sigue siendo el más bajo; el empuje suma puntos a candidatas de nivel mayor **dentro** del tope. Nadie ve el presupuesto de otro. | **Enmienda** (nuevo valor en la lista cerrada de `presupuesto` + regla de puntaje; cambia una función) | Después del sábado |
+
+**Qué hace E1 sin tocar la base.** Hoy las candidatas no traen el precio (el presupuesto del grupo no sale de la función). Mientras tanto, el agente usa una tabla fija con el nivel de gasto de cada actividad, **copiada del catálogo sembrado** (`docs/contrato-enmienda-4.md` y migración 0038): `parque`, `cultura`, `cerro` = gratis; `asado`, `futbol`, `juegos_casa`, `cine`, `cafe` = barato; `padel`, `fiesta`, `cena`, `bar`, `juegos_salida` = medio. Riesgo: si el catálogo cambia, la tabla queda vieja; por eso se anota en el pedido. Con la columna `tipo_lugar`/`nivel` (§9 B) se acabaría ese riesgo.
+
+### 13.3 Cómo se explica
+- **Nombre del estilo**, sin palabras de plata (el filtro de salida ya bloquea «gratis», «barato», «económico»): **Simple · Normal · Especial**.
+- **Texto al organizar:** «¿Qué estilo buscan? Simple, normal o especial. Siempre dentro de lo que le sirve a todos.»
+- **Texto del resultado, siempre igual:** «Elegimos lo más especial que le sirve a todos.» (si pidió «especial») · «Elegimos algo simple que le sirve a todos.» (si pidió «simple»). **No cambia si no pudo llegar al estilo.**
+- **Dos formas** (E2): «Dos formas de juntarse. Una más simple y otra más especial. Las dos le sirven al grupo.» Sin precios.
+
+### 13.4 Lo que esto no resuelve (límites)
+- **Inferencia residual.** Si el organizador pide «especial» y recibe algo simple, puede sospechar que alguien aceptó menos. **Ya existe** hoy: «Si sale un plan gratis, el grupo sabe que alguien lo pidió» (`agente-ia.md` §2). El texto fijo lo reduce; no lo elimina.
+- **El tope más bajo manda, por diseño.** Quedar excluido pesa más que festejar de forma simple; esa asimetría es una decisión de valores, no un descuido.
+- **Anclaje.** Mostrar primero el plan más caro puede subir lo que la gente está dispuesta a pagar (hay evidencia de anclaje de precios en menús y alojamiento, con muestras chicas; **no la usé como fuente**). Por eso la «Sugerida» es la del servidor y no la más cara.
+- **Esto no es un perfil de nadie.** El estilo es de la **ocasión**. No se guarda por persona ni por grupo.
+
+### 13.5 Otras formas de no dejar mal a nadie con la plata (sin datos)
+1. **Costo visible desde el principio**: el plan ya declara «costo cero» o «aporte fijo conocido por persona» (`caso-canonico.md`). Mantenerlo y mostrarlo arriba (U1): nadie descubre el costo en la puerta.
+2. **«Cada uno lleva algo»** como modalidad (§3.1).
+3. **Un plan «simple» siempre disponible como segunda forma**, aunque el estilo pedido sea «especial».

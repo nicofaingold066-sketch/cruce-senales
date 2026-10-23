@@ -122,10 +122,55 @@ Lo que **no pude verificar** está marcado "no verificado".
 
 ---
 
+## El cierre: por qué los planes de grupo no se cierran (§0b del documento principal)
+
+**F31. Darley y Latané, 1968, "Bystander intervention in emergencies: diffusion of responsibility", *Journal of Personality and Social Psychology* 8(4), 377–383.** Estudiantes hablaban por intercomunicador con 1 a 4 personas supuestas; al oír una emergencia médica grabada, ayudar fue menos probable y más lento cuanto más personas creían que había. Fuerza **A**. **Es una emergencia, no un plan entre amigos**: se usa como [ANALOGÍA]. (El resumen que leí en el enlace está marcado como generado automáticamente; el dato central coincide con las demás fuentes.)
+[https://stafforini.com/works/darley-1968-bystander-intervention-emergencies/](https://stafforini.com/works/darley-1968-bystander-intervention-emergencies/)
+
+**F32. Flynn y Lake, 2008, "If you need help, just ask: underestimating compliance with direct requests for help", *Journal of Personality and Social Psychology* 95(1), 128–143.** En varios estudios, de laboratorio y de campo, quien pide ayuda directa subestima hasta en un 50 % la probabilidad de que le digan que sí; los autores lo atribuyen a que quien pide sobrepesa el costo de decir sí y descuenta el costo social de negarse. Una revisión posterior (Bohns, 2016, vía prensa) habla de más de 14.000 desconocidos y de una subestimación de unos 48 %. Fuerza **A** (el 48 % es **C**, de segunda mano). No leí el artículo completo.
+[https://ecommons.cornell.edu/entities/publication/9c0adbfb-985c-4f7d-aae3-96959822bc4c](https://ecommons.cornell.edu/entities/publication/9c0adbfb-985c-4f7d-aae3-96959822bc4c)
+
+**F33. Webb y Sheeran, 2006, "Does changing behavioral intentions engender behavior change? A meta-analysis of the experimental evidence", *Psychological Bulletin* 132(2), 249–268.** 47 experimentos: un cambio de intención de d = 0,66 produjo un cambio de conducta de d = 0,36. Fuerza **A** (cifras de resúmenes; no verifiqué intervalos). Soporta que **"me interesa" no es lo mismo que ir**.
+[https://eprints.whiterose.ac.uk/1580](https://eprints.whiterose.ac.uk/1580)
+
+**F34. Zou, Meir y Parkes, 2015, "Strategic voting behavior in Doodle polls", *CSCW 2015* (DOI 10.1145/2675133.2675273).** Más de 340.000 encuestas de Doodle de EE.UU. (julio–septiembre 2011): en encuestas abiertas, los respondientes tienden a aprobar horarios muy populares o muy impopulares y no los intermedios; seguimientos muestran que los primeros votantes se comportan distinto a los últimos. Fuerza **A** (CSCW), **de agendas de trabajo y eventos en general, no de amigos**. Soporta que **ver lo que votaron otros cambia lo que uno vota**.
+[https://parkes.seas.harvard.edu/publications/strategic-voting-behavior-doodle-polls](https://parkes.seas.harvard.edu/publications/strategic-voting-behavior-doodle-polls)
+
+**F35. Granovetter, 1978, "Threshold models of collective behavior", *American Journal of Sociology* 83(6), 1420–1443.** Cada persona tiene un umbral: cuántas otras tienen que haber decidido antes de que ella decida; quien tiene umbral cero arranca; el resultado final depende de **cómo se distribuyen** los umbrales, no del promedio. Fuerza **A**, teórica, de motines, huelgas y rumores. Usado por [ANALOGÍA] para "esperar a ver quién va".
+[https://www.gwern.net/doc/sociology/1978-granovetter.pdf](https://www.gwern.net/doc/sociology/1978-granovetter.pdf)
+
+**F36. Tabarrok, 1998, "The private provision of public goods via dominant assurance contracts", *Public Choice* 96, 345–362.** En un contrato de aseguramiento, el proyecto se produce solo si se junta lo necesario y, si no, se devuelve lo aportado; en la versión "dominante" además hay un bono para quien aportó. Fuerza **A** (teoría de juegos). Usado como [ANALOGÍA]: **el mínimo de un plan funciona como un contrato de aseguramiento** (sin el bono). La crítica que apareció es de un trabajo de clase, no revisado.
+[https://mason.gmu.edu/~atabarro/PrivateProvision.pdf](https://mason.gmu.edu/~atabarro/PrivateProvision.pdf)
+
+**F37. Ariely y Wertenbroch, 2002, "Procrastination, deadlines, and performance: self-control by precommitment", *Psychological Science* 13(3), 219–224.** Las personas adoptan voluntariamente plazos costosos y les ayudan, pero los plazos externos funcionan mejor que los propios. **Una réplica publicada en *Psychological Science* en 2026 (Hyndman y Bisin) reportó que cambiar los plazos tuvo un efecto despreciable en el estudio replicado** (lo leí en un resumen de búsqueda; no verifiqué el detalle). Fuerza **A pero disputada**.
+[https://scholars.duke.edu/publication/810365](https://scholars.duke.edu/publication/810365) · [réplica](https://journals.sagepub.com/doi/full/10.1177/09567976261460772)
+
+## Ubicación (§12)
+
+**F38. Buehler, Griffin y Ross, 1994, "Exploring the planning fallacy: why people underestimate their task completion times", *Journal of Personality and Social Psychology* 67, 366–381.** Las predicciones fueron demasiado optimistas en tareas académicas y no académicas; en el estudio de las tesis, 37 estudiantes estimaron en promedio 33,9 días y tardaron 55,5, y solo cerca del 30 % terminó en la fecha prevista; para tareas de **otros** la estimación fue menos sesgada. Fuerza **A**. **Son tareas, no viajes**: [ANALOGÍA] para "calcula tu viaje con margen".
+[https://bear.warrington.ufl.edu/brenner/mar7588/Papers/buehler-et-al-1994.pdf](https://bear.warrington.ufl.edu/brenner/mar7588/Papers/buehler-et-al-1994.pdf)
+
+**F39. Documentación técnica.** (a) Google Maps URLs: enlaces universales para buscar y pedir direcciones, **sin clave de API**; `api=1` es obligatorio; la ruta se pide en `https://www.google.com/maps/dir/?api=1&destination=…`; si no se da origen, Maps usa la ubicación del dispositivo; límite de 2.048 caracteres. (b) iCalendar, RFC 5545: un evento (`VEVENT`) puede llevar recordatorios (`VALARM`) con `TRIGGER` relativo al inicio. Fuerza **A** (documentación oficial / estándar). No verifiqué la lista de valores de `travelmode`.
+[https://developers.google.com/maps/documentation/urls/guide](https://developers.google.com/maps/documentation/urls/guide) · [https://icalendar.org/iCalendar-RFC-5545/3-6-6-alarm-component.html](https://icalendar.org/iCalendar-RFC-5545/3-6-6-alarm-component.html)
+
+## Nivel de gasto y por qué no la clase social (§13)
+
+**F40. Segregación residencial por ingresos en Santiago.** Agostini, Hojman, Román y Valenzuela (*EURE*, 2016) estiman la segregación por ingresos en el Gran Santiago entre 1992 y 2002: la de los más pobres es mayor que la de los más ricos, aumentó en ese período y hay mucha heterogeneidad entre comunas (resumen de búsqueda; **no leí el artículo ni verifiqué el enlace del EURE**). Agostini (*Estudios Públicos*, 2010) revisa la evidencia chilena sobre efectos de la segregación. Fuerza **A**. Sirve para decir que **la comuna se relaciona con el ingreso en promedio, pero no dice nada de una persona**.
+[https://biblat.unam.mx/hevila/EstudiospublicosSantiago/2010/no117/6.pdf](https://biblat.unam.mx/hevila/EstudiospublicosSantiago/2010/no117/6.pdf)
+
+**F41. Barocas y Selbst, 2016, "Big data's disparate impact", *California Law Review* 104(3), 671–732.** Examina cómo los datos pueden discriminar aun sin intención, a través de proxies; la prensa que cita a Barocas pone el código postal como ejemplo. Fuerza **A** pero **es derecho de EE.UU. sobre empleo**: [ANALOGÍA]. No leí la sección sobre proxies.
+[https://www.cs.yale.edu/homes/jf/BarocasDisparateImpact.pdf](https://www.cs.yale.edu/homes/jf/BarocasDisparateImpact.pdf)
+
+**Sobre anclaje de precios** (mostrar primero algo caro sube lo que la gente está dispuesta a pagar): aparecieron estudios chicos (un menú de restaurantes de Beijing con 3.000 pedidos y un experimento de alojamiento de 2018). **No los usé como fuente**; solo como motivo de cautela en §13.4.
+
+---
 ## Lo que busqué y no encontré (no inventar)
 - Estudios chilenos sobre cancelaciones, bromas internas, quién pone la casa o la dinámica del asado. La búsqueda de antropología chilena devolvió trabajos sobre alimentación e identidad (Montecino) pero nada específico sobre el asado como práctica de sociabilidad.
 - Un estudio que mida la **ansiedad del anfitrión** directamente.
 - Una revisión sobre **grupos mixtos vs. de un solo género** y sus preferencias de plan.
 - Un estudio revisado sobre **tensión por plata en grupos de amigos**.
 - Un estudio que mida **cuánto desequilibrio hay en quién organiza los planes** entre amigos (F3 mide quién inicia contacto).
-- Evidencia de que **dos opciones** sean mejores que una para que un grupo se comprometa. Es una hipótesis del equipo (ver `docs/psicologia-grupo.md` §5).
+- Evidencia de que **dos opciones** sean mejores que una para que un grupo se comprometa. Es una hipótesis del equipo (ver `docs/psicologia-grupo.md` §7).
+- Un estudio de **por qué los planes entre amigos no se cierran**: lo del cierre (§0b) usa analogías (emergencias, umbrales, contratos de aseguramiento, agendas).
+- Un estudio de **cómo mostrar el tiempo de viaje a cada persona sin exponerla**: es diseño propio.
+- Estudios sobre **gasto y tensión de nivel socioeconómico en grupos de amigos** (ver F29).
