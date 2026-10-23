@@ -135,10 +135,24 @@ Para confirmar, cada invitado vuelve a abrir la app (nadie se lo avisa): portada
 
 | Recorte | Ahorra | Dueño | Estado |
 |---|---|---|---|
-| Después de "Sí, soy X", directo a responder la propuesta vigente, con respuestas de un toque ("Puedo los dos días", "Solo el …", "No puedo ninguno") que guardan las dos franjas: nunca queda "Pendiente"; "Me interesa" después y opcional | 4 toques al invitado (8 → 4) | friccion #88 | entregado en `wip/friccion` `efede20` (ruta `#/e/<id>/responder`, `src/friccion/Responder.tsx`); falta integrar. Sin verificar por mí |
+| Después de "Sí, soy X", directo a responder la propuesta vigente, con respuestas de un toque ("Puedo los dos días", "Solo el …", "No puedo ninguno") que guardan las dos franjas: nunca queda "Pendiente"; "Me interesa" después y opcional | 4 toques al invitado (8 → 4) | friccion #88 | entregado en `wip/friccion` (`efede20` y siguientes); falta integrar. **[visto]** ver §3.5 |
 | "¿Eres X?" en el mismo toque del nombre (confirmación en línea, deshacer) | 1 toque (4 → 3) | friccion | propuesto; ojo con el rótulo "Sí, soy X" de los guiones |
 | Avisar al grupo por WhatsApp al publicar o reparar una versión | el organizador no escribe a mano | ux-flujo #89 + front-juan | componente entregado (`419ac2a`); falta conectarlo |
 | El organizador responde antes de buscar (la pantalla se lo pide) | 1 búsqueda fallida | front-juan + backend | pedido |
+
+### 3.5 Segunda corrida, con #88 de friccion [visto]
+
+Viernes 23, 20:04-20:05, sobre una fusión LOCAL de `wip/ux` + `wip/friccion` (`05e148d`), sin subir; mismo guion, mismo grupo ficticio, 6 sesiones nuevas.
+
+| Persona | Del enlace a la primera respuesta | Vistas |
+|---|---|---|
+| Ana, Beto, Coni, Diego, Ema | **4 toques**: enlace, su nombre, "Sí, soy X", una respuesta de un toque ("Puedo los dos días" / "Solo el sábado 31 oct" / "Solo el domingo 1 nov") | ¿Quién eres? → ¿Cuándo puedes? → Respuesta guardada |
+
+- Ya no hay "Pendiente": Ema eligió "Solo el sábado" y entró en la versión (antes quedaba fuera sin saberlo).
+- "Me interesa" aparece después de guardar, en un aviso aparte que dice que es público y opcional. Debajo: "Ver el plan", "Cambiar mi respuesta" y "Contar mis gustos y presupuesto (opcional, privado)".
+- El organizador no cambia: sigue en 21 toques (o 19). Con la enmienda 12 (a) la próxima acción ya le dice "Primero marca tu disponibilidad"; falta conectar `AvisoParaMi` en la pantalla.
+- Para confirmar, igual que antes: volver a abrir la app, tarjeta "Tu plan", "Confirmar versión 1" (Ana, Beto y Ema confirmaron).
+- Límite de mi guion: espera 2,5 s en la portada al volver; con la entrada animada, a Diego y Coni la portada todavía decía "Buscando tus espacios…" y el guion no encontró la tarjeta. No es una falla de la app; no lo cuento como duda.
 
 ## 4. Recorrido del organizador, paso por paso
 
