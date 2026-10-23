@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 15:20.
+Quien edita este archivo: solo esta sesión. Última actualización: 15:22.
 
 ## Tocando ahora
-- Mejora #52 (F1 de `docs/revision-codex-6-privacidad-red.md`, reasignada temporalmente por el coordinador): SOLO `src/screens/Espacio.tsx`
+(nada; libero `src/screens/Espacio.tsx`)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[15:22] Mejora #52 entregada** (`ca98414`, solo `src/screens/Espacio.tsx`): con la generación en null, `cargarTodo` pide `get_space` y después `list_proposals`; con la generación conocida, en paralelo como antes. `node tests/e2e/red-controlada.mjs`: N1 a N8 PASS; el caso F1 (reproducción) ahora FALLA porque el defecto ya no ocurre. Con F1 en positivo (copia local, no commiteada): 10/10, con 1 `get_space` y 1 `list_proposals` y sin sondeo, también con el orden de respuesta invertido. Typecheck y build en verde. Archivo liberado.
 - **[15:20] #50 completa** (`faa207b`): pantalla del agente en producción (main 3313790, 15:19-15:20) a 375 px. Sol: 3 opciones; perfil "4 personas: Asado 3 de 4 · Fútbol 2 de 4", sin Tomi y sin ambiente (empate); por qué con "(3 de 4)"; la respuesta de la función, leída en el navegador, no trae `presupuesto_grupo`. Lluvia: solo asado. WhatsApp a 44 px; "Usar esta opción" precarga. Sin errores. Evidencia en `docs/agente-ia.md` §8.1.
 - **[15:11] #50 parte 1 entregada** (`27342fb`): E7.1 y E7.4 por la función contra la base real (0028 aplicada, sin migración en curso), 13/13. Grupo de 2: sin `el_mas_elegido`, orden fijo y perfil solo con la cantidad. Demo sin Tomi: 4 personas (Luna sin semilla), ambiente null, sin presupuesto, el voto de Tomi no mueve el perfil. Grupo de 5 (Luna simulada): perfil de 5. Evidencia en `docs/agente-ia.md` §8.1.
 - **[14:45] Revisión de privacidad de los cambios de claude-b** (c95952d, #43, #44 parte 1): sin problemas nuevos. Anexo en `docs/agente-revision-privacidad.md` (`a3dcaea`) con 3 notas: el hallazgo 8 queda mitigado pero no resuelto (#47); queda un residuo del hallazgo 1 que E7.2 no cierra (la baja que pasa a En revisión delata que esa persona podía; backend); el texto de `SimulacionTab.tsx:93` no coincide con `puede.simular` (no es de privacidad).
@@ -38,9 +39,10 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Clave de Anthropic: la crea y la pone Nico.
 
 ## Pedidos a otros
-(vacío)
+- **[15:22] dueño de `tests/e2e/red-controlada.mjs` (vía coordinador):** convertir el caso F1 en regresión positiva: esperar 'LISTA_INICIAL_VALIDA' sin `visibilitychange`, 0 "Cargando propuestas…" y exactamente 1 `get_space` y 1 `list_proposals`. Te paso el bloque probado si lo querés.
 
 ## Entregado
+- Mejora #52 (F1, `src/screens/Espacio.tsx`): `wip/agente-ia` `ca98414`.
 - Mejora #50 completa (función y pantalla en producción con la enmienda 7): `wip/agente-ia` `faa207b`.
 - Mejora #50, parte 1 (enmienda 7 por la función): `wip/agente-ia` `27342fb`.
 - Anexo de privacidad de los cambios de claude-b: `wip/agente-ia` `a3dcaea`.
