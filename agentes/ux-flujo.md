@@ -5,7 +5,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cru
 ## Tocando ahora
 - [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: los actualizo con cada entrega). Espero que backend saque MIGRACION EN CURSO para correr el e2e de entrega.
 
-## Entregado (rama `wip/ux`, último `ede33ca`)
+## Entregado (rama `wip/ux`, último `7347913`)
 - #98 + #91 `a3797af` (19:31): `docs/flujo-usuario.md` reescrito con el recorrido REAL "convencer a uno" (build propio 4183, 375 px, 19:24-19:27): organizador 21 toques (19 sin el tropiezo), cada invitado 8 toques y 4 vistas hasta la primera respuesta, +2 para confirmar. Marcas [visto]/[leído], 9 dudas vistas en pantalla, recortes con dueño, mapa input → servidor → output en mermaid con la enmienda 10 (pendiente) y tabla "quién ve qué".
 - #94 `bfa6218` (19:32): `docs/front-back-puente.md`: RPC y campos por pantalla, lo que el back expone y el front no usa (E10 incluida), lo que falta de cada lado, registro de entregas.
 - #89 `419ac2a` (19:34) + `ede33ca` (19:36, nota según el motivo y banco sin base `src/componentes-nuevos/prueba/recordar.html`, revisado a 375 y 320 px sin desborde): `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (lógica pura) + `recordar.test.mjs`. `node --test "src/componentes-nuevos/*.test.mjs"` 7/7; `npm run typecheck` y `npm run build` en verde (19:34).
@@ -23,6 +23,10 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - backend [19:30] (P2, no urgente, después de E10): `siguiente_accion` del organizador en `reuniendo_interes` dice "Ya hay N personas con condiciones. Busca una opción compatible." aunque el imprescindible no cargó las suyas (0013/0029). Si quien consulta ES el imprescindible y no tiene condiciones completas: "Primero marca tu disponibilidad: eres quien no puede faltar." No toca el caso en que el organizador no es el imprescindible (no revelar el estado de otra persona).
 - front-juan [19:30] (P2): `NuevaPropuesta.tsx:430` ofrece como "No puede faltar" a los integrantes que todavía no entraron (verificado: Ana…Ema "por entrar" aparecen en la lista). Si se elige a uno que nunca entra, el motor no publica nunca. Pedido: rotular "(por entrar)" en el chip cuando `m.pendiente` y, si queda elegido, aviso "Si no entra y responde, no va a haber opción".
 - apertura [19:30]: en `NuevaPropuesta.tsx` el primer atajo es "Asado" (después Fútbol, Cena, Juntada, Cine, Cumple, Paseo): en un grupo "Los del pádel" el plan salió titulado "Asado". Para tu #92: ejemplos y orden de atajos que no arranquen por asado y alguno de raqueta (pádel/tenis).
+
+- sinteticos [19:38]: (1) hecho en `7347913` (`wip/ux`): el texto de "Recordar a quien falta" ahora es "Para «X»: si todavía no respondiste, toca, elige tu nombre y marca cuándo puedes (es privado). Si ya respondiste, no hace falta nada: <enlace>". (2) el enlace a "Mis preferencias" lo pido a sus dueños (líneas siguientes).
+- front-juan [19:38] (P2, de sinteticos): en `RespuestaTab.tsx`, debajo de "Tus condiciones", un enlace "Contar mis gustos y presupuesto (opcional, privado)" que lleve a `rutas.espacio(espacioId)` con el bloque del agente abierto: en `Espacio.tsx:242` darle `id="mis-preferencias"` al `<details>` y abrirlo + `scrollIntoView` si `sessionStorage.getItem('cruxe:abrir-preferencias') === '1'` (y borrarlo). El enlace pone esa marca antes de navegar.
+- friccion [19:38] (P2, de sinteticos): lo mismo en `Responder.tsx`, en la tarjeta "Guardado" (después de "Me interesa"): enlace "Contar mis gustos y presupuesto (opcional, privado)" con la misma marca `cruxe:abrir-preferencias`, para que front-juan la lea en `Espacio.tsx`.
 
 ## Estado de mis pedidos
 - apertura (atajos): HECHO `87d4a62` (`ATAJOS`, `atajosParaGrupo`). Falta que front-juan lo conecte en `NuevaPropuesta.tsx` (pedido de apertura).
