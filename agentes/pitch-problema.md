@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 16:57.
+Quien edita este archivo: solo esta sesión. Última actualización: 16:59.
 
 ## Tocando ahora
-- [16:57] #72: `src/agente/api.ts` y `src/agente/AgentePanel.tsx` (casilla "Que el agente use mis preferencias", enmienda 8). Pruebas contra la base solo con demos propios, una o dos llamadas al agente como máximo.
+(nada)
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[16:59] Mejora #72 entregada** (`5ab6cc4`, solo `src/agente/api.ts`, `AgentePanel.tsx`, `agente.css` y `docs/agente-ia.md`): casilla "Que el agente use mis preferencias", marcada por defecto, con la ayuda de la enmienda 8 como descripción accesible y zona tocable de 44 px. `usar_en_agente` se lee a nivel raíz de `get_my_preferences` y va dentro de `p_preferencias` en `save_my_preferences`. Probado a 375 px contra la base real (16:58, demo propio, sin llamar al agente): guardar desmarcada da `usar_en_agente=false`; al recargar sigue desmarcada; `personas_con_preferencias` no la cuenta (4, no 5); volver a marcar da `true` y `repetido=false`; sin desborde ni errores. Typecheck y build en verde. No probé que `proponer_plan_borrador` la ignore: lo cubren las pruebas de backend de la enmienda 8 y evité gastar llamadas al modelo.
 - **[16:53] #64, dos llamadas más en vivo** (sesión de integración, 16:51:54 sol 3116 ms y 16:52:09 lluvia 3806 ms, fuente `modelo` en ambas, textos válidos): anotadas en `docs/agente-ia.md` §8.3 (`fefffb5`). La IA tarda 3 a 4 s. Sin probar: el límite con clave real y la lectura de los registros de la función.
 - **[16:52] #64 probada en vivo** (según el coordinador, 16:50:59, función v8): `docs/agente-ia.md` pasa a "probado en vivo con el modelo real", con la evidencia en §8.3 (`7a3e85d`). Sin medir todavía: tiempo de respuesta, lluvia simulada y el límite de llamadas con clave real; lo corre la sesión de integración cuando la base quede libre.
 - **[16:47] Mejora #64 entregada** (`fd89382`; archivos: `supabase/functions/agente/index.ts`, `logica.ts`, `logica.test.ts` y `docs/agente-ia.md`). Con `AI_GATEWAY_API_KEY`: Vercel AI Gateway (`https://ai-gateway.vercel.sh`, `anthropic/claude-haiku-5.5`, salida JSON con esquema, como documenta Vercel); sin ella y con `ANTHROPIC_API_KEY`: API directa como antes; sin ninguna: regla y texto fijo. `AGENTE_MODELO` cambia el modelo si tiene el formato del proveedor; `AGENTE_SALIDA=herramienta` fuerza una herramienta (solo sirve con Haiku 5.5). Costo: `max_tokens` 1500 (no 600: Haiku 5.5 piensa por defecto y eso cuenta en el tope; con 600 la respuesta se cortaría y se cobraría igual), 8 s con `signal`, sin reintentos; una llamada al modelo por persona cada 10 s y 30 por minuto por instancia, en memoria; pasado eso, regla y texto fijo, y queda un log. Toda salida pasa por `validarSalidaModelo` y `textoValido`. Logs sin claves ni contenido. `logica.test.ts` 34/34 sin red; la función entera con base y SDK simulados, 10/10 (en mi carpeta temporal). Revisión independiente (3 enfoques): 9 hallazgos, 6 corregidos (`as const` en el esquema, tope de tokens, `signal` para el cuerpo, nombre del error en el log, `Buffer` en el test, documentación del tool_choice); 3 documentados como límite (el límite por persona no frena sesiones anónimas nuevas ni suma entre instancias; el tope por minuto lo pueden agotar pocas sesiones; lo cubre el límite de gasto de la clave). **Construido, no probado con el modelo real.** README: la frase "elegir y redactar con un modelo de Anthropic está programado pero no probado" sigue siendo cierta; si querés, "a través del Vercel AI Gateway".
@@ -55,6 +56,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - **[15:37] coordinador:** el guion del recorrido (Playwright, dos contextos, 16 comprobaciones) está en mi carpeta temporal; si lo querés como prueba versionada en `tests/e2e/`, te lo paso.
 
 ## Entregado
+- Mejora #72 (casilla usar_en_agente): `wip/agente-ia` `5ab6cc4`.
 - Mejora #64 (cliente del modelo por Vercel AI Gateway, costo): `wip/agente-ia` `fd89382`.
 - Mejora #60 (revisión de accesibilidad, informe): `wip/agente-ia` `5fc476a`.
 - Mejora #61 (guion con el flujo nuevo de #47): `wip/agente-ia` `287d8db`.
