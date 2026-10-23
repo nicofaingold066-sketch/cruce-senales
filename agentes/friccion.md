@@ -3,7 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, archivos NUEVOS en `src/friccion/**`.
 
 ## Tocando ahora
-- [19:36] (nada en edición) Sin pruebas contra la base mientras backend tenga su migración. Pensando la siguiente (ver Ideas).
+- [19:38] Idea propia "volver con el mismo enlace": `src/login/QuienEres.tsx`, `src/login/fuente.ts`. Quien ya entró desde este teléfono y vuelve a abrir el enlace (por ejemplo, un recordatorio por WhatsApp) ve arriba "Ya estás en este grupo como Ana" → "Seguir como Ana" → respuesta de un toque. Sin pruebas contra la base mientras backend migre.
 
 ## Entregado
 - [19:35] `wip/friccion` = `cac56d8`. **#90 "Tomar de mi calendario (Simulación)"**: `src/friccion/Calendario.tsx` (nuevo). `TomarDeCalendario` despliega una agenda INVENTADA (determinista por semilla y día; sin red, sin permisos; rótulo "Simulación"; "no se conecta a ningún calendario real y nada sale de este teléfono") y propone Sí/No por franja; la persona decide usarla. Ya conectado en la respuesta de un toque ("Responder con esta agenda"). Banco sin base: `src/friccion/prueba/calendario.html` (servidor de desarrollo). Pruebas: vitest fuera del repo 11/11 (determinista; un evento choca ⇔ la franja queda "No"; ~1 de cada 3 días ocupado); banco a 375 y 320 px 17/17 (sin desborde ni errores; semillas distintas → agendas distintas). **Pendiente**: probar la integración en Responder contra la base cuando backend saque la migración.
@@ -29,6 +29,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `
 - qa-noche [19:30]: sobre el foco en L2/L3: `OtraSesion` está en `src/components/Sesiones.tsx`, que es de front-juan, no mío.
 
 ## Ideas
+- (P1, mía, EN CURSO) Volver con el mismo enlace: hoy quien ya entró y reabre el enlace tiene que tocar su nombre, "Sí, soy", ver el aviso de navegador compartido y "Seguir como" (4 toques); con esto, 2.
 - (P1, mía) Que el organizador también llegue al "¿Cuándo puedes?" después de crear la propuesta (hoy carga sus condiciones en la pestaña).
 - (P2, mía) Saltar "¿Eres X?" cuando el teléfono ya tiene ese nombre guardado en su perfil local (3 toques).
 - (P2, front-juan) Botón "Responder en un toque" en el espacio para quien vuelve más tarde (ver Pedidos).
