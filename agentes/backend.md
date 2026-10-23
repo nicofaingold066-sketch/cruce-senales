@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 20:13 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 20:32 Santiago (reloj).
 
 ## Tocando ahora
-- [20:13] Base libre. Enmienda 11 lista para aplicar, esperando el OK de Nico (vía coordinador). Nada en edición.
+- [20:32] **MIGRACION EN CURSO** (0041, enmienda 11 agente social, OK de Nico 20:33). Nadie corre suites ni e2e contra la base hasta que saque esta línea. Rutas: `supabase/migrations/0041_e11_agente_social.sql`, `tests/backend/**` (lista permitida 31 → 40), `docs/contrato-enmienda-11-borrador.md`.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
