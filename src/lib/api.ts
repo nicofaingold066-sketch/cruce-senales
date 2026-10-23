@@ -12,6 +12,7 @@ import type {
   MiembroRef,
   Momento,
   PanelSimulacion,
+  PreferenciasPropias,
   PropuestaResumen,
   TipoEspacio,
 } from './types'
@@ -96,6 +97,23 @@ export type ReparacionOk = PropuestaOk<{
   repetido: boolean
 }>
 export type PanelOk = OkBase & { state_rev: number; simulacion: PanelSimulacion }
+/**
+ * Preferencias privadas propias (enmiendas 4, 8 y 10). `preferencias` solo trae zona, movilidad, tiempo_max y
+ * momento si la persona los cargó. `usar_en_agente` es true si todavía no guardó nada.
+ */
+export type MisPreferenciasOk = OkBase & {
+  preferencias: PreferenciasPropias | null
+  usar_en_agente: boolean
+  actualizadas_en: Momento | null
+  opciones: { actividades: { clave: string; etiqueta: string }[] }
+  personas_con_preferencias: number
+}
+export type GuardarPreferenciasOk = OkBase & {
+  resultado: { repetido: boolean }
+  preferencias: PreferenciasPropias
+  usar_en_agente: boolean
+  actualizadas_en: Momento
+}
 
 // ---- Núcleo ----
 
@@ -198,6 +216,20 @@ async function llamar<T extends OkBase>(
   if (res.error) {
     const msg = res.error.message ?? ''
     if (esErrorDeRed(msg)) return falloDeRed(escritura)
+    if (res.error.code === '22P02') {
+      // Un id que no es uuid (por ejemplo, un enlace mal copiado) no llega a la función: PostgREST lo rechaza.
+      // Se responde lo mismo que el servidor para un id que no existe, sin reintento (pedido O-06 de rincones).
+      return {
+        ok: false,
+        error: {
+          codigo: 'fuera_de_audiencia',
+          detalle: 'no_miembro',
+          mensaje: 'No perteneces a este espacio o el elemento no existe.',
+          reintentable: false,
+          state_rev: null,
+        },
+      }
+    }
     if (res.error.code === 'PGRST202') {
       // Operación aún no publicada en la base: se trata como falla temporal (contrato 0.3).
       return fallo(
@@ -380,6 +412,20 @@ export const api = {
     llamar<CargarCasoOk>('simulate_load_case', { p_propuesta_id: propuestaId, p_intento_id: intentoId }, true),
   getSimulationPanel: (propuestaId: string) =>
     llamar<PanelOk>('get_simulation_panel', { p_propuesta_id: propuestaId }, false),
+
+  // Preferencias privadas (enmiendas 4, 8 y 10). El agente tiene sus propias llamadas en src/agente/api.ts.
+  getMyPreferences: (espacioId: string) =>
+    llamar<MisPreferenciasOk>('get_my_preferences', { p_espacio_id: espacioId }, false),
+  /** Guardar es reemplazar: una clave opcional que no se manda queda vacía. Sin `usarEnAgente`, vale true. */
+  saveMyPreferences: (espacioId: string, preferencias: PreferenciasPropias, usarEnAgente?: boolean) =>
+    llamar<GuardarPreferenciasOk>(
+      'save_my_preferences',
+      {
+        p_espacio_id: espacioId,
+        p_preferencias: usarEnAgente === undefined ? preferencias : { ...preferencias, usar_en_agente: usarEnAgente },
+      },
+      true,
+    ),
 }
 
 /** Texto para mostrar al usuario. Los mensajes del servidor ya son exactos (contrato 0.5). */

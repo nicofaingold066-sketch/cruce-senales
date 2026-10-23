@@ -5,6 +5,7 @@ import { beforeAll, describe, expect, it } from 'vitest'
 import {
   clienteSinSesion, crearEspacioPrueba, crearPropuesta, demoPrueba, err, intento, nuevaSesion, ok, PERMITIDAS, rpc, rpcCrudo,
   type Json, type Sesion,
+  TOTAL_PERMITIDAS,
 } from './helpers'
 
 type Pref = { presupuesto: string; energia: string; ambiente: string; lugar: string; me_gustaria: string[] }
@@ -70,7 +71,7 @@ describe('enmienda 8: el agente solo usa las preferencias de quien lo permite', 
     // Con la casilla marcada sus preferencias vuelven a contar: solo queda la entrada gratis y suma una persona.
     await guardar(E, demo.espacioId, GRATIS, true)
     const conLuna = await plan(O, demo.espacioId)
-    expect(conLuna.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-04'])
+    expect(conLuna.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-04', 'lugar-sim-10', 'lugar-sim-12']) // E10 Parte B: también cultura y cerro
     expect(conLuna.personas_consideradas).toBe(6)
     expect(conLuna.perfil_grupo.personas).toBe(5)
     expect((await mias(O, demo.espacioId)).personas_con_preferencias).toBe(cuentaAntes + 1)
@@ -197,7 +198,7 @@ describe('enmienda 8: el agente solo usa las preferencias de quien lo permite', 
   })
 
   it('5. catálogo: 31 para authenticated y 0 para anon, una sola firma por nombre', async () => {
-    expect(Object.keys(PERMITIDAS)).toHaveLength(31)
+    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40
     const anon = clienteSinSesion()
     for (const fn of ['save_my_preferences', 'get_my_preferences', 'proponer_plan_borrador']) {
       const a = await rpcCrudo(anon, fn, PERMITIDAS[fn]())

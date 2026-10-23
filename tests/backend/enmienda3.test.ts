@@ -54,16 +54,19 @@ describe('enmienda 3', { timeout: 90_000 }, () => {
       Luna: { A: 'si', B: 'si' }, Mati: { A: 'si', B: 'si' }, Caro: { A: 'si', B: 'no' },
       Fede: { A: 'no', B: 'si' }, Sofi: { A: 'no', B: 'si' },
     })
-    // El organizador ya puede buscar opción (5 con condiciones, mínimo 4).
-    expect(mirar(despues)).toEqual({ codigo: 'buscar_opcion', texto: 'Ya hay 5 personas con condiciones. Busca una opción compatible.' })
+    // Enmienda 12 (a): Tomi es organizador e imprescindible y todavía no marcó su disponibilidad: primero eso.
+    expect(mirar(despues)).toEqual({ codigo: 'reunir_condiciones', texto: 'Primero marca tu disponibilidad: eres quien no puede faltar.' })
 
     // Mismo intento con otra propuesta: intento_reutilizado.
     const otra = await crearPropuesta(O, demo.id, demo.mi_miembro_id, { titulo: 't-e3-otra' })
     expect(err(await rpc(O, 'simulate_load_case', { p_propuesta_id: otra, p_intento_id: i }))).toBe('entrada_incompleta/intento_reutilizado')
     await ok(O, 'cancel_proposal', { p_propuesta_id: otra })
 
+    // Con sus condiciones, el organizador ya puede buscar opción (6 con condiciones, mínimo 4).
+    const conTomi = await ok(O, 'save_my_conditions', { p_propuesta_id: prop, p_disponibilidad: { A: 'si', B: 'si' } })
+    expect(mirar(conTomi.propuesta)).toEqual({ codigo: 'buscar_opcion', texto: 'Ya hay 6 personas con condiciones. Busca una opción compatible.' })
+
     // Con versión publicada, los elegibles quedan congelados y se informan como omitidos.
-    await ok(O, 'save_my_conditions', { p_propuesta_id: prop, p_disponibilidad: { A: 'si', B: 'si' } })
     const ev = await ok(O, 'evaluate_and_publish', { p_propuesta_id: prop, p_intento_id: intento() })
     expect(ev.resultado).toMatchObject({ version: 1, franja: 'A' })
     const r2 = await ok(O, 'simulate_load_case', { p_propuesta_id: prop, p_intento_id: intento() })

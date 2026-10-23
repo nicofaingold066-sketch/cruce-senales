@@ -92,7 +92,7 @@ async function entrarPorEnlace(p, nombre) {
 // a, b: 'Sí puedo' | 'No puedo' | null (null = no sabe: en un toque va a «Todavía no sé», y en el plan deja «Pendiente»).
 async function responder(p, a, b) {
   if (p.rapida && a && b) {
-    const nombre = a === 'Sí puedo' && b === 'Sí puedo' ? /^Puedo en? los dos/
+    const nombre = a === 'Sí puedo' && b === 'Sí puedo' ? /^Puedo (en )?los dos/
       : a === 'No puedo' && b === 'No puedo' ? /^No puedo (ninguno|en ninguno)/
       : a === 'Sí puedo' ? /^Solo (el |de )/ : /^Solo (el |de )/
     const opciones = p.page.getByRole('button', { name: nombre })
@@ -220,7 +220,9 @@ try {
   renata.fin('del enlace a «No puedo» en las dos franjas')
   await ver(renata, 'renata-guardado')
   resumen.pasos.renata = lecturas.at(-1)
-  await renata.tocarPestana('Plan')
+  if (renata.rapida) await renata.tocar(renata.page.getByRole('link', { name: 'Ver el plan' }), 'enlace «Ver el plan»')
+  else await renata.tocarPestana('Plan')
+  await renata.page.getByRole('tab', { name: 'Plan' }).waitFor({ timeout: 20000 })
   await ver(renata, 'renata-plan-sin-franja')
 
   // ───────────────────────── 4. Bruno: contesta una franja, deja la otra «Pendiente», presupuesto bajo ─────────────────────────

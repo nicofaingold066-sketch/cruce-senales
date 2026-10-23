@@ -17,14 +17,14 @@ const ver = (n, c, d = '') => { c ? ok++ : mal++; console.log(`${c ? 'OK ' : 'MA
 const nueva = async () => {
   const ctx = await browser.newContext({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true, locale: 'es-CL' })
   const p = await ctx.newPage(); const pedidos = []
-  p.on('request', (r) => { if (/\/assets\/(Planes|Espacio)-/.test(r.url())) pedidos.push(new URL(r.url()).pathname.replace(/-[\w]+\.js/, '.js') + new URL(r.url()).search) })
+  p.on('request', (r) => { if (/\/assets\/(Planes|Espacio)-/.test(r.url())) pedidos.push(new URL(r.url()).pathname.replace(/-[\w-]+\.js/, '.js') + new URL(r.url()).search) })
   return { ctx, p, pedidos }
 }
 // A) Se corta UNA vez la parte de "Mis planes": el reintento con ?r=1 la abre sin que la persona haga nada.
 {
   const { ctx, p, pedidos } = await nueva()
   let cortes = 0
-  await p.route(/\/assets\/Planes-[\w]+\.js(\?.*)?$/, (r) => (cortes++ === 0 ? r.abort('internetdisconnected') : r.continue()))
+  await p.route(/\/assets\/Planes-[\w-]+\.js(\?.*)?$/, (r) => (cortes++ === 0 ? r.abort('internetdisconnected') : r.continue()))
   await p.goto(`${BASE}/#/planes`)
   const abre = await p.getByRole('heading', { name: 'Mis planes' }).waitFor({ timeout: 15000 }).then(() => true, () => false)
   ver('A: un corte → reintento con ?r=1 abre la pantalla', abre && pedidos.some((x) => x.includes('?r=1')), pedidos.join(', '))
@@ -34,7 +34,7 @@ const nueva = async () => {
 {
   const { ctx, p, pedidos } = await nueva()
   let red = false
-  await p.route(/\/assets\/Planes-[\w]+\.js(\?.*)?$/, (r) => (red ? r.continue() : r.abort('internetdisconnected')))
+  await p.route(/\/assets\/Planes-[\w-]+\.js(\?.*)?$/, (r) => (red ? r.continue() : r.abort('internetdisconnected')))
   await p.goto(`${BASE}/#/planes`)
   const barrera = await p.getByText('No se pudo abrir esta pantalla').waitFor({ timeout: 15000 }).then(() => true, () => false)
   const boton = await p.getByRole('button', { name: 'Recargar', exact: true }).count()
@@ -51,7 +51,7 @@ const nueva = async () => {
   const g = JSON.parse(execFileSync('node', [`${DIR}preparar-grupo.mjs`], { encoding: 'utf8', env: { ...process.env, SIN_PROPUESTA: '1' } }))
   const { ctx, p, pedidos } = await nueva()
   let cortes = 0
-  await p.route(/\/assets\/Espacio-[\w]+\.js(\?.*)?$/, (r) => (cortes++ === 0 ? r.abort('internetdisconnected') : r.continue()))
+  await p.route(/\/assets\/Espacio-[\w-]+\.js(\?.*)?$/, (r) => (cortes++ === 0 ? r.abort('internetdisconnected') : r.continue()))
   await p.goto(`${BASE}/#/unirse/${g.codigo}`)
   await p.getByRole('button', { name: 'Ana', exact: true }).waitFor({ timeout: 20000 })
   await p.waitForTimeout(1500) // la precarga corre a los 800 ms

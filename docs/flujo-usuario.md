@@ -7,7 +7,7 @@ Cómo leer las marcas:
 - **[visto]**: lo recorrí en la app compilada (`vite build` + `vite preview`, 375 px, base real) el viernes 23 entre 19:24 y 19:27, con un grupo ficticio. Guion propio fuera del repo; capturas en mi carpeta temporal (no se suben).
 - **[leído]**: sale del código, no lo vi en pantalla.
 
-La enmienda 10 (zona, movilidad, tiempo de viaje, momento del día) está aprobada pero todavía no aplicada: figura en el mapa (§1) como **[E10, pendiente]**. Las referencias son `archivo:línea`; las de SQL son `0011_enmienda2_propuestas.sql` salvo que diga otra cosa. Qué RPC usa cada pantalla y qué falta de cada lado: `docs/front-back-puente.md`.
+La enmienda 10 (zona, movilidad, tiempo de viaje, momento del día) está aprobada pero todavía no aplicada: figura en el mapa (§1) como **[E10: en la base, sin pantalla]**. Las referencias son `archivo:línea`; las de SQL son `0011_enmienda2_propuestas.sql` salvo que diga otra cosa. Qué RPC usa cada pantalla y qué falta de cada lado: `docs/front-back-puente.md`.
 
 ## 1. Mapa de información: qué entra, qué decide el servidor, qué sale
 
@@ -58,7 +58,7 @@ flowchart LR
 | Confirmación de la versión | sí | sí, nombre y hora | sí | |
 | Baja | sí | sí, nombre y versión | sí | |
 | Preferencias del agente | sí | no | totales solo con más de 3 personas y 2 o más votos; presupuesto nunca | el detalle |
-| E10: zona, movilidad, tiempo máx., momento **[pendiente]** | sí | no | no (tampoco totales) | el detalle; sale solo `viaje.max_minutos` con 4 o más personas que aportaron |
+| E10: zona, movilidad, tiempo máx., momento **[en la base, sin pantalla]** | sí | no | no (tampoco totales) | el detalle; sale solo `viaje.max_minutos` con 4 o más personas que aportaron |
 | Clima | | | lo ve en el borrador del agente | |
 
 ## 2. Roles
@@ -121,7 +121,7 @@ Para confirmar, cada invitado vuelve a abrir la app (nadie se lo avisa): portada
 
 ### 3.3 Dónde dudaría alguien (visto en pantalla)
 
-1. **El organizador busca opción antes de responder él.** La próxima acción del servidor le dice "Busca una opción compatible" con 4 personas respondidas, aunque él (que no puede faltar) no respondió. Resultado: "Sin opción compatible" sin explicación posible (por privacidad). Pedidos: front-juan (aviso en `BuscarOpcion` si soy el imprescindible sin condiciones) y backend (texto de `siguiente_accion`).
+1. **El organizador busca opción antes de responder él.** La próxima acción del servidor le dice "Busca una opción compatible" con 4 personas respondidas, aunque él (que no puede faltar) no respondió. Resultado: "Sin opción compatible" sin explicación posible (por privacidad). Resuelto en el servidor por la enmienda 12 (a) (backend `f896112`, 0039): la próxima acción ahora dice "Primero marca tu disponibilidad". Componente `AvisoParaMi` listo para la pantalla (front-juan).
 2. **"Me interesa" es el botón principal de Mi respuesta.** Botón negro grande arriba; las franjas y "Guardar condiciones" quedan abajo, fuera de la pantalla a 375 px. Un invitado puede tocar "Me interesa" y creer que respondió: el motor no lo usa. Pedido: front-juan (orden en `RespuestaTab.tsx`) y friccion (#88).
 3. **Una franja en Pendiente deja fuera sin aviso.** Ema guarda Sí/Pendiente, ve "Guardado" y la etiqueta "Incompletas"; nada le dice que así no entra en la búsqueda. Después no es elegible. Pedido: friccion (#88) y front-juan.
 4. **El invitado aterriza en el espacio, no en el plan.** Arriba ve el código y "Compartir/Copiar/WhatsApp" (acciones del organizador), y abajo el botón fijo "Nueva propuesta". La tarjeta de su plan queda a media pantalla. Lo resuelve en parte #88 de friccion (ir directo a responder).
@@ -135,10 +135,24 @@ Para confirmar, cada invitado vuelve a abrir la app (nadie se lo avisa): portada
 
 | Recorte | Ahorra | Dueño | Estado |
 |---|---|---|---|
-| Después de "Sí, soy X", directo a responder la propuesta vigente, con respuestas de un toque ("Puedo los dos días", "Solo el …", "No puedo ninguno") que guardan las dos franjas: nunca queda "Pendiente"; "Me interesa" después y opcional | 4 toques al invitado (8 → 4) | friccion #88 | entregado en `wip/friccion` `efede20` (ruta `#/e/<id>/responder`, `src/friccion/Responder.tsx`); falta integrar. Sin verificar por mí |
+| Después de "Sí, soy X", directo a responder la propuesta vigente, con respuestas de un toque ("Puedo los dos días", "Solo el …", "No puedo ninguno") que guardan las dos franjas: nunca queda "Pendiente"; "Me interesa" después y opcional | 4 toques al invitado (8 → 4) | friccion #88 | entregado en `wip/friccion` (`efede20` y siguientes); falta integrar. **[visto]** ver §3.5 |
 | "¿Eres X?" en el mismo toque del nombre (confirmación en línea, deshacer) | 1 toque (4 → 3) | friccion | propuesto; ojo con el rótulo "Sí, soy X" de los guiones |
 | Avisar al grupo por WhatsApp al publicar o reparar una versión | el organizador no escribe a mano | ux-flujo #89 + front-juan | componente entregado (`419ac2a`); falta conectarlo |
 | El organizador responde antes de buscar (la pantalla se lo pide) | 1 búsqueda fallida | front-juan + backend | pedido |
+
+### 3.5 Segunda corrida, con #88 de friccion [visto]
+
+Viernes 23, 20:04-20:05, sobre una fusión LOCAL de `wip/ux` + `wip/friccion` (`05e148d`), sin subir; mismo guion, mismo grupo ficticio, 6 sesiones nuevas.
+
+| Persona | Del enlace a la primera respuesta | Vistas |
+|---|---|---|
+| Ana, Beto, Coni, Diego, Ema | **4 toques**: enlace, su nombre, "Sí, soy X", una respuesta de un toque ("Puedo los dos días" / "Solo el sábado 31 oct" / "Solo el domingo 1 nov") | ¿Quién eres? → ¿Cuándo puedes? → Respuesta guardada |
+
+- Ya no hay "Pendiente": Ema eligió "Solo el sábado" y entró en la versión (antes quedaba fuera sin saberlo).
+- "Me interesa" aparece después de guardar, en un aviso aparte que dice que es público y opcional. Debajo: "Ver el plan", "Cambiar mi respuesta" y "Contar mis gustos y presupuesto (opcional, privado)".
+- El organizador no cambia: sigue en 21 toques (o 19). Con la enmienda 12 (a) la próxima acción ya le dice "Primero marca tu disponibilidad"; falta conectar `AvisoParaMi` en la pantalla.
+- Para confirmar, igual que antes: volver a abrir la app, tarjeta "Tu plan", "Confirmar versión 1" (Ana, Beto y Ema confirmaron).
+- Límite de mi guion: espera 2,5 s en la portada al volver; con la entrada animada, a Diego y Coni la portada todavía decía "Buscando tus espacios…" y el guion no encontró la tarjeta. No es una falla de la app; no lo cuento como duda.
 
 ## 4. Recorrido del organizador, paso por paso
 
@@ -152,7 +166,7 @@ Rutas: `shell.tsx:77-90`. Pantallas: `App.tsx:175-197`. RPC: `api.ts:269-383`.
 
 **Paso 3. Espacio** (`#/e/<id>`) **[visto]** Código con Compartir / Copiar / WhatsApp, "Propuestas" ("Todavía no hay propuestas" + "Crear propuesta"), "Personas del espacio" (pendientes "por entrar"), "Agente del círculo" plegado. `get_space` y `list_proposals` al entrar y cada 10 s. Texto de invitación: "Súmate a «X» en CRUXE para armar el próximo plan: <enlace>" (`compartir.ts:9`) **[leído]**.
 
-**Paso 3b. Agente, opcional** **[leído]** (`AgentePanel.tsx`) Preferencias de cada persona (`get_my_preferences`, `save_my_preferences`). "Que el agente proponga" (solo organizador del espacio): función `agente`, si falla `proponer_plan_borrador`. Exige 2 personas con preferencias (`pocas_preferencias`). "Usar esta opción" precarga la nueva propuesta. El agente no crea ni confirma nada. **[E10, pendiente]** cuatro preguntas más en preferencias y "Queda a menos de N minutos para todos (estimado)" en la tarjeta del borrador (agente-ia, #87).
+**Paso 3b. Agente, opcional** **[leído]** (`AgentePanel.tsx`) Preferencias de cada persona (`get_my_preferences`, `save_my_preferences`). "Que el agente proponga" (solo organizador del espacio): función `agente`, si falla `proponer_plan_borrador`. Exige 2 personas con preferencias (`pocas_preferencias`). "Usar esta opción" precarga la nueva propuesta. El agente no crea ni confirma nada. **[E10: en la base, sin pantalla]** cuatro preguntas más en preferencias y "Queda a menos de N minutos para todos (estimado)" en la tarjeta del borrador (agente-ia, #87).
 
 **Paso 4. Nueva propuesta** (`#/e/<id>/nueva`) **[visto]** Paso 1: atajos (Asado, Fútbol, Cena, Juntada, Cine, Cumple, Paseo), propósito, dos opciones de día (próximos 14) y hora, duración, mínimo, máximo, "No puede faltar" (todos los integrantes, también los pendientes), cierre. "Revisar antes de crear" → paso 2 con la ficha → "Crear y abrir al grupo" (`create_proposal` + `open_proposal`) o "Crear solo el borrador". El texto dice "Si sirven las dos, gana la A", pero el servidor ordena por fecha de inicio **[leído]**.
 
@@ -188,8 +202,8 @@ Rutas: `shell.tsx:77-90`. Pantallas: `App.tsx:175-197`. RPC: `api.ts:269-383`.
 | Baja | cada uno | `cruce.bajas` | todo el grupo | estado, reparación |
 | Preferencias del agente | cada uno | `cruce.preferencias` | solo yo (totales al organizador con más de 3 y 2 votos; presupuesto nunca) | `proponer_plan_borrador` |
 | "Que el agente use mis preferencias" | cada uno | `preferencias.usar_en_agente` | solo yo | a quién cuenta el agente |
-| **[E10, pendiente]** zona, movilidad, tiempo máximo, momento | cada uno, opcional | `cruce.preferencias` (claves nuevas) | solo yo | descartar candidatas lejanas, equidad de viaje, momento del día |
-| **[E10, pendiente]** tiempos entre zonas, zona de cada lugar | servidor (ficticios) | `cruce.tiempos_zona`, `catalogo_agente.zona` | nadie | cálculo de viaje |
+| **[E10: en la base, sin pantalla]** zona, movilidad, tiempo máximo, momento | cada uno, opcional | `cruce.preferencias` (claves nuevas) | solo yo | descartar candidatas lejanas, equidad de viaje, momento del día |
+| **[E10: en la base, sin pantalla]** tiempos entre zonas, zona de cada lugar | servidor (ficticios) | `cruce.tiempos_zona`, `catalogo_agente.zona` | nadie | cálculo de viaje |
 | Sábado y clima simulado del agente | organizador | no se guarda | — | función `agente` |
 | Borrador del agente | organizador | `sessionStorage cruxe:borrador-agente:<id>` | esa pestaña | precarga de la nueva propuesta |
 | Historial | servidor | eventos de la propuesta | todo el grupo | pestaña Historial |
@@ -201,13 +215,17 @@ Etiquetas: `types.ts:28-36`. Textos de "Próxima acción": `0013`, `0029`.
 | Estado | Próxima acción que muestra | Cómo se llega |
 |---|---|---|
 | Borrador | "El organizador debe abrir la propuesta." | `create_proposal` sin abrir |
-| Reuniendo interés | "Cada persona marca su disponibilidad en privado. Luego el organizador busca una opción." **[visto]**. Al organizador con suficientes condiciones: "Ya hay N personas con condiciones. Busca una opción compatible." **[visto]** (también si falta el imprescindible) | `open_proposal` |
+| Reuniendo interés | "Cada persona marca su disponibilidad en privado. Luego el organizador busca una opción." **[visto]**. Al organizador con suficientes condiciones: "Ya hay N personas con condiciones. Busca una opción compatible." **[visto]**. Desde la enmienda 12 (0039, 19:57), si el organizador es el imprescindible y no completó lo suyo: "Primero marca tu disponibilidad: eres quien no puede faltar." **[leído]** | `open_proposal` |
 | (sigue en Reuniendo interés) "Sin opción compatible" | "Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar." **[visto]** | `evaluate_and_publish` sin franja viable; es un resultado, no un estado |
-| Esperando compromisos | "Te toca confirmar la versión N." **[visto]** / "Ya confirmaste… Faltan X para el mínimo" / "Falta la aceptación de [imprescindible]" | opción publicada o `propose_repair` |
+| Esperando compromisos | "Te toca confirmar la versión N." **[visto]** / "Ya confirmaste… Faltan X para el mínimo" / "Falta la aceptación de [imprescindible]" / E12 (b), a quien tiene la disponibilidad incompleta: "Tu disponibilidad está incompleta: no entraste en esta versión. Si la completas, cuenta si el plan se rearma." (contrato `b8e19ae`, migración 0040 aplicada, backend `22459a9`) **[leído]** | opción publicada o `propose_repair` |
 | Grupo confirmado | "Grupo confirmado en la versión N. Cupos disponibles: X." **[visto]** | confirmados ≥ mínimo con el imprescindible |
 | En revisión | "Hubo una baja… El organizador debe buscar una alternativa" | baja que deja menos que el mínimo o saca al imprescindible |
 | Expirado | "Venció el plazo sin grupo confirmado." | pasa el cierre sin grupo confirmado |
 | Cancelado | "El organizador canceló la propuesta." | `cancel_proposal` |
+
+Reparación: En revisión → Esperando compromisos con versión N+1 y cero confirmaciones heredadas.
+
+Nota sobre E12 (b): los elegibles de una versión se fijan al publicarla (`0002_utilidades.sql:262`) y `accept_version` los revisa (`0005_api_motor.sql:135`). Completar la disponibilidad después NO suma a esa versión: solo cuenta si el plan se rearma. Texto corregido en el contrato (coordinador `b8e19ae`) a pedido de ux-flujo; aplicado en la base como 0040 (backend `22459a9`).
 
 ## 7. Fricciones y su estado
 
