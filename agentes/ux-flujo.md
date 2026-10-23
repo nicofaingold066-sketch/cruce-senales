@@ -4,9 +4,9 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cru
 
 ## Tocando ahora
 - [19:49] `src/componentes-nuevos/**` (componentes listos para conectar, porque front-juan no responde desde las 18:49) y los dos docs.
-- [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: los actualizo con cada entrega; último `0f38ad3`, E10 en la base).
+- [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: los actualizo con cada entrega; último `e73d93c`).
 
-## Entregado (rama `wip/ux`, último `49f803a`)
+## Entregado (rama `wip/ux`, último `e73d93c`)
 - #98 + #91 `a3797af` (19:31): `docs/flujo-usuario.md` reescrito con el recorrido REAL "convencer a uno" (build propio 4183, 375 px, 19:24-19:27): organizador 21 toques (19 sin el tropiezo), cada invitado 8 toques y 4 vistas hasta la primera respuesta, +2 para confirmar. Marcas [visto]/[leído], 9 dudas vistas en pantalla, recortes con dueño, mapa input → servidor → output en mermaid con la enmienda 10 (pendiente) y tabla "quién ve qué".
 - #94 `bfa6218` (19:32): `docs/front-back-puente.md`: RPC y campos por pantalla, lo que el back expone y el front no usa (E10 incluida), lo que falta de cada lado, registro de entregas.
 - #89 `419ac2a` (19:34) + `ede33ca` (19:36, nota según el motivo y banco sin base `src/componentes-nuevos/prueba/recordar.html`, revisado a 375 y 320 px sin desborde): `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (lógica pura) + `recordar.test.mjs`. `node --test "src/componentes-nuevos/*.test.mjs"` 7/7; `npm run typecheck` y `npm run build` en verde (19:34).
@@ -35,6 +35,7 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - agente-ia [19:51] (P1, puente E10): `save_my_preferences` REEMPLAZA (backend: "la clave que falta queda vacía"). Si `AgentePanel.tsx` guarda gustos sin mandar `zona`/`movilidad`/`tiempo_max`/`momento`, borra lo que la persona marcó en las cuatro preguntas. Mandar siempre las 8 claves juntas (lo leído con `get_my_preferences` + lo editado), también al tocar solo la casilla `usar_en_agente`.
 - backend y coordinador [19:59] (P1, enmienda 12 (b)): el texto "Completa tu disponibilidad para poder entrar en la opción." promete algo que el servidor no hace: los elegibles de la versión se fijan al publicarla (`0002_utilidades.sql:262`) y `accept_version` los revisa (`0005_api_motor.sql:135`), así que completar después NO te deja confirmar ESA versión. Propuesta de texto: "Tu disponibilidad está incompleta: no entraste en esta versión. Si la completas, cuenta si el plan se rearma." (mismo sentido que `AvisoParaMi`, `e10a5b0`). Si el coordinador prefiere que completar SÍ sume a la versión vigente, eso es otro cambio de motor, no de texto.
 - coordinador [20:03]: #98 en MEJORAS dice "corrida real esperando la base", pero la corrida real ya está hecha (19:24-19:27, antes de la migración; ver Entregado y `docs/flujo-usuario.md` §3). Ahora repito el recorrido sobre una fusión LOCAL de `wip/ux` + `wip/friccion` (sin subirla) para medir #88 con 5 invitados.
+- coordinador [20:19] (P1, destrabar): front-juan no responde desde las 18:49 y tiene 8 pedidos míos abiertos en `src/screens/**`. Los dos de más efecto ya están armados como componentes que no tocan nada más: en `PlanTab.tsx`, (1) `<AvisoParaMi p={p} irARespuesta={() => irAPestana('respuesta')} />` arriba de todo y (2) `<RecordarFaltan codigo={espacio.codigo_invitacion} titulo={p.titulo} />` para el organizador en `reuniendo_interes` (el código hay que pasarlo desde `Propuesta.tsx`, que ya tiene `espacio`). Propuesta: que vos lo conectes al integrar, o que me autorices esas líneas puntuales en `PlanTab.tsx`/`Propuesta.tsx` (como hiciste con login en `CrearGrupo.tsx`). Corro los tres guiones antes de entregar.
 
 ## Estado de mis pedidos
 - apertura (atajos): HECHO `87d4a62` (`ATAJOS`, `atajosParaGrupo`). Falta que front-juan lo conecte en `NuevaPropuesta.tsx` (pedido de apertura).
@@ -44,6 +45,8 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - backend + coordinador (E12 (b), texto que promete de más): APROBADO por el coordinador (contrato `b8e19ae`, 20:03); aplicado en la base como 0040 (`22459a9`).
 - backend (`siguiente_accion` del imprescindible): HECHO como enmienda 12 (a), `f896112`, 0039 aplicada (19:58). Antes: backend propuso la forma (`reunir_condiciones` + "Primero marca tu disponibilidad: eres quien no puede faltar.") y espera aprobación del coordinador (19:51). De acuerdo con esa forma; mismo texto que `AvisoParaMi`.
 - qa-noche [19:36]: el guion de #98 está en la carpeta compartida de notas de la sesión (`ux-flujo-convencer-uno.mjs`, fuera del repo). Si lo querés versionar en `tests/e2e/` es tuyo: crea 6 sesiones por corrida.
+
+- agente-ia (guardar preferencias sin borrar E10): CUBIERTO (20:19, leído en `1eaf510`): el panel manda las ocho claves juntas. P3 aparte: textos nuevos en voseo ("Cómo te movés", "Hasta cuánto viajás") en una app en tuteo.
 
 ## Ideas
 - P2 (de sinteticos): "Me interesa, pero otro día" y una tercera fecha cuando no hay opción. Hoy "Sin opción compatible" solo ofrece esperar o cancelar; el organizador no puede sumar una franja C sin crear otra propuesta. Pide contrato (franjas nuevas en una propuesta viva = versión nueva). Al coordinador.
