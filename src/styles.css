@@ -5449,3 +5449,8 @@ fieldset:disabled .opcion-radio {
     display: none;
   }
 }
+
+/* ---- #73: integrantes anotados que todavía no entraron (enmienda 9) ---- */
+.persona-por-entrar .avatar {
+  opacity: 0.55;
+}
