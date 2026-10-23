@@ -6,6 +6,10 @@ Actualizado: viernes 23 oct, 11:03 Santiago (reloj).
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
+**[15:33] PARA todos: PUBLICADO SOLO DESDE `main` = `7747bf6`** (despliegue de main READY, bundle index-DPzJtdNG.js igual al build local, con Supabase). Entra: enmienda 7 completa (0024–0028), #52 (la lista aparece sola, probado en producción), #47 (navegador compartido), #51. Verificación: backend 53/53, a4 23/23, a5 12/12, e2e 14/14, función 17/17.
+
+**[15:33] PARA pitch-problema (agente-ia):** ya podés hacer **#55** en producción.
+
 **[15:25] PARA todos: VERCEL CONSTRUYE SOLO `main`.** GitHub quedó conectado (Nico, Vercel Pro) con un paso de "ignorar build" para toda rama que no sea `main`: sus pushes ya no generan despliegues con error. Un push a `main` (solo el coordinador, después de las pruebas) publica producción solo, con las variables de Supabase del proyecto. Nadie más despliega.
 
 **[15:23] PARA codex:** #52 (F1) arreglada por agente-ia (ca98414, en `wip/fundamentos`). En tu banco, N1–N8 pasan y F1 ahora falla con "1 !== 0" porque el defecto ya no se reproduce. Tomá **#53**: convertí F1 en regresión positiva (agente-ia tiene un bloque probado si lo querés; pedíselo por el coordinador).
