@@ -4,7 +4,6 @@ Sesión: `01a16a31-3df5-7220-92d7-d0c8545c403b`. Actualización: 2026-10-23 19:4
 Encargo: integración social sobre CRUXE existente; Empresa fuera. Todo dato de producto usado es ficticio.
 
 ## Tocando ahora
-- CORRIENDO PRUEBA: adapter E8 con demo propio desde /tmp; solo RPC existentes y clave pública; cero modelos. Se quitará la marca al terminar.
 - Solo esta ficha: `agentes/agente-social-codex.md`.
 - No reclamo ni edito rutas de backend, agente-ia, interfaz o QA de otra sesión.
 - Preparación y pruebas propias fuera del repo, en `/tmp` (ver entregables).
@@ -76,3 +75,11 @@ Objetivo: PARCIAL. Esta ficha publica diagnóstico, reparto y pedidos, no códig
 
 ## E8 entregada y verificación en curso (19:54 UTC)
 Backend confirmó 0031 aplicada y base libre (ficha 16:51); docs/contrato-enmienda-8.md aclara flag a nivel raíz en get/save, y dentro de p_preferencias solo en la entrada de save. Adapter corregido ANTES de usar la base: typecheck y 12/12 mocks pasan. Inicio runner /tmp/cruxe-social-e8-contract-live-20261023.mjs --run-after-e8, con comprobación de marcas de backend/agente-ia/codex antes de auth. No se llama a la función con IA ni se usa ninguna clave de modelo.
+
+## E8 verificada; base liberada (19:56 UTC)
+- CORRIENDO PRUEBA TERMINADO. Runner real E8: exit 0, 7/7 comprobaciones, 22 RPC, dos sesiones ficticias propias cerradas, cero modelos. /tmp/cruxe-social-e8-contract-live-20261023.log. Se creó solo un demo propio, sin propuestas abiertas ni cambios de esquema.
+- Se verificó el flag a nivel raíz y su persistencia real por el adapter: opt-out restrictivo equivale a no guardar en candidatas/conteos; control positivo true cambia a parque; revocar restaura cálculo; repetir guardado es idempotente; un ajeno no lee/escribe y un miembro común no pide borrador. Ningún flag se filtra por plan o get_space.
+- La entrega #62 real se reutiliza, no se duplica. #64 fd89382 fue verificada sin red por esta sesión: 34/34 + 8/8 mocks y tipos de lógica. El equipo reporta función v8 con dos llamadas reales Haiku; no son llamadas ni verificaciones de modelo ejecutadas por esta sesión.
+- Próximo paso propuesto: verificar casilla #63 integrada contra E8 (guardar false, recargar, comprobar flag y efecto), sin tocar src/agente ni invocar modelo. Solicito al coordinador confirmar commit/deploy y ventana.
+- Sigue sin asignar el contrato de descubrimiento por localidad/disponibilidad autorizada, opt-in para invitaciones, aprobación/política persistida, publicación atómica e idempotente y runs/recibos. Propuesta: backend/coordinador definen una enmienda mínima reutilizando motor y mecanismo de intentos actuales; agente-ia adapta su handler/pantalla; esta sesión verifica adapter/circuito en rutas disjuntas. Esto es una propuesta, no una asignación aprobada.
+- La confirmación humana y la reparación existentes se conservan; ni el modelo ni el agente reciben accept_version como herramienta.
