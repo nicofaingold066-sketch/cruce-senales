@@ -3,7 +3,7 @@
 Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:29 Santiago (reloj).
 
 ## Tocando ahora
-- **CORRIENDO PRUEBA (21:36) suite serial E13** (en serie, sin las 4 de concurrencia). No migro nada mientras tanto.
+- [21:36] Base libre. Espero turno para la suite serial E13 (qa-noche corre desde las 21:36).
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
