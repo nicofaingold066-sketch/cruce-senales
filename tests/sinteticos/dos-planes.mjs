@@ -91,23 +91,38 @@ try {
   // ── Teo y Lola: pueden los dos y prefieren B ──────────────────────────────────────────────────────
   for (const p of [teo, lola]) {
     log(`— ${p.nombre} responde y prefiere B`)
+    let entrada
     await reintento(async () => {
-      await E.entrarPorEnlace(p)
-      // El camino de un toque guarda las dos franjas pero no ofrece «¿cuál prefieres?»: ir a Mi respuesta del plan.
+      entrada = await E.entrarPorEnlace(p)
       await E.responder(p, 'Sí puedo', 'Sí puedo')
     })
     p.fin('del enlace a la respuesta guardada')
+    // H24 (friccion d471641): los botones de un toque dicen el nombre de cada plan y, tras «Puedo los dos días», ofrecen
+    // «Prefiero «<plan>»». Si está, se usa ahí (y se mide); si no (producción de hoy), se prefiere en Mi respuesta.
+    C[`${p.nombre}UnToqueMuestraNombres`] = p.rapida && tiene(entrada.texto, /Asado en el parque/) && tiene(entrada.texto, /Cine y pizza/)
+    const prefiereEnUnToque = p.page.getByRole('button', { name: /^Prefiero «Cine y pizza»/ })
+    if (await prefiereEnUnToque.count()) {
+      await p.tocar(prefiereEnUnToque.first(), 'Prefiero «Cine y pizza» (en un toque)')
+      await p.esperar(/Prefieres «Cine y pizza»/, 20000)
+      await E.ver(p, `${p.nombre.toLowerCase()}-prefiero-en-un-toque`)
+      C[`${p.nombre}GuardoPrefieroEnUnToque`] = true
+      p.fin('del enlace a la respuesta guardada + preferencia (un toque)')
+    } else C[`${p.nombre}GuardoPrefieroEnUnToque`] = false
     await E.volverA(p, E.datos.propuestaUrl, 'Mi respuesta')
     const mr = await E.ver(p, `${p.nombre.toLowerCase()}-mi-respuesta`)
     C[`${p.nombre}VeCualPrefieres`] = tiene(mr.texto, /Si te sirven los dos, ¿cuál prefieres\?/)
     C[`${p.nombre}VeNombresDeLosPlanes`] = tiene(mr.texto, /Asado en el parque/) && tiene(mr.texto, /Cine y pizza/)
-    const opcionB = p.page.locator('fieldset.prefiero label', { hasText: /Cine y pizza|Opción B/ }).first()
-    if (await opcionB.count()) {
-      await p.tocar(opcionB, 'prefiero el plan B')
-      await p.tocarBoton('Guardar condiciones')
-      await p.esperar('Guardado. Solo tú ves estas condiciones.', 20000)
+    if (C[`${p.nombre}GuardoPrefieroEnUnToque`]) {
       C[`${p.nombre}GuardoPrefiero`] = true
-    } else C[`${p.nombre}GuardoPrefiero`] = false
+    } else {
+      const opcionB = p.page.locator('fieldset.prefiero label', { hasText: /Cine y pizza|Opción B/ }).first()
+      if (await opcionB.count()) {
+        await p.tocar(opcionB, 'prefiero el plan B')
+        await p.tocarBoton('Guardar condiciones')
+        await p.esperar('Guardado. Solo tú ves estas condiciones.', 20000)
+        C[`${p.nombre}GuardoPrefiero`] = true
+      } else C[`${p.nombre}GuardoPrefiero`] = false
+    }
   }
 
   // ── Nano: solo el sábado (A) ───────────────────────────────────────────────────────────────────────
