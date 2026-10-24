@@ -86,7 +86,9 @@ export function avisoParaMi(
       titulo: 'Esta versión no te incluye',
       texto: incompleta
         ? 'Se armó sin tu disponibilidad completa. Si la completas, cuenta si el plan se rearma.'
-        : 'Con lo que marcaste, esta fecha no te queda. No tienes que hacer nada.',
+        // Verdadero en los dos casos: la versión se armó con lo que había al publicarla (los elegibles son fijos); si
+        // marcaste después, cuenta si el plan se rearma. No decimos "esta fecha no te queda": puede no ser cierto.
+        : 'Esta versión se armó con las respuestas de cuando se publicó. Si cambiaste lo tuyo después, cuenta si el plan se rearma.',
       irARespuesta: incompleta && yo.puede.guardar_condiciones === true,
     }
   }
