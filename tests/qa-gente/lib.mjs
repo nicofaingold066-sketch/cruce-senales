@@ -92,10 +92,12 @@ export const resumenLat = (v) => (v.length ? `n=${v.length} p50=${pct(v, 50)}ms 
 export const lanzar = () => pw.chromium.launch({ headless: true, executablePath: process.env.CRUXE_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' })
 
 export class Persona {
-  constructor(browser, nombre, { ancho = 375, alto = 812 } = {}) { this.browser = browser; this.nombre = nombre; this.ancho = ancho; this.alto = alto
+  constructor(browser, nombre, { ancho = 375, alto = 812, intro = false, reducedMotion = 'no-preference' } = {}) { this.intro = intro; this.reducedMotion = reducedMotion; this.browser = browser; this.nombre = nombre; this.ancho = ancho; this.alto = alto
     this.rpc = []; this.errores = []; this.malas = [] }
   async abrir() {
-    this.ctx = await this.browser.newContext({ viewport: { width: this.ancho, height: this.alto }, isMobile: this.ancho < 700, hasTouch: this.ancho < 700, locale: 'es-CL' })
+    this.ctx = await this.browser.newContext({ viewport: { width: this.ancho, height: this.alto }, isMobile: this.ancho < 700, hasTouch: this.ancho < 700, locale: 'es-CL', reducedMotion: this.reducedMotion })
+    // Desde main 9364cd8 la primera visita muestra una intro de 2,6 s (diálogo modal): se marca como vista salvo que se pruebe la intro (f-intro).
+    if (!this.intro) await this.ctx.addInitScript(() => { try { localStorage.setItem('cruxe:entrada-vista', '1') } catch {} })
     this.page = await this.ctx.newPage()
     const ini = new Map()
     this.page.on('pageerror', (e) => this.errores.push(`pageerror: ${e.message}`.slice(0, 200)))
