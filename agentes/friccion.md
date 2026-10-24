@@ -3,6 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, archivos NUEVOS en `src/friccion/**`.
 
 ## Tocando ahora
+- [hora real] `wip/friccion` = `ce04bc6`: RPC con 401 → renueva la sesión (refresh; anónima nueva solo si no hay ninguna) y reintenta UNA vez en `src/lib/api.ts` (autorizado por el coordinador); banco sin base 401→200 y 401 siempre, 4/4; vitest puro 109/109; sin base.
 - [hora real] `wip/friccion` = `a223aa0`: defecto de Nico (iPhone 390): en ¿Quién eres? el error al tocar un nombre va debajo de la lista, a todo el ancho, fila intacta, foco en el error, reintento con el segundo toque. Banco error 320/390 10/10, banco 27/27, vitest puro 109/109, build OK; sin base.
 - [08:25] CIERRE de la noche: `wip/friccion` = `30e19f3`, subida, sin nada en edición ni sin commitear. Entregado y publicado: S1/S5 exactos al mockup (ver Entregado). Mi «Listo» (S5) es `a.btn-primario` fuera de `.escena`, así que no tiene el blanco-sobre-blanco que arregló ux-flujo en 7f47a88 (visto en captura de producción). Vigía y ciclo detenidos a las 08:30.
 - [07:25] `wip/friccion` subida: `30e19f3` (merge de wip/fundamentos 07:00; sin código nuevo mío desde `63d86a2`).
