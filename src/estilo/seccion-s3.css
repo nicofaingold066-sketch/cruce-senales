@@ -224,3 +224,78 @@
   color: var(--noche-suave);
   overflow-wrap: anywhere;
 }
+
+/* ---- computadora (≥ 960 px): sin scroll si entra (mockup, pantalla 8 y reglas generales). La cabecera arriba y el
+   formulario en dos columnas: izquierda qué y cuándo; derecha quiénes, cierre, más opciones y el botón. El orden del
+   DOM no cambia (teclado, lectores y guiones siguen igual). */
+@media (min-width: 960px) {
+  .vista-s3 {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+  }
+  /* Paso 2: el resumen es corto; en una columna de 720 px se lee de un vistazo. */
+  .vista-s3 .hoja > div {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .vista-s3 .escena {
+    /* relative y no static: el resplandor decorativo de la escena va con position absolute y estiraba la página. */
+    position: relative;
+    top: 0; /* en computadora la escena era sticky con top = alto de la barra: relative lo corría 56 px */
+    overflow: hidden;
+    min-height: 0;
+    padding: var(--e-4) var(--margen) var(--e-5);
+  }
+  .vista-s3 .s3-cabeza {
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+  .vista-s3 .pasos-form {
+    max-width: 1120px;
+    margin: var(--e-3) auto 0;
+  }
+  .vista-s3 .hoja {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--e-5) var(--margen) var(--e-6);
+  }
+  .vista-s3 .form-compacto {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    column-gap: var(--e-5);
+    align-items: start;
+    align-content: start;
+  }
+  .vista-s3 .form-compacto > * {
+    grid-column: 1 / -1;
+  }
+  .vista-s3 .form-compacto > fieldset:nth-of-type(1) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .vista-s3 .form-compacto > fieldset:nth-of-type(2) {
+    grid-column: 1;
+    grid-row: 3 / span 4;
+  }
+  .vista-s3 .form-compacto > fieldset:nth-of-type(3) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .vista-s3 .form-compacto > fieldset:nth-of-type(4) {
+    grid-column: 2;
+    grid-row: 3;
+  }
+  .vista-s3 .form-compacto > details.mas-opciones {
+    grid-column: 2;
+    grid-row: 4;
+  }
+  .vista-s3 .form-compacto > .barra-accion {
+    grid-column: 2;
+    grid-row: 5;
+    position: static;
+    margin-top: 0;
+  }
+  .vista-s3 .form-compacto > .form-seccion {
+    margin: 0 0 var(--entre-tarjetas);
+  }
+}
