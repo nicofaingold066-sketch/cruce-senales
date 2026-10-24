@@ -507,3 +507,244 @@
 .agente-estado-ok {
   color: var(--tinta-2);
 }
+
+/* Preferencias personales: ritmo propio, sin alterar los controles ni el panel de GRU.
+   La cuadrícula responde al ancho de la tarjeta, también cuando vive en una columna. */
+#agente-preferencias {
+  container-type: inline-size;
+  padding: var(--e-4);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-l);
+  background: var(--hoja);
+}
+#agente-preferencias > .tarjeta-cabeza {
+  margin: 0 0 var(--e-4);
+}
+#agente-preferencias > .bloque {
+  margin: 0;
+}
+#agente-preferencias > .bloque:not(.agente-prefs-linea) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--e-4);
+}
+#agente-preferencias > .bloque > * {
+  min-width: 0;
+  margin: 0;
+}
+#agente-preferencias > .bloque > .suave {
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--r-s);
+  background: var(--relleno);
+  color: var(--tinta-2);
+}
+#agente-preferencias > .bloque > .agente-subtitulo {
+  margin-top: var(--e-2);
+}
+#agente-preferencias .grupo {
+  min-width: 0;
+  margin: 0;
+}
+#agente-preferencias > .bloque > .grupo:not(:has(input[type='checkbox'])) {
+  padding: var(--e-4);
+  border-radius: var(--r-m);
+  background: color-mix(in srgb, var(--relleno) 65%, var(--hoja));
+}
+#agente-preferencias .grupo > legend {
+  float: left;
+  width: 100%;
+  margin-bottom: var(--e-3);
+  color: var(--tinta-2);
+  font-size: var(--t-nota);
+  font-weight: var(--p-boton);
+}
+#agente-preferencias .grupo > .opciones {
+  clear: both;
+  gap: var(--e-2);
+}
+#agente-preferencias .grupo > small {
+  display: block;
+  clear: both;
+  padding-top: var(--e-2);
+  color: var(--tinta-2);
+}
+#agente-preferencias .grupo-error > legend,
+#agente-preferencias .grupo-error > small {
+  color: var(--error);
+}
+#agente-preferencias .opcion-radio {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: var(--toque);
+  padding: 10px var(--e-3);
+  gap: var(--e-2);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-s);
+  background: var(--hoja);
+  color: var(--tinta-2);
+  font-size: var(--t-nota);
+  font-weight: var(--p-boton);
+  line-height: var(--lh-nota);
+  overflow-wrap: anywhere;
+}
+/* Un indicador de selección visible además del color; el input nativo conserva foco y teclado. */
+#agente-preferencias .opcion-radio::before {
+  content: '';
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--tinta-3);
+  border-radius: 50%;
+}
+#agente-preferencias .opcion-radio:has(input[type='checkbox'])::before {
+  border-radius: 5px;
+}
+#agente-preferencias .opcion-activa {
+  border-color: var(--brasa);
+  background: var(--brasa-suave);
+  color: var(--brasa);
+}
+#agente-preferencias .opcion-activa::before {
+  border: 0;
+  border-radius: 0;
+  background: currentColor;
+  clip-path: polygon(14% 43%, 38% 66%, 85% 18%, 98% 31%, 38% 92%, 1% 55%);
+}
+#agente-preferencias .grupo:has(input[type='checkbox']) > .opciones {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+#agente-preferencias .agente-plegable-seccion {
+  border: 1px solid var(--linea);
+  border-radius: var(--r-m);
+  background: var(--hoja);
+}
+#agente-preferencias .agente-plegable-boton {
+  display: grid;
+  gap: var(--e-1);
+  padding: var(--e-4) 44px var(--e-4) var(--e-4);
+  border-radius: var(--r-m);
+}
+#agente-preferencias .agente-plegable-titulo {
+  font-size: var(--t-cuerpo);
+}
+#agente-preferencias .agente-plegable-resumen {
+  line-height: var(--lh-nota);
+}
+#agente-preferencias .agente-plegable-flecha {
+  right: var(--e-4);
+  color: var(--tinta-3);
+}
+#agente-preferencias .agente-plegable-cuerpo {
+  padding: 0 var(--e-4) var(--e-4);
+}
+#agente-preferencias #pref-sec-viaje:not([hidden]) {
+  display: grid;
+  gap: var(--e-5);
+}
+#agente-preferencias .agente-plegable-cuerpo > .suave {
+  margin: 0;
+}
+#agente-preferencias .agente-casilla {
+  gap: var(--e-3);
+  padding: var(--e-2) 0;
+}
+#agente-preferencias .agente-casilla input {
+  accent-color: var(--brasa);
+}
+#agente-preferencias .agente-casilla small,
+#agente-preferencias .agente-plegable-cuerpo [role='status'] {
+  margin-top: var(--e-1);
+  color: var(--tinta-2);
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+#agente-preferencias > .bloque > .fila-botones {
+  gap: var(--e-2);
+  padding-top: var(--e-4);
+  border-top: 1px solid var(--linea);
+}
+#agente-preferencias > .bloque > .fila-botones > .btn:first-child {
+  flex: 1 1 15rem;
+}
+#agente-preferencias > .bloque > div:empty {
+  display: none;
+}
+#agente-preferencias .agente-linea-fila {
+  align-items: center;
+  gap: var(--e-3);
+  padding: var(--e-4);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-m);
+  background: var(--relleno);
+}
+#agente-preferencias .agente-linea {
+  padding: 0;
+  font-size: var(--t-cuerpo);
+  line-height: 1.65;
+}
+#agente-preferencias .agente-enlace {
+  padding: 0 var(--e-3);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-s);
+  background: var(--hoja);
+  color: var(--tinta);
+  font-size: var(--t-nota);
+  text-decoration: none;
+}
+#agente-preferencias .agente-prefs-linea > .suave {
+  margin-top: var(--e-3);
+  padding: 0;
+  background: none;
+}
+@media (hover: hover) {
+  #agente-preferencias fieldset:enabled .opcion-radio:hover {
+    border-color: var(--tinta-3);
+  }
+  #agente-preferencias .agente-plegable-boton:hover,
+  #agente-preferencias .agente-enlace:enabled:hover {
+    background: var(--relleno);
+  }
+}
+@container (min-width: 600px) {
+  #agente-preferencias > .bloque:not(.agente-prefs-linea) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--e-4);
+  }
+  #agente-preferencias > .bloque > :not(.grupo),
+  #agente-preferencias > .bloque > .grupo:has(input[type='checkbox']) {
+    grid-column: 1 / -1;
+  }
+  #agente-preferencias .grupo:has(input[type='checkbox']) > .opciones {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  #agente-preferencias #pref-sec-viaje:not([hidden]) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #agente-preferencias #pref-sec-viaje > .suave {
+    grid-column: 1 / -1;
+  }
+  #agente-preferencias > .bloque > .fila-botones > .btn:first-child {
+    flex: 0 1 auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #agente-preferencias .opcion-radio {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  #agente-preferencias .opcion-radio::before {
+    display: none;
+  }
+  #agente-preferencias .opcion-radio input {
+    position: static;
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    opacity: 1;
+  }
+  #agente-preferencias .opcion-activa {
+    border: 2px solid Highlight;
+  }
+}
