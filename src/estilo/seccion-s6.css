@@ -358,11 +358,12 @@
   background: var(--hoja);
   color: var(--tinta);
   box-shadow: var(--sombra-hoja);
-  /* La hoja sube (movimiento del sistema, sd-subir). */
-  animation: sd-subir var(--dur-3) var(--curva) both;
+  /* La hoja sube en 240 ms (movimiento del sistema, sd-hoja-sube) y el velo se atenúa (sd-velo). */
+  animation: sd-hoja-sube 240ms var(--curva) both;
 }
 .agente-hoja::backdrop {
   background: rgba(18, 16, 14, 0.45);
+  animation: sd-velo var(--dur-2) ease both;
 }
 .agente-hoja-cuerpo {
   padding: var(--e-5) var(--e-4) var(--e-6);
@@ -472,7 +473,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .agente-hoja {
+  .agente-hoja,
+  .agente-hoja::backdrop {
     animation: none;
   }
 }
