@@ -402,8 +402,8 @@ Los rótulos los fija la enmienda 13 y las pantallas son de front-juan. Si algun
 | A1 | **Frase universal de comida y alcohol** en el texto del plan y del mensaje del agente ("Habrá opción sin carne") | agente-ia (prompt del agente y texto fijo) | Bajo | Alto |
 | A2 | **Lista de palabras prohibidas** ampliada (§8.7) en el filtro de salida del modelo | agente-ia | Bajo | Alto |
 | A3 | **«Dos formas de juntarse»**: presentación A/B de dos de las tres candidatas con el eje de «dónde» y la plantilla de §7; mapeo actividad→concepto en `src/agente` | agente-ia | Medio | Alto |
-| A4 | **Modalidad de la juntada** (solo grupo / con parejas / abierta) en «Nueva propuesta» como marca en el título y repetida en el mensaje del enlace | front-juan (NuevaPropuesta) + friccion (compartir.ts) | Bajo | Medio |
-| A5 | **Ayuda plegable «¿Dónde se juntan?»** (casa / neutro / turnos) antes de elegir a la persona que no puede faltar | front-juan | Bajo | Medio |
+| A4 | **[22:25, sinteticos: NO conectado en producción; con el cierre de funciones pasa a «siguiente paso»; hoy la regla existe solo si quien organiza la escribe en el título y la invitación de WhatsApp no la repite]** **Modalidad de la juntada** (solo grupo / con parejas / abierta) en «Nueva propuesta» como marca en el título y repetida en el mensaje del enlace | front-juan (NuevaPropuesta) + friccion (compartir.ts) | Bajo | Medio |
+| A5 | **[22:25: NO conectado; siguiente paso]** **Ayuda plegable «¿Dónde se juntan?»** (casa / neutro / turnos) antes de elegir a la persona que no puede faltar | front-juan | Bajo | Medio |
 | A6 | **Textos de §8** (baja, plan cambia, +1, quien organiza) en avisos y mensajes | ux-flujo (avisoPersonal, recordar), friccion (compartir.ts) | Bajo | Medio |
 | A7 | **Lámina de pitch** (§10) | agente-ia (`docs/pitch*.md`) | Bajo | Alto |
 | A8 | Pregunta de contexto a Nico: confirmar que **género/pareja de personas no se piden** (D2) | Nico | — | Alto |
