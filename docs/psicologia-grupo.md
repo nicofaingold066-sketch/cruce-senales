@@ -626,6 +626,12 @@ Pedido del coordinador (21:02). Hecha a las 21:17 del viernes 23 sobre el códig
 | «Habrá opción sin carne», «Tu confirmación solo vale si llegan N» | **No están** (pedidos A1 y D1, no hechos) |
 | «Parrilla del parque» | No aparece en el código del cliente, como corresponde: es un dato del catálogo del servidor |
 
+### Actualización a las 22:24 (producción con `main` `bd9dc36`, bundle `index-DhEEDVTR`)
+- **Llegaron:** «Así no puedo, pero sigo» (3), «Buscar el lugar en el mapa» (1), «nadie queda comprometido» (1), «Una persona se retiró» (4).
+- **Siguen igual:** «se bajó» (4), «había confirmado» (2), «perdió al anfitrión», «Bajas registradas» (en `PlanTab.tsx` y `Cruce.tsx`; el parche de pantallas de ux-flujo no los tocó), el voseo del panel del agente y «ve solo el servidor» (3).
+- **Rebaja de A2 a A5 (de alta a media):** leí las migraciones 0043, 0045 y 0047: el **servidor ya anonimiza** las bajas de otras personas (actor «Una persona», `habia_aceptado` nulo, y las aceptaciones de quienes se retiraron ya no salen). Entonces la pantalla no puede mostrar un nombre; lo que queda es la **palabra** («se bajó» en vez de «se retiró») y el texto «perdió al anfitrión». Sigue valiendo cambiarlos, pero ya no es una exposición. **Pendiente de comprobar en pantalla:** que la columna «Versión N · ya no vale» de `PlanTab.tsx` no deje deducir quién se retiró por exclusión.
+- **Cerrado por backend:** el mensaje `condiciones_congeladas` del lote 7 (migración 0046).
+
 ### 16.1 Lo que hay que arreglar primero (7 altos): todos son la misma falla
 Cinco de los siete **nombran a quien se retiró** o dicen que «había confirmado» en textos que ve todo el grupo; la enmienda 13 (c), aprobada a las 20:51, pide «Una persona se retiró» sin nombre ni motivo. El historial viaja en capturas al chat. Los otros dos **prometen que todo lo que marques es privado** justo antes de la pantalla donde «me interesa» y la confirmación los ve el grupo.
 
