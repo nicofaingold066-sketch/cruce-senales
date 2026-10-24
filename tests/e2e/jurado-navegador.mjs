@@ -81,11 +81,15 @@ function sinE13(p, nombre) {
   for (const n of NOMBRES_DEMO) if (baja.includes(`"${n}"`)) privados.push(`E13 ${nombre}: la baja nombra a ${n}`)
   // Backend deja `habia_aceptado` en null (no quita la clave): lo que no puede haber es true/false.
   for (const b of Array.isArray(p.bajas) ? p.bajas : []) if ((b?.habia_aceptado ?? null) !== null) privados.push(`E13 ${nombre}: la baja dice si había confirmado`)
-  const totales = p.opiniones_totales ?? null
-  if (totales === null) return
-  if (!nombre.startsWith('Tomi')) privados.push(`E13 ${nombre}: ve opiniones_totales`)
-  if (typeof totales !== 'object' || Object.values(totales).some(v => typeof v !== 'number' || v < 2)) privados.push(`E13 ${nombre}: opiniones_totales con menos de 2 o forma rara`)
-  for (const n of NOMBRES_DEMO) if (JSON.stringify(totales).includes(n)) privados.push(`E13 ${nombre}: opiniones_totales nombra a ${n}`)
+  // "Sin decir si había confirmado": la aceptación vieja de quien se retiró también sale sin actor. En este guion se retira Caro.
+  if (Array.isArray(p.bajas) && p.bajas.length > 0) {
+    for (const e of (p.historial ?? []).filter(e => e.tipo === 'aceptacion')) if (e.actor?.nombre === 'Caro') privados.push(`E13 ${nombre}: la aceptación de quien se retiró conserva el nombre`)
+  }
+  // `opiniones_totales` llega como { asi_no_puedo: n } con n null si hay menos de 2. Solo el organizador puede ver un número.
+  const total = p.opiniones_totales?.asi_no_puedo ?? null
+  if (total !== null && !nombre.startsWith('Tomi')) privados.push(`E13 ${nombre}: ve opiniones_totales`)
+  if (total !== null && (typeof total !== 'number' || total < 2)) privados.push(`E13 ${nombre}: opiniones_totales con menos de 2 o forma rara`)
+  for (const n of NOMBRES_DEMO) if (JSON.stringify(p.opiniones_totales ?? null).includes(n)) privados.push(`E13 ${nombre}: opiniones_totales nombra a ${n}`)
 }
 async function observar(p, nombre) {
   p.setDefaultTimeout(15000)
@@ -269,14 +273,18 @@ try {
     // E13 (c) en pantalla: el historial compartido no nombra a quien se retiró, ni en la sesión de Luna ni en la del
     // organizador. El texto nuevo ("Una persona se retiró") es de front-juan: se avisa, no se exige todavía.
     if (e13) {
-      await L.reload(); await tab(L, 'Historial'); await tab(T, 'Historial')
+      // Ni "Caro se bajó" ni "Caro aceptó / había confirmado" en lo compartido (plan e historial), en ninguna de las dos sesiones.
+      const fuga = /(?:Tomi|Luna|Mati|Caro|Fede|Sofi) se (?:bajó|retiró)|Caro (?:aceptó|había confirmado)/
+      await L.reload(); await estado(L, 'En revisión')
+      comprobar(!fuga.test(await L.locator('main').innerText()), 'UI E13: el plan de Luna no nombra a quien se retiró ni dice que había confirmado')
+      await tab(L, 'Historial'); await tab(T, 'Historial')
       for (const [p, quien] of [[L, 'Luna'], [T, 'Tomi']]) {
         const historial = await p.locator('main').innerText()
-        comprobar(!/(?:Tomi|Luna|Mati|Caro|Fede|Sofi) se (?:bajó|retiró)/.test(historial), `UI E13: historial de ${quien} sin el nombre de quien se retiró`)
-        if (/El sistema se bajó/.test(historial)) log(`AVISO E13 (${quien}): el historial dice "El sistema se bajó"; debería decir "Una persona se bajó"`)
-        else if (!/Una persona se (?:bajó|retiró)/.test(historial)) log(`AVISO E13 (${quien}): el historial todavía no dice "Una persona se bajó"`)
+        comprobar(!fuga.test(historial), `UI E13: historial de ${quien} sin el nombre de quien se retiró`)
+        if (/El sistema se bajó/.test(historial)) log(`AVISO E13 (${quien}): el historial dice "El sistema se bajó"; debería decir "Una persona se retiró"`)
+        else if (!/Una persona se (?:bajó|retiró)/.test(historial)) log(`AVISO E13 (${quien}): el historial todavía no dice "Una persona se retiró"`)
       }
-      await tab(T, 'Plan')
+      await tab(L, 'Plan'); await tab(T, 'Plan')
     } else log('E13 pendiente: el servidor no trae mi_opinion/opiniones_totales; la baja sin nombre se comprueba sola cuando llegue.')
     await condiciones(T, 'No puedo', 'No puedo')
     await tab(T, 'Plan')
