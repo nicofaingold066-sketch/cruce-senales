@@ -5430,13 +5430,65 @@ li:has(> .plan-vivo) {
   }
 }
 
-/* Con el botón de Ayuda en la barra (codex-intro), a 360–420 px el rol («organizador») empujaba 10 px fuera de la
-   pantalla. Como ya se hacía bajo 360 px, el rol se oculta a la vista; el nombre queda y el lector sigue oyendo la sesión. */
-@media (max-width: 420px) {
+/* ---- La barra de arriba nunca mide más que la pantalla (Nico, 10:00: en su teléfono la página se corría hacia los
+   costados). Regla general, no por ancho exacto: todos los hijos pueden encogerse, el nombre se corta con «…», el rol se
+   oculta a la vista bajo 480 px (el lector lo sigue oyendo) y «Datos ficticios» pasa a «Ficticio» bajo 400 px. */
+.barra {
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+.barra > * {
+  min-width: 0;
+  flex-shrink: 1;
+}
+.barra > .barra-marca,
+.barra > .cruxe-ayuda {
+  flex-shrink: 0;
+}
+.barra .chip-ficticio {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.barra .barra-identidad {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.barra .barra-identidad-texto,
+.barra .barra-identidad strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chip-ficticio-corto {
+  display: none;
+}
+@media (max-width: 479px) {
   .barra .barra-rol {
     display: none;
   }
-  .barra-identidad {
-    min-width: 0;
+}
+@media (max-width: 399px) {
+  .barra .chip-ficticio-largo {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
+  .barra .chip-ficticio-corto {
+    display: inline;
+  }
+}
+
+/* Guardia global: nada puede ensanchar la página hacia los costados. `clip` y no `hidden`: `hidden` en html y body
+   convierte a body en contenedor de desplazamiento y rompe la barra pegada arriba (position: sticky). */
+html,
+body {
+  overflow-x: clip;
+  max-width: 100%;
 }

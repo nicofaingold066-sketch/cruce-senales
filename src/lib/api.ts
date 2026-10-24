@@ -196,10 +196,40 @@ function esErrorDeRed(msg: string): boolean {
   return /failed to fetch|networkerror|network request failed|load failed|fetch failed|timeout/i.test(msg)
 }
 
+/**
+ * Una RPC con 401: el token venció o la sesión aún no estaba lista (Safari suspende la pestaña y, al volver, la app llama
+ * antes de que se renueve el token). Se renueva la sesión (refresh; o una anónima nueva si no hay ninguna) y se reintenta UNA vez.
+ * Si la sesión existe pero no se puede renovar, no se crea otra persona: se devuelve el error.
+ */
+let renovando: Promise<boolean> | null = null
+function renovarSesion(): Promise<boolean> {
+  if (!renovando) {
+    renovando = (async () => {
+      try {
+        const { data } = await supabase.auth.getSession()
+        if (data.session) {
+          const r = await supabase.auth.refreshSession()
+          return !r.error && r.data.session != null
+        }
+        const r = await supabase.auth.signInAnonymously()
+        return !r.error
+      } catch {
+        return false
+      }
+    })().finally(() => {
+      renovando = null
+    })
+  }
+  return renovando
+}
+const es401 = (res: { status?: number; error: { message?: string; code?: string } | null }) =>
+  res.status === 401 || res.error?.code === 'PGRST301' || res.error?.code === 'PGRST303' || /jwt/i.test(res.error?.message ?? '')
+
 async function llamar<T extends OkBase>(
   fn: string,
   args: Record<string, unknown>,
   escritura: boolean,
+  yaRenovada = false,
 ): Promise<ApiResult<T>> {
   if (escritura && incompatible) {
     return {
@@ -216,7 +246,7 @@ async function llamar<T extends OkBase>(
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {
     return fallo('sin_conexion', MENSAJE_SIN_CONEXION, { sinConexion: true })
   }
-  let res: { data: unknown; error: { message?: string; code?: string } | null }
+  let res: { data: unknown; status?: number; error: { message?: string; code?: string } | null }
   const control = new AbortController()
   const tope = setTimeout(() => control.abort(), TOPE_RPC_MS)
   try {
@@ -230,6 +260,7 @@ async function llamar<T extends OkBase>(
     clearTimeout(tope)
   }
   if (res.error && control.signal.aborted) return falloPorTope(escritura)
+  if (res.error && !yaRenovada && es401(res) && (await renovarSesion())) return llamar<T>(fn, args, escritura, true)
   if (res.error) {
     const msg = res.error.message ?? ''
     if (esErrorDeRed(msg)) return falloDeRed(escritura)

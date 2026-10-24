@@ -4,7 +4,7 @@
 // La región `role=status` con `.estado-hero-etiqueta` y `siguiente_accion.texto` se conserva para los lectores de pantalla.
 import { useState } from 'react'
 import { api } from '../../lib/api'
-import { diaDe, fechaCorta, hora } from '../../lib/format'
+import { diaDe, fechaCorta, hora, horarioTexto } from '../../lib/format'
 import { useMutacion } from '../../lib/hooks'
 import type { PropuestaViva } from '../../lib/hooks'
 import { rutas } from '../../lib/shell'
@@ -93,7 +93,7 @@ export function Resultado({
             <span className="visualmente-oculto">{enRevision ? `Versión ${o.version} (en revisión, no confirmada)` : `Opción vigente · Versión ${o.version}`}</span>
             <p className="resultado-fecha">{diaDe(o.franja.inicio.local)}</p>
             <p className="resultado-hora">
-              {confirmado ? `${hora(o.franja.inicio.local)}${etiqueta ? ` · ${etiqueta}` : ''}` : `${hora(o.franja.inicio.local)} a ${hora(o.franja.fin.local)}${etiqueta ? ` · ${etiqueta}` : ''}`}
+              {confirmado ? `${hora(o.franja.inicio.local)}${etiqueta ? ` · ${etiqueta}` : ''}` : `${horarioTexto(o.franja.inicio, o.franja.fin)}${etiqueta ? ` · ${etiqueta}` : ''}`}
             </p>
             {enRevision && c && c.faltan_para_minimo > 0 ? <p className="resultado-nota">ya no llega al mínimo ({c.minimo})</p> : null}
           </div>

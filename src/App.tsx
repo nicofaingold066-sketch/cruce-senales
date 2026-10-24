@@ -87,7 +87,7 @@ function Marco({
         </a>
         <div className="barra-centro">
           {identidad.espacio ? <span className="barra-espacio">{identidad.espacio}</span> : null}
-          <span className="chip-ficticio">Datos ficticios</span>
+          <span className="chip-ficticio"><span className="chip-ficticio-largo">Datos ficticios</span><span className="chip-ficticio-corto" aria-hidden="true">Ficticio</span></span>
         </div>
         {conNav ? <PestanasBarra ruta={ruta} /> : null}
         <button type="button" className="cruxe-ayuda" onClick={alAbrirAyuda} aria-label="Ayuda: volver a ver el recorrido completo de CRUXE" aria-haspopup="dialog">

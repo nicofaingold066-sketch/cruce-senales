@@ -3,7 +3,7 @@ import { api } from '../lib/api'
 import { RONDA_HORAS } from '../lib/types'
 import type { ActividadClave, ApiError, Espacio, ReglaMotor, RondaHoras } from '../lib/types'
 import { useAccion } from '../lib/hooks'
-import { ZONA_VISIBLE } from '../lib/format'
+import { SIN_FIN_MINUTOS, UMBRAL_SIN_FIN, ZONA_VISIBLE } from '../lib/format'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { ATAJOS, atajosParaEspacio, ejemploPorSemilla, placeholderPlan } from '../lib/ejemplos'
 import type { Atajo } from '../lib/ejemplos'
@@ -83,7 +83,8 @@ const CASO = {
 }
 
 const HORAS = ['12:00', '13:00', '14:00', '17:00', '19:00', '20:00', '21:00']
-const DURACIONES = [60, 120, 180, 240]
+// «Sin hora de fin» (Nico, 24 oct): el contrato exige un fin; se manda inicio + 12 h y se lee como abierto.
+const DURACIONES = [60, 120, 180, 240, SIN_FIN_MINUTOS]
 const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 
@@ -118,6 +119,7 @@ function plazoDe(form: Formulario): string {
   return `${sumarDias(primero, form.cierre === 'dia_antes' ? -1 : -2)}T20:00`
 }
 function duracionTexto(min: number): string {
+  if (min >= UMBRAL_SIN_FIN) return 'Sin hora de fin'
   const h = Math.floor(min / 60)
   const m = min % 60
   return m ? `${h} h ${m} min` : `${h} h`
@@ -220,7 +222,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     if (borrador) {
       const [a, b] = borrador.franjas
       const dur = Math.round((enUTC(a.fin.slice(0, 10), a.fin.slice(11, 16)).getTime() - enUTC(a.inicio.slice(0, 10), a.inicio.slice(11, 16)).getTime()) / 60000)
-      const duracion = dur > 0 ? dur : base.duracion
+      const duracion = dur >= UMBRAL_SIN_FIN ? SIN_FIN_MINUTOS : dur > 0 ? dur : base.duracion
       setDesdeAgente(true)
       if (!DURACIONES.includes(duracion)) setDuracionExtra(duracion)
       setF({
@@ -458,7 +460,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                       {E15_DOS_PLANES && etiqueta.trim() ? <span className="s3-fila-nota"> · {etiqueta.trim()}</span> : null}
                     </span>
                     <span className="s3-fila-valor">
-                      {horaSel} · {duracionTexto(form.duracion)}
+                      {horaSel} · {form.duracion >= UMBRAL_SIN_FIN ? 'sin hora de fin' : duracionTexto(form.duracion)}
                     </span>
                     <span className="s3-fila-icono" aria-hidden="true">
                       <Icono n="borrador" tam={16} />

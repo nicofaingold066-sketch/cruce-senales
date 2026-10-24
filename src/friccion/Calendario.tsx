@@ -6,7 +6,7 @@
 //   <TomarDeCalendario franjas={p.franjas} semilla={p.mi_situacion.miembro_id} onTomar={(d) => b.reemplazar(d)} />
 import { useId, useState } from 'react'
 import type { Disponibilidad, Franja, Valor } from '../lib/types'
-import { diaDe, hora } from '../lib/format'
+import { diaDe, hora, horarioTexto } from '../lib/format'
 import { Boton, DiaTile, RotuloSimulacion } from '../components/ui'
 import { Icono } from '../components/Icono'
 import './friccion.css'
@@ -138,7 +138,7 @@ export function TomarDeCalendario({
                 <DiaTile local={d.franja.inicio.local} />
                 <div className="calendario-sim-dia">
                   <strong>
-                    {diaDe(d.franja.inicio.local)}, {hora(d.franja.inicio.local)} a {hora(d.franja.fin.local)}:{' '}
+                    {diaDe(d.franja.inicio.local)}, {horarioTexto(d.franja.inicio, d.franja.fin)}:{' '}
                     <span className={`etiqueta ${d.choque ? 'etiqueta-pendiente' : 'etiqueta-ok'}`}>{d.choque ? 'Ocupado' : 'Libre'}</span>
                   </strong>
                   {d.eventos.length === 0 ? <span className="suave">Sin nada anotado ese día</span> : null}
