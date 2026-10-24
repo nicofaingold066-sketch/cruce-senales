@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la computadora de Nico, Mac-mini-de-Felix). Última actualización: viernes 23 oct, 18:49 Santiago (reloj).
 
 ## Tocando ahora
-- CORRIENDO PRUEBA (00:13) sesión de pruebas UX (wip/front-juan-ux): e2e (dos sesiones, jurado, fricción, propósito, convencer a uno, entrada tipo Tricount) sobre wip/front-juan-ux 2ddb389 (sin Novedades), build local
+(vacío desde las 00:20; la sesión de pruebas UX no corre nada contra la base.)
 
 ## Entregado: `wip/front-juan` = `9cafcc2` (con `origin/wip/fundamentos` `a381a0c` fusionado, sin conflictos)
 Respuesta al aviso de las 17:35:
