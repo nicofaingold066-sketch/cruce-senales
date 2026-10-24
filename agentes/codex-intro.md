@@ -5,7 +5,9 @@ Pedido directo del usuario en Codex: «Sí, te autorizo a modificar la entrada. 
 Rama propia: `codex/intro-primera-visita`. Copia: `/Users/macair/cruse/cruce-intro`, desde `origin/main`.
 
 ## Tocando ahora
-Vacío. Guía entregada en rama propia, sin base ni despliegue.
+- Nuevo pedido directo de Nico: «Dale, me gusta cómo quedó. Integralo y publicalo así ya aparece en la app.» Autoriza integrar/publicar únicamente la guía aprobada `4e90813`, incluida excepción a las reglas previas de integración por coordinador para esta entrega.
+- Integración fast-forward de `origin/wip/fundamentos` y `origin/main`, desde `9364cd8` a `4e90813` si ambos siguen sin avances; publicación por Git/Vercel ya configurado. No se incorporan ramas ajenas ni se reescribe historial.
+- Verificación de typecheck/build y assets reales publicados con Auth/RPC totalmente interceptados. Sin pruebas, usuarios ni planes contra la base.
 
 ## Entrega nueva: guía de tres pasos
 Pedido directo de Nico: «Dale, hacela así, bien dinámica y divertida, con los 3 pasos. Que aparezca solo la primera vez, se pueda saltar y volver a ver desde Ayuda». Después pidió ver el resultado y cursor naranja. Autoriza esta ampliación puntual de la entrada.
