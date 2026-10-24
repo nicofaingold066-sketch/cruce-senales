@@ -67,7 +67,7 @@ export default function Planes() {
   ]
 
   return (
-    <div className="vista vista-s2b">
+    <div className="vista vista-s2b s2b-vista-planes">
       <header className="s2b-cabeza">
         <h1 id="planes-titulo">Tus planes</h1>
         <p className="s2b-bajada">Primero lo que te toca. Después, lo que espera a otros. Al final, lo pasado.</p>

@@ -56,7 +56,7 @@
   --r-l: 24px;
   --r-hoja: 28px;
   --barra-alto: 60px; /* lo que mide la barra: 44 de toque + 8 + 8; con 56 sobraban 4 px de scroll en computadora */
-  --margen: 20px; /* sistema: 20 en el teléfono, 40 en la computadora (src/estilo/sistema.css) */
+  /* --margen vive en src/estilo/sistema.css (20 en el teléfono, 40 en la computadora); acá lo pisaba en 20. */
   --fuente: var(--fuente-ui); /* Plus Jakarta Sans con la del sistema de respaldo (src/estilo/sistema.css) */
   --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   color-scheme: light dark;

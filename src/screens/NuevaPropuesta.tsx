@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../lib/api'
 import { RONDA_HORAS } from '../lib/types'
 import type { ActividadClave, ApiError, Espacio, ReglaMotor, RondaHoras } from '../lib/types'
@@ -11,6 +11,21 @@ import { Avatar, Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { tomarBorradorAgente } from '../agente/api'
 import '../estilo/seccion-s3.css'
+
+// C4 (computadora): Nuevo plan es una hoja centrada sobre el grupo atenuado; el grupo se dibuja detrás, inerte.
+const EspacioFondo = lazy(() => import('./Espacio'))
+const ANCHO = '(min-width: 960px)'
+
+function useAncho(): boolean {
+  const [ancho, setAncho] = useState(() => window.matchMedia(ANCHO).matches)
+  useEffect(() => {
+    const m = window.matchMedia(ANCHO)
+    const f = () => setAncho(m.matches)
+    m.addEventListener('change', f)
+    return () => m.removeEventListener('change', f)
+  }, [])
+  return ancho
+}
 
 // Una propuesta se arma con dos momentos posibles (A y B), cada uno un día y una hora de encuentro,
 // y una duración aproximada: la hora de fin se calcula sola. El contrato sigue recibiendo inicio y fin
@@ -132,6 +147,7 @@ function campoDeError(e: ApiError | null): Campo | null {
 }
 
 export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
+  const ancho = useAncho()
   const { soloLectura } = useShell()
   const [espacio, setEspacio] = useState<Espacio | null>(null)
   const [errorEspacio, setErrorEspacio] = useState<ApiError | null>(null)
@@ -349,7 +365,18 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const masActividades = actividades.length > 4
 
   return (
-    <div className="vista vista-s3">
+    <>
+      {ancho ? (
+        <>
+          <div className="s3-fondo" aria-hidden="true" inert>
+            <Suspense fallback={null}>
+              <EspacioFondo espacioId={espacioId} fondo />
+            </Suspense>
+          </div>
+          <div className="sd-velo s3-velo" aria-hidden="true" />
+        </>
+      ) : null}
+    <div className={`vista vista-s3${ancho ? ' s3-centrada sd-hoja-modal' : ''}`} role={ancho ? 'dialog' : undefined} aria-modal={ancho || undefined} aria-labelledby={ancho ? 'nueva-titulo' : undefined}>
       <section className="escena escena-compacta" aria-labelledby="nueva-titulo">
         {/* Mockup validado (pantalla 4): hoja del nivel Grupo, con ✕, "Nuevo plan" y el nombre del grupo. */}
         <div className="s3-cabeza">
@@ -561,6 +588,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
         </form>
       </div>
     </div>
+    </>
   )
 }
 

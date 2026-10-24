@@ -465,3 +465,75 @@
   border-color: var(--tinta);
   background: var(--hoja);
 }
+
+/* ---- pantalla 7: agente del círculo como pantalla propia; el summary oculto no se dibuja */
+.vista-agente .s2-agente-pantalla > summary {
+  list-style: none;
+}
+.vista-agente .s2-agente-pantalla > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* ---- computadora (C3 grupo, C7 agente): cabecera oscura a lo ancho y debajo dos columnas.
+   Grupo: 7/12 "Planes" a la izquierda; 5/12 invitar, agente, simulación e historial a la derecha. */
+@media (min-width: 960px) {
+  .vista-s2:not(.vista-crear) {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+  }
+  .vista-s2:not(.vista-crear) > .escena {
+    /* relative y no sticky: el resplandor decorativo va con position absolute y estiraba la página */
+    position: relative;
+    top: 0;
+    overflow: hidden;
+    min-height: 0;
+    padding: var(--e-3) var(--margen) var(--e-4);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'volver volver'
+      'cabeza personas';
+    align-items: end;
+    column-gap: var(--e-5);
+  }
+  .vista-s2:not(.vista-crear) > .escena > * {
+    max-width: none;
+  }
+  .vista-s2 > .escena > .escena-volver {
+    grid-area: volver;
+  }
+  .vista-s2 > .escena > .grupo-cabeza,
+  .vista-agente > .escena > h1 {
+    grid-area: cabeza;
+  }
+  .vista-s2 > .escena > .espacio-cabeza {
+    grid-area: personas;
+    margin: 0;
+  }
+  .vista-s2:not(.vista-crear) > .hoja {
+    max-width: none;
+    padding: var(--e-4) var(--margen) var(--e-4);
+  }
+  .vista-s2:not(.vista-crear):not(.vista-agente) > .hoja {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: 24px;
+    align-content: start;
+    align-items: start;
+  }
+  .vista-s2:not(.vista-crear):not(.vista-agente) > .hoja > * {
+    grid-column: 2;
+    margin-top: 0;
+    margin-bottom: var(--entre-tarjetas);
+  }
+  .vista-s2:not(.vista-crear):not(.vista-agente) > .hoja > .s2-col-planes {
+    grid-column: 1;
+    grid-row: 1 / span 12;
+  }
+  .vista-s2 .s2-col-planes .seccion-titulo {
+    margin-top: 0;
+  }
+  .vista-s2 .s2-agente {
+    margin-top: 0;
+  }
+}

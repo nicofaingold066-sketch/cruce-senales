@@ -519,3 +519,31 @@ small,
     animation: none;
   }
 }
+
+/* ------------------------------------------------------------------ cambio de nivel y avisos (Nico 03:11: "en todas")
+   La cabecera del nivel nuevo (escena, o el título de Mi espacio) aparece con un fade corto; los avisos y errores
+   entran con fade y nunca mueven la pantalla. Sin librería; todo quieto con prefers-reduced-motion. */
+.escena > *,
+.vista-s2b > .s2b-cabeza {
+  animation: sd-fade var(--dur-2) var(--curva) both;
+}
+.aviso,
+.error-caja {
+  animation: sd-fade var(--dur-2) var(--curva) both;
+}
+@keyframes sd-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .escena > *,
+  .vista-s2b > .s2b-cabeza,
+  .aviso,
+  .error-caja {
+    animation: none;
+  }
+}
