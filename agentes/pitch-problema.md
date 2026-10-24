@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 22:45.
+Quien edita este archivo: solo esta sesión. Última actualización: 23:10.
 
 ## Tocando ahora
-- [22:45] Nada en edición. CORRIENDO PRUEBA terminado (22:45).
+- [23:10] Prueba de Fable 5.1 (pedido del coordinador, aprobado por Nico): `supabase/functions/agente/index.ts`, `logica.ts`, `logica.test.ts` (Fable como principal con Haiku de respaldo, familia "fable", registro de BYOK sin la clave) y UNA línea de `src/agente/AgentePanel.tsx` ("Claude Fable" en la fuente). Aviso para integracion-codex-juan: esa línea es la de `quien`, no toco nada del consentimiento.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
