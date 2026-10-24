@@ -2,7 +2,10 @@ import { describe, it, expect } from 'vitest'
 import {
   ATAJOS,
   EJEMPLOS,
+  atajosParaEspacio,
+  atajosParaFamilia,
   atajosParaGrupo,
+  FAMILIA_DE_ACTIVIDAD,
   ordenarActividadesParaGrupo,
   ayudaGrupo,
   ejemploPorIndice,
@@ -92,5 +95,57 @@ describe('ejemplos que rotan (mejora #92)', () => {
     expect([...sin].sort()).toEqual(claves(a).sort())
     expect(ordenarActividadesParaGrupo([], 'x')).toEqual([])
     expect(claves(a)[0]).toBe('asado')
+  })
+
+  it('cada atajo trae la clave de su actividad del catálogo y las dos sin actividad son solo del modo libre', () => {
+    const conActividad = ATAJOS.filter((a) => a.actividad !== null)
+    for (const a of conActividad) expect(FAMILIA_DE_ACTIVIDAD[a.actividad as string]).toBeDefined()
+    const claves = conActividad.map((a) => a.actividad)
+    expect(new Set(claves).size).toBe(claves.length)
+    expect(ATAJOS.filter((a) => a.actividad === null).map((a) => a.titulo).sort()).toEqual(['Cumple', 'Juntada'])
+    // Los atajos nuevos de la enmienda 14.
+    for (const t of ['Básquet', 'Bar', 'Bowling o escape room', 'Picnic en el parque', 'Película en casa', 'Tenis']) {
+      expect(ATAJOS.map((a) => a.titulo)).toContain(t)
+    }
+  })
+
+  it('la tabla de familias coincide con el contrato (16 actividades, 6 familias)', () => {
+    expect(Object.keys(FAMILIA_DE_ACTIVIDAD)).toHaveLength(16)
+    expect(new Set(Object.values(FAMILIA_DE_ACTIVIDAD))).toEqual(
+      new Set(['deporte', 'comida', 'salida_noche', 'cultura', 'aire_libre', 'en_casa']),
+    )
+    expect(FAMILIA_DE_ACTIVIDAD.tenis).toBe('deporte')
+    expect(FAMILIA_DE_ACTIVIDAD.basquet).toBe('deporte')
+    expect(FAMILIA_DE_ACTIVIDAD.peli_casa).toBe('en_casa')
+    expect(FAMILIA_DE_ACTIVIDAD.cine).toBe('cultura')
+  })
+
+  it('un grupo con propósito solo ve los atajos de su familia, y ninguna familia queda con menos de 2', () => {
+    const familias = ['deporte', 'comida', 'salida_noche', 'cultura', 'aire_libre', 'en_casa'] as const
+    for (const f of familias) {
+      const r = atajosParaFamilia(f)
+      expect(r.length).toBeGreaterThanOrEqual(2)
+      for (const a of r) expect(FAMILIA_DE_ACTIVIDAD[a.actividad as string]).toBe(f)
+    }
+    expect(atajosParaFamilia('deporte').map((a) => a.titulo).sort()).toEqual(['Básquet', 'Fútbol', 'Pádel', 'Tenis'])
+    expect(atajosParaFamilia('deporte').map((a) => a.titulo)).not.toContain('Asado')
+    expect(atajosParaFamilia('en_casa').map((a) => a.titulo).sort()).toEqual(['Juegos de mesa', 'Película en casa'])
+    // Libre, sin familia o nula: todos, incluidos los sin actividad.
+    expect(atajosParaFamilia('libre')).toEqual(ATAJOS)
+    expect(atajosParaFamilia(undefined)).toEqual(ATAJOS)
+    expect(atajosParaFamilia(null)).toEqual(ATAJOS)
+    for (const f of familias) expect(atajosParaFamilia(f).map((a) => a.titulo)).not.toContain('Cumple')
+  })
+
+  it('el espacio combina familia (filtra) y nombre del grupo (ordena), sin perder ni repetir atajos', () => {
+    const r = atajosParaEspacio('Los del fútbol', 'deporte')
+    expect(r[0].titulo).toBe('Fútbol')
+    expect(r.map((a) => a.titulo).sort()).toEqual(['Básquet', 'Fútbol', 'Pádel', 'Tenis'])
+    // El nombre nombra una actividad de otra familia: no se cuela.
+    expect(atajosParaEspacio('Los del asado', 'deporte').map((a) => a.titulo)).not.toContain('Asado')
+    // Libre: mismo resultado que por nombre.
+    expect(atajosParaEspacio('Los del pádel', 'libre')).toEqual(atajosParaGrupo('Los del pádel'))
+    expect(atajosParaEspacio('Los del asado', 'libre')[0].titulo).toBe('Asado')
+    expect(new Set(atajosParaEspacio('x', 'comida').map((a) => a.titulo)).size).toBe(atajosParaEspacio('x', 'comida').length)
   })
 })
