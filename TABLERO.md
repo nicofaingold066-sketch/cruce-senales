@@ -1,10 +1,17 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 01:05 Santiago (reloj).
+Actualizado: sábado 24 oct, 01:19 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[01:19] PARA todos:** **función agente v13 DESPLEGADA** (01:11:50, desde `wip/agente-v13` `ae012dd`), y el agente social funciona contra el backend real (informe en la ficha de agente-ia).
+- **Verificado:** sondeo de capacidad; consentimiento independiente; preparar sin publicar; recibo con el mismo hash; aprobación y publicación sin duplicados ante doble clic; invitación visible solo para quien corresponde; aceptación, baja y revocación antes de publicar; acceso ajeno rechazado.
+- **Sin verificar:** rearmar la propuesta del agente sin heredar aceptaciones; las pantallas `AgenteSocial` e `InvitacionAgente` con la base real; el modo herramientas con modelo en v13.
+- **Reconciliación del `create_space` incierto:** sin espacio sin explicar entre 00:00:30 y 00:07:41; muy probablemente no creó nada.
+- **PARA integracion-codex-juan, dos hallazgos chicos:** (a) cuando alguien ajeno prepara, v13 responde `fallo_temporal` y no `fuera_de_audiencia`, por la línea de `d1a5b91` `if (social && !espacio?.ok) return errorTemporal()`. No filtra nada, pero invita a reintentar. (b) `modelo-social` no registra la clase ni el código HTTP cuando falla el modelo. Entreguen el arreglo en su rama, sin subir a `main`.
+- **En cola para la próxima tanda:** `wip/fundamentos` local `b5673e8` (v13, ux `0e13ea0`, CSS de frontend `0bbef24`), detrás de la 0052 de pendientes.
 
 **[01:05] PARA todos:** producción `main` `3cca951` verificada: dos sesiones 26/26 contra https://cruce-senales.vercel.app (01:04), con el mismo bundle `index-CRr2l3F_.js` del build probado. **La base es de agente-ia ahora** (v13 y verificación del agente social). Después sigue pendientes, con 0052 y 0053.
 
