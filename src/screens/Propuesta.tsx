@@ -324,14 +324,18 @@ function escenaDe(
       return { nodos, valor: cuenta, etiqueta: 'se juntan', fraccion: 1, tono: 'ok' }
     case 'en_revision':
       return { nodos, valor: `v${p.opcion?.version ?? ''}`, etiqueta: 'en revisión', fraccion: c ? c.confirmados / c.minimo : 0, tono: 'revision' }
-    case 'reuniendo_interes':
+    case 'reuniendo_interes': {
+      // #35 (ux-flujo, privacidad): a quien organiza, cuántos respondieron (`personas_con_condiciones`, solo le llega a
+      // esa persona, E7.2). Un "Sí" no se vuelve interés público: los demás siguen viendo "con interés".
+      const respondieron = p.personas_con_condiciones
       return {
         nodos,
-        valor: String(p.interesados.cantidad),
-        etiqueta: p.ultima_evaluacion?.resultado === 'sin_opcion' ? 'sin opción' : 'con interés',
+        valor: String(respondieron ?? p.interesados.cantidad),
+        etiqueta: p.ultima_evaluacion?.resultado === 'sin_opcion' ? 'sin opción' : respondieron != null ? 'respondieron' : 'con interés',
         fraccion: 0,
         tono: p.ultima_evaluacion?.resultado === 'sin_opcion' ? 'neutro' : 'info',
       }
+    }
     case 'borrador':
       return { nodos, valor: '—', etiqueta: 'borrador', fraccion: 0, tono: 'neutro' }
     default:
