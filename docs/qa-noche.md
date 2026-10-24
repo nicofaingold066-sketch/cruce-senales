@@ -106,6 +106,7 @@ El mockup validado (21 pantallas, `prompts/rediseno-secciones.md`) cambia cómo 
 | 02:33–02:38 | set sin base sobre las ramas con entregas: `wip/diseno` 9c6ffe8 (fase 1 del rediseño: sistema de estilos), `wip/frontend` fee1163, `wip/friccion` d471641 (respuesta de un toque con dos planes con nombre), `wip/ux` 0597dd3, `wip/agente-ia` 54dc6a4, `wip/apertura` 258242e: typecheck, build, guardia 0/0 y red 10/10 en las seis | localhost | verde |
 | 02:42 | `sesiones-recuperacion` sobre `wip/diseno` dio 5 FAIL: falsa alarma mía (mi guion esperaba la copia guardada como «Los del finde» y el banco `.jsx` de esa rama, anterior al cambio de nombre, dice «Los del asado»). El guion ahora acepta los dos nombres: 12/12 contra diseno y contra mi copia | Vite local | no es regresión |
 | 02:42 | friccion d471641 revisado: con planes sin nombre los rótulos de la respuesta de un toque no cambian («Puedo los dos días», «Solo el …», «No puedo ninguno»); `friccion-flujo.mjs` suma la comprobación de «Prefiero «…»» (E15 en pantalla), guardada por presencia; pendiente de correr con la base | — | — |
+| 03:09 | friccion S1/S5 (`wip/friccion` 0b5e4d1, pantallas 6, 9, 10 y 14): su aviso de rótulos aplicado a mis guiones (mismos cambios que ella dejó en su rama): `sesiones-recuperacion` L2 abre la fila «Tengo un código de invitación» antes de contar «Unirme», y `demo-reinicio-luna` acepta el título «Respondiste» además de «Respuesta guardada». Banco de sesiones: 12/12 con mi código y contra su rama | Vite local | verde |
 
 ## Regresiones abiertas
 (ninguna)

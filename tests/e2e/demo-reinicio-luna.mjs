@@ -100,7 +100,7 @@ try {
   await tocar(L, 'Seguir como Luna'); toques.push('Seguir como Luna')
   verificar('(b) Un toque lleva a «¿Cuándo puedes?»', await L.getByRole('heading', { name: '¿Cuándo puedes?' }).waitFor({ timeout: 20000 }).then(() => true, () => false))
   const guardado = await accion(L, 'save_my_conditions', () => L.getByRole('button', { name: /^Puedo los dos días/ }).click()); toques.push('Puedo los dos días')
-  verificar('(b) «Puedo los dos días» → «Respuesta guardada»', guardado.ok === true && await L.getByRole('heading', { name: 'Respuesta guardada' }).waitFor({ timeout: 20000 }).then(() => true, () => false))
+  verificar('(b) «Puedo los dos días» → «Respuesta guardada»', guardado.ok === true && await L.getByRole('heading', { name: /^(Respuesta guardada|Respondiste)$/ }).waitFor({ timeout: 20000 }).then(() => true, () => false))
   paso(`(b) Toques: ${toques.length} (${toques.join(' → ')})`)
   verificar('Sin desborde horizontal a 375 px (Luna)', !(await L.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)))
 } catch (e) {
