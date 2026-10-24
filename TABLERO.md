@@ -7,6 +7,8 @@ Actualizado: sábado 24 oct, 11:29 Santiago (reloj).
 
 - **[12:22] BASE DE VUELTA.** Nico reinició el proyecto desde el panel de Supabase (RESTARTING 12:14–12:21). A las 12:21 el login anónimo responde en 0,3 s y las RPC en 0,2–0,8 s. Causa: servidor Nano del plan Free agotado tras la carga de la mañana (sin bloqueos; base de 62 MB). Hasta el pitch: producción es para Nico y Juan; nadie corre QA, tandas ni ráfagas.
 
+- **[12:30] REGLA DE NICO (12:30, textual): «si nosotros somos los que estamos mandando esa cantidad de usuarios, no lo hagamos más».** De 7.246 usuarios anónimos, ~6.700 los crearon nuestras pruebas automáticas; eso saturó la base del plan Free a las 11:55. Desde ahora NADIE corre pruebas automáticas contra la base de producción (vitest de tests/backend, guiones e2e, Playwright, curl en bucle, QA de carga), ni el coordinador en sus ciclos. Solo pruebas puras sin base (`npx vitest run src`), tsc y build. Vale hasta que Nico diga otra cosa.
+
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 

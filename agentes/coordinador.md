@@ -1,5 +1,7 @@
 # Agente: coordinador (sesión Claude "Coordinador CRUCE", computadora A)
 
+- **REGLA (12:30):** sin pruebas automáticas contra la base de producción hasta nuevo aviso de Nico; publicar solo con tsc, pruebas puras y build.
+
 
 Quien edita este archivo: solo el coordinador. Última actualización: 10:57 (hora real).
 
