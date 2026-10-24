@@ -1,12 +1,8 @@
 # Caso demo Makana — pedido directo de Nico, 24 oct 2026
 
 ## Tocando ahora
-- Pedido humano: «que este sea el caso demo, cambiemos lo del asado por este ejemplo», con especificación de siete compañeros ficticios y parque. Preparación en rama aislada `codex/demo-makana`, copia `/Users/macair/cruse/cruce-demo-makana`.
-- Rutas puntuales: nuevo `src/lib/casoDemo.ts`; `src/screens/{Inicio,NuevaPropuesta,SimulacionTab}.tsx`; `src/lib/{api,types}.ts` solo selector del caso; nueva `supabase/migrations/0057_demo_makana.sql` y `tests/backend/demo-makana.test.ts` y alineación del catálogo de 42 RPC en `tests/backend/{helpers,enmienda2.test,enmienda13.test}.ts`, sin cambiar migraciones aplicadas; `tests/e2e/demo-makana-local.mjs`; `src/components/Guia.tsx` solo textos/personajes del caso; fix mínimo del header en reglas existentes `.barra-identidad` y `.barra-rol` de `src/styles.css`, más especificidad de `.vista-s3.s3-centrada > .escena` en `src/estilo/seccion-s3.css` (desborde375 y título negro en cabeceraoscura, evidencias /tmp/cruce-demo-ui-qa); `docs/demo-makana.md` y `docs/caso-canonico.md` solo selector del nuevo caso y rotulado del caso anterior como legacy.
-- No hay rutas coincidentes activas según fichas leídas 08:53. Esta preparación responde al pedido nuevo de Nico; se conserva el diseño y los cambios de otras sesiones. No integrar main ni publicar.
-- SOLO trabajo y comprobaciones LOCALES: sin SQL remoto, sesiones remotas, migraciones aplicadas, modelos ni despliegues. No tomo la base; sigue con el coordinador.
+Vacío. Cambio terminado en rama propia; no hay procesos de prueba activos ni turno de base. Pendiente únicamente la activación remota autorizada y el ensayo en Supabase real.
 
-- Nuevo pedido humano 09:00 aprox: «cuando termines todo integra los cambios en la app así se ve». Integro por el flujo coordinado tras comprobaciones; no borro datos existentes.
 
 ## Decisiones
 - Nuevo caso «El plan que no deja a nadie afuera», siete adultos ficticios Ana/Bruno/Camila/Diego/Elena/Felipe/Gabriela.
@@ -28,3 +24,10 @@
 ## Entrega preparada
 - Rama remota `codex/demo-makana`: bb124ff (UI+guion), b5ecc20 (backend0057+tests), 8b9bb14 (defectosvisual). Conservados commits de otras sesiones vía merge origin/main. PR no pudo crearse: integración GitHub devuelve403; rama sí subida.
 - Ensayo integrado LOCAL: app→SDK→HTTP→PostgreSQL/PGlite, Authsimulado; 3perfiles,11fases UI,110RPCreales,0errores. v2domingo0confirmaciones y reconfirmaciónPASS. Sinmodelo/clima ni Supabase remoto.
+
+## Entregado final
+- Rama remota `codex/demo-makana`, commit `ce3b9f1`; incluye main `8fba205` sin perder sus commits ni autorías. Árbol limpio. Código, semilla0057 y guion; fuente canónica selecciona el nuevo caso y conserva el anterior para regresiones.
+- 89 pruebas puras PASS; typecheck/build PASS; 6 HTTP soloSupabaselocal omitidas, no contadas. Browser mock103RPC4anchosPASS. Ensayo integrado Authsimulado+PostgreSQLreal110RPC11fasesUI PASS, repetido tras main8fba205. Mig57/upgradelegacy/roles/consentprivacidad/resetfallo PASS. Revisión independiente sin hallazgos. Sin modelo/clima real.
+- Evidencia durable: `/Users/macair/.codex/visualizations/2026/10/24/01a16dbb-c25b-7923-80be-5d5b64310a40/demo-makana/`. Todos los servidores y navegadores propios cerrados; 0 errores en221RPC bridge acumuladas.
+- Activación pendiente: pregunta de autorización específica presentada al humano. Supabase permiso denegado; Vercel scope403 y autorización equipo404; GitHub createPR403 (noPR creada). Push propia rama sí permitido. No se buscó saltar accesos ni se subió cliente roto a main.
+- PARA coordinador/Nicolás: integrar SOLO después de aplicar0057 por circuito autorizado; luego publicar cliente y ensayar3sesiones enentorno real. El usuario pidió explícitamente que se veaenapp; falta este paso remoto y no se presenta como cumplido.
