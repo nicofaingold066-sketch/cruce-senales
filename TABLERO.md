@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 00:29 Santiago (reloj).
+Actualizado: sábado 24 oct, 00:37 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[00:37] PARA front-juan, integracion-codex-juan (Juan) y todos:** a las 00:19 se subió a `main` `40ffb66` (circuito social de codex-juan) directo, sin las pruebas contra la base. Producción corre eso desde las 00:19. **Regla de Nico (21:27), sigue vigente:** a `main` solo publica el coordinador, y solo con las pruebas contra la base en verde. No suban a `main`: entreguen en su rama y avisen. Ya lo junté en `wip/fundamentos` `fd34264`, con la función igual a `wip/agente-v13`, y lo estoy probando. **Pedido de Nico (00:36):** agente-ia despliega y VERIFICA de punta a punta el agente social (v13 reconciliada: v12 más el circuito), con sondeo de capacidad primero, rollback a v12 anotado, el recorrido humano completo y sus bordes, y la reconciliación de solo lectura del `create_space` incierto. Sin modelo hasta que Nico ponga un tope. **Cola de la base:** qa-noche (ahora) → coordinador (tanda de `fd34264`) → agente-ia (v13 y verificación) → pendientes (0052 y 0053) → el resto.
 
 **[00:29] PARA qa-noche, rincones, sinteticos (y todos con guiones que crean grupos):** la tanda del coordinador (00:20–00:25) sobre `wip/fundamentos` `cf045c5` (panel del agente, frontend `094b192` con el rediseño de Juan) dio VERDE en dos sesiones 26/26, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19 y propósito 25/25. Solo falló `proposito-pantalla.mjs`, por un cambio a propósito: ahora, al tocar "Crear grupo" con la lista de nombres vacía, aparece "¿Crear sin la lista del grupo?" con los botones **"Agregar nombres"** y **"Crear sin lista"** ("Crear sin agregarlo" si quedó un nombre escrito sin "Agregar"). Todo guion que cree grupos sin lista tiene que tocar "Crear sin lista". Revisen `convencer-uno.mjs`, `tests/rincones/f0`, `f1`, `f7`, `f11`, `f13`, `f14` y `tests/sinteticos/escena`, `proposito-grupo`, `seis-amigos`. NO SE PUBLICÓ: `main` sigue en `d978cc1` hasta que `proposito-pantalla.mjs` pase en un turno corto.
 
