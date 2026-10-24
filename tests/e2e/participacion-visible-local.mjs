@@ -4,7 +4,7 @@
 // Opt-in opcional: CRUCE_QA_BASE_URL=https://app-autorizada.example (solo GET de sus assets; Auth/RPC siguen ficticios).
 import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { createServer } from 'vite'
 
@@ -14,7 +14,7 @@ try { pw = require('playwright') } catch {
   pw = require(process.env.CRUXE_PLAYWRIGHT_DIR || '/Users/macair/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright')
 }
 const ROOT = fileURLToPath(new URL('../..', import.meta.url))
-const OUT = process.env.CRUXE_PARTICIPACION_EVIDENCIA || '/tmp/cruce-participacion-visible-local'
+const OUT = process.env.CRUXE_PARTICIPACION_EVIDENCIA || '/tmp/cruce-participacion-mobile-preview'
 const MOCK = 'https://participacion-mock.invalid'
 const requestedBase = process.env.CRUCE_QA_BASE_URL ? new URL(process.env.CRUCE_QA_BASE_URL) : null
 if (requestedBase) {
@@ -39,7 +39,7 @@ const slots = [
 const envelope = data => ({ ok: true, contrato: 2, servidor_ahora: NOW, ...data })
 function proposal(version = 1, accepted = ['Ana', 'Felipe'], rev = 10) {
   const ms = members()
-  return { id: P, espacio_id: E, titulo: 'Encuentro de prueba · MOCK LOCAL', organizador: ref(ms[0]), imprescindible: ref(ms[0]),
+  return { id: P, espacio_id: E, titulo: 'Una tarde juntos', organizador: ref(ms[0]), imprescindible: ref(ms[0]),
     minimo: 3, maximo: 7, zona_horaria: 'America/Santiago', franjas: slots, plazo: mom('2026-10-29T20:00:00'),
     plazo_vencido: false, creada_en: NOW, estado: 'esperando_compromisos', estado_etiqueta: 'Esperando compromisos',
     state_rev: rev, confirmados: accepted.length,
@@ -66,12 +66,21 @@ function session() { const exp = Math.floor(Date.now() / 1000) + 3600; return {
   refresh_token: 'MOCK_LOCAL_NO_VALIDO', token_type: 'bearer', expires_in: 3600, expires_at: exp, user } }
 
 await mkdir(OUT, { recursive: true })
+// Fuentes públicas ya referenciadas por la app: fixtures opcionales en /tmp, nunca descarga al ejecutar.
+const fontFixtures = new Map()
+try {
+  const manifest = JSON.parse(await readFile(process.env.CRUCE_QA_FONT_MANIFEST || '/tmp/cruce-participacion-fonts/manifest.json', 'utf8'))
+  for (const entry of manifest.entries) {
+    assert.ok(['https://fonts.googleapis.com', 'https://fonts.gstatic.com'].includes(new URL(entry.url).origin))
+    fontFixtures.set(entry.url, { body: await readFile(entry.path), contentType: entry.contentType })
+  }
+} catch (error) { if (error.code !== 'ENOENT') throw error }
 const server = requestedBase ? null : await createServer({ root: ROOT, cacheDir: `${OUT}/vite-cache`,
   server: { host: '127.0.0.1', port: 0, strictPort: false },
   define: { 'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(MOCK),
     'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': JSON.stringify('sb_publishable_MOCK_LOCAL_ONLY') } })
 let browser
-const report = { mode: 'MOCK LOCAL: Auth y RPC ficticios; app y SDK reales; sin backend', cases: [], backendNetworkAllowed: false, outsideAssetOriginAllowed: false }
+const report = { mode: 'MOCK LOCAL: Auth y RPC ficticios; app y SDK reales; sin backend', cases: [], backendNetworkAllowed: false, outsideAssetOriginAllowed: false, fontFixtureAssets: fontFixtures.size, fontMode: fontFixtures.size ? 'Plus Jakarta Sans servida desde archivos locales' : 'Respaldo del sistema; fuente web no disponible' }
 try {
   await server?.listen()
   const BASE = requestedBase ? requestedBase.href.replace(/\/$/, '') : `http://127.0.0.1:${server.httpServer.address().port}`
@@ -87,15 +96,16 @@ try {
   report.assets = requestedBase ? 'GET reales únicamente del origen elegido; Auth/RPC interceptados' : 'Vite loopback'
   const isSyntheticAPI = url => (url.origin === MOCK || requestedBase !== null) && (url.pathname.startsWith('/auth/v1/') || url.pathname.startsWith('/rest/v1/rpc/'))
   browser = await pw.chromium.launch({ headless: true, executablePath: process.env.CRUXE_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' })
-  const configs = [{ width: 375, theme: 'light', full: true }, { width: 320, theme: 'light' }, { width: 1280, theme: 'light' },
-    { width: 375, theme: 'dark' }, { width: 320, theme: 'dark' }, { width: 1280, theme: 'dark' }]
+  const widths = process.env.CRUCE_QA_WIDTHS ? process.env.CRUCE_QA_WIDTHS.split(',').map(Number) : [375, 320, 390, 430, 1280]
+  assert.ok(widths.length && widths.every(width => [320, 375, 390, 430, 1280].includes(width)), 'Anchos de QA admitidos: 320,375,390,430,1280')
+  const configs = widths.flatMap(width => ['light', 'dark'].map(theme => ({ width, theme, full: width === 375 && theme === 'light' })))
   for (const config of configs) {
     const label = `${config.width}-${config.theme}`
-    const result = { ...config, checks: [], rpc: [], blocked: [], errors: [], screenshots: [], overflow: [] }
-    const context = await browser.newContext({ viewport: { width: config.width, height: 900 }, serviceWorkers: 'block',
+    const result = { ...config, checks: [], rpc: [], blocked: [], errors: [], screenshots: [], captures: [], fontRequests: [], overflow: [] }
+    const context = await browser.newContext({ viewport: { width: config.width, height: 844 }, serviceWorkers: 'block',
       locale: 'es-CL', colorScheme: config.theme, reducedMotion: 'reduce' })
     let roster = members(), p = proposal(), reads = 0
-    const space = () => ({ id: E, nombre: 'Amigos · MOCK LOCAL', tipo: 'amigos', demo: true, codigo_invitacion: 'MOCK2026',
+    const space = () => ({ id: E, nombre: 'Amigos de siempre', tipo: 'amigos', demo: true, codigo_invitacion: 'VISTALOC',
       creado_en: NOW, ultimo_reinicio: null, generacion: 1, mi_miembro_id: id(6), mi_rol: 'miembro', miembros: roster,
       proposito: 'libre', familia: 'libre', actividad: [] })
     const reply = (route, data) => route.fulfill({ status: 200, contentType: 'application/json',
@@ -104,6 +114,10 @@ try {
     // Único continue: GET del origen EXACTO elegido; otros puertos/hosts y métodos también se bloquean.
     await context.route('**/*', async route => {
       const req = route.request(), url = new URL(req.url())
+      if (req.method() === 'GET' && fontFixtures.has(url.href)) {
+        const fixture = fontFixtures.get(url.href); result.fontRequests.push(url.href)
+        return route.fulfill({ status: 200, contentType: fixture.contentType, body: fixture.body, headers: { 'access-control-allow-origin': '*' } })
+      }
       if (!isSyntheticAPI(url)) {
         if (assetGET(req, url)) return route.continue()
         result.blocked.push(url.origin + url.pathname); return route.abort('blockedbyclient')
@@ -139,9 +153,12 @@ try {
       localStorage.setItem('cruxe:tema:v1', theme)
       document.addEventListener('DOMContentLoaded', () => {
         const badge = document.createElement('div'); badge.id = 'qa-mock-local'
-        badge.textContent = 'MOCK LOCAL · Auth y RPC ficticios · sin backend'
-        badge.style.cssText = 'display:block;position:relative;margin:6px;background:#172554;color:white;font:11px/1.4 system-ui;padding:5px 8px;border:1px solid white;border-radius:5px;pointer-events:none;text-align:center;box-sizing:border-box'
-        document.body.appendChild(badge)
+        badge.textContent = 'Vista previa local · Datos ficticios · sin backend'
+        badge.style.cssText = 'display:block;position:fixed;top:0;left:0;right:0;height:26px;z-index:2147483647;background:#172554;color:white;font:11px/14px system-ui;padding:5px 6px;pointer-events:none;text-align:center;box-sizing:border-box'
+        document.body.prepend(badge)
+        document.body.style.paddingTop = '26px'
+        const style = document.createElement('style'); style.textContent = '.barra { top:26px !important; }'
+        document.head.appendChild(style)
       })
     }, { theme: config.theme })
     const page = await context.newPage()
@@ -149,7 +166,19 @@ try {
     const visible = async locator => { await locator.waitFor({ state: 'visible', timeout: 15000 }); assert.equal(await locator.isVisible(), true) }
     const hasName = (root, name) => root.getByText(name, { exact: false }).first()
     const shot = async name => {
-      const file = `${OUT}/${label}-${name}.png`; await page.screenshot({ path: file, fullPage: true }); result.screenshots.push(file)
+      const group = name.startsWith('grupo')
+      const panel = page.getByRole('region', { name: group ? 'Integrantes del grupo' : 'Participación del plan', exact: true })
+      const font = await page.evaluate(async () => { await document.fonts.ready; return { loadedFaces: Array.from(document.fonts).filter(f => f.status === 'loaded').length, family: getComputedStyle(document.body).fontFamily } })
+      if (fontFixtures.size) assert.ok(font.loadedFaces > 0, 'La fuente web local debe estar cargada antes de capturar')
+      result.font = font
+      if (group) await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+      else await panel.evaluate(el => window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - 112), behavior: 'instant' }))
+      const viewport = `${OUT}/${label}-${name}-viewport.png`
+      await page.screenshot({ path: viewport, fullPage: false, animations: 'disabled' })
+      result.screenshots.push(viewport); result.captures.push({ path: viewport, kind: 'viewport nativo con app, GRU y rótulo de datos ficticios', width: config.width, height: 844 })
+      const crop = `${OUT}/${label}-${name}-panel.png`
+      await panel.screenshot({ path: crop, animations: 'disabled' })
+      result.screenshots.push(crop); result.captures.push({ path: crop, kind: 'element.screenshot nativo; recorte exacto del panel, sin edición de píxeles' })
       const size = await page.evaluate(() => ({ viewport: innerWidth, doc: document.documentElement.scrollWidth, body: document.body.scrollWidth }))
       result.overflow.push({ name, ...size }); assert.ok(size.doc <= size.viewport + 1 && size.body <= size.viewport + 1, `Desborde ${label}/${name}: ${JSON.stringify(size)}`)
     }
@@ -166,15 +195,9 @@ try {
       await shot('grupo-siete-nombres')
       result.checks.push('Miembro común ve siete nombres sin abrir ficha, separados entre ingresados, simulación y por entrar')
 
-      // Nombre completo largo en una persona anotada: debe caber sin truncar ni revelar datos privados.
-      roster = roster.map(m => m.nombre === 'Elena' ? { ...m, nombre: LONG_NAME } : m)
       await page.goto(`${BASE}/#/e/${E}/p/${P}`)
       const participation = page.getByRole('region', { name: 'Participación del plan', exact: true })
       await visible(participation)
-      const longName = hasName(participation, LONG_NAME)
-      await visible(longName)
-      const textRects = await longName.evaluate(el => { const range = document.createRange(); range.selectNodeContents(el); return Array.from(range.getClientRects()).map(r => ({ left: r.left, right: r.right })) })
-      assert.ok(textRects.every(r => r.left >= 0 && r.right <= config.width + 1), 'El nombre largo debe caber completo dentro de la pantalla')
       const accepted1 = participation.getByRole('list', { name: 'Confirmaron la versión 1', exact: true })
       const waiting = () => participation.getByRole('list', { name: 'Sin confirmar esta versión', exact: true })
       for (const name of ['Ana', 'Felipe']) await visible(hasName(accepted1, name))
@@ -222,6 +245,17 @@ try {
         await shot('grupo-refrescado-sin-navegar')
         result.checks.push('La pantalla Grupo sondea get_space y actualiza nombres/salidas sin abrir ficha ni volver a navegar')
       }
+      // Prueba separada: las capturas principales mantienen los siete nombres normales.
+      roster = members().map(m => m.nombre === 'Elena' ? { ...m, nombre: LONG_NAME } : m)
+      p = proposal()
+      await page.goto(`${BASE}/#/e/${E}/p/${P}`)
+      const longPanel = page.getByRole('region', { name: 'Participación del plan', exact: true })
+      const longName = hasName(longPanel, LONG_NAME)
+      await visible(longName)
+      const textRects = await longName.evaluate(el => { const range = document.createRange(); range.selectNodeContents(el); return Array.from(range.getClientRects()).map(r => ({ left: r.left, right: r.right })) })
+      assert.ok(textRects.every(r => r.left >= 0 && r.right <= config.width + 1), 'El nombre largo debe caber completo dentro de la pantalla')
+      await shot('plan-nombre-largo-separado')
+      result.checks.push('Nombre largo completo probado por separado sin truncado ni desbordes')
       assert.equal(await page.locator('html').getAttribute('data-theme'), config.theme)
       assert.deepEqual(result.errors, [], 'Errores JS/interceptor')
       assert.ok(result.rpc.every(x => !/simulate|accept_version|save_|seed_|create_|leave_|withdraw/.test(x.fn)), 'La prueba de lectura no debe mutar ni siquiera el backend simulado')
@@ -229,7 +263,7 @@ try {
       console.log(`PASS ${label}: nombres públicos, estados visibles y sin desbordes`)
     } catch (error) {
       result.ok = false; result.failure = error.message
-      await page.screenshot({ path: `${OUT}/${label}-fallo.png`, fullPage: true }).catch(() => {})
+      await page.screenshot({ path: `${OUT}/${label}-fallo.png`, fullPage: false }).catch(() => {})
       console.error(`FAIL ${label}: ${error.message}`)
       report.cases.push(result)
       throw error

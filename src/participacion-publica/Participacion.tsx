@@ -25,7 +25,7 @@ function ListaPersonas({ titulo, personas, estado, vacio }: {
   return (
     <section className={`participacion-categoria participacion-categoria-${estado}`} aria-label={titulo}>
       <h3 className="participacion-subtitulo">
-        <span>{titulo}</span><span className="participacion-conteo" aria-label={`${personas.length} personas`}>{personas.length}</span>
+        <span className="participacion-conteo" aria-label={`${personas.length} personas`}>{personas.length}</span><span>{titulo}</span>
       </h3>
       {personas.length === 0 ? <p className="participacion-vacio">{vacio}</p> : (
         <ul className="participacion-personas" aria-label={titulo}>
@@ -33,12 +33,14 @@ function ListaPersonas({ titulo, personas, estado, vacio }: {
             const fichaEstado = estado === 'entro' && m.simulado ? 'simulada' : estado
             const ficha = ESTADOS[fichaEstado]
             return (
-              <li key={m.miembro_id} className={`participacion-persona participacion-persona-${fichaEstado}`}>
-                <Avatar nombre={m.nombre} simulado={m.simulado} yo={m.es_yo} tam={32} />
+              <li key={m.miembro_id} className={`participacion-persona participacion-persona-${fichaEstado}${m.nombre.length > 24 ? ' participacion-persona-larga' : ''}`}>
+                <Avatar nombre={m.nombre} simulado={m.simulado} yo={m.es_yo} tam={28} />
                 <span className="participacion-persona-texto">
                   <span className="participacion-nombre">{m.nombre}{m.es_yo ? <span className="participacion-tu"> (tú)</span> : null}</span>
-                  {m.simulado && fichaEstado !== 'simulada' ? <span className="participacion-simulacion">Simulación</span> : null}
-                  <span className="participacion-estado"><Icono n={ficha.icono} tam={14} />{ficha.texto}</span>
+                  <span className="participacion-estados">
+                    <span className="participacion-estado"><Icono n={ficha.icono} tam={14} />{ficha.texto}</span>
+                    {m.simulado && fichaEstado !== 'simulada' ? <span className="participacion-simulacion">Simulación</span> : null}
+                  </span>
                 </span>
               </li>
             )
@@ -55,7 +57,7 @@ function Panel({ titulo, etiqueta, children }: { titulo: string; etiqueta?: stri
     <section className="tarjeta participacion-publica" aria-labelledby={id}>
       <header className="participacion-cabecera">
         <h2 id={id}><Icono n="personas" tam={20} />{titulo}</h2>
-        {etiqueta ? <span className="participacion-version">{etiqueta}</span> : null}
+        {etiqueta ? <p className="participacion-version">{etiqueta}</p> : null}
       </header>
       {children}
     </section>
@@ -66,7 +68,8 @@ export function ParticipacionPlan({ p, espacio }: { p: EstadoPropuesta; espacio:
   const datos = participacionDe(p, espacio)
   if (!datos) return null
   return (
-    <Panel titulo="Participación del plan" etiqueta={datos.tipo === 'version' ? `Versión ${datos.version}` : undefined}>
+    <Panel titulo="Participación del plan" etiqueta={datos.tipo === 'version'
+      ? `Versión ${datos.version} · ${datos.confirmados.length} ${datos.confirmados.length === 1 ? 'confirmación' : 'confirmaciones'}` : undefined}>
       {datos.tipo === 'version' ? (
         <>
           {datos.enRevision ? <p className="participacion-revision">El plan está en revisión. Una alternativa necesita nuevas confirmaciones.</p> : null}
@@ -76,15 +79,16 @@ export function ParticipacionPlan({ p, espacio }: { p: EstadoPropuesta; espacio:
           ) : (
             <ListaPersonas titulo="Sin confirmar esta versión" personas={datos.sinConfirmar} estado="sin_confirmar" vacio="Todas las personas que ya están en el grupo confirmaron esta versión." />
           )}
-          <p className="participacion-nota">Cada persona confirma por su cuenta. Estar en el grupo no confirma el encuentro.</p>
         </>
       ) : (
         <>
           <ListaPersonas titulo="Les interesa" personas={datos.interesados} estado="interes" vacio="Todavía no hay interés marcado." />
-          <p className="participacion-nota">El interés todavía no confirma la asistencia.</p>
         </>
       )}
       <ListaPersonas titulo="Por entrar al grupo" personas={datos.porEntrar} estado="por_entrar" />
+      <p className="participacion-nota">{datos.tipo === 'version'
+        ? 'Estar en el grupo no confirma el encuentro.'
+        : 'El interés todavía no confirma la asistencia.'}</p>
     </Panel>
   )
 }
@@ -93,11 +97,11 @@ export function IntegrantesGrupo({ espacio }: { espacio: Espacio }) {
   const grupo = integrantesPublicos(espacio)
   const total = grupo.entraron.length + grupo.simulados.length + grupo.porEntrar.length
   return (
-    <Panel titulo="Integrantes del grupo" etiqueta={`${total} ${total === 1 ? 'persona' : 'personas'}`}>
+    <Panel titulo="Integrantes del grupo" etiqueta={`${total} ${total === 1 ? 'persona' : 'personas'} · ${grupo.entraron.length} ${grupo.entraron.length === 1 ? 'ya entró' : 'ya entraron'}`}>
       <ListaPersonas titulo="Ya están en el grupo" personas={grupo.entraron} estado="entro" vacio="Todavía no entró ninguna persona." />
       <ListaPersonas titulo="Personas simuladas" personas={grupo.simulados} estado="simulada" />
       <ListaPersonas titulo="Por entrar al grupo" personas={grupo.porEntrar} estado="por_entrar" />
-      <p className="participacion-nota">Estar en el grupo no confirma el encuentro. Cada plan se confirma por separado.</p>
+      <p className="participacion-nota">Estar en el grupo no confirma el encuentro.</p>
     </Panel>
   )
 }
