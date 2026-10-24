@@ -4,7 +4,7 @@ Rama de código: `wip/pendientes` (base `wip/fundamentos` `ad2d63e`). Rutas: `su
 Tarea (Nico, 23:50): (A) agente social completo (enmienda 11, lo humano), (B) E-c ronda de opiniones con plazo, (C) E-d dos planes con votación, como enmienda 15.
 
 ## Tocando ahora
-- [03:14] Pedido del coordinador (rediseño): 0056 `fecha_local`, `organizador` y `plan` (solo lectura, aditivo). Escrita SIN APLICAR (`wip/pendientes` `570950a`: migración, reversa, prueba `rediseno-0056.test.ts`, enmienda9 ajustada, puente de tipos). Espero base libre (qa-noche 03:11).
+- **MIGRACION EN CURSO (03:17)**: 0056 (fecha_local, organizador y plan; solo lectura), después suite en serie. Nadie corre contra la base.
 
 ## Entregado
 - [02:26] `docs/seguridad-final.md` repetido tras la 0055 (`wip/pendientes`): catálogo 41/41/41/0, 41 definer con search_path vacío, 0 internas expuestas, 22 tablas con RLS y 0 políticas, nada legible desde el navegador, advisors idénticos (INFO 22, WARN 41, contraseñas no aplica), 55 migraciones. Único error interno nuevo: id 21 (23:57, `seed_demo_space`, lock_timeout 5 s por concurrencia; `fallo_temporal/reintentar`), anterior a mis migraciones.
