@@ -47,7 +47,7 @@ export interface FuenteEntrada {
   yaEstoy?: (codigo: string) => Promise<{ espacioId: string; miembroId: string } | null>
 }
 
-function entrarAlEspacio(r: UnirseOk['resultado'], espacio: string, nombre: string, porLista: boolean, sesionGuardada?: string) {
+function entrarAlEspacio(r: UnirseOk['resultado'], espacio: string, nombre: string, porLista: boolean, sesionGuardada?: string, alResponder?: boolean) {
   marcarConEspacios()
   recordarNombreSiFalta(nombre)
   const extra = sesionGuardada ? ` ${sesionGuardada}` : ''
@@ -63,7 +63,7 @@ function entrarAlEspacio(r: UnirseOk['resultado'], espacio: string, nombre: stri
   }
   // #88: quien eligió su nombre de la lista va directo a responder la propuesta abierta (un toque). Si no hay una sola
   // propuesta por responder, esa pantalla lo deja en el espacio. Por el formulario se sigue entrando al espacio.
-  irA(porLista ? rutas.responder(r.espacio_id) : rutas.espacio(r.espacio_id))
+  irA(porLista || alResponder ? rutas.responder(r.espacio_id) : rutas.espacio(r.espacio_id))
 }
 
 /**
@@ -88,6 +88,8 @@ interface Intento {
   nombre: string
   miembroId: string | null
   origen: Origen
+  /** "No estoy en la lista" (pantalla 10): la siguiente pantalla es ¿Cuándo puedes?, igual que por la lista. */
+  alResponder?: boolean
 }
 interface YaMiembro {
   intento: Intento
@@ -114,7 +116,7 @@ export function useUnirse(fuente: FuenteEntrada) {
       return
     }
     // Por la lista se va directo a responder; por el formulario, al espacio (aunque reclame un lugar anotado por el nombre).
-    entrarAlEspacio(r.data.resultado, r.data.espacio.nombre, i.nombre, i.origen === 'lista', sesionGuardada)
+    entrarAlEspacio(r.data.resultado, r.data.espacio.nombre, i.nombre, i.origen === 'lista', sesionGuardada, i.alResponder)
   }
   return { ocupado, error, origen, yaMiembro, setYaMiembro, unirse }
 }
@@ -171,7 +173,7 @@ function AvisoYaMiembro({ ya, unirse, cerrar }: { ya: YaMiembro; unirse: (i: Int
             {ya.nombreActual}.
           </p>
           <div className="fila-botones">
-            <Boton autoFocus onClick={() => irA(ya.intento.origen === 'lista' ? rutas.responder(ya.espacioId) : rutas.espacio(ya.espacioId))}>
+            <Boton autoFocus onClick={() => irA(ya.intento.origen === 'lista' || ya.intento.alResponder ? rutas.responder(ya.espacioId) : rutas.espacio(ya.espacioId))}>
               Seguir como {ya.nombreActual}
             </Boton>
             <Boton variante="secundario" onClick={() => setConfirmar(true)}>
@@ -463,7 +465,7 @@ export function UnirseConNombre({
       miembroId = d.miembroId
       nombreFinal = d.nombre
     }
-    void u.unirse({ codigo: cod, nombre: nombreFinal, miembroId, origen: 'formulario' })
+    void u.unirse({ codigo: cod, nombre: nombreFinal, miembroId, origen: 'formulario', ...(soloNombre ? { alResponder: true } : {}) })
   }
 
   return (
