@@ -3,7 +3,7 @@
 Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:56 Santiago (reloj).
 
 ## Tocando ahora
-- [21:59] 0048 de la enmienda 14 escrita y subida SIN aplicar (`supabase/migrations/0048_e14_proposito_y_familias.sql`, `tests/backend/enmienda14.test.ts`). La aplico apenas ninguna ficha tenga CORRIENDO PRUEBA (hoy: coordinador desde 21:55). Escribiendo la 0049 (agente).
+- [22:00] **MIGRACION EN CURSO** (0048 de la enmienda 14: propósito, familias, actividad en create_proposal, filas 15 a 17). Nadie corre pruebas contra la base hasta que saque esta línea.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
