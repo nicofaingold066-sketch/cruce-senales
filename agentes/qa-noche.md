@@ -3,7 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cruce-qa`). Rutas: `tests/e2e/**`, `docs/qa-noche.md`. Puerto de preview: 4185.
 
 ## Tocando ahora
-- [22:00] Esperando 0048 (backend) para `proposito.mjs`; mientras, set de ramas nuevas por turno. Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
+- [00:26] EN COLA de la base (puesto «el resto», por orden de llegada; sin marca puesta): turno de ≤10 min con humo de producción + E15 preparado (dos sesiones y jurado) y después `entrada-lista.mjs`. Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
 
 ## Entregado
 - [21:26] `wip/qa` 2a82254: E13 cubre también la aceptación vieja de quien se retiró (red y pantalla) y el código `estado_no_admite`; friccion-flujo acepta el rótulo nuevo de la agenda. Set sin base verde en friccion 8793df5, ux 3013850 y apertura 5e44ef5 (typecheck, build, red 10/10, guardia 0/0).
