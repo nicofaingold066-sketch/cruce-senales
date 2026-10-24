@@ -55,7 +55,11 @@ Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-a
 - Sin probar: la llamada real al modelo, porque no hay clave.
 
 ## Siguiente
-Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin clave) y verificar CORS y verify_jwt. Con clave (Nico): probar la elección y la redacción del modelo y que la validación no descarte de más.
+Orden del coordinador (21:58), con el cierre de funciones de las 21:55:
+1. #108: hecho (22:03).
+2. Llamada real única de BYOK desde la app (demo propio, "Simular sol"), apenas backend saque MIGRACION EN CURSO (0048): modelo, segundos y lo que diga la respuesta sobre la ruta.
+3. Enmienda 14, parte del agente (lo mínimo: dejar pasar quorum, familia y personas, y los textos fijos de quórum y `faltan_personas`): se prepara contra el puente de backend; se despliega y se prueba recién con la 0049 en verde. Función a las 09:30, interfaz a las 11:00.
+4. Interfaz de la enmienda 11 (opt-in de invitaciones y aprobación del borrador): solo si 1 a 3 quedan cerradas y probadas.
 
 ## Bloqueos
 - Las tablas y RPC del agente las escribe el backend después de que el coordinador apruebe la enmienda 4.
@@ -103,6 +107,7 @@ Cuando el coordinador despliegue la función: probarla en vivo desde la app (sin
 - Pendiente el sábado: pasar CRUCE → CRUXE en `pitch.md`, `checkpoint-1.md`, `problema.md` y `readme-borrador.md`.
 
 ## Ideas
+- **[22:03] DESPUÉS DEL EVENTO (cierre de funciones de las 21:55):** D7 "estilo de la ocasión" (Simple·Normal·Especial, pedido de psico [21:01]) y "dos formas de juntarse" (psico P-A). No se construyen esta noche.
 - **[17:42] Distancia y movilidad en el agente** (pedido de Nico; dueño: backend + agente-ia; enmienda y migración, después de la demo): zona por comuna o departamento, cómo se mueve (auto, transporte público, bici o a pie, necesito que me lleven), tiempo máximo y a cuántos puede llevar. El servidor descarta lo que a alguien le queda fuera de su tiempo o sin cómo llegar, y ordena por el viaje más largo. El grupo ve solo "a menos de N minutos para todos". Diseño en `docs/agente-barrido.md` §1.1.
 - **[17:39] Enlace de atribución a Open-Meteo** (dueño: agente-ia, `src/agente/AgentePanel.tsx`, una línea): su licencia CC BY pide el enlace; hoy dice "(pronóstico de Open-Meteo)" sin enlace. Sin riesgo, antes del corte de las 10:00 si el coordinador lo aprueba.
 - **[16:53] Motivo del texto fijo en la respuesta** (dueño: agente-ia; aditivo, sin cambiar el contrato): hoy `eleccion_fuente: "regla"` no distingue "sin clave", "límite de llamadas", "el modelo no respondió" y "salida rechazada por la validación". Un campo `motivo_regla` permitiría que la pantalla diga la verdad en la demo ("El agente está ocupado; esta opción salió por reglas") y que los logs no sean la única pista.
