@@ -571,3 +571,9 @@ test('entradaModelo pasa el aviso de quórum como texto del grupo (o null) y nad
   assert.equal(sin.aviso_quorum, null)
   assert.doesNotMatch(JSON.stringify(con), /Tomi|Luna|Mati|Caro|Fede|Sofi|miembro/)
 })
+
+test('enmienda 14: la frase proposito_del_grupo tiene texto fijo y pasa la validación', () => {
+  const t = unirFrases(['proposito_del_grupo', 'presupuesto_todos'], false, { actividad: 'Fútbol' })
+  assert.equal(t, "Es lo que este grupo vino a hacer y le sirve al presupuesto de todos.")
+  assert.equal(textoValido(t, 240, NOMBRES), true)
+})

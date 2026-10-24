@@ -145,6 +145,8 @@ export const FRASES: Record<string, string> = {
   al_aire_libre_con_buen_tiempo: 'es al aire libre con buen pronóstico',
   el_mas_elegido: 'es lo que más eligieron',
   ritmo_del_grupo: 'va con el ritmo que prefiere el grupo',
+  // Enmienda 14 (0049): la actividad del propósito del grupo.
+  proposito_del_grupo: 'es lo que este grupo vino a hacer',
 }
 
 const ENERGIA_TEXTO: Record<string, string> = { con_todo: 'con todo', algo_tranquilo: 'algo tranquilo' }

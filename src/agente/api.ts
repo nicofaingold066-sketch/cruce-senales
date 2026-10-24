@@ -82,9 +82,12 @@ export interface Quorum {
   personas_posibles: number
 }
 
-/** Texto fijo del tamaño del grupo (enmienda 14, ajuste 7): habla del grupo, nunca de asistencia. */
+/**
+ * Texto fijo del tamaño del grupo (enmienda 14, ajuste 7): habla del grupo, nunca de asistencia. Igual a `textoQuorum`
+ * de `src/lib/types.ts` (puente de backend 3efc838, con el cierre de psico); cuando el puente esté integrado, se usa ese.
+ */
 export function textoQuorum(q: Quorum): string {
-  return `Para ${q.etiqueta} hacen falta al menos ${q.personas_min} personas; este grupo tiene ${q.personas_posibles} por ahora. Estas opciones se pueden armar con el grupo actual.`
+  return `Para ${q.etiqueta} hacen falta al menos ${q.personas_min} personas; este grupo tiene ${q.personas_posibles} por ahora. Estas opciones se pueden armar con el grupo actual. Cuando se sumen más, vuelve a pedir una propuesta.`
 }
 
 /** Enmienda 14: motivo `faltan_personas` (ninguna actividad del propósito alcanza con el grupo actual). */
@@ -136,6 +139,8 @@ const FRASES: Record<string, string> = {
   al_aire_libre_con_buen_tiempo: 'es al aire libre con buen pronóstico',
   el_mas_elegido: 'es lo que más eligieron',
   ritmo_del_grupo: 'va con el ritmo que prefiere el grupo',
+  // Enmienda 14 (0049): la actividad del propósito del grupo.
+  proposito_del_grupo: 'es lo que este grupo vino a hacer',
 }
 
 const ENERGIA_PLAN: Record<string, string> = { con_todo: 'un plan con todo', algo_tranquilo: 'un plan algo tranquilo' }
