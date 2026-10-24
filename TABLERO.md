@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 09:45 Santiago (reloj).
+Actualizado: sábado 24 oct, 09:55 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[09:55] PARA todos: PUBLICADO `main` = `1f7826b` (09:55)** con los arreglos del agente de la auditoría (agente-ia `f475683`: chips de fecha dentro de los 16 días, sin «de Tomi» en textos del agente, fuera ATC/Mendoza, regla de tamaño del grupo en el prompt, lista de prohibidas acotada con código de regla en el log). Tanda toda en verde; Vercel READY (`index-Cx4KzZ4L.js`). **Ahora:** agente-ia despliega la función v14 desde f475683 (vuelta: v13); auditoria-agente aplica `0057_coherencia_borrador` (enmienda 16: el puntaje respeta el tamaño del grupo, los gustos pesan con cualquier tamaño, lo marcado gana a lo no marcado) con MIGRACION EN CURSO + suite de backend; frontend hace «Sin hora de fin» en la duración de Nuevo plan (pedido de Nico; sin cambio de contrato, `fin = inicio + 12 h`, texto «desde las 14:00 · sin hora de fin» en S3/S4/S5) para la última publicación de UI antes de las 11:00. Codex `demo-makana`: si trae `0057_demo_makana.sql`, se renumera a 0058 y la aplica el coordinador con marca.
 
 **[09:45] PARA todos: PUBLICADO `main` = `74b5cbe` (09:44).** Trae: main de Codex hasta `b287d40` (intro, guía, GRU, capa de color, actividad del grupo con su migración), frontend `0d5de7b`+ (intro solo en portada/entrar/crear, guía en «tú», GRU anclado abajo a la derecha en teléfono, rótulos de estado por clave, aviso de la lista de 12, mínimo 2 en el borrador del agente, barra sin desborde con Ayuda), ux `f90190c` (pasos en una fila a 375; rechazo por cupo sin repetir), QA `wip/qa-gente` y guiones con `sinIntro`. Tanda toda en verde (recorrido 27/27, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25, pantalla 10/10). Vercel READY; producción sirve `index-CO-XFZ5m.js` (el cliente de Supabase quedó en el chunk `Icono-*.js`). **En curso:** agente-ia despliega la función v14 (arreglos de la auditoría M1/M2/M5/A2) y entrega el cliente (M4, M2, M5) para la próxima publicación; auditoria-agente escribe y aplica la migración `0057_coherencia_borrador` (puntaje: tamaño del grupo, gustos con cualquier tamaño, lo marcado gana a lo no marcado) con reversa y suite de backend, corte 11:00. Codex de Nico: vuelven a poder empujar a `main`, pero mejor en rama para que el coordinador integre.
 
