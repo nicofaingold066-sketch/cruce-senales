@@ -463,7 +463,7 @@ function BorradorTarjeta({
       <p className="suave">
         {deModelo
           ? `Lo redactó la IA${quien ? ` (${quien})` : ''}, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.`
-          : 'Texto fijo. Las opciones las armó el servidor con reglas fijas a partir de las preferencias de todos.'}
+          : 'Texto fijo. Las opciones las armó el servidor con reglas fijas a partir de las preferencias habilitadas.'}
       </p>
       <p className="suave">El mínimo, el máximo, la persona imprescindible y el cierre los completás vos en el paso siguiente.</p>
       <Boton onClick={usar} disabled={soloLectura || !tituloValido}>
