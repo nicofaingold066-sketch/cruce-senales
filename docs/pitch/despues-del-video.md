@@ -1,6 +1,6 @@
 # Después del video: los 2 minutos en voz alta
 
-Sesión **pitch**, sábado 24 oct 2026 (pedido del coordinador, 11:34). Formato decidido por Nico y Juan: dentro de los 5 minutos va primero el **video de ~3 min** (sesión «video»: gancho, los siete amigos, cómo funciona con capturas reales, el plan, Joaco se baja y se repara, GRU, cifras) y después hablan ellos **~2 min**. Esto es lo que se dice después. **No repite el video:** no vuelve a contar el caso ni a mostrar pantallas. Defiende **por qué** elegimos esto. Todo ficticio.
+Sesión **pitch**, sábado 24 oct 2026 (pedido del coordinador, 11:34). Formato decidido por Nico y Juan: dentro de los 5 minutos va primero el **video de 2:46** (`/Users/macair/cruse/cruce-video/out/cruxe-pitch.mp4`) (sesión «video»: gancho, los siete amigos, cómo funciona con capturas reales, el plan, Joaco se baja y se repara, GRU, cifras) y después hablan ellos **~2 min**. Esto es lo que se dice después. **No repite el video:** no vuelve a contar el caso ni a mostrar pantallas. El video ya dice: 8 de octubre (6 interesados, 0 encuentros), 36 horas, «cerca de sesenta mil líneas», 30 personas a la vez sin sobrecupo, «GRU propone; nunca confirma», y cierra con «Que juntarse deje de depender de que uno persiga a todos» + «Gracias por escucharnos». Lo nuevo acá: el porqué, las cuatro reglas, 152 verificaciones, la auditoría, 15 enmiendas y el piloto. Defiende **por qué** elegimos esto. Todo ficticio.
 
 Nombres de los amigos (deck y video): Bastián organiza, Carlos prefiere gratis, Kai necesita traslado simple, Charlie algo tranquilo, Nacho siempre propone pádel, Joaco confirma y se baja, Pía no responde.
 
@@ -30,9 +30,8 @@ Reglas: las causas van como «creemos que»; soledad **solo con su rango**, nunc
 
 ### 1:00–1:30 · Qué probamos (Juan)
 - «Esto no es una maqueta. Lo decide el servidor: cupos, plazos y estado.»
-- «Lo probamos con 30 personas confirmando a la vez sobre 20 cupos: nunca se pasó.»
-- «152 verificaciones, cero defectos graves.»
-- «Al agente, GRU, le hicimos una auditoría: encontró propuestas incoherentes y arreglamos las más graves antes de publicar. GRU propone; nunca confirma.»
+- «Las treinta personas a la vez que vieron en el video son parte de 152 verificaciones, con cero defectos graves.»
+- «Al agente, GRU, le hicimos una auditoría propia: encontró propuestas que no tenían sentido y arreglamos las más graves antes de publicar.»
 - «Y el contrato del producto cambió 15 veces en 36 horas, siempre por escrito y probado contra la base real.»
 
 > Fuentes: `docs/qa/gente-y-rendimiento.md` (152 verificaciones, 0 graves, c4–c6: 30 confirmaciones con máximo 20 → 19 aceptadas y 11 rechazos limpios; 7 hallazgos medios/bajos: no decir «sin errores»); `docs/auditoria-agente.md` (rama `auditoria-agente`: 4 de 7 casos simulados incoherentes, M1 y M3 arreglados con la 0057); enmiendas: `docs/contrato-enmienda-2.md` a `-16.md` = **15 enmiendas** sobre `docs/contrato.md` (el pedido decía 16; son 15 archivos de enmienda). 36 h: primer commit vie 23, 09:47 (`README.md`).
@@ -45,8 +44,9 @@ Reglas: las causas van como «creemos que»; soledad **solo con su rango**, nunc
 > Hoy no hay vista para empresas: «solo totales» es el diseño del piloto. Métricas: `docs/preguntas-jurado.md` P2; piloto como hipótesis: `docs/demo-makana.md` (rama `codex/demo-makana`).
 
 ### 1:50–2:00 · Cierre (Nico, de memoria)
-- *(lento)* «**Que juntarse deje de depender de que uno persiga a todos.**»
-- «Gracias por escucharnos.»
+El video ya cierra con «Que juntarse deje de depender de que uno persiga a todos» y «Gracias por escucharnos» (sesión video, `video/guion/escenas.json`): **no se repiten**. Cierre oral, que vuelve al gancho:
+- *(lento)* «**La próxima vez que alguien escriba *che, ¿cuándo nos juntamos?*, que la respuesta sea una fecha.**»
+- «Gracias.»
 
 **Si vas largo:** se cae primero la línea de las 15 enmiendas; después, la del 43 %. Las cuatro reglas y el cierre no se tocan.
 
@@ -77,4 +77,4 @@ Fuente: `docs/agente-ia.md` §6–7; `AGENTS.md` («La IA, si se usa, solo expli
 5. Una confirmación vale para UNA versión. Si alguien se baja, se repara.
 6. 30 a la vez sin sobrecupo · 152 verificaciones · auditoría de GRU · 36 h.
 7. Piloto Makana: encuentros, repetición a 4 y 12 semanas, planes reparados. Empresa: solo totales.
-8. «Que juntarse deje de depender de que uno persiga a todos.»
+8. Cierre: «La próxima vez que alguien escriba *che, ¿cuándo nos juntamos?*, que la respuesta sea una fecha.»
