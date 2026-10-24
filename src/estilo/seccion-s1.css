@@ -162,3 +162,12 @@
 .s1-quien .unirse .suave {
   margin: 0 0 var(--e-3);
 }
+
+/* El formulario de unión dentro de la tarjeta "Tengo un código": sin tarjeta propia (tarjeta dentro de tarjeta). */
+.s1-portada .unirse {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  box-shadow: none;
+}

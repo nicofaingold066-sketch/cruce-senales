@@ -10,10 +10,12 @@ import type { ApiError, EstadoPropuesta, Preferencia, PropuestaResumen } from '.
 import { useAccion } from '../lib/hooks'
 import { dejarAviso, rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { vibrar } from '../lib/tacto'
-import { Boton, Cargando, DiaTile, ErrorCaja } from '../components/ui'
+import { Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { TomarDeCalendario } from './Calendario'
 import { nombreDelPlan, opcionesRapidas } from './respuestas'
+import { RespuestasRapidas } from './RespuestasRapidas'
+import '../estilo/seccion-s5.css'
 import type { Opcion } from './respuestas'
 import { QueGuarda } from './QueGuarda'
 import { miOpinion } from './opinar'
@@ -110,7 +112,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
 
   if (!lista) {
     return (
-      <div className="vista">
+      <div className="vista s5 s5-responder">
         <section className="escena">
           <a className="escena-volver" href={rutas.espacio(espacioId)}>
             <Icono n="atras" tam={20} /> Ver el grupo
@@ -168,7 +170,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
   }
 
   return (
-    <div className="vista">
+    <div className="vista s5 s5-responder">
       <section className="escena" aria-labelledby="responder-titulo">
         <a className="escena-volver" href={rutas.espacio(espacioId)}>
           <Icono n="atras" tam={20} /> Ver el grupo
@@ -198,27 +200,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
 
         {!elegida ? (
           <section aria-labelledby="responder-titulo">
-            <ul className="rapida-opciones">
-              {opciones.map((o) => (
-                <li key={o.id}>
-                  <button
-                    type="button"
-                    id={`rapida-${o.id}`}
-                    className={`btn ${o.id === 'ambas' || o.id === 'si' ? 'btn-primario' : 'btn-secundario'} rapida-opcion ${sugerida === o.id ? 'rapida-sugerida' : ''}`}
-                    aria-describedby={sugerida === o.id ? 'rapida-sugerencia' : undefined}
-                    onClick={() => void responder(o)}
-                    disabled={soloLectura}
-                    aria-busy={guardar.ocupado || undefined}
-                  >
-                    {o.dia ? <DiaTile local={o.dia} /> : null}
-                    <span className="rapida-texto">
-                      <strong>{o.texto}</strong>
-                      <span className="rapida-detalle">{o.detalle}</span>
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <RespuestasRapidas franjas={p.franjas} onElegir={(o) => void responder(o)} ocupado={guardar.ocupado} deshabilitado={soloLectura} sugerida={sugerida} />
             {guardar.ocupado ? <p role="status" className="suave">Guardando…</p> : null}
             {sugerida ? (
               <p id="rapida-sugerencia" className="suave" role="status">
@@ -253,7 +235,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
               <Icono n="check" tam={20} /> {elegida.texto}
             </h2>
             <p className="suave">
-              Guardado. Solo tú ves estas condiciones. Puedes cambiarlas en el plan mientras se reúnen respuestas.
+              Guardado. Solo tú ves estas condiciones.
             </p>
             {conDesempate ? (
               <div className="rapida-prefiero">
