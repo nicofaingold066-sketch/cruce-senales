@@ -50,6 +50,11 @@ export async function irA(p, nombre, { espera = 500, timeout = 15000 } = {}) {
     }
     throw new Error(`irA: no encuentro «Historial» (ni plegado ni como pestaña) en ${p.url()}`)
   }
+  if (nombre !== 'Simulación' && nombre !== 'Plan') {
+    // Desde la Simulación abierta, las filas del plan no se ven: primero se vuelve al plan.
+    const volver = await primeroVisible([p.getByRole('button', { name: /^‹? ?Volver al plan$/ })])
+    if (volver) await clic(p, volver, espera)
+  }
   if (nombre === 'Simulación') {
     // Ya abierta (la fila desaparece mientras se ve la Simulación): no hay nada que tocar.
     const abierta = await primeroVisible([p.getByRole('button', { name: /^‹? ?Volver al plan$/ }), p.getByRole('heading', { name: /^Personas simuladas$/ })])

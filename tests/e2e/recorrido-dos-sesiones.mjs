@@ -256,7 +256,7 @@ try {
   // #56: con más confirmaciones que el mínimo (el caso llega a 5 de mínimo 4) se dice "5 (mínimo 4)".
   const planLuna = await textoYEtiquetas(L)
   const imposiblesPlan = conteosImposibles(planLuna)
-  const nuevoPlan = planLuna.match(/Confirmaron \d+ \(mínimo \d+\)/)?.[0]
+  const nuevoPlan = planLuna.match(/Confirmaron \d+ \(mínimo \d+\)|\d+ confirmaron \(mínimo \d+\)/)?.[0] // S4: «N confirmaron (mínimo M)»
   verificar('#56: el plan dice "Confirmaron N (mínimo M)" y no "N de M" con N mayor (texto y aria-label)',
     imposiblesPlan.length === 0 && !!nuevoPlan, imposiblesPlan.length ? imposiblesPlan.join(', ') : nuevoPlan ?? 'sin el texto nuevo')
   await captura(L, 'luna-v2-confirmado')
@@ -264,7 +264,12 @@ try {
 
   // 7. Navegador compartido (mejora #47): en el navegador de Tomi alguien abre el enlace como "Pepe".
   await T.goto(`${BASE}/#/unirse/${codigo}`)
-  await T.getByRole('textbox').nth(1).fill('Pepe'); await tocar(T, 'Unirme')
+  // S1 (mockup, pantalla 10): «¿Quién eres?» lista los nombres; Pepe no está → «No estoy en la lista» → «Tu nombre» + «Entrar».
+  { const noLista = T.getByRole('button', { name: /No estoy en la lista/ })
+    if (await noLista.isVisible({ timeout: 8000 }).catch(() => false)) await noLista.click()
+    const caja = T.getByLabel(/Tu nombre/).first()
+    if (await caja.isVisible({ timeout: 3000 }).catch(() => false)) await caja.fill('Pepe'); else await T.getByRole('textbox').nth(1).fill('Pepe')
+    await T.getByRole('button', { name: /^(Unirme|Entrar)$/ }).first().click() }
   verificar('Navegador compartido: avisa en vez de entrar como Tomi',
     await esperarTexto(T, 'Este navegador ya está en este espacio como Tomi').then(() => true, () => false))
   await captura(T, 'compartido-aviso')
@@ -273,13 +278,16 @@ try {
   verificar('Confirmación: la sesión de Tomi queda guardada en este navegador',
     await esperarTexto(T, 'queda guardada en este navegador').then(() => true, () => false))
   await tocar(T, 'Sí, entrar como Pepe')
+  // S5: con un plan abierto, Pepe cae en ¿Cuándo puedes?; el grupo se mira con su URL (la sesión ya es la de Pepe).
+  await T.locator('h1').filter({ hasText: /¿Cuándo puedes\?|Los del (asado|finde)/ }).first().waitFor({ timeout: 20000 })
+  if ((await T.getByRole('heading', { name: '¿Cuándo puedes?' }).count()) > 0) await T.goto(urlEspacio)
   await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
   const cab = await T.locator('header').innerText()
   verificar('Entra como Pepe con sesión nueva, sin herramientas del organizador',
     /Pepe/.test(cab) && (await T.getByText('Herramientas del organizador').count()) === 0, cab.replace(/\s+/g, ' ').slice(0, 80))
   await T.getByText('Asado en casa de Tomi', { exact: false }).first().waitFor({ timeout: 15000 })
   // La tarjeta une el texto del servidor (siguiente_accion) y el conteo que arma la interfaz.
-  const tarjeta = (await T.locator('.plan-vivo, .tarjeta-prop').first().innerText()).replace(/\s+/g, ' ')
+  const tarjeta = (await T.locator('.plan-vivo, .tarjeta-prop, a[href*="/p/"]').first().innerText()).replace(/\s+/g, ' ')
   const imposiblesTarjeta = conteosImposibles(tarjeta)
   verificar('#56: la tarjeta dice "N confirmaron (mínimo M)" y no "N de M" con N mayor',
     imposiblesTarjeta.length === 0 && /\d+ confirmaron \(mínimo \d+\)/.test(tarjeta), imposiblesTarjeta.length ? imposiblesTarjeta.join(', ') : tarjeta)
