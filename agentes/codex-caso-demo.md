@@ -1,14 +1,14 @@
 # Caso demo Makana — pedido directo de Nico, 24 oct 2026
 
 ## Tocando ahora
-Código terminado y rama entregada: `origin/codex/participacion-visible` = `8c62104`, incluye main `08aa6e2` por merge `f64b4cf`. Rutas liberadas; sin procesos ni turno de base. Nico autorizó publicar al terminar. Espero integración/publicación para verificar los assets servidos con Auth/RPC sintéticos.
+Código terminado y rama entregada: `origin/codex/participacion-visible` = `96ddc27`, incluye main `08aa6e2` por merge `f64b4cf`. Rutas liberadas; sin procesos ni turno de base. Nico autorizó publicar al terminar. Espero integración/publicación para verificar los assets servidos con Auth/RPC sintéticos.
 
 ## Decisiones
 - Nuevo caso «El plan que no deja a nadie afuera», siete adultos ficticios Ana/Bruno/Camila/Diego/Elena/Felipe/Gabriela.
 - Demo aislada e idempotente, sin alterar registros previos. Permisos separados apagados inicialmente; pendientes no cuentan como aceptaciones. Sin mínimo artificial de cuatro en parque.
 
 ## Pedidos
-- **PARA coordinador: LISTO PARA INTEGRAR Y PUBLICAR** `origin/codex/participacion-visible` = `8c62104` (contiene `638a677`, merge de main08aa6e2 y pulido móvil). Nico autorizó «cuando termines subilo lo acepto». TypeScript/build PASS, 105 puras PASS; UI 320/375/390/430/1280 claro/oscuro10/10,148RPC sintéticas,68capturas,0errores/desbordes. Sin migración, RPC nueva ni cambios de contrato. No ocupa base. Integrar rama completa; después verificaré assets publicados sin llamadas Auth/base/modelo. Mantengo sin push a main durante tu tanda según aviso10:04.
+- **PARA coordinador: LISTO PARA INTEGRAR Y PUBLICAR** `origin/codex/participacion-visible` = `96ddc27` (contiene `638a677`, merge de main08aa6e2 y pulido móvil). Nico autorizó «cuando termines subilo lo acepto». TypeScript/build PASS, 105 puras PASS; UI 320/375/390/430/1280 claro/oscuro10/10,148RPC sintéticas,68capturas,0errores/desbordes. Sin migración, RPC nueva ni cambios de contrato. No ocupa base. Integrar rama completa; después verificaré assets publicados sin llamadas Auth/base/modelo. Mantengo sin push a main durante tu tanda según aviso10:04.
 - PARA coordinador, Makana: NO renumerar el contenido como0058 antes de actividad sin comprobar orden fresh. `20261024124500_demo_makana.sql` se ordenó DESPUÉS de actividad: captura sus wrappers y verifica43RPC (incluyeleave_space). Si corre antes, actividad borra camposdemo y falla catálogo. Tu nueva0057coherencia puede precederla; confirmar orden antes deaplicar. LaSQLMakana está en `origin/codex/demo-makana`8194e96; independiente de participación pública.
 
 
@@ -58,6 +58,8 @@ Código terminado y rama entregada: `origin/codex/participacion-visible` = `8c62
 - Nico: «cuando termines subilo lo acepto». Levanta la espera anterior para el refinamiento de participación. Se completa QA móvil, se entrega SHA final y se publica por el flujo coordinado; sin tocar base ni migraciones. No se requiere otra confirmación del diseño.
 
 ## Entrega móvil autorizada para publicación
-- Rama `codex/participacion-visible`, SHA `8c62104`; conserva main08aa6e2 y las autorías por merge, sin force push. Mejor jerarquía móvil, avatares/nombres/estado, superficies neutras, versión y totales a la izquierda. A320 filas compactas; a375–430 dos columnas; nombres largos completos. GRU no cubre metadatos del panel.
+- Rama `codex/participacion-visible`, SHA `96ddc27`; conserva main08aa6e2 y las autorías por merge, sin force push. Mejor jerarquía móvil, avatares/nombres/estado, superficies neutras, versión y totales a la izquierda. A320 filas compactas; a375–430 dos columnas; nombres largos completos. GRU no cubre metadatos del panel.
 - Evidencia local: `/tmp/cruce-participacion-mobile-preview/` (10 configuraciones,148RPC sintéticas,0errores ydesbordes). PlusJakartaSans servida desde fixtures de fuentes públicas. No se contactó base real. Código limpio, tsc/build y105puras verdes.
 - **Dependencia pendiente:** integración/publicación del coordinador para que el usuario lo vea en app. No se da por publicado por haber subido la rama.
+
+- Actualización final: `96ddc27` agrega solo espaciado más compacto en320px y selector de anchos del arnés. Recaptura320 claro/oscuro PASS en `/tmp/cruce-participacion-mobile-preview-final-320/`. No hay más cambios pendientes; árbol limpio. Usar `96ddc27` como punta de la rama para publicar.
