@@ -111,11 +111,18 @@ export interface OpcionAnterior {
   fin: Momento
 }
 
+/**
+ * Enmienda 13 (c): en las bajas y los eventos de baja de OTRA persona, el servidor no dice quién fue: llega
+ * `{ miembro_id: null, nombre: 'Una persona', simulado: false }` y `habia_aceptado: null`. La propia baja, como antes.
+ */
+export type MiembroEnBaja = Omit<MiembroRef, 'miembro_id'> & { miembro_id: string | null }
+
 export interface Baja {
-  miembro: MiembroRef
+  miembro: MiembroEnBaja
   en: Momento
   version: number | null
-  habia_aceptado: boolean
+  /** null cuando la baja es de otra persona (E13 (c)): no se dice si había confirmado. */
+  habia_aceptado: boolean | null
 }
 
 export type ActorTipo = 'persona' | 'simulacion' | 'sistema'
@@ -143,6 +150,8 @@ export interface Puede {
   proponer_reparacion: boolean
   cancelar: boolean
   simular: boolean
+  /** Enmienda 13 (a): decir "así no puedo, pero sigo" sobre la versión vigente (elegible, sin aceptar, sin retirarse). */
+  opinar?: boolean
 }
 
 export type EstadoCondiciones = 'sin_cargar' | 'incompletas' | 'completas'
@@ -159,6 +168,10 @@ export interface MiSituacion {
   acepte_version: boolean
   /** Enmienda 2 (A1): por qué `puede.aceptar` es false; "cupo_reservado" si el último cupo es del imprescindible. */
   motivo_aceptar?: string | null
+  /** Enmienda 13 (a): la propia opinión sobre la versión vigente; null si no opinó o ya aceptó. */
+  mi_opinion?: 'asi_no_puedo' | null
+  /** Enmienda 11: la invitación del agente a esta persona (solo la propia). */
+  invitacion_agente?: { texto: string } | null
   puede: Puede
 }
 
@@ -186,6 +199,11 @@ export interface EstadoPropuesta {
   interesados: { cantidad: number; miembros: MiembroRef[] }
   /** Enmienda 7 (E7.2): null para quien no es organizador de la propuesta; no descuenta bajas. */
   personas_con_condiciones: number | null
+  /**
+   * Enmienda 13 (a): solo para el organizador de la propuesta (null para los demás). `asi_no_puedo` es null con
+   * menos de 2: nunca se dice quiénes.
+   */
+  opiniones_totales?: { asi_no_puedo: number | null } | null
   bajas: Baja[]
   siguiente_accion: SiguienteAccion
   mi_situacion: MiSituacion
@@ -405,4 +423,15 @@ export function textoViaje(v: ViajeEstimado | null | undefined): string | null {
 
 export const MOTIVO_SIN_PLAN_TEXTO: Record<MotivoSinPlan, string> = {
   sin_lugar_cerca_para_todos: 'Ningún lugar les queda cerca a todos. Prueben con más tiempo de viaje u otro plan.',
+}
+
+// ---- Enmienda 13: opinar sin bajarse ----
+export type OpinionVersion = 'asi_no_puedo' | 'retirar_opinion'
+
+/** Texto de la enmienda 13 (c) para quien se retira; el servidor lo manda en `siguiente_accion.texto`. */
+export const TEXTO_GRACIAS_BAJA = 'Gracias por avisar. No hace falta contar por qué.'
+
+/** true si la baja (o el actor de un evento de baja) es de otra persona y el servidor no dice quién (E13 (c)). */
+export function esPersonaAnonima(m: { miembro_id: string | null } | null | undefined): boolean {
+  return !!m && m.miembro_id === null
 }

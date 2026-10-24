@@ -64,8 +64,9 @@ describe('enmienda 5: preferencias simuladas en vivo', { timeout: 90_000 }, () =
     // reset_demo deshace los cambios en vivo.
     await ok(O, 'reset_demo', { p_espacio_id: demo.id, p_intento_id: intento() })
     const r = await plan()
-    expect(r).toMatchObject({ actividad: 'asado', lugar: { id: 'lugar-sim-01' } })
-    expect(r.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-01', 'lugar-sim-03', 'lugar-sim-04'])
+    // E13 (d): la parrilla del parque (viaje máximo 20) le gana al quincho (25) a igual puntaje.
+    expect(r).toMatchObject({ actividad: 'asado', lugar: { id: 'lugar-sim-14' } })
+    expect(r.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-14', 'lugar-sim-01', 'lugar-sim-03'])
   })
 
   it('2. no organizador, espacio no demo, miembro real o de otro espacio, y sesión ajena: error y sin cambios', async () => {
@@ -130,7 +131,7 @@ describe('enmienda 5: preferencias simuladas en vivo', { timeout: 90_000 }, () =
   })
 
   it('4. catálogo: 31 funciones para authenticated, 0 para anon', async () => {
-    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40
+    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40; E13: 41
     const a = await rpcCrudo(clienteSinSesion(), 'simulate_save_preferences', PERMITIDAS.simulate_save_preferences())
     expect(a.error?.code).toBe('42501')
     const b = await rpcCrudo(O, 'simulate_save_preferences', PERMITIDAS.simulate_save_preferences())

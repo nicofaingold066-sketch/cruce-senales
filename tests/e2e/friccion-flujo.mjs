@@ -68,7 +68,7 @@ try {
   await L.p.getByRole('heading', { name: '¿Cuándo puedes?' }).waitFor({ timeout: 20000 })
   await L.p.getByRole('button', { name: /Tomar de mi calendario/ }).click()
   ver('#90: la agenda dice que es ficticia', (await L.p.getByText('Agenda ficticia para la demo', { exact: false }).count()) === 1)
-  await boton(L.p, 'Marcar lo que dice mi agenda').click()
+  await L.p.getByRole('button', { name: /^(?:Marcar lo que dice mi agenda|Ver qué sugiere mi agenda)$/ }).click() // rótulo viejo y nuevo (psico, 21:21)
   const sug = L.p.locator('.rapida-sugerida')
   ver('#90: la agenda resalta una opción y NO guarda', (await sug.count()) === 1 && (await L.p.getByText('Guardado.', { exact: false }).count()) === 0, (await sug.innerText().catch(() => '')).replace(/\s+/g, ' '))
   await sug.click()

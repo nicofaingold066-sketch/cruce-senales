@@ -66,6 +66,31 @@ function sinE10(v, ruta) {
     }
   } else if (typeof v === 'string' && VALORES_E10.includes(v)) privados.push(`E10 ${ruta}=valor privado`)
 }
+// Enmienda 13. (c) La baja no trae nombre, motivo ni si había confirmado, en ninguna respuesta compartida (tampoco al
+// organizador: ve el total, no quién). (a) `opiniones_totales` solo lo ve el organizador, es null con menos de 2 y nunca
+// trae nombres. Se activa sola cuando el servidor trae las claves nuevas (`mi_situacion.mi_opinion` / `opiniones_totales`);
+// hasta entonces queda como pendiente, sin contar. `ejecutado_por` de un evento es quien corrió la simulación (público).
+let e13 = null
+const NOMBRES_DEMO = ['Tomi', 'Luna', 'Mati', 'Caro', 'Fede', 'Sofi']
+function sinE13(p, nombre) {
+  if (!p?.mi_situacion) return
+  if (e13 === null) e13 = 'mi_opinion' in p.mi_situacion || 'opiniones_totales' in p
+  if (!e13) return
+  const baja = JSON.stringify({ bajas: p.bajas ?? null,
+    eventos: (p.historial ?? []).filter(e => e.tipo === 'baja').map(({ ejecutado_por: _simula, ...e }) => e) })
+  for (const n of NOMBRES_DEMO) if (baja.includes(`"${n}"`)) privados.push(`E13 ${nombre}: la baja nombra a ${n}`)
+  // Backend deja `habia_aceptado` en null (no quita la clave): lo que no puede haber es true/false.
+  for (const b of Array.isArray(p.bajas) ? p.bajas : []) if ((b?.habia_aceptado ?? null) !== null) privados.push(`E13 ${nombre}: la baja dice si había confirmado`)
+  // "Sin decir si había confirmado": la aceptación vieja de quien se retiró también sale sin actor. En este guion se retira Caro.
+  if (Array.isArray(p.bajas) && p.bajas.length > 0) {
+    for (const e of (p.historial ?? []).filter(e => e.tipo === 'aceptacion')) if (e.actor?.nombre === 'Caro') privados.push(`E13 ${nombre}: la aceptación de quien se retiró conserva el nombre`)
+  }
+  // `opiniones_totales` llega como { asi_no_puedo: n } con n null si hay menos de 2. Solo el organizador puede ver un número.
+  const total = p.opiniones_totales?.asi_no_puedo ?? null
+  if (total !== null && !nombre.startsWith('Tomi')) privados.push(`E13 ${nombre}: ve opiniones_totales`)
+  if (total !== null && (typeof total !== 'number' || total < 2)) privados.push(`E13 ${nombre}: opiniones_totales con menos de 2 o forma rara`)
+  for (const n of NOMBRES_DEMO) if (JSON.stringify(p.opiniones_totales ?? null).includes(n)) privados.push(`E13 ${nombre}: opiniones_totales nombra a ${n}`)
+}
 async function observar(p, nombre) {
   p.setDefaultTimeout(15000)
   p.on('pageerror', e => jsErrores.push(`${nombre}: ${e.name}`))
@@ -90,7 +115,7 @@ async function observar(p, nombre) {
       if (r.contrato !== 2) privados.push('respuesta sin contrato 2')
       if (!PROPIAS.includes(u.pathname.split('/').at(-1))) sinE10(r, u.pathname.split('/').at(-1))
       if (r.propuesta) {
-        sinPrivados(r.propuesta)
+        sinPrivados(r.propuesta); sinE13(r.propuesta, nombre)
         if (nombre === 'Luna') {
           if (r.propuesta.personas_con_condiciones !== null) privados.push('Luna: conteo de condiciones')
           if (r.propuesta.opcion && r.propuesta.opcion.cupos.pendientes !== null) privados.push('Luna: pendientes')
@@ -245,6 +270,22 @@ try {
     await tab(T, 'Simulación'); await tocar(T, 'Se baja: Caro')
     const baja = await accion(T, 'simulate_withdraw', () => tocar(T, 'Sí, Caro se baja'))
     comprobar(baja.propuesta.estado === 'en_revision', 'Baja rompe el mínimo')
+    // E13 (c) en pantalla: el historial compartido no nombra a quien se retiró, ni en la sesión de Luna ni en la del
+    // organizador. El texto nuevo ("Una persona se retiró") es de front-juan: se avisa, no se exige todavía.
+    if (e13) {
+      // Ni "Caro se bajó" ni "Caro aceptó / había confirmado" en lo compartido (plan e historial), en ninguna de las dos sesiones.
+      const fuga = /(?:Tomi|Luna|Mati|Caro|Fede|Sofi) se (?:bajó|retiró)|Caro (?:aceptó|había confirmado)/
+      await L.reload(); await estado(L, 'En revisión')
+      comprobar(!fuga.test(await L.locator('main').innerText()), 'UI E13: el plan de Luna no nombra a quien se retiró ni dice que había confirmado')
+      await tab(L, 'Historial'); await tab(T, 'Historial')
+      for (const [p, quien] of [[L, 'Luna'], [T, 'Tomi']]) {
+        const historial = await p.locator('main').innerText()
+        comprobar(!fuga.test(historial), `UI E13: historial de ${quien} sin el nombre de quien se retiró`)
+        if (/El sistema se bajó/.test(historial)) log(`AVISO E13 (${quien}): el historial dice "El sistema se bajó"; debería decir "Una persona se retiró"`)
+        else if (!/Una persona se (?:bajó|retiró)/.test(historial)) log(`AVISO E13 (${quien}): el historial todavía no dice "Una persona se retiró"`)
+      }
+      await tab(L, 'Plan'); await tab(T, 'Plan')
+    } else log('E13 pendiente: el servidor no trae mi_opinion/opiniones_totales; la baja sin nombre se comprueba sola cuando llegue.')
     await condiciones(T, 'No puedo', 'No puedo')
     await tab(T, 'Plan')
     const r = await accion(T, 'propose_repair', () => tocar(T, 'Buscar alternativa'), false)
@@ -301,7 +342,7 @@ try {
   assert.deepEqual(erroresRPC.sort(), ['propose_repair:sin_alternativa/sin_alternativa', 'simulate_accept:cupo_completo/reservado_imprescindible'].sort(), 'Solo los dos rechazos esperados')
   assert.equal(modelos, 0, 'Ninguna llamada a funciones/modelos')
   assert.equal(sesiones.size, 2, 'Sin identidades extra')
-  log(`RPC observadas: ${rpcObservadas}; privacidad de sobres compartidos sin hallazgos; 2 rechazos esperados; 0 llamadas al modelo.`)
+  log(`RPC observadas: ${rpcObservadas}; privacidad de sobres compartidos sin hallazgos; 2 rechazos esperados; 0 llamadas al modelo. Enmienda 13: ${e13 ? 'detectada y comprobada (baja sin nombre, totales solo al organizador)' : 'pendiente en el servidor'}.`)
 } catch (e) {
   if (!fallidas) { fallidas++; log(`FAIL preparación/cierre: ${String(e.message).split('\n')[0]}`) }
   await foto(L, 'fallo-preparacion-Luna').catch(() => {})

@@ -188,15 +188,16 @@ describe('enmienda 10: zona, movilidad, tiempo máximo y momento del día', { ti
     // Todos marcan asado (14:00, tarde), fútbol (11:00) y parque (12:00), que dominan el puntaje. Con "algo barato"
     // no entra nada de precio medio (las salidas de noche).
     const P = { ...BASE, presupuesto: 'algo_barato', me_gustaria: ['asado', 'futbol', 'parque'], zona: 'nunoa', movilidad: 'auto_sin_lugar', tiempo_max: '60' }
+    // E13 (d): hay dos lugares de asado (quincho en Ñuñoa y parrilla en Providencia, 0044), los dos de tarde.
     await todos({ ...P, momento: 'tarde' })
     const tarde = await plan(DESCONOCIDO)
-    expect(idsDe(tarde)[0]).toBe('lugar-sim-01')
+    expect(idsDe(tarde).slice(0, 2)).toEqual(['lugar-sim-01', 'lugar-sim-14']) // los asados suben (quincho más cerca)
     await todos({ ...P, momento: 'manana' })
     const manana = await plan(DESCONOCIDO)
+    expect(idsDe(manana).slice(0, 2)).toEqual(['lugar-sim-03', 'lugar-sim-04']) // fútbol y parque suben
+    // El momento ordena, no descarta: el asado de tarde sigue entre las candidatas de la mañana.
     expect(idsDe(manana)[2]).toBe('lugar-sim-01')
-    // Las mismas tres en los dos casos: el momento ordena, no descarta.
-    expect([...idsDe(tarde)].sort()).toEqual(['lugar-sim-01', 'lugar-sim-03', 'lugar-sim-04'])
-    expect([...idsDe(manana)].sort()).toEqual(['lugar-sim-01', 'lugar-sim-03', 'lugar-sim-04'])
+    expect(idsDe(tarde)).toHaveLength(3)
     // "Noche" no coincide con ninguna que entre por precio: igual que da_igual.
     await todos({ ...P, momento: 'noche' })
     const noche = await plan(DESCONOCIDO)

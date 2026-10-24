@@ -57,7 +57,7 @@ export function PlanVivo({ p, espacioId, espacioNombre }: { p: PropuestaResumen;
       <span className="pv-meta">
         <span className="num">
           {conVersion ? `${cuenta} · máx. ${p.maximo}` : `Mínimo ${p.minimo}, máximo ${p.maximo}`}
-          <span className="pv-cierre">{p.plazo_vencido ? 'Plazo cerrado' : `Cierre ${momentoCorto(p.plazo)}`}</span>
+          <span className="pv-cierre">{p.plazo_vencido ? 'Plazo para confirmar cerrado' : `Confirma hasta ${momentoCorto(p.plazo)} · Santiago`}</span>
         </span>
         <span className="pv-abrir" aria-hidden="true">
           Abrir <Icono n="chevron" tam={14} />

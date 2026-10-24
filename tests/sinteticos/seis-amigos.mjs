@@ -341,7 +341,8 @@ try {
   await gonza.tocarBoton('Retirarme de esta propuesta')
   await ver(gonza, 'gonza-confirma-baja')
   await gonza.tocarBoton('Sí, no voy')
-  await gonza.esperar('Te retiraste', 25000)
+  // Texto de hoy, o el de la enmienda 13 (c) para quien se retira.
+  await gonza.esperar(/Te retiraste|Gracias por avisar/, 25000)
   await ver(gonza, 'gonza-se-bajo')
 
   log('— Vale ve la baja y busca alternativa')
