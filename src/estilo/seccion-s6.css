@@ -510,6 +510,9 @@
 
 /* Preferencias personales: ritmo propio, sin alterar los controles ni el panel de GRU.
    La cuadrícula responde al ancho de la tarjeta, también cuando vive en una columna. */
+.vista-agente .s2-agente-pantalla {
+  background: none;
+}
 #agente-preferencias {
   container-type: inline-size;
   padding: var(--e-4);
@@ -519,6 +522,11 @@
 }
 #agente-preferencias > .tarjeta-cabeza {
   margin: 0 0 var(--e-4);
+}
+#agente-preferencias > .preferencia-tema {
+  margin-bottom: var(--e-5);
+  padding-bottom: var(--e-5);
+  border-bottom: 1px solid var(--linea);
 }
 #agente-preferencias > .bloque {
   margin: 0;

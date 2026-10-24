@@ -3,6 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // La misma clave y orden de respaldo que src/lib/tema.ts, antes del primer render.
+      (() => {
+        let modo = 'system'
+        for (const tipo of ['sessionStorage', 'localStorage']) {
+          try {
+            const valor = window[tipo].getItem('cruxe:tema:v1')
+            if (valor === 'light' || valor === 'dark' || valor === 'system') {
+              modo = valor
+              break
+            }
+          } catch {}
+        }
+        const tema = modo === 'system'
+          ? (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : modo
+        document.documentElement.dataset.theme = tema
+        document.documentElement.style.colorScheme = tema
+      })()
+    </script>
     <title>CRUXE</title>
     <link rel="icon" type="image/svg+xml" href="/src/assets/cruxe-icono.svg" />
     <meta name="theme-color" content="#b4400f" />
