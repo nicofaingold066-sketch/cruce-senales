@@ -1,7 +1,7 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: sábado 24 oct, 00:55 (build = `main` 3cca951) (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: sábado 24 oct, 01:30 (build = `main` 3cca951) (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
 Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 16**, de los cuales **2 ya APROBADOS** en `main` 3ace04e (O-06 y O-08, corrida 4 `f0` 20:55) y 3 por confirmar en la misma corrida (O-02, O-12b, O-13) (ninguno impide completar el recorrido canónico), el resto APROBADO.
@@ -36,6 +36,7 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | O-12 | OBSERVADO (leve) | Avisos repetidos | (a) Sin red en un plan: banner global + banner "Sin conexión" del plan + error del botón (R161); (b) contrato incompatible: "Versión incompatible" arriba y "No se pudo completar · Versión incompatible" debajo (R170); (c) "Hoy paso" aparece deshabilitado sin explicación mientras no se marque "Me interesa" (R162) | `202610232002/R161-375.png`, `202610232004/R170-375.png` | front-juan (a, c) / friccion (b) |
 | O-13 | OBSERVADO (leve) | Falla al iniciar la sesión anónima | El texto dice "el inicio de sesión anónimo puede estar deshabilitado en el proyecto": lenguaje técnico para una persona que solo abrió el enlace (R173) | `202610232004/R173-375.png` | friccion |
 | O-14 | OBSERVADO | Demo, pestaña Simulación a **320 px** | (a) La pestaña "Simulación" se sale de la pantalla (262–360 de 320); (b) en cada persona simulada la etiqueta "SIMULACIÓN" queda tapada por la insignia "Sin versión publicada" ("SIMUL…") | `202610231946/R104-320.png` | front-juan |
+| O-15 | **APROBADO 01:21** (era OBSERVADO) | Panel del agente, "Mis preferencias" | El grupo "Me gustaría" aparecía en rojo con "Marcá al menos una." desde que se abría, antes de tocar nada. Verificado en producción (`main` 3cca951, `f14` R407): texto normal "Marca al menos una actividad para guardar." | `202610231958/R150-375.png` (antes) · `202610232250/R407-375.png` (ahora) | agente-ia |
 | O-16 | OBSERVADO (decisión) | Chip "Datos ficticios" del encabezado | Aparece en TODAS las pantallas, también en un grupo real con personas de verdad (`App.tsx:85`, fricción 19 de `docs/flujo-usuario.md`); un grupo real podría leerlo como "esto no vale". Y a 320 px lo pisa el avatar (O-01) | `202610231931/R25-320.png` | **Decidido (21:10, ux-flujo `603678e`, tabla #102 H3): el chip se queda.** Cerrado como aceptado; lo único que sigue abierto es O-01 (a 320 px lo pisa el avatar) |
 
 ## Accesibilidad a fondo (método, `tests/rincones/a11y.mjs`; se aplica a la demo en `f12`)
@@ -257,6 +258,18 @@ Observación del banco de friccion (O-17, leve, a friccion): tras marcar "Así n
 | R370/R371 | Retiro: ayuda "retirarte avisa al grupo sin decir quién. No hace falta contar por qué."; confirmación; a quien se retira: "Gracias por avisar. No hace falta contar por qué." (se anuncia) | ojo | A |
 | R372 | Baja sin nombre: ninguna frase "<nombre> se bajó/se retiró" en el plan del organizador | auto | A (privacidad) |
 Accesibilidad de estos rincones (320, 375): sin fallas reales; dos avisos de "foco sin cambio" en campos de texto son transiciones (falso positivo ya corregido en el módulo); "Confirmar" y "Encuentro" se cortan en el paso de 4 etapas con espaciado de texto ampliado a 320 px (leve); las pestañas son 3 paradas de Tab en vez de una con flechas (leve).
+
+### Propósito del grupo (enmienda 14) en PRODUCCIÓN (`f14`, 01:20–01:22, `main` 3cca951; grupo propio "Los del fútbol")
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| R400 | Crear grupo: "¿Para qué es este grupo?" con "Libre: cualquiera propone lo que quiera" por defecto y la ayuda "Opcional. Cualquiera del grupo puede proponer lo que quiera."; 22 opciones agrupadas (Deporte, Comida, Salida / noche, Cultura, Aire libre, En casa; sin Fiesta ni Cultura sueltas, ya "Fiesta" entró después con la 0051) | ojo | A |
+| R401 | Con Fútbol elegido, la ayuda dice "Las propuestas de este grupo serán de este tipo de plan (deporte)." | ojo | A |
+| R402 | Espacio del grupo con propósito: "Invita a tu grupo… Faltan por entrar: Ana", botón "Mandar invitación por WhatsApp" | ojo | A |
+| R403 | "¿Quién eres?": "Este grupo es para jugar fútbol." | ojo | A |
+| R404 | Nueva propuesta en un grupo de fútbol: atajos "Fútbol · Pádel · Tenis · Básquet" (solo la familia deporte) y ejemplo "Ej.: Fútbol 5 el sábado" | ojo | A |
+| R405 | Un título libre sin atajo ("Cena de fin de año") en un grupo de fútbol SE CREA: no hay forma de elegir una actividad de otra familia desde la pantalla, y el título es libre por contrato (la restricción es por actividad/familia, no por texto). El mensaje de "fuera de propósito" solo se alcanza por la API | auto | A (comportamiento por diseño; solo queda anotado) |
+| R406 | Atajo Pádel en un grupo de fútbol (misma familia): título "Pádel", franjas de 1 h 30, se crea | ojo | A |
+| R407 | Agente en un grupo con propósito: "Me gustaría" solo ofrece Pádel · Fútbol · Tenis · Básquet; "Marca al menos una actividad para guardar." en texto normal (ya no en rojo: **O-15 APROBADO**); preguntas de zona, movilidad, tiempo de viaje y momento del día con "Prefiero no responder"; casilla "Recibir invitaciones del agente"; dos botones: "Que el agente proponga" y "Que el agente arme un plan" | ojo (375) | A |
 
 ## Pendiente de recorrer
 "Entrar como otra persona" confirmado, reclamar un lugar simulado libre del demo, "Hoy paso" ya marcado, plazo vencido (expirado), cierre elegido a mano con fecha pasada, y los cuatro anchos de cada rincón mirados a ojo (hoy `auto` en varios). Se repite lo afectado tras cada publicación en `main`.
