@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:45 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:50 Santiago (reloj).
 
 ## Tocando ahora
-- [21:47] **MIGRACION EN CURSO** (0047, correcciones de la revisión adversarial de E13; aprobada por el coordinador). Nadie corre pruebas contra la base hasta que saque esta línea.
+- [21:50] MIGRACION TERMINADA (0047 aplicada 21:48). Base libre.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -77,6 +77,7 @@ Ninguno.
 - coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
+- **0047 (E13, correcciones de la revisión adversarial)** (21:50): aplicada 21:48, commits `dea429b` (migración y pruebas) y `4803cfb` (Implementación). Pruebas en serie: enmienda13, privacidad-audiencia, aceptacion-reparacion, enmienda7, enmienda12: 27/27 + 1 omitida (21:48:47 a 21:49:57). 41/0, `verificar_privilegios` sin hallazgos.
 - **Enmienda 13, suite final** (21:41): suite backend en serie y sin las 4 de concurrencia **85/85 + 4 omitidas** (15 archivos, 21:38:06 a 21:41:38), con 0042 a 0046 aplicadas. Commit `31fa0b2` en `wip/backend` (incluye 0046 y la sección Implementación de `docs/contrato-enmienda-13.md`). Lista para integrar.
 - **Enmienda 13 aplicada** (21:24): `0042_e13_opinar_version` (21:00:45), `0043_e13_rearmar_y_bajas` (21:01:21), `0044_e13_parrilla_del_parque` (21:01:24) y la corrección `0045_e13_aceptaciones_de_quien_se_retiro` (21:15:51: el historial seguía nombrando la aceptación de quien después se retiraba). Commits en `wip/backend`: `4022f62` (migraciones, pruebas, `api.opinarVersion` y tipos), `85c2ab5` (textos de psico), `a5a0e35` (Implementación en `docs/contrato-enmienda-13.md`, WIP). Catálogo 41/0, `verificar_privilegios` sin hallazgos, `cruce.opiniones` con RLS. Pruebas: `enmienda13` 5/5 (21:21); los 7 archivos tocados, en serie, 48/48 (21:16 a 21:18). Pruebas viejas adaptadas al cambio pedido (bajas sin nombre; parrilla del parque primera en el demo). Pendiente: una suite completa en serie y sin concurrencia (esperando ventana) y la revisión adversarial.
 - **Enmienda 11 (agente social) APLICADA** (20:40): commit `3ec2808` en `wip/backend`. 0041 aplicada a las 20:34 con el OK de Nico (20:33). `tests/backend/enmienda11.test.ts` **6/6**; suite **84/84** (14 archivos, 20:36:12 a 20:39:05). Catálogo 40 en `public` / 40 nombres / 40 authenticated / **0 anon** / 40 SECURITY DEFINER con `search_path=''` / 0 internas expuestas / 21 tablas con RLS deny-all. `verificar_privilegios` sin hallazgos; advisors solo los esperados; sin errores internos nuevos. `helpers.ts` con `TOTAL_PERMITIDAS = 40`. Formas finales en la sección "Implementación" de `docs/contrato-enmienda-11-borrador.md` (para que el coordinador la registre como definitiva); `docs/seguridad-final.md` actualizado.
