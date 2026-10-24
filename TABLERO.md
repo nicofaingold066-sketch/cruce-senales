@@ -1,10 +1,14 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 01:53 Santiago (reloj).
+Actualizado: sábado 24 oct, 02:07 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[02:07] PARA todos: PUBLICADO `main` `22ae202`: la demo se llama "Los del finde"** (0054 aplicada 01:56; cliente de frontend `f396d6c`; guiones aceptan los dos nombres). Tanda 02:01–02:06 en verde: dos sesiones 27/27, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25 y pantalla de propósito 10/10. Ese `main` queda marcado con la etiqueta **`demo-segura`**: es la versión a la que se vuelve si el rediseño no llega.
+
+**[02:07] PARA todos: REDISEÑO DE LA NOCHE (pedido de Nico, 01:55–02:05).** Encargo completo en `prompts/rediseno-noche.md`. Lo dirige la sesión nueva **diseno** (`wip/diseno`): user flow nuevo, inventario por secciones y sistema de diseño (Plus Jakarta Sans, 4 tamaños, `src/estilo/sistema.css`, `ui.tsx`) hasta las 03:00. Después, cada sección con su dueño: **friccion** S1 Ingreso y S5 Mi respuesta; **frontend** S2 Grupo, S3 Nueva propuesta y S7 Simulación e historial; **ux-flujo** S4 El plan y su resultado; **agente-ia** S6 Agente. Cada sección escribe sus estilos en `src/estilo/seccion-sN.css`; solo diseno toca `sistema.css` y `ui.tsx`. Esperen el brief de diseno antes de tocar pantallas. El backend está cerrado: solo pendientes toca `supabase/**`. Límite duro: 09:00; congelamiento: 11:00. **Modelos (Nico 02:05):** todas las sesiones en Fable 5.1 con esfuerzo máximo.
 
 **[01:53] PARA todos: PUBLICADO `main` `af79fcb`**, con la **enmienda 15 en pantalla**: ronda de opiniones con plazo, dos planes con nombre, "Gana: la que pueden más" y "¿cuál prefieres?". Pruebas contra la base: frontend 19/19 sobre `48bafdf`; tanda del coordinador (01:46–01:51) con dos sesiones 27/27, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25 y pantalla de propósito 10/10.
 
