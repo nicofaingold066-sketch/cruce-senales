@@ -118,6 +118,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const [faltantes, setFaltantes] = useState(false)
   const [abrirUltimo, setAbrirUltimo] = useState(true)
   const [desdeAgente, setDesdeAgente] = useState(false)
+  // Duración fuera de DURACIONES que trajo un atajo (Pádel 1 h 30 min, Cine 2 h 30 min) o la precarga (borrador del
+  // agente): queda como opción más aunque se elija otra, para poder volver a ella.
+  const [duracionExtra, setDuracionExtra] = useState<number | null>(null)
   const flujo = useRef(false)
   const [enCurso, setEnCurso] = useState(false)
 
@@ -174,7 +177,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     if (borrador) {
       const [a, b] = borrador.franjas
       const dur = Math.round((enUTC(a.fin.slice(0, 10), a.fin.slice(11, 16)).getTime() - enUTC(a.inicio.slice(0, 10), a.inicio.slice(11, 16)).getTime()) / 60000)
+      const duracion = dur > 0 ? dur : base.duracion
       setDesdeAgente(true)
+      if (!DURACIONES.includes(duracion)) setDuracionExtra(duracion)
       setF({
         ...base,
         titulo: borrador.titulo,
@@ -182,10 +187,11 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
         aHora: a.inicio.slice(11, 16),
         bDia: b.inicio.slice(0, 10),
         bHora: b.inicio.slice(11, 16),
-        duracion: dur > 0 ? dur : base.duracion,
+        duracion,
       })
       return
     }
+    if (!DURACIONES.includes(base.duracion)) setDuracionExtra(base.duracion)
     setF(base)
   }, [espacio, f])
 
@@ -220,6 +226,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   function elegirActividad(a: Atajo) {
     const esAtajo = form.titulo.trim() === '' || actividades.some((x) => x.titulo === form.titulo.trim())
     setF({ ...form, titulo: esAtajo ? a.titulo : form.titulo, duracion: a.min })
+    if (!DURACIONES.includes(a.min)) setDuracionExtra(a.min)
     if (error) limpiarError()
   }
 
@@ -229,8 +236,8 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const bFin = bInicio ? sumarMinutos(form.bDia, form.bHora, form.duracion) : ''
   const plazo = plazoDe(form)
   // Como la hora «propia» de SelectorHora: si un atajo (Pádel 1 h 30 min, Cine 2 h 30 min) o el borrador del agente
-  // trae una duración fuera de la lista, aparece como opción más, marcada, y se puede volver a ella.
-  const duraciones = DURACIONES.includes(form.duracion) ? DURACIONES : [...DURACIONES, form.duracion].sort((x, y) => x - y)
+  // trae una duración fuera de la lista, aparece como opción más, marcada, y se puede volver a ella (duracionExtra).
+  const duraciones = duracionExtra == null ? DURACIONES : [...DURACIONES, duracionExtra].sort((x, y) => x - y)
 
   const completo =
     form.titulo.trim() !== '' &&

@@ -373,6 +373,15 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
   const [cambiando, setCambiando] = useState(false)
   const [errorCambio, setErrorCambio] = useState<string | null>(null)
   const faltan = codigo.trim() === '' || nombre.trim() === ''
+  // Mirar la lista del grupo (destinoPorCodigo) y unirse tardan: si mientras tanto la persona se fue de la portada, no
+  // se la lleva a otra pantalla por detrás (y si se fue antes de unirse, tampoco se la une).
+  const vivo = useRef(true)
+  useEffect(() => {
+    vivo.current = true
+    return () => {
+      vivo.current = false
+    }
+  }, [])
 
   // `d.nombre` es el nombre con que quedó (el que anotó el organizador, si se reclamó ese lugar).
   function entrar(r: { espacio_id: string; reclamo_asiento_simulado: boolean }, espacio: string, d: DestinoPorCodigo, sesionGuardada?: string) {
@@ -402,6 +411,7 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
     // desvía nunca. Si la lista no se puede mirar, se une como siempre y join_space da el error que corresponde.
     setMirando(true)
     const d = await destinoPorCodigo(codigo.trim(), nombre.trim()).finally(() => setMirando(false))
+    if (!vivo.current) return
     if (d.elegir) {
       irA(rutas.unirse(codigoParaRuta(codigo)))
       return
@@ -409,6 +419,8 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
     const r = await ejecutar(`join:${codigo.trim()}:${nombre.trim()}`, () =>
       api.joinSpace(codigo.trim(), d.nombre, d.miembroId),
     )
+    // La unión ya hecha queda en el servidor y aparece en la lista de espacios; solo no se navega por detrás.
+    if (!vivo.current) return
     if (!r?.ok) return
     if (r.data.resultado.ya_era_miembro) {
       // El servidor no cambia el nombre ni crea a otra persona: no se entra en silencio como quien estaba antes.
@@ -429,6 +441,7 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
       // sesión: la lista no depende de quién pregunta. Si toca elegir, se va sin abrir otra sesión; "¿Quién eres?" ya
       // ofrece "Ya estás en este grupo como…" y su propio cambio de persona.
       const d = await destinoPorCodigo(codigo.trim(), nombre.trim())
+      if (!vivo.current) return
       if (d.elegir) {
         irA(rutas.unirse(codigoParaRuta(codigo)))
         return
@@ -441,6 +454,8 @@ function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: bool
       setYaMiembro(null)
       setConfirmar(false)
       const r = await ejecutar(`join-nueva:${codigo.trim()}:${nombre.trim()}`, () => api.joinSpace(codigo.trim(), d.nombre, d.miembroId))
+      // La sesión ya cambió: se termina de unir (queda coherente y aparece en la lista), pero no se navega por detrás.
+      if (!vivo.current) return
       if (r?.ok) {
         entrar(
           r.data.resultado,
