@@ -2,7 +2,7 @@
 
 Sesión **presentacion**, sábado 24 oct 2026. Fuente editable: Figma Slides «CRUXE — Pitch Makana» (https://www.figma.com/slides/OLK75B9kmObV6t1P3cG2gN, privado de la cuenta de Nico). Copia exportada: [`presentacion.pdf`](presentacion.pdf) (8 diapositivas, 1920×1080). Las notas del orador están en Figma (vista de presentador).
 
-Sigue la guía de bolsillo de Nico y el guion de la sesión **pitch** (`docs/pitch/guion-pitch.md`, rama `pitch`). El caso de ejemplo es «El plan que no deja a nadie afuera» (siete compañeros de trabajo; Ana, Felipe, Gabriela, Camila), texto dado por Nico. No se usa el asado como ejemplo en pantalla. Todo ficticio.
+Sigue la guía de bolsillo de Nico y el guion de la sesión **pitch** (`docs/pitch/guion-pitch.md`, rama `pitch`). El caso de ejemplo es «El plan que no deja a nadie afuera» (siete compañeros de trabajo), texto dado por Nico. Los pasos de la demo en la diapositiva 5 no nombran personas, porque la demo en vivo por defecto es «Los del finde». No se usa el asado como ejemplo en pantalla. Todo ficticio.
 
 Cada diapositiva tiene el mismo encabezado (logo CRUXE a la izquierda, número y bloque con el minuto a la derecha) y, abajo, tres pistas «Para decir» para no trabarse. Componentes en Figma: «Encabezado CRUXE», «Etiqueta de bloque», «Pista para decir».
 
@@ -12,7 +12,7 @@ Cada diapositiva tiene el mismo encabezado (logo CRUXE a la izquierda, número y
 | 2 | Problema · 0:30 | Siete compañeros: «Siempre la misma propuesta: pádel y comida» + lo que nadie dice (gratis, traslado simple, algo tranquilo) | El plan no le sirve a todos · nadie explica sus razones · 8 de octubre: 6 interesados, 0 encuentros |
 | 3 | Conflicto · 1:10 | «WhatsApp sirve para hablar del plan. No para cerrarlo.» Privado · Compromiso · Reparar | Con los dedos · «las que probamos» · el cierre |
 | 4 | Solución · 1:50 | «Que el encuentro ocurra.» 4 pasos | La frase lenta · un paso por dedo · «Juan, mostrémoslo» |
-| 5 | Demo en vivo · 2:10 | Guion de la demo (Ana, Felipe, Gabriela, Camila) + 2 capturas reales | Pausa antes de que Felipe se baje |
+| 5 | Demo en vivo · 2:10 | Pasos de la demo sin nombres (sirven para «Los del finde» o Makana) + 2 capturas de producción | Pausa antes de que alguien se baje; narrar con los nombres de la demo en pantalla (`docs/pitch/demo-en-vivo.md`, rama `pitch`) |
 | 6 | Distinto · 3:50 | 36 h · 30 a la vez sin sobrecupo · 152 verificaciones | El servidor manda · GRU propone, no confirma · se corta si vas largo |
 | 7 | Para Makana · 4:10 | «El último metro» Makana → CRUXE → Encuentro + 3 métricas del piloto | De tener a usar · la empresa vería solo totales (propuesta) · qué no decir |
 | 8 | Cierre · 4:40 | Logo, «Gracias por escucharnos.», «Que juntarse no dependa de uno solo.», QR | Frase final de memoria |
