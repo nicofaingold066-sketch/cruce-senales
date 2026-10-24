@@ -106,7 +106,7 @@ export class Persona {
     this.page.on('requestfailed', (r) => { if (ini.has(r)) this.rpc.push({ fn: r.url().split('/').pop().split('?')[0], ms: Date.now() - ini.get(r), status: 0, codigo: 'fallo_red:' + (r.failure()?.errorText ?? '') }) })
     this.page.on('response', async (r) => {
       const u = r.url()
-      if (r.status() >= 400) this.malas.push(`${r.status()} ${r.request().method()} ${new URL(u).pathname}`)
+      if (r.status() >= 400) this.malas.push(`${r.status()} ${r.request().method()} ${new URL(u).pathname}${new URL(u).pathname.includes('rpc') ? '' : ''}`)
       if (!u.includes('/rest/v1/rpc/')) return
       const t0 = ini.get(r.request()); const fn = u.split('/').pop().split('?')[0]
       let codigo = null

@@ -52,7 +52,8 @@ await conTurno('qa-gente (e) rendimiento visual con 20 y 30 integrantes a 4 anch
     }
   } finally {
     const consola = todas.flatMap((p) => p.errores.map((e) => `${p.nombre}: ${e}`)).slice(0, 6)
-    inf.ok('sin errores de consola en todo el bloque', consola.length === 0, consola.join(' | '))
+    const malas = todas.flatMap((p) => p.malas.map((m) => `${p.nombre}: ${m}`)).slice(0, 6)
+    inf.ok('sin errores de consola en todo el bloque', consola.length === 0, consola.join(' | ') + (malas.length ? ' || respuestas ≥400: ' + malas.join(' | ') : ''))
     for (const p of todas) await p.cerrar(); await browser.close()
   }
 })
