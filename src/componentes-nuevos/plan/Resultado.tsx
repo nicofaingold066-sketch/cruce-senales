@@ -248,7 +248,7 @@ function Linea({ p }: { p: EstadoPropuesta }) {
   if (p.estado === 'en_revision') {
     return (
       <p className="resultado-linea">
-        Nadie ve quién se retiró. Si hay otra fecha que sirva, sale una versión nueva y todos vuelven a confirmar: nada se hereda.
+        La actividad del grupo muestra quién se bajó, sin motivos. Si hay otra fecha que sirva, sale una versión nueva y todos vuelven a confirmar: nada se hereda.
         {s.puede.proponer_reparacion ? '' : ' Quien organiza busca alternativa.'}
       </p>
     )

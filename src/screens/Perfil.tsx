@@ -188,7 +188,7 @@ export default function Perfil() {
                     <strong>Cuándo puedes:</strong> nadie del grupo lo ve. Quien organiza ve cuántas personas respondieron; no quién ni qué.
                   </li>
                   <li>
-                    <strong>Lo que sí ve el grupo:</strong> tu nombre, si marcaste "Me interesa" y si confirmaste una versión. Si te retiras, sin tu nombre.
+                    <strong>Lo que sí ve el grupo:</strong> tu nombre, si marcaste "Me interesa", si confirmaste y cuándo te unes, sales del grupo o te bajas de un plan. Tus motivos no se publican.
                   </li>
                   <li>
                     <strong>Tus gustos y presupuesto:</strong> privados. A quien organiza le llegan solo totales del grupo, nunca el presupuesto.

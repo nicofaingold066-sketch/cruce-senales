@@ -50,7 +50,8 @@ La migración agrega una RPC pública a la lista cerrada: 42 ejecutables por `au
 - Fallo forzado en el segundo retiro: ambos planes, aceptaciones, actividad y membresía quedan sin efectos parciales; el reintento posterior funciona.
 - Auditoría independiente del SQL: sin bloqueantes.
 - Servidor real: migración `20261024115616` instalada. Catálogo observado: 42 RPC autenticadas, 0 sin sesión, 0 helpers expuestos y 0 tablas de `cruce` sin RLS. Las seis pruebas nuevas pasan contra producción (16,12 s). Las nueve pruebas de E2/privilegios también pasaron. La primera tanda E13 se interrumpió por fallos de conexión; tras recuperarse la conexión, su ejecución aislada pasó 6/6 (17,93 s).
-- Despliegue de interfaz y verificación visual en producción: pendientes al escribir este corte.
+- Interfaz integrada en `main` y publicada por Vercel. El despliegue de `97d40f1` terminó en estado completado y producción sirvió `index-CyCNqfHT.js`.
+- Recorrido real desde una sesión de integrante en un grupo ficticio: se ven «Sol prueba se unió al grupo», «Luna prueba salió del grupo» y «Mati prueba se bajó de Asado · prueba ficticia»; expandir muestra el historial y «Ver plan» abre la propuesta correcta. Al recorrer el plan se detectaron y corrigieron dos promesas antiguas de anonimato, en Resultado y Perfil, para que coincidan con la actividad con nombres.
 
 No se agregaron dependencias de producción ni llamadas a modelos.
 
