@@ -60,7 +60,8 @@ const revisarE13 = (quien, p) => {
   const baja = JSON.stringify({ bajas: p.bajas ?? null,
     eventos: (p.historial ?? []).filter((e) => e.tipo === 'baja').map(({ ejecutado_por: _simula, ...e }) => e) })
   for (const n of NOMBRES_DEMO) if (baja.includes(`"${n}"`)) fugasE13.push(`${quien}: la baja nombra a ${n}`)
-  if (baja.includes('habia_aceptado')) fugasE13.push(`${quien}: la baja dice si había confirmado`)
+  // Backend deja `habia_aceptado` en null (no quita la clave): lo que no puede haber es true/false.
+  for (const b of Array.isArray(p.bajas) ? p.bajas : []) if ((b?.habia_aceptado ?? null) !== null) fugasE13.push(`${quien}: la baja dice si había confirmado`)
   if (quien === 'Luna' && (p.opiniones_totales ?? null) !== null) fugasE13.push('Luna: ve opiniones_totales')
 }
 for (const [n, p] of [['Tomi', T], ['Luna', L]]) {
