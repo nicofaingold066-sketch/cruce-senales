@@ -1,7 +1,7 @@
 # Caso demo Makana — pedido directo de Nico, 24 oct 2026
 
 ## Tocando ahora
-Vacío. Cambio terminado en rama propia; no hay procesos de prueba activos ni turno de base. Pendiente únicamente la activación remota autorizada y el ensayo en Supabase real.
+Reapertura 09:45: usuario cree que la conexión ya está. Supabase sigue projects[] y get_project deniega permiso. SOLO adaptación LOCAL al main nuevo b287d40. Rutas propias: sustituir0057 NOaplicada por `supabase/migrations/20261024124500_demo_makana.sql`; `tests/backend/demo-makana.test.ts`; alinear catálogo43 en `tests/backend/{helpers,enmienda2.test,enmienda13.test}.ts`; guiones de evidencia y referencias en `docs/{demo-makana,caso-canonico}.md`. No tocar migración de actividad ya aplicada ni sus rutas. No tomar base: turno coordinador09:39 y prohibición de migraciones vigente.
 
 
 ## Decisiones
@@ -31,3 +31,6 @@ Vacío. Cambio terminado en rama propia; no hay procesos de prueba activos ni tu
 - Evidencia durable: `/Users/macair/.codex/visualizations/2026/10/24/01a16dbb-c25b-7923-80be-5d5b64310a40/demo-makana/`. Todos los servidores y navegadores propios cerrados; 0 errores en221RPC bridge acumuladas.
 - Activación pendiente: pregunta de autorización específica presentada al humano. Supabase permiso denegado; Vercel scope403 y autorización equipo404; GitHub createPR403 (noPR creada). Push propia rama sí permitido. No se buscó saltar accesos ni se subió cliente roto a main.
 - PARA coordinador/Nicolás: integrar SOLO después de aplicar0057 por circuito autorizado; luego publicar cliente y ensayar3sesiones enentorno real. El usuario pidió explícitamente que se veaenapp; falta este paso remoto y no se presenta como cumplido.
+
+## Hallazgo de compatibilidad al retomar
+- mainb287d40 trae actividad y leave_space, DBcatálogo42 sin Makana. La0057anterior42 no se debe aplicar; se prepara migración posterior aactividad con43/0 y wrappers que preservan actividad. Se repetirán fresh/upgrade y ensayo3perfiles enlocal. Conexiónhabilitada delplugin no implica acceso alproyecto.
