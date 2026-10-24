@@ -88,7 +88,7 @@ Notas de la Parte B:
 - La opción que elige el agente puede no ser el asado (con sol hay varias candidatas y el modelo elige). Está bien: el grupo se llama «Los del asado» y el plan es lo que el grupo decida. Leer lo que aparece; no forzar.
 - Si el agente propone franjas distintas a las del caso (p. ej. 12:00–15:00), el caso de Simulación carga igual por franja A y B: sábado con Tomi, Luna, Mati y Caro; domingo con Fede y Sofi. **[leído]** (`SimulacionTab.tsx`, `CASO` por clave A/B).
 - Los botones «Aceptar versión N por …» llevan los nombres de quienes pueden aceptar; se toca una vez y espera «Confirmaron la versión N: …».
-- Solo T1 (organizador) ve «Con condiciones» y «Faltan por responder»; T2 no. Si hay tiempo, decirlo con los dos aparatos a la vista. **[visto]** recorrido (E7.2 con control positivo).
+- Solo T1 (organizador) ve «Con condiciones» y «Faltan por responder» (el rótulo pasa a **«Faltan por confirmar»** cuando el coordinador publique `0cca08a`, pedido de frontend; leerlo del build del ensayo, no de memoria); T2 no. Si hay tiempo, decirlo con los dos aparatos a la vista. **[visto]** recorrido (E7.2 con control positivo).
 
 ### 3b. El mismo recorrido con un solo aparato (plan B de la Parte B, misma estructura para cambiar sin pensar)
 
