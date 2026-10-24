@@ -1,4 +1,4 @@
--- CRUCE · 0052 · Enmienda 15 (E-d): dos planes con etiqueta y la regla "la que más Sí" (docs/contrato-enmienda-15.md).
+-- CRUCE · 0053 · Enmienda 15 (E-d): dos planes con etiqueta y la regla "la que más Sí" (docs/contrato-enmienda-15.md).
 -- Sin RPC nuevas ni cambio de firmas (41/0). Sin etiqueta, sin regla y sin `prefiero`, todo igual que hoy.
 --   * franjas.etiqueta (1 a 40, null sin nombre), dentro de p_franjas de create_proposal; p_regla admite 'mas_si'.
 --   * Motor: con 'mas_si', entre las viables gana la de más elegibles; empate: la que más prefieren (solo cuentan
@@ -7,7 +7,7 @@
 --     del servidor sigue siendo {A, B}; la propia persona la ve en `condiciones.prefiero` (save y get_my_conditions).
 --   * La vista suma `etiqueta` en cada franja y en la opción, y `planes_totales` SOLO para el organizador con 'mas_si':
 --     {A: {si, prefieren}, B: {...}} contando a los demás, cada número null con menos de 2. Nunca quién.
--- Cuerpos copiados de 0051 (create_proposal), 0042 (op_save_conditions), 0011 (get_my_conditions) y 0002
+-- Cuerpos copiados de 0052 (create_proposal), 0042 (op_save_conditions), 0011 (get_my_conditions) y 0002
 -- (validar_disponibilidad, motor), con los cambios marcados "E15 (E-d)".
 
 alter table cruce.franjas add column etiqueta text check (char_length(etiqueta) between 1 and 40);
@@ -357,7 +357,7 @@ end
 $$;
 
 
--- La vista base suma la etiqueta de cada franja y de la opción, y los totales por plan del organizador (0051 ya suma
+-- La vista base suma la etiqueta de cada franja y de la opción, y los totales por plan del organizador (0052 ya suma
 -- ronda y regla).
 create or replace function cruce.vista_propuesta_base(p_prop uuid, p_yo uuid) returns jsonb
 language plpgsql stable set search_path = '' as $$

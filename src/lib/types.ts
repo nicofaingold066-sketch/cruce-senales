@@ -39,7 +39,7 @@ export interface Franja {
   clave: string
   inicio: Momento
   fin: Momento
-  /** Enmienda 15 (E-d, 0052): nombre corto del plan de esa franja ("Picnic en el parque"), público; null sin nombre. */
+  /** Enmienda 15 (E-d, 0053): nombre corto del plan de esa franja ("Picnic en el parque"), público; null sin nombre. */
   etiqueta?: string | null
 }
 
@@ -57,7 +57,7 @@ export interface RondaOpiniones {
   cierra: Momento
   abierta: boolean
 }
-/** Enmienda 15 (E-d, 0052): totales por plan, solo para el organizador; cada número es null con menos de 2. */
+/** Enmienda 15 (E-d, 0053): totales por plan, solo para el organizador; cada número es null con menos de 2. */
 export interface TotalesPlan {
   si: number | null
   prefieren: number | null
@@ -232,7 +232,7 @@ export interface EstadoPropuesta {
   ronda?: RondaOpiniones | null
   /** Enmienda 15: regla del motor ('temprana' si no se eligió). */
   regla?: ReglaMotor
-  /** Enmienda 15 (E-d, 0052): solo para el organizador y con regla 'mas_si'; null para los demás. Nunca quién. */
+  /** Enmienda 15 (E-d, 0053): solo para el organizador y con regla 'mas_si'; null para los demás. Nunca quién. */
   planes_totales?: Record<string, TotalesPlan> | null
   bajas: Baja[]
   siguiente_accion: SiguienteAccion

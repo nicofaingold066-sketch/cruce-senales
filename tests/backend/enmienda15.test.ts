@@ -1,4 +1,4 @@
-// Enmienda 15 (docs/contrato-enmienda-15-borrador.md): ronda de opiniones con plazo (E-c, 0051). Contra la base
+// Enmienda 15 (docs/contrato-enmienda-15-borrador.md): ronda de opiniones con plazo (E-c, 0052). Contra la base
 // real, datos ficticios: demo propio de una sesión (Tomi organiza y es el imprescindible) y dos personas reales que
 // se unen con nombres nuevos. El cierre de una ronda (2 h como mínimo) no se puede esperar en la suite: se verifica a
 // mano sobre una propuesta de prueba propia (ver la sección Implementación de la enmienda).

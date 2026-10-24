@@ -1,7 +1,7 @@
--- CRUCE · 0051 · Enmienda 15 (E-c): ronda de opiniones con plazo. Aprobada por el coordinador (ver
+-- CRUCE · 0052 · Enmienda 15 (E-c): ronda de opiniones con plazo. Aprobada por el coordinador (ver
 -- docs/contrato-enmienda-15-borrador.md). Sin RPC nuevas (41/0). Una firma cambia: create_proposal suma
 -- p_regla y p_ronda_horas, opcionales al final (patrón 0048). Sin parámetros nuevos, todo igual que hoy.
---   * propuestas.ronda_horas (2, 12, 24 o null) y propuestas.regla ('temprana' por defecto; 'mas_si' llega con la 0052).
+--   * propuestas.ronda_horas (2, 12, 24 o null) y propuestas.regla ('temprana' por defecto; 'mas_si' llega con la 0053).
 --   * versiones.ronda_cierra: al publicar cualquier versión, publicada + horas; si no cabe antes del cierre de
 --     aceptación, esa versión queda sin ronda (null) y se comporta como hoy.
 --   * Ronda abierta: no se rearma desde esperando_compromisos (opcion_desactualizada/ronda_abierta); desde
@@ -172,7 +172,7 @@ begin
   if p_actividad is not null and cruce.familia_de_actividad(p_actividad) is null then
     return cruce.err('entrada_incompleta', 'formato_invalido', null);
   end if;
-  -- E15: regla del motor y ronda de opiniones, opcionales. En la 0051 solo 'temprana' (mas_si llega con la 0052).
+  -- E15: regla del motor y ronda de opiniones, opcionales. En la 0052 solo 'temprana' (mas_si llega con la 0053).
   if p_regla is not null and p_regla not in ('temprana') then
     return cruce.err('entrada_incompleta', 'formato_invalido', null);
   end if;
