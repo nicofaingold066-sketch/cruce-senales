@@ -27,7 +27,7 @@ const fuente: FuenteEntrada = {
     llamadas.push(`ver:${codigo}`)
     await espera(300)
     if (codigo === 'MALO') return { ok: false, error: fallo('codigo_inexistente', 'El código de invitación no existe.') }
-    return { ok: true, data: { espacio: { nombre: codigo === 'FUTBOL' ? 'Los del fútbol' : 'Los del asado', demo: codigo !== 'FUTBOL', ...(codigo === 'FUTBOL' ? { proposito: 'futbol' } : {}) }, miembros: miembros.map((m) => ({ ...m })) } }
+    return { ok: true, data: { espacio: { nombre: codigo === 'FUTBOL' ? 'Los del fútbol' : 'Los del asado', demo: codigo !== 'FUTBOL', ...(codigo === 'FUTBOL' ? { proposito: 'futbol' } : {}) }, miembros: miembros.map((m) => ({ ...m, ...(codigo === 'LLENO' ? { libre: false } : {}) })) } }
   },
   async unirse(codigo, nombre, miembroId) {
     llamadas.push(`unirse:${codigo}:${nombre}:${miembroId}`)
