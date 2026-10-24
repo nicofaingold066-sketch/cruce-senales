@@ -30,8 +30,9 @@ Marcas, como en `docs/problema.md` y `docs/apertura.md`:
 > - **D4:** la oferta de casa es privada, y queda para después de la demo.
 >
 > - **D7:** sí (21:00, en esta sesión). El estilo de la ocasión (simple · normal · especial) entra sin migración (§13).
+> - **D5, D6, D8, D9, D10:** sí (21:06, vía coordinador). D10: el botón «Buscar el lugar en el mapa» va a front-juan (§12 U2). D6 y D8: a apertura, para el guion y las preguntas del jurado (§14). D5 y D9: después del evento, al README (§15, §12 U6, §13 E3).
 >
-> La enmienda 13 (`docs/contrato-enmienda-13.md`, corte a la 01:00) suma además «Así no puedo, pero sigo» (opinar sin bajarse), «Rearmar con lo nuevo» y la baja sin nombre («Una persona se retiró»), con el texto de psico para quien se retira. Textos de esas pantallas: §8.10. Siguen pendientes D5 a D10 (ficha `agentes/psico.md`).
+> La enmienda 13 (`docs/contrato-enmienda-13.md`, corte a la 01:00) suma además «Así no puedo, pero sigo» (opinar sin bajarse), «Rearmar con lo nuevo» y la baja sin nombre («Una persona se retiró»), con el texto de psico para quien se retira. Textos de esas pantallas: §8.10. No queda ninguna decisión pendiente de psico (ficha `agentes/psico.md`).
 
 ## 0b. El cierre: por qué los planes de grupo no se cierran (eje del documento)
 Pedido de Nico (20:28): *«Somos seres sociales y a todos nos gusta estar con gente, pero el máximo problema es terminar de coordinar una juntada.»* Es el mismo problema de `docs/problema.md` §3, visto desde la psicología. Todo lo demás de este documento (casa, comida, parejas, plata, distancia) importa **porque cada una de esas tensiones es una razón para no cerrar**.
