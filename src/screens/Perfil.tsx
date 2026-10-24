@@ -61,7 +61,7 @@ export default function Perfil() {
   const filaElegida = FILAS.find((f) => f.clave === elegir) ?? null
 
   return (
-    <div className="vista vista-s2b">
+    <div className="vista vista-s2b s2b-vista-perfil">
       <header className="s2b-cabeza s2b-perfil-cabeza">
         <Avatar nombre={perfil?.nombre ?? '?'} tam={64} />
         <div className="s2b-perfil-nombre">

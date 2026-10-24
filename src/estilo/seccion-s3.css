@@ -436,3 +436,75 @@
   height: 1px;
   margin: -1px;
 }
+
+/* ---- C4 (computadora): hoja CENTRADA de 880 × 720 sobre el grupo atenuado (validado 03:15).
+   El grupo se dibuja detrás, inerte (.s3-fondo); el velo y la hoja son los del sistema (.sd-velo, .sd-hoja-modal). */
+@media (min-width: 960px) {
+  .s3-fondo {
+    position: fixed;
+    inset: var(--barra-alto) 0 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .s3-velo {
+    top: var(--barra-alto);
+  }
+  .vista-s3.s3-centrada {
+    display: block;
+    position: fixed;
+    top: calc(var(--barra-alto) + (100dvh - var(--barra-alto)) / 2);
+    bottom: auto;
+    left: 50%;
+    right: auto;
+    width: min(880px, calc(100vw - 80px));
+    margin: 0;
+    max-height: min(720px, calc(100dvh - var(--barra-alto) - 48px));
+    min-height: 0;
+    transform: translate(-50%, -50%);
+    overflow-y: auto;
+    padding: 0;
+    border-radius: var(--r-l);
+    animation: s3-centrada-entra 240ms var(--curva) both;
+  }
+  .vista-s3.s3-centrada > .escena {
+    background: var(--hoja);
+    color: var(--tinta);
+    padding: var(--e-4) var(--e-5) 0;
+    border-bottom: 0;
+  }
+  .vista-s3.s3-centrada > .escena::before,
+  .vista-s3.s3-centrada > .escena::after {
+    display: none;
+  }
+  .vista-s3.s3-centrada .s3-cerrar,
+  .vista-s3.s3-centrada .s3-grupo {
+    color: var(--tinta-2);
+  }
+  .vista-s3.s3-centrada .s3-titulo h1 {
+    color: var(--tinta);
+  }
+  .vista-s3.s3-centrada > .hoja {
+    max-width: none;
+    padding: var(--e-4) var(--e-5) var(--e-5);
+    background: var(--hoja);
+  }
+  .vista-s3.s3-centrada .barra-accion {
+    background: none;
+    box-shadow: none;
+  }
+}
+@keyframes s3-centrada-entra {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 16px));
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vista-s3.s3-centrada {
+    animation: none;
+  }
+}

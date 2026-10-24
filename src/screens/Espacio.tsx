@@ -3,7 +3,7 @@ import type { FormEvent } from 'react'
 import { api } from '../lib/api'
 import type { ApiError, Espacio as EspacioT, PropuestaResumen } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
-import { rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
+import { irA, parseRuta, rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { momentoCorto } from '../lib/format'
 import { Avatar, AvatarPila, Aviso, Boton, Cargando, ErrorCaja, IconoGrupo, Nombre, Vacio } from '../components/ui'
 import { Confirmacion, useVolverFoco } from '../components/Confirmacion'
@@ -14,7 +14,8 @@ import '../estilo/seccion-s2.css'
 // El panel del agente va en su propia parte del paquete (mejora #14): se descarga solo al abrir el bloque.
 const AgentePanel = lazy(() => import('../agente/AgentePanel').then((m) => ({ default: m.AgentePanel })))
 
-export default function Espacio({ espacioId }: { espacioId: string }) {
+/** `fondo`: dibujado atenuado detrás de Nuevo plan en computadora (C4); no toma el aviso ni sondea. */
+export default function Espacio({ espacioId, fondo = false }: { espacioId: string; fondo?: boolean }) {
   const { soloLectura } = useShell()
   // "Contar mis gustos y presupuesto" (Responder, de friccion) deja esta marca para abrir "Mis preferencias".
   const [desdeResponder] = useState(() => {
@@ -26,24 +27,29 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
       return false
     }
   })
-  const [agenteAbierto, setAgenteAbierto] = useState(desdeResponder)
-  const agenteRef = useRef<HTMLDetailsElement>(null)
+  // Pantalla 7 del mockup: el agente es una pantalla propia (#/e/<id>/agente) que monta este mismo componente,
+  // así el grupo ya cargado no se vuelve a pedir al ir y volver.
+  const [enAgente, setEnAgente] = useState(() => esVistaAgente())
+  useEffect(() => {
+    const f = () => setEnAgente(esVistaAgente())
+    window.addEventListener('hashchange', f)
+    return () => window.removeEventListener('hashchange', f)
+  }, [])
+  // Desde "Contar mis gustos y presupuesto" se llega directo a la pantalla del agente.
+  useEffect(() => {
+    if (desdeResponder) window.location.replace(rutas.agente(espacioId))
+  }, [desdeResponder, espacioId])
   const [verPersonas, setVerPersonas] = useState(false)
   const [gustos, setGustos] = useState<string>('Tus gustos son privados: solo los usa el agente.')
   const [espacio, setEspacio] = useState<EspacioT | null>(null)
   const [propuestas, setPropuestas] = useState<PropuestaResumen[] | null>(null)
   const [errorEspacio, setErrorEspacio] = useState<ApiError | null>(null)
   const [errorLista, setErrorLista] = useState<ApiError | null>(null)
-  const [aviso, setAviso] = useState<string | null>(() => tomarAviso())
+  const [aviso, setAviso] = useState<string | null>(() => (fondo ? null : tomarAviso()))
 
   const yo = espacio?.miembros.find((m) => m.es_yo) ?? null
   useIdentidad(espacio?.nombre ?? null, yo?.nombre ?? null, espacio ? (espacio.mi_rol === 'organizador' ? 'organizador' : 'miembro') : null)
 
-  // B-5: llegando desde "Contar mis gustos y presupuesto", "Mis preferencias" queda abierto y a la vista.
-  const conEspacio = espacio != null
-  useEffect(() => {
-    if (desdeResponder && conEspacio) agenteRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
-  }, [desdeResponder, conEspacio])
 
   // U1 (revisión de Codex): las cargas se solapan (sondeo, volver a la pestaña, refresco tras reiniciar).
   // Se aplica solo la respuesta más nueva de cada carga, una lista pedida en otra generación del espacio
@@ -111,9 +117,9 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
   }, [cargarTodo])
 
   // Agente del círculo (mockup): una línea con tus gustos resumidos. Son tuyos y privados: solo se ven acá.
-  // Se pide al cargar y otra vez al cerrar el agente, por si los cambiaste ahí.
+  // Se pide al cargar y otra vez al volver del agente, por si los cambiaste ahí.
   useEffect(() => {
-    if (agenteAbierto) return
+    if (enAgente) return
     let vivo = true
     void api.getMyPreferences(espacioId).then((r) => {
       if (!vivo || !r.ok) return
@@ -130,9 +136,9 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
     return () => {
       vivo = false
     }
-  }, [espacioId, agenteAbierto])
+  }, [espacioId, enAgente])
   // Contrato 4: con la lista visible, list_proposals cada 10 s.
-  useSondeo(cargarTodo, 10000)
+  useSondeo(cargarTodo, 10000, !fondo)
 
   if (errorEspacio && !espacio) {
     const fuera = errorEspacio.codigo === 'fuera_de_audiencia'
@@ -169,6 +175,31 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
   const porEntrar = espacio.miembros.filter((m) => m.pendiente)
   const dentro = espacio.miembros.length - porEntrar.length
   const organizador = espacio.miembros.find((m) => m.rol === 'organizador')
+
+  if (enAgente) {
+    return (
+      <div className="vista vista-s2 vista-agente">
+        {/* Mockup, pantalla 7 (y C7 en computadora): "‹ grupo", título y el panel del agente (agente-ia). */}
+        <section className="escena" aria-labelledby="agente-pantalla-titulo">
+          <a className="escena-volver" href={rutas.espacio(espacioId)}>
+            <Icono n="atras" tam={20} /> {espacio.nombre}
+          </a>
+          <h1 id="agente-pantalla-titulo">Agente del círculo</h1>
+        </section>
+        <div className="hoja">
+          {/* Siempre abierto: el summary oculto queda para los guiones que lo tocan (no lo pliega). */}
+          <details id="mis-preferencias" className="agente-plegable s2-agente-pantalla" open>
+            <summary className="visualmente-oculto" tabIndex={-1} onClick={(e) => e.preventDefault()}>
+              Agente del círculo
+            </summary>
+            <Suspense fallback={<Cargando texto="Cargando el agente…" esqueleto />}>
+              <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} demo={espacio.demo} />
+            </Suspense>
+          </details>
+        </div>
+      </div>
+    )
+  }
 
   const ultimaPropuesta = propuestas && propuestas.length > 0 ? propuestas[0] : null
 
@@ -223,7 +254,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
           ) : null}
         </section>
 
-        <section aria-labelledby="propuestas-titulo">
+        <section className="s2-col-planes" aria-labelledby="propuestas-titulo">
           <div className="seccion-titulo">
             <h2 id="propuestas-titulo">Planes</h2>
             <a className="enlace s2-nuevo-plan" href={rutas.nueva(espacioId)} aria-disabled={soloLectura}>
@@ -258,44 +289,27 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
           ) : null}
         </section>
 
-        {/* Agente del círculo: una línea con tus gustos (privados, solo los ves tú), "Abrir ›" y el botón del agente. */}
+        {/* Agente del círculo: una línea con tus gustos (privados, solo los ves tú), "Abrir ›" y el botón del agente.
+            Las dos cosas llevan a la pantalla del agente. El summary mantiene details.agente-plegable para los guiones. */}
         <section className="tarjeta s2-agente" aria-labelledby="agente-titulo">
-          <details
-            ref={agenteRef}
-            id="mis-preferencias"
-            className="plegable agente-plegable"
-            open={agenteAbierto}
-            onToggle={(e) => setAgenteAbierto(e.currentTarget.open)}
-          >
-            <summary>
+          <details className="plegable agente-plegable">
+            <summary
+              onClick={(e) => {
+                e.preventDefault()
+                irA(rutas.agente(espacioId))
+              }}
+            >
               <span className="summary-texto">
                 <span id="agente-titulo">Agente del círculo</span>
               </span>
-              <span className="s2-abrir">{agenteAbierto ? 'Cerrar' : 'Abrir ›'}</span>
+              <span className="s2-abrir">Abrir ›</span>
             </summary>
-            {/* Se monta solo al abrir: plegado no hace llamadas al servidor del agente. */}
-            {agenteAbierto ? (
-              <Suspense fallback={<Cargando texto="Cargando el agente…" />}>
-                <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} demo={espacio.demo} />
-              </Suspense>
-            ) : null}
           </details>
-          {!agenteAbierto ? (
-            <>
-              <p className="suave s2-gustos">{gustos}</p>
-              {esOrganizador ? (
-                <button
-                  type="button"
-                  className="btn btn-secundario s2-agente-boton"
-                  onClick={() => {
-                    setAgenteAbierto(true)
-                    window.setTimeout(() => agenteRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }), 50)
-                  }}
-                >
-                  Que el agente proponga un plan
-                </button>
-              ) : null}
-            </>
+          <p className="suave s2-gustos">{gustos}</p>
+          {esOrganizador ? (
+            <a className="btn btn-secundario s2-agente-boton" href={rutas.agente(espacioId)}>
+              Que el agente proponga un plan
+            </a>
           ) : null}
         </section>
 
@@ -542,4 +556,9 @@ function ReiniciarDemo({
       {error ? <ErrorCaja error={error} enfocar /> : null}
     </div>
   )
+}
+
+function esVistaAgente(): boolean {
+  const r = parseRuta(window.location.hash)
+  return r.nombre === 'espacio' && r.vista === 'agente'
 }

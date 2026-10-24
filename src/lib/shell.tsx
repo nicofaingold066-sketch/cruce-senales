@@ -57,7 +57,7 @@ export type Ruta =
   | { nombre: 'planes' }
   | { nombre: 'perfil' }
   | { nombre: 'crear' }
-  | { nombre: 'espacio'; espacioId: string }
+  | { nombre: 'espacio'; espacioId: string; vista?: 'agente' }
   | { nombre: 'nueva'; espacioId: string }
   | { nombre: 'responder'; espacioId: string; propuestaId?: string }
   | { nombre: 'propuesta'; espacioId: string; propuestaId: string }
@@ -93,6 +93,8 @@ export function parseRuta(hash: string): Ruta {
     if (partes[2] === 'nueva') return { nombre: 'nueva', espacioId: partes[1] }
     if (partes[2] === 'responder') return { nombre: 'responder', espacioId: partes[1], ...(partes[3] ? { propuestaId: partes[3] } : {}) }
     if (partes[2] === 'p' && partes[3]) return { nombre: 'propuesta', espacioId: partes[1], propuestaId: partes[3] }
+    // Mockup, pantalla 7: el agente del círculo es una pantalla propia del grupo (la monta Espacio).
+    if (partes[2] === 'agente') return { nombre: 'espacio', espacioId: partes[1], vista: 'agente' }
     return { nombre: 'espacio', espacioId: partes[1] }
   }
   return { nombre: 'inicio' }
@@ -105,6 +107,7 @@ export const rutas = {
   crear: () => '#/crear',
   espacio: (id: string) => `#/e/${id}`,
   nueva: (id: string) => `#/e/${id}/nueva`,
+  agente: (id: string) => `#/e/${id}/agente`,
   /** #88: responder en un toque la propuesta abierta (o esa propuesta); si no se puede, la pantalla vuelve al espacio. */
   responder: (id: string, propuestaId?: string) => `#/e/${id}/responder${propuestaId ? `/${propuestaId}` : ''}`,
   propuesta: (e: string, p: string) => `#/e/${e}/p/${p}`,

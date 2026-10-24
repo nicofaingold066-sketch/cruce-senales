@@ -344,3 +344,58 @@
     padding-bottom: 120px;
   }
 }
+
+/* ---- computadora (validado 03:15). C8 Planes: las cards en tres columnas. C9 Perfil: 4/12 avatar, nombre y
+   "Salir"; 8/12 los dos bloques de filas. Márgenes de 40 px y 24 px entre columnas. */
+@media (min-width: 960px) {
+  .vista-s2b.s2b-vista-planes > .s2b-cabeza,
+  .vista-s2b.s2b-vista-planes > .s2b-cuerpo {
+    max-width: 1200px;
+  }
+  .vista-s2b .s2b-planes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+  }
+  .vista-s2b .s2b-planes > li {
+    display: flex;
+  }
+  .vista-s2b .s2b-planes > li > * {
+    flex: 1;
+  }
+  .vista.vista-s2b.s2b-vista-perfil {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    column-gap: 24px;
+    align-content: start;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding: var(--e-5) var(--margen) 0;
+  }
+  .s2b-vista-perfil > .s2b-cabeza {
+    grid-column: 1;
+    grid-row: 1;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .s2b-vista-perfil > .s2b-cuerpo {
+    display: contents;
+  }
+  .s2b-vista-perfil > .s2b-cuerpo > * {
+    grid-column: 2;
+    margin-bottom: var(--entre-tarjetas);
+  }
+  .s2b-vista-perfil > .s2b-cuerpo > :first-child {
+    grid-row: 1;
+  }
+  .s2b-vista-perfil > .s2b-cuerpo > .s2b-salir {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+    margin-top: var(--e-4);
+  }
+}
