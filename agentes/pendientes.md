@@ -4,7 +4,7 @@ Rama de código: `wip/pendientes` (base `wip/fundamentos` `ad2d63e`). Rutas: `su
 Tarea (Nico, 23:50): (A) agente social completo (enmienda 11, lo humano), (B) E-c ronda de opiniones con plazo, (C) E-d dos planes con votación, como enmienda 15.
 
 ## Tocando ahora
-- [02:02] Base LIBRE (0054 terminada). Nada en edición.
+- [02:12] Tarea del coordinador (02:0x): 0055, en las demos los simulados reciben invitaciones del agente. Escrita SIN APLICAR (`wip/pendientes` `9d0e013`: migración, reversa, pruebas enmienda11 y agente-social-reparacion ajustadas, prueba nueva `agente-social-demo.test.ts`). Espero que sinteticos libere la base (CORRIENDO PRUEBA 02:10) para poner MIGRACION EN CURSO y aplicar.
 
 ## Entregado
 - [02:02] **0054 demo "Los del finde" APLICADA (01:56)** (pedido de Nico 01:51), `wip/pendientes` `cbab6af`: `seed_demo_space` siembra con el nombre nuevo; 1342 demos renombrados (0 quedan con "Los del asado"; 0 funciones con el nombre viejo). 41/0, `verificar_privilegios()` sin hallazgos. Pruebas aceptan los dos nombres (`Los del (asado|finde)`). Reversa: `supabase/revertir/0054_revertir.sql`.
