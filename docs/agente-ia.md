@@ -216,5 +216,26 @@ El modelo recibe lo mismo que `entradaModelo`: totales del grupo y opciones ya v
 
 **BYOK:** el Gateway guarda cada generación, y `GET /v1/generation?id=gen_…` (documentado por Vercel) devuelve `is_byok`. La función lo consulta en segundo plano, del lado del servidor y con la misma clave, y registra solo `is_byok`, el proveedor y el modelo. Registro de la llamada anterior, a las 00:00:13: `{"is_byok":true,"proveedor":"anthropic","modelo":"anthropic/claude-fable-5.1"}`. **Las llamadas salen por la clave de Anthropic de Nico.**
 
+### 8.10 Agente social contra el backend real: función v13 (pedido de Nico, 24 oct)
+Función v13, desplegada el 24 de octubre a la 01:11:50 desde `wip/agente-v13` `ae012dd`. Junta la v12 (Fable y herramientas) con el circuito social de codex-juan de `main` `40ffb66`, y suma el registro de `is_byok` en la ruta social. Son 8 archivos. Antes de desplegar se comprobó que las 18 RPC del circuito existen con sus firmas y que las migraciones están aplicadas hasta la 0051.
+
+**Turno de base de 01:05 a 01:14:51 (hora del reloj), con demos y usuarios anónimos ficticios propios, por API:**
+- **Servidor viejo (v12):** el sondeo social y preparar responden `fecha_invalida`, sin RPC ni modelo. La interfaz falla cerrada.
+- **Capacidad en la v13:** responde exactamente `{ok, contrato 2, capacidades.agente_social 1}`.
+- **Consentimiento de invitaciones:** apagado por defecto, se guarda y se recupera, independiente de `usar_en_agente`.
+- **Preparar sin destinatarios:** cierra con `sin_destinatarios`, sin modelo y sin propuesta.
+- **Preparar con destinatarios:** queda en `necesita_aprobacion` (no publica) con el plan exacto a la vista; recuperar el recibo no llama al modelo.
+- **Aprobar y publicar:** con doble clic y reintento sale una sola aprobación y una sola propuesta. Un hash ajeno no da autoridad.
+- **Invitación y respuesta:** Luna ve la invitación desde su sesión, y eso no cuenta como asistencia. Después acepta la v1 y se da de baja.
+- **Revocar antes de publicar:** publicar se rechaza sin crear propuesta.
+- **Acceso ajeno:** se rechaza sin nombres.
+
+**Sin verificar:** el rearmado sin heredar aceptaciones y el rechazo de una versión vieja sobre una propuesta publicada por el agente (hace falta llegar a "grupo confirmado"), la pantalla con la base real y el modo herramientas con modelo (su código es el de la v12, §8.9).
+
+**Las 3 llamadas autorizadas por Nico:**
+1. Preparar: 28,8 s, salió por el texto de respaldo y sin registro de la causa.
+2. Preparar para la revocación: 10,4 s, Fable, `is_byok: true`.
+3. Modo de siempre: 4,0 s, Fable, `is_byok: true`.
+
 ## Historia
 Idea de Nico. Diseño de privacidad del coordinador: el servidor elige y la IA solo ve totales. Enmienda 4 (preferencias, catálogo y elección por reglas), 4.1 (candidatas, perfil del grupo y la IA como coordinadora, pedido de Nico) y 5 (preferencias simuladas). Mejoras #11, #23, #25, #26, #28, #32 y #35. #64: el modelo pasa por el Vercel AI Gateway (pedido de Nico), con un tope de tokens y un límite de llamadas por persona (pedido del coordinador por costo).
