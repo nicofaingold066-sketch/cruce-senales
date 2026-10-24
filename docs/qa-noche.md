@@ -28,7 +28,8 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
   - L1 espera los espacios de Tomi en la portada (sección «Tus grupos»).
   - L2 ofrece las entradas que existen hoy con alguien sin nombre: demo, «Unirme» y «Entrar» (nombre). «Crear un espacio» ya no está en esa pantalla: «Crear un grupo» solo aparece con nombre guardado.
   - L3 verifica que, con HTTP 503, la copia sigue ofrecida (volver / olvidarla).
-  - Se quitó la comprobación de **foco** tras el error (antes en `#/entrar`); la portada nueva no maneja foco al fallar el retorno. Idea para friccion/Juan: mover el foco al aviso de error. No se baja lo demás.
+  - **Foco recuperado (00:19):** frontend lo implementó en `OtraSesion` (`094b192`, `wip/frontend`); L2 y L3 vuelven a comprobar que el foco queda en el aviso del error. Es estricto cuando el código probado trae `.focus()` en `src/components/Sesiones.tsx`; si no, solo avisa («AVISO foco»). Probado: contra `wip/frontend` 12/12 con la comprobación estricta; contra fundamentos 12/12 con el aviso.
+  - (historial) Se quitó la comprobación de **foco** tras el error (antes en `#/entrar`); la portada nueva no maneja foco al fallar el retorno. Idea para friccion/Juan: mover el foco al aviso de error. No se baja lo demás.
 - 19:28 `recorrido-dos-sesiones.mjs` ahora también respeta `MIGRACION EN CURSO` (antes corría igual).
 - 20:28 Enmienda 10: `jurado-navegador.mjs` revisa en toda respuesta compartida (todas menos get/save/simulate_save_preferences) que no aparezcan las claves `movilidad`, `tiempo_max`, `minutos_por_persona` ni los valores de movilidad (`me_llevan`, `auto_con_lugar`…) ni las 8 zonas. Pasa contra producción con la enmienda 10 publicada (main fae49fa).
 - 21:08 **Enmienda 13** (pedido del coordinador 20:51), listo antes de que backend la aplique. Todo se activa solo cuando el servidor trae `mi_situacion.mi_opinion` / `opiniones_totales`; hasta entonces los guiones dicen "E13 pendiente" y no cuentan.
