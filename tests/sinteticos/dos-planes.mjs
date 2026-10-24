@@ -67,8 +67,9 @@ try {
   const mas = await E.ver(mara, 'nueva-propuesta-mas-opciones')
   C.masOpcionesRonda = tiene(mas.texto, /Sin ronda/) && tiene(mas.texto, /2 h/)
   C.masOpcionesRegla = tiene(mas.texto, /La que pueden más/)
-  await mara.tocar(mara.page.locator('label', { hasText: /^2 h$/ }).first(), 'ronda de 2 h')
-  await mara.tocar(mara.page.locator('label', { hasText: 'La que pueden más' }).first(), 'gana: la que pueden más')
+  // Solo dentro del grupo «Ronda de opiniones»: «Dura aprox.» también tiene un «2 h» antes en la pantalla.
+  await mara.tocar(mara.page.locator('[aria-label="Ronda de opiniones"] label', { hasText: /^2 h$/ }).first(), 'ronda de 2 h')
+  await mara.tocar(mara.page.locator('[aria-label="Si sirven las dos, gana"] label', { hasText: 'La que pueden más' }).first(), 'gana: la que pueden más')
   await mara.tocar(mara.page.getByLabel('Sumar uno al mínimo'), 'mínimo +1')
   await mara.tocarBoton('Revisar antes de crear')
   const rev = await E.ver(mara, 'nueva-propuesta-revisar-e15')
