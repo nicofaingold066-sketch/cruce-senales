@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../lib/api'
+import { DEMO_MAKANA, esDemoMakana } from '../lib/casoDemo'
 import { RONDA_HORAS } from '../lib/types'
 import type { ActividadClave, ApiError, Espacio, ReglaMotor, RondaHoras } from '../lib/types'
 import { useAccion } from '../lib/hooks'
@@ -168,10 +169,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const [enCurso, setEnCurso] = useState(false)
 
   const yo = espacio?.miembros.find((m) => m.es_yo) ?? null
-  // Atajos de actividad según el nombre del grupo (#92, apertura): «Los del pádel» ve Pádel primero; el demo
-  // («Los del finde») no nombra una actividad y sale en el orden general. El ejemplo del placeholder sale del id del
-  // grupo: no cambia al escribir.
-  const actividades = useMemo(() => atajosParaEspacio(espacio?.nombre ?? '', espacio?.familia), [espacio?.nombre, espacio?.familia])
+  // El caso Makana ofrece Parque primero; los demás grupos conservan el orden por nombre y familia.
+  // El ejemplo del placeholder sale del id del grupo y no cambia al escribir.
+  const actividades = useMemo(() => atajosParaEspacio(esDemoMakana(espacio) ? 'parque' : espacio?.nombre ?? '', espacio?.familia), [espacio?.nombre, espacio?.familia, espacio?.demo_caso])
   const ej = useMemo(() => ejemploPorSemilla(espacioId), [espacioId])
   useIdentidad(espacio?.nombre ?? null, yo?.nombre ?? null, espacio ? (espacio.mi_rol === 'organizador' ? 'organizador' : 'miembro') : null)
 
@@ -202,7 +202,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     const tomi = espacio.miembros.find((m) => m.nombre.toLowerCase() === 'tomi')
     const borrador = tomarBorradorAgente(espacio.id)
     const sabado = proximoSabado()
-    const base: Formulario = espacio.demo
+    const base: Formulario = esDemoMakana(espacio)
+      ? { ...CASO, ...DEMO_MAKANA.propuesta, imprescindibleId: yoM?.miembro_id ?? '' }
+      : espacio.demo
       ? { ...CASO, imprescindibleId: (tomi ?? yoM)?.miembro_id ?? '' }
       : {
           titulo: '',
@@ -227,10 +229,11 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
       if (!DURACIONES.includes(duracion)) setDuracionExtra(duracion)
       setF({
         ...base,
-        // El borrador no trae cupos: el mínimo 4 del caso del asado no vale para un parque. Se parte del 2 de siempre
-        // y quien organiza lo ajusta; el servidor valida el cupo (el mínimo real lo calcula el flujo social).
-        minimo: '2',
+        // Se usan los límites de la actividad cuando están disponibles; el servidor valida los cupos.
         titulo: borrador.titulo,
+        actividad: (borrador.actividad ?? null) as ActividadClave | null,
+        minimo: String(borrador.personas?.min ?? 2),
+        maximo: String(Math.max(borrador.personas?.min ?? 2, Math.min(Number(base.maximo), borrador.personas?.max ?? 20))),
         aDia: a.inicio.slice(0, 10),
         aHora: a.inicio.slice(11, 16),
         bDia: b.inicio.slice(0, 10),
@@ -488,7 +491,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                           value={etiqueta}
                           onChange={(e) => poner(clave === 'A' ? 'aEtiqueta' : 'bEtiqueta', e.target.value)}
                           maxLength={40}
-                          placeholder={clave === 'A' ? 'Ej.: asado en lo de Tomi' : 'Ej.: picnic en el parque'}
+                          placeholder={clave === 'A' ? 'Ej.: encuentro tranquilo en el parque' : 'Ej.: café y conversación'}
                         />
                       </label>
                     ) : null}

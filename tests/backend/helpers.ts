@@ -56,7 +56,7 @@ const Z = '00000000-0000-4000-8000-000000000000'
 /**
  * Lista permitida de entradas públicas (A5) con argumentos inofensivos: con una sesión válida cada
  * llamada termina en un sobre de error de negocio (o en una lectura vacía) y no escribe nada.
- * seed_demo_space es la excepción (crea el demo propio de esa sesión) y se prueba aparte.
+ * seed_demo_space y seed_demo_makana son las excepciones (crean la demo propia) y se prueban aparte.
  */
 export const PERMITIDAS: Record<string, () => Record<string, unknown>> = {
   server_info: () => ({}),
@@ -67,6 +67,7 @@ export const PERMITIDAS: Record<string, () => Record<string, unknown>> = {
   get_space: () => ({ p_espacio_id: Z }),
   leave_space: () => ({ p_espacio_id: Z, p_intento_id: randomUUID() }), // actividad del grupo
   seed_demo_space: () => ({}),
+  seed_demo_makana: () => ({}), // 0057: caso de siete perfiles, aislado de legacy
   add_simulated_member: () => ({ p_espacio_id: Z, p_nombre_visible: 'x' }),
   reset_demo: () => ({ p_espacio_id: Z, p_intento_id: randomUUID() }),
   create_proposal: () => ({
@@ -116,8 +117,8 @@ export const PERMITIDAS: Record<string, () => Record<string, unknown>> = {
   opinar_version: () => ({ p_propuesta_id: Z, p_version: 1, p_opinion: 'asi_no_puedo', p_intento_id: randomUUID() }),
 }
 
-/** Tamaño de la lista permitida (A5): 41 con E13; 42 con la salida explícita del grupo. */
-export const TOTAL_PERMITIDAS = 42
+/** Lista permitida: 41 con E13, 42 con leave_space, 43 con seed_demo_makana. */
+export const TOTAL_PERMITIDAS = 43
 
 /** Lista cerrada de siguiente_accion.codigo (enmienda 3). */
 export const CODIGOS_SIGUIENTE = [

@@ -92,18 +92,20 @@ describe('enmienda 10: zona, movilidad, tiempo máximo y momento del día', { ti
   })
 
   it('1. tiempo_max: 15 descarta lo lejano, 60 no; todo lejos da sin_lugar_cerca_para_todos sin decir para quién', async () => {
-    // Las 6 personas marcan fútbol, pádel y parque: esas tres dominan el puntaje (3 por marca) frente al resto del
-    // catálogo. Todos en Ñuñoa en transporte público: fútbol 10 min, parque 25, pádel 40 (sin castigo: 40 - 30 < 15).
+    // Las 6 personas marcan bar, parque y cine: esas tres dominan el puntaje (3 por marca) frente al resto del
+    // catálogo. Todos en Ñuñoa en transporte público: bar 10 min, parque 25, cine 40 (sin castigo: 40 - 30 < 15).
+    // E16 (0057): antes eran fútbol, pádel y parque; en el demo de 6 el pádel (máx. 4) ya no sale y el fútbol
+    // (mín. 10) va al final, así que se cambian por actividades que entran para 6. Lo que se prueba es lo mismo.
     const CERCA = { zona: 'nunoa', movilidad: 'transporte_publico', tiempo_max: '60', momento: 'da_igual' }
-    const TRES = { ...BASE, me_gustaria: ['futbol', 'padel', 'parque'] }
+    const TRES = { ...BASE, me_gustaria: ['bar', 'parque', 'cine'] }
     await todos({ ...TRES, ...CERCA })
     const largo = await plan(DESCONOCIDO)
-    expect(idsDe(largo)).toEqual(['lugar-sim-03', 'lugar-sim-02', 'lugar-sim-04'])
-    // Tomi con 15: el pádel (40) y el parque (25) quedan fuera; todo lo que queda está a 15 o menos.
+    expect(idsDe(largo)).toEqual(['lugar-sim-07', 'lugar-sim-04', 'lugar-sim-09']) // E16
+    // Tomi con 15: el cine (40) y el parque (25) quedan fuera; todo lo que queda está a 15 o menos.
     await guardar(O, demo.espacioId, { ...TRES, ...CERCA, tiempo_max: '15' })
     const corto = await plan(DESCONOCIDO)
-    expect(idsDe(corto)[0]).toBe('lugar-sim-03')
-    expect(idsDe(corto)).not.toContain('lugar-sim-02')
+    expect(idsDe(corto)[0]).toBe('lugar-sim-07') // E16
+    expect(idsDe(corto)).not.toContain('lugar-sim-09') // E16
     expect(idsDe(corto)).not.toContain('lugar-sim-04')
     for (const c of corto.candidatas) expect(c.viaje.max_minutos).toBeLessThanOrEqual(15)
     // Tomi en Maipú con 15 y "algo barato" (el único lugar de Maipú es de precio medio): todo le queda lejos.
@@ -135,17 +137,18 @@ describe('enmienda 10: zona, movilidad, tiempo máximo y momento del día', { ti
   })
 
   it('3. equidad: a igual puntaje gana la de menor viaje máximo', async () => {
-    // Todos marcan fútbol y pádel, que empatan (marcas y energía). Sin viaje desempataba el precio (fútbol, barato).
-    // Todos en Las Condes: pádel a 10, fútbol a 25 → gana el pádel aunque sea más caro.
-    const DOS = { ...BASE, me_gustaria: ['futbol', 'padel'] }
+    // Todos marcan película en casa y asado, que empatan (marcas, energía, precio barato y techo).
+    // E16 (0057): antes eran fútbol y pádel, que no entran para los 6 del demo (mín. 10 y máx. 4).
+    // Todos en Las Condes: película a 10, parrilla a 20, quincho a 25 → gana la de menor viaje máximo.
+    const DOS = { ...BASE, me_gustaria: ['peli_casa', 'asado'] }
     await todos({ ...DOS, zona: 'las_condes', movilidad: 'auto_sin_lugar', tiempo_max: '60', momento: 'da_igual' })
     const lc = await plan(DESCONOCIDO)
-    expect(idsDe(lc).slice(0, 2)).toEqual(['lugar-sim-02', 'lugar-sim-03'])
+    expect(idsDe(lc)).toEqual(['lugar-sim-17', 'lugar-sim-14', 'lugar-sim-01']) // E16
     expect(lc.viaje).toEqual({ max_minutos: 10, estimado: true })
-    expect(lc.candidatas[1].viaje).toEqual({ max_minutos: 25, estimado: true })
-    // Todos en Ñuñoa: fútbol a 10, pádel a 25 → gana el fútbol.
+    expect(lc.candidatas[1].viaje).toEqual({ max_minutos: 20, estimado: true }) // E16
+    // Todos en Ñuñoa: quincho a 10, parrilla a 15, película a 25 → gana el quincho.
     await todos({ ...DOS, zona: 'nunoa', movilidad: 'auto_sin_lugar', tiempo_max: '60', momento: 'da_igual' })
-    expect(idsDe(await plan(DESCONOCIDO)).slice(0, 2)).toEqual(['lugar-sim-03', 'lugar-sim-02'])
+    expect(idsDe(await plan(DESCONOCIDO))).toEqual(['lugar-sim-01', 'lugar-sim-14', 'lugar-sim-17']) // E16
   })
 
   it('4. viaje es null con 3 personas con zona y aparece con 4; ninguna respuesta compartida trae zona, modo ni minutos por persona', async () => {
@@ -185,16 +188,17 @@ describe('enmienda 10: zona, movilidad, tiempo máximo y momento del día', { ti
   })
 
   it('5. momento suma pero no descarta', async () => {
-    // Todos marcan asado (14:00, tarde), fútbol (11:00) y parque (12:00), que dominan el puntaje. Con "algo barato"
+    // Todos marcan asado (14:00, tarde), cerro (09:00) y parque (12:00), que dominan el puntaje. Con "algo barato"
     // no entra nada de precio medio (las salidas de noche).
-    const P = { ...BASE, presupuesto: 'algo_barato', me_gustaria: ['asado', 'futbol', 'parque'], zona: 'nunoa', movilidad: 'auto_sin_lugar', tiempo_max: '60' }
+    // E16 (0057): antes era fútbol (11:00) en vez de cerro; el fútbol (mín. 10) no entra para los 6 del demo.
+    const P = { ...BASE, presupuesto: 'algo_barato', me_gustaria: ['asado', 'cerro', 'parque'], zona: 'nunoa', movilidad: 'auto_sin_lugar', tiempo_max: '60' }
     // E13 (d): hay dos lugares de asado (quincho en Ñuñoa y parrilla en Providencia, 0044), los dos de tarde.
     await todos({ ...P, momento: 'tarde' })
     const tarde = await plan(DESCONOCIDO)
     expect(idsDe(tarde).slice(0, 2)).toEqual(['lugar-sim-01', 'lugar-sim-14']) // los asados suben (quincho más cerca)
     await todos({ ...P, momento: 'manana' })
     const manana = await plan(DESCONOCIDO)
-    expect(idsDe(manana).slice(0, 2)).toEqual(['lugar-sim-03', 'lugar-sim-04']) // fútbol y parque suben
+    expect(idsDe(manana).slice(0, 2)).toEqual(['lugar-sim-12', 'lugar-sim-04']) // E16: cerro y parque suben
     // El momento ordena, no descarta: el asado de tarde sigue entre las candidatas de la mañana.
     expect(idsDe(manana)[2]).toBe('lugar-sim-01')
     expect(idsDe(tarde)).toHaveLength(3)
@@ -229,7 +233,8 @@ describe('enmienda 10: zona, movilidad, tiempo máximo y momento del día', { ti
     for (const a of opciones) expect(a.etiqueta).toBeTruthy()
     // Sin descartes por viaje (60 para todos): con 6 personas que la marcan, la actividad sale primera.
     const V = { zona: 'santiago_centro', movilidad: 'auto_sin_lugar', tiempo_max: '60', momento: 'da_igual' }
-    for (const act of NUEVAS) {
+    // E16 (0057): el tenis (máx. 4) no entra para los 6 del demo y no sale aunque lo marquen todos.
+    for (const act of NUEVAS.filter((a) => a !== 'tenis')) {
       await todos({ ...BASE, me_gustaria: [act], ...V })
       const r = await plan(SECO)
       expect(r.tipo, act).toBe('borrador')
@@ -237,6 +242,8 @@ describe('enmienda 10: zona, movilidad, tiempo máximo y momento del día', { ti
       expect(r.candidatas[0].lugar.nombre).toMatch(/ \(Simulación\)$/)
       expect(r.perfil_grupo.gustos).toEqual([{ actividad_etiqueta: opciones.find((o: Json) => o.clave === act).etiqueta, cuantos: 5 }]) // sin Tomi
     }
+    await todos({ ...BASE, me_gustaria: ['tenis'], ...V }) // E16
+    expect((await plan(SECO)).candidatas.map((c: Json) => c.actividad)).not.toContain('tenis') // E16
     // El presupuesto sigue descartando: con "ojalá gratis" la cena no entra.
     await todos({ ...BASE, presupuesto: 'ojala_gratis', me_gustaria: ['cena'], ...V })
     expect(idsDe(await plan(SECO))).not.toContain('lugar-sim-06')

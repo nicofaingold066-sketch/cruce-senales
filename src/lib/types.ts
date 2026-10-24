@@ -201,6 +201,8 @@ export interface MiSituacion {
 export interface EstadoPropuesta {
   id: string
   espacio_id: string
+  /** Variante de demo identificada por el servidor; null en grupos normales. */
+  demo_caso?: 'legacy' | 'makana' | null
   titulo: string
   organizador: MiembroRef
   imprescindible: MiembroRef
@@ -285,6 +287,7 @@ export interface Espacio {
   nombre: string
   tipo: TipoEspacio
   demo: boolean
+  demo_caso?: 'legacy' | 'makana' | null
   codigo_invitacion: string
   creado_en: Momento
   ultimo_reinicio: Momento | null
@@ -305,6 +308,7 @@ export interface EspacioResumen {
   nombre: string
   tipo: TipoEspacio
   demo: boolean
+  demo_caso?: 'legacy' | 'makana' | null
   codigo_invitacion: string
   mi_miembro_id: string
   mi_rol: 'organizador' | 'miembro'

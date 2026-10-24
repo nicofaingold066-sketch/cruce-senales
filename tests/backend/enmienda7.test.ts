@@ -22,8 +22,10 @@ async function proximoSabado(s: Sesion): Promise<string> {
   return sab
 }
 
-describe('E7.1: el orden de las candidatas no delata gustos en grupos chicos', { timeout: 90_000 }, () => {
-  it('grupo de 2 reales (fiesta y parque): ninguna trae el_mas_elegido y el orden es el de sin marcas', async () => {
+// E16 (0057, pedido de Nico): E7.1 cae. Las marcas pesan con cualquier tamaño y lo marcado va antes; el texto sigue sin
+// delatar (sin el_mas_elegido ni gustos en el perfil con 3 personas o menos). Ver docs/contrato-enmienda-16.md.
+describe('E7.1 → E16: en grupos chicos las marcas ordenan, pero el texto no delata gustos', { timeout: 90_000 }, () => {
+  it('grupo de 2 reales (fiesta y parque): lo marcado que entra va primero; ninguna trae el_mas_elegido', async () => {
     const [A, B] = await sesiones()
     const esp = await crearEspacioPrueba(A, 'e7-orden', 'Org t')
     await ok(B, 'join_space', { p_codigo: esp.codigo, p_nombre_visible: 'Dos t' })
@@ -36,18 +38,17 @@ describe('E7.1: el orden de las candidatas no delata gustos en grupos chicos', {
     await ok(B, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['parque']) })
     const r1 = await plan()
     expect(r1.personas_consideradas).toBe(2)
-    // Sin marcas (energía con_todo, ambiente sin mayoría, seco): Cerro 2 (gratis, E10 Parte B), Fútbol 2 (barato)
-    // y Básquet 2 (barato, E14 0048), detrás del fútbol.
-    // Con el orden anterior, la marca de B ponía al Parque primero y con "el más elegido".
-    expect(r1.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-12', 'lugar-sim-03', 'lugar-sim-16'])
+    // E16: el parque (lo marcó B, entra para 2) va primero; la fiesta (la marcó A) pide 6 y va al final; después
+    // lo que entra para 2 por puntaje: cerro (gratis) y tenis (2 a 4). Fútbol (10) y básquet (6) quedan atrás.
+    expect(r1.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-04', 'lugar-sim-12', 'lugar-sim-15']) // E16
     for (const c of r1.candidatas) expect(c.frases_grupo).not.toContain('el_mas_elegido')
 
-    // Otras marcas (las dos eligen asado, que antes sumaba 6): mismas candidatas, mismo orden, mismas frases.
+    // Otras marcas (las dos eligen asado, que pide 4): E16, el asado no entra para 2 y va al final; primero lo que entra.
     await ok(A, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['asado']) })
     await ok(B, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['asado']) })
     const r2 = await plan()
-    expect(r2.candidatas).toEqual(r1.candidatas)
-    expect(r2.frases_grupo).toEqual(r1.frases_grupo)
+    for (const c of r2.candidatas) expect(c.personas.min, c.id).toBeLessThanOrEqual(2) // E16
+    expect(r2.candidatas.map((c: Json) => c.actividad)).not.toContain('asado') // E16
     expect(JSON.stringify(r2)).not.toContain('el_mas_elegido')
   })
 })

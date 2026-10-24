@@ -1,0 +1,198 @@
+/* Una tarjeta neutra, con el mismo ritmo de nombres y metadatos que Actividad del grupo. */
+.participacion-publica {
+  min-width: 0;
+  padding: var(--e-4);
+  color: var(--tinta);
+  box-shadow: none;
+}
+.participacion-publica > .participacion-cabecera {
+  display: grid;
+  justify-items: start;
+  gap: var(--e-1);
+  margin: 0 0 var(--e-4);
+}
+.participacion-cabecera h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-width: 0;
+  margin: 0;
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+}
+.participacion-cabecera h2 svg {
+  flex: none;
+  color: var(--tinta-2);
+}
+.participacion-cabecera .participacion-version {
+  margin: 0;
+  color: var(--tinta-2);
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  font-weight: var(--p-rotulo);
+  font-variant-numeric: tabular-nums;
+}
+.participacion-publica > .participacion-categoria {
+  margin-top: 0;
+}
+.participacion-publica > .participacion-categoria ~ .participacion-categoria {
+  margin-top: var(--e-4);
+}
+.participacion-subtitulo {
+  display: flex;
+  align-items: baseline;
+  gap: var(--e-2);
+  margin: 0 0 var(--e-2);
+  color: var(--tinta);
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  font-weight: var(--p-boton);
+}
+.participacion-subtitulo > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.participacion-conteo {
+  flex: none;
+  min-width: 18px;
+  color: var(--tinta);
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+  font-weight: var(--p-pantalla);
+  font-variant-numeric: tabular-nums;
+}
+.participacion-personas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--e-4);
+  row-gap: var(--e-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.participacion-persona {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--e-2);
+  min-width: 0;
+  min-height: 44px;
+  padding: 2px 0;
+}
+.participacion-persona-larga {
+  grid-column: 1 / -1;
+}
+.participacion-persona .avatar {
+  flex: none;
+  margin-top: 1px;
+}
+.participacion-persona-texto {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+.participacion-nombre {
+  color: var(--tinta);
+  font-size: var(--t-cuerpo);
+  line-height: var(--lh-cuerpo);
+  font-weight: var(--p-boton);
+  overflow-wrap: anywhere;
+}
+.participacion-tu {
+  font-size: var(--t-nota);
+  font-weight: var(--p-texto);
+}
+.participacion-estados {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px var(--e-2);
+}
+.participacion-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-1);
+  color: var(--tinta-2);
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+.participacion-estado svg {
+  flex: none;
+}
+.participacion-persona-confirmo .participacion-estado,
+.participacion-persona-entro .participacion-estado {
+  color: var(--ok);
+  font-weight: var(--p-boton);
+}
+.participacion-persona-por_entrar .participacion-estado {
+  color: var(--revision);
+  font-weight: var(--p-boton);
+}
+.participacion-persona-simulada .participacion-estado,
+.participacion-simulacion {
+  color: var(--sim-texto);
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+.participacion-nota,
+.participacion-vacio,
+.participacion-revision {
+  margin: var(--e-2) 0 0;
+  color: var(--tinta-2);
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  overflow-wrap: anywhere;
+}
+.participacion-publica > .participacion-nota {
+  margin-top: var(--e-4);
+  padding-top: var(--e-3);
+  border-top: 1px solid var(--linea);
+}
+.participacion-publica > .participacion-revision {
+  margin: 0 0 var(--e-3);
+  color: var(--revision);
+}
+.resultado .resultado-nombres {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  line-height: 1.5;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 720px) {
+  .participacion-personas {
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  }
+  .participacion-persona-larga {
+    grid-column: auto;
+  }
+}
+@media (max-width: 359px) {
+  .participacion-personas {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--e-2);
+  }
+  .participacion-persona {
+    min-height: 36px;
+  }
+  .participacion-persona-texto {
+    flex: 1;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--e-2);
+    min-height: 28px;
+  }
+  .participacion-nombre {
+    font-size: var(--t-nota);
+  }
+  .participacion-estados {
+    justify-content: flex-end;
+    max-width: 112px;
+  }
+  .participacion-persona-larga .participacion-persona-texto {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .participacion-persona-larga .participacion-estados {
+    justify-content: flex-start;
+    max-width: none;
+  }
+}
