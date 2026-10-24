@@ -613,6 +613,19 @@ Pedido del coordinador (21:02). Hecha a las 21:17 del viernes 23 sobre el códig
 
 **Cobertura:** unos 930 textos revisados en `src/screens`, `src/components`, `src/login`, `src/friccion`, `src/componentes-nuevos`, `src/agente`, `src/App.tsx`, `src/lib/shell.tsx`, `src/lib/compartir.ts` y los textos fijos de `supabase/functions/agente`. **89 hallazgos: 7 altos, 22 medios, 60 bajos** (69 de los cinco lectores, 10 del lote 6 y 10 del lote 7: los mensajes que el servidor manda a pantalla, fijados por el contrato; los lotes 6 y 7 los revisé yo a las 21:20). Ningún C9 (humor con blanco) en toda la app. Sin hallazgos en `compartir.ts` (los textos de WhatsApp y calendario ya son los de §8), `Integrantes.tsx`, `Calendario.tsx`, `Planes.tsx`, `Propuesta.tsx` y los componentes gráficos.
 
+### Estado en producción a las 22:01 (`main` `140cdaf`, bundle `index-BTad15GY`; lectura de los 11 archivos JS publicados, sin tocar la base)
+| Texto | En producción |
+|---|---|
+| «Una persona se retiró» (`format.ts`) | **Sí** (2 apariciones) |
+| «lo que marques después es privado» (A6, A7) | **Corregido** (0) |
+| «Te lo recuerda CRUXE» | **Corregido** (0) |
+| «se bajó» (4), «había confirmado» (2), «perdió al anfitrión» (1), «Bajas registradas» (1), «Imprescindible (anfitrión)» (1) | **Siguen** en `PlanTab.tsx` y `Cruce.tsx`: los 4 altos de front-juan (A2 a A5) no están |
+| «ve solo el servidor» | **Sigue** (3) |
+| Voseo en el panel del agente («podés» 2, «movés» 2, «Marcá» 1) | **Sigue** |
+| «Así no puedo, pero sigo», «Gracias por avisar», «Cambios en el grupo», «Buscar el lugar en el mapa» | **No están**: la enmienda 13 está en la base, pero sus pantallas todavía no se conectaron |
+| «Habrá opción sin carne», «Tu confirmación solo vale si llegan N» | **No están** (pedidos A1 y D1, no hechos) |
+| «Parrilla del parque» | No aparece en el código del cliente, como corresponde: es un dato del catálogo del servidor |
+
 ### 16.1 Lo que hay que arreglar primero (7 altos): todos son la misma falla
 Cinco de los siete **nombran a quien se retiró** o dicen que «había confirmado» en textos que ve todo el grupo; la enmienda 13 (c), aprobada a las 20:51, pide «Una persona se retiró» sin nombre ni motivo. El historial viaja en capturas al chat. Los otros dos **prometen que todo lo que marques es privado** justo antes de la pantalla donde «me interesa» y la confirmación los ve el grupo.
 
