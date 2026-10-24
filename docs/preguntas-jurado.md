@@ -2,7 +2,7 @@
 
 Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo ficticio; nada de esto lleva datos de personas reales.
 
-**Para qué sirve.** El pitch dura 5 minutos con demo en vivo y hay 3 minutos de preguntas. El jurado (equipo de producto de Makana) puntúa **Problema, Solución y Convicción**, de 1 a 7, con el mismo peso; en la convicción cuentan las respuestas a las preguntas (`prompts/contexto-dia-pitch-reglas.md`, bases §10). Acá hay 30 preguntas probables, incluidas las incómodas, con una respuesta de 2 o 3 frases y la evidencia que la respalda.
+**Para qué sirve.** El pitch dura 5 minutos con demo en vivo y hay 3 minutos de preguntas. El jurado (equipo de producto de Makana) puntúa **Problema, Solución y Convicción**, de 1 a 7, con el mismo peso; en la convicción cuentan las respuestas a las preguntas (`prompts/contexto-dia-pitch-reglas.md`, bases §10). Acá hay 31 preguntas probables, incluidas las incómodas, con una respuesta de 2 o 3 frases y la evidencia que la respalda.
 
 **Cómo usarlo.**
 - **★ = una de las 5 más probables.** **⚠ = una de las 3 más peligrosas** (la respuesta honesta cuesta; hay que ensayarla).
@@ -37,6 +37,7 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 **Respuesta.** No lo sabemos. Es una hipótesis: los seis interesados dejaron de responder y no preguntamos por qué. Elegimos atacar el cierre porque es la parte que el chat no hace y porque podíamos ponerlo a prueba en dos días, no porque lo hayamos comprobado.
 **Evidencia.** `docs/problema.md` §2 y §5: la causa real «está por investigar y no se afirma» (`docs/caso-canonico.md`). La sección «Lo que dijeron los del asado» sigue vacía (nadie respondió).
 **Sin evidencia causal.** Decir exactamente eso, y cuál sería la prueba: tasa de planes concretados y repetición del encuentro a las 4 y 12 semanas. **No** decir «esto resuelve el problema».
+**D6 (Nico, 21:06).** Las cuatro causas se dicen como «creemos que». Si se nombra evidencia de psicología, decir que es de EE.UU. y Europa y que no hay de Chile. La única cifra de psico que se cita: 80 % de 1.100 encuestados en EE.UU. dicen que cancelar no daña la amistad, pero que mentir sobre el motivo sí ([MSU Today, 2023](https://msutoday.msu.edu/news/2023/01/cancelling-plans-research); F1 en `docs/psicologia-grupo.md`). Sirve para la reparación: «por eso no pedimos el motivo cuando alguien se baja».
 
 ### P3 · ¿Quién es la persona y qué le pasa?
 **Respuesta.** Alguien que quiere ver a sus amigos y no logra que pase: contestó «me interesa», pero nadie fija día y hora, y esperó a que otro lo ordene. En CRUXE esa persona es Vale, la que organiza: crea el grupo, manda el enlace y los demás responden.
@@ -54,7 +55,7 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 ### P6 · ¿Qué cifra respalda que hay un problema?
 **Respuesta.** Hay amigos pero no hay encuentro: el 43 % de los chilenos tiene entre 3 y 5 amigos (Encuesta Bicentenario UC 2025, fuente secundaria). Sobre soledad damos siempre el rango (9,6 % casi siempre; 48 % algunas veces) y no afirmamos que CRUXE la reduzca.
 **Evidencia.** `docs/problema.md` §1, con fuente. **No existen cifras de cancelaciones de planes en Chile**; la que hay es del Reino Unido (68 % de 18 a 34 años, Opinium/IPA 2025) y se dice así.
-**Si piden más.** «No tenemos un dato propio; no inventamos uno».
+**Si piden más.** «No tenemos un dato propio; no inventamos uno». Y por D6: ninguna otra cifra de psicología que la F1 de P2.
 
 ### P7 · ¿No es un problema de soledad o de motivación?
 **Respuesta.** Puede ser parte, pero no es lo que atacamos. Si la gente no quiere verse, CRUXE no sirve; si quiere y no logra cerrar, sí. No prometemos más bienestar.
@@ -76,7 +77,7 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 ### S2 · ¿Qué pasa si nadie confirma?
 **Respuesta.** El silencio nunca es asistencia: quien no responde no cuenta como confirmado ni como elegible. Si pasa el cierre sin llegar al mínimo, el plan expira y lo dice; no baja el mínimo ni finge que se armó.
 **Evidencia.** `docs/contrato.md` (vencimiento: la propuesta pasa a «Expirado»); `tests/backend/aceptacion-reparacion.test.ts` (aceptación fuera de plazo rechazada); la persona que nunca abre el enlace (Pili) sigue «por entrar» y no se trata como asistente (`docs/usuarios-sinteticos.md`).
-**Límite.** Hoy no hay recordatorios automáticos. «Recordar a quien falta» (`RecordarFaltan`, de ux-flujo) está construido pero **sin conectar a la pantalla** (decisión de Nico pendiente).
+**Límite (declarado, D8).** CRUXE no manda notificaciones ni recordatorios: deja el mensaje listo y lo manda una persona por WhatsApp. «Recordar a quien falta» (`RecordarFaltan`, de ux-flujo) arma ese texto y está construido pero **sin conectar a la pantalla**.
 
 ### S3 ★ · ¿Cómo se discute o se debate la propuesta?
 **Respuesta, si la enmienda 13 NO está en producción o el botón no está en pantalla.** La charla sigue en WhatsApp: bromas, quién lleva qué. CRUXE no es un chat; lo que se decide no se pierde ahí. Cada persona responde en la app, en privado (puedo los dos días, solo un día, no puedo), y después confirma esa versión o se baja. Si una versión no junta el mínimo, el plan se rearma con lo que dijeron y nadie arrastra una confirmación vieja. Hoy cada persona confirma o se baja; lo siguiente que tenemos diseñado es poder decir «así no puedo, pero sigo» y elegir entre dos planes, siempre con totales y nunca con nombres.
@@ -131,6 +132,11 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 **Respuesta.** No. El género y la situación de pareja no se piden ni se infieren: son datos sensibles y en un grupo de cinco delatan a alguien. «Quién viene» es una regla del grupo, no de una persona: solo el grupo, con parejas o abierta. Por ahora va en el título del plan; un campo propio queda para después.
 **Evidencia.** Decisiones D2 y D3 de psico, aceptadas por Nico (20:51): `agentes/psico.md`, `docs/psicologia-grupo.md` (rama `wip/psico`); `docs/contrato-enmienda-13.md`, «Fuera». La Ley 21.719 lista identidad de género y vida sexual entre los datos sensibles (guía secundaria; plena vigencia el 1 dic 2026): no citar artículos que no leímos.
 
+### S13 · ¿La app avisa o manda recordatorios?
+**Respuesta.** No, y lo elegimos así. CRUXE no manda notificaciones: cuando sale la opción, cambia o se confirma, deja listo un mensaje con el enlace y lo manda una persona por el WhatsApp que el grupo ya usa. Así nadie recibe avisos de una app nueva y el grupo sigue hablando donde habla.
+**Evidencia.** Decisión D8 de Nico (21:06): se acepta para la entrega y se declara como límite (`agentes/psico.md`). Hoy el único mensaje listo es el de cierre (`PlanTab.tsx:641`); los de «sale la opción» y «cambió» están construidos y sin conectar (`RecordarFaltan`, ux-flujo). `docs/problema.md` §4 (notificaciones fuera a propósito).
+**No decir** que «la app avisa».
+
 ---
 
 ## 3. Convicción
@@ -183,6 +189,8 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 - Que es un producto para empresas.
 - Que la privacidad es total en grupos chicos.
 - Un paso del recorrido que no figure como verificado.
+- Las causas del problema como hechos: van con «creemos que» (D6). Cifras de psicología distintas de F1, o evidencia presentada como chilena cuando es de EE.UU. o Europa (D6).
+- Que la app avisa, notifica o recuerda sola (D8).
 
 ## 5. Pendientes (se actualizan con las ramas)
 - **Enmienda 13 (corte 01:00):** S3, S5b, S6 y S10 tienen versión «si entró» y «si no entró». A las 10:30, con el «Estado verificado», dejar una sola. El botón «Así no puedo, pero sigo» lo conecta front-juan; sin botón, vale la versión «no entró» aunque la base lo tenga.

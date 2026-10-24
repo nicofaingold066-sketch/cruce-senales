@@ -8,13 +8,13 @@ Dueño: apertura. Pedido #103 (Nico, vía coordinador, 20:52 del viernes 23 oct 
 
 **Cómo leerlo.** Cada paso tiene: lo que se toca (rótulo exacto de la pantalla, entre comillas), lo que se dice (una frase) y qué prueba lo respalda. Marcas: **[visto]** = pasó en producción esta noche, con guion y hora; **[leído]** = sale del código, no se vio en pantalla; **[a verificar]** = hay que confirmarlo en el ensayo del sábado (10:00–11:00) y en el «Estado verificado para el pitch» de las 10:30. Los segundos son una estimación para repartir el tiempo: se miden con cronómetro en el ensayo. Producción al escribir esto (20:59): `main` `3ace04e`.
 
-**Reglas que no se rompen en escena.** Solo se dice lo que funciona en vivo. Nunca «reservado», «confirmado por la IA», «la app manda mensajes sola», ni «probado con gente real». Si un paso falla, se usa su plan B sin disimular («esto es la versión de respaldo»).
+**Reglas que no se rompen en escena.** Solo se dice lo que funciona en vivo. Nunca «reservado», «confirmado por la IA», «la app manda mensajes sola», ni «probado con gente real». Las causas del problema se dicen como «creemos que» y sin cifras de psicología salvo F1 con fuente (D6). La app no manda notificaciones: el recordatorio lo manda una persona por WhatsApp con el texto que arma CRUXE, y eso se declara como límite (D8). Si un paso falla, se usa su plan B sin disimular («esto es la versión de respaldo»).
 
 ## 0. Reparto del tiempo (propuesta; cambia la estructura de `docs/pitch.md`)
 
 | Tramo | Qué | Criterio del jurado |
 |---|---|---|
-| 0:00–0:45 | Problema: el asado del 8 de octubre y por qué creemos que falla el cierre (`docs/pitch.md` 0:00–1:10, comprimido) | Problema |
+| 0:00–0:45 | Problema: el asado del 8 de octubre y por qué **creemos que** falla el cierre (`docs/pitch.md` 0:00–1:10, comprimido). Decisión D6 de Nico: las causas se dicen como «creemos que»; si se nombra evidencia, decir que es de EE.UU. y Europa y que no hay de Chile; la única cifra de psicología que se cita es F1 con su fuente (80 % de 1.100 encuestados en EE.UU.: cancelar no daña la amistad, mentir sobre el motivo sí; MSU 2023) | Problema |
 | 0:45–1:45 | **Parte A** (1:00) | Solución |
 | 1:45–3:55 | **Parte B** (2:10) | Solución |
 | 3:55–4:25 | Qué dejamos fuera y cómo lo mediríamos | Solución, Convicción |
@@ -56,7 +56,7 @@ Dos aparatos: **T1** (quien organiza: Vale en A, Tomi en B) y **T2** (quien reci
 Notas de la Parte A:
 - Si Ana queda en «Respuesta guardada» y la opción tarda en aparecer, el plan se actualiza solo cada 3 segundos (`get_proposal_state`, `docs/flujo-usuario.md` paso 5); no recargar.
 - Mínimo 2 es un valor de la demo para cerrar con dos personas en escena; decirlo si preguntan.
-- **No decir** que la app avisa sola cuando sale la opción: hoy nadie recibe un aviso; el organizador escribe por fuera. (`RecordarFaltan` está construido y sin conectar, ux-flujo.)
+- **No decir** que la app avisa sola cuando sale la opción: CRUXE no manda notificaciones (límite declarado, D8). Si preguntan: «La app deja el mensaje listo; lo manda una persona por WhatsApp. Lo dejamos fuera a propósito.» (`RecordarFaltan` está construido y sin conectar, ux-flujo.)
 
 ## 3. Parte B: demo «Los del asado», el agente, la baja y el rearmado (1:45–3:55)
 
@@ -96,7 +96,7 @@ Notas de la Parte B:
 ## 5. Lo que este guion no promete
 - Que el agente invite o publique solo (la enmienda 11 está en la base, 0041, pero la interfaz no está conectada).
 - «Así no puedo, pero sigo» y «Rearmar con lo nuevo» (enmienda 13 a y b): solo si entran antes de la 01:00 y front-juan conecta el botón; si no, se dicen como siguiente paso en las preguntas (`docs/preguntas-jurado.md`, S3).
-- Avisos automáticos, reservas, pagos, calendario compartido, chat.
+- Notificaciones o avisos automáticos (límite declarado, D8), reservas, pagos, calendario compartido, chat.
 
 ## 6. Pedidos que salen de este guion
 - **agente-ia (dueño de `docs/pitch.md`):** adoptar el reparto de §0 (problema 0:45, demo en dos partes hasta 3:55) o proponer otro; el guion de 2:30 del bloque del agente queda cubierto por la Parte B.
