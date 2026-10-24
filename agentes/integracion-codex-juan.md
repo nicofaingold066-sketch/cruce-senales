@@ -8,16 +8,17 @@
 
 ## Entregado
 - Tanda UX en `main a5381ad`: cuatro commits de Juan Morales, sin squash. Tipos/build y QA aplicada verdes. Vercel success y assets públicos verificados. No certifica E2E ni Figma.
-- Consentimiento E11: rama remota `codex/e11-consentimiento-invitaciones`, HEAD `816d540` reconciliado con `main 140cdaf`. 18 pruebas de contrato sin red, tipos/build PASS; QA UI con cliente y componentes reales sobre RPC simuladas 22/22, consola limpia. No DB ni inferencia. Pendiente integrar cuando se retire la pausa/migración; el control se deshabilita si falta el booleano E11.
+- Consentimiento E11: rama remota `codex/e11-consentimiento-invitaciones`, HEAD `8e68b46`, reconciliado con `main 140cdaf` y `71c193b` (#108). 19 pruebas de contrato sin red, tipos/build PASS. QA UI anterior 22/22 sobre `816d540`; repetición en curso tras incorporar el reintento real de #108 (no trasladamos automáticamente esa evidencia). No DB ni inferencia. El control se deshabilita si falta el booleano E11.
 
 ## Pedidos a otros
 - agente-ia: esta unidad toma únicamente consentimiento de invitaciones en las rutas arriba, separado de E8. No encontré una copia local accesible ni implementación publicada E11 en su rama (593dc5f). Avisar si ya existe trabajo local para no duplicarlo.
 - QA UX: verifica el commit aplicado con datos ficticios, sin base ni modelo. No modifica fuentes de esta rama.
-- backend: para la adaptación E11/E14 necesitamos el puente FINAL de 0049: forma exacta de `plan.actividad`, `quorum` raíz y metadatos de candidata, firmas y momento en que quedan aplicadas/compatibles. No asumimos `plan.quorum` ni calculamos mínimo en cliente. Responder con contrato/commit entregado; no requiere ejecutar SQL para nosotros.
-- coordinador: consentimiento listo en la rama arriba. Esperamos el retiro de MIGRACION EN CURSO 0048/0049 y del humo de producción para integrar sin interrumpir operaciones. No pedimos transferir autoridad de publicación ni realizar pruebas concurrentes.
+- backend: recibido tu puente 0049 de las 22:12, gracias: `plan.actividad` es STRING de clave; `quorum` raíz, familia/personas por candidata y mínimo resuelto por servidor; sin `plan.quorum`. Lo pasé al módulo puro. Esperamos el aviso de aplicación; no ejecutamos SQL ni pruebas concurrentes.
+- coordinador [22:17]: incorporé `71c193b` sin conflicto y repetí tipos/build + 19 de contrato; UX repite la UI con el reintento. `origin/wip/fundamentos` todavía devuelve `140cdaf` (también `ls-remote`); `bd9dc36` aún no está disponible en este checkout. Avisá al publicar ese lote y reconciliamos el parche de pantallas antes de integrar consentimiento. Juan autorizó completar la integración final; coordinamos la ventana para no interrumpir humo/migraciones y conservar una sola publicación a la vez. Entrega sin squash ni reatribuir commits ajenos.
 - agente-ia: conservar al integrar #108 los campos/operaciones del consentimiento E11 de nuestra rama; sus cambios de timeout/reintento y el trabajo E14 son distintos. Reconciliamos por main sin sobrescribir sus commits.
 
 ## Límites
 - E11 definitiva ya reportada aplicada como 0041; el frontend falla cerrado si no recibe el booleano del contrato.
-- 0047 terminó; última lectura: 0048 en MIGRACION EN CURSO y humo de producción del coordinador 22:00. Se conserva la pausa de operaciones remotas.
+- 0048 aplicada según backend; 0049 en espera de turno. El coordinador prueba el parche de pantallas desde 22:10. Se conserva la pausa de operaciones remotas.
+- Tablero 22:08 registra cierre de funciones de Nico: el consentimiento existente entra; la siguiente adaptación pura no activa aprobación/publicación/invitaciones visibles en el producto. Se informó al padre para alinear el alcance social pendiente.
 - Sin autonomía, aprobación, publicación o reparación automática en esta unidad.
