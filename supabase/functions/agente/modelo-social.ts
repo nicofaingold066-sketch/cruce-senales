@@ -12,6 +12,7 @@ export interface DependenciasModeloSocial {
   nombres: readonly string[]
   hastaMs: number
   ahora?: () => number
+  signal?: AbortSignal
 }
 const objeto = (x: unknown): x is Record<string, unknown> => x !== null && typeof x === 'object' && !Array.isArray(x)
 const SISTEMA_SOCIAL = [
@@ -38,14 +39,15 @@ export function crearModeloSocial(d: DependenciasModeloSocial): PuertoModelo {
   return async (opciones, signal) => {
     const proveedor = d.proveedor
     const ahora = d.ahora ?? Date.now
-    if (!proveedor || signal.aborted || opciones.length === 0 || d.hastaMs - ahora() < 1500 || !d.permitir()) return null
+    const señales = d.signal ? [signal, d.signal] : [signal]
+    if (!proveedor || señales.some((s) => s.aborted) || opciones.length === 0 || d.hastaMs - ahora() < 1500 || !d.permitir()) return null
     const modo = modoSalida(d.modo)
     const entrada = { opciones: proyectar(opciones) }
     // armarPedido solo consume los ids para el esquema de elección. El mensaje
     // enviado al modelo contiene exclusivamente la proyección anterior.
     const referencias = opciones.map((o) => ({ id: o.opcion_ref })) as Parameters<typeof armarPedido>[2]
     for (const [i, modelo] of [proveedor.modelo, proveedor.respaldo].entries()) {
-      if (signal.aborted) return null
+      if (señales.some((s) => s.aborted)) return null
       const restante = d.hastaMs - ahora()
       const plazo = Math.min(i === 0 ? 20000 : 8000, restante - (i === 0 ? 6000 : 0))
       if (plazo < 1500) continue
@@ -55,7 +57,7 @@ export function crearModeloSocial(d: DependenciasModeloSocial): PuertoModelo {
       try {
         const corte = new Promise<never>((_, rechazar) => {
           cancelar = () => { control.abort(); rechazar(new Error('modelo_no_disponible')) }
-          signal.addEventListener('abort', cancelar, { once: true })
+          for (const s of señales) s.addEventListener('abort', cancelar, { once: true })
           reloj = setTimeout(cancelar, plazo)
         })
         const respuesta = await Promise.race([
@@ -73,7 +75,7 @@ export function crearModeloSocial(d: DependenciasModeloSocial): PuertoModelo {
         // No contenido, causas, URL, nombres ni mensajes del proveedor en logs.
       } finally {
         if (reloj !== undefined) clearTimeout(reloj)
-        if (cancelar) signal.removeEventListener('abort', cancelar)
+        if (cancelar) for (const s of señales) s.removeEventListener('abort', cancelar)
       }
     }
     return null
