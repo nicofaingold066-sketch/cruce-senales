@@ -106,6 +106,7 @@ try {
 } catch (e) {
   fallidas++
   paso(`ERROR: ${String(e?.message ?? e).split('\n')[0]}`)
+  try { if (process.env.CRUXE_CAPTURAS) await T.screenshot({ path: `${process.env.CRUXE_CAPTURAS}/proposito-pantalla-error.png`, fullPage: true }) } catch { /* sin captura */ }
 } finally {
   if (propuestaCreada) { try { await T.evaluate(() => 0); await T.goto(`${BASE}/#/`) } catch { /* sigue */ } }
   verificar('Sin errores de la app en consola', errores.length === 0, errores.slice(0, 3).join(' | '))

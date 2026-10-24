@@ -139,7 +139,7 @@ try {
   // 1. Tomi abre la demo.
   await T.goto(BASE)
   // S1 (mockup): la demo es un enlace-botón «Probar la demo «Los del finde»» (o «Abrir…» si ya está cargada).
-  { const demo = T.getByRole('button', { name: /^(Probar|Abrir) la demo «Los del (asado|finde)»/ }).first(); await demo.scrollIntoViewIfNeeded(); await demo.click() }
+  { await T.getByRole('button', { name: /^(Probar|Abrir) la demo «Los del (asado|finde)»/ }).first().click() }
   await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
   const codigo = (await T.locator('.codigo').first().textContent())?.trim()
   const urlEspacio = T.url()

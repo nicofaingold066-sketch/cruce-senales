@@ -252,15 +252,23 @@ async function variante(nombre, prueba) {
 log(`Jurado navegador: ${BASE}; 375 px; base ${execFileSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim()}`)
 try {
   await T.goto(BASE)
-  const seed = await accion(T, 'seed_demo_space', () => tocar(T, /^Probar la demo «Los del (asado|finde)»$/))
+  const seed = await accion(T, 'seed_demo_space', () => T.getByRole('button', { name: /^(Probar|Abrir) la demo «Los del (asado|finde)»/ }).first().click())
   await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor()
   espacioUrl = T.url()
   const codigo = seed.espacio.codigo_invitacion
   await L.goto(`${BASE}/#/unirse/${codigo}`)
-  const unirse = L.locator('form', { has: L.getByRole('heading', { name: 'Unirme con un código', exact: true }) })
-  // El label incluye también la ayuda <small>; se acota al formulario de unirse.
-  await unirse.getByLabel(/Tu nombre en el (espacio|grupo)/).fill('Luna')
-  const unir = await accion(L, 'join_space', () => tocar(L, 'Unirme'))
+  // S1 (mockup, pantalla 10): en la demo, «¿Quién eres?» lista los nombres y Luna entra en UN toque; si no hay lista,
+  // el formulario de siempre («Tu nombre en el grupo» + «Unirme»/«Entrar»).
+  const unir = await accion(L, 'join_space', async () => {
+    const fila = L.getByRole('button', { name: 'Luna', exact: true })
+    if (await fila.waitFor({ timeout: 8000 }).then(() => true, () => false)) {
+      await fila.click()
+      const si = boton(L, 'Sí, soy Luna'); if (await si.isVisible({ timeout: 1500 }).catch(() => false)) await si.click()
+    } else {
+      await L.getByLabel(/Tu nombre/).first().fill('Luna')
+      await L.getByRole('button', { name: /^(Unirme|Entrar)$/ }).first().click()
+    }
+  })
   assert.equal(unir.resultado.reclamo_asiento_simulado, true)
   await L.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor()
   comprobar(sesiones.size === 2, 'Dos identidades anónimas distintas')

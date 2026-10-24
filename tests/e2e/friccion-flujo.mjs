@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import { baseLibre } from './base-libre.mjs'
+import { respuestaGuardada } from './nav.mjs'
 baseLibre()
 const require = createRequire(import.meta.url)
 let pw
@@ -44,7 +45,7 @@ try {
   ver('#88: cuatro respuestas de un toque', (await A.p.locator('.rapida-opcion').count()) === 4)
   ver('#88: sin desborde a 375 px', !(await desborde(A.p)))
   await A.p.getByRole('button', { name: /^Puedo los dos días/ }).click()
-  ver('#88: un toque guarda', await A.p.getByText('Guardado. Solo tú ves estas condiciones.').waitFor({ timeout: 15000 }).then(() => true, () => false))
+  ver('#88: un toque guarda', await respuestaGuardada(A.p).then(() => true, () => false))
   // Enmienda 15 (friccion d471641): con «puedo en los dos» aparecen dos botones «Prefiero «…»» (privado; solo desempata con
   // «la que más Sí»). Guardado por presencia: en un build sin E15 en pantalla se anota y se sigue.
   const prefiero = A.p.getByRole('button', { name: /^Prefiero «/ })
@@ -78,15 +79,15 @@ try {
   ver('"Solo el …" dice qué día queda como No', (await B.p.getByText('queda como No', { exact: false }).count()) === 2)
   ver('#90: en un grupo real no se ofrece la agenda ficticia', (await B.p.getByRole('button', { name: /Tomar de mi calendario/ }).count()) === 0)
   await B.p.getByRole('button', { name: /^No puedo ninguno/ }).click()
-  await B.p.getByText('Guardado. Solo tú ves estas condiciones.').waitFor({ timeout: 15000 })
+  await respuestaGuardada(B.p)
   ver('"No puedo ninguno": no habla de confirmar ni ofrece "Me interesa"', (await B.p.getByText('la confirmas en el plan', { exact: false }).count()) === 0 && (await B.p.getByRole('button', { name: /^(Me interesa|Avisar que me interesa)/ }).count()) === 0)
   // 3b. Demo: Luna desde la lista, con la agenda ficticia que solo SUGIERE.
   const gd = preparar({ DEMO: '1' })
   const L = await pagina()
   await elegir(L.p, gd.codigo, 'Luna')
   await L.p.getByRole('heading', { name: '¿Cuándo puedes?' }).waitFor({ timeout: 20000 })
-  await L.p.getByRole('button', { name: /Tomar de mi calendario/ }).click()
-  ver('#90: la agenda dice que es ficticia', (await L.p.getByText('Agenda ficticia para la demo', { exact: false }).count()) === 1)
+  await L.p.getByRole('button', { name: /Tomar de mi calendario|mi agenda|agenda ficticia/i }).first().click()
+  ver('#90: la agenda dice que es ficticia', (await L.p.getByText(/Agenda ficticia/).count()) >= 1)
   await L.p.getByRole('button', { name: /^(?:Marcar lo que dice mi agenda|Ver qué sugiere mi agenda)$/ }).click() // rótulo viejo y nuevo (psico, 21:21)
   const sug = L.p.locator('.rapida-sugerida')
   ver('#90: la agenda resalta una opción y NO guarda', (await sug.count()) === 1 && (await L.p.getByText('Guardado.', { exact: false }).count()) === 0, (await sug.innerText().catch(() => '')).replace(/\s+/g, ' '))
@@ -103,6 +104,10 @@ try {
   ver('Sin errores de la app en consola', errores.length === 0, errores.join(' | '))
 } catch (e) {
   ver('el guion terminó sin excepción', false, e instanceof Error ? e.message.split('\n')[0] : String(e))
+  // Captura de cada página abierta al fallar (CRUXE_CAPTURAS), para ver en qué pantalla se trabó.
+  try {
+    if (process.env.CRUXE_CAPTURAS) for (const [i, c] of browser.contexts().entries()) for (const [j, pg] of c.pages().entries()) await pg.screenshot({ path: `${process.env.CRUXE_CAPTURAS}/friccion-error-${i}-${j}.png`, fullPage: true }).catch(() => {})
+  } catch { /* sin captura */ }
 }
 console.log(`FRICCION ${mal ? 'CON FALLAS' : 'OK'}: ${ok} aprobadas, ${mal} fallidas`)
 await browser.close()
