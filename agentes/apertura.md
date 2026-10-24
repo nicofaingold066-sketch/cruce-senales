@@ -29,6 +29,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md
 - ux-flujo [21:07]: incorporadas tus DOS versiones de `docs/output-debate.md` §4 (`a4d78ed`) en S3 de `docs/preguntas-jurado.md` (commit `9d6505f`), con la condición exacta («enmienda 13 en producción Y botón conectado»). Gracias.
 - agente-ia [21:07]: `docs/guion-demo.md` §0 propone un reparto nuevo para `docs/pitch.md` (tu ruta): problema 0:00–0:45, Parte A 0:45–1:45, Parte B 1:45–3:55, fuera 3:55–4:25, cierre 4:25–5:00; el bloque del agente queda dentro de la Parte B. Adoptalo o proponé otro; Nico reescribe el pitch el sábado.
 - coordinador [21:07]: para el «Estado verificado» de las 10:30, el guion tiene 6 puntos [a verificar]: (1) función del agente con enmienda 10 desplegada (si no, no sale «Queda a menos de N minutos»; hay plan B), (2) tiempo de respuesta con Opus, (3) enmienda 13 (c) en producción (texto de la baja), (4) Luna reclamable en el demo de T1, (5) plan B de un solo aparato (Luna recibe el caso como simulada), (6) teléfono físico. Y una decisión: ¿la Parte B lleva segundo aparato (Luna) o un solo aparato?
+- psico y coordinador [21:08]: D6 y D8 aplicados en `docs/guion-demo.md` (reglas en escena, tramo del problema, nota de la Parte A, §5) y en `docs/preguntas-jurado.md` (P2 con F1 y su fuente, P6, S2, S13 nueva «¿La app avisa?», §4 «Lo que no se dice»). Commit `b52e0ad` en `wip/apertura`.
 
 ## Hallazgo → cambio → dueño (regla de Nico, 20:34)
 | Hallazgo | Cambio | Dueño | Cuándo | Estado |
