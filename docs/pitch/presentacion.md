@@ -29,3 +29,7 @@ Cada diapositiva tiene el mismo encabezado (logo CRUXE a la izquierda, número y
 - QR: apunta a https://cruce-senales.vercel.app; verificado leyendo la diapositiva 8 exportada con un lector de QR (jsQR).
 
 Transiciones: la 1 entra con fundido, de la 2 a la 7 entran moviéndose desde la derecha y el cierre sube desde abajo (0,6 s, al hacer clic). Solo se ven en Figma (Present); el PDF no las tiene.
+
+## Cambio de formato (24 oct, 12:30, pedido de Nico vía coordinador)
+
+Se presenta sin video ni demo en vivo: el deck tiene 19 diapositivas. 1–4 gancho, problema, conflicto y solución; 5–16 la demo paso a paso, una captura real de producción por diapositiva (390×844 a 2×, `cruce-video/capturas-demo-2x/` 02, 06, 08, 10, 13, 16, 17, 19, 21, 23, 25, 26) con título corto, una línea y barra de avance; 17–19 lo que no se ve, Makana y cierre con QR (verificado de nuevo en el PDF). La diapositiva de demo anterior quedó oculta en Figma, no borrada.
