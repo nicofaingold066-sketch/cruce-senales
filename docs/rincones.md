@@ -271,5 +271,17 @@ Accesibilidad de estos rincones (320, 375): sin fallas reales; dos avisos de "fo
 | R406 | Atajo Pádel en un grupo de fútbol (misma familia): título "Pádel", franjas de 1 h 30, se crea | ojo | A |
 | R407 | Agente en un grupo con propósito: "Me gustaría" solo ofrece Pádel · Fútbol · Tenis · Básquet; "Marca al menos una actividad para guardar." en texto normal (ya no en rojo: **O-15 APROBADO**); preguntas de zona, movilidad, tiempo de viaje y momento del día con "Prefiero no responder"; casilla "Recibir invitaciones del agente"; dos botones: "Que el agente proponga" y "Que el agente arme un plan" | ojo (375) | A |
 
+### Enmienda 15 en pantalla (`main` af79fcb; `f15` corre en el turno de las 02:15)
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| R500 | Nueva propuesta: "Nombre de este plan (opcional)" en cada franja y "Más opciones" (Ronda de opiniones: Sin ronda / N h; "Si sirven las dos, gana": La que empieza antes / La que pueden más) | — | pendiente |
+| R501 | Paso 2: planes con nombre, "Gana la que pueden más personas", "Ronda de opiniones: N h después de publicar cada versión (nunca después del cierre)" | — | pendiente |
+| R510 | "Respuesta en un paso" con dos planes con nombre | — | pendiente |
+| R511 | Mi respuesta: "Si te sirven los dos, ¿cuál prefieres?" (opcional y privado; solo con A y B en Sí) | — | pendiente |
+| R512 | Con una franja en No, "¿cuál prefieres?" no se ofrece | — | pendiente |
+| R520 | v1 con "la que pueden más": qué plan ganó; nota de la ronda "Opiniones hasta… Mientras tanto no se rearma; confirmar sigue abierto." | — | pendiente |
+| R521 | Ficha del plan: "Cómo viene cada plan: pueden N · la prefieren N", solo el organizador, sin nombres | — | pendiente (privacidad) |
+| R522 | Una invitada no ve esos totales | — | pendiente (privacidad) |
+
 ## Pendiente de recorrer
 "Entrar como otra persona" confirmado, reclamar un lugar simulado libre del demo, "Hoy paso" ya marcado, plazo vencido (expirado), cierre elegido a mano con fecha pasada, y los cuatro anchos de cada rincón mirados a ojo (hoy `auto` en varios). Se repite lo afectado tras cada publicación en `main`.
