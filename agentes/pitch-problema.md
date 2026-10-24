@@ -1,12 +1,14 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 00:00.
+Quien edita este archivo: solo esta sesión. Última actualización: 00:10.
 
 ## Tocando ahora
 - [00:00] Nada en edición. CORRIENDO PRUEBA terminado (00:00).
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- [00:10] Fiesta de noche (pedido de Nico 00:01): el agente ya lee bien las franjas que cruzan la medianoche. El texto fijo dice "el sábado 31 de 23:00 a 03:00 o el domingo 1 de 22:00 a 02:00", y el panel (`franjaTexto`) agrega la fecha del final cuando cambia de día. Lo fija una prueba nueva en `1f85cbe` (86/86). No hace falta cambiar el agente.
+- [00:10] Estimación para el coordinador (solo lectura): juntar `codex/e11-circuito` 8b970a9 con v12 da un solo conflicto (línea del tipo de `entrada`), más dos líneas en `social-http.test.ts` de codex-juan, que no conoce el import de `herramientas.ts`. Unos 30 minutos. Espero su OK, que a su vez espera el de Nico.
 - **[00:00] BYOK CONFIRMADO: las llamadas salen por la clave de Anthropic de Nico.** Registro de la función `agente` v12 (Supabase, `function_logs`), después de la llamada real de las 23:59:57: a las 00:00:13 dice `agente: generación del Gateway {"is_byok":true,"proveedor":"anthropic","modelo":"anthropic/claude-fable-5.1"}`. Lo leyó la función con `GET /v1/generation` del Gateway, del lado del servidor y con la misma clave, que nunca sale al registro. Contestó en el segundo intento (15 s después).
 - **[00:00] Bucle con herramientas: DESPLEGADO Y PROBADO.** Función `agente` **v12** a las 23:59 (desde `wip/agente-ia` `4b1e368`: `index.ts`, `logica.ts`, `herramientas.ts`; verify_jwt true). Panel en `ca6c677` + `73d2d4f`, falta publicarlo.
   - **UNA llamada real, 23:59:44–23:59:57** (build propio con la función real, demo propio, "Simular sol", botón "Que el agente arme un plan"): **12,5 s**, `modo_agente: "herramientas"`, Fable, fuente modelo/modelo. Pasos: "Miré el clima del sábado: sin lluvia (simulación)" · "Miré el clima del domingo: sin lluvia (simulación)" · "Busqué planes que le sirven a todo el grupo: 3" · "Elegí: Asado en Parrilla del parque (Simulación)". Texto: "El asado es lo que más eligió el grupo (3 de 4), calza con un ritmo tranquilo, le sirve al presupuesto de todos, tiene techo por si cambia el tiempo y queda a menos de 20 minutos estimados para todos." Sin nombres, la pantalla no nombra el modelo, 375 px sin desborde, consola limpia.
