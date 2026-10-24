@@ -317,3 +317,12 @@ export function EncabezadoSeccion({ titulo, nota, accion, id }: { titulo: string
     </div>
   )
 }
+
+/** Ícono del grupo: sus iniciales sobre un color estable por nombre. Marca el nivel "Grupo" sin leer (y en la lista de grupos). */
+export function IconoGrupo({ nombre, chico }: { nombre: string; chico?: boolean }) {
+  return (
+    <span className={`icono-grupo ${chico ? 'icono-grupo-chico' : ''}`} style={{ '--ig-c': colorAvatar(nombre) } as CSSProperties} aria-hidden="true">
+      {iniciales(nombre)}
+    </span>
+  )
+}

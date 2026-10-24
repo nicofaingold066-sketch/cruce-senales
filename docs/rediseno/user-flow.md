@@ -22,6 +22,22 @@ Tres cosas tienen que entenderse de un vistazo en cada pantalla: **qué es impor
 
 El servidor decide cupos, plazos, elegibilidad, estado y ganador. La pantalla solo muestra y ofrece la acción que el servidor marca en `siguiente_accion`.
 
+## Tres niveles que se ven distintos (Nico y Juan, 02:15; mockup validado 02:40)
+
+Nico y Juan: "confundo el home con estar dentro de un grupo; no terminamos de descifrar dónde estamos". La referencia de estructura es el mockup validado (https://claude.ai/artifact/LqZBMzmLT187pv6duBpj6f, 8 pantallas) y las capturas de Tricount en `referencias/` de la rama coordinacion (como concepto, no como copia; CRUXE sigue oscuro).
+
+| Nivel | Qué es | Cómo se reconoce sin leer | Volver | Pantallas |
+|---|---|---|---|---|
+| **Mi espacio** | lo mío: mis grupos, mis planes, mi perfil | fondo claro, sin escena oscura, h1 «Tus grupos», barra inferior Grupos · Planes · Perfil, el «+ Nuevo grupo» flotante | — | Home, Planes, Perfil, hoja «+» |
+| **Grupo** | su gente, sus planes, el agente | escena oscura con el **ícono del grupo** (`IconoGrupo`: iniciales sobre un color propio) y el nombre grande | «‹ Tus espacios» | Pantalla del grupo, Nueva propuesta (hoja con ✕ y el nombre del grupo debajo del título) |
+| **Plan** | el resultado, mi respuesta, confirmar | el nombre del grupo arriba («‹ Los del finde»), la fecha grande y UNA acción | «‹ <nombre del grupo>» | El plan y sus pestañas |
+
+Home (Mi espacio): **solo la lista de grupos**. Sin «Tu plan»: los planes viven en la pestaña Planes. Si el servidor dice que te toca algo, UNA línea arriba («Te toca confirmar · Los del finde ›») que lleva al plan. Un «+» flotante «Nuevo grupo» abre una hoja desde abajo con «Crear un grupo» y «Unirme con un código» (desplegable), y abajo «Probar la demo». En computadora (1280) **sin scroll**: grupos a la izquierda, crear y unirme a la derecha.
+
+Grupo: cabecera con ícono y nombre, «Invita a tu grupo» (código, Copiar, WhatsApp) en una tarjeta, «Planes» con «+ Nueva propuesta» a la derecha, la tarjeta del plan vigente con su acción, el agente compacto (lo tuyo resumido + «Que el agente proponga»), Personas, Simulación e Historial como filas. Lo mío (preferencias) vive en el agente del grupo porque son por grupo (directiva 02:17).
+
+Scrolls (pantallas de alto a 375 × 812 y a 1280 × 800; meta de Nico: computadora sin scroll, teléfono lo mínimo). Hoy, medido en las capturas de la fase 2 (`docs/rediseno/capturas/`): grupo demo 2,5 pantallas a 375; Nueva propuesta 3 a 375 y 2 a 1280; Simulación 6 a 375. Meta: home 1 / 1; grupo ≤ 2 / 1; Nueva propuesta ≤ 2 / 1; plan ≤ 2 / 1; Mi respuesta 1 / 1; Simulación ≤ 4 / 2 (es la herramienta del demo, no la ve el jurado como usuario).
+
 ## Camino rápido (primero)
 
 ### 1. Invitado: del enlace a "respondí"

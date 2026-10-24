@@ -176,3 +176,346 @@ small,
   outline: 2px solid var(--foco);
   outline-offset: 2px;
 }
+
+/* ------------------------------------------------------------------ movimiento (pedido de Nico, 02:40)
+   Cinco movimientos, y solo estos; las secciones los usan con estas clases y no inventan otros (decisión 15: sin
+   librería). La hoja y las tarjetas se mueven con `top` y no con `transform`: un transform en el contenedor vuelve
+   relativa a la barra fija de abajo y la hace saltar. Con prefers-reduced-motion todo queda quieto. */
+
+:root {
+  --dur-1: 120ms; /* presión del dedo */
+  --dur-2: 220ms; /* aparecer */
+  --dur-3: 380ms; /* la hoja sube */
+  --curva: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes sd-aparecer {
+  from {
+    opacity: 0;
+    top: 8px;
+  }
+  to {
+    opacity: 1;
+    top: 0;
+  }
+}
+@keyframes sd-subir {
+  from {
+    opacity: 0;
+    top: 28px;
+  }
+  to {
+    opacity: 1;
+    top: 0;
+  }
+}
+@keyframes sd-pop {
+  0% {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes sd-pulso {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* 1. Presión: todo lo que se toca responde al dedo (sin tocar el color: eso lo decide cada variante). */
+.btn,
+.chip-tocable,
+.opcion-radio,
+.chip-dia,
+.chip-hora,
+.chip-persona,
+.chip-actividad,
+.pestana,
+.plan-vivo {
+  transition:
+    transform var(--dur-1) var(--curva),
+    background-color var(--dur-2) ease,
+    box-shadow var(--dur-2) ease,
+    opacity var(--dur-2) ease;
+}
+.btn:active,
+.chip-tocable:active,
+.opcion-radio:active,
+.chip-dia:active,
+.chip-hora:active,
+.chip-persona:active,
+.chip-actividad:active,
+.pestana:active,
+.plan-vivo:active {
+  transform: scale(0.98);
+  box-shadow: var(--sombra-flota);
+}
+
+/* 2. Aparecer: las tarjetas y las filas entran al montarse, escalonadas (hasta ocho). `.sd-aparecer` para cualquier
+   otra pieza; `.sd-escalonado` escalona a sus hijos. Las que vuelven a dibujarse por el sondeo no se mueven (React
+   conserva el nodo). */
+.hoja .tarjeta,
+.lista-planes > li,
+.sd-aparecer,
+.sd-escalonado > * {
+  position: relative;
+  animation: sd-aparecer var(--dur-2) var(--curva) both;
+}
+.hoja .tarjeta:nth-child(2),
+.lista-planes > li:nth-child(2),
+.sd-escalonado > :nth-child(2) {
+  animation-delay: 40ms;
+}
+.hoja .tarjeta:nth-child(3),
+.lista-planes > li:nth-child(3),
+.sd-escalonado > :nth-child(3) {
+  animation-delay: 80ms;
+}
+.hoja .tarjeta:nth-child(4),
+.lista-planes > li:nth-child(4),
+.sd-escalonado > :nth-child(4) {
+  animation-delay: 120ms;
+}
+.hoja .tarjeta:nth-child(5),
+.lista-planes > li:nth-child(5),
+.sd-escalonado > :nth-child(5) {
+  animation-delay: 160ms;
+}
+.hoja .tarjeta:nth-child(6),
+.lista-planes > li:nth-child(6),
+.sd-escalonado > :nth-child(6) {
+  animation-delay: 200ms;
+}
+.hoja .tarjeta:nth-child(7),
+.lista-planes > li:nth-child(7),
+.sd-escalonado > :nth-child(7) {
+  animation-delay: 240ms;
+}
+.hoja .tarjeta:nth-child(8),
+.lista-planes > li:nth-child(8),
+.sd-escalonado > :nth-child(8) {
+  animation-delay: 280ms;
+}
+
+/* 3. La hoja sube desde abajo al abrir cada pantalla. */
+.hoja {
+  position: relative;
+  animation: sd-subir var(--dur-3) var(--curva) both;
+}
+
+/* 4. Confirmación: el resultado "pega". La sección lo pone en la tarjeta de «¡Se juntan!», en «Ya confirmaste» y en
+   «Respuesta guardada». Lleva transform: no ponerlo en un contenedor con una barra fija adentro. */
+.sd-exito {
+  animation: sd-pop 460ms var(--curva) both;
+}
+
+/* 5. Trabajando: pasos de una espera (el agente, una carga). El paso activo late, los hechos quedan marcados. */
+.sd-pasos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--e-2);
+}
+.sd-pasos > li {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-height: 24px;
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--tinta-2);
+}
+.sd-pasos > li::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--linea);
+}
+.sd-pasos > .sd-paso-activo {
+  color: var(--tinta);
+  font-weight: var(--p-boton);
+}
+.sd-pasos > .sd-paso-activo::before {
+  background: var(--brasa);
+  animation: sd-pulso 1s ease-in-out infinite;
+}
+.sd-pasos > .sd-paso-hecho::before {
+  background: var(--ok);
+}
+.sd-pulso {
+  animation: sd-pulso 1.2s ease-in-out infinite;
+}
+
+/* Aire: las secciones separan sus bloques con la escala, no con valores sueltos. */
+.sd-aire > * + * {
+  margin-top: var(--e-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .chip-tocable,
+  .opcion-radio,
+  .chip-dia,
+  .chip-hora,
+  .chip-persona,
+  .chip-actividad,
+  .pestana,
+  .plan-vivo {
+    transition: none;
+  }
+  .hoja,
+  .hoja .tarjeta,
+  .lista-planes > li,
+  .sd-aparecer,
+  .sd-escalonado > *,
+  .sd-exito,
+  .sd-pasos > .sd-paso-activo::before,
+  .sd-pulso {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ más movimiento (pedido de Nico, 02:40) */
+
+@keyframes sd-respira {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  40% {
+    box-shadow: 0 0 0 6px var(--brasa-suave);
+  }
+}
+@keyframes sd-latido {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes sd-hoja-sube {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes sd-velo {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 6. El resultado del plan "respira" una vez cuando cambia de estado (la sección pone la clase con key={estado}). */
+.sd-respira {
+  animation: sd-respira 900ms ease-out 1;
+}
+/* 7. Confirmado: el botón o el chip "Confirmado ✓" late una vez; el Confeti que ya existe queda para «¡Se juntan!». */
+.sd-confirmado {
+  animation: sd-latido 360ms var(--curva) 1;
+}
+/* 8. Chips al seleccionarse: el activo late apenas (sin mover el layout). */
+.chip-activo,
+.opcion-activa,
+.chip.chip-activo {
+  animation: sd-latido 180ms var(--curva) 1;
+}
+/* 9. Hoja desde abajo (bottom sheet): para el «+» de Mi espacio y cualquier pregunta de dos opciones.
+   <div class="sd-velo"> detrás y <div class="sd-hoja-modal" role="dialog" aria-modal="true"> adelante. */
+.sd-velo {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(0, 0, 0, 0.45);
+  animation: sd-velo var(--dur-2) ease both;
+}
+.sd-hoja-modal {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 71;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: var(--e-4) var(--margen) max(var(--e-5), env(safe-area-inset-bottom));
+  border-radius: var(--r-l) var(--r-l) 0 0;
+  background: var(--hoja);
+  box-shadow: var(--sombra-hoja);
+  animation: sd-hoja-sube 240ms var(--curva) both;
+}
+@media (min-width: 960px) {
+  .sd-hoja-modal {
+    left: 50%;
+    right: auto;
+    width: 560px;
+    margin-left: -280px;
+  }
+}
+
+/* ------------------------------------------------------------------ niveles (Nico y Juan, 02:15: "no sabemos dónde estamos")
+   Mi espacio: fondo claro, sin escena oscura, título "Tus grupos". Grupo: escena oscura con el ícono del grupo.
+   Plan: la escena oscura con el nombre del grupo arriba (volver) y el resultado primero. */
+
+.icono-grupo {
+  --ig: 48px;
+  flex: none;
+  width: var(--ig);
+  height: var(--ig);
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--ig-c, var(--noche-3));
+  color: #fff;
+  font-size: var(--t-subtitulo);
+  font-weight: var(--p-pantalla);
+  letter-spacing: 0.02em;
+}
+.icono-grupo-chico {
+  --ig: 40px;
+  border-radius: 12px;
+  font-size: var(--t-cuerpo);
+}
+
+/* Aire (pedido 02:40): 20 px a los lados en el teléfono y 40 en la computadora; 12 entre tarjetas, 24 entre bloques. */
+:root {
+  --margen: 20px;
+  --entre-tarjetas: 12px;
+  --entre-bloques: 24px;
+}
+@media (min-width: 960px) {
+  :root {
+    --margen: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sd-respira,
+  .sd-confirmado,
+  .chip-activo,
+  .opcion-activa,
+  .chip.chip-activo,
+  .sd-velo,
+  .sd-hoja-modal {
+    animation: none;
+  }
+}

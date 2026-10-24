@@ -56,7 +56,7 @@
   --r-l: 24px;
   --r-hoja: 28px;
   --barra-alto: 56px;
-  --margen: 16px;
+  --margen: 20px; /* sistema: 20 en el teléfono, 40 en la computadora (src/estilo/sistema.css) */
   --fuente: var(--fuente-ui); /* Plus Jakarta Sans con la del sistema de respaldo (src/estilo/sistema.css) */
   --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   color-scheme: light dark;
