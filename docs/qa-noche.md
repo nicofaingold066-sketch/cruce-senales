@@ -19,6 +19,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | `plan-b-un-aparato.mjs` | Guion de la demo §8 (5), de apertura: una sola sesión (Tomi) recorre el caso con Simulación; informa si el caso carga a Luna, v1 sábado con 4, quiénes aceptan, baja de Caro, v2 domingo y segundos totales | sí | `node tests/e2e/plan-b-un-aparato.mjs <url>` |
 | `demo-reinicio-luna.mjs` | Guion de la demo §8 (4), de apertura: Luna reclamada sigue reclamada tras «Reiniciar demo» (sesión nueva no puede elegirla; la misma sesión sigue en un toque y responde) | sí | `node tests/e2e/demo-reinicio-luna.mjs <url>` |
 | `turno-base.sh` | Envoltorio de la regla 21:16: espera a que ninguna ficha diga MIGRACION / PRUEBA DE CARGA / CORRIENDO PRUEBA, marca «CORRIENDO PRUEBA (hh:mm)» en mi ficha, corre UNA prueba y quita la marca | — | `tests/e2e/turno-base.sh "<qué>" <comando…>` |
+| `proposito.mjs` | Enmienda 14 (propósito del grupo): create_space con propósito, propuesta fuera de propósito rechazada con el mensaje exacto y sin crear nada, pádel aceptada, ajuste 2 (un ajeno no se entera del propósito), demo libre, «Me gustaría» por familia (0049) e invitación «para jugar fútbol». Salida 4 = 0048 no aplicada | sí | `tests/e2e/turno-base.sh "propósito" node tests/e2e/proposito.mjs <url>` |
 | `preparar-grupo.mjs` | Ayudante: crea grupo ficticio (Orga, Ana, Beto) y propuesta abierta | sí | lo llaman los dos anteriores |
 
 ## Cambios en los guiones
@@ -73,6 +74,9 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 21:26 | recorrido canónico (vitest) con E13 contra la base, en turno con marca CORRIENDO PRUEBA | base | corriendo |
 | 21:37 | recorrido canónico (vitest) con E13 contra la base, base 0042–0045 | base | 5/5. Dos primeros intentos fallaron por forma que yo supuse mal: `opiniones_totales` llega como `{ asi_no_puedo: n|null }`, no `null`; guion corregido |
 | 21:37 | hallazgo para backend (sin cambiar nada): con 2 opiniones, el organizador que NO aceptó esa versión ve `siguiente_accion = te_toca_aceptar` y no el texto «Algunos no pueden así: puedes rearmar con lo nuevo.» (0043 evalúa `puede.aceptar` antes). El botón sí está (`puede.proponer_reparacion = true`). El contrato dice que ese texto es del organizador «en ese caso» | base | consulta abierta, no regresión |
+| 21:55 | humo de producción (dos sesiones), repetición con capturas: **26/26** (E13 activo: el historial de Luna dice «Una persona se retiró»). El primero, 21:42, había caído a los 20 s en el paso de Luna (Mi respuesta) con la base cargada por otras corridas en paralelo (parones de ~7 s avisados 21:16); no se reprodujo | producción | verde |
+| 21:55 | `proposito.mjs` sonda: 0048 aún no aplicada → salida 4 (`PGRST202` en `create_space` con `p_proposito`) | base | pendiente de backend |
+| 22:00 | backend 21:45: `te_toca_aceptar` antes de «puedes rearmar» es lo buscado; con 0047 `opiniones_totales` cuenta solo las opiniones de los demás. La prueba E13 acepta las dos formas (2 o null) y lo informa | — | adaptado |
 
 ## Regresiones abiertas
 (ninguna)

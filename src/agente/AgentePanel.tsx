@@ -12,6 +12,7 @@ import type { ApiError } from '../lib/types'
 import { Aviso, Boton, Cargando, ErrorCaja, RotuloSimulacion } from '../components/ui'
 import './agente.css'
 import {
+  AVISO_REINTENTO,
   agenteApi,
   guardarBorradorAgente,
   mensajeFijo,
@@ -141,20 +142,26 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   const [errorCarga, setErrorCarga] = useState<ApiError | null>(null)
   const [actividades, setActividades] = useState<ActividadOpcion[]>([])
   const [borrador, setBorrador] = useState<Preferencias>(VACIAS)
-  // Enmienda 8 (mejora #72): marcada por defecto; desmarcada, el agente no usa estas preferencias.
+  // Enmienda 8: la casilla es un borrador; el permiso cambia al guardar y recibir confirmación.
   const [usar, setUsar] = useState(true)
+  const [usarConfirmado, setUsarConfirmado] = useState<boolean | null>(null)
   const [guardadas, setGuardadas] = useState(false)
   const [aviso, setAviso] = useState<string | null>(null)
+  // #108: la primera llamada tardó demasiado y se está reintentando una vez.
+  const [reintentando, setReintentando] = useState(false)
   const { ocupado, error, ejecutar } = useAccion()
   const refError = useFocoEnError(error)
 
   const cargar = useCallback(async () => {
     setCargando(true)
-    const r = await agenteApi.getMyPreferences(espacioId)
+    setReintentando(false)
+    const r = await agenteApi.getMyPreferences(espacioId, { alReintentar: () => setReintentando(true) })
+    setReintentando(false)
     if (r.ok) {
       setActividades(r.data.opciones.actividades)
       if (r.data.preferencias) setBorrador(r.data.preferencias)
       setUsar(r.data.usar_en_agente)
+      setUsarConfirmado(r.data.usar_en_agente)
       setGuardadas(Boolean(r.data.preferencias))
       setErrorCarga(null)
     } else setErrorCarga(r.error)
@@ -165,7 +172,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
     void cargar()
   }, [cargar])
 
-  if (cargando) return <Cargando texto="Cargando tus preferencias…" />
+  if (cargando) return <Cargando texto={reintentando ? AVISO_REINTENTO : 'Cargando tus preferencias…'} />
   if (errorCarga) return <ErrorCaja error={errorCarga} onReintentar={() => void cargar()} />
 
   const poner = <K extends keyof Preferencias>(k: K, v: Preferencias[K]) => {
@@ -190,18 +197,24 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   const sinActividades = borrador.me_gustaria.length === 0
 
   async function guardar() {
-    const r = await ejecutar(`preferencias:${espacioId}`, () => agenteApi.saveMyPreferences(espacioId, borrador, usar))
+    setReintentando(false)
+    const r = await ejecutar(`preferencias:${espacioId}`, () =>
+      agenteApi.saveMyPreferences(espacioId, borrador, usar, { alReintentar: () => setReintentando(true) }),
+    )
+    setReintentando(false)
     if (r?.ok) {
       setGuardadas(true)
-      setUsar(r.data.usar_en_agente)
-      setAviso(r.data.usar_en_agente ? 'Guardado. Nadie más ve tus preferencias.' : 'Guardado. El agente no usa tus preferencias; siguen guardadas solo para ti.')
+      setUsarConfirmado(r.data.usar_en_agente)
+      setAviso(r.data.usar_en_agente !== usar
+        ? 'El servidor confirmó otro permiso. Tu cambio sigue sin guardar; revisa y vuelve a guardar.'
+        : r.data.usar_en_agente ? 'Guardado. Nadie más ve tus preferencias.' : 'Guardado. El agente no usa tus preferencias; siguen guardadas solo para ti.')
     }
   }
 
   return (
     <div className="bloque">
       <p className="suave">
-        Solo las ves tú. El agente las usa para elegir el plan, pero al grupo le llega solo la propuesta, nunca lo que pusiste.
+        Solo las ves tú. Con tu permiso guardado, el agente puede usarlas para sugerir un plan. Al grupo le llega solo la propuesta, nunca lo que pusiste.
       </p>
       <Opciones nombre="pref-presupuesto" titulo="Presupuesto este finde" opciones={PRESUPUESTO} valor={borrador.presupuesto} onCambio={(v) => poner('presupuesto', v)} deshabilitado={soloLectura || ocupado} />
       <Opciones nombre="pref-energia" titulo="Energía" opciones={ENERGIA} valor={borrador.energia} onCambio={(v) => poner('energia', v)} deshabilitado={soloLectura || ocupado} />
@@ -245,13 +258,18 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
         />
         <span>
           Que el agente use mis preferencias
-          <small id="pref-usar-ayuda">Si la desmarcas, el agente no las usa; siguen guardadas solo para ti.</small>
+          <small id="pref-usar-ayuda">El cambio se aplica cuando guardas y el servidor lo confirma. Tus preferencias siguen siendo privadas.</small>
         </span>
       </label>
+      <p role="status">
+        {usarConfirmado === true ? 'Permiso guardado: el agente puede usar tus preferencias.' : usarConfirmado === false ? 'Permiso guardado: el agente no usa tus preferencias.' : 'Permiso guardado pendiente de lectura.'}
+        {usarConfirmado !== null && usar !== usarConfirmado ? ' Cambio sin guardar: el permiso anterior sigue vigente.' : ''}
+      </p>
       <div ref={refError}>{error ? <ErrorCaja error={error} onReintentar={() => void guardar()} /> : null}</div>
-      {aviso ? <Aviso tono="ok">{aviso}</Aviso> : null}
+      {ocupado && reintentando ? <Aviso tono="aviso">{AVISO_REINTENTO}</Aviso> : null}
+      {aviso ? <Aviso tono={usarConfirmado !== null && usar !== usarConfirmado ? 'info' : 'ok'}>{aviso}</Aviso> : null}
       <p className="agente-sr" aria-live="polite">
-        {ocupado ? 'Guardando tus preferencias…' : aviso ?? ''}
+        {ocupado ? (reintentando ? AVISO_REINTENTO : 'Guardando tus preferencias…') : aviso ?? ''}
       </p>
       <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura || sinActividades}>
         {guardadas ? 'Actualizar mis preferencias' : 'Guardar mis preferencias'}
@@ -361,7 +379,7 @@ function BorradorTarjeta({
   return (
     <div className="bloque">
       <Aviso tono="info" titulo="Opciones del agente">
-        Todas le sirven al grupo según lo que cargó cada uno. Elegís vos: todavía nadie está invitado ni confirmado.
+        Son ideas según las preferencias habilitadas. La disponibilidad y la confirmación se resuelven después, para una versión del plan.
       </Aviso>
       <fieldset className="grupo agente-candidatas">
         <legend>
@@ -455,7 +473,7 @@ function BorradorTarjeta({
       <p className="suave">
         {deModelo
           ? `Lo redactó la IA${quien ? ` (${quien})` : ''}, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.`
-          : 'Texto fijo. Las opciones las armó el servidor con reglas fijas a partir de las preferencias de todos.'}
+          : 'Texto fijo. Las opciones las armó el servidor con reglas fijas a partir de las preferencias habilitadas.'}
       </p>
       <p className="suave">El mínimo, el máximo, la persona imprescindible y el cierre los completás vos en el paso siguiente.</p>
       <Boton onClick={usar} disabled={soloLectura || !tituloValido}>
@@ -729,7 +747,7 @@ function PanelAgente({
         <section className="tarjeta agente-panel">
           <h2>Agente del círculo</h2>
           <p className="suave">
-            Lee las preferencias de todo el grupo, mira el clima y un catálogo de lugares (de Simulación) y te propone opciones que le sirven a todos. Propone, pero no decide por nadie.
+            Usa las preferencias habilitadas, mira el clima y un catálogo de lugares (de Simulación) para sugerir ideas. La disponibilidad y la confirmación se resuelven después, para una versión del plan.
           </p>
           <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} invitacion={invitacion} />
         </section>
