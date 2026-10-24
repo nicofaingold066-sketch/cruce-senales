@@ -85,7 +85,7 @@ export default function Inicio({
             </span>
             <div>
               <strong>Sin contraseña ni correo</strong>
-              <p>Tu sesión queda guardada en este teléfono. Lo que marques sobre cuándo puedes lo ve solo el servidor.</p>
+              <p>Tu sesión queda guardada en este teléfono. Cuándo puedes es privado: nadie del grupo lo ve.</p>
             </div>
           </div>
         </div>
