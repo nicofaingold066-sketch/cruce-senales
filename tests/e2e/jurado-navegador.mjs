@@ -9,7 +9,7 @@ import { createRequire } from 'node:module'
 import { execFileSync } from 'node:child_process'
 import { mkdirSync } from 'node:fs'
 import { createServer } from 'vite'
-import { irA } from './nav.mjs'
+import { irA, responderRapido, respuestaGuardada, rotulo } from './nav.mjs'
 
 const require = createRequire(import.meta.url)
 let pw
@@ -162,7 +162,7 @@ const boton = (p, nombre) => p.getByRole('button', { name: nombre, exact: true }
 const tocar = (p, nombre) => boton(p, nombre).click()
 const tab = (p, nombre) => irA(p, nombre)
 const texto = (p, t) => p.getByText(t, { exact: false }).first().waitFor()
-const estado = (p, t) => p.locator('.estado-hero-etiqueta').filter({ hasText: new RegExp(`^${t}$`, 'i') }).waitFor()
+const estado = (p, t) => p.locator('.estado-hero-etiqueta').filter({ hasText: rotulo(t) }).first().waitFor()
 function comprobar(condicion, mensaje) { assert.ok(condicion, mensaje); comprobadas++ }
 async function accion(p, fn, clic, ok = true) {
   const espera = p.waitForResponse(r => new URL(r.url()).pathname === `/rest/v1/rpc/${fn}`)
@@ -175,13 +175,12 @@ async function accion(p, fn, clic, ok = true) {
   return r
 }
 async function condiciones(p, a = 'Sí puedo', b = 'Sí puedo') {
+  // S5 (¿Cuándo puedes?): una opción rápida guarda las dos franjas con save_my_conditions; el editor viejo ya no existe.
   await tab(p, 'Mi respuesta')
-  for (const [clave, valor] of [['A', a], ['B', b]]) {
-    await p.locator('fieldset', { has: p.locator('legend', { hasText: `Franja ${clave}:` }) })
-      .getByLabel(valor, { exact: true }).check()
-  }
-  await accion(p, 'save_my_conditions', () => tocar(p, 'Guardar condiciones'))
-  await texto(p, 'Guardado. Solo tú ves estas condiciones.')
+  const v = (x) => (x === 'Sí puedo' ? 'si' : 'no')
+  await accion(p, 'save_my_conditions', () => responderRapido(p, v(a), v(b)))
+  await respuestaGuardada(p)
+  await tab(p, 'Plan')
 }
 async function foto(p, nombre) {
   if (carpeta) await p.screenshot({ path: `${carpeta}/${nombre}.png`, fullPage: true })
@@ -231,7 +230,7 @@ async function cancelar() {
   const actual = propuestas.at(-1)
   if (!actual || actual.cancelada) return
   await T.goto(actual.url); await tab(T, 'Plan')
-  await tocar(T, 'Cancelar propuesta')
+  await T.getByRole('button', { name: /^Cancelar (la )?propuesta$/ }).first().click()
   await accion(T, 'cancel_proposal', () => tocar(T, 'Sí, cancelar'))
   await estado(T, 'Cancelado'); actual.cancelada = true
 }

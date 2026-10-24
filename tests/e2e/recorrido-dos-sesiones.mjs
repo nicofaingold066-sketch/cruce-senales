@@ -15,7 +15,7 @@
 import { createRequire } from 'node:module'
 import { mkdirSync } from 'node:fs'
 import { baseLibre } from './base-libre.mjs'
-import { irA } from './nav.mjs'
+import { irA, responderRapido, respuestaGuardada, rotulo } from './nav.mjs'
 baseLibre()
 const require = createRequire(import.meta.url)
 let pw
@@ -109,13 +109,15 @@ const siPuedo = (p, franja) => p.locator('fieldset', { hasText: `Franja ${franja
 const estado = (p) => p.locator('.estado-hero-etiqueta').first().innerText().catch(() => '')
 // Cada paso espera lo que devuelve el servidor, no un tiempo fijo.
 const conInteres = async (p) => {
-  await tocar(p, 'Me interesa')
+  // S5: el botón dice «Avisar que me interesa (opcional · lo ve el grupo)»; antes, «Me interesa».
+  const b = p.getByRole('button', { name: /^(Me interesa|Avisar que me interesa)/ }).first()
+  await b.scrollIntoViewIfNeeded(); await b.click()
   await esperarTexto(p, 'Marcaste "Me interesa"')
 }
 const conCondiciones = async (p) => {
-  await siPuedo(p, 'A'); await siPuedo(p, 'B')
-  await tocar(p, 'Guardar condiciones')
-  await esperarTexto(p, 'Guardado. Solo tú ves estas condiciones.')
+  // S5 (¿Cuándo puedes?): una opción rápida guarda las dos franjas; el editor viejo (Franja A/B) ya no existe.
+  await responderRapido(p, 'si', 'si')
+  await respuestaGuardada(p)
 }
 const confirmar = async (p, version) => {
   await tocar(p, `Confirmar versión ${version}`)
@@ -149,11 +151,11 @@ try {
   { const revisar = T.getByRole('button', { name: 'Revisar antes de crear', exact: true }); if (await revisar.isVisible().catch(() => false)) await revisar.click() }
   await tocar(T, 'Crear y abrir al grupo')
   await T.waitForURL(/\/p\//, { timeout: 20000 })
-  await T.getByRole('tab', { name: 'Plan' }).waitFor({ timeout: 20000 })
+  await T.locator('.estado-hero-etiqueta').first().waitFor({ timeout: 20000 })
   // Abierta de verdad: el servidor la pasa a "Reuniendo interés" (si open_proposal falla, queda en borrador).
-  await esperarTexto(T, 'Reuniendo interés').catch(() => {})
+  await T.locator('.estado-hero-etiqueta').filter({ hasText: rotulo('Reuniendo interés') }).first().waitFor({ timeout: 20000 }).catch(() => {})
   const estadoInicial = await estado(T)
-  verificar('Propuesta creada y abierta al grupo', /Reuniendo interés/i.test(estadoInicial), estadoInicial)
+  verificar('Propuesta creada y abierta al grupo', rotulo('Reuniendo interés').test(estadoInicial), estadoInicial)
 
   // 3. Luna entra con el enlace en su ventana privada. La lista tiene que aparecer sola (F1, mejora #52).
   await L.goto(`${BASE}/#/unirse/${codigo}`)
@@ -169,21 +171,23 @@ try {
   // 4. Condiciones privadas: Tomi y Luna (franjas A y B); los simulados, con el atajo de la demo.
   await pestana(T, 'Mi respuesta'); await conInteres(T); await conCondiciones(T)
   await L.getByText('Asado en casa de Tomi', { exact: false }).first().click()
-  await L.getByRole('tab', { name: 'Mi respuesta' }).waitFor({ timeout: 15000 })
-  // La pestaña depende del espacio (get_space aparte): se espera a que llegue y se mira un rato, no un instante.
+  await L.locator('a.fila[href*="/responder/"]').first().waitFor({ timeout: 15000 })
+  // La fila depende del espacio (get_space aparte): se espera a que llegue y se mira un rato, no un instante.
   await L.getByRole('link', { name: /Los del (asado|finde)/ }).first().waitFor({ timeout: 15000 }) // rediseño: el volver lleva ícono, no '←'
   let conSimulacion = false
   for (let i = 0; i < 6 && !conSimulacion; i++) {
-    conSimulacion = (await L.getByRole('tab', { name: 'Simulación' }).count()) > 0
+    conSimulacion = (await L.getByRole('button', { name: /^Simulación/ }).count()) > 0
     await L.waitForTimeout(250)
   }
-  verificar('Luna no tiene la pestaña Simulación', !conSimulacion)
+  verificar('Luna no tiene la fila Simulación demo', !conSimulacion)
   await pestana(L, 'Mi respuesta'); await conInteres(L); await conCondiciones(L)
   // E7.2 con control positivo, mientras se reúne interés: Tomi ve el conteo de condiciones cargadas; Luna no.
   await pestana(T, 'Plan'); await pestana(L, 'Plan')
-  const tomiVeConteo = await esperarTexto(T, 'Con condiciones', 10000).then(() => true, () => false)
-  const lunaVeConteo = (await L.getByText('Con condiciones', { exact: false }).count()) > 0
-  verificar('E7.2: "Con condiciones cargadas" lo ve Tomi y no Luna', tomiVeConteo && !lunaVeConteo, `Tomi ${tomiVeConteo ? 'sí' : 'no'}, Luna ${lunaVeConteo ? 'sí' : 'no'}`)
+  // Rediseño S4: «Con condiciones» pasó a «N de M respondieron» (solo quien organiza). Se aceptan los dos.
+  const RE_CONTEO = /Con condiciones|\d+ de \d+ respondieron/
+  const tomiVeConteo = await T.getByText(RE_CONTEO).first().waitFor({ timeout: 10000 }).then(() => true, () => false)
+  const lunaVeConteo = RE_CONTEO.test(await L.locator('main').innerText())
+  verificar('E7.2: el conteo de respuestas lo ve Tomi y no Luna', tomiVeConteo && !lunaVeConteo, `Tomi ${tomiVeConteo ? 'sí' : 'no'}, Luna ${lunaVeConteo ? 'sí' : 'no'}`)
   await pestana(T, 'Simulación'); await tocar(T, 'Cargar condiciones del caso a las personas simuladas')
   await esperarTexto(T, 'cargadas las condiciones de', 20000)
   await captura(T, 'tomi-simulacion-cargada')
@@ -196,12 +200,13 @@ try {
   await L.reload(); await pestana(L, 'Plan')
   await esperarTexto(L, 'Confirmar versión 1')
   await confirmar(L, 1)
-  const v1 = await L.getByText('Grupo confirmado', { exact: false }).first().waitFor({ timeout: 20000 }).then(() => true, () => false)
+  const v1 = await L.getByText(rotulo('Grupo confirmado')).first().waitFor({ timeout: 20000 }).then(() => true, () => false)
   verificar('v1: Grupo confirmado en el teléfono de Luna', v1)
   // E7.2 con control positivo, con versión vigente: "Faltan por responder" lo ve Tomi y no Luna.
   await pestana(T, 'Plan')
   // El rótulo puede ser «Faltan por responder» (hoy) o «Faltan por confirmar» (ux-flujo, opcional): se aceptan los dos.
-  const RE_FALTAN = /Faltan por (?:responder|confirmar)/
+  // Rediseño S4: la fila «Faltan por confirmar» se fue; quien organiza ve «N de M confirmaron · faltan X».
+  const RE_FALTAN = /Faltan por (?:responder|confirmar)|confirmaron · faltan \d+/
   const tomiVePendientes = await T.getByText(RE_FALTAN).first().waitFor({ timeout: 10000 }).then(() => true, () => false)
   const lunaVePendientes = RE_FALTAN.test(await L.locator('main').innerText())
   verificar('E7.2: «Faltan por responder/confirmar» lo ve Tomi y no Luna', tomiVePendientes && !lunaVePendientes, `Tomi ${tomiVePendientes ? 'sí' : 'no'}, Luna ${lunaVePendientes ? 'sí' : 'no'}`)
@@ -229,14 +234,14 @@ try {
   const v2Inicio = await T.locator('main').innerText()
   const v2Estado = await estado(T)
   verificar('v2: empieza de cero (ninguna confirmación de v1 pasa)',
-    /Nadie confirmó todavía/.test(v2Inicio) && /Estas confirmaciones no pasan a la versión 2/.test(v2Inicio) && !/Grupo confirmado/i.test(v2Estado), v2Estado)
+    /Nadie confirmó todavía/.test(v2Inicio) && /confirmaciones (anteriores )?no pasan a (la|esta) versión/.test(v2Inicio) && !rotulo('Grupo confirmado').test(v2Estado), v2Estado)
   await captura(T, 'tomi-v2')
   await confirmar(T, 2)
   await aceptarSimulados(2)
   await L.reload(); await pestana(L, 'Plan')
   await esperarTexto(L, 'Confirmar versión 2')
   await confirmar(L, 2)
-  const v2 = await L.getByText('Grupo confirmado', { exact: false }).first().waitFor({ timeout: 20000 }).then(() => true, () => false)
+  const v2 = await L.getByText(rotulo('Grupo confirmado')).first().waitFor({ timeout: 20000 }).then(() => true, () => false)
   verificar('v2: Grupo confirmado otra vez y Luna confirmó la versión 2', v2)
   // #56: con más confirmaciones que el mínimo (el caso llega a 5 de mínimo 4) se dice "5 (mínimo 4)".
   const planLuna = await textoYEtiquetas(L)
