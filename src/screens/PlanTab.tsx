@@ -6,6 +6,7 @@ import { cuentaRegresiva, describirEvento, diaDe, franjaTexto, hora, momentoCort
 import { Avatar, Aviso, Boton, DiaTile, ErrorCaja, Nombre, Progreso } from '../components/ui'
 import type { PestanaProps } from './tabs'
 import { Icono } from '../components/Icono'
+import type { NombreIcono } from '../components/Icono'
 import { Confeti } from '../components/Confeti'
 import { Resaltado } from '../components/Resaltado'
 import { descargarCalendario, urlWhatsApp } from '../lib/compartir'
@@ -112,13 +113,27 @@ type VivaProps = Pick<PestanaProps, 'p' | 'viva' | 'soloLectura'>
  *   decide solo por el imprescindible, mientras la enmienda 12 (a) pide además ser organizador): no se dibuja.
  *   Pendiente (pedido a friccion): con 12 (a) en la cabecera, el texto de FaltaTuRespuesta para el imprescindible
  *   repite "eres quien no puede faltar"; el cambio es de su componente, no de esta pantalla.
- * - La versión es sin ella: <AvisoParaMi/> arriba, salvo que la próxima acción ya sea la de la enmienda 12 (b)
- *   (`reunir_condiciones` con una opción publicada), que dice lo mismo casi con las mismas palabras. En ese caso el
- *   texto queda solo en la cabecera y la acción que el aviso traía ("Ir a Mi respuesta") pasa sola a la opción
- *   vigente (accionSinAviso): el texto no se repite y la persona no se queda sin el camino para completar.
+ * - La versión es sin ella y su disponibilidad está incompleta: <AvisoParaMi/> arriba, salvo que la próxima acción ya
+ *   sea la de la enmienda 12 (b) (`reunir_condiciones` con una opción publicada), que dice lo mismo casi con las mismas
+ *   palabras. En ese caso el texto queda solo en la cabecera y la acción que el aviso traía ("Ir a Mi respuesta")
+ *   pasa sola a la opción vigente (accionSinAviso): el texto no se repite y la persona no se queda sin el camino
+ *   para completar.
+ * - La versión es sin ella con la disponibilidad completa: AvisoParaMi no se dibuja. Su texto ("con lo que marcaste,
+ *   esta fecha no te queda") da un motivo que puede ser falso: la elegibilidad es una foto al publicar la versión
+ *   (0002_utilidades.sql:262) y quien no entró puede seguir guardando condiciones
+ *   (0028_e7_simular_solo_demo_y_mensaje.sql:84), así que pudo completar con "Sí" después. Lo dice una sola vez la
+ *   opción vigente, sin dar motivo (razonNoAceptar).
+ * - La versión es sin ella y el plazo de aceptación ya cerró (un grupo confirmado sigue así pasado el plazo): tampoco
+ *   se dibuja AvisoParaMi, cuyo "Si la completas, cuenta si el plan se rearma" ya no es cierto (no puede guardar
+ *   condiciones ni hay reparación). Lo dice una sola vez la opción vigente, junto con el cierre del plazo.
  */
 function verAvisoParaMi(p: EstadoPropuesta): boolean {
-  return avisoParaMi(p)?.clave === 'version_sin_ti' && p.siguiente_accion.codigo !== 'reunir_condiciones'
+  return (
+    avisoParaMi(p)?.clave === 'version_sin_ti' &&
+    p.mi_situacion.condiciones !== 'completas' &&
+    !p.plazo_vencido &&
+    p.siguiente_accion.codigo !== 'reunir_condiciones'
+  )
 }
 
 /** El aviso "Esta versión es sin ti" ofrecía ir a completar (`irARespuesta`), pero no se dibuja: se ofrece solo el botón. */
@@ -183,20 +198,33 @@ function PlazoInformativo({ p, viva, ahora }: { p: EstadoPropuesta; viva: Pestan
 
 // ------------------------------------------------------------------ opción vigente
 
-function razonNoAceptar(p: EstadoPropuesta): string | null {
+function razonNoAceptar(p: EstadoPropuesta): { texto: string; icono: NombreIcono } | null {
   const s = p.mi_situacion
   const v = p.opcion?.version
-  if (s.retirado) return 'Te retiraste de esta propuesta y ya no puedes participar en ella.'
-  if (s.acepte_version) return `Ya confirmaste la versión ${v}. Tu confirmación vale solo para esa versión.`
-  if (p.plazo_vencido) return 'El plazo de aceptación ya cerró.'
-  // "Esta versión es sin ti" ya lo dice una vez AvisoParaMi arriba (o la próxima acción, enmienda 12 b): no se repite.
-  // Con 12 (b), en este lugar va solo el botón "Ir a Mi respuesta" (accionSinAviso).
-  if (s.elegible_en_version === false) return null
-  if (s.motivo_aceptar === 'cupo_reservado') {
-    return 'El último cupo está reservado para el anfitrión. Podrás confirmar si se libera un cupo para otros.'
+  const candado = (texto: string) => ({ texto, icono: 'candado' as const })
+  if (s.retirado) return candado('Te retiraste de esta propuesta y ya no puedes participar en ella.')
+  if (s.acepte_version) return { texto: `Ya confirmaste la versión ${v}. Tu confirmación vale solo para esa versión.`, icono: 'check' }
+  if (s.elegible_en_version === false) {
+    // Va antes del plazo: un grupo confirmado no vence (0008_enmienda2_esquema.sql:150), pero `plazo_vencido` sí, y
+    // solo con "El plazo cerró" no se entera de que la versión es sin ella. Con el plazo vencido ya no puede guardar
+    // condiciones ni hay reparación (0028_e7_simular_solo_demo_y_mensaje.sql:84 y :90): AvisoParaMi no se dibuja
+    // (verAvisoParaMi) y esta es la única línea, sin promesa de rearme, completas o no.
+    if (p.plazo_vencido) return candado('Esta versión se armó sin ti y el plazo de aceptación ya cerró.')
+    // Con la disponibilidad completa, AvisoParaMi no se dibuja (verAvisoParaMi): se dice acá, una vez y sin motivo,
+    // porque la elegibilidad es la foto de cuando se publicó la versión y lo marcado después no la cambia.
+    if (s.condiciones === 'completas') {
+      return { texto: 'Esta versión se armó sin ti. Si el plan se rearma, cuenta lo que marcaste.', icono: 'cambiar' }
+    }
+    // Incompleta: "Esta versión es sin ti" ya lo dice una vez AvisoParaMi arriba (o la próxima acción, enmienda 12 b).
+    // Con 12 (b), en este lugar va solo el botón "Ir a Mi respuesta" (accionSinAviso).
+    return null
   }
-  if (p.opcion && p.opcion.cupos.disponibles <= 0) return 'Ya se completaron los cupos de esta versión.'
-  return 'Ahora no puedes confirmar esta versión.'
+  if (p.plazo_vencido) return candado('El plazo de aceptación ya cerró.')
+  if (s.motivo_aceptar === 'cupo_reservado') {
+    return candado('El último cupo está reservado para el anfitrión. Podrás confirmar si se libera un cupo para otros.')
+  }
+  if (p.opcion && p.opcion.cupos.disponibles <= 0) return candado('Ya se completaron los cupos de esta versión.')
+  return candado('Ahora no puedes confirmar esta versión.')
 }
 
 // Mejora #56: con más confirmaciones que el mínimo, "5 de 4" se lee raro; se dice "5 (mínimo 4)".
@@ -334,8 +362,8 @@ function OpcionVigente({
         </div>
       ) : razon ? (
         <p className="nota-linea" role="note">
-          <Icono n={p.mi_situacion.acepte_version ? 'check' : 'candado'} tam={16} />
-          {razon}
+          <Icono n={razon.icono} tam={16} />
+          {razon.texto}
         </p>
       ) : accionSinAviso(p) ? (
         <div className="fila-botones">

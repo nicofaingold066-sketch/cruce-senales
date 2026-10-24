@@ -58,15 +58,40 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
   const [avisoPrevio, setAvisoPrevio] = useState<string | null>(() => tomarAviso())
   const versionPrevia = useRef<number | null>(null)
 
+  // El espacio (nombre, demo y el código de invitación de "Recordar a quien falta") llega con un get_space aparte. Si
+  // falla, se vuelve a pedir con cada refresco de la propuesta (sondeo de 3 s) mientras siga sin llegar; con el
+  // espacio cargado no se pide más. Un pedido en vuelo no se repite ni se descarta por el refresco siguiente.
+  const montado = useRef(true)
+  const pidiendoEspacio = useRef(false)
   useEffect(() => {
-    let vivo = true
-    void api.getSpace(espacioId).then((r) => {
-      if (vivo && r.ok) setEspacio(r.data.espacio)
-    })
+    montado.current = true
     return () => {
-      vivo = false
+      montado.current = false
     }
-  }, [espacioId])
+  }, [])
+  const refrescoPropuesta = viva.recibidoEn
+  useEffect(() => {
+    if (espacio || pidiendoEspacio.current) return
+    pidiendoEspacio.current = true
+    void api
+      .getSpace(espacioId)
+      .then((r) => {
+        if (montado.current && r.ok) setEspacio(r.data.espacio)
+      })
+      .finally(() => {
+        pidiendoEspacio.current = false
+      })
+  }, [espacioId, espacio, refrescoPropuesta])
+
+  // Un botón dentro del panel ("Ir a Mi respuesta", "Ver historial completo") cambia de pestaña y se va con el panel:
+  // el foco pasa a la pestaña nueva. Cuando cambia el propio tablist, la pestaña ya tiene el foco y no se toca.
+  const enfocarPestana = useRef<Pestana | null>(null)
+  useEffect(() => {
+    const t = enfocarPestana.current
+    if (t == null) return
+    enfocarPestana.current = null
+    document.getElementById(`tab-${t}`)?.focus()
+  }, [pestana])
 
   const nombreYo = p?.mi_situacion.nombre ?? espacio?.miembros.find((m) => m.es_yo)?.nombre ?? null
   const rol = p ? (p.mi_situacion.es_organizador_espacio ? 'organizador' : 'miembro') : null
@@ -131,7 +156,11 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
   const conocido = (CODIGOS_SIGUIENTE as readonly string[]).includes(cod)
   const turno = cod === 'te_toca_aceptar' || (!conocido && p.mi_situacion.puede.aceptar)
   const yaAcepte = cod === 'ya_aceptaste' || (!conocido && !turno && p.mi_situacion.acepte_version && p.estado === 'esperando_compromisos')
-  const props = { p, viva, soloLectura, irAPestana: setPestana }
+  function irAPestana(t: Pestana) {
+    if (t !== activa) enfocarPestana.current = t
+    setPestana(t)
+  }
+  const props = { p, viva, soloLectura, irAPestana }
 
   const escena = escenaDe(p, espacio)
 
@@ -221,7 +250,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
           </p>
           <Pasos p={p} />
           {turno && activa !== 'plan' ? (
-            <button type="button" className="btn btn-turno btn-chico ir-confirmar" onClick={() => setPestana('plan')}>
+            <button type="button" className="btn btn-turno btn-chico ir-confirmar" onClick={() => irAPestana('plan')}>
               Ir a confirmar
             </button>
           ) : null}
