@@ -120,8 +120,12 @@ describe.skipIf(OCUPADA)('E15 desde afuera · dos sesiones reales', () => {
     if (r.propuesta.regla !== 'mas_si') { console.log('E15 pendiente: regla mas_si no soportada'); return ctx.skip() }
     const id = r.resultado.propuesta_id as string
     const ev = await prepararYPublicar(id, 'B')
-    expect(['A', 'B']).toContain(ev.propuesta.opcion.franja)
-    expect(ev.propuesta.opcion.etiqueta, 'la opción publicada trae la etiqueta del plan elegido').toMatch(/Asado en lo de Tomi|Picnic en el parque/)
+    // `opcion.franja` es la franja publicada completa ({clave, inicio, fin, etiqueta}); `resultado.franja` es la letra.
+    const clave = ev.propuesta.opcion.franja?.clave ?? ev.resultado.franja
+    expect(['A', 'B']).toContain(clave)
+    const etiqueta = ev.propuesta.opcion.etiqueta ?? ev.propuesta.opcion.franja?.etiqueta ?? null
+    expect(etiqueta, 'la opción publicada trae la etiqueta del plan elegido').toMatch(/Asado en lo de Tomi|Picnic en el parque/)
+    const version = ev.propuesta.opcion.version
     // La ronda depende del plazo: con cierre jueves 29 y publicada "ahora" (cualquier día antes) cabe o no; solo se comprueba su forma.
     const pTomi = await mirar(tomi, id, 'Tomi'), pLuna = await mirar(luna, id, 'Luna')
     expect(pLuna.planes_totales ?? null, 'Luna no ve planes_totales').toBeNull()
@@ -136,22 +140,25 @@ describe.skipIf(OCUPADA)('E15 desde afuera · dos sesiones reales', () => {
     // «Prefiero» es solo de Luna: ni Tomi ni nadie lo lee en list_proposals, y Tomi no lo ve en SUS condiciones.
     const lista = await llamar(tomi, 'list_proposals', { p_espacio_id: espacio.id }); sinPrefiero(lista, 'list_proposals', 'Tomi')
     const listaL = await llamar(luna, 'list_proposals', { p_espacio_id: espacio.id }); sinPrefiero(listaL, 'list_proposals', 'Luna')
+    // La clave puede venir normalizada (`prefiero: null`) en las condiciones propias: lo que no puede aparecer en la respuesta
+    // de Tomi es un VALOR ('A'/'B'), porque él no eligió ninguno y el único que existe es el de Luna.
     const propiaTomi = await llamar(tomi, 'get_my_conditions', { p_propuesta_id: id })
-    expect(JSON.stringify(propiaTomi).includes('"prefiero"'), 'Tomi lee el prefiero de Luna').toBe(false)
+    expect(JSON.stringify(propiaTomi), 'Tomi lee el prefiero de Luna').not.toMatch(/"prefiero":"[AB]"/)
+    expect(propiaTomi.condiciones?.disponibilidad?.prefiero ?? null, 'Tomi no eligió plan').toBeNull()
     const propiaLuna = await llamar(luna, 'get_my_conditions', { p_propuesta_id: id })
-    expect(JSON.stringify(propiaLuna).includes('"prefiero"'), 'Luna sí ve el suyo').toBe(true)
+    expect(propiaLuna.condiciones?.disponibilidad?.prefiero, 'Luna sí ve el suyo').toBe('B')
     // Ronda: si cupo, abierta, y rearmar queda cerrado hasta que cierre.
     const ronda = pTomi.ronda ?? null
     if (ronda !== null) {
       expect(ronda.horas).toBe(2)
       expect(ronda.abierta).toBe(true)
-      await llamar(luna, 'opinar_version', { p_propuesta_id: id, p_version: ev.propuesta.opcion.version, p_opinion: 'asi_no_puedo', p_intento_id: randomUUID() })
+      await llamar(luna, 'opinar_version', { p_propuesta_id: id, p_version: version, p_opinion: 'asi_no_puedo', p_intento_id: randomUUID() })
       const t2 = await mirar(tomi, id, 'Tomi')
       expect(t2.mi_situacion.puede.proponer_reparacion, 'con la ronda abierta no se rearma').toBe(false)
       const rep = await llamar(tomi, 'propose_repair', { p_propuesta_id: id, p_intento_id: randomUUID() }, false)
       expect(rep.error).toMatchObject({ codigo: 'opcion_desactualizada', detalle: 'ronda_abierta' })
       // Aceptar sigue abierto durante la ronda.
-      const acepta = await llamar(luna, 'accept_version', { p_propuesta_id: id, p_version: ev.propuesta.opcion.version, p_intento_id: randomUUID() }, null)
+      const acepta = await llamar(luna, 'accept_version', { p_propuesta_id: id, p_version: version, p_intento_id: randomUUID() }, null)
       console.log(`E15: aceptar durante la ronda abierta → ${acepta.ok ? 'ok' : `${acepta.error?.codigo}/${acepta.error?.detalle}`}`)
     } else console.log('E15: la ronda de 2 h no cupo antes del cierre de aceptación (ronda null, como hoy); no se probó el bloqueo de rearmar.')
     console.log('PASÓ E15: prefiero privado, planes_totales solo al organizador.')

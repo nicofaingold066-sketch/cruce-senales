@@ -90,6 +90,8 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si CUALQUIER 
 | 00:34–00:37 | turno corto sobre producción (main con parche 2): dos sesiones **26/26**; jurado **4/4** (E13 comprobada, E15 «pendiente en el servidor»: sin enmienda 15 aún); `entrada-lista.mjs` **7/7** (lista agotada: campo de nombre a la vista) | producción | verde |
 | 00:19 | `sesiones-recuperacion` L2/L3 con foco al error: estricto contra `wip/frontend` 094b192 (12/12), aviso contra fundamentos | localhost | verde |
 | 01:44 | `enmienda15-privacidad.test.ts` escrito (3 pruebas); tipos ok | — | sin correr: espero mi turno (puesto 5 de la cola del 01:44) |
+| 02:09 | merge de fundamentos 22ae202 (`main`, etiqueta `demo-segura`): la demo pasa a llamarse **«Los del finde»** (0054); el coordinador adaptó los guiones a `/Los del (asado|finde)/` y `wip/qa` quedó igual a fundamentos. Banco de sesiones con el nombre nuevo: 12/12 | Vite local | verde |
+| 02:20–02:23 | turno ≤10 min sobre producción («Los del finde», `main` 22ae202): `proposito.mjs` **25/25**, `proposito-pantalla.mjs` **10/10**, dos sesiones **27/27** (E15: «prefiero» ausente de lo compartido, Luna sin `planes_totales`), jurado **4/4** (E13 y E15 detectadas y comprobadas, 181 RPC sin hallazgos). `enmienda15-privacidad.test.ts` 2/3: la caída fue un supuesto mío (`opcion.franja` es un objeto `{clave, inicio, fin, etiqueta}`, no la letra); corregido; la repetición (02:31) cayó en otro supuesto mío (`get_my_conditions` normaliza `prefiero: null`; ahora se exige que Tomi no reciba un VALOR 'A'/'B'); nueva repetición en cola | producción | verde salvo mi prueba, en ajuste |
 
 ## Regresiones abiertas
 (ninguna)
