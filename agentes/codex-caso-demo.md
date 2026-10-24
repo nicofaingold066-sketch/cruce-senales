@@ -1,14 +1,14 @@
 # Caso demo Makana — pedido directo de Nico, 24 oct 2026
 
 ## Tocando ahora
-Código terminado y rama entregada: `origin/codex/participacion-visible` = `96ddc27`, incluye main `08aa6e2` por merge `f64b4cf`. Rutas liberadas; sin procesos ni turno de base. Nico autorizó publicar al terminar. Espero integración/publicación para verificar los assets servidos con Auth/RPC sintéticos.
+Vacío. Integrado y publicado por el coordinador en main `018215d`; incluye Makana y participación móvil. QA del cliente publicado terminado, sin procesos propios ni escrituras a base. Se respeta congelamiento de UI11:00.
 
 ## Decisiones
 - Nuevo caso «El plan que no deja a nadie afuera», siete adultos ficticios Ana/Bruno/Camila/Diego/Elena/Felipe/Gabriela.
 - Demo aislada e idempotente, sin alterar registros previos. Permisos separados apagados inicialmente; pendientes no cuentan como aceptaciones. Sin mínimo artificial de cuatro en parque.
 
 ## Pedidos
-- **PARA coordinador: LISTO PARA INTEGRAR Y PUBLICAR** `origin/codex/participacion-visible` = `96ddc27` (contiene `638a677`, merge de main08aa6e2 y pulido móvil). Nico autorizó «cuando termines subilo lo acepto». TypeScript/build PASS, 105 puras PASS; UI 320/375/390/430/1280 claro/oscuro10/10,148RPC sintéticas,68capturas,0errores/desbordes. Sin migración, RPC nueva ni cambios de contrato. No ocupa base. Integrar rama completa; después verificaré assets publicados sin llamadas Auth/base/modelo. Mantengo sin push a main durante tu tanda según aviso10:04.
+- **PARA coordinador: PUBLICACIÓN VERIFICADA.** main018215d incluye ambas ramas; Vercel success y dominio sirve index-ChsMKBzK.js, participaciónJS--p-OCr1Y y CSS D5bFLaB4 HTTP200. QA visual del cliente publicado10/10 a320/375/390/430/1280 claro/oscuro,97RPC sintéticas,0errores/desbordes. No ocupé la base ni hice Auth/RPC/modelo reales. Rutas liberadas y sin cambios posteriores a congelamiento.
 - PARA coordinador, Makana: leído tu registro 81b24f8: 0058 aplicada10:33, backend130/130 PASS y reversa guardada. La dependencia de base quedó resuelta por tu circuito autorizado. Para que el caso nuevo y la participación se vean, falta integrar/publicar `origin/codex/demo-makana`8194e96 y `origin/codex/participacion-visible`96ddc27. Mis pruebas posteriores serán sobre assets públicos con Auth/RPC sintéticos; no tomaré la base ni aplicaré migraciones.
 
 
@@ -66,3 +66,9 @@ Código terminado y rama entregada: `origin/codex/participacion-visible` = `96dd
 
 ## Base Makana activada por el coordinador
 - Leído registro81b24f8: 0058 aplicada10:33 y130/130 backend PASS en serie10:41–10:49; marcas retiradas. No ejecuté esas escrituras ni pruebas remotas desde esta sesión. Queda el cliente de Makana más participación en la próxima publicación coordinada. Nico ya autorizó subirlo al terminar.
+
+## Cierre — publicado y mostrado al usuario
+- Objetivo de código/integración cumplido: el coordinador publicó main018215d11:03; conservo commits reales638a677/8c62104/96ddc27, sin force push ni publicaciones paralelas. Makana base activada por coordinador; cliente público incorpora seed_demo_makana, demo_caso y parque ficticio.
+- Verificación independiente del cliente servido: Vercel success; HTML/JS/CSS públicosHTTP200 y hashes guardados. Navegador10/10configuraciones,97RPCficticias,0errores ydesbordes; aceptación vigente, nueva versión sin herencia, cambios de integrantes y nombre largo. Esto es QA de frontend con transporte interceptado, no un ensayo de Auth/PostgREST/modelo reales.
+- Evidencia durable: `/Users/macair/.codex/visualizations/2026/10/24/01a16dbb-c25b-7923-80be-5d5b64310a40/participacion-movil/publicado/` y release.json en su padre. Texto listo para presentación en `caso-demo-para-presentacion.txt`. Capturas de grupo/plan mostradas al usuario, con datos ficticios explícitos.
+- Procesos cerrados, árbol de código limpio; ninguna ruta nueva reclamada. Sin cambios de src/base/función tras congelamiento.
