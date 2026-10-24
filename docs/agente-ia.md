@@ -196,7 +196,25 @@ Preparada en `wip/agente-ia` `456f0be` y `8a655e7` (texto del quórum igual al d
 ### 8.7 Opus por la clave de Nico (BYOK), en producción (mejora #99)
 **Viernes 23 oct 2026, de 22:43:08 a 22:43:24 (hora del reloj).** Producción `main` `bd9dc36`, función v10, demo propio, "Simular sol", 375 × 812, una sola llamada. Respondió **Opus** (`modelo_usado: "opus"`, fuente `modelo`) en **10,0 s**, desde que se pide hasta que llega la respuesta. La pantalla dice "Lo redactó la IA (Claude Opus)". La IA escribió: "El asado es lo que más eligió el grupo (3 de 4), calza con un ritmo algo tranquilo y la parrilla del parque queda a menos de 20 minutos para todos, como estimado." Viaje por candidata: 20, 25 y 25 minutos. Sin errores de consola.
 
-**Lo que esta prueba no dice:** si la llamada salió por la clave de Nico (BYOK) o por los créditos del Gateway. La función no recibe metadatos de la ruta del Gateway y los encabezados de la respuesta son solo los de Supabase. Eso se ve en el panel de uso del AI Gateway de Vercel.
+**Lo que esta prueba no dice:** si la llamada salió por la clave de Nico (BYOK) o por los créditos del Gateway. La función no recibe metadatos de la ruta del Gateway y los encabezados de la respuesta son solo los de Supabase. Ver §8.9: ahora la función lo pregunta y lo deja en su registro.
+
+### 8.8 Fable 5.1 como modelo principal (pedido de Nico, 23 oct)
+Id `anthropic/claude-fable-5.1`, confirmado en la lista pública del Gateway (`GET https://ai-gateway.vercel.sh/v1/models`). Función v11, desplegada a las 23:15 desde `3cb5433`. Cadena: Fable → Haiku → texto fijo, con el mismo plazo de 20 s, MAX_TOKENS 1500, effort bajo, salida con esquema y las mismas validaciones. Fable cuesta 2,5 veces Opus 5.5 por token ($10/$50 contra $4/$20 por millón).
+
+**Una llamada en producción, de 23:15:30 a 23:15:47 (hora del reloj):** demo propio con "Simular sol". Respondió Fable en **11,5 s** (Opus, en las mismas condiciones a las 22:43, tardó 10,0 s). La IA escribió: "El asado es lo que más eligieron (3 de 4), calza con el ritmo tranquilo del grupo y la parrilla del parque queda a menos de 20 minutos para todos, con techo por si cambia el tiempo." El techo es real: la parrilla figura `techado: true` en el catálogo (0044). El criterio era 15 s o menos y un texto igual o mejor que el de Opus, así que quedó Fable. Por decisión de Nico (23:19), la pantalla no nombra el modelo: dice "Lo redactó la IA" (`5fa22c5`). `modelo_usado` sigue en la respuesta y en los registros.
+
+### 8.9 Agente con herramientas y BYOK confirmado (pedido de Nico, 23:17)
+"La IA propone, las reglas protegen." El botón "Que el agente arme un plan" manda `modo: "herramientas"`. El modelo decide qué mirar con cuatro herramientas y cada resultado sale de los filtros del servidor, sin RPC nuevas:
+- `ver_clima(día)`;
+- `buscar_planes()`, que es `proponer_plan_borrador`, con el clima que conoce el servidor y no el que diga el modelo;
+- `buscar_canchas(actividad)`;
+- `elegir_plan`, que valida como siempre.
+
+El modelo recibe lo mismo que `entradaModelo`: totales del grupo y opciones ya validadas, nunca datos de una persona. Topes: 4 herramientas y 25 s. Si no llega, la respuesta sale por el camino de siempre solo con Haiku, sin error visible. Los pasos que se muestran son textos fijos del servidor, sin nombres. Código en `supabase/functions/agente/herramientas.ts`. Una revisión independiente encontró 4 problemas, arreglados en `130ea9b` y `4b1e368`. Pruebas sin red: 85/85, más el arnés de la función 25/25.
+
+**Una llamada real, viernes 23 oct, de 23:59:44 a 23:59:57 (hora del reloj):** función v12 (desplegada a las 23:59 desde `4b1e368`), build propio, demo propio y "Simular sol". Tardó **12,5 s** y respondió Fable. Pasos: "Miré el clima del sábado: sin lluvia (simulación)", "Miré el clima del domingo: sin lluvia (simulación)", "Busqué planes que le sirven a todo el grupo: 3", "Elegí: Asado en Parrilla del parque (Simulación)". Texto válido y sin nombres; la pantalla no nombra el modelo.
+
+**BYOK:** el Gateway guarda cada generación, y `GET /v1/generation?id=gen_…` (documentado por Vercel) devuelve `is_byok`. La función lo consulta en segundo plano, del lado del servidor y con la misma clave, y registra solo `is_byok`, el proveedor y el modelo. Registro de la llamada anterior, a las 00:00:13: `{"is_byok":true,"proveedor":"anthropic","modelo":"anthropic/claude-fable-5.1"}`. **Las llamadas salen por la clave de Anthropic de Nico.**
 
 ## Historia
 Idea de Nico. Diseño de privacidad del coordinador: el servidor elige y la IA solo ve totales. Enmienda 4 (preferencias, catálogo y elección por reglas), 4.1 (candidatas, perfil del grupo y la IA como coordinadora, pedido de Nico) y 5 (preferencias simuladas). Mejoras #11, #23, #25, #26, #28, #32 y #35. #64: el modelo pasa por el Vercel AI Gateway (pedido de Nico), con un tope de tokens y un límite de llamadas por persona (pedido del coordinador por costo).

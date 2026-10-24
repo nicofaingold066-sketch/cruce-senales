@@ -39,6 +39,28 @@ export interface Franja {
   clave: string
   inicio: Momento
   fin: Momento
+  /** Enmienda 15 (E-d, 0053): nombre corto del plan de esa franja ("Picnic en el parque"), público; null sin nombre. */
+  etiqueta?: string | null
+}
+
+/** Enmienda 15: cómo elige el motor entre las franjas viables. 'temprana' es la de siempre. */
+export type ReglaMotor = 'temprana' | 'mas_si'
+/** Enmienda 15 (E-c): horas de la ronda de opiniones que se pueden pedir al crear la propuesta. */
+export type RondaHoras = 2 | 12 | 24
+export const RONDA_HORAS: readonly RondaHoras[] = [2, 12, 24]
+/**
+ * Enmienda 15 (E-c): ronda de opiniones de la versión vigente. La decide el servidor (`cierra` nunca pasa el cierre
+ * de aceptación); `abierta` la calcula el servidor: la interfaz no la recalcula con su reloj.
+ */
+export interface RondaOpiniones {
+  horas: RondaHoras
+  cierra: Momento
+  abierta: boolean
+}
+/** Enmienda 15 (E-d, 0053): totales por plan, solo para el organizador; cada número es null con menos de 2. */
+export interface TotalesPlan {
+  si: number | null
+  prefieren: number | null
 }
 
 /** Códigos cerrados de `siguiente_accion` (enmienda 3). La interfaz elige color o ícono por código, nunca por texto. */
@@ -206,6 +228,12 @@ export interface EstadoPropuesta {
   opiniones_totales?: { asi_no_puedo: number | null } | null
   /** Enmienda 14: la actividad de la propuesta (null si no se eligió; en grupos con propósito, de su familia). */
   actividad?: ActividadPropuesta | null
+  /** Enmienda 15 (E-c): ronda de opiniones de la versión vigente; null sin ronda. Pública. */
+  ronda?: RondaOpiniones | null
+  /** Enmienda 15: regla del motor ('temprana' si no se eligió). */
+  regla?: ReglaMotor
+  /** Enmienda 15 (E-d, 0053): solo para el organizador y con regla 'mas_si'; null para los demás. Nunca quién. */
+  planes_totales?: Record<string, TotalesPlan> | null
   bajas: Baja[]
   siguiente_accion: SiguienteAccion
   mi_situacion: MiSituacion
@@ -280,10 +308,15 @@ export interface EspacioResumen {
   generacion: number
 }
 
+/** Enmienda 15 (E-d, 0053): cuál de los dos planes prefiere la persona si puede en los dos. Privada. */
+export type Preferencia = 'A' | 'B'
+
 export interface Condiciones {
   disponibilidad: Disponibilidad
   estado: EstadoCondiciones
   actualizadas_en: Momento | null
+  /** Enmienda 15 (E-d, 0053): solo la propia (save_my_conditions y get_my_conditions); la disponibilidad sigue {A, B}. */
+  prefiero?: Preferencia | null
 }
 
 export interface MiembroPanel {
@@ -523,7 +556,7 @@ export interface QuorumAgente {
  * que no se lea como reproche a quien armó un grupo chico.
  */
 export function textoQuorum(q: QuorumAgente): string {
-  return `Para ${q.etiqueta} hacen falta al menos ${q.personas_min} personas; este grupo tiene ${q.personas_posibles} por ahora. Estas opciones se pueden armar con el grupo actual. Cuando se sumen más, vuelve a pedir una propuesta.`
+  return `Para ${q.etiqueta} hacen falta al menos ${q.personas_min} personas; por ahora entraron ${q.personas_posibles} al grupo. Estas opciones se pueden armar con el grupo actual. Cuando se sumen más, vuelve a pedir una propuesta.`
 }
 
 /** Mensaje del error `entrada_incompleta/fuera_de_proposito` (lo manda el servidor en `error.mensaje`). */

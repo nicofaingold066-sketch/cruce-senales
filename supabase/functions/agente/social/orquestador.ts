@@ -161,9 +161,15 @@ async function elegirConLimite(modelo: PuertoModelo, opciones: readonly OpcionMo
 
 export async function orquestarAgenteSocial(
   entrada: EntradaSocial,
-  puertos: { backend: PuertoBackendSocial; modelo: PuertoModelo; limiteModeloMs?: number },
+  puertos: {
+    backend: PuertoBackendSocial; modelo: PuertoModelo; limiteModeloMs?: number
+    // Control interno del handler, nunca política ni permiso del cliente HTTP.
+    // false prepara sin publicar; la acción explícita publicar sigue validándose en DB.
+    publicacionAutomatica?: boolean
+  },
 ): Promise<ResultadoSocial> {
   if (!entradaValida(entrada)) return { estado: 'error', error: { codigo: 'entrada_incompleta', detalle: 'formato_invalido' } }
+  const publicarAlPreparar = puertos.publicacionAutomatica !== false
   // Snapshot de parámetros: ni caller ni modelo cambian la huella durante los awaits.
   const e: EntradaSocial = { espacioId: entrada.espacioId, ejecucionId: entrada.ejecucionId,
     sabado: entrada.sabado, oportunidad: entrada.oportunidad,
@@ -294,8 +300,9 @@ export async function orquestarAgenteSocial(
   const borrador = borradorDe(guardado.borrador)
   if (!borrador || borrador.opcion_ref !== elegida.opcion_ref) return error('contrato_invalido', true, ejecucion)
   const preparada: EjecucionSocial = { ...ejecucion, estado: 'borrador', borrador: { ...borrador, texto } }
-  if (modoAlIniciar !== 'autonoma') return {
-    estado: 'necesita_aprobacion', ejecucion: preparada, borrador: preparada.borrador!, propia: true, ...metadatos,
+  if (modoAlIniciar !== 'autonoma' || !publicarAlPreparar) return {
+    estado: modoAlIniciar === 'autonoma' ? 'borrador' : 'necesita_aprobacion',
+    ejecucion: preparada, borrador: preparada.borrador!, propia: true, ...metadatos,
   }
   return { ...await publicar(preparada), ...metadatos }
 }

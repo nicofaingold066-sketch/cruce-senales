@@ -11,18 +11,16 @@ import './friccion.css'
 export function FaltaTuRespuesta({ p, espacioId }: { p: EstadoPropuesta; espacioId: string }) {
   const s = p.mi_situacion
   if (p.estado !== 'reuniendo_interes' || !s.puede.guardar_condiciones || s.condiciones === 'completas') return null
-  const imprescindible = p.imprescindible.miembro_id === s.miembro_id
   return (
     <section className="tarjeta entrada-principal falta-respuesta" aria-labelledby={`falta-${p.id}`}>
       <h2 id={`falta-${p.id}`}>
         <Icono n="calendario" tam={20} /> ¿Cuándo puedes?
       </h2>
       <p className="suave">
-        {imprescindible
-          ? 'Eres quien no puede faltar: si se busca la opción antes de que respondas, no va a haber ninguna.'
-          : s.condiciones === 'incompletas'
-            ? 'Te queda algún día sin marcar; con la respuesta completa entras en la búsqueda.'
-            : 'Marca cuándo puedes. Es privado: el grupo no ve qué elegiste.'}
+        {/* La cabecera del plan (siguiente_accion, enmienda 12 a) ya le dice a quien no puede faltar lo que pasa sin su respuesta: acá no se repite. */}
+        {s.condiciones === 'incompletas'
+          ? 'Te queda algún día sin marcar; con la respuesta completa entras en la búsqueda.'
+          : 'Marca cuándo puedes. Es privado: el grupo no ve qué elegiste.'}
       </p>
       <a className="btn btn-primario" href={rutas.responder(espacioId, p.id)}>
         Responder en un toque

@@ -173,4 +173,14 @@ describe('ejemplos que rotan (mejora #92)', () => {
     }
     expect(Object.keys(PLANES_POR_FAMILIA).sort()).toEqual(['aire_libre', 'comida', 'cultura', 'deporte', 'en_casa', 'salida_noche'])
   })
+
+  it('«Fiesta» tiene atajo (4 horas, como la fila del catálogo) y vive en la familia salida / noche', () => {
+    const f = ATAJOS.find((a) => a.titulo === 'Fiesta')
+    expect(f?.actividad).toBe('fiesta')
+    expect(f?.min).toBe(240)
+    expect(FAMILIA_DE_ACTIVIDAD.fiesta).toBe('salida_noche')
+    expect(atajosParaFamilia('salida_noche').map((a) => a.titulo).sort()).toEqual(['Bar', 'Bowling o escape room', 'Fiesta'])
+    expect(atajosParaEspacio('Fiesta de fin de año', 'salida_noche')[0].titulo).toBe('Fiesta')
+    expect(atajosParaEspacio('Fiesta de fin de año', 'deporte').map((a) => a.titulo)).not.toContain('Fiesta')
+  })
 })

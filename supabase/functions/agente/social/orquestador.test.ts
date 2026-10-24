@@ -106,6 +106,44 @@ test('E11 exact fixture without cuantos: persists full visible plan and two real
   assert.deepEqual(t.llamadas, ['contexto', 'iniciar', 'candidatos', 'modelo', 'guardar'])
 })
 
+test('preparar with publicacionAutomatica:false stores an autonomous draft, stable replay, no publication', async () => {
+  const t = banco('autonoma')
+  const puertos = { backend: t.backend, modelo: t.modelo, limiteModeloMs: 10, publicacionAutomatica: false }
+  const politica = structuredClone(t.contexto.politica)
+  const r = await orquestarAgenteSocial(entrada, puertos)
+  assert.equal(r.estado, 'borrador'); assert.equal(r.ejecucion?.estado, 'borrador')
+  assert.deepEqual(r.borrador?.plan, plan); assert.equal(t.efectos, 0); assert.equal(t.publicados.length, 0)
+  const repetida = await orquestarAgenteSocial(entrada, puertos)
+  assert.equal(repetida.estado, 'borrador'); assert.equal(repetida.repetido, true)
+  assert.deepEqual(repetida.ejecucion, r.ejecucion); assert.equal(t.guardados.length, 1); assert.equal(t.modelos, 1)
+  assert.deepEqual(t.contexto.politica, politica)
+  assert.deepEqual(t.llamadas, ['contexto', 'iniciar', 'candidatos', 'modelo', 'guardar', 'contexto', 'iniciar'])
+  // Solo una acción explícita puede continuar; el backend decide con su política real.
+  const publicada = await orquestarAgenteSocial({ ...entrada, accion: { tipo: 'publicar', borradorHash: HASH } }, puertos)
+  assert.equal(publicada.estado, 'publicada'); assert.equal(t.efectos, 1); assert.equal(t.publicados.length, 1)
+  assert.equal(t.guardados.length, 1); assert.equal(t.modelos, 1); assert.deepEqual(t.contexto.politica, politica)
+})
+
+test('publicacionAutomatica undefined or true preserves existing autonomous behavior', async () => {
+  for (const publicacionAutomatica of [undefined, true]) {
+    const t = banco('autonoma')
+    const r = await orquestarAgenteSocial(entrada, { backend: t.backend, modelo: t.modelo, limiteModeloMs: 10, publicacionAutomatica })
+    assert.equal(r.estado, 'publicada'); assert.equal(t.efectos, 1); assert.equal(t.publicados.length, 1)
+  }
+})
+
+test('publicacionAutomatica:false does not grant approval or bypass DB checks for explicit publication', async () => {
+  const t = banco('aprobacion')
+  const puertos = { backend: t.backend, modelo: t.modelo, limiteModeloMs: 10, publicacionAutomatica: false }
+  assert.equal((await orquestarAgenteSocial(entrada, puertos)).estado, 'necesita_aprobacion')
+  const continuar: EntradaSocial = { ...entrada, accion: { tipo: 'publicar', borradorHash: HASH } }
+  const rechazada = await orquestarAgenteSocial(continuar, puertos)
+  assert.equal(rechazada.error?.detalle, 'sin_aprobacion'); assert.equal(t.efectos, 0)
+  t.aprobar()
+  assert.equal((await orquestarAgenteSocial(continuar, puertos)).estado, 'publicada')
+  assert.equal(t.efectos, 1); assert.equal(t.modelos, 1); assert.equal(t.contexto.politica.modo, 'aprobacion')
+})
+
 test('weather preserves both distinct days and canonical hash ignores object key order', async () => {
   const t = banco(); let recibido: unknown
   const candidatos = t.backend.agente_social_candidatos
