@@ -2,8 +2,8 @@
 export const DEMO_MAKANA = {
   clave: 'makana',
   nombre: 'El plan que no deja a nadie afuera',
-  personas: ['Ana', 'Bruno', 'Camila', 'Diego', 'Elena', 'Felipe', 'Gabriela'],
-  detalle: 'Serás Ana, quien organiza; los otros seis compañeros son ficticios y simulados. Participar es voluntario.',
+  personas: ['Bastián', 'Nacho', 'Carlos', 'Kai', 'Charlie', 'Joaco', 'Pía'],
+  detalle: 'Serás Bastián, quien organiza; los otros seis amigos son ficticios y simulados. Participar es voluntario.',
   // Lugar ficticio, sin compras ni datos de personas reales. El parque requiere al menos dos personas.
   propuesta: {
     titulo: 'Parque del Encuentro (ficticio) · acceso norte · encuentro gratuito',

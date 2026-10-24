@@ -13,7 +13,7 @@ test('imprescindible sin condiciones en reuniendo interés: nada (lo cubren el s
   for (const condiciones of ['sin_cargar', 'incompletas', 'completas']) {
     assert.equal(avisoParaMi({ estado: 'reuniendo_interes', imprescindible: vale, mi_situacion: yo({ condiciones }) }), null)
   }
-  const ana = yo({ miembro_id: 'm-ana', nombre: 'Ana', es_organizador: false })
+  const ana = yo({ miembro_id: 'm-ana', nombre: 'Bastián', es_organizador: false })
   assert.equal(avisoParaMi({ estado: 'reuniendo_interes', imprescindible: vale, mi_situacion: ana }), null)
 })
 
@@ -47,7 +47,7 @@ test('en revisión: sin nombre ni motivo; organizador con dos salidas', () => {
   const ana = yo({ miembro_id: 'm-ana', es_organizador: false, condiciones: 'completas', elegible_en_version: true })
   const a = avisoParaMi({ estado: 'en_revision', imprescindible: vale, mi_situacion: ana, opcion: { cupos: { faltan_para_minimo: 2 } } })
   assert.match(a.texto, /^Una persona se retiró\. Faltan 2 para el mínimo\. Si sale una versión nueva/)
-  assert.doesNotMatch(a.titulo + a.texto, /Vale|Ana|porque|se bajó|había confirmado/)
+  assert.doesNotMatch(a.titulo + a.texto, /Vale|Bastián|porque|se bajó|había confirmado/)
   const sinOpcion = avisoParaMi({ estado: 'en_revision', imprescindible: vale, mi_situacion: ana })
   assert.equal(sinOpcion.texto, 'Una persona se retiró. Si sale una versión nueva, las confirmaciones anteriores no cuentan: si esa te sirve, la confirmas.')
 })
@@ -121,12 +121,12 @@ test('ningún aviso nombra a nadie (baja sin nombre, enmienda 13 (c))', () => {
   let vistos = 0
   for (const estado of estados) for (const persona of personas) {
     const a = avisoParaMi(
-      { estado, imprescindible: imp, mi_situacion: persona, minimo: 4, opcion: { cupos: { faltan_para_minimo: 1, pendientes: 2 } }, bajas: [{ miembro: { nombre: 'Gabriela' } }] },
+      { estado, imprescindible: imp, mi_situacion: persona, minimo: 4, opcion: { cupos: { faltan_para_minimo: 1, pendientes: 2 } }, bajas: [{ miembro: { nombre: 'Pía' } }] },
       { plazoTexto: 'jue 29 oct, 20:00', horasAlCierre: 10 },
     )
     if (!a) continue
     vistos++
-    assert.doesNotMatch(a.titulo + ' ' + a.texto, /Carolina|Bernardo|Daniela|Elisa|Fernando|Gabriela/, `${estado}/${persona.nombre}`)
+    assert.doesNotMatch(a.titulo + ' ' + a.texto, /Carolina|Bernardo|Daniela|Elisa|Fernando|Pía/, `${estado}/${persona.nombre}`)
   }
   assert.ok(vistos >= 8, `se revisaron ${vistos} avisos`)
 })

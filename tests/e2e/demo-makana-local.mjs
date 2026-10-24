@@ -16,7 +16,7 @@ const MOCK = 'https://makana-mock.invalid'
 const CAPTURAS = '/tmp/cruce-demo-ui-qa'
 const NOMBRE = 'El plan que no deja a nadie afuera'
 const TITULO = 'Parque del Encuentro (ficticio) · acceso norte · encuentro gratuito'
-const PERSONAS = ['Ana', 'Bruno', 'Camila', 'Diego', 'Elena', 'Felipe', 'Gabriela']
+const PERSONAS = ['Bastián', 'Nacho', 'Carlos', 'Kai', 'Charlie', 'Joaco', 'Pía']
 const ANCHOS = [320, 375, 768, 1280]
 const mom = local => ({ local, utc: new Date(`${local}-03:00`).toISOString() })
 const AHORA = mom('2026-10-24T12:00:00')
@@ -55,7 +55,7 @@ function propuesta(version = false) {
     actividad: { clave: 'parque', etiqueta: 'Parque', familia: 'aire_libre' },
     ronda: null, regla: 'temprana', planes_totales: null, bajas: [], historial: [],
     siguiente_accion: { codigo: 'reunir_condiciones', texto: 'Marca cuándo puedes.' },
-    mi_situacion: { miembro_id: miembros[0].miembro_id, nombre: 'Ana', es_organizador: true,
+    mi_situacion: { miembro_id: miembros[0].miembro_id, nombre: 'Bastián', es_organizador: true,
       es_organizador_espacio: true, interesado: false, condiciones: 'sin_cargar', retirado: false,
       elegible_en_version: null, acepte_version: false, mi_opinion: null,
       puede: { abrir: false, marcar_interes: true, guardar_condiciones: true, evaluar: false,
@@ -65,15 +65,15 @@ function propuesta(version = false) {
 }
 function panel(version = false) {
   return miembros.slice(1).map(m => ({ miembro: ref(m), interesado: false,
-    condiciones: { disponibilidad: version && m.nombre !== 'Gabriela' ? { A: 'si', B: 'si' } : {},
-      estado: version && m.nombre !== 'Gabriela' ? 'completas' : 'sin_cargar', actualizadas_en: null },
-    retirado: false, elegible_en_version: version && m.nombre !== 'Gabriela', acepte_version: false,
-    puede: { marcar_interes: true, guardar_condiciones: true, aceptar: version && m.nombre !== 'Gabriela', retirarme: false },
+    condiciones: { disponibilidad: version && m.nombre !== 'Pía' ? { A: 'si', B: 'si' } : {},
+      estado: version && m.nombre !== 'Pía' ? 'completas' : 'sin_cargar', actualizadas_en: null },
+    retirado: false, elegible_en_version: version && m.nombre !== 'Pía', acepte_version: false,
+    puede: { marcar_interes: true, guardar_condiciones: true, aceptar: version && m.nombre !== 'Pía', retirarme: false },
   }))
 }
 const usuario = { id: '00000000-0000-4000-8000-000000000001', aud: 'authenticated', role: 'authenticated',
   is_anonymous: true, created_at: AHORA.utc, app_metadata: { provider: 'anonymous', providers: ['anonymous'] },
-  user_metadata: { ficticio: 'Ana MOCK LOCAL' }, identities: [],
+  user_metadata: { ficticio: 'Bastián MOCK LOCAL' }, identities: [],
 }
 const b64 = value => Buffer.from(JSON.stringify(value)).toString('base64url')
 function sesion() {
@@ -215,7 +215,7 @@ async function verificar(ancho) {
     await page.goto(BASE)
     const demo = page.getByRole('button', { name: `Probar la demo «${NOMBRE}»`, exact: true })
     await demo.waitFor()
-    assert.match(await page.locator('body').innerText(), /Serás Ana.*seis compañeros.*ficticios/s)
+    assert.match(await page.locator('body').innerText(), /Serás Bastián.*seis amigos.*ficticios/s)
     await captura('inicio')
     await demo.click()
     await page.getByRole('heading', { name: NOMBRE, exact: true }).waitFor()
@@ -251,7 +251,7 @@ async function verificar(ancho) {
     assert.equal(await page.getByRole('textbox', { name: 'Propósito de la propuesta' }).inputValue(), TITULO)
     assert.equal(await page.locator('#cupo-minimo').inputValue(), '2')
     assert.equal(await page.locator('#cupo-maximo').inputValue(), '7')
-    assert.equal(await page.getByRole('radio', { name: 'Ana', exact: true }).isChecked(), true)
+    assert.equal(await page.getByRole('radio', { name: 'Bastián', exact: true }).isChecked(), true)
     for (const clave of ['A', 'B']) {
       const resumen = page.locator('.s3-momento summary').filter({ hasText: `Editar la opción ${clave}` })
       assert.match(await resumen.innerText(), /16:00 · 2 h/)
@@ -277,17 +277,17 @@ async function verificar(ancho) {
     const filas = page.locator('.sim-fila')
     assert.equal(await filas.count(), 6)
     assert.equal(await page.getByRole('button', { name: /Cargar condiciones del caso/ }).count(), 0)
-    assert.match(await page.locator('body').innerText(), /Gabriela sigue pendiente/)
-    const bruno = page.getByRole('region', { name: 'Simulación de Bruno', exact: true })
+    assert.match(await page.locator('body').innerText(), /Pía sigue pendiente/)
+    const bruno = page.getByRole('region', { name: 'Simulación de Nacho', exact: true })
     await bruno.locator('summary').click()
     await bruno.locator('fieldset').nth(0).getByRole('radio', { name: 'Sí puedo', exact: true }).check()
     await bruno.locator('fieldset').nth(1).getByRole('radio', { name: 'Sí puedo', exact: true }).check()
-    await bruno.getByRole('button', { name: 'Guardar condiciones de Bruno', exact: true }).click()
-    await page.waitForFunction(() => document.querySelector('[aria-label="Simulación de Bruno"] .sim-fila-estado')?.textContent.includes('A: Sí'))
+    await bruno.getByRole('button', { name: 'Guardar condiciones de Nacho', exact: true }).click()
+    await page.waitForFunction(() => document.querySelector('[aria-label="Simulación de Nacho"] .sim-fila-estado')?.textContent.includes('A: Sí'))
     const guardadas = llamadas.filter(x => x.fn === 'simulate_save_conditions')
     assert.equal(guardadas.length, 1); assert.equal(guardadas[0].args.p_miembro_id, miembros[1].miembro_id)
     assert.deepEqual(guardadas[0].args.p_disponibilidad, { A: 'si', B: 'si' })
-    assert.match(await page.getByRole('region', { name: 'Simulación de Gabriela', exact: true }).innerText(), /Sin responder/)
+    assert.match(await page.getByRole('region', { name: 'Simulación de Pía', exact: true }).innerText(), /Sin responder/)
     await captura('simulacion-respuestas')
 
     p = propuesta(true); simulados = panel(true)
@@ -296,9 +296,9 @@ async function verificar(ancho) {
     assert.equal(await page.getByRole('button', { name: /^Aceptar versión 1 por / }).count(), 5,
       'Hay cinco botones individuales de aceptación, sin botón colectivo')
     assert.equal(await page.locator('.sim-atajo-chico').count(), 0)
-    assert.equal(await page.getByRole('button', { name: /Aceptar versión 1 por Gabriela/ }).count(), 0)
-    await page.getByRole('button', { name: 'Aceptar versión 1 por Bruno', exact: true }).click()
-    await page.getByRole('status').filter({ hasText: 'Confirmaron la versión 1: Bruno.' }).waitFor()
+    assert.equal(await page.getByRole('button', { name: /Aceptar versión 1 por Pía/ }).count(), 0)
+    await page.getByRole('button', { name: 'Aceptar versión 1 por Nacho', exact: true }).click()
+    await page.getByRole('status').filter({ hasText: 'Confirmaron la versión 1: Nacho.' }).waitFor()
     const aceptaciones = llamadas.filter(x => x.fn === 'simulate_accept')
     assert.equal(aceptaciones.length, 1); assert.equal(aceptaciones[0].args.p_miembro_id, miembros[1].miembro_id)
     assert.equal(llamadas.some(x => ['simulate_load_case', 'seed_demo_space'].includes(x.fn)), false)

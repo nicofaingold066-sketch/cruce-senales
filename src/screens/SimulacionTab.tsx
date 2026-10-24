@@ -84,7 +84,7 @@ export default function SimulacionTab({ p, viva, soloLectura, espacio }: Pestana
             Personas simuladas
           </h2>
           <p className="t-nota sim-linea">Respondes y confirmas por ellas. Todo queda en el historial como simulación.</p>
-          {makana ? <p className="t-nota">Cada respuesta se carga por separado para una propuesta concreta. Gabriela sigue pendiente hasta que responda; nunca cuenta como confirmada.</p> : null}
+          {makana ? <p className="t-nota">Cada respuesta se carga por separado para una propuesta concreta. Pía sigue pendiente hasta que responda; nunca cuenta como confirmada.</p> : null}
 
           <div className="sim-atajos" role="group" aria-label="Atajos de simulación">
             {!makana && p.mi_situacion.puede.simular ? (
