@@ -9,7 +9,6 @@ import type { PropuestaViva } from '../../lib/hooks'
 import type { EstadoPropuesta } from '../../lib/types'
 import PlanTab from '../../screens/PlanTab'
 import { Resultado } from '../plan/Resultado'
-import { escenaDe } from '../plan/escena'
 import { CASOS_S4, SERVIDOR_AHORA, espacioDe } from './estados-s4'
 import type { CasoS4 } from './estados-s4'
 
@@ -30,15 +29,15 @@ function vivaDe(p: EstadoPropuesta): PropuestaViva {
 function Caso({ c, solo }: { c: CasoS4; solo: boolean }) {
   const espacio = espacioDe(c.yo, c.demo ?? false)
   const quien = `${c.yo.nombre}${c.p.mi_situacion.es_organizador ? ' (organiza)' : ''}`
-  const cruce = escenaDe(c.p, espacio)
   return (
     <section className="galeria-caso" aria-labelledby={`caso-${c.id}`} data-caso={c.id} style={solo ? undefined : { marginBottom: 48 }}>
       <div className="vista vista-plan">
-        <section className="escena resultado-escena" data-tono={cruce.tono}>
+        <section className="escena resultado-escena">
           <div className="resultado-arriba">
             <span className="escena-volver">{solo ? `‹ ${espacio.nombre}` : `${c.titulo} · mira ${quien}`}</span>
+            {c.p.opcion ? <span className="chip chip-neutro resultado-sello">v{c.p.opcion.version} · cierra jue 29 oct, 20:00</span> : null}
           </div>
-          <Resultado p={c.p} viva={vivaDe(c.p)} soloLectura={false} espacio={espacio} activa="plan" irAPestana={() => {}} cruce={cruce} />
+          <Resultado p={c.p} viva={vivaDe(c.p)} soloLectura={false} espacio={espacio} activa="plan" irAPestana={() => {}} />
         </section>
         <div className="hoja">
           <div className="pestanas">

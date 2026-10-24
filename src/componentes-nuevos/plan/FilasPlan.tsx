@@ -1,29 +1,30 @@
-// Las filas de la hoja del plan (S4, pantalla 5 del mockup): lo secundario, una fila por cosa y debajo del resultado.
-// "Tu respuesta · Cambiar", "Así no puedo, pero sigo" (friccion), "Avisar al grupo", el mapa, los cambios del grupo sin
-// nombre (E13 c), la ficha plegada con quién confirmó, y al final, chicos, "No voy" y cancelar (quien organiza).
-import { useState } from 'react'
-import type { ReactNode } from 'react'
+// Las filas debajo del bloque de resultado (S4), exactas por estado como en el mockup validado (03:05, obligatorio):
+//  5 esperando:  Tu respuesta · Cambiar › · Así no puedo, pero sigo › · Avisar al grupo (WhatsApp) › · Ficha del plan ·
+//                Quién confirmó ⌄ · Historial ⌄ · (chico) Retirarme de este plan
+// 15 reuniendo:  Recordar a quien falta (WhatsApp) · Tu respuesta · Cambiar › · Ficha del plan ⌄ · (chico) Cancelar la propuesta
+// 16 ¡se juntan!: Ver el lugar en el mapa · Avisar al grupo (WhatsApp) · Agregar a mi calendario · Ficha del plan · Historial ⌄
+//                · (chico) Ya no puedo ir
+// 17 en revisión: Tu respuesta · Cambiar › · Ficha del plan · Historial ⌄ · (chico) Cancelar la propuesta
+// Lo privado nunca aparece: "Tu respuesta" es la propia (`get_my_conditions`), los avisos no nombran a nadie.
+import { useEffect, useState } from 'react'
 import { api } from '../../lib/api'
-import { enlaceInvitacion } from '../../lib/compartir'
-import { franjaTexto } from '../../lib/format'
+import { descargarCalendario, enlaceInvitacion } from '../../lib/compartir'
+import { diaDe, franjaTexto } from '../../lib/format'
 import { useMutacion } from '../../lib/hooks'
 import type { PropuestaViva } from '../../lib/hooks'
 import { rutas } from '../../lib/shell'
-import type { Espacio, EstadoPropuesta } from '../../lib/types'
+import type { Disponibilidad, Espacio, EstadoPropuesta } from '../../lib/types'
 import { Boton, ErrorCaja } from '../../components/ui'
 import { Confirmacion, useVolverFoco } from '../../components/Confirmacion'
 import { Icono } from '../../components/Icono'
 import { AsiNoPuedo } from '../../friccion/AsiNoPuedo'
+import HistorialTab from '../../screens/HistorialTab'
 import type { Pestana } from '../../screens/tabs'
 import { mostrarBuscarLugar, urlLugar } from '../lugarMapa'
-import { rotuloAviso, textoAviso, urlAviso } from '../recordar'
+import { urlAviso } from '../recordar'
 import type { MotivoAviso } from '../recordar'
-
-const TEXTO_CONDICIONES: Record<EstadoPropuesta['mi_situacion']['condiciones'], string> = {
-  completas: 'respondiste',
-  incompletas: 'te falta algún día',
-  sin_cargar: 'sin responder',
-}
+import { FichaPlan } from './FichaPlan'
+import { textoTuRespuesta } from './accion'
 
 /** A quién y con qué mensaje se avisa al grupo (el mensaje no nombra a nadie ni dice cuántos faltan). */
 function motivoAviso(p: EstadoPropuesta, codigo: string | null): MotivoAviso | null {
@@ -37,102 +38,175 @@ function motivoAviso(p: EstadoPropuesta, codigo: string | null): MotivoAviso | n
   return null
 }
 
+/** La respuesta propia, solo para mostrársela a la misma persona. Se vuelve a pedir cuando cambia el estado del plan. */
+function useMiRespuesta(p: EstadoPropuesta): Disponibilidad | null {
+  const [disp, setDisp] = useState<Disponibilidad | null>(null)
+  const pedir = p.mi_situacion.condiciones !== 'sin_cargar' && !p.mi_situacion.retirado
+  useEffect(() => {
+    if (!pedir) return
+    let vivo = true
+    void api.getMyConditions(p.id).then((r) => {
+      if (vivo && r.ok) setDisp(r.data.condiciones.disponibilidad)
+    })
+    return () => {
+      vivo = false
+    }
+  }, [p.id, p.state_rev, pedir])
+  return pedir ? disp : null
+}
+
 export function FilasPlan({
   p,
   viva,
   soloLectura,
   espacio,
   irAPestana,
-  children,
 }: {
   p: EstadoPropuesta
   viva: PropuestaViva
   soloLectura: boolean
   espacio: Espacio | null
   irAPestana: (t: Pestana) => void
-  /** La ficha plegada: va después de las filas y antes de lo chico del final. */
-  children?: ReactNode
 }) {
   const s = p.mi_situacion
   const o = p.opcion
   const codigo = espacio?.codigo_invitacion ?? null
-  const abierta = p.estado !== 'cancelado' && p.estado !== 'expirado'
-  const vigente = (p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado') && o
+  const estado = p.estado
+  const abierta = estado !== 'cancelado' && estado !== 'expirado'
   const motivo = motivoAviso(p, codigo)
-  const [copiado, setCopiado] = useState(false)
+  const disp = useMiRespuesta(p)
+  const [nota, setNota] = useState<string | null>(null)
   const datosAviso =
     motivo && codigo
       ? { motivo, titulo: p.titulo, cuando: o ? franjaTexto(o.franja.inicio, o.franja.fin) : null, cuposLibres: o?.cupos.disponibles ?? null, enlace: enlaceInvitacion(codigo) }
       : null
-  const mapa = vigente && mostrarBuscarLugar(espacio?.demo ?? true, p.titulo)
+  const rotuloAvisar = motivo === 'faltan' ? 'Recordar a quien falta (WhatsApp)' : 'Avisar al grupo (WhatsApp)'
+  const tuRespuesta = textoTuRespuesta(
+    disp,
+    p.franjas.map((f) => ({ clave: f.clave, dia: diaDe(f.inicio.local).split(' ')[0].toLocaleLowerCase('es') })),
+    s.condiciones,
+  )
+  const props = { p, viva, soloLectura, irAPestana, espacio }
+
+  function agendar() {
+    if (!o) return
+    const quienes = o.aceptaron.map((a) => a.miembro.nombre).join(', ')
+    const ok = descargarCalendario({
+      id: `${p.id}-v${o.version}`,
+      titulo: p.titulo,
+      inicioUtc: o.franja.inicio.utc,
+      finUtc: o.franja.fin.utc,
+      descripcion: `Plan confirmado en CRUXE (versión ${o.version}). Van: ${quienes}.`,
+    })
+    setNota(ok ? 'Listo: se descargó el evento para tu calendario.' : 'No se pudo armar el evento en este navegador.')
+  }
+
+  const filaRespuesta =
+    abierta && !s.retirado && (s.puede.guardar_condiciones || s.condiciones !== 'sin_cargar') ? (
+      <li key="respuesta">
+        <a className="fila" href={rutas.responder(p.espacio_id, p.id)}>
+          <span className="fila-texto">Tu respuesta: {tuRespuesta}</span>
+          <span className="fila-accion">
+            Cambiar <Icono n="chevron" tam={14} />
+          </span>
+        </a>
+      </li>
+    ) : null
+  const filaAvisar = datosAviso ? (
+    <li key="avisar">
+      <a className="fila" href={urlAviso(datosAviso)} target="_blank" rel="noopener noreferrer">
+        <span className="fila-texto">{rotuloAvisar}</span>
+        <Icono n="chevron" tam={14} />
+      </a>
+    </li>
+  ) : null
+  const historial = (
+    <details className="tarjeta plegable historial-plegado">
+      <summary>
+        <h2>Historial</h2>
+      </summary>
+      <HistorialTab {...props} />
+    </details>
+  )
+
+  if (estado === 'grupo_confirmado') {
+    const mapa = mostrarBuscarLugar(espacio?.demo ?? true, p.titulo)
+    return (
+      <div className="filas-plan">
+        <div className="filas-botones">
+          {mapa ? (
+            <a className="btn btn-secundario btn-grande" href={urlLugar(p.titulo)} target="_blank" rel="noopener noreferrer">
+              Ver el lugar en el mapa
+            </a>
+          ) : null}
+          {datosAviso ? (
+            <a className="btn btn-secundario" href={urlAviso(datosAviso)} target="_blank" rel="noopener noreferrer">
+              <Icono n="whatsapp" tam={18} /> Avisar al grupo (WhatsApp)
+            </a>
+          ) : null}
+          {s.acepte_version && o ? (
+            <button type="button" className="btn btn-secundario" onClick={agendar}>
+              <Icono n="agendar" tam={18} /> Agregar a mi calendario
+            </button>
+          ) : null}
+          {nota ? (
+            <p role="status" className="suave">
+              {nota}
+            </p>
+          ) : null}
+        </div>
+        <FichaPlan p={p} viva={viva} titulo="Ficha del plan · Historial">
+          {historial}
+        </FichaPlan>
+        {s.acepte_version && s.puede.retirarme ? (
+          <button type="button" className="enlace fila-chica" onClick={() => irAPestana('respuesta')}>
+            Ya no puedo ir
+            {o && o.cupos.confirmados - 1 < o.cupos.minimo ? ' · si te bajas, el plan pasa a revisión y los demás vuelven a confirmar' : ''}
+          </button>
+        ) : null}
+      </div>
+    )
+  }
+
+  const filas =
+    estado === 'reuniendo_interes' || estado === 'borrador'
+      ? [filaAvisar, filaRespuesta]
+      : estado === 'esperando_compromisos'
+        ? [filaRespuesta, filaAvisar]
+        : [filaRespuesta]
+  const hayFilas = filas.some(Boolean)
 
   return (
     <div className="filas-plan">
-      <ul className="filas">
-        {abierta && !s.retirado && (s.puede.guardar_condiciones || s.condiciones !== 'sin_cargar') ? (
-          <li>
-            <a className="fila" href={rutas.responder(p.espacio_id, p.id)}>
-              <Icono n="calendario" tam={18} />
-              <span className="fila-texto">
-                Tu respuesta: {TEXTO_CONDICIONES[s.condiciones]} <span className="fila-nota">· privada</span>
-              </span>
-              <span className="fila-accion">
-                {s.puede.guardar_condiciones ? 'Cambiar' : 'Ver'} <Icono n="chevron" tam={14} />
-              </span>
-            </a>
-          </li>
-        ) : null}
-        {datosAviso ? (
-          <li>
-            <a className="fila" href={urlAviso(datosAviso)} target="_blank" rel="noopener noreferrer">
-              <Icono n="whatsapp" tam={18} />
-              <span className="fila-texto">
-                {rotuloAviso(datosAviso.motivo)} <span className="fila-nota">· WhatsApp, sin nombrar a nadie</span>
-              </span>
-              <Icono n="chevron" tam={14} />
-            </a>
-            <button
-              type="button"
-              className="enlace fila-copiar"
-              onClick={() => void navigator.clipboard.writeText(textoAviso(datosAviso)).then(() => setCopiado(true), () => setCopiado(false))}
-            >
-              {copiado ? 'Mensaje copiado.' : 'Copiar mensaje'}
-            </button>
-          </li>
-        ) : null}
-        {mapa ? (
-          <li>
-            <a className="fila" href={urlLugar(p.titulo)} target="_blank" rel="noopener noreferrer">
-              <Icono n="enlace" tam={18} />
-              <span className="fila-texto">
-                Buscar el lugar en el mapa <span className="fila-nota">· CRUXE no sabe desde dónde sales</span>
-              </span>
-              <Icono n="chevron" tam={14} />
-            </a>
-          </li>
-        ) : null}
-        {p.bajas.length > 0 ? (
-          <li className="fila fila-quieta">
-            <Icono n="personas" tam={18} />
-            <span className="fila-texto">
-              {/* Enmienda 13 (c), psico §16: sin nombre y sin "había confirmado". */}
-              Cambios en el grupo: {p.bajas.map((b) => `Una persona se retiró${b.version != null ? ` (versión ${b.version})` : ''}.`).join(' ')}
-            </span>
-          </li>
-        ) : null}
-      </ul>
+      {hayFilas ? <ul className="filas">{filas}</ul> : null}
 
-      {/* Enmienda 13 (a): "Así no puedo, pero sigo" junto a confirmar; marcado, ofrece actualizar o volver a «puedo». */}
-      {vigente ? <AsiNoPuedo p={p} viva={viva} soloLectura={soloLectura} irAPestana={irAPestana} /> : null}
+      {/* Enmienda 13 (a): "Así no puedo, pero sigo" (friccion). Marcado, ofrece actualizar o volver a «puedo». */}
+      {estado === 'esperando_compromisos' && o ? (
+        <div className="fila-asi">
+          <AsiNoPuedo p={p} viva={viva} soloLectura={soloLectura} irAPestana={irAPestana} />
+          {s.mi_opinion !== 'asi_no_puedo' && s.puede.opinar ? <p className="fila-nota">Si esta fecha no te sirve pero sigues: márcalo. Nadie ve quién fue.</p> : null}
+        </div>
+      ) : null}
 
-      {children}
+      {estado === 'esperando_compromisos' ? (
+        <>
+          <FichaPlan p={p} viva={viva} titulo="Ficha del plan · Quién confirmó" />
+          {historial}
+        </>
+      ) : estado === 'reuniendo_interes' || estado === 'borrador' ? (
+        <FichaPlan p={p} viva={viva} titulo="Ficha del plan" />
+      ) : (
+        <FichaPlan p={p} viva={viva} titulo="Ficha del plan · Historial">
+          {historial}
+        </FichaPlan>
+      )}
 
-      {abierta && !s.retirado && s.puede.retirarme ? (
+      {estado === 'esperando_compromisos' && !s.retirado && s.puede.retirarme ? (
         <button type="button" className="enlace fila-chica" onClick={() => irAPestana('respuesta')}>
-          No voy a ir: retirarme en «Mi respuesta»
+          Retirarme de este plan
         </button>
       ) : null}
-      {s.puede.cancelar ? <Cancelar p={p} viva={viva} soloLectura={soloLectura} /> : null}
+      {s.puede.cancelar && estado !== 'esperando_compromisos' ? <Cancelar p={p} viva={viva} soloLectura={soloLectura} /> : null}
     </div>
   )
 }
@@ -147,15 +221,11 @@ function Cancelar({ p, viva, soloLectura }: { p: EstadoPropuesta; viva: Propuest
     if (r?.ok) setConfirmar(false)
   }
   return (
-    <section ref={zona} className={`zona-peligro zona-peligro-chica ${confirmar ? '' : 'zona-peligro-fila'}`} aria-labelledby="cancelar-titulo">
-      <div className="zona-peligro-texto">
-        <h3 id="cancelar-titulo">¿Ya no va?</h3>
-        <p className="suave">Pasa a Cancelado y no se puede reabrir.</p>
-      </div>
+    <section ref={zona} className="cancelar-chico" aria-label="Cancelar la propuesta">
       {!confirmar ? (
-        <Boton variante="secundario" onClick={() => setConfirmar(true)} disabled={soloLectura} data-abre-confirmacion>
-          Cancelar propuesta
-        </Boton>
+        <button type="button" className="enlace fila-chica" onClick={() => setConfirmar(true)} disabled={soloLectura} data-abre-confirmacion>
+          Cancelar la propuesta
+        </button>
       ) : (
         <Confirmacion titulo="¿Cancelar la propuesta?">
           La propuesta pasa a Cancelado y no se puede reabrir.

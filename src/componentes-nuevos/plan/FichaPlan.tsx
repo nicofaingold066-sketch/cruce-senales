@@ -1,5 +1,6 @@
 // Ficha del plan (S4, rediseño): los datos técnicos que salen del frente, plegados al final. `details` con el título
 // «Ficha del plan» y «Cómo viene cada plan» (E15, solo quien organiza): los busca el guion f15 de rincones.
+import type { ReactNode } from 'react'
 import { cuentaRegresiva, franjaTexto, momentoCorto } from '../../lib/format'
 import { useAhora } from '../../lib/hooks'
 import type { PropuestaViva } from '../../lib/hooks'
@@ -15,18 +16,16 @@ function textoPlan(t: { si: number | null; prefieren: number | null }): string |
   return partes.length > 0 ? partes.join(' · ') : null
 }
 
-export function FichaPlan({ p, viva }: { p: EstadoPropuesta; viva: PropuestaViva }) {
+export function FichaPlan({ p, viva, titulo, children }: { p: EstadoPropuesta; viva: PropuestaViva; titulo: string; children?: ReactNode }) {
   const ahora = useAhora(1000)
   const o = p.opcion
   const totalesPlanes = Object.entries(p.planes_totales ?? {})
     .map(([clave, t]) => [clave, textoPlan(t)] as const)
     .filter((x): x is readonly [string, string] => x[1] !== null)
   return (
-    <details className="tarjeta plegable ficha" open={!o}>
+    <details className="tarjeta plegable ficha">
       <summary>
-        <h2>
-          Ficha del plan <span className="ficha-sub">· Quién confirmó</span>
-        </h2>
+        <h2>{titulo}</h2>
       </summary>
       <QuienConfirmo p={p} />
       <dl className="datos">
@@ -89,6 +88,7 @@ export function FichaPlan({ p, viva }: { p: EstadoPropuesta; viva: PropuestaViva
         <dt>Horas</dt>
         <dd>De Santiago de Chile. Las condiciones de cada persona son privadas y no se muestran.</dd>
       </dl>
+      {children}
     </details>
   )
 }

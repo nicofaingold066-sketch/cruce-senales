@@ -9,7 +9,6 @@ import { Cruce } from '../components/Cruce'
 import { Icono } from '../components/Icono'
 import { momentoCorto } from '../lib/format'
 import { Resultado } from '../componentes-nuevos/plan/Resultado'
-import { escenaDe } from '../componentes-nuevos/plan/escena'
 import '../estilo/seccion-s4.css'
 import type { Pestana } from './tabs'
 import PlanTab from './PlanTab'
@@ -146,12 +145,10 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
   }
   const props = { p, viva, soloLectura, irAPestana, espacio }
 
-  const escena = escenaDe(p, espacio)
-
   return (
     <div className="vista vista-plan">
-      {/* La escena ES el resultado (S4, pantalla 5): estado, fecha, quiénes, cifra, cómo salió y la única acción. */}
-      <section className={`escena resultado-escena`} data-tono={escena.tono} aria-labelledby="propuesta-titulo">
+      {/* Nivel Plan (mockup): «‹ grupo» y la versión arriba; después el bloque de resultado con la única acción. */}
+      <section className="escena resultado-escena">
         <div className="resultado-arriba">
           <a className="escena-volver" href={rutas.espacio(espacioId)}>
             <Icono n="atras" tam={20} /> {espacio?.nombre ?? 'Volver al espacio'}
@@ -205,7 +202,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
           </Aviso>
         ) : null}
 
-        <Resultado p={p} viva={viva} soloLectura={soloLectura} espacio={espacio} activa={activa} irAPestana={irAPestana} cruce={escena} />
+        <Resultado p={p} viva={viva} soloLectura={soloLectura} espacio={espacio} activa={activa} irAPestana={irAPestana} />
       </section>
 
       <div className="hoja">

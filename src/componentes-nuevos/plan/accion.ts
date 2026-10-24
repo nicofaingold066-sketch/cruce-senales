@@ -100,3 +100,36 @@ export function etapaDe(estado: EstadoPropuesta['estado']): number | null {
   const i: Record<string, number> = { borrador: 0, reuniendo_interes: 0, en_revision: 1, esperando_compromisos: 2, grupo_confirmado: 3 }
   return i[estado] ?? null
 }
+
+/**
+ * Rótulo del estado en el bloque de resultado (mockup validado, pantallas 5, 15, 16 y 17). El estado lo decide el
+ * servidor; esto solo elige cómo se nombra en pantalla. Un estado desconocido muestra la etiqueta del servidor.
+ */
+export function etiquetaPlan(estado: EstadoPropuesta['estado'], delServidor: string): string {
+  const r: Partial<Record<EstadoPropuesta['estado'], string>> = {
+    reuniendo_interes: 'Reuniendo respuestas',
+    esperando_compromisos: 'Esperando confirmaciones',
+    grupo_confirmado: '¡Se juntan!',
+    en_revision: 'En revisión',
+  }
+  return r[estado] ?? delServidor
+}
+
+/**
+ * "Tu respuesta: puedo los dos días" con la respuesta propia (`get_my_conditions`, solo la ve la persona). Sin datos,
+ * lo que dice `mi_situacion.condiciones`. Nunca se muestra a otra persona.
+ */
+export function textoTuRespuesta(
+  disponibilidad: Record<string, 'si' | 'no' | 'pendiente'> | null,
+  franjas: { clave: string; dia: string }[],
+  estado: 'sin_cargar' | 'incompletas' | 'completas',
+): string {
+  if (estado === 'sin_cargar') return 'sin responder'
+  if (!disponibilidad) return estado === 'completas' ? 'respondiste' : 'te falta algún día'
+  const valores = franjas.map((f) => disponibilidad[f.clave] ?? 'pendiente')
+  if (valores.some((v) => v === 'pendiente')) return 'te falta algún día'
+  const si = franjas.filter((f) => disponibilidad[f.clave] === 'si')
+  if (si.length === 0) return 'no puedo ninguno'
+  if (si.length === franjas.length) return franjas.length === 2 ? 'puedo los dos días' : 'puedo todos los días'
+  return `solo el ${si.map((f) => f.dia).join(' y el ')}`
+}

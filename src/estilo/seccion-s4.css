@@ -1,15 +1,19 @@
-/* S4 · El plan y su resultado (ux-flujo). Rediseño de la noche, pantalla 5 del mockup validado (02:40).
-   La escena oscura ES el resultado; la hoja trae "Cómo se armó" y las filas. Solo los 4 tamaños de sistema.css
-   (--t-titulo 24, --t-subtitulo 18, --t-cuerpo 16, --t-nota 13), toques de 44 px, nada que se pise a 320/375/1280 px.
-   Movimiento: solo el del sistema (.sd-aparecer al cambiar de estado, .sd-exito al confirmar). Se importa desde Propuesta.tsx.
-   Los selectores que leen los guiones (.estado-hero-etiqueta) se conservan. */
+/* S4 · El plan y su resultado (ux-flujo). Construido como el mockup validado por Nico y Juan (03:05, obligatorio):
+   pantallas 5, 15, 16, 17 y 21. Nivel "Plan": página clara con «‹ grupo» arriba y el bloque de resultado primero
+   (distinto de la cabecera oscura del nivel Grupo). Solo los 4 tamaños de sistema.css, toques de 44 px, márgenes de 20 px
+   en móvil, 12 px entre cards y 24 entre bloques; nada superpuesto a 320/375/768/1280. Movimiento: solo el del sistema
+   (`sd-respira` al cambiar de estado, `sd-confirmado` al confirmar; Confeti con «¡Se juntan!»). Se importa desde Propuesta.tsx. */
 
-/* ------------------------------------------------------------------ la escena es el resultado */
-.resultado-escena {
-  padding: var(--e-2) var(--margen) var(--e-6);
+/* ------------------------------------------------------------------ nivel Plan (sistema.css, "niveles"): la escena oscura
+   con «‹ grupo» y la versión arriba, y el bloque de resultado (claro) primero. La hoja no se monta encima del bloque. */
+.vista.vista-plan .resultado-escena {
+  padding: var(--e-2) var(--margen) var(--e-5);
 }
-.resultado-escena > * + * {
+.vista-plan .resultado-escena > * + * {
   margin-top: var(--e-3);
+}
+.vista-plan .resultado-escena .escena-volver {
+  font-size: var(--t-cuerpo);
 }
 .resultado-arriba {
   display: flex;
@@ -19,7 +23,6 @@
   gap: var(--e-1) var(--e-2);
 }
 .resultado-arriba .escena-volver {
-  font-size: var(--t-cuerpo);
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -27,214 +30,215 @@
   background: rgba(255, 255, 255, 0.12);
   color: var(--noche-texto);
 }
-.resultado-sello.chip-info {
-  background: var(--info-suave);
-  color: var(--info);
+.vista-plan .hoja {
+  margin-top: 0;
 }
 
-/* El bloque: borde grueso arriba con el color del estado (--c lo ponen las clases estado-hero-*). */
+/* Pantalla 21: la invitación del agente, una línea punteada arriba del bloque. */
+.resultado-invitacion {
+  margin: 0;
+  padding: var(--e-3) var(--e-4);
+  border: 1.5px dashed var(--noche-suave);
+  border-radius: var(--r-m);
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--noche-texto);
+}
+
+/* ------------------------------------------------------------------ el bloque de resultado */
 .resultado {
-  --c: var(--noche-suave);
+  --c: var(--tinta-3);
   position: relative;
-  padding-top: var(--e-4);
+  padding: var(--e-4) var(--e-4) var(--e-5);
+  background: var(--hoja);
+  color: var(--tinta);
+  border: 1px solid var(--linea);
   border-top: 6px solid var(--c);
-  border-radius: 4px 4px 0 0;
-}
-.resultado.estado-hero-reuniendo_interes,
-.resultado.estado-hero-borrador {
-  --c: var(--info);
-}
-.resultado.estado-hero-esperando_compromisos {
-  --c: var(--brasa-viva);
-}
-.resultado.estado-hero-grupo_confirmado {
-  --c: #4cc98a;
-}
-.resultado.estado-hero-en_revision {
-  --c: #f0b44c;
+  border-radius: var(--r-l);
+  box-shadow: var(--sombra-flota);
 }
 .resultado > * + * {
-  margin-top: var(--e-4);
+  margin-top: var(--e-3);
 }
-/* Sin margen propio en los párrafos; el aire entre piezas lo pone `.resultado > * + *` (gana por especificidad). */
 :where(.resultado) p {
   margin: 0;
 }
+.resultado-reuniendo_interes,
+.resultado-borrador {
+  --c: var(--tinta-3);
+}
+.resultado-esperando_compromisos {
+  --c: var(--brasa);
+}
+/* 16: fondo brasa suave y borde brasa. */
+.resultado-grupo_confirmado {
+  --c: var(--brasa);
+  background: var(--brasa-suave);
+  border: 2px solid var(--brasa);
+  border-top-width: 6px;
+}
+/* 17: borde punteado. */
+.resultado-en_revision {
+  --c: var(--revision);
+  border: 2px dashed var(--revision);
+  border-top-width: 6px;
+  border-top-style: solid;
+}
 
-.resultado .estado-hero-fila {
-  display: flex;
-  align-items: center;
-  gap: var(--e-2);
-}
-.resultado .estado-hero-icono {
-  display: inline-grid;
-  place-items: center;
-  color: var(--c);
-}
-/* "Mayúsculas chicas" del mockup sin cambiar el texto: los guiones leen «Esperando compromisos» tal cual. */
-.resultado .estado-hero-etiqueta {
+/* Estado en mayúsculas chicas, sin cambiar el texto (versalitas). */
+.resultado-rotulo {
   font-size: var(--t-nota);
   line-height: var(--lh-nota);
-  font-weight: var(--p-pantalla);
+  color: var(--c);
   font-variant-caps: all-small-caps;
   letter-spacing: 0.08em;
-  color: var(--c);
 }
-.resultado .estado-hero-siguiente {
+.resultado-rotulo .estado-hero-etiqueta {
+  font-weight: var(--p-pantalla);
+}
+.resultado-rotulo-extra {
+  font-weight: var(--p-boton);
+}
+.resultado-frase {
   margin-top: var(--e-1);
   font-size: var(--t-cuerpo);
   line-height: var(--lh-cuerpo);
   font-weight: var(--p-boton);
-  color: var(--noche-texto);
   overflow-wrap: anywhere;
 }
-.resultado-turno .estado-hero-siguiente {
-  color: var(--brasa-viva);
-}
-.resultado .pastilla {
-  font-size: var(--t-nota);
+.resultado-turno .resultado-frase {
+  color: var(--brasa);
 }
 
-.resultado-titulo {
-  font-size: var(--t-titulo);
-  line-height: var(--lh-titulo);
-  font-weight: var(--p-pantalla);
-  color: var(--noche-texto);
-}
-.resultado-fiesta {
-  position: relative;
-}
-
-.resultado-cuando {
-  display: flex;
-  align-items: center;
-  gap: var(--e-3);
-  min-width: 0;
-}
-.resultado-cuando > div {
-  min-width: 0;
-}
-.resultado-eyebrow {
-  display: block;
-  font-size: var(--t-nota);
-  line-height: var(--lh-nota);
-  font-weight: var(--p-boton);
-  color: var(--noche-suave);
+.resultado-cuando > p + p {
+  margin-top: 2px;
 }
 .resultado-fecha {
   font-size: var(--t-titulo);
   line-height: var(--lh-titulo);
   font-weight: var(--p-pantalla);
   letter-spacing: -0.01em;
-  color: var(--noche-texto);
   overflow-wrap: anywhere;
 }
 .resultado-hora {
   font-size: var(--t-cuerpo);
   line-height: var(--lh-cuerpo);
-  color: var(--noche-suave);
-}
-.resultado-cuando-vieja .resultado-fecha {
-  text-decoration: line-through;
-  text-decoration-thickness: 2px;
-  color: var(--noche-suave);
-}
-.resultado-candidatas {
-  font-size: var(--t-cuerpo);
-  line-height: var(--lh-cuerpo);
-  color: var(--noche-suave);
+  color: var(--tinta-2);
   overflow-wrap: anywhere;
 }
-.resultado-candidata strong {
-  font-size: var(--t-subtitulo);
-  color: var(--noche-texto);
+.resultado-cuando-vieja .resultado-fecha,
+.resultado-cuando-vieja .resultado-hora {
+  color: var(--tinta-3);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+.resultado-nota,
+.resultado-linea {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--tinta-2);
+  overflow-wrap: anywhere;
+}
+.resultado-linea {
+  color: var(--tinta);
 }
 
 h1.resultado-plan {
-  margin: var(--e-2) 0 0;
+  margin: 0;
+  color: var(--tinta);
   font-size: var(--t-subtitulo);
   line-height: var(--lh-subtitulo);
   font-weight: var(--p-titulo);
-  color: var(--noche-texto);
+  overflow-wrap: anywhere;
+}
+h1.resultado-plan-grande {
+  font-size: var(--t-titulo);
+  line-height: var(--lh-titulo);
+  font-weight: var(--p-pantalla);
+}
+.resultado-fechas {
+  font-size: var(--t-cuerpo);
+  color: var(--tinta-2);
+  overflow-wrap: anywhere;
 }
 
-/* El cruce, chico: a 320 px entra sin desplazar. */
-.resultado-cruce .cruce {
-  display: block;
-  width: 100%;
-  max-width: 300px;
-  height: auto;
-  margin: 0 auto;
+/* Avatares: llenos los que están; punteados los que faltan (sin nombre). */
+.resultado-quienes {
+  display: grid;
+  gap: var(--e-2);
 }
-.resultado-cruce .cruce-nombre,
-.resultado-cruce .cruce-etiqueta,
-.resultado-cruce .cruce-iniciales {
-  font-size: 13px;
-}
-.resultado-cruce .cruce-valor {
-  font-size: 24px;
-}
-.resultado-cruce .cruce-leyenda {
-  justify-content: center;
+.resultado-avatares {
+  display: flex;
   flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.resultado-avatares .avatar {
+  --av: 32px;
   font-size: var(--t-nota);
 }
-
+.avatar.avatar-punteado {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px dashed var(--tinta-3);
+  display: inline-grid;
+  place-items: center;
+  color: var(--tinta-2);
+  font-size: var(--t-nota);
+  font-weight: var(--p-pantalla);
+}
+.avatar.avatar-lleno {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--tinta-3);
+}
 .resultado-cuenta {
   font-size: var(--t-cuerpo);
   line-height: var(--lh-cuerpo);
-  color: var(--noche-texto);
+  font-weight: var(--p-boton);
   overflow-wrap: anywhere;
-}
-.resultado-cuenta strong {
-  font-size: var(--t-subtitulo);
-  font-weight: var(--p-pantalla);
-}
-.resultado-detalle,
-.resultado-como {
-  font-size: var(--t-nota);
-  line-height: var(--lh-nota);
-  color: var(--noche-suave);
-  overflow-wrap: anywhere;
-}
-.resultado-como {
-  color: var(--noche-texto);
 }
 
-/* Tira de etapas sobre la escena oscura: el texto baja de línea antes que cortarse. */
+/* Tira de etapas: el texto baja de línea antes que cortarse. */
 .resultado-pasos.pasos {
   margin-top: var(--e-4);
 }
+.resultado .paso-barra {
+  background: var(--relleno-2);
+}
+.resultado .paso-hecho .paso-barra,
+.resultado-grupo_confirmado .paso-barra {
+  background: var(--c);
+}
 .resultado-pasos .paso {
-  color: var(--noche-suave);
   font-size: var(--t-nota);
-}
-.resultado-pasos .paso-actual {
-  color: var(--noche-texto);
-}
-.resultado-pasos .paso-barra {
-  background: rgba(255, 255, 255, 0.16);
 }
 .resultado-pasos .paso-texto {
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
   overflow-wrap: normal;
-  hyphens: auto;
 }
-/* La hoja de calendario sigue clara sobre la escena: su número va en tinta. */
-.resultado-cuando .dia-tile-num {
-  color: var(--tinta);
+.resultado-pasos.pasos {
+  gap: 4px;
+}
+/* A 320 px las cuatro etapas no entran en una fila sin cortar palabras: dos por fila. */
+@media (max-width: 359px) {
+  .resultado-pasos.pasos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: var(--e-2);
+  }
 }
 
-.resultado .aviso {
-  font-size: var(--t-cuerpo);
-}
+.resultado .aviso,
 .resultado .aviso-titulo {
   font-size: var(--t-cuerpo);
 }
-.resultado .aviso .suave,
-.resultado .aviso p {
+.resultado .aviso p,
+.resultado .aviso .suave {
   font-size: var(--t-nota);
 }
 
@@ -245,47 +249,45 @@ h1.resultado-plan {
   min-height: var(--toque);
   padding: 0 var(--e-4);
   border-radius: 999px;
-  background: rgba(76, 201, 138, 0.16);
-  color: #8fe2b6;
+  background: var(--ok-suave);
+  color: var(--ok);
   font-size: var(--t-cuerpo);
   font-weight: var(--p-boton);
 }
-.resultado-razon.nota-linea {
-  font-size: var(--t-nota);
-  line-height: var(--lh-nota);
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--noche-texto);
-}
 
-/* La acción: una sola, fija al alcance del pulgar dentro de la escena. */
-.resultado-escena .barra-accion {
-  margin: var(--e-4) calc(-1 * var(--margen)) 0;
-  background: linear-gradient(to top, var(--noche) 78%, transparent);
+/* El único primario, fijo al alcance del pulgar dentro del bloque. */
+.resultado .barra-accion {
+  margin: var(--e-4) calc(-1 * var(--e-4)) calc(-1 * var(--e-5));
+  padding: var(--e-3) var(--e-4) max(var(--e-4), env(safe-area-inset-bottom));
+  border-radius: 0 0 var(--r-l) var(--r-l);
+  background: linear-gradient(to top, var(--hoja) 80%, transparent);
   display: grid;
   gap: var(--e-2);
 }
-.resultado-escena .barra-accion > .btn {
+.resultado-grupo_confirmado .barra-accion {
+  background: linear-gradient(to top, var(--brasa-suave) 80%, transparent);
+}
+.resultado .barra-accion > .btn {
   width: 100%;
   min-height: var(--toque);
   font-size: var(--t-cuerpo);
 }
-.resultado-escena .barra-accion > p {
+.resultado .barra-accion > p {
   margin: 0;
   text-align: center;
 }
 .resultado-rearmar {
   padding: var(--e-3);
   border-radius: var(--r-m);
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--relleno);
 }
 .resultado-rearmar h3 {
   margin: 0 0 var(--e-1);
   font-size: var(--t-cuerpo);
-  color: var(--noche-texto);
 }
 .resultado-rearmar p {
   font-size: var(--t-nota);
-  color: var(--noche-suave);
+  color: var(--tinta-2);
 }
 .resultado-rearmar .barra-accion {
   margin: var(--e-2) 0 0;
@@ -297,6 +299,9 @@ h1.resultado-plan {
 }
 
 /* ------------------------------------------------------------------ pestañas: entran a 320 px o se desplazan */
+.vista-plan .pestanas {
+  margin-top: 0;
+}
 .vista-plan .pestanas-carril {
   width: max-content;
   min-width: 100%;
@@ -312,132 +317,9 @@ h1.resultado-plan {
   }
 }
 
-/* ------------------------------------------------------------------ hoja: cómo se armó y filas */
-.plan-tab > * + * {
-  margin-top: var(--e-5);
-}
-.plan-tab .encabezado-seccion {
-  margin-top: 0;
-}
-
-.pasos-plan {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.paso-plan {
-  position: relative;
-  display: grid;
-  grid-template-columns: 32px minmax(0, 1fr);
-  gap: var(--e-3);
-  padding-bottom: var(--e-4);
-}
-.paso-plan:not(:last-child)::before {
-  content: '';
-  position: absolute;
-  left: 15px;
-  top: 34px;
-  bottom: 2px;
-  width: 2px;
-  background: var(--linea);
-}
-.paso-plan-hecho:not(:last-child)::before {
-  background: var(--ok);
-}
-.paso-plan-num {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--relleno);
-  color: var(--tinta-2);
-  font-size: var(--t-nota);
-  font-weight: var(--p-pantalla);
-}
-.paso-plan-hecho .paso-plan-num {
-  background: var(--ok-suave);
-  color: var(--ok);
-}
-.paso-plan-actual .paso-plan-num {
-  background: var(--tinta);
-  color: var(--hoja);
-}
-.paso-plan-cuerpo {
-  min-width: 0;
-  padding-top: 4px;
-}
-.paso-plan-titulo {
-  display: block;
-  font-size: var(--t-cuerpo);
-  font-weight: var(--p-titulo);
-}
-.paso-plan-texto {
-  margin: var(--e-1) 0 0;
-  font-size: var(--t-nota);
-  line-height: var(--lh-nota);
-  color: var(--tinta-2);
-  overflow-wrap: anywhere;
-}
-.paso-plan-actual .paso-plan-texto {
-  color: var(--tinta);
-}
-.versiones {
-  margin-top: var(--e-2);
-  display: grid;
-  gap: var(--e-2);
-}
-.versiones-titulo {
-  margin: 0;
-  font-size: var(--t-nota);
-  font-weight: var(--p-titulo);
-}
-.version {
-  margin: 0;
-  padding: var(--e-3);
-  border-radius: var(--r-s);
-  border: 1px solid var(--linea);
-  background: var(--hoja);
-  display: grid;
-  gap: var(--e-1);
-  min-width: 0;
-}
-.version-vieja {
-  background: var(--relleno);
-}
-.version-nueva {
-  border-color: var(--tinta);
-}
-.version-rotulo {
-  font-size: var(--t-nota);
-  font-weight: var(--p-titulo);
-  color: var(--tinta-2);
-}
-.version-nueva .version-rotulo {
-  color: var(--tinta);
-}
-.version-franja {
-  font-size: var(--t-cuerpo);
-  font-weight: var(--p-boton);
-  overflow-wrap: anywhere;
-}
-.version-vieja .version-franja {
-  text-decoration: line-through;
-  color: var(--tinta-2);
-}
-.version-nota {
-  font-size: var(--t-nota);
-  line-height: var(--lh-nota);
-  color: var(--tinta-2);
-  overflow-wrap: anywhere;
-}
-.version-nota .avatar-pila {
-  vertical-align: middle;
-}
-
-/* Filas: una cosa por fila, 44 px o más, la acción a la derecha. */
+/* ------------------------------------------------------------------ filas debajo del bloque */
 .filas-plan > * + * {
-  margin-top: var(--e-3);
+  margin-top: 12px;
 }
 .filas {
   list-style: none;
@@ -473,10 +355,6 @@ a.fila:hover {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.fila-nota {
-  color: var(--tinta-2);
-  font-size: var(--t-nota);
-}
 .fila-accion {
   flex: none;
   display: inline-flex;
@@ -484,32 +362,55 @@ a.fila:hover {
   gap: var(--e-1);
   font-weight: var(--p-boton);
 }
-.fila-copiar {
-  display: block;
-  min-height: var(--toque);
-  margin: 0 var(--e-4) var(--e-1) calc(var(--e-4) + 18px + var(--e-3));
+.fila-nota {
+  margin: var(--e-1) 0 0;
   font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--tinta-2);
+}
+/* "Así no puedo, pero sigo ›" como una fila: la ayuda larga de la pieza se reemplaza por una línea. */
+.fila-asi .asi-no-puedo > .btn {
+  width: 100%;
+  min-height: 52px;
+  justify-content: flex-start;
+  font-size: var(--t-cuerpo);
+}
+.fila-asi .asi-no-puedo-nota {
+  display: none;
+}
+.fila-asi .asi-no-puedo.tarjeta h2 {
+  font-size: var(--t-subtitulo);
 }
 .fila-chica {
   display: block;
   min-height: var(--toque);
+  margin-top: var(--e-5);
   font-size: var(--t-nota);
   color: var(--tinta-2);
+  text-align: left;
 }
-.filas-plan .asi-no-puedo > .btn {
+.cancelar-chico .fila-chica {
+  margin-top: var(--e-2);
+}
+.filas-botones {
+  display: grid;
+  gap: 12px;
+}
+.filas-botones > .btn {
   width: 100%;
-}
-.filas-plan .asi-no-puedo-nota {
-  font-size: var(--t-nota);
-  margin-top: var(--e-1);
-}
-.filas-plan .asi-no-puedo h2 {
-  font-size: var(--t-subtitulo);
-}
-.ficha-sub {
-  color: var(--tinta-2);
-  font-weight: var(--p-boton);
+  min-height: var(--toque);
   font-size: var(--t-cuerpo);
+}
+.btn.btn-grande {
+  min-height: 56px;
+}
+.plan-tab .ficha summary h2,
+.plan-tab .historial-plegado summary h2 {
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-boton);
+}
+.plan-tab .ficha .datos {
+  font-size: var(--t-nota);
 }
 .ficha-quienes h3 {
   margin: 0 0 var(--e-2);
@@ -518,57 +419,24 @@ a.fila:hover {
 .ficha-quienes .nombre {
   font-size: var(--t-nota);
 }
-.plan-tab .ficha .datos {
-  font-size: var(--t-nota);
-}
-.zona-peligro-chica {
-  padding: var(--e-3) var(--e-4);
-}
-.zona-peligro-chica h3 {
-  margin: 0;
-  font-size: var(--t-cuerpo);
+.ficha .historial-plegado {
+  margin-top: var(--e-4);
 }
 
-/* ------------------------------------------------------------------ computadora: una columna de 640 px centrada,
-   con la escena a todo el ancho detrás (el jurado ve lo mismo en el teléfono y en la compu). */
-@media (min-width: 960px) {
-  .vista.vista-plan {
-    display: block;
-  }
-  .vista-plan .escena {
-    position: relative;
-    top: auto;
-    min-height: 0;
-    padding: var(--e-5) var(--margen) var(--e-6);
-  }
-  .vista-plan .escena > * {
+/* ------------------------------------------------------------------ tablet: la pantalla de móvil, centrada en 640 px */
+@media (min-width: 700px) and (max-width: 959px) {
+  .vista-plan .resultado-escena > *,
+  .vista-plan .hoja > :not(.pestanas) {
     max-width: 640px;
     margin-left: auto;
     margin-right: auto;
   }
-  .vista-plan .escena > * + * {
-    margin-top: var(--e-3);
-  }
-  .vista-plan .hoja {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: var(--e-5) 0 var(--e-6);
-    background: transparent;
-  }
-  .resultado-escena .barra-accion {
-    margin-left: 0;
-    margin-right: 0;
-  }
-  .resultado-cruce .cruce {
-    max-width: 340px;
-  }
 }
 
-/* El primario sobre la escena oscura: claro y lleno (el brasa queda solo para «te toca»). */
-.resultado-escena .btn-claro {
-  background: var(--noche-texto);
-  color: var(--noche);
-}
-.resultado-escena .btn-claro:hover:not(:disabled) {
-  opacity: 0.9;
+/* ------------------------------------------------------------------ computadora: dos columnas (pantalla 8): la escena con
+   el bloque a la izquierda (fija, como en el resto de la app) y las filas a la derecha. */
+@media (min-width: 960px) {
+  .resultado .barra-accion {
+    position: static;
+  }
 }

@@ -118,3 +118,23 @@ test('etapas: el grupo confirmado espera el encuentro (no se marca hecho lo que 
   assert.equal(etapaDe('grupo_confirmado'), 3)
   assert.equal(etapaDe('cancelado'), null)
 })
+
+import { etiquetaPlan, textoTuRespuesta } from './accion.ts'
+
+test('rótulo del estado como en el mockup; lo desconocido, como lo manda el servidor', () => {
+  assert.equal(etiquetaPlan('reuniendo_interes', 'Reuniendo interés'), 'Reuniendo respuestas')
+  assert.equal(etiquetaPlan('esperando_compromisos', 'Esperando compromisos'), 'Esperando confirmaciones')
+  assert.equal(etiquetaPlan('grupo_confirmado', 'Grupo confirmado'), '¡Se juntan!')
+  assert.equal(etiquetaPlan('en_revision', 'En revisión'), 'En revisión')
+  assert.equal(etiquetaPlan('cancelado', 'Cancelado'), 'Cancelado')
+})
+
+test('tu respuesta: con lo propio; sin dato, lo que dice el estado de las condiciones', () => {
+  const f = [{ clave: 'A', dia: 'sábado' }, { clave: 'B', dia: 'domingo' }]
+  assert.equal(textoTuRespuesta({ A: 'si', B: 'si' }, f, 'completas'), 'puedo los dos días')
+  assert.equal(textoTuRespuesta({ A: 'si', B: 'no' }, f, 'completas'), 'solo el sábado')
+  assert.equal(textoTuRespuesta({ A: 'no', B: 'no' }, f, 'completas'), 'no puedo ninguno')
+  assert.equal(textoTuRespuesta({ A: 'si' }, f, 'incompletas'), 'te falta algún día')
+  assert.equal(textoTuRespuesta(null, f, 'completas'), 'respondiste')
+  assert.equal(textoTuRespuesta(null, f, 'sin_cargar'), 'sin responder')
+})

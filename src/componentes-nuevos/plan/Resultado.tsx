@@ -1,48 +1,28 @@
-// El resultado del plan (S4, rediseño; pantalla 5 del mockup validado por Nico, 02:40). Es la escena oscura de arriba:
-// estado, cuándo (grande), el cruce con quiénes confirmaron, la cifra, la tira de etapas, cómo salió, un aviso y UNA acción.
-// Todo sale del servidor (estado, cupos, `siguiente_accion`, `puede.*`); la interfaz no decide cupos, plazos ni quién puede.
-// La región `role=status` con `.estado-hero-etiqueta` y `siguiente_accion.texto` se conserva: la leen los guiones de qa y rincones.
+// El bloque de resultado del plan (S4). Construido como el mockup validado por Nico y Juan (03:05, obligatorio):
+// pantallas 5 (esperando confirmaciones), 15 (reuniendo respuestas), 16 (¡se juntan!), 17 (en revisión) y 21 (invitación
+// del agente). Todo sale del servidor (estado, cupos, `siguiente_accion`, `puede.*`); la interfaz no decide nada.
+// La región `role=status` con `.estado-hero-etiqueta` y `siguiente_accion.texto` se conserva para los lectores de pantalla.
 import { useState } from 'react'
 import { api } from '../../lib/api'
-import { descargarCalendario } from '../../lib/compartir'
-import { diaDe, hora } from '../../lib/format'
+import { diaDe, fechaCorta, hora } from '../../lib/format'
 import { useMutacion } from '../../lib/hooks'
 import type { PropuestaViva } from '../../lib/hooks'
 import { rutas } from '../../lib/shell'
 import { CODIGOS_SIGUIENTE } from '../../lib/types'
-import type { Espacio, EstadoPropuesta } from '../../lib/types'
+import type { Espacio, EstadoPropuesta, MiembroRef } from '../../lib/types'
 import { vibrar } from '../../lib/tacto'
-import { Aviso, Boton, DiaTile, ErrorCaja } from '../../components/ui'
+import { Avatar, Aviso, Boton, ErrorCaja } from '../../components/ui'
 import { Confeti } from '../../components/Confeti'
-import { Cruce } from '../../components/Cruce'
-import type { NodoCruce, TonoCruce } from '../../components/Cruce'
 import { Icono } from '../../components/Icono'
-import type { NombreIcono } from '../../components/Icono'
-import { Resaltado } from '../../components/Resaltado'
-import { InvitacionAgente } from '../../agente/InvitacionAgente'
 import type { Pestana } from '../../screens/tabs'
 import { AvisoParaMi } from '../AvisoParaMi'
 import { avisoParaMi } from '../avisoPersonal'
 import { RearmarConLoNuevo } from '../RearmarConLoNuevo'
-import { ETAPAS, accionPrimaria, cuentaConfirmados, etapaDe, porQueNoConfirmo, textoComoSalio } from './accion'
+import { ETAPAS, accionPrimaria, cuentaConfirmados, etapaDe, etiquetaPlan, porQueNoConfirmo, textoComoSalio } from './accion'
 
-/** Ícono por estado: el estado nunca se distingue solo por color. */
-const ICONO_ESTADO: Record<string, NombreIcono> = {
-  borrador: 'borrador',
-  reuniendo_interes: 'grupo',
-  esperando_compromisos: 'esperando',
-  grupo_confirmado: 'confirmado',
-  en_revision: 'alerta',
-  expirado: 'cerrado',
-  cancelado: 'cerrado',
-}
-
-export interface EscenaCruce {
-  nodos: NodoCruce[]
-  valor: string
-  etiqueta: string
-  fraccion: number
-  tono: TonoCruce
+/** "Tomi, Luna, Mati y Caro". */
+function lista(nombres: string[]): string {
+  return nombres.length <= 1 ? (nombres[0] ?? '') : `${nombres.slice(0, -1).join(', ')} y ${nombres[nombres.length - 1]}`
 }
 
 export function Resultado({
@@ -52,7 +32,6 @@ export function Resultado({
   espacio,
   activa,
   irAPestana,
-  cruce,
 }: {
   p: EstadoPropuesta
   viva: PropuestaViva
@@ -60,199 +39,263 @@ export function Resultado({
   espacio: Espacio | null
   activa: Pestana
   irAPestana: (t: Pestana) => void
-  cruce: EscenaCruce
 }) {
   const o = p.opcion
   const s = p.mi_situacion
   const confirmado = p.estado === 'grupo_confirmado'
   const enRevision = p.estado === 'en_revision'
+  const reuniendo = p.estado === 'reuniendo_interes' || p.estado === 'borrador'
   const vigente = (p.estado === 'esperando_compromisos' || confirmado) && o
   // Enmienda 3: el código decide el acento; los booleanos solo si llega un código desconocido.
   const cod = p.siguiente_accion.codigo
   const conocido = (CODIGOS_SIGUIENTE as readonly string[]).includes(cod)
   const turno = cod === 'te_toca_aceptar' || (!conocido && s.puede.aceptar)
-  const yaAcepte = cod === 'ya_aceptaste' || (!conocido && !turno && s.acepte_version && p.estado === 'esperando_compromisos')
-  const accion = accionPrimaria(p)
+  const accion = activa === 'plan' ? accionPrimaria(p) : null
   const razon = porQueNoConfirmo(p)
   const etapa = etapaDe(p.estado)
   const etiqueta = o ? (o.franja.etiqueta ?? p.franjas.find((f) => f.clave === o.franja.clave)?.etiqueta ?? null) : null
+  const c = o?.cupos
+  const sinPrimario = !accion || accion.clave === 'calendario'
 
   return (
-    // key: el bloque "respira" (aparece de nuevo) una vez cada vez que cambia el estado o la versión.
-    <div key={`${p.estado}-${o?.version ?? 0}`} className={`resultado estado-hero-${p.estado} ${turno ? 'resultado-turno' : ''} sd-aparecer`} data-codigo={cod}>
-      <div className="resultado-estado" role="status" aria-live="polite" aria-atomic="true">
-        <p className="estado-hero-fila">
-          <span className="estado-hero-icono" aria-hidden="true">
-            <Icono n={ICONO_ESTADO[p.estado] ?? 'esperando'} tam={16} />
-          </span>
-          <strong className="estado-hero-etiqueta">{p.estado_etiqueta}</strong>
+    <>
+      {/* Pantalla 21: la invitación del agente, una línea punteada arriba del bloque. */}
+      {s.invitacion_agente ? (
+        <p className="resultado-invitacion">
+          El agente de {p.organizador.nombre} te invita. {p.organizador.nombre} revisó y aprobó este plan. Lo redactó la IA; no es una confirmación.
         </p>
-        {turno && cod !== 'te_toca_aceptar' ? <span className="pastilla pastilla-turno">Tu turno: confirma la versión {o?.version}</span> : null}
-        {yaAcepte && cod !== 'ya_aceptaste' ? <span className="pastilla pastilla-ok">Ya confirmaste la versión {o?.version}</span> : null}
-        <p className="estado-hero-siguiente">
-          <span className="visualmente-oculto">Próxima acción: </span>
-          {p.siguiente_accion.texto}
-        </p>
-      </div>
+      ) : null}
 
-      {confirmado && o ? (
-        <div className="resultado-fiesta sd-exito">
-          {s.acepte_version ? <Confeti /> : null}
-          <p className="resultado-titulo">
-            <Resaltado tipo="marcador" color="var(--ok)">
-              ¡Se juntan!
-            </Resaltado>
+      {/* key: el bloque "respira" una vez al cambiar de estado (`sd-respira`, sistema). */}
+      <section
+        key={p.estado}
+        className={`resultado resultado-${p.estado} ${turno ? 'resultado-turno' : ''} sd-respira`}
+        aria-labelledby="propuesta-titulo"
+        data-codigo={cod}
+      >
+        <div className="resultado-estado" role="status" aria-live="polite" aria-atomic="true">
+          <p className="resultado-rotulo">
+            <strong className="estado-hero-etiqueta">{etiquetaPlan(p.estado, p.estado_etiqueta)}</strong>
+            {enRevision && p.bajas.length > 0 ? <span className="resultado-rotulo-extra"> · Una persona se retiró</span> : null}
+          </p>
+          {/* La frase del servidor se ve cuando no hay botón (mockup: "si no me toca nada, una frase"); si hay, la lee el lector. */}
+          <p className={sinPrimario && !reuniendo && !enRevision ? 'resultado-frase' : 'visualmente-oculto'}>
+            <span className="visualmente-oculto">Próxima acción: </span>
+            {p.siguiente_accion.texto}
           </p>
         </div>
-      ) : null}
 
-      {o && (vigente || enRevision) ? (
-        <div className={`resultado-cuando ${enRevision ? 'resultado-cuando-vieja' : ''}`}>
-          <DiaTile local={o.franja.inicio.local} />
-          <div>
-            <p className="resultado-eyebrow">{enRevision ? `Versión ${o.version} (en revisión, no confirmada)` : `Opción vigente · Versión ${o.version}`}</p>
-            <p className="resultado-fecha">
-              {etiqueta ? `${etiqueta} · ` : ''}
-              {diaDe(o.franja.inicio.local)}
-            </p>
+        {confirmado && s.acepte_version ? <Confeti /> : null}
+
+        {/* Cuándo */}
+        {o && (vigente || enRevision) ? (
+          <div className={`resultado-cuando ${enRevision ? 'resultado-cuando-vieja' : ''}`}>
+            <span className="visualmente-oculto">{enRevision ? `Versión ${o.version} (en revisión, no confirmada)` : `Opción vigente · Versión ${o.version}`}</span>
+            <p className="resultado-fecha">{diaDe(o.franja.inicio.local)}</p>
             <p className="resultado-hora">
-              {hora(o.franja.inicio.local)} a {hora(o.franja.fin.local)}
+              {confirmado ? `${hora(o.franja.inicio.local)}${etiqueta ? ` · ${etiqueta}` : ''}` : `${hora(o.franja.inicio.local)} a ${hora(o.franja.fin.local)}${etiqueta ? ` · ${etiqueta}` : ''}`}
             </p>
+            {enRevision && c && c.faltan_para_minimo > 0 ? <p className="resultado-nota">ya no llega al mínimo ({c.minimo})</p> : null}
           </div>
-        </div>
-      ) : !o && p.estado !== 'cancelado' && p.estado !== 'expirado' ? (
-        <p className="resultado-candidatas">
-          <span className="resultado-eyebrow">Opciones</span>
-          {p.franjas.map((f, i) => (
-            <span key={f.clave} className="resultado-candidata">
-              {i > 0 ? <span className="resultado-o"> o </span> : null}
-              <strong>
-                {f.etiqueta ? `${f.etiqueta} · ` : ''}
-                {diaDe(f.inicio.local)}
-              </strong>{' '}
-              {hora(f.inicio.local)}
-            </span>
-          ))}
-        </p>
-      ) : null}
+        ) : null}
 
-      <h1 id="propuesta-titulo" className="resultado-plan" style={{ viewTransitionName: `plan-${p.id}` }}>
-        {p.titulo}
-      </h1>
+        <h1 id="propuesta-titulo" className={`resultado-plan ${reuniendo ? 'resultado-plan-grande' : ''}`} style={{ viewTransitionName: `plan-${p.id}` }}>
+          {p.titulo}
+        </h1>
 
-      <div className="resultado-cruce">
-        <Cruce nodos={cruce.nodos} valor={cruce.valor} etiqueta={cruce.etiqueta} fraccion={cruce.fraccion} tono={cruce.tono} confirmado={confirmado} />
-      </div>
+        {reuniendo ? (
+          <p className="resultado-fechas">
+            {p.franjas.map((f, i) => (
+              <span key={f.clave}>
+                {i > 0 ? ' · ' : ''}
+                {f.etiqueta ? `${f.etiqueta}, ` : ''}
+                {fechaCorta(f.inicio.local)} {hora(f.inicio.local)}
+              </span>
+            ))}
+          </p>
+        ) : null}
 
-      <Cifra p={p} />
+        <Quienes p={p} total={espacio ? espacio.miembros.length : null} />
 
-      {etapa !== null ? (
-        <ol className="pasos resultado-pasos" aria-label="Etapas del plan">
-          {ETAPAS.map((t, n) => (
-            <li key={t} className={`paso ${n < etapa ? 'paso-hecho' : ''} ${n === etapa ? 'paso-actual' : ''}`} aria-current={n === etapa ? 'step' : undefined}>
-              <span className="paso-barra" aria-hidden="true" />
-              <span className="paso-texto">{t}</span>
-            </li>
-          ))}
-        </ol>
-      ) : null}
-      {etapa !== null && p.estado !== 'borrador' ? <p className="resultado-como">{textoComoSalio(p)}</p> : null}
+        {etapa !== null ? (
+          <ol className="pasos resultado-pasos" aria-label="Etapas del plan">
+            {ETAPAS.map((t, n) => (
+              <li key={t} className={`paso ${n < etapa || (confirmado && n === etapa) ? 'paso-hecho' : ''} ${n === etapa ? 'paso-actual' : ''}`} aria-current={n === etapa ? 'step' : undefined}>
+                <span className="paso-barra" aria-hidden="true" />
+                <span className="paso-texto">{t}</span>
+              </li>
+            ))}
+          </ol>
+        ) : null}
 
-      <AvisoUnico p={p} viva={viva} irARespuesta={() => irAPestana('respuesta')} />
+        <Linea p={p} />
 
-      {razon && s.acepte_version && vigente ? (
-        <p className="resultado-hecho sd-exito" role="note">
-          <Icono n="check" tam={16} /> Confirmado ✓ · {razon}
-        </p>
-      ) : razon ? (
-        <p className="nota-linea resultado-razon" role="note">
-          <Icono n="candado" tam={16} />
-          <span>{razon}</span>
-        </p>
-      ) : null}
+        <AvisoUnico p={p} viva={viva} irARespuesta={() => irAPestana('respuesta')} />
 
-      {activa === 'plan' ? (
-        <Accion p={p} viva={viva} soloLectura={soloLectura} codigo={espacio?.codigo_invitacion ?? null} accion={accion} irAPestana={irAPestana} />
-      ) : accion && accion.clave !== 'calendario' ? (
-        <div className="barra-accion">
-          <button type="button" className={`btn ${accion.clave === 'confirmar' ? 'btn-turno' : 'btn-claro'} ir-confirmar`} onClick={() => irAPestana('plan')}>
-            {accion.clave === 'confirmar' ? 'Ir a confirmar' : 'Ir al plan'}
-          </button>
-        </div>
-      ) : null}
-    </div>
+        {s.acepte_version && vigente && !confirmado ? (
+          <p className="resultado-hecho sd-confirmado" role="note">
+            <Icono n="check" tam={16} /> Confirmado ✓
+          </p>
+        ) : razon && !s.acepte_version ? (
+          <p className="resultado-nota" role="note">
+            {razon}
+          </p>
+        ) : null}
+
+        {activa === 'plan' ? (
+          <Accion p={p} viva={viva} soloLectura={soloLectura} accion={accion} />
+        ) : turno ? (
+          <div className="barra-accion">
+            <button type="button" className="btn btn-turno ir-confirmar" onClick={() => irAPestana('plan')}>
+              Ir a confirmar
+            </button>
+          </div>
+        ) : null}
+      </section>
+    </>
   )
 }
 
-/** "Confirmaron 2 de 4 · faltan 2 para el mínimo" (o "5 (mínimo 4)"); mientras se juntan respuestas, lo que el servidor deja ver. */
-function Cifra({ p }: { p: EstadoPropuesta }) {
+/** Avatares y la cifra, por estado. Solo lo público: quién confirmó, cuántos (del servidor); nunca quién respondió qué. */
+function Quienes({ p, total: total_ }: { p: EstadoPropuesta; total: number | null }) {
   const o = p.opcion
-  const vigente = (p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado') && o
-  if (vigente) {
-    const c = o.cupos
-    const partes = [
-      c.faltan_para_minimo > 0 && p.estado === 'esperando_compromisos' ? `faltan ${c.faltan_para_minimo} para el mínimo` : null,
-      c.imprescindible_acepto ? null : `${p.imprescindible.nombre} (no puede faltar): pendiente`,
-      c.pendientes != null ? `Faltan por confirmar: ${c.pendientes}` : null,
-      c.reservado_imprescindible ? `cupo reservado para quien no puede faltar; libres para el resto: ${c.libres_para_otros}` : null,
-      p.estado === 'grupo_confirmado' && c.disponibles > 0 ? `${c.disponibles} ${c.disponibles === 1 ? 'cupo libre' : 'cupos libres'}` : null,
-    ].filter((x): x is string => x !== null)
-    return (
-      <p className="resultado-cuenta">
-        <strong className="num">Confirmaron {cuentaConfirmados(c.confirmados, c.minimo)}</strong>
-        {partes.length > 0 ? <span className="resultado-detalle"> · {partes.join(' · ')}</span> : null}
-      </p>
-    )
-  }
-  if (p.estado === 'borrador') return <p className="resultado-detalle">Nadie más puede responder cuándo puede hasta que la propuesta se abra.</p>
-  if (p.estado !== 'reuniendo_interes') return null
-  const s = p.mi_situacion
-  // E7.2: cuántos respondieron solo le llega a quien organiza; los demás ven lo propio.
-  if (p.personas_con_condiciones != null) {
-    return (
-      <p className="resultado-cuenta">
-        <strong className="num">Con condiciones: {p.personas_con_condiciones}</strong>
-        <span className="resultado-detalle"> · mínimo {p.minimo}</span>
-      </p>
-    )
-  }
-  if (s.retirado) return null
-  return (
-    <p className="resultado-detalle">
-      {s.condiciones === 'completas'
-        ? 'Respondiste. Cuando salga la opción, la ves acá.'
-        : s.condiciones === 'incompletas'
-          ? 'Te queda algún día sin marcar; con la respuesta completa entras en la búsqueda.'
-          : `Hacen falta al menos ${p.minimo} que puedan en el mismo horario, contando a ${p.imprescindible.nombre}.`}
-    </p>
+  const c = o?.cupos
+  const yo = p.mi_situacion.miembro_id
+  const fila = (personas: MiembroRef[], punteados: number, interrogacion = false) => (
+    <span className="resultado-avatares" aria-hidden="true">
+      {personas.map((m) => (
+        <Avatar key={m.miembro_id} nombre={m.nombre} simulado={m.simulado} yo={m.miembro_id === yo} tam={32} />
+      ))}
+      {Array.from({ length: Math.max(0, Math.min(punteados, 8)) }, (_, i) => (
+        <span key={`p${i}`} className="avatar avatar-punteado" />
+      ))}
+      {interrogacion ? <span className="avatar avatar-punteado avatar-interrogacion">?</span> : null}
+    </span>
   )
+  if (p.estado === 'esperando_compromisos' && o && c) {
+    const nombres = o.aceptaron.map((a) => a.miembro)
+    return (
+      <div className="resultado-quienes">
+        {fila(nombres, c.faltan_para_minimo)}
+        <p className="resultado-cuenta">
+          {c.confirmados > c.minimo ? `${c.confirmados} confirmaron (mínimo ${c.minimo})` : `${cuentaConfirmados(c.confirmados, c.minimo)} confirmaron`}
+          {c.faltan_para_minimo > 0 ? ` · faltan ${c.faltan_para_minimo}` : ''}
+        </p>
+        {nombres.length > 0 ? <p className="visualmente-oculto">Confirmaron: {lista(nombres.map((m) => m.nombre))}.</p> : null}
+      </div>
+    )
+  }
+  if (p.estado === 'grupo_confirmado' && o) {
+    const nombres = o.aceptaron.map((a) => a.miembro)
+    return (
+      <div className="resultado-quienes">
+        {fila(nombres, 0)}
+        <p className="resultado-cuenta">
+          Van {nombres.length}: {lista(nombres.map((m) => (m.miembro_id === yo ? 'tú' : m.nombre)))}
+        </p>
+      </div>
+    )
+  }
+  if (p.estado === 'en_revision' && o && c) {
+    const siguen = o.aceptaron.map((a) => a.miembro)
+    // Enmienda 14 (0050): "faltan N para el mínimo" solo si faltan; con el mínimo cumplido se deduciría quién se fue.
+    return (
+      <div className="resultado-quienes">
+        {fila(siguen, 0, p.bajas.length > 0)}
+        <p className="resultado-cuenta">
+          {siguen.length} {siguen.length === 1 ? 'sigue' : 'siguen'}
+          {c.faltan_para_minimo > 0 ? ` · faltan ${c.faltan_para_minimo} para el mínimo` : ''}
+        </p>
+      </div>
+    )
+  }
+  if (p.estado === 'reuniendo_interes' && p.personas_con_condiciones != null) {
+    // E7.2: el número solo le llega a quien organiza; los avatares son de conteo, sin nombre (nadie ve quién respondió).
+    const n = p.personas_con_condiciones
+    const total = Math.max(total_ ?? n, n)
+    return (
+      <div className="resultado-quienes">
+        <span className="resultado-avatares" aria-hidden="true">
+          {Array.from({ length: Math.min(n, 8) }, (_, i) => (
+            <span key={i} className="avatar avatar-lleno" />
+          ))}
+          {Array.from({ length: Math.max(0, Math.min(total - n, 8)) }, (_, i) => (
+            <span key={`f${i}`} className="avatar avatar-punteado" />
+          ))}
+        </span>
+        <p className="resultado-cuenta">
+          {n} de {total} respondieron
+        </p>
+      </div>
+    )
+  }
+  return null
 }
 
-/** Un solo aviso (hoy se apilaban dos o tres). Orden: lo personal, la invitación del agente, la revisión, sin opción. */
-function AvisoUnico({ p, viva, irARespuesta }: { p: EstadoPropuesta; viva: PropuestaViva; irARespuesta: () => void }) {
-  const personal = avisoParaMi(p)
-  const sinTi = personal?.clave === 'version_sin_ti'
-  // Marcado "así no puedo": lo dice la pieza de friccion en la hoja (con deshacer); no se repite arriba.
-  if (personal?.clave === 'marcaste_asi_no_puedo') return null
-  // "Esta versión no te incluye" con la disponibilidad completa diría un motivo que puede ser falso (la elegibilidad es una
-  // foto al publicar): texto cierto y sin motivo. Con el plazo vencido ya lo dice la línea de "por qué no confirmo".
-  if (sinTi && !p.plazo_vencido) {
-    if (p.mi_situacion.condiciones !== 'completas') return <AvisoParaMi p={p} servidorAhora={viva.servidorAhora} irARespuesta={irARespuesta} />
-    return (
-      <Aviso tono="info" titulo="Esta versión no te incluye">
-        Se armó sin ti. No tienes que hacer nada: si el plan se rearma, cuenta lo que marcaste.
-      </Aviso>
-    )
+/** La línea de debajo de la tira (mockup): cómo salió, qué falta o qué pasa ahora. */
+function Linea({ p }: { p: EstadoPropuesta }) {
+  const s = p.mi_situacion
+  const n = p.personas_con_condiciones
+  if (p.estado === 'borrador') return <p className="resultado-linea">Nadie más puede responder cuándo puede hasta que la propuesta se abra.</p>
+  if (p.estado === 'reuniendo_interes') {
+    if (s.puede.guardar_condiciones && s.condiciones !== 'completas') return <p className="resultado-linea">Te toca decir cuándo puedes. Es privado.</p>
+    if (s.puede.evaluar && p.siguiente_accion.codigo === 'buscar_opcion' && n != null) {
+      return <p className="resultado-linea">Con {n} respuestas ya se puede buscar una opción. Quien no respondió no entra en esta versión.</p>
+    }
+    if (s.puede.evaluar) return <p className="resultado-linea">{textoComoSalio(p)}</p>
+    return <p className="resultado-linea">{s.retirado ? p.siguiente_accion.texto : 'Respondiste. Te avisamos cuando haya plan.'}</p>
   }
-  if (personal && !sinTi) return <AvisoParaMi p={p} servidorAhora={viva.servidorAhora} irARespuesta={irARespuesta} />
-  if (p.mi_situacion.invitacion_agente) return <InvitacionAgente situacion={p.mi_situacion} onResponder={irARespuesta} />
   if (p.estado === 'en_revision') {
     return (
-      <Aviso tono="aviso" titulo="Una baja dejó el plan sin cumplir">
-        {/* Enmienda 14, 0050: texto neutro; nombrar la causa junto a los conteos dejaba deducir quién se fue. */}
-        Hasta que salga una alternativa y se reúnan de nuevo las confirmaciones, nadie queda comprometido.
-      </Aviso>
+      <p className="resultado-linea">
+        Nadie ve quién se retiró. Si hay otra fecha que sirva, sale una versión nueva y todos vuelven a confirmar: nada se hereda.
+        {s.puede.proponer_reparacion ? '' : ' Quien organiza busca alternativa.'}
+      </p>
     )
+  }
+  if (p.estado === 'esperando_compromisos' && p.opcion) {
+    const reparada = p.ultima_evaluacion?.resultado === 'reparacion_publicada' && p.ultima_evaluacion.version === p.opcion.version
+    return (
+      <>
+        <p className="resultado-linea">{textoComoSalio(p)}</p>
+        {/* Enmienda 15 (E-c): la ronda la decide el servidor (`abierta` no se recalcula con el reloj del teléfono). */}
+        {p.ronda ? (
+          <p className="resultado-nota">
+            {p.ronda.abierta
+              ? `Opiniones hasta ${fechaCorta(p.ronda.cierra.local)}, ${hora(p.ronda.cierra.local)}. Mientras tanto no se rearma; confirmar sigue abierto.`
+              : `La ronda de opiniones cerró ${fechaCorta(p.ronda.cierra.local)}, ${hora(p.ronda.cierra.local)}.`}
+          </p>
+        ) : null}
+        {reparada && p.opcion.aceptaron.length === 0 ? (
+          <p className="resultado-linea">
+            El plan cambió: versión {p.opcion.version - 1} → versión {p.opcion.version}. Nadie confirmó todavía: las confirmaciones anteriores no pasan a esta versión.
+          </p>
+        ) : null}
+      </>
+    )
+  }
+  return null
+}
+
+/** Un solo aviso, solo para los casos que el mockup no dibuja (te retiraste, sin ti, hoy conviene recordar, sin opción). */
+function AvisoUnico({ p, viva, irARespuesta }: { p: EstadoPropuesta; viva: PropuestaViva; irARespuesta: () => void }) {
+  const personal = avisoParaMi(p)
+  // Lo que el bloque ya dice no se repite: "solo vale si llegan" (la nota del botón), "así no puedo" (fila de la hoja),
+  // "cambió el plan" (la línea de revisión) y "se armó la juntada" (¡se juntan!).
+  const yaDicho = new Set(['solo_vale_si_llegan', 'marcaste_asi_no_puedo', 'cambio_el_plan', 'gracias_por_moverlo'])
+  if (personal && !yaDicho.has(personal.clave)) {
+    // "Esta versión no te incluye" con la disponibilidad completa: texto cierto y sin motivo (la elegibilidad es una foto al publicar).
+    if (personal.clave === 'version_sin_ti') {
+      if (p.plazo_vencido) return null
+      if (p.mi_situacion.condiciones === 'completas') {
+        return (
+          <Aviso tono="info" titulo="Esta versión no te incluye">
+            Se armó sin ti. No tienes que hacer nada: si el plan se rearma, cuenta lo que marcaste.
+          </Aviso>
+        )
+      }
+    }
+    return <AvisoParaMi p={p} servidorAhora={viva.servidorAhora} irARespuesta={irARespuesta} />
   }
   if (p.estado === 'reuniendo_interes' && p.ultima_evaluacion?.resultado === 'sin_opcion') {
     return (
@@ -264,52 +307,27 @@ function AvisoUnico({ p, viva, irARespuesta }: { p: EstadoPropuesta; viva: Propu
   return null
 }
 
-/** La acción primaria (una), en la barra fija de abajo. Solo la que el servidor habilita. */
-function Accion({
-  p,
-  viva,
-  soloLectura,
-  codigo,
-  accion,
-  irAPestana,
-}: {
-  p: EstadoPropuesta
-  viva: PropuestaViva
-  soloLectura: boolean
-  codigo: string | null
-  accion: ReturnType<typeof accionPrimaria>
-  irAPestana: (t: Pestana) => void
-}) {
-  const o = p.opcion
+/** El único primario, con su nota (mockup). En la barra fija de abajo. */
+function Accion({ p, viva, soloLectura, accion }: { p: EstadoPropuesta; viva: PropuestaViva; soloLectura: boolean; accion: ReturnType<typeof accionPrimaria> }) {
   const { ocupado, error, correr } = useMutacion(viva)
-  const [nota, setNota] = useState<string | null>(null)
+  const [confirmo, setConfirmo] = useState(false)
 
   async function aceptar(version: number) {
     // Siempre se envía la versión que la persona está viendo, nunca una calculada.
     const r = await correr(`aceptar:${p.id}:${version}`, (intento) => api.acceptVersion(p.id, version, intento))
-    if (r?.ok) vibrar([14, 50, 22])
+    if (r?.ok) {
+      vibrar([14, 50, 22])
+      setConfirmo(true)
+    }
   }
   const evaluar = () => correr(`evaluar:${p.id}:${p.state_rev}`, (intento) => api.evaluateAndPublish(p.id, intento))
   const reparar = () => correr(`reparar:${p.id}:${p.state_rev}`, (intento) => api.proposeRepair(p.id, intento))
   const abrir = () => correr(`abrir:${p.id}`, () => api.openProposal(p.id))
-  function agendar() {
-    if (!o) return
-    const quienes = o.aceptaron.map((a) => a.miembro.nombre).join(', ')
-    const ok = descargarCalendario({
-      id: `${p.id}-v${o.version}`,
-      titulo: p.titulo,
-      inicioUtc: o.franja.inicio.utc,
-      finUtc: o.franja.fin.utc,
-      descripcion: `Plan confirmado en CRUXE (versión ${o.version}). Van: ${quienes}.`,
-    })
-    setNota(ok ? 'Listo: se descargó el evento para tu calendario.' : 'No se pudo armar el evento en este navegador.')
-  }
-
-  const sinAlternativa = p.estado === 'en_revision' && (p.ultima_evaluacion?.resultado === 'sin_alternativa' || error?.codigo === 'sin_alternativa')
   const reintentar = Boolean(error?.reintentable)
+  const sinAlternativa = p.estado === 'en_revision' && (p.ultima_evaluacion?.resultado === 'sin_alternativa' || error?.codigo === 'sin_alternativa')
 
   let boton = null
-  let pie: string | null = null
+  let nota: string | null = null
   switch (accion?.clave) {
     case 'confirmar':
       boton = (
@@ -317,50 +335,43 @@ function Accion({
           {reintentar ? `Reintentar confirmación de la versión ${accion.version}` : accion.texto}
         </Boton>
       )
-      pie = ocupado ? 'Enviando tu confirmación. Todavía no está confirmada hasta que el servidor responda.' : 'Tu confirmación vale solo para esta versión.'
+      nota = ocupado ? 'Enviando tu confirmación. Todavía no está confirmada hasta que el servidor responda.' : 'Tu confirmación vale solo para esta versión.'
       break
     case 'responder':
       boton = (
-        <a className="btn btn-claro" href={rutas.responder(p.espacio_id, p.id)}>
+        <a className="btn btn-primario" href={rutas.responder(p.espacio_id, p.id)}>
           {accion.texto}
         </a>
       )
       break
     case 'buscar_opcion':
       boton = (
-        <Boton variante={accion.secundaria ? 'secundario' : 'claro'} onClick={() => void evaluar()} ocupado={ocupado} ocupadoTexto="Buscando…" disabled={soloLectura}>
+        <Boton variante={accion.secundaria ? 'secundario' : 'primario'} onClick={() => void evaluar()} ocupado={ocupado} ocupadoTexto="Buscando…" disabled={soloLectura}>
           {reintentar ? 'Reintentar búsqueda' : accion.texto}
         </Boton>
       )
-      pie = accion.secundaria ? 'Quien todavía no respondió no entra en la versión que se publique.' : null
+      nota = 'Lo decide el servidor con lo que cada uno marcó en privado.'
       break
     case 'buscar_alternativa':
       boton = (
-        <Boton variante="claro" onClick={() => void reparar()} ocupado={ocupado} ocupadoTexto="Buscando alternativa…" disabled={soloLectura}>
+        <Boton onClick={() => void reparar()} ocupado={ocupado} ocupadoTexto="Buscando alternativa…" disabled={soloLectura}>
           {reintentar ? 'Reintentar búsqueda de alternativa' : sinAlternativa ? 'Volver a buscar alternativa' : accion.texto}
         </Boton>
       )
-      pie = 'La nueva versión empieza con cero aceptaciones.'
+      nota = 'Si no hay alternativa: «Sin opción compatible», sin bajar el mínimo.'
       break
     case 'abrir':
       boton = (
-        <Boton variante="claro" onClick={() => void abrir()} ocupado={ocupado} ocupadoTexto="Abriendo…" disabled={soloLectura}>
+        <Boton onClick={() => void abrir()} ocupado={ocupado} ocupadoTexto="Abriendo…" disabled={soloLectura}>
           {accion.texto}
         </Boton>
-      )
-      break
-    case 'calendario':
-      boton = (
-        <button type="button" className="btn btn-claro" onClick={agendar} aria-label="Agregar al calendario">
-          <Icono n="agendar" tam={18} /> {accion.texto}
-        </button>
       )
       break
     case 'rearmar':
       // Enmienda 13 (b): la pieza decide con los totales del servidor y maneja sus propios estados (sin alternativa, tope).
       return (
         <div className="resultado-rearmar">
-          <RearmarConLoNuevo p={p} viva={viva} codigo={codigo} soloLectura={soloLectura} compacto />
+          <RearmarConLoNuevo p={p} viva={viva} soloLectura={soloLectura} compacto />
         </div>
       )
     default:
@@ -371,34 +382,18 @@ function Accion({
     <>
       {sinAlternativa ? (
         <Aviso tono="aviso" titulo="Sin opción compatible">
-          Con las respuestas actuales no hay alternativa. No se baja el mínimo ni se finge una reparación: si alguien actualiza cuándo puede, se vuelve a buscar.
+          Con las respuestas actuales no hay alternativa. No se baja el mínimo ni se finge una reparación.
         </Aviso>
       ) : null}
-      {p.estado === 'en_revision' && !p.mi_situacion.puede.proponer_reparacion && !p.mi_situacion.retirado ? (
-        <p className="resultado-detalle">
-          El organizador ({p.organizador.nombre}) debe buscar una alternativa.
-          {p.mi_situacion.puede.guardar_condiciones ? ' Mientras tanto puedes actualizar cuándo puedes en «Mi respuesta».' : ''}
-        </p>
-      ) : null}
       {boton ? (
-        <div className="barra-accion">
+        <div className={`barra-accion ${confirmo ? 'sd-confirmado' : ''}`}>
           {boton}
-          {accion?.clave === 'responder' ? (
-            <button type="button" className="btn btn-secundario" onClick={() => irAPestana('respuesta')}>
-              Ir a Mi respuesta
-            </button>
-          ) : null}
-          {pie ? (
-            <p className="resultado-detalle" role={ocupado ? 'status' : undefined}>
-              {pie}
+          {nota ? (
+            <p className="resultado-nota" role={ocupado ? 'status' : undefined}>
+              {nota}
             </p>
           ) : null}
         </div>
-      ) : null}
-      {nota ? (
-        <p role="status" className="resultado-detalle">
-          {nota}
-        </p>
       ) : null}
       {/* Si el servidor ya muestra la confirmación hecha, la duda de "pudo haberse registrado o no" quedó resuelta (E-1). */}
       {error && error.codigo !== 'sin_alternativa' && !(error.resultadoIncierto && p.mi_situacion.acepte_version) ? <ErrorCaja error={error} enfocar /> : null}
