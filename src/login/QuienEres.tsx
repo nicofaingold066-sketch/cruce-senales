@@ -17,6 +17,7 @@ import { Icono } from '../components/Icono'
 import { marcarConEspacios } from './estado'
 import { QueGuarda } from '../friccion/QueGuarda'
 import { FRASE_QUIEN_VIENE, quienVieneDe, sinQuienViene } from '../lib/compartir'
+import { fraseProposito } from '../friccion/propositos'
 import { destinoDesdeVista, destinoPorCodigo } from '../friccion/porCodigo'
 import './login.css'
 
@@ -28,7 +29,8 @@ export interface MiembroPorReclamar {
 }
 
 export interface VistaPorCodigo {
-  espacio: { nombre: string; demo: boolean }
+  /** `proposito` (enmienda 14): la clave que eligió quien creó el grupo; falta en respuestas anteriores a la enmienda. */
+  espacio: { nombre: string; demo: boolean; proposito?: string }
   miembros: MiembroPorReclamar[]
 }
 
@@ -251,6 +253,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
         {/* El nombre del espacio va fuera de los títulos: los guiones esperan el título del espacio para saber que ya se entró. */}
         {vista ? <p className="quien-espacio">en «{nombreEspacio}»</p> : null}
         {reglaEspacio ? <p className="quien-espacio quien-regla">{FRASE_QUIEN_VIENE[reglaEspacio]}</p> : null}
+        {vista && fraseProposito(vista.espacio.proposito) ? <p className="quien-espacio quien-regla">Este grupo es {fraseProposito(vista.espacio.proposito)}.</p> : null}
         <p className="escena-sub">
           {codigoMalo
             ? 'Revisa que el enlace esté completo o pide uno nuevo a quien organiza. También puedes escribir el código abajo.'
