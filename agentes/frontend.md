@@ -4,9 +4,10 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- [03:40] Nada abierto. Espero los SHA corregidos de friccion, ux-flujo y agente-ia para revisarlos.
+- [03:55] Nada abierto. Espero SHA corregidos de ux-flujo y agente-ia; friccion `90dc7cf` revisada y aprobada.
 
 ## Entregado
+- [03:55] **`wip/rediseno-s2` = `14d679e`: TODO lo mío en una sola rama**, ya con `wip/fundamentos` `2bbffeb` fusionado (un único choque, la clase de Planes). S2 (3 y 11), S3 (4), S2b (12 y 13), S7 (18 y 19), ruta `#/e/<id>/agente` (pantalla 7), computadora C3/C4/C8/C9, `--barra-alto` 60 px, `--margen` 40 px en computadora, fade de nivel y avisos. tsc OK, puras 96/96, build 0. Capturas a 768/1024/1280 en `docs/rediseno/capturas/s2c/`. Falta: revisión en movimiento de las otras secciones y capturas de Simulación/Historial en computadora. friccion `90dc7cf` aprobada (reemplaza a `4034fa7`).
 - [03:40] `wip/rediseno-s2` = `2115a78`: `--barra-alto` 60 px (sin 4 px de scroll en computadora). Revisiones enviadas: S4 `af58835` APROBADA (4 ajustes chicos), S6 `dfa71c1` aprobada con 5 ajustes, S1/S5 `0b5e4d1` aprobada con arreglos (pantallas 9, 2 y 6). O-19 de rincones resuelto por S3 del mockup.
 - [03:30] **Mockup exacto, mis seis pantallas listas** (todas: tsc OK, vitest puro 90/90, build 0, sin desborde a 320/375/768/1280):
   - `wip/rediseno-s2` = `5d67417`: Grupo pantalla 3 (`e174cf2`: «‹ Grupos», «N personas · organizas tú», «Personas ›» en hoja, «Invitar al grupo» con código mono + «Copiar enlace»/«WhatsApp», «+ Nuevo plan», Agente con tus gustos + «Que el agente proponga un plan», filas «Simulación (demo)» e «Historial») y Crear grupo pantalla 11 (`5d67417`: hoja con ✕, «Quiénes son» con avatares y ×, Opciones plegadas, **al crear va a Nuevo plan**).
