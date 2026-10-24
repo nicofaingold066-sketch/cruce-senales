@@ -189,6 +189,13 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
     void cargar()
   }, [cargar])
 
+  // El permiso de invitaciones lo guarda su propio componente (E11). Al volver al resumen o plegar "Permisos" se
+  // relee del servidor para no mostrar un valor viejo; si no responde, queda "sin dato".
+  const refrescarRecibir = useCallback(async () => {
+    const r = await agenteApi.getMyPreferences(espacioId)
+    setRecibirInicial(r.ok ? r.data.recibir_invitaciones_agente : null)
+  }, [espacioId])
+
   if (cargando) return <Cargando texto={reintentando ? AVISO_REINTENTO : 'Cargando tus preferencias…'} />
   if (errorCarga) return <ErrorCaja error={errorCarga} onReintentar={() => void cargar()} />
 
@@ -234,6 +241,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
       if (r.data.usar_en_agente === usar) {
         setGuardado(borrador)
         setEditando(false)
+        void refrescarRecibir()
       }
     }
   }
@@ -244,6 +252,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
     setIntentoSinActividad(false)
     setAviso(null)
     setEditando(false)
+    void refrescarRecibir()
   }
 
   const textoDe = <T extends string>(lista: { v: T | SinRespuesta; texto: string }[], v: string | undefined) =>
@@ -330,7 +339,17 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
         <Opciones nombre="pref-tiempo" titulo="Hasta cuánto viajas" opciones={TIEMPO} valor={borrador.tiempo_max ?? ''} onCambio={(v) => ponerOpcional('tiempo_max', v)} deshabilitado={soloLectura || ocupado} />
         <Opciones nombre="pref-momento" titulo="Momento del día" opciones={MOMENTO} valor={borrador.momento ?? ''} onCambio={(v) => ponerOpcional('momento', v)} deshabilitado={soloLectura || ocupado} />
       </Plegable>
-      <Plegable id="pref-sec-permisos" titulo="Permisos" resumen={resumenPermisos} abierto={verPermisos} onCambio={setVerPermisos}>
+      <Plegable
+        id="pref-sec-permisos"
+        titulo="Permisos"
+        resumen={resumenPermisos}
+        abierto={verPermisos}
+        mantener
+        onCambio={(v) => {
+          setVerPermisos(v)
+          if (!v) void refrescarRecibir()
+        }}
+      >
       <label htmlFor="pref-usar" className="agente-casilla">
         <input
           id="pref-usar"
@@ -353,7 +372,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
         {usarConfirmado !== null && usar !== usarConfirmado ? ' Cambio sin guardar: el permiso anterior sigue vigente.' : ''}
       </p>
       {/* E11 (integracion-codex-juan): el consentimiento de invitaciones, junto al otro permiso. */}
-      <ConsentimientoInvitaciones espacioId={espacioId} inicial={recibirInicial} soloLectura={soloLectura} />
+      <ConsentimientoInvitaciones key={String(recibirInicial)} espacioId={espacioId} inicial={recibirInicial} soloLectura={soloLectura} />
       </Plegable>
       <div ref={refError}>{error ? <ErrorCaja error={error} onReintentar={() => void guardar()} /> : null}</div>
       {ocupado && reintentando ? <Aviso tono="aviso">{AVISO_REINTENTO}</Aviso> : null}
@@ -375,12 +394,16 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   )
 }
 
-/** Sección que se abre a pedido. Plegada no se dibuja: nada oculto que tocar ni que leer en voz alta. */
+/**
+ * Sección que se abre a pedido. Plegada no se dibuja: nada oculto que tocar ni que leer en voz alta.
+ * Con `mantener`, plegada queda montada pero oculta, para no perder el estado de un componente con su propio guardado.
+ */
 function Plegable({
   id,
   titulo,
   resumen,
   abierto,
+  mantener,
   onCambio,
   children,
 }: {
@@ -388,6 +411,7 @@ function Plegable({
   titulo: string
   resumen: string
   abierto: boolean
+  mantener?: boolean
   onCambio: (v: boolean) => void
   children: ReactNode
 }) {
@@ -398,8 +422,8 @@ function Plegable({
         {!abierto ? <span className="agente-plegable-resumen">{resumen}</span> : null}
         <span aria-hidden="true" className="agente-plegable-flecha">{abierto ? '▴' : '▾'}</span>
       </button>
-      {abierto ? (
-        <div id={id} className="agente-plegable-cuerpo">
+      {abierto || mantener ? (
+        <div id={id} className="agente-plegable-cuerpo" hidden={!abierto}>
           {children}
         </div>
       ) : null}
