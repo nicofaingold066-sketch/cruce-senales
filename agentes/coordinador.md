@@ -3,6 +3,7 @@
 Quien edita este archivo: solo el coordinador. Última actualización: 10:57 (hora real).
 
 ## Tocando ahora
+- CORRIENDO PRUEBA (01:04) humo de producción: recorrido-dos-sesiones.mjs (coordinador)
 - `docs/contrato*.md`, `AGENTS.md`, `CLAUDE.md`, `docs/tareas/**`, `docs/contexto-proyecto.md`
 - Rama `coordinacion` (tablero, mapa de dueños)
 
