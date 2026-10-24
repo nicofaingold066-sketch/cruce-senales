@@ -106,4 +106,4 @@ Efectos a revisar antes de aplicar (backend):
 - Dos filas con la misma `actividad` y puntaje parecido: se desempata por precio y luego por `orden`, así que el quincho (orden 1) gana al parque (orden 14) salvo que la zona o el viaje (enmienda 10) cambien el puntaje. Para que la forma neutra gane cuando el viaje a la casa es largo, basta la regla de equidad de viaje; no hace falta tocar nada más.
 - `perfil_grupo.gustos` agrupa por actividad: no cuenta dos veces el asado.
 - Las candidatas son hasta 3: con dos de asado puede quedar solo un lugar para otra actividad; es un costo real de la fila.
-- No cambia el caso canónico ni «Los del asado».
+- No cambia el caso canónico ni «Los del finde».

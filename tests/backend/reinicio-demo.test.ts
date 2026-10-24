@@ -1,5 +1,5 @@
 // Pruebas críticas: seed idempotente, reclamo de asiento simulado y reinicio de demo aislado.
-// Nota: seed_demo_space crea por contrato un espacio demo "Los del asado" PROPIO de cada sesión de prueba
+// Nota: seed_demo_space crea por contrato un espacio demo "Los del finde" (antes "Los del asado", 0054) PROPIO de cada sesión de prueba
 // (sesiones anónimas nuevas); nunca toca el espacio demo de los dispositivos reales de la demo.
 import { beforeAll, describe, expect, it } from 'vitest'
 import { crearEspacioPrueba, crearPropuesta, err, intento, nuevaSesion, ok, rpc, type Json, type Sesion } from './helpers'
@@ -22,7 +22,7 @@ describe('seed y reinicio de demo', { timeout: 60_000 }, () => {
     expect(b.resultado).toMatchObject({ creado: false, repetido: true, espacio_id: a.resultado.espacio_id })
     esp1 = b.espacio
     expect(esp1.demo).toBe(true)
-    expect(esp1.nombre).toBe('Los del asado')
+    expect(esp1.nombre).toMatch(/^Los del (asado|finde)$/) // 0054: "Los del finde"
     expect(esp1.mi_rol).toBe('organizador')
     expect(esp1.codigo_invitacion).toMatch(/^[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{8}$/)
     expect(esp1.miembros.map((m: Json) => [m.nombre, m.simulado])).toEqual([

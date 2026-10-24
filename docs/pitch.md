@@ -39,7 +39,7 @@ Hay dos versiones. Se elige según "Estado verificado para el pitch".
 - **Reducida:** si la baja y la reparación (pasos 6 y 7) no están verificadas, se muestran los pasos 1 a 4 en vivo y se cierra con "lo siguiente es que, si alguien se baja, el plan se repara solo". Si un paso del 1 al 4 no está verificado, se reemplaza por la grabación de respaldo y se dice que es una grabación.
 
 **Versión completa:**
-1. **1:10** · Reiniciar la demo. Mostrar el espacio "Los del asado".
+1. **1:10** · Reiniciar la demo. Mostrar el espacio "Los del finde".
 2. **1:20** · Tomi crea la propuesta con dos franjas, sábado y domingo. Mostrar que "me interesa" no suma confirmados.
 3. **1:40** · Cada uno carga sus condiciones en privado. Mostrar en el teléfono de Luna que no ve las de Tomi.
 4. **2:00** · El motor elige el sábado con Tomi, Luna, Mati y Caro. Aceptan: **Grupo confirmado** en los dos teléfonos.

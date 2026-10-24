@@ -48,7 +48,7 @@ Lista permitida: 31 para `authenticated`, 0 para `anon`; `join_space` tiene una 
 **`preview_space_by_code(p_codigo text)`** (cualquier sesión, sin ser miembro; no inscribe; sin bloqueos):
 ```json
 { "ok": true, "contrato": 2, "servidor_ahora": {...},
-  "espacio": { "nombre": "Los del asado", "demo": true },
+  "espacio": { "nombre": "Los del finde", "demo": true },
   "miembros": [ { "miembro_id": "uuid", "nombre": "Luna", "libre": true }, ... ] }
 ```
 - `miembros` viene en el orden del espacio (el mismo que `get_space`), con TODOS los integrantes, también los que no están libres. Esas tres son las únicas claves de cada uno.

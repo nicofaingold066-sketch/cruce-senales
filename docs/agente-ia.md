@@ -50,7 +50,7 @@ Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y
 
 ## 4. Cómo verificarlo
 **En la app** (https://cruce-senales.vercel.app; evidencia en la sección 8):
-1. "Probar la demo «Los del asado»" → abrir "Agente del círculo (opcional)".
+1. "Probar la demo «Los del finde»" → abrir "Agente del círculo (opcional)".
 2. Cargar las preferencias de Tomi y guardar: "Guardado. Nadie más ve tus preferencias."
 3. Elegir "Simular sol" → "Que el agente proponga": aparecen 3 opciones (asado, fútbol y parque), el asado como "Recomendada" y el perfil del grupo sin actividades de una sola persona.
 4. Elegir "Simular lluvia": queda solo el asado, porque alguien pidió techo.
@@ -91,7 +91,7 @@ Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y
 - **Corte duro:** sábado 10:00. Si algo del agente no está estable, sale de la demo y se cuenta como siguiente paso.
 
 ## 8. Evidencia en producción
-**Viernes 23 oct 2026, de 14:09 a 14:11 (hora del reloj, Santiago).** App publicada en https://cruce-senales.vercel.app: `main` `614b2c8`, publicado a las 14:06 según el coordinador. Función `agente` v5, desplegada desde `487d2fc`. Navegador del panel de la app con la vista de teléfono de 375 × 812, que emula un teléfono pero no es uno físico. Sin clave de Anthropic. Datos ficticios del espacio demo "Los del asado".
+**Viernes 23 oct 2026, de 14:09 a 14:11 (hora del reloj, Santiago).** App publicada en https://cruce-senales.vercel.app: `main` `614b2c8`, publicado a las 14:06 según el coordinador. Función `agente` v5, desplegada desde `487d2fc`. Navegador del panel de la app con la vista de teléfono de 375 × 812, que emula un teléfono pero no es uno físico. Sin clave de Anthropic. Datos ficticios del espacio demo "Los del finde".
 
 | Paso | Observado |
 |---|---|

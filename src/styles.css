@@ -5441,7 +5441,7 @@ fieldset:disabled .opcion-radio {
   flex: none;
 }
 
-/* En el teléfono el nombre del grupo ya está en el enlace "< Los del asado"; en la barra solo sobraba, cortado */
+/* En el teléfono el nombre del grupo ya está en el enlace "< Los del finde"; en la barra solo sobraba, cortado */
 @media (max-width: 719px) {
   .barra-espacio {
     display: none;
