@@ -1,7 +1,7 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: viernes 23 oct, 21:38 (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: viernes 23 oct, 21:28 (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
 Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 16**, de los cuales **2 ya APROBADOS** en `main` 3ace04e (O-06 y O-08, corrida 4 `f0` 20:55) y 3 por confirmar en la misma corrida (O-02, O-12b, O-13) (ninguno impide completar el recorrido canónico), el resto APROBADO.
@@ -209,7 +209,7 @@ Autoprueba del módulo: `node tests/rincones/prueba-a11y/correr.mjs` (página lo
 | R245 | Plegable "¿Qué guarda CRUXE de mí?" en "¿Quién eres?" y "¿Cuándo puedes?" (`wip/friccion` 366b7af, todavía no en `main`) | — | pendiente |
 | R246 | Calendario `.ics` con dos recordatorios (víspera y 2 h antes) y líneas plegadas a 75 octetos (`compartir.ts`): abrirlo en un calendario real | — | pendiente (solo se puede mirar el archivo) |
 
-### Piezas de ux-flujo, galería sin red ni base (`galeria-ux.mjs` sobre `wip/ux` 3013850, 21:35; build propio en 4199)
+### Piezas de ux-flujo, galería sin red ni base (`galeria-ux.mjs` sobre `wip/ux` 3013850, 21:27; build propio en 4199)
 26 casos de `AvisoParaMi`, `RecordarFaltan` (4 motivos), `RearmarConLoNuevo` (con tope y errores), `AyudaRetiro` (4 momentos) y `BuscarLugar`, en 320 y 375 px, con auditoría visual y de accesibilidad. Texto completo de cada caso y de cada enlace en `galeria-texto.md` de la carpeta de capturas.
 | Id | Rincón | Rev. | Estado |
 |---|---|---|---|
