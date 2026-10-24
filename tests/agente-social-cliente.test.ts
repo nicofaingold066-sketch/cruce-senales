@@ -109,6 +109,13 @@ describe('flujo E11 humano: contrato con transporte simulado, sin red', () => {
     mock.invoke.mockResolvedValue(envuelto(x))
     expect(await socialApi.preparar(solicitud())).toMatchObject({ ok: true, data: { aprobacionHash: borrador().hash } })
   })
+  it('necesita_aprobacion ofrece el borrador, nunca aprobación implícita', async () => {
+    const x = recibo()
+    x.resultado_social.estado = 'necesita_aprobacion'
+    mock.invoke.mockResolvedValue(envuelto(x))
+    expect(await socialApi.preparar(solicitud())).toMatchObject({ ok: true, data: { estado: 'borrador', aprobacionHash: null } })
+    expect(mock.rpc).not.toHaveBeenCalled()
+  })
   it('recibo ajeno es explícitamente no propio', async () => {
     const x = recibo()
     x.resultado_social.propia = false

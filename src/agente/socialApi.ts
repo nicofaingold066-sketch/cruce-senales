@@ -105,7 +105,7 @@ function borradorDe(x: unknown): BorradorSocialCliente | null {
 function reciboDe(x: Record<string, unknown>, solicitud: SolicitudSocial): ApiResult<ReciboSocial> {
   const r = x.resultado_social
   if (!objeto(r)) return falloSocial('recibo_invalido', true)
-  if (r.estado === 'error' || r.estado === 'necesita_aprobacion') {
+  if (r.estado === 'error') {
     const fallo = rechazo(r.error)
     return r.resultado_incierto === true ? falloSocial('recibo_pendiente', true) : fallo
   }
@@ -120,7 +120,7 @@ function reciboDe(x: Record<string, unknown>, solicitud: SolicitudSocial): ApiRe
   if (r.estado === 'publicada' && e.estado === 'publicada' && objeto(r.propuesta) && uuid(r.propuesta.id) && e.propuesta_id === r.propuesta.id) {
     return { ok: true, data: { ...base, estado: 'publicada', ejecucionId: e.id, propia: r.propia, borrador, aprobacionHash: null, propuestaId: r.propuesta.id, texto: textoGuardado } }
   }
-  if (r.estado !== 'borrador' || e.estado !== 'borrador' || !borrador || e.propuesta_id !== null) return falloSocial('borrador_invalido', true)
+  if (!['borrador', 'necesita_aprobacion'].includes(String(r.estado)) || e.estado !== 'borrador' || !borrador || e.propuesta_id !== null) return falloSocial('borrador_invalido', true)
   let aprobacionHash: string | null = null
   if (e.aprobacion !== null) {
     if (!objeto(e.aprobacion) || e.aprobacion.hash !== borrador.hash || !objeto(e.aprobacion.aprobado_en) || !fecha(e.aprobacion.aprobado_en.utc) || !fecha(e.aprobacion.aprobado_en.local)) return falloSocial('aprobacion_invalida', true)
