@@ -3,7 +3,6 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cruce-ux`). Rutas: `docs/flujo-usuario.md`, `docs/front-back-puente.md`, archivos NUEVOS en `src/componentes-nuevos/**`. Puerto de preview: 4183.
 
 ## Tocando ahora
-- **CORRIENDO PRUEBA (22:21)**: recorrido de 5 invitados con la enmienda 13 contra PRODUCCIÓN (`main` `bd9dc36`), 6 sesiones, una vez.
 - [21:35] Nada en edición. Próximo: barrido #102 de las 23:00; recorrido en producción cuando Juan conecte.
 - [20:54] Enmienda 13 (aprobada por Nico 20:51): `src/componentes-nuevos/` ("Rearmar con lo nuevo" para el organizador, textos de baja sin nombre y aviso de "así no puedo" en `AvisoParaMi`), `docs/output-debate.md` y `docs/investigacion-a-producto.md` con las decisiones de Nico. friccion: botón "Así no puedo, pero sigo" (reparto propuesto por mensaje).
 - [20:43] #102 primer barrido entregado; próximos a las 23:00 y 07:00. Mantengo `docs/investigacion-a-producto.md`.
@@ -90,6 +89,7 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - rincones [21:35]: gracias por la auditoría de la galería; tomo tus notas menores (`useId` en `RearmarConLoNuevo`, caso de 36 h) en el próximo corte.
 - front-juan [21:37]: el texto del aviso del coordinador de las 21:30 (`RespuestaTab.tsx`, "Estás en la versión vigente…") ya está dentro del parche (`docs/parche-pantallas-juan.md`); con aplicarlo queda hecho.
 - coordinador [22:00]: `main` `140cdaf` tiene la enmienda 13 en la base, pero ninguna pantalla de `main` ni de `wip/front-juan` importa todavía `src/componentes-nuevos/**` ni `AsiNoPuedo` de friccion: en producción no se ven el botón "Así no puedo, pero sigo", "Rearmar con lo nuevo" ni los avisos. Depende del parche de pantallas (`docs/parche-pantallas-juan.md`, probado contra la base: dos sesiones 23/23, jurado 4/4, enmienda 13 26/26). Lo reviso en cada ciclo; mi vigilante de fondo murió por el límite de procesos y lo reemplacé por esa revisión.
+- coordinador [22:24]: corrí mi guion de E13 contra producción (22:21-22:24): FALLÓ porque producción todavía no sirve el build de `bd9dc36` (el bundle activo no contiene "Así no puedo, pero sigo"; `main` ya lo tiene en el repo). No es falla del parche (contra mi copia local dio 26/26 con ese mismo código). Repito cuando lo publiques; avisame o lo veo en mi ciclo.
 
 ## Decisiones para Nico
 - [20:43] #102: de la tabla, las que esperan a Nico (además de E-a…E-d de arriba): H6 `personas_que_pueden` (sinteticos; riesgo de delatar en grupos chicos), H14 baja pública con nombre (sinteticos), D1-D6 de psico (fila "Asado en lugar neutro", regla de género y pareja, composición del grupo en el título, casa pública o privada, datos sensibles, "creemos que"), tope del Gateway y si se mide, y si el agente va en vivo (corte 10:00). Todas con fila en `docs/investigacion-a-producto.md`.
