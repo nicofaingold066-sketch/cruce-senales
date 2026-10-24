@@ -1,6 +1,7 @@
 // Fase 8: agente del círculo en un grupo real: preferencias de Ana y del organizador, UNA llamada a "Que el agente proponga"
 // (sin clima simulado: no es demo), "Usar esta opción". Sin clave del modelo o con ella: se anota qué fuente respondió.
 import { abrir, actor, BASE, rincon, nota, guardar, boton, esperarTexto, errores, CARPETA } from './lib.mjs'
+import { rinconA11y, guardarA11y } from './a11y.mjs'
 import { leer, guardarSesion, rutaSesion } from './estado.mjs'
 const g = leer()
 const b = await abrir()
@@ -30,4 +31,21 @@ await corto('R155', o, async () => {
   const usar = o.getByRole('button', { name: 'Usar esta opción' })
   if (await usar.count()) { await usar.click(); await o.waitForURL(/\/nueva/, { timeout: 15000 }); await T(o, 2500); await rincon(o, 'R155', 'Nueva propuesta precargada desde el agente'); nota('R155', await txt(o)) }
 })
-console.log('ERRORES', JSON.stringify(errores)); console.log(guardar('f8')); await b.close()
+// v13: "Que el agente arme un plan" (con herramientas) y "Lo que hizo el agente": UNA llamada, textos fijos del servidor sin nombres
+await corto('R156', o, async () => {
+  await abrirAgente(o)
+  const arme = o.getByRole('button', { name: 'Que el agente arme un plan' })
+  nota('R156', 'botón "Que el agente arme un plan": ' + await arme.count())
+  if (await arme.count()) {
+    await arme.click(); await T(o, 1500)
+    await rincon(o, 'R156', 'Agente v13: "El agente está pensando…" (arme un plan)', { anchos: [{ n: '375', w: 375, h: 812 }] })
+    await o.getByText(/Lo que hizo el agente|No se pudo|no pudo/i).first().waitFor({ timeout: 90000 }).catch(() => {}); await T(o, 1500)
+    await rincon(o, 'R157', 'Agente v13: resultado de "arme un plan" y "Lo que hizo el agente"', { foco: true })
+    await rinconA11y(o, 'R157', 'Agente v13: resultado (accesibilidad)', { anchos: [320, 375] })
+    const t = await txt(o, 'details.agente-plegable')
+    nota('R157', t.slice(0, 900))
+    const hizo = t.match(/Lo que hizo el agente[^]{0,500}/)?.[0] ?? ''
+    nota('R157', '¿nombres de integrantes en "Lo que hizo el agente"?: ' + /(Ana|Beto|Caro|Rincon Org)/.test(hizo))
+  }
+})
+console.log('ERRORES', JSON.stringify(errores)); console.log(guardar('f8')); console.log(guardarA11y('a11y-f8')); await b.close()
