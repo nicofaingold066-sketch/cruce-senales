@@ -43,7 +43,8 @@ await corto('R164', o, async () => {
 // Perfil: entrar como otra persona
 await corto('R166', o, async () => {
   await o.goto(`${BASE}/#/perfil`); await T(o, 3500)
-  await boton(o, 'Entrar como otra persona').click(); await T(o, 1000)
+  // S2b (mockup 13): el botón se llama «Salir de este teléfono»; se acepta también el nombre de antes.
+  await o.getByRole('button', { name: /^(Entrar como otra persona|Salir de este teléfono)$/ }).click(); await T(o, 1000)
   await rincon(o, 'R166', 'Perfil: "Entrar como otra persona" (confirmación)', { foco: true }); nota('R166', await txt(o))
 })
 console.log('ERRORES', JSON.stringify(errores)); console.log(guardar('f9')); await b.close()

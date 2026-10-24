@@ -27,7 +27,7 @@ const nueva = async () => {
   let cortes = 0
   await p.route(/\/assets\/Planes-[\w-]+\.js(\?.*)?$/, (r) => (cortes++ === 0 ? r.abort('internetdisconnected') : r.continue()))
   await p.goto(`${BASE}/#/planes`)
-  const abre = await p.getByRole('heading', { name: 'Mis planes' }).waitFor({ timeout: 15000 }).then(() => true, () => false)
+  const abre = await p.getByRole('heading', { name: /^(Tus|Mis) planes$/ }).waitFor({ timeout: 15000 }).then(() => true, () => false)
   ver('A: un corte → reintento con ?r=1 abre la pantalla', abre && pedidos.some((x) => x.includes('?r=1')), pedidos.join(', '))
   await ctx.close()
 }
@@ -43,7 +43,7 @@ const nueva = async () => {
   await p.screenshot({ path: `${process.env.CRUXE_CAPTURAS || tmpdir()}/red-import-barrera.png` })
   red = true
   await p.getByRole('button', { name: 'Recargar', exact: true }).click()
-  const abre = await p.getByRole('heading', { name: 'Mis planes' }).waitFor({ timeout: 15000 }).then(() => true, () => false)
+  const abre = await p.getByRole('heading', { name: /^(Tus|Mis) planes$/ }).waitFor({ timeout: 15000 }).then(() => true, () => false)
   ver('B: con la red de vuelta, "Recargar" abre la pantalla', abre)
   await ctx.close()
 }
