@@ -130,7 +130,8 @@ describe('aceptación, baja y reparación', { timeout: 90_000 }, () => {
     expect(baja.propuesta.bajas[0]).toMatchObject({ miembro: ANON, version: 1, habia_aceptado: null })
     expect(JSON.stringify(baja.propuesta)).not.toContain(caro)
     const evBaja = baja.propuesta.historial.at(-1)
-    expect(evBaja).toMatchObject({ tipo: 'baja', actor_tipo: 'simulacion', actor: ANON, ejecutado_por: { miembro_id: esp.miembroId } })
+    // 0047: la baja de otra persona tampoco dice si fue simulada ni quién la ejecutó, ni el cambio de estado.
+    expect(evBaja).toMatchObject({ tipo: 'baja', actor_tipo: 'persona', actor: ANON, ejecutado_por: null, estado_nuevo: null })
     expect(evBaja.en.utc).toMatch(/Z$/)
     expect(err(await rpc(O, 'simulate_accept', { p_propuesta_id: prop, p_miembro_id: caro, p_version: 1, p_intento_id: intento() })))
       .toBe('no_autorizado/retirado')
