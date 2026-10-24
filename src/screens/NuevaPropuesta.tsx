@@ -347,11 +347,19 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   return (
     <div className="vista vista-s3">
       <section className="escena escena-compacta" aria-labelledby="nueva-titulo">
-        <a className="escena-volver" href={rutas.espacio(espacioId)}>
-          <Icono n="atras" tam={20} /> {espacio.nombre}
-        </a>
-        <span className="escena-eyebrow">{paso === 'editar' ? 'Paso 1 de 2 · El plan' : 'Paso 2 de 2 · Revisar y crear'}</span>
-        <h1 id="nueva-titulo">Nueva propuesta</h1>
+        {/* Mockup validado (pantalla 4): una hoja del nivel Grupo, con ✕ para cerrar y el nombre del grupo bajo el título. */}
+        <div className="s3-cabeza">
+          <a className="s3-cerrar" href={rutas.espacio(espacioId)} aria-label={`Cerrar y volver a ${espacio.nombre}`}>
+            <Icono n="cerrar" tam={20} />
+          </a>
+          <div className="s3-titulo">
+            <h1 id="nueva-titulo">Nueva propuesta</h1>
+            <span className="s3-grupo">
+              {espacio.nombre} · {paso === 'editar' ? 'paso 1 de 2' : 'paso 2 de 2: revisar'}
+            </span>
+          </div>
+          <span className="s3-cerrar-espacio" aria-hidden="true" />
+        </div>
         <div className="pasos-form" aria-hidden="true">
           <span className="hecho" />
           <span className={paso === 'revisar' ? 'hecho' : ''} />

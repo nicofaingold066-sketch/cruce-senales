@@ -193,3 +193,34 @@
 .vista-s3 .chip-nota {
   font-size: var(--t-nota);
 }
+
+/* ---- cabecera de hoja (mockup validado, pantalla 4): ✕ a la izquierda, título y grupo al centro */
+.vista-s3 .s3-cabeza {
+  display: grid;
+  grid-template-columns: var(--toque) minmax(0, 1fr) var(--toque);
+  align-items: center;
+  gap: var(--e-2);
+}
+.vista-s3 .s3-cerrar {
+  width: var(--toque);
+  height: var(--toque);
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--noche-linea);
+  color: var(--noche-texto);
+}
+.vista-s3 .s3-titulo {
+  text-align: center;
+  min-width: 0;
+}
+.vista-s3 .s3-titulo h1 {
+  margin: 0;
+}
+.vista-s3 .s3-grupo {
+  display: block;
+  margin-top: var(--e-1);
+  font-size: var(--t-nota);
+  color: var(--noche-suave);
+  overflow-wrap: anywhere;
+}
