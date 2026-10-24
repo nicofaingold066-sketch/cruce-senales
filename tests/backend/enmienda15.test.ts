@@ -52,6 +52,8 @@ describe('enmienda 15 (E-c): ronda de opiniones con plazo', { timeout: 180_000 }
     expect(ev.propuesta.opcion.franja.clave).toBe('A')
     expect((await opinar(U, p, 1)).ok).toBe(true)
     expect((await opinar(V, p, 1)).ok).toBe(true)
+    // Mientras el organizador no aceptó, "te toca confirmar" va primero (E13); después, el texto de rearmar.
+    await ok(O, 'accept_version', { p_propuesta_id: p, p_version: 1, p_intento_id: intento() })
     const st = await estado(O, p)
     expect(st.mi_situacion.puede.proponer_reparacion).toBe(true)
     expect(st.siguiente_accion.texto).toBe(REARMAR)
