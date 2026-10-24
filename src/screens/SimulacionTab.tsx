@@ -99,7 +99,11 @@ export default function SimulacionTab({ p, viva, soloLectura }: PestanaProps) {
                   ocupadoTexto="Enviando confirmaciones…"
                   disabled={soloLectura}
                 >
-                  {`Aceptar versión ${version} por ${puedenAceptar.map((m) => m.miembro.nombre).join(', ')}`}
+                  {/* Con una sola persona, "Aceptar versión 1 por Sofi" se llamaba igual que el botón de su tarjeta (dos
+                      botones idénticos; el guion del jurado fallaba según cuándo se refrescaba el panel). */}
+                  {puedenAceptar.length === 1
+                    ? `Aceptar versión ${version} por quien falta: ${puedenAceptar[0].miembro.nombre}`
+                    : `Aceptar versión ${version} por ${puedenAceptar.map((m) => m.miembro.nombre).join(', ')}`}
                 </Boton>
               ) : null}
             </div>

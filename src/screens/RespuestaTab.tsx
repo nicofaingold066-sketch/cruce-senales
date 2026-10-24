@@ -216,9 +216,11 @@ function MisCondiciones({
             </button>
           ) : null}
           <div className={`fila-botones ${b.sucio ? 'barra-accion' : ''}`}>
-            {/* Dentro de la barra fija, encima del botón: se ve justo cuando se decide (a 375 px la barra tapa lo de arriba). */}
+            {/* Dentro de la barra fija, encima del botón: se ve justo cuando se decide (a 375 px la barra tapa lo de arriba).
+                En una sola línea para que la barra no crezca; la explicación va para lectores de pantalla y en la tarjeta
+                "¿Avisar que te interesa?". */}
             {ofrecerInteres && s.puede.guardar_condiciones && b.sucio ? (
-              <label htmlFor={`mi-${p.id}-interes`} className="casilla">
+              <label htmlFor={`mi-${p.id}-interes`} className="casilla casilla-corta">
                 <input
                   id={`mi-${p.id}-interes`}
                   type="checkbox"
@@ -228,10 +230,10 @@ function MisCondiciones({
                   onChange={(e) => setAvisarInteres(e.target.checked)}
                 />
                 <span>
-                  Avisar también al grupo que me interesa
-                  <small id={`mi-${p.id}-interes-ayuda`}>
-                    Opcional. El grupo verá tu nombre entre los interesados, no tus condiciones. No es confirmar.
-                  </small>
+                  Avisar también que me interesa (opcional)
+                  <span id={`mi-${p.id}-interes-ayuda`} className="visualmente-oculto">
+                    El grupo verá tu nombre entre los interesados, no tus condiciones. No es confirmar.
+                  </span>
                 </span>
               </label>
             ) : null}
