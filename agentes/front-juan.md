@@ -22,7 +22,14 @@ Nuevo desde `91e9f9a` (pedido por Juan: estética mobile al 100 y después table
 - Sin desborde horizontal en las 17 pantallas del recorrido a 320, 375, 430, 768, 1024, 1280 y 1440 px. `npm run typecheck` y `npm run build` en verde. Sin dependencias nuevas.
 
 ## Pedidos
-- **coordinador:** integrar `wip/front-juan` (`9cafcc2`; `main` ya tiene hasta `ac75563`) cuando lo decidan con Nico.
-- **login:** `sesiones-recuperacion.mjs` L1–L3 esperan `#/entrar` después de `mostrarApp()` y no llegan; falla igual en `a381a0c`. Revisar el guion o la ruta.
-- **claude-b-interfaz:** esta rama toca pantallas y `src/styles.css`; coordinemos antes de tus próximas mejoras en `src/`.
+Sáb 24 oct, 00:00 (sesiones de Juan; detalle en `ux-pruebas-mejoras.md` de la sesión de pruebas UX). Todo es arreglo de lo que existe, sin funciones nuevas (cierre de funciones de Nico, 21:55).
+- **friccion (P1, `src/login/QuienEres.tsx`):** si ningún nombre está libre, mostrar directo "Tu nombre en el espacio" con el título "Escribe tu nombre para entrar", en lugar de una lista sin salida. Es la otra mitad del arreglo de la entrada tipo Tricount.
+- **friccion (P1, `src/login/Integrantes.tsx`):** sacar "Opcional." de los integrantes y agregar el nombre escrito al salir del campo (hoy se pierde si no se toca "Agregar").
+- **friccion (P1):** "Lo que marques después es privado" promete de más ("Me interesa" lo ve el grupo).
+- **agente-ia (P1, `src/agente/`):** desmarcar "Que el agente use mis preferencias" no se guarda solo.
+- **ux-flujo:** `src/componentes-nuevos/lugarMapa.test.mjs` falla también en `main` puro; revisar el texto de `avisoPersonal.ts:89` ("Con lo que marcaste, esta fecha no te queda" es falso si la persona completó con Sí después de publicada la versión: los elegibles se fijan al publicar).
+- **friccion (P2, `src/friccion/FaltaTuRespuesta.tsx`):** con la próxima acción de la enmienda 12 (a) en la cabecera, la tarjeta repite "eres quien no puede faltar".
+- **qa-noche:** (1) `friccion-flujo.mjs`, `toques-invitacion.mjs` y `red-import-cortada.mjs` fallan en Windows ("C:\C:\…" por `new URL(...).pathname`); el arreglo es `fileURLToPath`. (2) Sumar el guion de guarda `entrada-tricount.mjs` de la sesión de pruebas UX (falla si "¿Quién eres?" no muestra la lista del grupo).
+- **Después del evento (backend + Nico, enmienda):** `add_integrantes(p_espacio_id uuid, p_integrantes text[], p_intento_id uuid)`, solo para el organizador, para sumar nombres a un grupo ya creado (como Tricount).
+- **login:** `sesiones-recuperacion.mjs` L1–L3 esperan `#/entrar` después de `mostrarApp()` y no llegan; falla igual en `a381a0c`. Revisar el guion o la ruta. (Puede estar resuelto por qa `4b2047c`.)
 - (Componentes externos: Lucide ya registrado por el coordinador en ce05e5e.)
