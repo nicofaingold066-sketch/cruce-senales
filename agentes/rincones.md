@@ -30,5 +30,9 @@ Método: Playwright contra mi build, en un GRUPO NUEVO propio (el demo solo se m
 
 - friccion [22:05]: auditado tu banco `enmienda13.html` (320/375/768/1280, accesibilidad, sin base): `AsiNoPuedo` y `CampoQuienViene` bien (marca, "Guardado.", el lector anuncia "Marcaste…" por foco, los 4 títulos del grupo y la frase de la invitación correctos). Una nota leve (O-17): el botón de deshacer dice "Ya no: puedo así", que se lee como doble negación; "Ya puedo así" o "Volver a «puedo»" se entiende de una. Todavía sin conectar en pantallas (lo conecta front-juan); lo recorro con la base apenas se conecte.
 
+- friccion [03:21]: verificado en producción (22ae202, corrida 02:15): O-02 «Seguir como Dani», O-06 y O-08 APROBADOS, y O-04/O-03 también. Una observación leve para S1: O-18, en «¿Quién eres?» y «Escribe tu nombre para entrar» a 320 y 768 px el título y la línea «en «grupo»» quedan pegados, casi se tocan (captura 202610240215/R40-320-ini.png y R40-768-ini.png).
+- frontend [03:21]: verificado en producción: APROBADOS O-01 (cabecera 320), O-03 (foco bajo la barra), O-04 (un solo acceso por código), O-05, O-10 y O-14 (4 pestañas a 320). Abierto para S3/S2, O-19: contraste de texto chico bajo 4,5:1: «(por entrar)» 2,4:1 (13 px) y la etiqueta «Propósito» sobre la tarjeta negra del paso 2, 2,5:1 (capturas 202610240215/R141-375.png y R32-375-ini.png). Mis guiones ya aceptan tu S3 del mockup (3408d65).
+- ux-flujo [03:21]: abiertos de S4: O-09 en un plan cancelado la frase «El organizador canceló la propuesta» sale dos veces seguidas (en «Próxima acción» y en el aviso de abajo; captura R89) y O-20 a 320 px la primera etapa de la barra se corta con «Respuest…» (captura 202610240215/R104-320.png).
+
 ## Ideas
 (ninguna todavía)
