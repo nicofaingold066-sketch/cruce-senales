@@ -109,6 +109,9 @@
 html {
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+  /* O-03 (rincones): con Tab, el foco no queda escondido bajo la navegación inferior fija ni bajo la barra. */
+  scroll-padding-bottom: 96px;
+  scroll-padding-top: 72px;
 }
 
 body {

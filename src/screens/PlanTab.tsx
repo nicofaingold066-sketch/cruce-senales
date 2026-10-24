@@ -56,7 +56,8 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana, espacio }: P
       ) : null}
 
       {p.estado === 'cancelado' || p.estado === 'expirado' ? (
-        <Aviso tono="aviso" titulo={p.estado_etiqueta}>
+        // O-09 (rincones): "Cancelado"/"Expirado" ya está en el encabezado del plan; el aviso no lo repite.
+        <Aviso tono="aviso">
           {p.siguiente_accion.texto}
         </Aviso>
       ) : null}
@@ -259,7 +260,7 @@ function OpcionVigente({
         />
         <div className="progreso-leyenda" aria-hidden="true">
           <span>
-            <strong>{o.cupos.confirmados}</strong> confirmaron
+            <strong>{o.cupos.confirmados}</strong> {o.cupos.confirmados === 1 ? 'confirmó' : 'confirmaron'}
           </span>
           <span>
             mín. {o.cupos.minimo} · máx. {o.cupos.maximo} · {o.cupos.disponibles} {o.cupos.disponibles === 1 ? 'libre' : 'libres'}
@@ -395,7 +396,14 @@ function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
       </h2>
       {ant ? (
         <p className="cv-resumen">
-          {diaDe(ant.inicio.local)} {hora(ant.inicio.local)} → <strong>{diaDe(o.franja.inicio.local)} {hora(o.franja.inicio.local)}</strong>
+          {/* H8 (sinteticos): con la misma franja, "sáb 20:00 → sáb 20:00" parecía un error; lo que cambió es quién puede ir. */}
+          {ant.inicio.local === o.franja.inicio.local && ant.fin.local === o.franja.fin.local ? (
+            <>Misma fecha y hora; cambió quién puede ir.</>
+          ) : (
+            <>
+              {diaDe(ant.inicio.local)} {hora(ant.inicio.local)} → <strong>{diaDe(o.franja.inicio.local)} {hora(o.franja.inicio.local)}</strong>
+            </>
+          )}
         </p>
       ) : null}
       <div className="cv-grilla">
