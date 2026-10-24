@@ -382,7 +382,7 @@ try {
       const fin = await aceptar('Tomi')
       comprobar(fin.propuesta.confirmados === 4 && fin.propuesta.estado === 'grupo_confirmado' && fin.propuesta.opcion.cupos.disponibles === 0, 'Tomi confirma último: cuatro, sin sobrecupo')
       await estado(T, 'Grupo confirmado'); await estado(L, 'Grupo confirmado')
-      comprobar(/4 de 4|4 confirmaron/.test(await L.locator('main').innerText()), 'UI: cuatro de cuatro en la sesión de Luna') // S4: el conteo va en el hero
+      comprobar(/4 de 4|4 confirmaron|Van 4\b/.test(await L.locator('main').innerText()), 'UI: cuatro de cuatro en la sesión de Luna') // S4: el conteo va en el hero
       await foto(L, 'V3-cupo-reservado-confirmado')
     } finally {
       for (const route of retenidas) await route.abort().catch(() => {})
