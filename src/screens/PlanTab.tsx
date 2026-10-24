@@ -16,6 +16,7 @@ import { RearmarConLoNuevo } from '../componentes-nuevos/RearmarConLoNuevo'
 import { RecordarFaltan } from '../componentes-nuevos/RecordarFaltan'
 import { AsiNoPuedo } from '../friccion/AsiNoPuedo'
 import { FaltaTuRespuesta } from '../friccion/FaltaTuRespuesta'
+import { InvitacionAgente } from '../agente/InvitacionAgente'
 
 export default function PlanTab({ p, viva, soloLectura, irAPestana, espacio }: PestanaProps) {
   const codigo = espacio?.codigo_invitacion ?? null
@@ -34,6 +35,7 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana, espacio }: P
   return (
     <div>
       <AvisoParaMi p={p} servidorAhora={viva.servidorAhora} irARespuesta={() => irAPestana('respuesta')} />
+      <InvitacionAgente situacion={p.mi_situacion} onResponder={() => irAPestana('respuesta')} />
 
       {p.estado === 'cancelado' || p.estado === 'expirado' ? (
         <Aviso tono="aviso" titulo={p.estado_etiqueta}>

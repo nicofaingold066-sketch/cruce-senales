@@ -12,6 +12,7 @@ import type { ApiError } from '../lib/types'
 import { Aviso, Boton, Cargando, ErrorCaja, RotuloSimulacion } from '../components/ui'
 import './agente.css'
 import { ConsentimientoInvitaciones } from './ConsentimientoInvitaciones'
+import { AgenteSocial } from './AgenteSocial'
 import {
   AVISO_REINTENTO,
   TEXTO_FALTAN_PERSONAS,
@@ -616,6 +617,11 @@ function ProponerPlan({
   }
 
   const climaPedido = demo && clima !== 'real' ? clima : undefined
+  const estadoClimaValido = (v: string): v is 'seco' | 'lluvia' | 'desconocido' =>
+    v === 'seco' || v === 'lluvia' || v === 'desconocido'
+  const climaSocial = resultado?.tipo === 'borrador'
+    && estadoClimaValido(resultado.clima.sabado) && estadoClimaValido(resultado.clima.domingo)
+    ? { sabado: resultado.clima.sabado, domingo: resultado.clima.domingo } : null
 
   const refError = useFocoEnError(error)
   // Con Opus la respuesta puede tardar: pasados 8 s se avisa que sigue trabajando, para que no parezca trabado.
@@ -700,6 +706,11 @@ function ProponerPlan({
         </Aviso>
       ) : null}
       {resultado?.tipo === 'borrador' ? <BorradorTarjeta espacioId={espacioId} b={resultado} soloLectura={soloLectura} invitacion={invitacion} /> : null}
+      {resultado?.tipo === 'borrador' && climaSocial ? (
+        <AgenteSocial espacioId={espacioId} sabado={sabado} soloLectura={soloLectura}
+          clima={climaSocial} />
+      ) : null}
+      {resultado?.tipo === 'borrador' && !climaSocial ? <Aviso>No recibimos un dato de clima válido para preparar las invitaciones. Vuelve a pedir el borrador.</Aviso> : null}
     </div>
   )
 }
