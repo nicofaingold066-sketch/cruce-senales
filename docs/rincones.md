@@ -1,7 +1,7 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: viernes 23 oct, 21:28 (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: viernes 23 oct, 21:58 (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
 Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 16**, de los cuales **2 ya APROBADOS** en `main` 3ace04e (O-06 y O-08, corrida 4 `f0` 20:55) y 3 por confirmar en la misma corrida (O-02, O-12b, O-13) (ninguno impide completar el recorrido canónico), el resto APROBADO.
@@ -219,6 +219,16 @@ Autoprueba del módulo: `node tests/rincones/prueba-a11y/correr.mjs` (página lo
 | G04 | `AyudaRetiro` (4 momentos): textos distintos antes de la opción, con y sin enmienda 13, ya confirmó ("sin decir quién") | ojo | A |
 | G05 | `BuscarLugar`: abre Google Maps con el nombre del plan, "CRUXE no sabe desde dónde sales"; en el demo no dibuja nada | ojo | A |
 Observaciones (ninguna rompe nada): (1) el caso "Organizador a menos de 36 h del cierre, con pendientes" sale vacío hoy porque el cierre fijo de la galería está a 7 días; para verlo hay que acercar la fecha (es un límite de la galería, no del componente); (2) `RearmarConLoNuevo` usa el id fijo `rearmar-titulo`: si dos aparecieran a la vez se repetiría (en la app hay uno solo; con `useId` quedaría a salvo); (3) los botones de estas piezas miden 52 px de alto en teléfono: bien para el pulgar. Accesibilidad: sin otras fallas (la galería no tiene `<main>` ni cabecera porque es una página de prueba).
+
+### Enmienda 14: propósito del grupo (la última función nueva; filas reservadas, se recorren cuando esté en `main`)
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| R250 | Crear grupo: elegir el propósito (libre, una familia o una actividad); el valor por defecto es "libre" | — | pendiente |
+| R251 | Nueva propuesta en un grupo con propósito: solo actividades de esa familia; qué pasa al elegir otra ("Este grupo se armó para otro tipo de plan. Elige una actividad de ese tipo o crea un grupo en modo libre.") | — | pendiente |
+| R252 | Grupo en modo libre: igual que hoy (cualquier propuesta) y el demo "Los del asado" sigue libre | — | pendiente |
+| R253 | "¿Quién eres?" e invitación muestran el propósito del grupo (`preview_space_by_code`) | — | pendiente |
+| R254 | Agente restringido a la familia del grupo y "propón parecidas" cuando no hay quórum | — | pendiente |
+| R255 | Regresión de mis guiones: `f1`, `f4`, `f7` y `f11` crean propuestas sin actividad; en un grupo con propósito fallarían ("campo_faltante"). Los grupos de rincones se crean en modo libre salvo `f13` | — | adaptar al llegar |
 
 ## Pendiente de recorrer
 "Entrar como otra persona" confirmado, reclamar un lugar simulado libre del demo, "Hoy paso" ya marcado, plazo vencido (expirado), cierre elegido a mano con fecha pasada, y los cuatro anchos de cada rincón mirados a ojo (hoy `auto` en varios). Se repite lo afectado tras cada publicación en `main`.
