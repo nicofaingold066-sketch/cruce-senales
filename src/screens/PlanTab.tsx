@@ -374,18 +374,15 @@ function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
               {confirmaronAnt.map((m) => (
                 <li key={m.miembro_id} className={seBajo.has(m.miembro_id) ? 'cv-bajo' : ''}>
                   <Nombre m={m} />
-                  {seBajo.has(m.miembro_id) ? <span className="cv-nota"> se bajó</span> : <span className="cv-nota"> había confirmado</span>}
+                  <span className="cv-nota"> había confirmado</span>
                 </li>
               ))}
             </ul>
           ) : null}
-          {bajasAnt
-            .filter((b) => !confirmaronAnt.some((m) => m.miembro_id === b.miembro.miembro_id))
-            .map((b) => (
-              <p key={b.miembro.miembro_id} className="cv-bajo">
-                <Nombre m={b.miembro} /> <span className="cv-nota">se bajó</span>
-              </p>
-            ))}
+          {/* Enmienda 13 (c): la baja va aparte y sin nombre, fuera de la lista de quienes confirmaron, para no dejar deducir quién fue. */}
+          {bajasAnt.length > 0 ? (
+            <p className="cv-nota">{bajasAnt.length === 1 ? 'Una persona se retiró.' : `${bajasAnt.length} personas se retiraron.`}</p>
+          ) : null}
           <p className="cv-pie">Estas confirmaciones no pasan a la versión {o.version}.</p>
         </div>
         <span className="cv-flecha" aria-hidden="true">
