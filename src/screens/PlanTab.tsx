@@ -36,14 +36,11 @@ export default function PlanTab({
     (p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado') &&
     p.ultima_evaluacion?.resultado === 'reparacion_publicada' &&
     p.ultima_evaluacion.version === p.opcion?.version
-  // Misma condición con que se muestra <FaltaTuRespuesta/>: mientras falte mi respuesta, esa tarjeta es la acción
-  // principal y "Buscar opción compatible" pasa a secundario (pedido P1 de ux-flujo; enmienda 12 a). El énfasis sigue
-  // al servidor: si su próxima acción ya es `buscar_opcion` ("Busca una opción compatible"), el botón sigue principal.
-  const buscarSecundario =
-    p.estado === 'reuniendo_interes' &&
-    p.mi_situacion.puede.guardar_condiciones &&
-    p.mi_situacion.condiciones !== 'completas' &&
-    p.siguiente_accion.codigo !== 'buscar_opcion'
+  // El énfasis sigue al servidor: "Buscar opción compatible" es la acción principal solo cuando su próxima acción es
+  // `buscar_opcion` (ya respondieron al menos el mínimo) o para volver a buscar después de "Sin opción". Antes bastaba
+  // con que el organizador completara lo suyo, y un toque temprano dejaba "Sin opción compatible" a la vista de todos
+  // (D-3 de la revisión). Mientras falte mi respuesta, <FaltaTuRespuesta/> sigue siendo lo principal (enmienda 12 a).
+  const buscarSecundario = p.estado === 'reuniendo_interes' && p.siguiente_accion.codigo !== 'buscar_opcion' && !sinOpcion
 
   return (
     <div>
@@ -662,6 +659,14 @@ function BuscarOpcion({ p, viva, soloLectura, sinOpcion, secundaria }: VivaProps
           Cuando haya suficientes condiciones cargadas, el organizador pide al servidor una opción compatible.
         </p>
       )}
+      {p.mi_situacion.puede.evaluar ? (
+        <p className="suave">
+          {secundaria && p.personas_con_condiciones != null && p.personas_con_condiciones < p.minimo
+            ? `Con menos de ${p.minimo} personas que respondieron no puede salir una opción: conviene esperar. `
+            : ''}
+          Quien todavía no respondió no entra en la versión que se publique; contaría solo si el plan se rearma.
+        </p>
+      ) : null}
       {p.mi_situacion.puede.evaluar ? (
         <div className="barra-accion">
           <Boton
