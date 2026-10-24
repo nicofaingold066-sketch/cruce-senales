@@ -5,7 +5,7 @@ Pedido directo de Nico en Codex (24 oct): integrar el personaje aprobado, llamad
 Rama propia `codex/gru-vivo`, copia aislada `/Users/macair/cruse/cruce-gru`, base `origin/main` `7f47a88`.
 
 ## Tocando ahora
-Vacío. Arrastre manual implementado, probado y subido a la rama propia. Sin procesos ni turno de base.
+Nico autorizó explícitamente integrar y publicar: «Sí, pasalo a main y publicalo así lo pruebo en la app». Esta instrucción nueva habilita la publicación de este cambio visual ya probado pese al congelamiento anterior. Integrar origin/main actual en `codex/gru-vivo` y publicar por el Git deployment existente. Sólo GRU: `src/agente/GruAsistente.tsx`, `src/agente/gru-asistente.css`; conservar intacto el main reciente con demo Makana/participación. Build/typecheck y QA ficticia antes y después del deploy. Sin base/modelos/migraciones.
 
 ## Verificación
 Typecheck, build y navegador local con fixtures ficticios y red externa interceptada. Comprobar navegación, estados de éxito/error/sin opción, teclado, movimiento reducido, móvil 320/375 y escritorio 1280. Cero consultas pagas o escrituras en la base.
