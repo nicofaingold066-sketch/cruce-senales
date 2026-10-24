@@ -19,6 +19,7 @@ import { Icono } from '../components/Icono'
 import { UnirseConNombre, useUnirse } from '../login/QuienEres'
 import { fuenteReal } from '../login/fuente'
 import { momentoCorto } from '../lib/format'
+import { etiquetaPlan } from '../componentes-nuevos/plan/accion'
 import '../estilo/seccion-s1.css'
 
 export default function Inicio({ invitacionInvalida }: { invitacionInvalida?: boolean } = {}) {
@@ -136,7 +137,7 @@ function FilaGrupo({ e, plan }: { e: EspacioResumen; plan: PlanActivo | null }) 
   const personas = `${e.cantidad_miembros} ${e.cantidad_miembros === 1 ? 'persona' : 'personas'}`
   // 0056: el servidor trae la fecha del plan destacado; hasta que se aplique, la del estado de la propuesta.
   const fecha = e.fecha_local ? momentoCorto(e.fecha_local) : e.fecha_local === undefined ? (plan?.fecha ?? null) : null
-  const estado = fecha ?? (plan ? plan.p.estado_etiqueta.toLocaleLowerCase('es') : 'sin plan todavía')
+  const estado = fecha ?? (plan ? etiquetaPlan(plan.p.estado, plan.p.estado_etiqueta).toLocaleLowerCase('es') : 'sin plan todavía')
   return (
     <li>
       <a className="fila s1-fila-grupo" href={rutas.espacio(e.id)}>

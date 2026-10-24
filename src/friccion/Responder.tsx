@@ -16,6 +16,7 @@ import { TomarDeCalendario } from './Calendario'
 import { nombreDelPlan, opcionesRapidas } from './respuestas'
 import { RespuestasRapidas } from './RespuestasRapidas'
 import { AjustarPorDia } from './AjustarPorDia'
+import { etiquetaPlan } from '../componentes-nuevos/plan/accion'
 import '../estilo/seccion-s5.css'
 import type { Opcion } from './respuestas'
 import { miOpinion } from './opinar'
@@ -275,7 +276,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
             <section className="tarjeta s5-grupo" aria-label={`Estado de ${lista.espacio}`}>
               <div className="tarjeta-cabeza">
                 <strong className="t-cuerpo">{lista.espacio}</strong>
-                <Chip>{p.estado_etiqueta}</Chip>
+                <Chip>{etiquetaPlan(p.estado, p.estado_etiqueta)}</Chip>
               </div>
               {respondieron != null && lista.personas > 0 ? (
                 <>

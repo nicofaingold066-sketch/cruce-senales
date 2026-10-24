@@ -316,3 +316,10 @@
     padding: 0 40px 40px;
   }
 }
+
+@media (min-width: 960px) {
+  /* La columna oscura de la izquierda llega hasta abajo aunque "Opcional" sea más corto que la derecha. */
+  .vista.s5-responder {
+    background: linear-gradient(to right, var(--noche) 41.6667%, transparent 41.6667%);
+  }
+}
