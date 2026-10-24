@@ -124,7 +124,8 @@ export function sinIntro(browser) {
   browser.newContext = async (...args) => {
     const ctx = await nuevo(...args)
     await ctx.addInitScript(() => {
-      for (const tipo of ['localStorage', 'sessionStorage']) { try { window[tipo].setItem('cruxe:entrada-vista', '1') } catch { /* sin almacenamiento */ } }
+      // Intro (`cruxe:entrada-vista`) y guía interactiva de tres pasos (`cruxe:guia-vista:v1`): las dos se marcan vistas.
+      for (const tipo of ['localStorage', 'sessionStorage']) for (const clave of ['cruxe:entrada-vista', 'cruxe:guia-vista:v1']) { try { window[tipo].setItem(clave, '1') } catch { /* sin almacenamiento */ } }
     })
     return ctx
   }
