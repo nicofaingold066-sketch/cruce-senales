@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 19:41.
+Quien edita este archivo: solo esta sesión. Última actualización: 21:52.
 
 ## Tocando ahora
-- [19:41] Agente con Opus y respaldo en Haiku (pedido del coordinador por decisión de Nico): `supabase/functions/agente/index.ts`, `logica.ts`, `logica.test.ts`, `src/agente/api.ts`, `src/agente/AgentePanel.tsx`, `docs/agente-ia.md`.
+- [21:52] #108 (P1 de Nico): `src/agente/api.ts` y `src/agente/AgentePanel.tsx`: 15 s y un reintento en las RPC del panel.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[21:52] #99 desplegada: función `agente` v9** (desde `wip/agente-ia` `593dc5f`, solo `index.ts` y `logica.ts`, proyecto tjkfdnvzsikncjbskufm, verify_jwt true). Opus 5.5 por el Gateway con hasta 20 s, respaldo Haiku 5.5 y después texto fijo; `modelo_usado` en la respuesta. Falta la llamada real (BYOK): espero a que backend saque MIGRACION EN CURSO (0047).
 - **[19:40] #87 entregada** (`wip/agente-ia` `1eaf510`; código en `d5d913e`; archivos `src/agente/api.ts`, `AgentePanel.tsx`, `agente.css`, `supabase/functions/agente/index.ts`, `logica.ts`, `logica.test.ts`, `docs/agente-ia.md`). Probada 19:40 contra la base migrada: las cuatro preguntas guardan (tiempo_max texto), "Prefiero no responder" saca la clave, "Queda a menos de 25 minutos para todos (estimado)" con el viaje de la candidata, `sin_lugar_cerca_para_todos` sin decir para quién, sin zonas ni modos en las respuestas. 13/14 (la falla fue del guion). Pendiente: redesplegar la función (la v8 no manda `viaje` arriba ni se lo pasa al modelo). Parte B (#86): los chips salen solos del servidor. **CORRIENDO PRUEBA terminado.**
 - **[19:37] #87 (interfaz de la enmienda 10), código listo en `wip/agente-ia` `d5d913e`** (subido): las cuatro preguntas opcionales en Mis preferencias ("Prefiero no responder" saca la clave; `tiempo_max` como texto), "Queda a menos de N minutos para todos (estimado)" con el viaje de la candidata elegida, el motivo `sin_lugar_cerca_para_todos` sin decir para quién; en la función, viaje saneado por candidata, el de arriba es el de la destacada, y al modelo solo `viaje_max_minutos`; el texto del modelo no puede decir dónde vive nadie ni cómo se mueve. `logica.test.ts` 38/38, función simulada 11/11, typecheck y build en verde, vista a 375 px sin guardar. **Esperando la 0035 (MIGRACION EN CURSO desde 19:26) para la prueba en vivo; el guion ya está listo.** La función necesita redespliegue después (coordinador).
 - **[19:06] Posibles canchas probado en producción** (`64baaef`): 19:05-19:06, una llamada al modelo, 13/14. Funciona todo; la que falló fue "sin errores de consola" por un corte de red local (`ERR_NETWORK_CHANGED`) que hizo fallar la precarga de NuevaPropuesta. **CORRIENDO PRUEBA terminado.**
