@@ -1,7 +1,7 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: sábado 24 oct, 01:36 (build = `main` 44e6de6) (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: sábado 24 oct, 02:12 (build = `main` 22ae202, «Los del finde») (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
 Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 16**, de los cuales **2 ya APROBADOS** en `main` 3ace04e (O-06 y O-08, corrida 4 `f0` 20:55) y 3 por confirmar en la misma corrida (O-02, O-12b, O-13) (ninguno impide completar el recorrido canónico), el resto APROBADO.
@@ -38,6 +38,11 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | O-14 | OBSERVADO | Demo, pestaña Simulación a **320 px** | (a) La pestaña "Simulación" se sale de la pantalla (262–360 de 320); (b) en cada persona simulada la etiqueta "SIMULACIÓN" queda tapada por la insignia "Sin versión publicada" ("SIMUL…") | `202610231946/R104-320.png` | front-juan |
 | O-15 | **APROBADO 01:21** (era OBSERVADO) | Panel del agente, "Mis preferencias" | El grupo "Me gustaría" aparecía en rojo con "Marcá al menos una." desde que se abría, antes de tocar nada. Verificado en producción (`main` 3cca951, `f14` R407): texto normal "Marca al menos una actividad para guardar." | `202610231958/R150-375.png` (antes) · `202610232250/R407-375.png` (ahora) | agente-ia |
 | O-16 | OBSERVADO (decisión) | Chip "Datos ficticios" del encabezado | Aparece en TODAS las pantallas, también en un grupo real con personas de verdad (`App.tsx:85`, fricción 19 de `docs/flujo-usuario.md`); un grupo real podría leerlo como "esto no vale". Y a 320 px lo pisa el avatar (O-01) | `202610231931/R25-320.png` | **Decidido (21:10, ux-flujo `603678e`, tabla #102 H3): el chip se queda.** Cerrado como aceptado; lo único que sigue abierto es O-01 (a 320 px lo pisa el avatar) |
+
+## Rediseño de la noche (desde las 02:07; `prompts/rediseno-noche.md`)
+- La demo pasó a llamarse **«Los del finde»** (`main` 22ae202, 0054). Las filas anteriores que dicen «Los del asado» eran correctas en su momento; los guiones aceptan los dos nombres (frontend adaptó `f5` y `f12`). El título precargado del caso sigue siendo "Asado en casa de Tomi".
+- `main` 22ae202 lleva la etiqueta **`demo-segura`**: es la versión a la que se vuelve si una sección del rediseño no llega en verde a las 09:00.
+- Papel de rincones: aprobar cada sección (S1 Ingreso, S2 Grupo, S3 Nueva propuesta, S4 El plan, S5 Mi respuesta, S6 Agente, S7 Simulación e historial) apenas su dueño la publique, con los mismos guiones y veredictos, y de 07:00 a 09:00 el **barrido visual de todo a 320, 375, 768 y 1280 px**. Si una sección cambia un texto que buscan mis guiones, su dueño me avisa con la línea exacta (regla de entrega) y yo adapto el guion para que acepte los dos.
 
 ## Accesibilidad a fondo (método, `tests/rincones/a11y.mjs`; se aplica a la demo en `f12`)
 Rincones de la demo en el orden del jurado, en 320, 375 y 1280 px. Por rincón:
