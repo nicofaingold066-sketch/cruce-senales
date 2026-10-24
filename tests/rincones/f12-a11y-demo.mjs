@@ -67,7 +67,7 @@ await corto('A10', j, async () => {
 await corto('A13', j, async () => {
   await j.getByRole('button', { name: /Tomar de mi calendario/ }).click(); await T(j, 600)
   await rinconA11y(j, 'A13', 'Jurado: agenda ficticia desplegada', { anchos: [320, 375] })
-  await boton(j, 'Marcar lo que dice mi agenda').click(); await T(j, 900)
+  await j.getByRole('button', { name: /Ver qué sugiere mi agenda|Marcar lo que dice mi agenda|Usar esta agenda/ }).click(); await T(j, 900) // el rótulo cambió el 24/10 (friccion)
   await anunciado(j, 'A13', 'Agenda', 'Tu agenda ficticia sugiere')
   const enfocado = await j.evaluate(() => { const e = document.activeElement; return e && e.id && e.id.startsWith('rapida-') ? e.id : '' })
   nota('A13', 'tras "Marcar lo que dice mi agenda", el foco va a la opción sugerida: ' + (enfocado || 'no'))
