@@ -2,7 +2,7 @@
 
 ## Tocando ahora
 - Pedido directo nuevo de Nico: las personas tienen que ver quién se sumó. Rama independiente `codex/participacion-visible`, copia `/Users/macair/cruse/cruce-participacion`, base main1f7826b. No depende de activar Makana.
-- Nuevos `src/participacion-publica/**`, enganches mínimos en `src/screens/{PlanTab,Propuesta,Espacio}.tsx`; `tests/e2e/participacion-visible-local.mjs`; `docs/participacion-publica.md`.
+- Nuevos `src/participacion-publica/**`, enganches mínimos en `src/screens/{PlanTab,Propuesta,Espacio}.tsx`; `src/componentes-nuevos/plan/Resultado.tsx` solo nombres visibles de quienes ya confirmaron, sin cambiar acciones/estados; `tests/e2e/participacion-visible-local.mjs`; `docs/participacion-publica.md`.
 - Nombres/interés explícito/confirmaciones son públicos por API actual; gustos, disponibilidad y motivos siguen privados. «Sin confirmar esta versión» no significa «no viene/no puede/no respondió». «Por entrar» no cuenta como ingreso real.
 - Tests LOCALES sin modelos/base remota/migración. No coincidencia con frontend activo en NuevaPropuesta para sin hora de fin; no tocar Resultado/FilasPlan de ux-flujo.
 
