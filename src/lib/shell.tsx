@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import type { ReactNode } from 'react'
+import { GruAsistente } from '../agente/GruAsistente'
 
 export interface Identidad {
   espacio: string | null
@@ -23,7 +24,12 @@ const Ctx = createContext<ShellCtx>({
 
 export function ShellProvider({ soloLectura, children }: { soloLectura: boolean; children: ReactNode }) {
   const [identidad, setIdentidad] = useState<Identidad>({ espacio: null, yo: null, rol: null })
-  return <Ctx.Provider value={{ identidad, setIdentidad, soloLectura }}>{children}</Ctx.Provider>
+  return (
+    <Ctx.Provider value={{ identidad, setIdentidad, soloLectura }}>
+      {children}
+      <GruAsistente identidad={identidad} soloLectura={soloLectura} parseRuta={parseRuta} rutaAgente={rutas.agente} />
+    </Ctx.Provider>
+  )
 }
 
 export function useShell() {

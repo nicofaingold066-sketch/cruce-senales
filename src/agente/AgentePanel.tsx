@@ -8,13 +8,17 @@ import { api } from '../lib/api'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto } from '../lib/format'
 import { irA, rutas } from '../lib/shell'
-import type { ApiError } from '../lib/types'
+import type { ApiError, ApiResult } from '../lib/types'
 import { Aviso, Boton, Card, Cargando, Chip, ErrorCaja, RotuloSimulacion } from '../components/ui'
 import { PreferenciaTema } from '../components/PreferenciaTema'
+import { Icono } from '../components/Icono'
 import '../estilo/seccion-s6.css'
+import './gru-preferencias.css'
 import { ConsentimientoInvitaciones } from './ConsentimientoInvitaciones'
 import { AgenteSocial } from './AgenteSocial'
 import { socialApi } from './socialApi'
+import { GruPersonaje } from './GruPersonaje'
+import { actualizarEstadoGru, useEstadoGru } from './gruEstado'
 import {
   AVISO_REINTENTO,
   TEXTO_FALTAN_PERSONAS,
@@ -127,7 +131,7 @@ function Opciones<T extends string>({
   deshabilitado?: boolean
 }) {
   return (
-    <fieldset className="grupo" disabled={deshabilitado}>
+    <fieldset className="grupo gru-prefs-grupo" disabled={deshabilitado}>
       <legend>{titulo}</legend>
       <div className="opciones">
         {opciones.map((o) => {
@@ -135,7 +139,7 @@ function Opciones<T extends string>({
           return (
             <label key={o.v || 'sin-respuesta'} htmlFor={id} className={`opcion-radio ${valor === o.v ? 'opcion-activa' : ''}`}>
               <input id={id} type="radio" name={nombre} checked={valor === o.v} onChange={() => onCambio(o.v)} />
-              {o.texto}
+              <span className="gru-prefs-opcion-texto">{o.texto}</span>
             </label>
           )
         })}
@@ -265,9 +269,13 @@ function MisPreferencias({ espacioId, soloLectura, primario }: { espacioId: stri
   const resumenViaje = viaje.length > 0 ? viaje.join(', ') : 'sin responder'
   const resumenPermisos = `${usar ? 'el agente puede usarlas' : 'el agente no las usa'} · invitaciones ${recibirInicial === true ? 'activadas' : recibirInicial === false ? 'desactivadas' : 'sin dato'}`
   const privacidad = (
-    <p className="suave">
-      Solo las ves tú: el agente las usa con tu permiso y al grupo le llega la propuesta, nunca lo que pusiste.
-    </p>
+    <div className="gru-prefs-privacidad">
+      <Icono n="candado" tam={20} />
+      <div>
+        <strong>Solo las ves tú</strong>
+        <p className="suave">GRU las usa con tu permiso. Al grupo le llega la propuesta, nunca tus respuestas.</p>
+      </div>
+    </div>
   )
 
   if (!editando) {
@@ -287,14 +295,19 @@ function MisPreferencias({ espacioId, soloLectura, primario }: { espacioId: stri
       .filter(Boolean)
       .join(' · ')
     return (
-      <div className="bloque agente-prefs-linea">
+      <div className="bloque agente-prefs-linea gru-prefs-resumen">
         <div className="agente-linea-fila">
-          <p className="agente-linea">{linea}</p>
+          <div className="gru-prefs-resumen-datos" aria-label="Tus preferencias guardadas">
+            {linea.split(' · ').map((texto, i) => <span className="gru-prefs-resumen-chip" key={`${texto}-${i}`}>{texto}</span>)}
+          </div>
           <button type="button" className="agente-enlace" onClick={() => { setAviso(null); setEditando(true) }} disabled={soloLectura}>
             Editar ›
           </button>
         </div>
-        <p className="suave">Solo las ves tú: al grupo le llega la propuesta, nunca lo que pusiste.</p>
+        <div className="gru-prefs-privacidad">
+          <Icono n="candado" tam={20} />
+          <p>Solo las ves tú: al grupo le llega la propuesta, nunca lo que pusiste.</p>
+        </div>
         {aviso ? <Aviso tono="ok">{aviso}</Aviso> : null}
         <p className="agente-sr" aria-live="polite">
           {aviso ?? ''}
@@ -304,38 +317,67 @@ function MisPreferencias({ espacioId, soloLectura, primario }: { espacioId: stri
   }
 
   return (
-    <div className="bloque">
+    <div className="bloque gru-prefs-form">
       {privacidad}
-      <h3 className="agente-subtitulo">Qué te gusta</h3>
-      <fieldset
-        ref={refGustos}
-        className={`grupo ${sinActividades && intentoSinActividad ? 'grupo-error' : ''}`}
-        disabled={soloLectura || ocupado}
-        aria-describedby={sinActividades ? 'pref-gusta-ayuda' : undefined}
-      >
-        <legend>Me gustaría</legend>
-        <div className="opciones">
-          {actividades.map((a) => {
-            const id = `pref-gusta-${a.clave}`
-            const activa = borrador.me_gustaria.includes(a.clave)
-            return (
-              <label key={a.clave} htmlFor={id} className={`opcion-radio ${activa ? 'opcion-activa' : ''}`}>
-                <input id={id} type="checkbox" checked={activa} onChange={() => alternar(a.clave)} />
-                {a.etiqueta}
-              </label>
-            )
-          })}
+      <section className="gru-prefs-seccion" aria-labelledby="gru-prefs-gustos">
+        <div className="gru-prefs-cabecera">
+          <Icono n="chispa" tam={24} />
+          <div>
+            <h3 id="gru-prefs-gustos" className="agente-subtitulo">Qué te gusta</h3>
+            <p>Marca los planes que te entusiasman. Puedes elegir varios.</p>
+          </div>
         </div>
-        {sinActividades ? (
-          <small id="pref-gusta-ayuda" role={intentoSinActividad ? 'alert' : undefined}>
-            Marca al menos una actividad para guardar.
-          </small>
-        ) : null}
-      </fieldset>
-      <Opciones nombre="pref-presupuesto" titulo="Presupuesto este finde" opciones={PRESUPUESTO} valor={borrador.presupuesto} onCambio={(v) => poner('presupuesto', v)} deshabilitado={soloLectura || ocupado} />
-      <Opciones nombre="pref-energia" titulo="Energía" opciones={ENERGIA} valor={borrador.energia} onCambio={(v) => poner('energia', v)} deshabilitado={soloLectura || ocupado} />
-      <Opciones nombre="pref-ambiente" titulo="Ambiente" opciones={AMBIENTE} valor={borrador.ambiente} onCambio={(v) => poner('ambiente', v)} deshabilitado={soloLectura || ocupado} />
-      <Opciones nombre="pref-lugar" titulo="Lugar" opciones={LUGAR} valor={borrador.lugar} onCambio={(v) => poner('lugar', v)} deshabilitado={soloLectura || ocupado} />
+        <fieldset
+          ref={refGustos}
+          className={`grupo gru-prefs-actividades ${sinActividades && intentoSinActividad ? 'grupo-error' : ''}`}
+          disabled={soloLectura || ocupado}
+          aria-describedby={sinActividades ? 'pref-gusta-ayuda' : undefined}
+        >
+          <legend>Me gustaría</legend>
+          <div className="opciones">
+            {actividades.map((a) => {
+              const id = `pref-gusta-${a.clave}`
+              const activa = borrador.me_gustaria.includes(a.clave)
+              return (
+                <label key={a.clave} htmlFor={id} className={`opcion-radio ${activa ? 'opcion-activa' : ''}`}>
+                  <input id={id} type="checkbox" checked={activa} onChange={() => alternar(a.clave)} />
+                  <Icono
+                    n={a.clave === 'asado' ? 'asado'
+                      : ['futbol', 'padel', 'tenis', 'basquet'].includes(a.clave) ? 'futbol'
+                        : ['cena', 'comida', 'restaurante', 'cafe'].includes(a.clave) ? 'cena'
+                          : a.clave === 'cine' ? 'cine'
+                            : a.clave === 'fiesta' ? 'fiesta'
+                              : ['parque', 'paseo', 'senderismo'].includes(a.clave) ? 'paseo' : 'chispa'}
+                    tam={21}
+                  />
+                  <span className="gru-prefs-opcion-texto">{a.etiqueta}</span>
+                </label>
+              )
+            })}
+          </div>
+          {sinActividades ? (
+            <small id="pref-gusta-ayuda" role={intentoSinActividad ? 'alert' : undefined}>
+              Marca al menos una actividad para guardar.
+            </small>
+          ) : null}
+        </fieldset>
+      </section>
+      <section className="gru-prefs-seccion" aria-labelledby="gru-prefs-plan">
+        <div className="gru-prefs-cabecera">
+          <Icono n="rayo" tam={24} />
+          <div>
+            <h3 id="gru-prefs-plan" className="agente-subtitulo">Tu plan ideal</h3>
+            <p>Cuéntale a GRU qué prefieres para este finde.</p>
+          </div>
+        </div>
+        <div className="gru-prefs-disposicion">
+          <Opciones nombre="pref-presupuesto" titulo="Presupuesto este finde" opciones={PRESUPUESTO} valor={borrador.presupuesto} onCambio={(v) => poner('presupuesto', v)} deshabilitado={soloLectura || ocupado} />
+          <Opciones nombre="pref-energia" titulo="Energía" opciones={ENERGIA} valor={borrador.energia} onCambio={(v) => poner('energia', v)} deshabilitado={soloLectura || ocupado} />
+          <Opciones nombre="pref-ambiente" titulo="Ambiente" opciones={AMBIENTE} valor={borrador.ambiente} onCambio={(v) => poner('ambiente', v)} deshabilitado={soloLectura || ocupado} />
+          <Opciones nombre="pref-lugar" titulo="Lugar" opciones={LUGAR} valor={borrador.lugar} onCambio={(v) => poner('lugar', v)} deshabilitado={soloLectura || ocupado} />
+        </div>
+      </section>
+      <div className="gru-prefs-extras">
       <Plegable id="pref-sec-viaje" titulo="Cómo llegas (opcional)" resumen={resumenViaje} abierto={verViaje} onCambio={setVerViaje}>
         <p className="suave">Sirve para elegir un lugar que te quede a mano. Nadie del grupo ve tu zona ni cómo te mueves.</p>
         <Opciones nombre="pref-zona" titulo="Tu zona" opciones={ZONA} valor={borrador.zona ?? ''} onCambio={(v) => ponerOpcional('zona', v)} deshabilitado={soloLectura || ocupado} />
@@ -378,13 +420,14 @@ function MisPreferencias({ espacioId, soloLectura, primario }: { espacioId: stri
       {/* E11 (integracion-codex-juan): el consentimiento de invitaciones, junto al otro permiso. */}
       <ConsentimientoInvitaciones key={String(recibirInicial)} espacioId={espacioId} inicial={recibirInicial} soloLectura={soloLectura} />
       </Plegable>
+      </div>
       <div ref={refError}>{error ? <ErrorCaja error={error} onReintentar={() => void guardar()} /> : null}</div>
       {ocupado && reintentando ? <Aviso tono="aviso">{AVISO_REINTENTO}</Aviso> : null}
       {aviso ? <Aviso tono={usarConfirmado !== null && usar !== usarConfirmado ? 'info' : 'ok'}>{aviso}</Aviso> : null}
       <p className="agente-sr" aria-live="polite">
         {ocupado ? (reintentando ? AVISO_REINTENTO : 'Guardando tus preferencias…') : aviso ?? ''}
       </p>
-      <div className="fila-botones">
+      <div className="fila-botones gru-prefs-acciones">
         {/* Un solo primario por pantalla: para quien organiza, el primario es el del agente. */}
         <Boton variante={primario ? 'primario' : 'secundario'} onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura}>
           {guardadas ? 'Actualizar mis preferencias' : 'Guardar mis preferencias'}
@@ -694,6 +737,49 @@ function ErrorAgente({ error, espacioId, onReintentar }: { error: ApiError; espa
 
 type ClimaElegido = 'real' | ClimaSimulado
 
+type RecuerdoGru = {
+  sabado: string
+  clima: ClimaElegido
+  conHerramientas: boolean
+  resultado: ResultadoAgente | null
+  error: ApiError | null
+  peticion: Promise<ApiResult<ResultadoAgente>> | null
+}
+
+// Solo memoria de esta sesión: conserva el borrador y la búsqueda al navegar. No guarda preferencias.
+const recuerdosGru = new Map<string, RecuerdoGru>()
+
+function buscarConGru(espacioId: string, sabado: string, clima: ClimaElegido, demo: boolean | undefined, conHerramientas: boolean) {
+  const anterior = recuerdosGru.get(espacioId)
+  if (anterior?.peticion) return anterior.peticion
+
+  const recuerdo: RecuerdoGru = { sabado, clima, conHerramientas, resultado: null, error: null, peticion: null }
+  const climaPedido = demo && clima !== 'real' ? clima : undefined
+  const peticion = agenteApi.proponer(espacioId, sabado, climaPedido, conHerramientas).catch((): ApiResult<ResultadoAgente> => ({
+    ok: false,
+    error: {
+      codigo: 'fallo_temporal',
+      detalle: 'reintentar',
+      mensaje: 'No se pudo completar la búsqueda de GRU. Intenta de nuevo.',
+      reintentable: true,
+      state_rev: null,
+    },
+  }))
+  recuerdo.peticion = peticion
+  recuerdosGru.set(espacioId, recuerdo)
+  actualizarEstadoGru(espacioId, 'buscando')
+
+  // La petición sigue aunque se cierre el panel. Su resultado actualiza también la miniatura persistente.
+  void peticion.then((r) => {
+    if (recuerdosGru.get(espacioId) !== recuerdo) return
+    recuerdo.peticion = null
+    recuerdo.resultado = r.ok ? r.data : null
+    recuerdo.error = r.ok ? null : r.error
+    actualizarEstadoGru(espacioId, r.ok ? r.data.tipo === 'borrador' ? 'listo' : 'sin-opcion' : 'error')
+  })
+  return peticion
+}
+
 // Pantalla 7: chips de Clima "Real / Sol / Lluvia" (solo en el demo; con sol o lluvia es una simulación).
 const CLIMA_DEMO: { v: ClimaElegido; texto: string }[] = [
   { v: 'real', texto: 'Real' },
@@ -723,28 +809,64 @@ function ProponerPlan({
   demo?: boolean
   personasGrupo: number | null
 }) {
-  const [sabado, setSabado] = useState(SABADO_DEL_CASO)
-  const [clima, setClima] = useState<ClimaElegido>('real')
-  const [resultado, setResultado] = useState<ResultadoAgente | null>(null)
+  const recuerdo = recuerdosGru.get(espacioId)
+  const [sabado, setSabado] = useState(recuerdo?.sabado ?? SABADO_DEL_CASO)
+  const [clima, setClima] = useState<ClimaElegido>(recuerdo?.clima ?? 'real')
+  const [resultado, setResultado] = useState<ResultadoAgente | null>(recuerdo?.resultado ?? null)
+  const [errorRecuperado, setErrorRecuperado] = useState<ApiError | null>(recuerdo?.error ?? null)
   // Qué se tocó: "Que el agente arme un plan" (con herramientas, el primario) o "Propuesta rápida (sin herramientas)".
-  const [conHerramientas, setConHerramientas] = useState(true)
+  const [conHerramientas, setConHerramientas] = useState(recuerdo?.conHerramientas ?? true)
   // Pantalla 20: "Revisar antes de invitar", abierta desde el enlace chico del resultado.
   const [hojaSocial, setHojaSocial] = useState(false)
   const [servicioSocial, setServicioSocial] = useState<boolean | null>(null)
-  const { ocupado, error, ejecutar, limpiarError } = useAccion()
+  const { ocupado: ocupadoAccion, error: errorAccion, ejecutar, limpiarError } = useAccion()
+  const { estado: estadoCompartido } = useEstadoGru(espacioId)
+  const ocupado = ocupadoAccion || estadoCompartido === 'buscando'
+  const error = errorAccion ?? errorRecuperado
+  const montado = useRef(true)
   const sabados = sabadosParaElegir()
 
+  useEffect(() => {
+    montado.current = true
+    return () => { montado.current = false }
+  }, [])
+
+  useEffect(() => {
+    const guardado = recuerdosGru.get(espacioId)
+    if (!guardado) return
+    setSabado(guardado.sabado)
+    setClima(guardado.clima)
+    setConHerramientas(guardado.conHerramientas)
+    setResultado(guardado.resultado)
+    setErrorRecuperado(guardado.error)
+  }, [espacioId, estadoCompartido])
+
+  function limpiarBusqueda(sabadoElegido: string, climaElegido: ClimaElegido) {
+    setResultado(null)
+    setErrorRecuperado(null)
+    limpiarError()
+    recuerdosGru.set(espacioId, {
+      sabado: sabadoElegido,
+      clima: climaElegido,
+      conHerramientas,
+      resultado: null,
+      error: null,
+      peticion: null,
+    })
+    actualizarEstadoGru(espacioId, 'disponible')
+  }
+
   function cambiarSabado(v: string) {
+    if (ocupado) return
     // Un resultado de otro fin de semana no se puede usar: se limpia.
     setSabado(v)
-    setResultado(null)
-    limpiarError()
+    limpiarBusqueda(v, clima)
   }
 
   function cambiarClima(v: ClimaElegido) {
+    if (ocupado) return
     setClima(v)
-    setResultado(null)
-    limpiarError()
+    limpiarBusqueda(sabado, v)
   }
 
   const climaPedido = demo && clima !== 'real' ? clima : undefined
@@ -779,29 +901,54 @@ function ProponerPlan({
   // Región que siempre existe y anuncia los cambios (mejora #35). Los errores graves ya se anuncian solos (role="alert").
   const anuncio = ocupado
     ? largo
-      ? 'El agente sigue pensando: puede tardar hasta medio minuto.'
-      : 'El agente está trabajando.'
+      ? 'GRU sigue trabajando: puede tardar hasta medio minuto.'
+      : 'GRU está buscando un plan.'
     : error?.codigo === 'entrada_incompleta' && error.detalle === 'pocas_preferencias'
       ? 'Faltan preferencias: el agente necesita las de al menos 2 personas.'
       : resultado?.tipo === 'borrador'
-      ? `El agente encontró ${resultado.candidatas.length === 1 ? 'una opción' : `${resultado.candidatas.length} opciones`}. Recomendada: ${resultado.titulo}.`
+      ? `GRU encontró ${resultado.candidatas.length === 1 ? 'una opción' : `${resultado.candidatas.length} opciones`}. Recomendada: ${resultado.titulo}. Es un borrador para revisar.`
       : resultado?.tipo === 'sin_plan_compatible'
-        ? 'Sin plan compatible.'
+        ? 'GRU no encontró un plan compatible.'
         : ''
 
+  const estadoGru = ocupado ? 'buscando' : error ? 'error'
+    : resultado?.tipo === 'borrador' ? 'listo'
+      : resultado?.tipo === 'sin_plan_compatible' ? 'sin-opcion' : 'disponible'
+  const tituloGru = ocupado ? 'Estoy buscando un plan'
+    : error ? 'No pude completar la búsqueda'
+      : resultado?.tipo === 'borrador' ? 'Tengo una propuesta para el grupo'
+        : resultado?.tipo === 'sin_plan_compatible' ? 'Todavía no hay un plan compatible'
+          : '¿Qué hacemos este finde?'
+  const ayudaGru = ocupado
+    ? 'Te aviso cuando la propuesta esté lista. Puedes seguir recorriendo la app.'
+    : error ? 'Revisa el aviso de abajo para ver cómo seguir.'
+      : resultado?.tipo === 'borrador' ? 'Es un borrador: revísalo antes de usarlo. El grupo decide.'
+        : resultado?.tipo === 'sin_plan_compatible' ? 'Podemos volver a intentarlo con otro finde o crear una propuesta a mano.'
+          : 'Soy GRU, tu asistente de IA. Te ayudo a encontrar un plan con el clima, los lugares y los gustos del grupo.'
+
   async function proponer(herramientas = conHerramientas) {
-    setResultado(null)
-    setHojaSocial(false)
-    setConHerramientas(herramientas)
-    const r = await ejecutar(`agente:${espacioId}:${sabado}:${climaPedido ?? 'real'}:${herramientas ? 'h' : 'd'}`, () =>
-      agenteApi.proponer(espacioId, sabado, climaPedido, herramientas),
-    )
-    if (r?.ok) setResultado(r.data)
+    if (ocupado) return
+    const r = await ejecutar(`agente:${espacioId}:${sabado}:${climaPedido ?? 'real'}:${herramientas ? 'h' : 'd'}`, () => {
+      setResultado(null)
+      setErrorRecuperado(null)
+      setHojaSocial(false)
+      setConHerramientas(herramientas)
+      return buscarConGru(espacioId, sabado, clima, demo, herramientas)
+    })
+    if (r?.ok && montado.current) setResultado(r.data)
   }
 
   return (
     <div className="bloque agente-idea">
-      <p className="suave">Mira el clima, los lugares y los gustos del grupo, y te propone un plan. Lo redacta la IA; el grupo decide.</p>
+      <div className="gru-presentacion">
+        <GruPersonaje estado={estadoGru} tamano="grande" />
+        <div className="gru-presentacion__contenido">
+          <p className="gru-presentacion__etiqueta">GRU · Tu asistente de IA</p>
+          <h3 className="gru-presentacion__titulo">{tituloGru}</h3>
+          <p className="gru-presentacion__ayuda">{ayudaGru}</p>
+          <p className="gru-presentacion__estado">{ocupado ? 'Buscando' : error ? 'Necesita atención' : resultado?.tipo === 'borrador' ? 'Propuesta lista' : resultado?.tipo === 'sin_plan_compatible' ? 'Sin opción compatible' : 'Disponible'}</p>
+        </div>
+      </div>
       <div className="agente-chips">
         <div className="agente-chips-fila" role="group" aria-label="Finde">
           <span className="agente-chips-rotulo">Finde</span>
@@ -875,37 +1022,24 @@ function ProponerPlan({
   )
 }
 
-/** Lo que hace el agente, en orden. Describe el trabajo; no marca nada como hecho: eso lo dice el servidor al terminar. */
+/** Criterios generales de la búsqueda. Los pasos realizados llegan del servidor al terminar. */
 const PASOS_TRABAJO = [
-  'Lee las preferencias habilitadas del grupo',
-  'Mira el clima del fin de semana',
-  'Busca planes que le sirvan a todos',
-  'Elige una opción y explica por qué',
+  'Las preferencias habilitadas del grupo',
+  'El clima disponible para el fin de semana',
+  'Los planes del catálogo compatibles con el grupo',
+  'Una explicación de la opción elegida',
 ]
 
-/**
- * "El agente está trabajando" (pedido de Nico, 02:40): los cuatro pasos aparecen de a uno con el movimiento del
- * sistema (sd-pasos). El último que apareció late (sd-paso-activo); los anteriores quedan sin marca de hecho, porque el
- * cliente no sabe en qué va el servidor. Los pasos reales, como hechos, llegan en "Lo que hizo el agente".
- */
+/** La petición no informa progreso por herramienta. Estos son sus criterios, sin pasos completados ficticios. */
 function AgenteTrabajando({ largo }: { largo: boolean }) {
-  const [visibles, setVisibles] = useState(1)
-  useEffect(() => {
-    if (visibles >= PASOS_TRABAJO.length) return
-    const t = setTimeout(() => setVisibles((v) => v + 1), 600)
-    return () => clearTimeout(t)
-  }, [visibles])
   return (
     <div className="bloque agente-trabajando">
-      <p className="agente-trabajando-titulo">El agente está trabajando</p>
+      <p className="agente-trabajando-titulo">GRU está trabajando en tu propuesta</p>
+      <p className="suave">La búsqueda tiene en cuenta:</p>
       <ul className="sd-pasos">
-        {PASOS_TRABAJO.slice(0, visibles).map((p, i) => (
-          <li key={p} className={`sd-aparecer ${i === visibles - 1 ? 'sd-paso-activo' : ''}`}>
-            {p}
-          </li>
-        ))}
+        {PASOS_TRABAJO.map((p) => <li key={p}>{p}</li>)}
       </ul>
-      {largo ? <p className="suave">El agente sigue pensando: puede tardar hasta medio minuto…</p> : null}
+      {largo ? <p className="suave">GRU sigue trabajando: puede tardar hasta medio minuto…</p> : null}
     </div>
   )
 }
@@ -1004,9 +1138,20 @@ function PanelAgente({
       {/* Pantalla 7 del mockup: arriba el agente (finde, clima y el botón); debajo, "Mis preferencias" en una línea. */}
       {esOrganizador ? (
         <Card id="agente-idea" className="agente-panel">
-          <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} personasGrupo={personasGrupo} />
+          <ProponerPlan key={espacioId} espacioId={espacioId} soloLectura={soloLectura} demo={demo} personasGrupo={personasGrupo} />
         </Card>
-      ) : null}
+      ) : (
+        <Card id="gru-saludo" className="agente-panel">
+          <div className="gru-presentacion">
+            <GruPersonaje estado="disponible" tamano="grande" />
+            <div className="gru-presentacion__contenido">
+              <p className="gru-presentacion__etiqueta">GRU · Tu asistente de IA</p>
+              <h3 className="gru-presentacion__titulo">Tus gustos ayudan a encontrar un plan</h3>
+              <p className="gru-presentacion__ayuda">Decide qué preferencias puede usar GRU. Son privadas: al grupo le llega la propuesta, nunca lo que pusiste.</p>
+            </div>
+          </div>
+        </Card>
+      )}
       <Card id="agente-preferencias" titulo="Mis preferencias" className="agente-panel">
         <PreferenciaTema />
         <MisPreferencias espacioId={espacioId} soloLectura={soloLectura} primario={!esOrganizador} />

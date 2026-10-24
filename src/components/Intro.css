@@ -1,6 +1,8 @@
 /* Una sola línea de tiempo; el prefijo evita colisiones con .entrada de los formularios. */
 .cruxe-intro {
   --intro-duracion: 2.6s;
+  --intro-escala: 3.5;
+  --intro-pulso: 3.7;
   position: fixed;
   inset: 0;
   width: 100%;
@@ -77,7 +79,7 @@
   display: grid;
   place-items: center;
   width: 100%;
-  height: clamp(190px, 32vh, 270px);
+  height: clamp(230px, 42vmin, 380px);
 }
 .cruxe-intro__marca {
   display: flex;
@@ -117,9 +119,9 @@
 }
 .cruxe-intro__x { display: block; width: 100%; height: 100%; overflow: visible; }
 @keyframes cruxe-intro-simbolo {
-  0%, 36% { transform: scale(2.5); }
-  43% { transform: scale(2.65); }
-  48% { transform: scale(2.5); }
+  0%, 36% { transform: scale(var(--intro-escala)); }
+  43% { transform: scale(var(--intro-pulso)); }
+  48% { transform: scale(var(--intro-escala)); }
   74%, 100% { transform: none; }
 }
 .cruxe-intro__fino {
@@ -223,8 +225,9 @@
   to { transform: scaleX(1); opacity: .8; }
 }
 @media (max-height: 430px) {
+  .cruxe-intro { --intro-escala: 2.8; --intro-pulso: 2.95; }
   .cruxe-intro__centro { padding-bottom: 35px; }
-  .cruxe-intro__escena { height: 150px; }
+  .cruxe-intro__escena { height: min(250px, calc(100dvh - 125px)); }
   .cruxe-intro__saltar { bottom: max(12px, env(safe-area-inset-bottom)); }
 }
 @media (prefers-reduced-motion: reduce) {
