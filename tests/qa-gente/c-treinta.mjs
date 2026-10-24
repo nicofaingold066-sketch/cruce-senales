@@ -71,6 +71,9 @@ await conTurno(`qa-gente (c) ${N} a la vez + confirmaciones concurrentes`, async
     const fuera = rech[0]?.q ?? sinBoton[0]
     if (fuera) { await fuera.page.waitForTimeout(500); const tx = (await textoMain(fuera.page)).replace(/\s+/g, ' '); await fuera.captura('c6-quien-queda-afuera'); inf.ok('c6b: quien queda afuera ve un mensaje claro (sin error técnico)', !/Falla temporal|undefined|null/.test(tx) && tx.length > 40, tx.slice(0, 260)) }
     else inf.ok('c6b: hubo alguien afuera', false, 'nadie quedó afuera: revisar cupo')
+    // H3 de la vuelta 1: la frase del cupo reservado salía repetida arriba y abajo del mensaje de rechazo.
+    if (fuera) { const tx = (await textoMain(fuera.page)).replace(/\s+/g, ' '); const veces = (tx.match(/último cupo está reservado/g) ?? []).length
+      inf.ok('c6c (H3 vuelta 1): la frase «El último cupo está reservado…» no se repite en la pantalla de quien queda afuera', veces <= 1, `aparece ${veces} vez/veces; ${tx.match(/[^.]*reservado[^.]*\./g)?.slice(0, 3).join(' | ') ?? ''}`.slice(0, 300)) }
     const sin = (await p.evaluate(() => document.documentElement.scrollWidth - innerWidth))
     inf.ok('sin desborde horizontal a 375 px (organizadora)', sin <= 0, `${sin}`)
   } finally {

@@ -167,6 +167,31 @@ await conTurno('qa-gente (d) situaciones: mismo nombre, enlace x3, compartido, d
       inf.ok('d7: con red lenta (+4 s por llamada) el botón da señal de «trabajando» y al final confirma una vez', true, `señal de ocupado=${ocupado > 0 ? 'sí' : 'NO visible a los 0,7 s'}; tardó ${((Date.now() - t0) / 1000).toFixed(1)} s`)
       await r.ctx.unroute('**/rest/v1/rpc/**')
     })
+
+    // d8 (vuelta 2): ante un 401 la app renueva la sesión y reintenta UNA vez (src/lib/api.ts). Se simula un 401 en una lectura y en una escritura.
+    await escenario('d8 sesión vencida (401): la app renueva la sesión y reintenta una vez, sin error visible', async (ab) => {
+      const g = await montar(browser, { grupo: `Sesion ${sello}`, organiza: 'Sara Qa', nombres: ['Tito Qa'], minimo: 2, maximo: 3 })
+      ab.push(g.org, ...g.invitados); const tito = g.invitados[0]
+      await responderRapido(tito, 'dos'); const p = g.org.page
+      await verPlan(p, g.urlPlan); await irA(p, 'Mi respuesta'); await responderRapido(g.org, 'dos'); await irA(p, 'Plan')
+      await click(p, /^Buscar opción compatible$/, false); await p.getByRole('button', { name: /^Confirmar versión 1/ }).waitFor({ timeout: 30000 })
+      const auth = []; tito.page.on('request', (r) => { if (r.url().includes('/auth/v1/')) auth.push(new URL(r.url()).pathname.split('/').pop() + '?' + (new URL(r.url()).searchParams.get('grant_type') ?? '')) })
+      const una401 = (fn) => { let n = 0; return tito.ctx.route(`**/rest/v1/rpc/${fn}`, async (route) => { if (n++ < 1) return route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ code: 'PGRST301', message: 'JWT expired' }) }); await route.continue() }) }
+      // Lectura: el primer get_proposal_state responde 401.
+      await una401('get_proposal_state')
+      await tito.page.goto(g.urlPlan); await tito.page.reload()
+      await tito.page.getByRole('button', { name: /^Confirmar versión 1/ }).waitFor({ timeout: 30000 })
+      const lect = tito.rpc.filter((r) => r.fn === 'get_proposal_state'); const t1 = await plano(tito.page)
+      inf.ok('d8: con un 401 en la lectura del plan, la app renueva la sesión y el plan carga sin error visible', lect.some((r) => r.status === 401) && lect.some((r) => r.status === 200) && !/Falla temporal|expir|JWT|sesión/i.test(t1), `get_proposal_state: ${lect.map((r) => r.status).join(',')}; llamadas de auth: ${auth.join(' ') || 'ninguna'}`)
+      await tito.ctx.unroute('**/rest/v1/rpc/get_proposal_state')
+      // Escritura: el primer accept_version responde 401 (no llegó al servidor); la app reintenta una vez y queda UNA confirmación.
+      await una401('accept_version')
+      await click(tito.page, /^Confirmar versión 1/, false)
+      await tito.page.getByText(/Ya confirmaste|¡Se juntan!/).first().waitFor({ timeout: 30000 })
+      const esc = tito.rpc.filter((r) => r.fn === 'accept_version'); const t2 = await plano(tito.page)
+      inf.ok('d8: con un 401 al confirmar, la app renueva, reintenta una sola vez y la confirmación queda una sola vez', esc.map((r) => r.status).join(',') === '401,200' && !/Falla temporal|JWT/i.test(t2), `accept_version: ${esc.map((r) => r.status).join(',')}; llamadas de auth: ${auth.join(' ') || 'ninguna'}`)
+      await tito.captura('d8-tras-401'); await tito.ctx.unroute('**/rest/v1/rpc/accept_version')
+    })
   } finally {
     const t = tablaRpc(todas); console.log('RPC:\n' + t.texto); console.log('Errores RPC: ' + JSON.stringify(t.errores))
     const consola = todas.flatMap((p) => p.errores.filter((e) => !/ERR_INTERNET_DISCONNECTED/.test(e)).map((e) => `${p.nombre}: ${e}`)).slice(0, 6)

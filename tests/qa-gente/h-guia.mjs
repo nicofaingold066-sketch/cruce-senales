@@ -46,6 +46,11 @@ await conTurno('qa-gente (h) guía de tres pasos en la primera visita', async ()
         await a.page.goto(`${BASE}/#/crear`); await a.page.getByRole('heading', { name: 'Crear un grupo' }).waitFor({ timeout: 20000 })
         const resto = (await textoMain(a.page)).match(/\b(Elegí|Probá|Tocá|Agregá|Escribí|Poné)\b/g) ?? []
         inf.ok('h7b: «Crear un grupo» usa «tú» (control: sin voseo)', resto.length === 0, resto.join(', '))
+        // h7c (vuelta 2): el asistente GRU de la portada (texto y aria-label) también debe hablar de «tú».
+        await a.page.goto(`${BASE}/#/`); await dormir(1500)
+        const gru = await a.page.evaluate(() => [...document.querySelectorAll('[aria-label],[title]')].map((e) => e.getAttribute('aria-label') || e.getAttribute('title') || '').join(' · ') + ' · ' + document.body.innerText)
+        const vgru = gru.match(/\b(Elegí|Probá|Tocá|Agregá|Escribí|Poné|Vos|decís|Mirá|Pedí|Sumá|vas a encontrar|Me vas a)\b/g) ?? []
+        inf.ok('h7c: la portada y el asistente GRU (aria-label incluido) usan «tú», sin voseo', vgru.length === 0, `voseo: ${[...new Set(vgru)].join(', ') || 'ninguno'}; ${gru.match(/[^·.]*(Elegí|Me vas a)[^·.]*/)?.[0]?.trim().slice(0, 140) ?? ''}`)
       }
     }
     // Invitación nueva: sin guía (va directo).
