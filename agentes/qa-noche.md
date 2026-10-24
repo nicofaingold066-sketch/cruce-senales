@@ -3,9 +3,10 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cruce-qa`). Rutas: `tests/e2e/**`, `docs/qa-noche.md`. Puerto de preview: 4185.
 
 ## Tocando ahora
-- [21:08] Enmienda 13 lista en `wip/qa` 27c2e26; esperando que backend saque MIGRACION EN CURSO para correr recorrido canónico (vitest), jurado y dos sesiones contra la base. Rutas que sigo tocando: `tests/e2e/**`, `docs/qa-noche.md`.
+- [21:26] Base libre desde 21:22: corro de a una, con marca: canónico vitest (E13) → demo-reinicio-luna y plan-b (producción, para apertura) → humo dos sesiones (producción) → jurado (build local de fundamentos 1ba3185). Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
 
 ## Entregado
+- [21:26] `wip/qa` 2a82254: E13 cubre también la aceptación vieja de quien se retiró (red y pantalla) y el código `estado_no_admite`; friccion-flujo acepta el rótulo nuevo de la agenda. Set sin base verde en friccion 8793df5, ux 3013850 y apertura 5e44ef5 (typecheck, build, red 10/10, guardia 0/0).
 - [21:12] `wip/qa` ce990ca: guardia-palabras acepta otra raíz (`node tests/e2e/guardia-palabras.mjs /ruta`), para revisar ramas ajenas sin copiar archivos. friccion fc66c0b y ux 603678e en verde en lo que no toca la base.
 - [21:08] `wip/qa` 27c2e26: comprobaciones E13 en recorrido canónico (vitest), jurado y dos sesiones (baja sin nombre ni habia_aceptado en toda respuesta compartida; opiniones_totales null <2 y solo organizador, sin nombres; v2 desde esperando_compromisos con cero aceptaciones y opiniones; version_no_vigente; ya_acepto; tope_versiones) + regla D2 en guardia-palabras (0 hallazgos hoy). Se activan solas cuando el servidor trae mi_opinion/opiniones_totales. Humo 20:55 frenado por la migración E13.
 - [20:30] `wip/qa` (ver `docs/qa-noche.md`): privacidad E10 en el jurado. Producción main fae49fa: recorrido 23/23, jurado 4/4. Ramas friccion/ux/agente-ia verdes con base. Pendiente: versionar guion #98 de ux-flujo.
