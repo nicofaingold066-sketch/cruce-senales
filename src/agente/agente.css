@@ -128,12 +128,14 @@
   flex-basis: 100%;
   color: var(--tinta-2);
 }
-.agente-pasos ol {
-  list-style: decimal;
-  margin: 0;
-  padding-left: 1.4em;
-  display: grid;
-  gap: var(--e-1);
+/* Pasos del agente: los del sistema (sd-pasos), con el texto en cuerpo para que se lea el proceso. */
+.agente-pasos .sd-pasos > li,
+.agente-trabajando > li {
+  font-size: var(--t-cuerpo);
+  line-height: var(--lh-cuerpo);
+}
+.agente-trabajando {
+  margin: var(--e-2) 0;
 }
 
 /* Chips de preferencias: compactos (pedido de Nico, 01:50), con 44 px de toque. */

@@ -548,7 +548,7 @@ function BorradorTarjeta({
   }
 
   return (
-    <div className="bloque agente-resultado">
+    <div className="bloque agente-resultado sd-aparecer">
       <h3 className="agente-resultado-titulo">Opciones del agente</h3>
       <p className="suave">Ideas con las preferencias habilitadas. La disponibilidad y la confirmación se resuelven después, para una versión del plan.</p>
       {b.quorum ? <p className="suave agente-quorum">{textoQuorum(b.quorum)}</p> : null}
@@ -855,16 +855,18 @@ function ProponerPlan({
         </Boton>
         <small>«Arme un plan»: la IA elige qué mirar (clima, planes, canchas); cada paso pasa por las reglas de CRUXE.</small>
       </div>
+      {/* "Trabajando" del sistema (sd-pasos): una sola frase viva mientras piensa (E6). Los pasos reales los manda el
+          servidor al terminar y se ven en "Lo que hizo el agente"; acá no se inventa un avance. */}
       {ocupado ? (
-        <Cargando
-          texto={
-            largo
+        <ul className="sd-pasos agente-trabajando">
+          <li className="sd-paso-activo">
+            {largo
               ? 'El agente sigue pensando: puede tardar hasta medio minuto…'
               : conHerramientas
                 ? 'El agente está mirando el clima, buscando planes que le sirvan a todos y eligiendo…'
-                : 'El agente está leyendo las preferencias del grupo y el clima…'
-          }
-        />
+                : 'El agente está leyendo las preferencias del grupo y el clima…'}
+          </li>
+        </ul>
       ) : null}
       <div ref={refError}>
         {error ? <ErrorAgente error={error} espacioId={espacioId} onReintentar={() => void proponer(conHerramientas)} /> : null}
@@ -917,9 +919,11 @@ function PasosAgente({ pasos }: { pasos: string[] }) {
   return (
     <div className="bloque agente-pasos">
       <h3 className="agente-subtitulo">Lo que hizo el agente</h3>
-      <ol>
+      <ol className="sd-pasos sd-escalonado">
         {pasos.map((p, i) => (
-          <li key={i}>{p}</li>
+          <li key={i} className="sd-paso-hecho">
+            {p}
+          </li>
         ))}
       </ol>
       <small>Cada paso pasó por las reglas de CRUXE: la IA solo eligió entre opciones que le sirven a todo el grupo.</small>
