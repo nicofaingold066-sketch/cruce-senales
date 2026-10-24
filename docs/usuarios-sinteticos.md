@@ -8,6 +8,26 @@ Seis amigos ficticios usan la app como lo haría gente real, para contar dónde 
 - La guardia (`guardia.mjs`) frena el guion si la ficha de backend dice «MIGRACION EN CURSO».
 - Los toques cuentan solo lo que la persona toca (no escribir, ni deslizar, ni las redirecciones automáticas). Los segundos son de máquina: son una cota inferior de lo que tarda una persona; un toque humano con lectura ronda 1,5 s.
 
+## Cómo correr los guiones (para quien tome la posta; sesión archivada a las 03:14)
+
+Todos corren con Playwright y el Chrome del sistema (como `tests/e2e/`), cada persona en un contexto aparte, siempre en un **grupo nuevo** (nunca la demo), sin tocar datos ajenos. Salida (no se commitea): `tests/sinteticos/salida/<sello>/` con capturas, `textos.md` (el texto de cada pantalla que vio cada persona) y `resultados.json` (toques, segundos, hallazgos y comprobaciones). La **guardia** (`guardia.mjs`) mira TODAS las fichas de `agentes/` y frena (código 3) si alguna declara «MIGRACION EN CURSO»; `turno.sh` además espera y marca «CORRIENDO PRUEBA» en la ficha de quien lo corre.
+
+| Guion | Qué hace | Cómo se corre | Duración |
+|---|---|---|---|
+| `seis-amigos.mjs` | Los 6 perfiles (organizadora, apurado a 320 px, sin franja, con condiciones, interesado que se baja, silencio): crear grupo, responder, v1, baja, reparación | `node tests/sinteticos/seis-amigos.mjs https://cruce-senales.vercel.app` | ~1,3 min |
+| `dos-planes.mjs` | Enmienda 15: dos planes con nombre, «la que pueden más», «¿cuál prefieres?», ronda de 2 h, totales solo a quien organiza | idem con `dos-planes` | ~1 min |
+| `asi-no-puedo.mjs` | Enmienda 13: «Así no puedo, pero sigo», rearmar, v2 sin herencias, nadie ve quién | idem con `asi-no-puedo` | ~1,2 min |
+| `psico-perfiles.mjs` | Perfiles de psico (siempre organiza, casa, sin carne, pareja en «solo el grupo» a 320 px, mal momento, silencio) | idem con `psico-perfiles` | ~1,3 min |
+| `proposito-grupo.mjs` | Enmienda 14: propósito «Fútbol» al crear el grupo, atajos y «Me gustaría» solo deporte, texto de quórum del agente | idem; `CRUXE_AGENTE=0` evita la llamada al modelo (cuesta una por corrida) | ~1 min (sin agente) |
+
+Una tanda completa contra un build propio: `npx vite build && npx vite preview --port 4186` y la URL `http://localhost:4186` en vez de producción. Con `tests/sinteticos/turno.sh <url> <guion>...` se encadenan cediendo ante migraciones y marcas de otros. Las ediciones de lib/escena/revisar son mías; el resto de `tests/sinteticos/` es de quien lo lea.
+
+**Rótulos del rediseño que los guiones ya aceptan** (lo de hoy y lo nuevo, el viejo solo si existe): «Nuevo plan» o «Nueva propuesta» (título); «Revisar antes de crear» opcional (con el mockup S3 el primario «Crear y abrir al grupo» va en el formulario); fechas A y B plegadas (`details.s3-momento`, se abren antes de tocarlas); atajos tras «Más…» si no están a la vista; «Cómo llegas (opcional)» se abre si existe; el final de «Respondiste» puede ser «Ver el plan» o «Listo»; desde la portada el plan se alcanza por la tarjeta «Tu plan» o por la línea «Te toca confirmar» (`a[href*="/p/"]`); «Prefiero «<plan>»» en un toque (friccion) además de «¿cuál prefieres?» en Mi respuesta.
+
+**Lo que NO está verificado todavía** (porque el `main` con ese diseño aún no se había publicado cuando se archivó la sesión): `main` `60a98e0` solo trae el S3 anterior; el mockup exacto de S3 (`wip/rediseno-s3` 0b7ce46), S1/S5 de friccion (`0b5e4d1`) y el resto de las secciones se probaron solo por lectura de código y mensajes de sus dueños. Primera corrida a hacer contra el `main` nuevo: `seis-amigos` y `dos-planes`; si alguno falla, el error dice qué rótulo no encontró en su línea.
+
+**Hallazgos abiertos al archivar** (detalle y capturas arriba): H2 (franjas primero en «Mi respuesta», en manos del rediseño S5), H6 («Ya hay N personas con condiciones» cuenta a quien dijo No/No: decisión de Nico, después de la demo), H12 («1 confirmaron»), H13 (el editor de condiciones sigue a la vista tras «No voy»), H19/H20 (la invitación y el espacio del organizador no dicen «para jugar fútbol»), H21 («3 por ahora» frente a «4 personas»: agente-ia lo tomó), H22 (tenis al aire libre con lluvia sin decirlo), H23 («Flujo social no disponible» visible), H10 (la hora «de Santiago»: ux-flujo lo saca de la opción). Resueltos y verificados en producción: H1, H4, H8, H9, H14, H16, H17, H18 y la enmienda 13 completa, la 14 y la 15 con su ronda.
+
 ## Los seis perfiles
 
 | # | Persona | Ancho | Qué quiere | Qué hace el guion |
@@ -120,6 +140,24 @@ Cómo lo hice: recorrí cada paso del guion contra las pantallas que mis perfile
 
 Pedidos de este ensayo y su estado (21:25): **apertura, hecho** en `5bd4d9e`: los 7 puntos (rótulo «WhatsApp» en 0:55, «Seguir como Ana» en el plan B, el toque de 1:18, «Ver el plan» en 1:33, grupo nuevo a las 13:30 y nombre de repuesto, frases listas, título antes del atajo) y los riesgos transversales están en `docs/guion-demo.md` §1, §2 y §4. **friccion, hecho** en `8793df5`: «¿Quieres avisar al grupo que te interesa?» pasa debajo de «Ver el plan» y «Cambiar mi respuesta», en letra chica y con «esto sí lo ve el grupo» (a verificar en la próxima corrida). **front-juan, pendiente**: H9 («Anfitrión (Vale)» en un plan de fútbol) queda como frase lista en el guion hasta que cambie el texto; conectar `RecordarFaltan` y `AvisoParaMi`.
 
+## Rediseño de la noche: lo que buscan los guiones de sinteticos, por sección (02:15)
+
+El encargo (`prompts/rediseno-noche.md`) pide que cada sección que cambie un texto o un nombre accesible que un guion busca lo actualice o avise con la línea exacta. Para que no haya que adivinar, esta es la lista completa de lo que buscan `tests/sinteticos/*.mjs` (texto exacto, salvo donde dice patrón). Lo que no está acá no lo busca ningún guion de sinteticos. Las clases e ids marcados con `código` son selectores de CSS/DOM, no textos.
+
+| Sección (dueño) | Textos y nombres accesibles que se buscan | Selectores de código |
+|---|---|---|
+| **S1 Ingreso** (friccion) | encabezado «¿Quién eres?»; botón con el **nombre de la persona** (exacto); botón «Sí, soy X»; botón «Entrar» (portada); el primer cuadro de texto de la portada (el nombre); botón «Unirme» | — |
+| **S2 Grupo** (frontend) | enlace «Crear un grupo»; encabezado «Crear un grupo»; etiqueta «Agregar a alguien del grupo»; botón «Agregar»; opción «Solo el grupo»; etiqueta «¿Para qué es este grupo?» (select); botón «Crear grupo»; encabezado con el **nombre del grupo**; enlace «Crear propuesta»; texto «por entrar»; enlace con el nombre del grupo para volver | `.codigo` (el código de invitación); `a.plan-vivo, a.tarjeta-prop` (la tarjeta del plan); `a[href^="https://wa.me"]` (la invitación) |
+| **S3 Nueva propuesta** (frontend) | encabezado «Nueva propuesta»; botones de atajo «Cena», «Asado», «Fútbol», «Cerro», «Pádel/Tenis/Básquet»; etiqueta «Propósito de la propuesta» (el título); etiqueta accesible «Sumar uno al mínimo»; «Revisar antes de crear»; «Crear y abrir al grupo»; «Volver a editar»; «Más opciones»; «Sin ronda» / «2 h»; «La que pueden más»; «Nombre de este plan» | `.chip-actividad`; `.campo-etiqueta-plan input` |
+| **S4 El plan** (ux-flujo) | pestaña «Plan»; «Buscar opción compatible»; «Confirmar versión N»; «Ya confirmaste la versión N»; «Grupo confirmado»; «En revisión»; «Buscar alternativa»; botón que empiece con «Así no puedo»; botón que contenga «Rearmar»; «Recordar a quien falta» / «Avisar al grupo»; «Opiniones hasta»; «El plan cambió»; «Nadie confirmó todavía»; «Una persona se retiró» | `header` (nombre y rol de quien mira), `main` (todo lo que se lee por pantalla), `h1` (clave de cada pantalla) |
+| **S5 Mi respuesta** (friccion) | pestaña «Mi respuesta»; grupos «Franja A:» / «Franja B:» con «Sí puedo» / «No puedo» / «Pendiente»; «Guardar condiciones»; «Guardado. Solo tú ves estas condiciones.»; «Me interesa»; «Marcaste "Me interesa"»; «Retirarme de esta propuesta»; «Sí, no voy»; «Te retiraste» o «Gracias por avisar»; «Si te sirven los dos, ¿cuál prefieres?»; en «¿Cuándo puedes?» (Responder.tsx): encabezado «¿Cuándo puedes?», botones que empiecen con «Puedo los dos» / «Solo el» / «Solo de» / «No puedo ninguno», enlace «Todavía no sé: ver el plan», «Respuesta guardada», enlace «Ver el plan» | `fieldset` que contenga «Franja A»; `fieldset.prefiero label` |
+| **S6 Agente** (agente-ia) | texto «Agente del círculo» (lo que abre el bloque); «Presupuesto este finde»; «Ojalá gratis»; «Prefiero bajo techo»; «Transporte público»; «Hasta 30 min»; «Guardar mis preferencias»; «Guardado. Nadie más ve tus preferencias.»; «Que el agente proponga»; «El agente está pensando» (desaparece al terminar); «Opciones del agente»; «hacen falta al menos N personas» | `input[id^=pref-gusta-]` (los chips de «Me gustaría») |
+| **S7 Simulación e historial** (frontend) | pestaña «Historial» | — |
+
+Si un texto cambia, lo mejor es que la pantalla acepte los dos durante la noche o que el dueño me avise con la línea; yo adapto el guion en la misma hora. Lo que mido no son los rótulos sino los toques, los segundos, las pantallas y lo que ve cada persona: con el rediseño vuelvo a correr los seis perfiles, los de psico, la enmienda 13, el propósito y los dos planes contra cada publicación, y comparo con los números de hoy (invitado: 3 toques desde el enlace; organizadora: 4 toques para crear el grupo y 5 para la propuesta).
+
+Hallazgos abiertos de sinteticos que el rediseño puede resolver de paso (detalle arriba): **H2** (franjas primero en «Mi respuesta»), **H6** («Ya hay 4 personas con condiciones» cuenta a quien dijo No/No), **H10** («hora de Santiago (America/Santiago)»), **H12** («1 confirmaron»), **H13** (el editor de condiciones sigue a la vista tras «No voy»), **H19/H20** (la invitación y el espacio no dicen el propósito), **H21** («3 por ahora» frente a «4 personas»), **H23** («Flujo social no disponible» visible), y de la demo: «Datos ficticios» se queda (decisión), el 320 px deja «No puedo ninguno» bajo el pliegue.
+
 ## Perfiles de psico (pedido del coordinador, 20:53): guion `tests/sinteticos/psico-perfiles.mjs`
 
 Grupo nuevo «Los del reencuentro», plan «Asado del reencuentro · solo el grupo» (la modalidad en el título, regla D3; hoy la escribe la organizadora a mano porque no hay selector). Mínimo 3. Fuente de los perfiles: `docs/psicologia-grupo.md` (§3.2, §3.4, §3.6, §3.8, §3.9, §8).
@@ -176,7 +214,7 @@ Si la interfaz todavía no tiene los botones («Así no puedo, pero sigo» en Mi
 Hallazgos nuevos de esta corrida (pedidos en la ficha):
 - **H16 (media, front-juan):** en «Mi respuesta», Gonza lee «Estás en la versión vigente. Si esta fecha no te sirve, marca «Así no puedo, pero sigo»…» y «Si solo esta fecha no te sirve, usa "Así no puedo, pero sigo"», pero **el botón no está ahí**: vive en la pestaña Plan, junto a «Confirmar versión». Quien lee la instrucción en Mi respuesta no encuentra qué tocar; falta un enlace «Ir al plan» o el botón repetido.
 - **H17 (RESUELTO 22:58: apertura lo declaró en `docs/preguntas-jurado.md` S5b, `9e606e1`) (media, apertura / límite a declarar):** con **3 personas elegibles** y 2 opiniones, quien organiza (que es una de las tres y ya confirmó) sabe exactamente quiénes opinaron: «2 personas marcaron que así no pueden» + «yo confirmé» = los otros dos. El umbral «solo desde 2» protege el caso de 1 y no el de grupos de 3. No es un defecto a arreglar (cierre de funciones); sí una frase para la pregunta del jurado sobre privacidad: «en grupos chicos el total puede deducirse; nunca dice quién».
-- **H18 (baja, front-juan):** el título «Así no puedes, pero sigues» habla en segunda persona mientras el botón dice «Así no puedo, pero sigo»; leerlo como respuesta de uno mismo («Dijiste: así no puedo, pero sigo») sería más claro.
+- **H18 (RESUELTO: «Dijiste: así no puedo, pero sigo», en producción desde `22ae202`) (baja, front-juan):** el título «Así no puedes, pero sigues» habla en segunda persona mientras el botón dice «Así no puedo, pero sigo»; leerlo como respuesta de uno mismo («Dijiste: así no puedo, pero sigo») sería más claro.
 
 **Verificado y sin hallazgo:** nadie ve quién opinó (ni Vale, ni Renata, ni el historial); la opinión no cuenta como baja; la v2 no hereda aceptaciones ni opiniones; el tope de 3 versiones está declarado.
 
@@ -329,6 +367,26 @@ Hallazgos de esta llamada (pedidos en la ficha):
 - **H23 (baja, codex-juan/agente-ia):** al final de la opción aparece un bloque «**Flujo social no disponible** · No pudimos confirmar que el servidor admita este recorrido. No se enviará una preparación. Comprobar servicio · Preparar borrador social» (la función v13 todavía no está desplegada). Es un estado de error visible al jurado en la pantalla del agente: ocultarlo mientras no esté disponible o suavizar el texto.
 - **H19 y H20** siguen: la invitación de WhatsApp lleva la regla pero no «para jugar fútbol», y el espacio del organizador no repite el propósito.
 
+## Enmienda 15, dos planes con nombre y «la que pueden más» (producción `22ae202`, 02:10; guion `tests/sinteticos/dos-planes.mjs`; capturas en `capturas/0210/`)
+
+Grupo nuevo «Los de la terraza»: Mara organiza con dos planes con nombre («Asado en el parque» el sábado, «Cine y pizza» el domingo) y regla «La que pueden más»; Teo (320 px) y Lola pueden los dos y prefieren «Cine y pizza»; Nano solo puede el sábado; Pipo nunca abre el enlace. Mínimo 3.
+
+| Qué se comprobó | Qué pasó |
+|---|---|
+| Nueva propuesta | «Nombre de este plan (opcional)» en cada opción ✔; «Más opciones» (plegado) con «Sin ronda / 2 h / 12 h / 24 h» y «La que empieza antes / La que pueden más» ✔; el texto de arriba cambia a «Si sirven las dos, gana la que pueden más personas (lo cuenta el servidor).» ✔ |
+| Mi respuesta | «Si te sirven los dos, ¿cuál prefieres?» aparece **solo con las dos en Sí** (Mara no lo vio antes de responder; sí después) y ofrece los nombres de los planes como opciones ✔; «Opcional y privado: solo desempata si los dos planes los pueden los mismos.» ✔; Teo y Lola guardaron su preferencia ✔ |
+| Lo que ve quien organiza antes de buscar | «Cómo viene cada plan · Franja A: pueden 3 · Franja B: pueden 2 · la prefieren 2 · Solo lo ves tú, sin contarte a ti y sin decir quién. El servidor elige.» ✔ (los números son correctos: A = Teo, Lola, Nano; B = Teo, Lola) |
+| Lo que ven los demás | Teo y Nano no ven totales ni preferencias ✔; ninguna pantalla ajena nombra a quien prefiere qué ni a quien solo puede un día ✔ (fugas: ninguna) |
+| La opción publicada | Gana **A, «Asado en el parque»** (3 pueden) aunque B es la preferida de 2 ✔ (la regla cuenta quiénes pueden; la preferencia solo desempata); la etiqueta aparece en «Opción vigente · Asado en el parque» ✔ |
+| «Así no puedo» y confirmar | Teo tiene el botón y confirmar sigue abierto ✔ |
+| Ronda de 2 h (E-c) | **Verificada a las 02:24** (segunda corrida): en Revisar, «Ronda de opiniones · 2 h después de publicar cada versión (nunca después del cierre)»; al publicar, todos ven «**Opiniones hasta sáb 24 oct, 04:24** (hora de Santiago). Mientras tanto no se rearma; confirmar sigue abierto.» (2 h exactas después de publicar); Teo dice «así no puedo» (texto «Dijiste: así no puedo, pero sigo», H18 ya publicado); Mara **no ve «Rearmar»** con la ronda abierta y sí puede confirmar ✔ |
+| Toques | Mara: 4 para el grupo (lista pegada); Teo, Lola y Nano: 3 desde el enlace; la preferencia cuesta 2 toques más (ir a «Mi respuesta», elegir, guardar) |
+
+Hallazgos nuevos (pedidos en la ficha):
+- **H24 (media, friccion S5 / ux-flujo):** la pantalla de un toque «¿Cuándo puedes?» **no muestra los nombres de los planes**: con «Asado en el parque» y «Cine y pizza» cargados, Teo leyó «Puedo los dos días · Sábado 31 oct y Domingo 1 nov», «Solo el sábado 31 oct», «Solo el domingo 1 nov». Responde sin saber qué es cada uno. Y ese camino **no ofrece «¿cuál prefieres?»**: con «la que pueden más», quien responde por el enlace (el 100 % de los invitados) nunca desempata; solo quien entra a «Mi respuesta». Captura `capturas/0210/teo-03-responder-en-un-paso.png`.
+- **H25 (baja, límite ya declarado):** con 4 que entraron, «pueden 3 / pueden 2 · la prefieren 2» deja deducir cosas en un grupo chico; es el mismo límite que H17 y lo cubre la frase de `preguntas-jurado.md` S5b («en grupos chicos el total puede deducirse; la app nunca dice quién»).
+- **Observación (baja, ux-flujo):** después de publicar, la «Ficha del plan» queda plegada y «Gana la que pueden más personas» deja de verse; para el jurado conviene que la regla se lea junto a la opción vigente («Ganó porque la pueden más»).
+
 ## Qué mejoró con el parche 2 (producción `d978cc1`, 23:46–23:50)
 
 | Hallazgo | Estado hoy |
@@ -349,6 +407,8 @@ Hallazgos de esta llamada (pedidos en la ficha):
 |---|---|---|
 | 19:28 | build `95def89` (parcial: el guion se cortó al confirmar Gonza; corrió durante MIGRACION EN CURSO) | descartada |
 | 19:40 | build `95def89`, base libre | completa; hallazgos H1–H14 |
+| 02:23–02:29 | **PRODUCCIÓN** `22ae202` | `dos-planes` otra vez (ronda E-c verificada: «Opiniones hasta … 04:24», sin «Rearmar» con la ronda abierta), `asi-no-puedo` (23/23 verdaderas) y `psico-perfiles` (sin hallazgos nuevos; «Dijiste: así no puedo» y «Misma fecha y hora; cambió quién puede ir» ya en producción). `proposito-grupo` (sin agente) en cola detrás de rincones |
+| 02:10–02:13 | **PRODUCCIÓN** `22ae202` (la demo se llama «Los del finde») | `dos-planes` (nuevo, E15): dos planes con nombre, «la que pueden más», «¿cuál prefieres?» y totales solo a quien organiza, sin fugas (ronda sin probar por mi selector; arreglado). `seis-amigos` completo: Joaco 3 toques (4,0 s), Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2. Corrida cortada después por pedido de pendientes (0055): «así no puedo», psico y propósito quedan para después de su migración |
 | 01:42–01:43 | **PRODUCCIÓN** `44e6de6` (v13, «Novedades» fuera, CSS de 320 px, fricción y arreglos de Juan) | `seis-amigos` completo, sin errores del guion ni fugas: Joaco 3 toques (4,7 s, 320 px), Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2. **H8 resuelto**: la reparación dice «Misma fecha y hora; cambió quién puede ir.». Nuevos textos buenos: «Faltan por confirmar 3 personas», «6 personas (1 por entrar)» y la tarjeta «Invita a tu grupo · Por ahora entraron 5 · Faltan por entrar: Pili» (para quien nunca abre el enlace). Corrí antes de mi turno por un error de mi cola (empezó justo al liberarse la 0053): se terminó esa corrida de 1 minuto y no lancé más |
 | 00:26–00:27 | **PRODUCCIÓN** `d978cc1` | `proposito-grupo` otra vez, esta vez esperando al agente: el texto de quórum sale como pidió Nico (arriba); H21–H23 nuevos |
 | 23:45–23:50 | **PRODUCCIÓN** `main` `d978cc1` (parche 2 de pantallas + enmienda 14 visible) | cuatro guiones completos, sin errores del guion y sin fugas: `proposito-grupo` (nuevo), `seis-amigos` (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6), `asi-no-puedo` (22/22 verdaderas y las dos «falsas» son lo esperado: nadie ve nombres) y `psico-perfiles`. La llamada del agente en `proposito-grupo` se leyó antes de que terminara de pensar (mi guion): pendiente repetirla |

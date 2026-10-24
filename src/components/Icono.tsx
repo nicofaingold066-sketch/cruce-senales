@@ -1,6 +1,7 @@
 // Íconos de Lucide (https://lucide.dev, licencia ISC). Siempre decorativos: el texto vecino dice qué es.
 // Se importan uno por uno para que el paquete solo lleve los que se usan.
 import {
+  X,
   Beer,
   Cake,
   CalendarClock,
@@ -53,6 +54,7 @@ const ICONOS = {
   candado: Lock,
   personas: Users,
   chispa: Sparkles,
+  cerrar: X,
   llave: KeyRound,
   calendario: CalendarDays,
   check: Check,

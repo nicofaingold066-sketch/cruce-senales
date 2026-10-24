@@ -1,0 +1,432 @@
+/* S1 Ingreso (friccion, rediseño de la noche). Solo tokens de sistema.css: cuatro tamaños, 44 px de toque, espaciado
+   --e-*. Se reutilizan las clases de styles.css (vista, escena, hoja, tarjeta, btn, campo, filas, privado, plegable);
+   acá va lo propio de la portada y de "¿Quién eres?". Todo bajo .s1 para no pisar a otras secciones. */
+
+.s1 .portada-lema,
+.s1 .escena h1 {
+  font-size: var(--t-titulo);
+  line-height: var(--lh-titulo);
+  font-weight: var(--p-pantalla);
+}
+.s1 .portada-sub,
+.s1 .escena-sub,
+.s1 .quien-espacio {
+  font-size: var(--t-cuerpo);
+  line-height: var(--lh-cuerpo);
+}
+.s1 .escena-eyebrow {
+  font-size: var(--t-nota);
+}
+.s1 h2 {
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+}
+.s1 .t-nota,
+.s1 .suave,
+.s1 small,
+.s1 .campo > span,
+.s1 .privado p,
+.s1 .privado strong,
+.s1 .aviso {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+.s1-nota {
+  margin: 0 0 var(--e-3);
+  color: var(--tinta-2);
+}
+.s1 .btn.s1-btn,
+.s1 .s1-confirmar .btn {
+  width: 100%;
+  min-height: 52px;
+  margin: 0;
+  white-space: normal;
+  text-align: center;
+  font-size: var(--t-cuerpo);
+}
+.s1-entrada {
+  margin: 0 0 var(--e-3);
+}
+.s1-entrada-principal {
+  border-color: var(--tinta);
+  border-width: 2px;
+}
+.s1-nombre {
+  margin: 0 0 var(--e-3);
+}
+.s1-nombre-fila {
+  display: grid;
+  gap: var(--e-2);
+}
+@media (min-width: 375px) {
+  .s1-nombre-fila {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+}
+.s1-nombre-fila .campo {
+  margin: 0;
+}
+.s1-nombre-fila .btn {
+  min-height: var(--toque);
+  margin: 0;
+}
+.s1-nombre-listo {
+  margin: var(--e-3) 0 0;
+  color: var(--tinta-2);
+}
+.s1-nombre-listo .enlace {
+  font: inherit;
+  font-size: var(--t-nota);
+  background: none;
+  border: 0;
+  padding: 0;
+  min-height: var(--toque);
+  color: var(--tinta);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.s1-acciones {
+  display: grid;
+  gap: var(--e-2);
+  margin: 0 0 var(--e-3);
+}
+.s1-plegable > summary {
+  list-style: none;
+  cursor: pointer;
+}
+.s1-plegable > summary::-webkit-details-marker {
+  display: none;
+}
+.s1-plegable-cuerpo {
+  margin-top: var(--e-2);
+}
+.s1-demo {
+  margin: var(--e-2) 0 0;
+}
+.s1-demo .s1-nota {
+  margin: var(--e-2) 0 0;
+}
+.s1-confirmar {
+  margin: var(--e-2) 0 var(--e-3);
+}
+.s1-grupos .fila-titulo {
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-boton);
+}
+.s1-grupos .fila-meta {
+  font-size: var(--t-nota);
+}
+.s1-grupos .fila {
+  min-height: 56px;
+}
+.s1-grupo-icono {
+  font-weight: var(--p-pantalla);
+  font-size: var(--t-nota);
+}
+
+/* ¿Quién eres?: la lista es el primer plano; la fila elegida se abre para confirmar en la misma pantalla. */
+.s1-quien .quien-nombre {
+  min-height: 56px;
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-boton);
+}
+.s1-quien .quien-tomado {
+  font-size: var(--t-nota);
+}
+.s1-otro .quien-nombre {
+  opacity: 0.55;
+}
+.s1-elegido {
+  display: block;
+}
+.s1-confirmar-nombre {
+  border: 2px solid var(--tinta);
+  border-radius: var(--r-m);
+  padding: var(--e-4);
+  background: var(--hoja);
+}
+.s1-confirmar-nombre h3 {
+  margin: 0 0 var(--e-1);
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+  font-weight: var(--p-titulo);
+}
+.s1-confirmar-nombre p {
+  margin: 0 0 var(--e-3);
+  color: var(--tinta-2);
+}
+.s1-quien .entrada-subtitulo {
+  font-size: var(--t-subtitulo);
+}
+.s1-quien .unirse .suave {
+  margin: 0 0 var(--e-3);
+}
+
+/* El formulario de unión dentro de la tarjeta "Tengo un código": sin tarjeta propia (tarjeta dentro de tarjeta). */
+.s1-portada .unirse {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ---- Portada "Mi espacio" (mockup 02:40) ---- */
+.s1-portada .s1-hoja {
+  padding-top: var(--e-5);
+}
+.s1-titulo {
+  margin: 0 0 var(--e-3);
+  font-size: var(--t-titulo);
+  line-height: var(--lh-titulo);
+  font-weight: var(--p-pantalla);
+}
+.s1-te-toca {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-height: var(--toque);
+  margin: 0 0 var(--e-4);
+  padding: var(--e-2) var(--e-4);
+  border-radius: var(--r-m);
+  background: var(--brasa-suave, var(--relleno));
+  color: var(--brasa);
+  font-size: var(--t-cuerpo);
+  text-decoration: none;
+}
+.s1-te-toca span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.s1-vacio {
+  margin: 0 0 var(--e-4);
+  color: var(--tinta-2);
+}
+.s1-fila-grupo {
+  min-height: 64px;
+}
+.s1-opciones {
+  display: grid;
+  gap: var(--e-3);
+}
+.s1-opcion {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  min-height: 64px;
+  padding: var(--e-3) var(--e-4);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-m);
+  background: var(--hoja);
+  color: var(--tinta);
+  text-decoration: none;
+}
+details.s1-opcion {
+  display: block;
+  padding: 0;
+}
+.s1-opcion-unirme > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  min-height: 64px;
+  padding: var(--e-3) var(--e-4);
+}
+.s1-opcion-unirme > summary::-webkit-details-marker {
+  display: none;
+}
+.s1-opcion-cuerpo {
+  padding: 0 var(--e-4) var(--e-4);
+}
+.s1-opcion-icono {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-s);
+  background: var(--relleno);
+}
+.s1-opcion-texto {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  overflow-wrap: anywhere;
+}
+.s1-opcion-texto .t-nota {
+  color: var(--tinta-2);
+}
+.s1-opciones .s1-demo {
+  margin: var(--e-2) 0 0;
+}
+.s1-opciones .s1-demo > .s1-nota:first-child {
+  margin: 0 0 var(--e-2);
+  text-align: center;
+}
+.s1-nombre {
+  padding: var(--e-3) var(--e-4);
+  border: 1px dashed var(--linea);
+  border-radius: var(--r-m);
+}
+.s1-nombre h2 {
+  margin: 0 0 var(--e-2);
+  font-weight: var(--p-titulo);
+}
+.s1-nombre .s1-nota {
+  margin: var(--e-2) 0 0;
+}
+
+/* El "+" flotante (solo con grupos y en el teléfono): encima de la barra inferior. */
+.s1-mas {
+  position: fixed;
+  right: var(--margen);
+  bottom: calc(76px + env(safe-area-inset-bottom));
+  z-index: 25;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-height: 52px;
+  padding: 0 var(--e-5);
+  border-radius: 999px;
+  box-shadow: var(--sombra-flota);
+  font-size: var(--t-cuerpo);
+}
+
+/* La hoja del "+": un dialog pegado abajo, ancho del contenido. */
+.s1-hoja-modal {
+  width: 100%;
+  max-width: 640px;
+  max-height: 88vh;
+  margin: auto auto 0;
+  padding: var(--e-4) var(--margen) calc(var(--e-5) + env(safe-area-inset-bottom));
+  border: 0;
+  border-radius: var(--r-l) var(--r-l) 0 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  overflow-y: auto;
+}
+.s1-hoja-modal::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+.s1-hoja-cabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-3);
+  margin: 0 0 var(--e-3);
+}
+.s1-hoja-cabeza h2 {
+  margin: 0;
+}
+.s1-cerrar {
+  min-width: var(--toque);
+  min-height: var(--toque);
+  margin: 0;
+  padding: 0;
+}
+
+/* Teléfono con grupos: las opciones viven en la hoja; sin grupos, a la vista bajo la lista. */
+.s1-con-grupos .s1-columna-nuevo {
+  display: none;
+}
+.s1-sin-grupos .s1-columna-nuevo {
+  margin-top: var(--e-2);
+}
+
+/* Computadora: grupos a la izquierda (7 columnas) y "Nuevo grupo" a la derecha, sin la hoja ni el "+". */
+@media (min-width: 960px) {
+  /* La portada no tiene escena: no usa la grilla escena | hoja de styles.css; ocupa el ancho, centrada. */
+  .vista.s1-portada {
+    display: block;
+    /* Sin escena no hace falta ocupar el alto: así la portada no desplaza en 1280 (la barra mide 60 y no --barra-alto). */
+    min-height: 0;
+  }
+  .s1-portada .hoja.s1-hoja {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--e-6) 40px 96px;
+  }
+  .s1-cuerpo {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: var(--e-6);
+    align-items: start;
+  }
+  .s1-con-grupos .s1-columna-nuevo {
+    display: block;
+  }
+  .btn.s1-mas {
+    display: none;
+  }
+}
+
+/* ---- Mockup validado, pantallas 1, 2, 9 y 10 (03:15) ---- */
+/* El "+" flotante va abajo al centro (sobre la barra inferior). */
+.btn.s1-mas {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}
+.btn.s1-mas:active {
+  transform: translateX(-50%) scale(0.97);
+}
+/* La X de la hoja: el ícono "+" girado. */
+.s1-x {
+  display: inline-grid;
+  transform: rotate(45deg);
+}
+/* Pantalla 9 */
+.s1-nueva .escena {
+  padding-bottom: var(--e-6);
+}
+.s1-orbita-chica {
+  max-width: 220px;
+  margin: var(--e-3) auto 0;
+}
+.s1-entrar {
+  margin: 0 0 var(--e-3);
+}
+.s1-entrar h2 {
+  margin: 0 0 var(--e-1);
+}
+.s1-entrar .campo {
+  margin: var(--e-3) 0;
+}
+.s1-opcion-demo {
+  display: block;
+  padding: var(--e-3) var(--e-4);
+}
+.s1-opcion-demo .btn {
+  width: 100%;
+  margin: 0;
+}
+.s1-opcion-demo .s1-nota {
+  margin: var(--e-2) 0 0;
+}
+/* Pantalla 10 */
+.s1 .s1-grupo-grande {
+  margin: var(--e-1) 0 var(--e-1);
+  font-size: var(--t-titulo);
+  line-height: var(--lh-titulo);
+  font-weight: var(--p-pantalla);
+  color: var(--noche-texto);
+  overflow-wrap: anywhere;
+}
+.s1-quien .escena h1 {
+  margin-top: var(--e-4);
+}
+.s1-quien .quien-nombre {
+  gap: var(--e-3);
+}
+.s1-quien .quien-nombre .avatar {
+  flex: none;
+}
+.btn.s1-no-estoy {
+  border: 1.5px dashed var(--linea);
+  background: transparent;
+}

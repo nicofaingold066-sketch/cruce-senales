@@ -137,7 +137,7 @@ async function recorridoTeclado(page, max = 90) {
   for (let i = 0; i < max; i++) {
     await page.keyboard.press('Tab')
     await page.waitForTimeout(320) // deja terminar el desplazamiento suave del carrusel y las transiciones de 150–300 ms
-    const info = await page.evaluate(() => {
+    const info = await page.evaluate(async () => {
       const e = document.activeElement
       if (!e || e === document.body || e.id === '__inicio_a11y') return null
       const estilo = (x) => { const s = getComputedStyle(x); return [s.outlineStyle, s.outlineWidth, s.outlineColor, s.boxShadow, s.borderColor, s.backgroundColor, s.color, s.textDecorationLine].join('|') }
@@ -145,17 +145,25 @@ async function recorridoTeclado(page, max = 90) {
       const nombre = (e.getAttribute('aria-label') || e.innerText || e.value || e.getAttribute('title') || e.getAttribute('placeholder') || '').trim().replace(/\s+/g, ' ').slice(0, 50)
       const clave = `${e.tagName}|${e.id}|${e.className}|${nombre}|${Math.round(e.getBoundingClientRect().top + scrollY)}`
       e.blur()
+      await new Promise((r) => setTimeout(r, 380)) // las transiciones de borde/sombra duran 0,15–0,3 s: sin esperar, "sin foco" se lee igual que "con foco"
       const sin = estilo(e)
       e.focus({ preventScroll: true })
       // ¿Queda tapado por algo fijo/pegajoso? Cinco puntos dentro del elemento.
-      const r = e.getBoundingClientRect()
-      const pts = [[0.5, 0.5], [0.15, 0.2], [0.85, 0.2], [0.15, 0.8], [0.85, 0.8]].map(([fx, fy]) => [r.left + r.width * fx, r.top + r.height * fy])
-      let tapados = 0, fuera = 0, tapa = ''
-      for (const [x, y] of pts) {
-        if (x < 0 || y < 0 || x > innerWidth || y > innerHeight) { fuera++; continue }
-        const top = document.elementFromPoint(x, y)
-        if (top && !(top === e || e.contains(top) || top.contains(e))) { tapados++; tapa = (top.closest('.nav-inferior, .barra, .barra-accion, header, nav') || top).className || top.tagName }
+      const medir = () => {
+        const r = e.getBoundingClientRect()
+        const pts = [[0.5, 0.5], [0.15, 0.2], [0.85, 0.2], [0.15, 0.8], [0.85, 0.8]].map(([fx, fy]) => [r.left + r.width * fx, r.top + r.height * fy])
+        let tapados = 0, fuera = 0, tapa = ''
+        for (const [x, y] of pts) {
+          if (x < 0 || y < 0 || x > innerWidth || y > innerHeight) { fuera++; continue }
+          const top = document.elementFromPoint(x, y)
+          if (top && !(top === e || e.contains(top) || top.contains(e))) { tapados++; tapa = (top.closest('.nav-inferior, .barra, .barra-accion, header, nav') || top).className || top.tagName }
+        }
+        return { tapados, fuera, tapa, r }
       }
+      let m = medir()
+      // Un carrusel con desplazamiento suave tarda en traer el elemento: se vuelve a medir antes de darlo por tapado o fuera.
+      if (m.tapados + m.fuera >= 2) { await new Promise((x) => setTimeout(x, 600)); m = medir() }
+      const { tapados, fuera, tapa, r } = m
       return { clave, tag: e.tagName.toLowerCase(), nombre, indicador: con !== sin, tapados, fuera, tapa: String(tapa).slice(0, 40), top: Math.round(r.top), alto: innerHeight }
     })
     if (!info) continue
@@ -180,7 +188,8 @@ async function contrastePixeles(page) {
   await page.setViewportSize({ width: vp.width, height: h })
   await page.mouse.move(0, 0) // sin pasar el mouse por encima de nada (los hover cambian colores)
   await page.waitForTimeout(900) // transiciones y animaciones de entrada (0,15–0,3 s) terminadas
-  const png = (await page.screenshot({ type: 'png' })).toString('base64')
+  const buf = await page.screenshot({ type: 'png' })
+  const png = buf.toString('base64')
   const res = await page.evaluate(async (b64) => {
     const img = new Image(); img.src = `data:image/png;base64,${b64}`; await img.decode()
     const cv = document.createElement('canvas'); cv.width = img.width; cv.height = img.height
@@ -250,6 +259,8 @@ async function contrastePixeles(page) {
   }, png)
   await page.setViewportSize(vp)
   await page.waitForTimeout(200)
+  // Evidencia: si hay fallas de contraste se guarda la captura sobre la que se midió (así se distingue una falla real de un artefacto de medición).
+  if (res.length && globalThis.__rincon_id) { try { writeFileSync(`${CARPETA}/${globalThis.__rincon_id}-contraste-${vp.width}.png`, buf) } catch {} }
   return res
 }
 
@@ -278,6 +289,7 @@ async function espaciado(page) {
 
 /** Audita un rincón en los anchos pedidos. Guarda el árbol accesible a 375. */
 export async function rinconA11y(page, id, rincon, { anchos = [320, 375, 1280], teclado = true } = {}) {
+  globalThis.__rincon_id = id
   const previo = page.viewportSize()
   for (const w of anchos) {
     await page.setViewportSize({ width: w, height: w >= 1000 ? 800 : w >= 700 ? 1024 : 740 })

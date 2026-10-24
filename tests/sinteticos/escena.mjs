@@ -148,14 +148,12 @@ export function armarEscena({ base, salida, grupo, titulo, fugas = [] }) {
   async function crearPropuesta(org, { actividad, minimoMas = 1 }) {
     const t = org.toques
     await org.tocarEnlace('Crear propuesta', false)
-    await org.page.getByRole('heading', { name: 'Nueva propuesta' }).waitFor({ timeout: 15000 })
+    await org.esperarNuevoPlan()
     const vacia = await ver(org, 'nueva-propuesta-vacia')
-    if (actividad) await org.tocarBoton(actividad)
+    if (actividad) await org.atajo(actividad)
     await org.page.getByLabel('Propósito de la propuesta').fill(titulo)
     for (let i = 0; i < minimoMas; i++) await org.tocar(org.page.getByLabel('Sumar uno al mínimo'), 'mínimo +1')
-    await org.tocarBoton('Revisar antes de crear')
-    await ver(org, 'nueva-propuesta-revisar')
-    await org.tocarBoton('Crear y abrir al grupo')
+    await org.revisarYCrear(() => ver(org, 'nueva-propuesta-revisar'))
     await org.page.getByRole('tab', { name: 'Plan' }).waitFor({ timeout: 30000 })
     await org.page.waitForTimeout(1200)
     datos.propuestaUrl = org.page.url()
@@ -170,7 +168,8 @@ export function armarEscena({ base, salida, grupo, titulo, fugas = [] }) {
     await p.page.goto(datos.enlace)
     await p.mirar()
     await p.page.getByRole('heading', { name: '¿Quién eres?' }).waitFor({ timeout: 25000 })
-    await ver(p, 'enlace-quien-eres')
+    const quienEres = await ver(p, 'enlace-quien-eres')
+    p.quienEresTexto = quienEres.texto // la regla del grupo («Esta vez es solo el grupo.») y el propósito se leen acá
     await p.tocar(p.page.getByRole('button', { name: nombre, exact: true }), `su nombre «${nombre}»`)
     await ver(p, 'eres-tu')
     await p.tocarBoton(`Sí, soy ${nombre}`)
@@ -233,8 +232,8 @@ export function armarEscena({ base, salida, grupo, titulo, fugas = [] }) {
 
   // De «Respuesta guardada» (o del espacio) a la pestaña Plan de la propuesta.
   async function irAlPlan(p) {
-    if (p.rapida && (await p.page.getByRole('link', { name: 'Ver el plan' }).count())) {
-      await p.tocar(p.page.getByRole('link', { name: 'Ver el plan' }), 'enlace «Ver el plan»')
+    if (p.rapida && (await p.page.getByRole('link', { name: /^(Ver el plan|Listo)$/ }).count())) {
+      await p.tocar(p.page.getByRole('link', { name: /^(Ver el plan|Listo)$/ }), 'enlace «Ver el plan» / «Listo»')
     } else {
       await p.page.goto(datos.propuestaUrl)
     }

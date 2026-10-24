@@ -9,6 +9,7 @@ import { createRequire } from 'node:module'
 import { execFileSync } from 'node:child_process'
 import { mkdirSync } from 'node:fs'
 import { createServer } from 'vite'
+import { irA } from './nav.mjs'
 
 const require = createRequire(import.meta.url)
 let pw
@@ -159,7 +160,7 @@ async function observar(p, nombre) {
 await observar(T, 'Tomi'); await observar(L, 'Luna')
 const boton = (p, nombre) => p.getByRole('button', { name: nombre, exact: true })
 const tocar = (p, nombre) => boton(p, nombre).click()
-const tab = (p, nombre) => p.getByRole('tab', { name: nombre, exact: true }).click()
+const tab = (p, nombre) => irA(p, nombre)
 const texto = (p, t) => p.getByText(t, { exact: false }).first().waitFor()
 const estado = (p, t) => p.locator('.estado-hero-etiqueta').filter({ hasText: new RegExp(`^${t}$`, 'i') }).waitFor()
 function comprobar(condicion, mensaje) { assert.ok(condicion, mensaje); comprobadas++ }
@@ -188,9 +189,10 @@ async function foto(p, nombre) {
 async function preparar(minimo = 4, maximo = 6, tomi = true, caro = true) {
   baseLibre()
   await T.goto(espacioUrl)
-  await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta/ }).first().click()
+  await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Nuevo plan/ }).first().click()
   await T.getByLabel(/Mínimo/).fill(String(minimo)); await T.getByLabel('Máximo', { exact: true }).fill(String(maximo))
-  await tocar(T, 'Revisar antes de crear')
+  // El mockup (S3) deja un solo primario («Crear y abrir al grupo»): el paso «Revisar antes de crear» es opcional.
+  { const revisar = T.getByRole('button', { name: 'Revisar antes de crear', exact: true }); if (await revisar.isVisible().catch(() => false)) await revisar.click() }
   const creada = await accion(T, 'create_proposal', () => tocar(T, 'Crear y abrir al grupo'))
   await T.waitForURL(/\/p\//)
   await estado(T, 'Reuniendo interés')
