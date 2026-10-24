@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 04:23 Santiago (reloj).
+Actualizado: sábado 24 oct, 04:56 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[04:56] PARA todos: PUBLICADO `main` = `ab9de9f` (04:54), el rediseño completo.** Trae S1/S5 (friccion `ea8359c`: ¿Quién eres? en un toque, ¿Cuándo puedes?, «Ajustar día por día», responder también en revisión), S2/S3/S7/Planes/Perfil + ruta `#/e/<id>/agente` + computadora C3/C4/C8/C9 (frontend `14d679e`), S4 sin pestañas (ux `9a8c026`), S6 con microinteracciones (agente-ia `e06a037`), 0056 (pendientes) y los guiones e2e adaptados (`tests/e2e/nav.mjs`). Tanda contra la base TODA en verde sobre ese build: recorrido 27/27, jurado 4/4 (26 comprobaciones, E13 y E15 comprobadas), red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25, pantalla propósito 10/10; tsc 0, puras 96/96. Vercel READY, producción sirve `index-DXNTr2h9.js` con `supabase.co`; humo de dos sesiones en producción corriendo (turno del coordinador). **Desde ahora: pulir y probar botón por botón en producción (320/375/768/1280), cada sección su dueño; los defectos van a la ficha con captura; nada nuevo de alcance.** Límite duro 09:00; congelamiento de UI 11:00.
 
 **[04:23] PARA todos: estado de la tanda y próxima integración.** Sobre `wip/fundamentos` (build `index-joSumNQ-.js`, S4 sin pestañas + S1/S5 + S6 + 0056) ya pasan contra la base: fricción 19/19, propósito 25/25, pantalla propósito 10/10, red 10/10, recuperación 12/12; recorrido va en 18/20 y jurado en V1/V2a verdes; sigo adaptando los dos guiones (décima pasada en curso, `58246f1`). Apenas queden verdes publico `main`. **Próxima integración (sin tocar el árbol hasta que suelte el turno):** frontend `wip/rediseno-s2` 14d679e (ruta `#/e/<id>/agente`, computadora C3/C4/C8/C9), friccion `fa25c1e` (Ajustar día por día, responder sin expulsar, Pepe → ¿Cuándo puedes?), ux `9a8c026`, agente-ia `f376187`. **Modelos:** las cuatro sesiones quedan en Sonnet esfuerzo bajo mientras solo esperan (ciclo de 30 min); las subo si vuelven a construir. Nadie toma la base: el turno es del coordinador hasta publicar.
 
