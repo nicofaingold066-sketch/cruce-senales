@@ -10,6 +10,7 @@ import type { Atajo } from '../lib/ejemplos'
 import { Avatar, Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { tomarBorradorAgente } from '../agente/api'
+import '../estilo/seccion-s3.css'
 
 // Una propuesta se arma con dos momentos posibles (A y B), cada uno un día y una hora de encuentro,
 // y una duración aproximada: la hora de fin se calcula sola. El contrato sigue recibiendo inicio y fin
@@ -344,7 +345,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   }
 
   return (
-    <div className="vista">
+    <div className="vista vista-s3">
       <section className="escena escena-compacta" aria-labelledby="nueva-titulo">
         <a className="escena-volver" href={rutas.espacio(espacioId)}>
           <Icono n="atras" tam={20} /> {espacio.nombre}
@@ -369,7 +370,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
           >
             {desdeAgente ? (
               <Aviso tono="info" titulo="Borrador del agente">
-                Título y momentos vienen del borrador del agente. Revisa cupos, quién no puede faltar y cierre: el agente no crea ni confirma nada.
+                Título y fechas vienen del agente. Revisa cupos, quién no puede faltar y cierre. El agente no crea ni confirma nada.
               </Aviso>
             ) : null}
             {espacio.demo && !desdeAgente ? (
@@ -421,7 +422,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
             <fieldset className={`form-seccion ${marcado === 'franjas' ? 'grupo-error' : ''}`}>
               <legend>Cuándo · dos opciones</legend>
               <p className="suave nota-seccion">
-                El grupo dice en privado cuál le sirve. Si sirven las dos, gana{' '}
+                Cada uno dice en privado cuál le sirve. Si sirven las dos, gana{' '}
                 {reglaEnviar === 'mas_si' ? 'la que pueden más personas (lo cuenta el servidor).' : 'la que empieza antes.'}
               </p>
               {(['A', 'B'] as const).map((clave) => {
@@ -438,6 +439,8 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                       <strong>Opción {clave}</strong>
                       {inicio ? <span className="momento-resumen">{franjaTexto(inicio, fin)}</span> : null}
                     </div>
+                    <SelectorDia clave={clave} valor={dia} alElegir={(d) => poner(clave === 'A' ? 'aDia' : 'bDia', d)} />
+                    <SelectorHora clave={clave} valor={horaSel} alElegir={(h) => poner(clave === 'A' ? 'aHora' : 'bHora', h)} />
                     {E15_DOS_PLANES ? (
                       <label className="campo campo-etiqueta-plan">
                         <span>Nombre de este plan (opcional)</span>
@@ -449,8 +452,6 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                         />
                       </label>
                     ) : null}
-                    <SelectorDia clave={clave} valor={dia} alElegir={(d) => poner(clave === 'A' ? 'aDia' : 'bDia', d)} />
-                    <SelectorHora clave={clave} valor={horaSel} alElegir={(h) => poner(clave === 'A' ? 'aHora' : 'bHora', h)} />
                   </div>
                 )
               })}
@@ -475,7 +476,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                 <Contador id="cupo-minimo" etiqueta="Mínimo" valor={form.minimo} onCambio={(v) => poner('minimo', v)} />
                 <Contador id="cupo-maximo" etiqueta="Máximo" valor={form.maximo} onCambio={(v) => poner('maximo', v)} />
               </div>
-              <p className="suave nota-seccion">El mínimo cuenta a quien es imprescindible.</p>
+              <p className="suave nota-seccion">El mínimo cuenta a quien no puede faltar.</p>
               <div className="anfitrion-elegir" role="radiogroup" aria-label="Persona que no puede faltar">
                 <span className="duracion-etiqueta">
                   <Icono n="anfitrion" tam={16} /> No puede faltar
@@ -531,7 +532,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
               ) : null}
               {plazo ? (
                 <p className="suave nota-seccion">
-                  <Icono n="cierre" tam={14} /> Cierra {momentoCorto(plazo)} (hora de Santiago). El servidor decide si se cumplió.
+                  <Icono n="cierre" tam={14} /> Cierra {momentoCorto(plazo)}. Hasta entonces se puede confirmar.
                 </p>
               ) : null}
             </fieldset>
@@ -551,52 +552,65 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                 <small>Propósito</small>
                 <strong>{form.titulo.trim()}</strong>
               </div>
-              <dl className="datos">
-                <dt>Franja A</dt>
-                <dd>
-                  {etiquetaA ? <strong>{etiquetaA}: </strong> : null}
-                  {franjaTexto(aInicio, aFin)}
-                </dd>
-                <dt>Franja B</dt>
-                <dd>
-                  {etiquetaB ? <strong>{etiquetaB}: </strong> : null}
-                  {franjaTexto(bInicio, bFin)}
-                </dd>
+              <ul className="resumen-s3">
+                <li>
+                  <Icono n="reloj" tam={18} />
+                  <span>
+                    <strong>A</strong> {etiquetaA ? `${etiquetaA}: ` : ''}
+                    {franjaTexto(aInicio, aFin)}
+                  </span>
+                </li>
+                <li>
+                  <Icono n="reloj" tam={18} />
+                  <span>
+                    <strong>B</strong> {etiquetaB ? `${etiquetaB}: ` : ''}
+                    {franjaTexto(bInicio, bFin)}
+                  </span>
+                </li>
+                <li>
+                  <Icono n="persona" tam={18} />
+                  <span>
+                    Mínimo <strong>{form.minimo}</strong>, máximo <strong>{form.maximo}</strong>. No puede faltar:{' '}
+                    <strong>{imprescindible?.nombre ?? '—'}</strong>
+                  </span>
+                </li>
+                <li>
+                  <Icono n="cierre" tam={18} />
+                  <span>Se confirma hasta el {momentoCorto(plazo)}</span>
+                </li>
                 {reglaEnviar === 'mas_si' ? (
-                  <>
-                    <dt>Si sirven las dos</dt>
-                    <dd>Gana la que pueden más personas</dd>
-                  </>
+                  <li>
+                    <Icono n="check" tam={18} />
+                    <span>Si sirven las dos, gana la que pueden más personas</span>
+                  </li>
                 ) : null}
                 {rondaEnviar ? (
-                  <>
-                    <dt>Ronda de opiniones</dt>
-                    <dd>{rondaEnviar} h después de publicar cada versión (nunca después del cierre)</dd>
-                  </>
+                  <li>
+                    <Icono n="reloj" tam={18} />
+                    <span>Ronda de opiniones de {rondaEnviar} h después de publicar cada versión</span>
+                  </li>
                 ) : null}
-                <dt>Zona horaria</dt>
-                <dd>{ZONA_VISIBLE}</dd>
-                <dt>Cupos</dt>
-                <dd>
-                  Mínimo {form.minimo} (contando a {imprescindible?.nombre ?? 'quien es imprescindible'}), máximo {form.maximo}
-                </dd>
-                <dt>Imprescindible</dt>
-                <dd>{imprescindible?.nombre ?? '—'}</dd>
-                <dt>Cierre de aceptación</dt>
-                <dd>{momentoCorto(plazo)}</dd>
-              </dl>
+              </ul>
             </div>
-            <p className="suave" style={{ marginTop: 12 }}>
-              "Abrir" permite que cada persona marque en privado cuándo puede. "Me interesa" es opcional y no suma confirmados.
-            </p>
+            <p className="resumen-nota">Al abrir, cada persona marca en privado cuándo puede.</p>
             {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} enfocar /> : null}
-            <div className="fila-botones">
-              <Boton variante="secundario" onClick={() => void crear(false)} ocupado={ocupado || enCurso} ocupadoTexto="Creando…" disabled={soloLectura}>
-                Crear solo el borrador
-              </Boton>
+            {/* Un solo primario (en la barra). El borrador queda como enlace: rincones f1 lo toca para el estado Borrador. */}
+            <div className="acciones-revisar">
               <Boton variante="secundario" onClick={() => setPaso('editar')} disabled={ocupado || enCurso}>
                 Volver a editar
               </Boton>
+              <button
+                type="button"
+                className="enlace"
+                aria-disabled={ocupado || enCurso || soloLectura || undefined}
+                aria-busy={ocupado || enCurso ? true : undefined}
+                onClick={() => {
+                  if (ocupado || enCurso || soloLectura) return
+                  void crear(false)
+                }}
+              >
+                {ocupado || enCurso ? 'Creando…' : 'Crear solo el borrador'}
+              </button>
             </div>
             <div className="barra-accion">
               <Boton onClick={() => void crear(true)} ocupado={ocupado || enCurso} ocupadoTexto="Creando…" disabled={soloLectura}>
