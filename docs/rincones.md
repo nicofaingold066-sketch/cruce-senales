@@ -1,7 +1,7 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: viernes 23 oct, 22:05 (build = `main` 140cdaf) (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: sábado 24 oct, 00:55 (build = `main` 3cca951) (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
 Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 16**, de los cuales **2 ya APROBADOS** en `main` 3ace04e (O-06 y O-08, corrida 4 `f0` 20:55) y 3 por confirmar en la misma corrida (O-02, O-12b, O-13) (ninguno impide completar el recorrido canónico), el resto APROBADO.
@@ -231,6 +231,32 @@ Observaciones (ninguna rompe nada): (1) el caso "Organizador a menos de 36 h del
 | R255 | Regresión de mis guiones: `f1`, `f4`, `f7` y `f11` crean propuestas sin actividad; en un grupo con propósito fallarían ("campo_faltante"). Los grupos de rincones se crean en modo libre salvo `f13` | — | adaptar al llegar |
 
 Observación del banco de friccion (O-17, leve, a friccion): tras marcar "Así no puedo", el botón de deshacer dice "Ya no: puedo así", que se lee como doble negación; algo como "Ya puedo así" o "Volver a «puedo»" se entiende de una.
+
+### Agente social (enmienda 11, `main` 40ffb66; se recorre cuando haya turno: `f8` y las pruebas reales de agente-ia)
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| R410 | Panel del agente: "Invitaciones del agente" (casilla de permiso, "Guardar", "Comprobar permiso de invitaciones") | — | pendiente |
+| R411 | `AgenteSocial`: revisión humana del borrador exacto antes de invitar (aprobar o descartar) | — | pendiente |
+| R412 | `InvitacionAgente`: invitación personal del agente que recibe una persona | — | pendiente |
+| R413 | El agente social con el permiso apagado o sin conexión: mensajes y que no invite a nadie | — | pendiente |
+
+### Enmienda 13 de punta a punta en PRODUCCIÓN (`f13`, 00:38–00:45, `main` 3cca951 publicado; grupo propio "Rincones D", 4 personas)
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| R300/R301 | Crear grupo con "¿Quién viene?" = "Con parejas"; el nombre del grupo queda "Rincones D · con parejas" en pantalla y la invitación dice "Pueden venir con pareja." | ojo | A |
+| R303 | Nueva propuesta: atajos del grupo (Pádel · Tenis · Cena · Cine · Cumple · Asado · Básquet · Bar · …); el mínimo sube con "Sumar uno al mínimo" ("Mínimo 3, contando a Orga Dé") | auto | A |
+| R310 | "¿Quién eres?" de un grupo con modalidad y con "¿Qué guarda CRUXE de mí?" | ojo | A |
+| R311 | "Respuesta en un paso" en un grupo real: sin calendario simulado (correcto), foco al título "¿Cuándo puedes?" | ojo | A |
+| R320–R322 | Plan: "Primero marca tu disponibilidad: eres quien no puede faltar" (se anuncia); tras buscar opción, "Si no llegan 3, nadie queda comprometido… Se cierra vie 30 oct, 20:00" | ojo | A |
+| R330–R332 | Vista de Ana: "Así no puedo, pero sigo" junto a confirmar → "Dijiste: así no puedo, pero sigo… Sigues en el plan"; el lector lo anuncia ("Marcaste…") por el foco; en Mi respuesta puede cambiar sus condiciones | ojo | A |
+| R333 | Con UNA sola opinión, el organizador NO ve "Algunos no pueden así" (no delata) | auto | A (privacidad) |
+| R340 | Con DOS opiniones: "Algunos no pueden así… Rearmar con lo nuevo", sin nombres cerca | ojo | A (privacidad) |
+| R341–R343 | v1 con 2 de 3 confirmados → "Algunos no pueden así: puedes rearmar con lo nuevo" → tras rearmar, v2 en la franja B, 0/3, sin aceptaciones heredadas | ojo | A |
+| R350–R353 | v2: Caro y el organizador confirman (2/3: "Falta 1 para el mínimo"); el aviso "Hay una versión nueva (versión 2)… Entendido" aparece a quien vuelve; al volver, la app abre en la última pestaña usada (Mi respuesta) con "Ir a confirmar" arriba. (Mi guion de Ana y Beto falló por buscar el botón en esa pestaña; ya lo corregí) | ojo | A |
+| R360 | Enlaces de WhatsApp y de mapa del plan: ninguno nombra a una persona; el aviso de versión nueva dice "Las confirmaciones anteriores no cuentan; si te sirve, confirma de nuevo" | auto | A (privacidad) |
+| R370/R371 | Retiro: ayuda "retirarte avisa al grupo sin decir quién. No hace falta contar por qué."; confirmación; a quien se retira: "Gracias por avisar. No hace falta contar por qué." (se anuncia) | ojo | A |
+| R372 | Baja sin nombre: ninguna frase "<nombre> se bajó/se retiró" en el plan del organizador | auto | A (privacidad) |
+Accesibilidad de estos rincones (320, 375): sin fallas reales; dos avisos de "foco sin cambio" en campos de texto son transiciones (falso positivo ya corregido en el módulo); "Confirmar" y "Encuentro" se cortan en el paso de 4 etapas con espaciado de texto ampliado a 320 px (leve); las pestañas son 3 paradas de Tab en vez de una con flechas (leve).
 
 ## Pendiente de recorrer
 "Entrar como otra persona" confirmado, reclamar un lugar simulado libre del demo, "Hoy paso" ya marcado, plazo vencido (expirado), cierre elegido a mano con fecha pasada, y los cuatro anchos de cada rincón mirados a ojo (hoy `auto` en varios). Se repite lo afectado tras cada publicación en `main`.

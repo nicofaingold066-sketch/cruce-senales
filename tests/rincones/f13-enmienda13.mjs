@@ -163,6 +163,7 @@ for (const [n, id] of [['anad', 'R350'], ['betod', 'R351'], ['carod', 'R352'], [
   await corto(id, P[n], async () => {
     await P[n].goto(urlP); await T(P[n], 3500)
     if (n === 'anad') { await rincon(P[n], id, 'v2 vista de Ana (su "así no puedo" ya no vale: la versión es nueva)', { foco: false }); nota(id, await txt(P[n])) }
+    await P[n].getByRole('tab', { name: 'Plan' }).click().catch(() => {}); await T(P[n], 700) // la app puede abrir en Mi respuesta (la última pestaña usada)
     await boton(P[n], 'Confirmar versión 2').click(); await esperarTexto(P[n], 'Ya confirmaste la versión 2', 20000); await T(P[n], 800)
   })
 }
