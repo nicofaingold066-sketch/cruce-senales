@@ -4,7 +4,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/rincones` (copia `/Users/macair/cru
 Método: Playwright contra mi build, en un GRUPO NUEVO propio (el demo solo se mira, no se resetea). Veredictos: APROBADO / OBSERVADO / ROTO. Yo no arreglo nada: pido al dueño.
 
 ## Tocando ahora
-- [01:20] CORRIENDO PRUEBA (01:20): rincones, fases f14-proposito f11-responder (grupo propio, una sesión por persona, sin ráfagas).
+- [01:23] Corte pedido por el coordinador: mi marca de las 01:20 (f14, f11) se soltó a las 01:22; corrió unos 2 minutos, empezando 4 minutos después de que pendientes puso su MIGRACION EN CURSO (01:16). Causa: mi detector buscaba `**MIGRACION EN CURSO**` con el cierre de negrita pegado, y la línea de pendientes lleva `**MIGRACION EN CURSO (01:16)**`; no la vio. Arreglado: ahora una marca es cualquier viñeta de "Tocando ahora" que EMPIEZA con `[hh:mm]` opcional, `**` opcional y CORRIENDO PRUEBA, MIGRACION EN CURSO o PRUEBA DE CARGA EN CURSO (probado con las 6 formas reales y con las menciones de espera, que no cuentan). Lo que alcancé a hacer en ese rato: f14 creó UN grupo propio ("Los del fútbol") y como mucho una propuesta; ninguna ráfaga. Mi cadena queda al final de la cola, después de pendientes (0052 y 0053) y de la tanda del coordinador.
 - [23:32] Sin prueba en curso: cedí la base al coordinador (su tanda de publicación, pedido de las 23:30) y no la tomo hasta las 23:40. Después retomo f11 y la cadena f0–f10 sobre producción (con el parche 2) y f13 corregido. Mi marca de prueba solo existe mientras corro; estas líneas no son marca.
 - [23:32] Trabajo en `tests/rincones/**` y `docs/rincones.md` (accesibilidad a fondo, enmienda 13, resumen de las 08:00).
 
