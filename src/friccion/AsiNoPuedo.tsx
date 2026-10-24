@@ -22,7 +22,8 @@ export const TEXTO_ASI_NO_PUEDO = {
   // total, y recién desde 2 (enmienda 13 (a)); nunca nombres.
   diferencia:
     'Si esta fecha no te sirve pero quieres ir, márcalo: sigues en el plan y puedes cambiar cuándo puedes. Nadie ve que fuiste tú. Retirarte es para no participar más en este plan.',
-  titulo: 'Así no puedes, pero sigues',
+  // sinteticos H18: como respuesta propia (el botón dice «Así no puedo, pero sigo»), no en segunda persona.
+  titulo: 'Dijiste: así no puedo, pero sigo',
   marcado: 'Marcaste que así no puedes. Sigues en el plan: si se rearma, cuenta lo que marques ahora.',
   actualizar: 'Actualizar cuándo puedo',
   // rincones O-17: "Ya no: puedo así" se leía como doble negación.

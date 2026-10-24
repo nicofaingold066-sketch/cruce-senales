@@ -9,6 +9,8 @@ import { Aviso, Boton, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { CampoIntegrantes } from '../login/Integrantes'
 import { CampoQuienViene } from '../friccion/QuienViene'
+import { CampoProposito } from '../friccion/Proposito'
+import type { Proposito } from '../friccion/propositos'
 import { conQuienViene } from '../lib/compartir'
 import type { QuienViene } from '../lib/compartir'
 import { ejemploPorSemilla, placeholderGrupo } from '../lib/ejemplos'
@@ -25,6 +27,8 @@ export default function CrearGrupo() {
   const [integrantes, setIntegrantes] = useState<string[]>([])
   // D3 de psico (friccion): quién viene es una regla del grupo; va como marca en el nombre, sin migración.
   const [quienViene, setQuienViene] = useState<QuienViene | null>(null)
+  // Enmienda 14: para qué es el grupo. 'libre' (por defecto) es el comportamiento de siempre y no se manda al servidor.
+  const [proposito, setProposito] = useState<Proposito>('libre')
   // Apertura: el ejemplo del nombre rota (no siempre "Los del asado").
   const ej = useMemo(() => ejemploPorSemilla(new Date().toDateString()), [])
   const tipo: TipoEspacio = 'amigos'
@@ -34,8 +38,8 @@ export default function CrearGrupo() {
   async function hacer(e: FormEvent) {
     e.preventDefault()
     if (faltan) return
-    const r = await ejecutar(`crear:${nombre}:${tipo}:${visible}:${integrantes.join('|')}`, () =>
-      api.createSpace(conQuienViene(nombre.trim(), quienViene), tipo, visible.trim(), integrantes),
+    const r = await ejecutar(`crear:${nombre}:${tipo}:${visible}:${integrantes.join('|')}:${proposito}`, () =>
+      api.createSpace(conQuienViene(nombre.trim(), quienViene), tipo, visible.trim(), integrantes, proposito),
     )
     if (r?.ok) {
       recordarNombreSiFalta(visible)
@@ -70,6 +74,7 @@ export default function CrearGrupo() {
           </fieldset>
           <CampoIntegrantes integrantes={integrantes} cambiar={setIntegrantes} tuNombre={visible} />
           <CampoQuienViene valor={quienViene} cambiar={setQuienViene} nombre={nombre} />
+          <CampoProposito valor={proposito} cambiar={setProposito} deshabilitado={soloLectura} />
           <Aviso tono="info">
             Vas a ser quien organiza: creas las propuestas y buscas la opción compatible. Las condiciones de cada persona son
             privadas, también para ti.

@@ -7,7 +7,7 @@
 //   · create_space sin propósito → libre/libre (cliente viejo intacto); con futbol → deporte; con deporte → deporte;
 //     con cultura → cultura; con «sushi» → formato_invalido. get_space y preview_space_by_code traen proposito y familia.
 //   · create_proposal en el grupo de fútbol: sin actividad → aceptada (ajuste 1 de la revisión); con asado → rechazada con
-//     el mensaje exacto y SIN crear nada; con pádel → aceptada, con propuesta.actividad = {padel, Pádel, deporte}.
+//     el mensaje exacto y SIN crear nada (un intento cuyo primer uso falló no queda guardado); con pádel → aceptada, con propuesta.actividad = {padel, Pádel, deporte}.
 //     En un grupo libre: cualquier actividad vale; una clave inexistente → formato_invalido.
 //   · Privacidad (ajuste 2): quien NO es del grupo no se entera del propósito por el error.
 //   · El demo «Los del asado» sigue en modo libre.
@@ -110,7 +110,7 @@ try {
   const mismoIntento = propuesta(futbol.id, futbol.yo, { p_actividad: 'tenis' })
   const t1 = await rpc(T, 'create_proposal', mismoIntento); if (t1.ok) creados.push(t1.resultado.propuesta_id)
   const t2 = await rpc(T, 'create_proposal', { ...mismoIntento, p_actividad: 'basquet' })
-  verificar('Mismo p_intento_id con otra actividad → intento_reutilizado', t1.ok === true && t2.ok === false && t2.error?.codigo === 'entrada_incompleta' && t2.error?.detalle === 'intento_reutilizado', `${t2.error?.codigo ?? 'ok'}/${t2.error?.detalle ?? ''}`)
+  verificar('Mismo p_intento_id con otra actividad → entrada_incompleta/intento_reutilizado', t1.ok === true && t2.ok === false && t2.error?.codigo === 'entrada_incompleta' && t2.error?.detalle === 'intento_reutilizado', `${t2.error?.codigo ?? 'ok'}/${t2.error?.detalle ?? ''}`)
   const lista = (await rpc(T, 'list_proposals', { p_espacio_id: futbol.id }))?.propuestas ?? []
   verificar('list_proposals trae la actividad de cada propuesta (aditivo)', lista.length > 0 && lista.every((p) => 'actividad' in p), `${lista.length} propuestas`)
 
