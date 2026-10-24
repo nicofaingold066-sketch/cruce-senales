@@ -143,6 +143,13 @@ describe('enmienda 13: opinar sin bajarse, rearmar, baja sin nombre y parrilla d
     expect(v3.mi_situacion.puede.proponer_reparacion).toBe(false) // ya no quedan versiones
     expect(v3.siguiente_accion).not.toEqual(REARMAR)
     expect(err(await rearmar(p))).toBe('sin_alternativa/tope_versiones')
+    // En revisión con la versión 3: no se ofrece rearmar y se dice el tope (0047).
+    await ok(U, 'withdraw_commitment', { p_propuesta_id: p })
+    await ok(V, 'withdraw_commitment', { p_propuesta_id: p })
+    const rev = await estado(O, p)
+    expect(rev.estado).toBe('en_revision')
+    expect(rev.mi_situacion.puede.proponer_reparacion).toBe(false)
+    expect(rev.siguiente_accion).toEqual({ codigo: 'sin_alternativa', texto: 'Esta propuesta ya tuvo tres versiones. El organizador puede cancelarla.' })
     await ok(O, 'cancel_proposal', { p_propuesta_id: p })
   })
 
@@ -172,17 +179,45 @@ describe('enmienda 13: opinar sin bajarse, rearmar, baja sin nombre y parrilla d
     const sim = await ok(O, 'simulate_withdraw', { p_propuesta_id: p, p_miembro_id: ids.Mati })
     expect(JSON.stringify(sim.propuesta)).not.toContain(ids.Mati)
     expect(sim.propuesta.bajas).toHaveLength(2)
-    // Quien confirmó y después se retiró: su aceptación tampoco lo nombra para los demás (0045); él sí la ve.
+    // Quien confirmó y después se retiró: para los demás su aceptación ya no sale (0047; una aceptación anónima decía
+    // que había confirmado) y la baja va sin cambio de estado ni rastro de simulación. Él sí ve lo suyo.
     await aceptar(U, p, 1)
     await ok(U, 'withdraw_commitment', { p_propuesta_id: p })
     const org = await estado(O, p)
     expect(JSON.stringify(org)).not.toContain('Uno t')
-    expect(org.historial.filter((x: Json) => x.tipo === 'aceptacion' && x.actor?.nombre === 'Una persona')).toHaveLength(1)
+    expect(org.historial.filter((x: Json) => x.tipo === 'aceptacion' && x.actor?.miembro_id !== demo.miembroId)).toHaveLength(0)
+    for (const b of org.historial.filter((x: Json) => x.tipo === 'baja')) {
+      expect(b).toMatchObject({ actor: ANON, actor_tipo: 'persona', ejecutado_por: null, estado_previo: null, estado_nuevo: null })
+    }
     expect(org.bajas.every((b: Json) => b.habia_aceptado === null && b.miembro.miembro_id === null)).toBe(true)
     const propia = await estado(U, p)
     expect(propia.historial.some((x: Json) => x.tipo === 'aceptacion' && x.actor?.nombre === 'Uno t')).toBe(true)
     expect(propia.bajas.find((b: Json) => b.miembro.nombre === 'Uno t')).toMatchObject({ habia_aceptado: true })
     await ok(O, 'cancel_proposal', { p_propuesta_id: p })
+  })
+
+  it('0047: el organizador no cuenta su propia opinión; aceptar no baja el total; si se retira el imprescindible, los cupos no lo dicen', async () => {
+    const p = await nueva('t-e13-7', 3)
+    for (const s of [O, U, V]) await condiciones(s, p, SI)
+    await simCond(p, 'Mati', SI)
+    await publicar(p)
+    await opinar(O, p, 1) // el organizador también es elegible
+    await opinar(U, p, 1)
+    expect((await estado(O, p)).opiniones_totales).toEqual({ asi_no_puedo: null }) // solo 1 de los demás
+    await opinar(V, p, 1)
+    let org = await estado(O, p)
+    expect(org.opiniones_totales).toEqual({ asi_no_puedo: 2 })
+    expect(org.mi_situacion.puede.proponer_reparacion).toBe(true)
+    // Uno acepta: el total que ve el organizador no cambia (si bajara, la aceptación con nombre delataría que opinó).
+    await aceptar(U, p, 1)
+    org = await estado(O, p)
+    expect(org.opiniones_totales).toEqual({ asi_no_puedo: 2 })
+    // El imprescindible (Tomi) se retira: los demás no lo ven en los cupos.
+    await ok(O, 'withdraw_commitment', { p_propuesta_id: p })
+    const deUno = await estado(U, p)
+    expect(deUno.estado).toBe('en_revision')
+    expect(deUno.opcion.cupos).toMatchObject({ imprescindible_acepto: false, reservado_imprescindible: true })
+    expect(deUno.bajas).toEqual([{ miembro: ANON, en: expect.any(Object), version: 1, habia_aceptado: null }])
   })
 
   it('5. la parrilla del parque aparece como candidata del asado', async () => {
