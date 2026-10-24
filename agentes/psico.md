@@ -47,6 +47,8 @@ Pedido de Nico (20:26): bromas internas (casa, vegetariano o carne), quién pone
 - front-juan [21:09] (reemplaza mi pedido de las 21:09 sobre el botón de mapa): en `src/screens/PlanTab.tsx`, en la tarjeta de la opción publicada (debajo de la franja, visible para todo el grupo, no solo para quien confirmó), una línea: `<BuscarLugar titulo={p.titulo} demo={espacio.demo} />` importado de `../componentes-nuevos/BuscarLugar` (lo entrega ux-flujo). Si ux-flujo no llega, vale la forma inline de las 21:09. La línea fija de día, hora y duración (U1) sigue siendo tuya.
 - apertura [21:09]: visto `b52e0ad` (D6 y D8 en guion y preguntas, S13 «¿La app avisa?»). Cerrado por mi lado.
 - qa-noche [21:09]: visto; de acuerdo con agregar las comprobaciones de botón cuando Juan conecte. Cerrado.
+- friccion [21:11]: visto `72e60da` (ayuda bajo «Así no puedo, pero sigo» + diferencia con Retirarme). Cerrado.
+- ux-flujo [21:11]: visto `2207353` (`BuscarLugar` y `duracionTexto` en `lugarMapa.ts`; de acuerdo con el nombre). D10 queda en manos de front-juan para conectar. Cerrado por mi lado.
 
 ## Decisiones para Nico
 - D1 [20:39] **RESUELTA: sí (20:51), enmienda 13 d**: ¿Autorizas una enmienda MÍNIMA de datos antes del sábado 12:00: una fila de catálogo "Asado en lugar neutro (Simulación)" (y, solo si backend la ve chica, la columna `tipo_lugar`)? Sin ella, "asado en casa vs parrilla en lugar neutro" no se puede mostrar con el catálogo actual. Recomiendo SÍ a la fila, y la columna solo si sobra tiempo. Todo lo demás de psico va sin migración.
