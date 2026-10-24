@@ -1,7 +1,7 @@
 // Entrada estilo Tricount (enmienda 9): el organizador crea el espacio con los nombres de su grupo y, al abrir la
-// invitación (#/unirse/<código>), cada persona elige quién es. Desde ahí la sesión anónima de ese teléfono queda
-// ligada a ese miembro. Debajo de la lista sigue el formulario de siempre ("No estoy en la lista"), con los mismos
-// nombres accesibles que usan los guiones e2e, y el aviso de navegador compartido (#47).
+// invitación (#/unirse/<código>), cada persona toca su nombre y entra (pantalla 10 del mockup: 3 toques del enlace a
+// "respondí"). Desde ahí la sesión anónima de ese teléfono queda ligada a ese miembro. "No estoy en la lista" abre
+// "Tu nombre" + "Entrar"; un nombre que ya tomó otro teléfono pregunta "¿Eres X?". Aviso de navegador compartido (#47).
 // La pantalla recibe la API como `fuente` (src/login/fuente.ts), así el banco de prueba corre sin base.
 // Crear un grupo con integrantes (fase 2) está en src/screens/CrearGrupo.tsx con CampoIntegrantes (src/login).
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -13,9 +13,7 @@ import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { entrarComoOtraPersona, leerGuardada } from '../lib/sesiones'
 import { leerPerfil, recordarNombreSiFalta, usePerfil } from '../lib/perfil'
 import { Avatar, Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
-import { Icono } from '../components/Icono'
 import { marcarConEspacios } from './estado'
-import { QueGuarda } from '../friccion/QueGuarda'
 import { FRASE_QUIEN_VIENE, quienVieneDe, sinQuienViene } from '../lib/compartir'
 import { fraseProposito } from '../friccion/propositos'
 import type { Proposito } from '../friccion/propositos'
@@ -189,7 +187,13 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
   const { soloLectura } = useShell()
   const [vista, setVista] = useState<VistaPorCodigo | null>(null)
   const [errorVista, setErrorVista] = useState<ApiError | null>(null)
+  // El nombre que se está reclamando (entra al tocarlo) o, si ya lo tomó otro teléfono, el que pregunta "¿Eres X?".
   const [elegido, setElegido] = useState<MiembroPorReclamar | null>(null)
+  const [noEstoy, setNoEstoy] = useState(false)
+  const pregunta = useRef<HTMLHeadingElement>(null)
+  useEffect(() => {
+    if (elegido && !elegido.libre) pregunta.current?.focus()
+  }, [elegido])
   const [yaEstoy, setYaEstoy] = useState<{ espacioId: string; miembroId: string } | null>(null)
   // D3: la regla de quién viene va como marca al final del nombre; acá se muestra limpio y la regla aparte.
   const nombreEspacio = vista ? sinQuienViene(vista.espacio.nombre) : ''
@@ -287,65 +291,63 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
 
         {vista && !sinLibres ? (
           <section aria-labelledby="quien-lista" className="s1-lista">
-            <h2 id="quien-lista" className="entrada-subtitulo">
+            <h2 id="quien-lista" className="visualmente-oculto">
               Integrantes
             </h2>
             {errorLista?.detalle === 'miembro_ya_reclamado' ? <ErrorCaja error={errorLista} /> : null}
             <ul className="quien-lista">
               {vista.miembros.map((m) => {
                 const esta = elegido?.miembro_id === m.miembro_id
+                const tomado = esta && !m.libre
                 return (
-                  <li key={m.miembro_id} className={esta ? 's1-elegido' : elegido ? 's1-otro' : ''}>
-                    {esta ? (
-                      // Rediseño S1: la confirmación en la misma pantalla (la fila del nombre se abre). Reclamar un lugar
-                      // no se deshace, por eso sigue habiendo un "Sí, soy X" (4 toques, el piso del brief).
+                  <li key={m.miembro_id} className={tomado ? 's1-elegido' : ''}>
+                    {tomado ? (
+                      // Pantalla 10: si el nombre ya lo tomó otro teléfono, se pregunta "¿Eres X?" en la misma fila.
                       <div className="s1-confirmar-nombre" role="group" aria-labelledby="quien-confirmar">
-                        <h3 id="quien-confirmar">¿Eres {m.nombre}?</h3>
+                        <h3 id="quien-confirmar" tabIndex={-1} ref={pregunta}>
+                          ¿Eres {m.nombre}?
+                        </h3>
                         <p>
-                          Este teléfono queda como {m.nombre} en «{nombreEspacio}». Cuándo puedes y tus condiciones no las ve nadie del
-                          grupo.
+                          {vista.espacio.demo
+                            ? `${m.nombre} es una persona simulada de la demo y ya está respondiendo. Elige otro nombre o escribe el tuyo.`
+                            : `${m.nombre} ya entró desde otro teléfono. Si eres tú, abre este mismo enlace en ese teléfono: ahí sigues como ${m.nombre}.`}
                         </p>
                         <div className="entrada-botones">
-                          <Boton
-                            autoFocus
-                            onClick={() => void u.unirse({ codigo, nombre: m.nombre, miembroId: m.miembro_id, origen: 'lista' })}
-                            ocupado={u.ocupado && u.origen === 'lista'}
-                            ocupadoTexto="Entrando…"
-                            disabled={soloLectura}
-                          >
-                            Sí, soy {m.nombre}
-                          </Boton>
                           <Boton
                             variante="secundario"
                             onClick={() => {
                               setElegido(null)
                               requestAnimationFrame(() => titulo.current?.focus())
                             }}
-                            disabled={u.ocupado}
                           >
                             Elegir otro nombre
                           </Boton>
                         </div>
-                        {errorLista ? <ErrorCaja error={errorLista} enfocar /> : null}
-                        {yaLista ? <AvisoYaMiembro ya={yaLista} unirse={u.unirse} cerrar={() => u.setYaMiembro(null)} /> : null}
                       </div>
                     ) : (
                       <>
                         <button
                           type="button"
                           className="btn btn-secundario quien-nombre"
-                          disabled={!m.libre || soloLectura}
-                          onClick={() => setElegido(m)}
+                          disabled={soloLectura || (u.ocupado && u.origen === 'lista')}
+                          aria-busy={(esta && u.ocupado && u.origen === 'lista') || undefined}
+                          onClick={() => {
+                            setElegido(m)
+                            setNoEstoy(false)
+                            if (m.libre) void u.unirse({ codigo, nombre: m.nombre, miembroId: m.miembro_id, origen: 'lista' })
+                          }}
                           aria-describedby={m.libre ? undefined : `ya-${m.miembro_id}`}
                         >
                           <Avatar nombre={m.nombre} tam={32} />
-                          {m.nombre}
+                          {esta && u.ocupado && u.origen === 'lista' ? 'Entrando…' : m.nombre}
                         </button>
                         {m.libre ? null : (
                           <span id={`ya-${m.miembro_id}`} className="suave quien-tomado">
                             {vista.espacio.demo ? 'no disponible' : 'ya entró'}
                           </span>
                         )}
+                        {esta && errorLista && errorLista.detalle !== 'miembro_ya_reclamado' ? <ErrorCaja error={errorLista} enfocar /> : null}
+                        {esta && yaLista ? <AvisoYaMiembro ya={yaLista} unirse={u.unirse} cerrar={() => u.setYaMiembro(null)} /> : null}
                       </>
                     )}
                   </li>
@@ -355,10 +357,12 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
             <button
               type="button"
               className="btn btn-secundario entrada-enlace s1-no-estoy"
+              aria-expanded={noEstoy}
+              aria-controls="unirse"
               onClick={() => {
-                const f = document.getElementById('unirse')
-                f?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                campoNombre.current?.focus({ preventScroll: true })
+                setElegido(null)
+                setNoEstoy(true)
+                requestAnimationFrame(() => campoNombre.current?.focus())
               }}
             >
               No estoy en la lista
@@ -366,24 +370,22 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
           </section>
         ) : null}
 
-        <UnirseConNombre codigoInicial={codigo} u={u} campoNombre={campoNombre} deshabilitado={soloLectura} vista={vista} />
-        <div className="privado" role="note">
-          <span className="privado-icono" aria-hidden="true">
-            <Icono n="candado" tam={20} />
-          </span>
-          <div>
-            <strong>Sin contraseña ni correo</strong>
-            <p>Tu sesión queda guardada en este teléfono. Cuándo puedes es privado: nadie del grupo lo ve.</p>
-          </div>
-        </div>
-        <QueGuarda />
+        {/* "No estoy en la lista" abre "Tu nombre" + "Entrar" (el código es el del enlace). Si no hay nombres libres, se ve
+            directo; si el código no existe, el formulario completo con el código. */}
+        {vista && (noEstoy || sinLibres) ? (
+          <UnirseConNombre codigoInicial={codigo} u={u} campoNombre={campoNombre} deshabilitado={soloLectura} vista={vista} soloNombre />
+        ) : null}
+        {!vista && errorVista ? (
+          <UnirseConNombre codigoInicial={codigo} u={u} campoNombre={campoNombre} deshabilitado={soloLectura} vista={null} />
+        ) : null}
       </div>
     </div>
   )
 }
 
 /**
- * "No estoy en la lista": el formulario de siempre (mismos nombres accesibles que la portada). Coherente con el enlace:
+ * Unirse con un nombre: "Código de invitación", "Tu nombre en el grupo" y "Unirme" (hoja del "+", portada); con
+ * `soloNombre`, el "No estoy en la lista" de la pantalla 10: "Tu nombre" + "Entrar". Coherente con el enlace:
  * si el nombre escrito es el de un integrante anotado y libre de este grupo, reclama ese lugar (antes daba "nombre en
  * uso"); con otro código, mira ese grupo y, si tiene nombres libres que no coinciden, lleva a su "¿Quién eres?".
  * Exportado para que la portada (front-juan) use este mismo formulario con `vista={null}`.
@@ -395,6 +397,7 @@ export function UnirseConNombre({
   deshabilitado,
   vista,
   compacto,
+  soloNombre,
 }: {
   codigoInicial: string
   u: ReturnType<typeof useUnirse>
@@ -404,6 +407,8 @@ export function UnirseConNombre({
   vista: VistaPorCodigo | null
   /** En la portada, dentro de la tarjeta "Tengo un código": el título queda solo para lectores y sin la frase de la lista. */
   compacto?: boolean
+  /** Pantalla 10, "No estoy en la lista": sin el campo del código (es el del enlace), "Tu nombre" y "Entrar". */
+  soloNombre?: boolean
 }) {
   const demo = vista?.espacio.demo === true
   const [codigo, setCodigo] = useState(codigoInicial)
@@ -452,25 +457,27 @@ export function UnirseConNombre({
   }
 
   return (
-    <form id="unirse" className="tarjeta unirse" onSubmit={hacer} noValidate aria-labelledby="unirse-titulo">
-      <h2 id="unirse-titulo" className={compacto ? 'visualmente-oculto' : undefined}>
-        Unirme con un código
+    <form id="unirse" className={`tarjeta unirse ${soloNombre ? 's1-no-estoy-form' : ''}`} onSubmit={hacer} noValidate aria-labelledby="unirse-titulo">
+      <h2 id="unirse-titulo" className={compacto || soloNombre ? 'visualmente-oculto' : undefined}>
+        {soloNombre ? 'No estoy en la lista' : 'Unirme con un código'}
       </h2>
-      {compacto ? null : <p className="suave">¿No estás en la lista? Escribe tu nombre y entras como una persona nueva.</p>}
-      <label className={`campo ${codigoMal ? 'campo-error' : ''}`}>
-        <span>Código de invitación</span>
-        <input
-          value={codigo}
-          onChange={(e) => setCodigo(e.target.value)}
-          autoCapitalize="characters"
-          autoComplete="off"
-          spellCheck={false}
-          maxLength={16}
-          aria-invalid={codigoMal || undefined}
-        />
-      </label>
+      {compacto || soloNombre ? null : <p className="suave">Escribe el código que te mandaron y tu nombre.</p>}
+      {soloNombre ? null : (
+        <label className={`campo ${codigoMal ? 'campo-error' : ''}`}>
+          <span>Código de invitación</span>
+          <input
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value)}
+            autoCapitalize="characters"
+            autoComplete="off"
+            spellCheck={false}
+            maxLength={16}
+            aria-invalid={codigoMal || undefined}
+          />
+        </label>
+      )}
       <label className={`campo ${nombreMal ? 'campo-error' : ''}`}>
-        <span>Tu nombre en el espacio</span>
+        <span>{soloNombre ? 'Tu nombre' : 'Tu nombre en el grupo'}</span>
         <input
           ref={campoNombre}
           value={nombre}
@@ -482,7 +489,7 @@ export function UnirseConNombre({
         {demo ? <small>Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.</small> : null}
       </label>
       <Boton type="submit" variante="secundario" ocupado={(u.ocupado && u.origen === 'formulario') || mirando} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado}>
-        Unirme
+        {soloNombre ? 'Entrar' : 'Unirme'}
       </Boton>
       {error ? <ErrorCaja error={error} enfocar={!nombreMal} /> : null}
       {ya ? <AvisoYaMiembro ya={ya} unirse={u.unirse} cerrar={() => u.setYaMiembro(null)} /> : null}

@@ -65,7 +65,7 @@ function Marco({
   // Navegación inferior solo en las pantallas principales; en un plan o un formulario se oculta, como durante un viaje.
   // En el ingreso (portada sin nombre) tampoco: la pantalla tiene una sola tarea.
   const conNav =
-    sesion.fase === 'lista' && (ruta.nombre === 'inicio' || ruta.nombre === 'planes' || ruta.nombre === 'perfil')
+    sesion.fase === 'lista' && ((ruta.nombre === 'inicio' && perfil != null) || ruta.nombre === 'planes' || ruta.nombre === 'perfil')
   const quien = identidad.yo ?? perfil?.nombre ?? null
 
   return (

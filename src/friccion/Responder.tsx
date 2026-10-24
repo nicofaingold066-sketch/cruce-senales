@@ -17,7 +17,6 @@ import { nombreDelPlan, opcionesRapidas } from './respuestas'
 import { RespuestasRapidas } from './RespuestasRapidas'
 import '../estilo/seccion-s5.css'
 import type { Opcion } from './respuestas'
-import { QueGuarda } from './QueGuarda'
 import { miOpinion } from './opinar'
 import { sinQuienViene } from '../lib/compartir'
 import './friccion.css'
@@ -101,14 +100,11 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
   const prefer = useAccion()
   const [prefiero, setPrefiero] = useState<Preferencia | null>(null)
   const titulo = useRef<HTMLHeadingElement>(null)
-  const hecho = useRef<HTMLHeadingElement>(null)
 
+  // El foco va al h1 al abrir la pantalla y al responder ("Respondiste"), como pide rincones.
   useEffect(() => {
-    if (lista && !elegida) titulo.current?.focus({ preventScroll: true })
+    if (lista) titulo.current?.focus({ preventScroll: true })
   }, [lista, elegida])
-  useEffect(() => {
-    if (elegida) hecho.current?.focus()
-  }, [elegida])
 
   if (!lista) {
     return (
@@ -183,18 +179,26 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
   return (
     <div className="vista s5 s5-responder">
       <section className="escena" aria-labelledby="responder-titulo">
-        <a className="escena-volver" href={verPlan}>
-          <Icono n="atras" tam={20} /> Ver el plan
-        </a>
-        <span className="escena-eyebrow">
-          {elegida ? 'Respuesta guardada · ' : ''}
-          {p.titulo} · {lista.espacio}
-        </span>
         {elegida ? (
-          <span className="s5-check sd-exito" aria-hidden="true">
-            <Icono n="check" tam={40} />
-          </span>
-        ) : null}
+          <>
+            {/* Pantalla 14 empieza en el check. "Respuesta guardada" queda para el lector (y los guiones), sin verse. */}
+            <p className="visualmente-oculto" role="status">
+              Respuesta guardada
+            </p>
+            <span className="s5-check sd-exito" aria-hidden="true">
+              <Icono n="check" tam={40} />
+            </span>
+          </>
+        ) : (
+          <>
+            <a className="escena-volver" href={verPlan}>
+              <Icono n="atras" tam={20} /> Ver el plan
+            </a>
+            <span className="escena-eyebrow">
+              {p.titulo} · {lista.espacio}
+            </span>
+          </>
+        )}
         <h1 id="responder-titulo" ref={titulo} tabIndex={-1}>
           {elegida ? 'Respondiste' : '¿Cuándo puedes?'}
         </h1>
@@ -205,6 +209,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
               : 'Toca una opción y listo. Es privado: nadie del grupo ve qué elegiste.'
             : loQueMarcaste}
         </p>
+        {elegida ? <p className="escena-sub s5-solo-tu">Cuando haya un plan, lo ves acá. Solo tú ves lo que marcaste.</p> : null}
       </section>
       <div className="hoja">
         {aviso && !elegida ? (
@@ -224,9 +229,6 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
                 </p>
               ) : null}
               {guardar.error ? <ErrorCaja error={guardar.error} enfocar /> : null}
-              <a className="enlace s5-todavia" href={verPlan}>
-                Todavía no sé: ver el plan
-              </a>
             </section>
 
             {/* Mockup (pantalla 6): lo opcional, chico y debajo, cada cosa diciendo quién la ve. */}
@@ -235,14 +237,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
                 Opcional
               </h2>
               {s.puede.marcar_interes && !s.interesado ? (
-                <div className="s5-fila-opcional">
-                  <span>
-                    Avisar que me interesa <span className="t-nota">(lo ve el grupo)</span>
-                  </span>
-                  <Boton variante="secundario" onClick={() => void marcarInteres()} ocupado={interes.ocupado} disabled={soloLectura}>
-                    Me interesa
-                  </Boton>
-                </div>
+                <FilaInteres nota="(lo ve el grupo)" onTocar={() => void marcarInteres()} ocupado={interes.ocupado} deshabilitado={soloLectura} />
               ) : null}
               {s.interesado ? <p className="t-nota">Ya avisaste que te interesa (lo ve el grupo; no es confirmar).</p> : null}
               {interesNota ? <p role="status">{interesNota}</p> : null}
@@ -264,8 +259,10 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
                 </span>
                 <Icono n="chevron" tam={18} />
               </a>
-              {lista.demo ? (
+              {/* #90: la agenda es ficticia (simulación) y solo SUGIERE; responder sigue siendo tocar la opción. */}
+              {p.franjas.length > 0 ? (
                 <TomarDeCalendario
+                  fila
                   franjas={p.franjas}
                   semilla={s.miembro_id}
                   deshabilitado={soloLectura || guardar.ocupado}
@@ -284,13 +281,9 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
           </>
         ) : (
           <>
-            {/* Pantalla 14: "Respondiste". */}
-            <section className="tarjeta s5-respondiste" aria-labelledby="rapida-hecho">
-              <h2 id="rapida-hecho" ref={hecho} tabIndex={-1} className="visualmente-oculto">
-                {elegida.texto}
-              </h2>
-              <p className="t-cuerpo">Guardado. Solo tú ves estas condiciones. Cuando haya un plan, lo ves acá.</p>
-              {conDesempate ? (
+            {/* Enmienda 15: con la regla "la que más pueden", quien puede en los dos dice cuál prefiere (privado, opcional). */}
+            {conDesempate ? (
+              <section className="tarjeta s5-respondiste" aria-label="Cuál prefieres">
                 <div className="rapida-prefiero">
                   <p className="suave">
                     {prefiero
@@ -308,8 +301,8 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
                   ) : null}
                   {prefer.error ? <ErrorCaja error={prefer.error} enfocar /> : null}
                 </div>
-              ) : null}
-            </section>
+              </section>
+            ) : null}
 
             <section className="tarjeta s5-grupo" aria-label={`Estado de ${lista.espacio}`}>
               <div className="tarjeta-cabeza">
@@ -347,14 +340,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
                 <Icono n="chevron" tam={18} />
               </button>
               {algunSi && s.puede.marcar_interes && !s.interesado ? (
-                <div className="s5-fila-opcional">
-                  <span>
-                    Avisar que me interesa <span className="t-nota">(opcional · lo ve el grupo)</span>
-                  </span>
-                  <Boton variante="secundario" onClick={() => void marcarInteres()} ocupado={interes.ocupado} disabled={soloLectura}>
-                    Me interesa
-                  </Boton>
-                </div>
+                <FilaInteres nota="(opcional · lo ve el grupo)" onTocar={() => void marcarInteres()} ocupado={interes.ocupado} deshabilitado={soloLectura} />
               ) : null}
               {interesNota ? <p role="status">{interesNota}</p> : null}
               {interes.error ? <ErrorCaja error={interes.error} enfocar /> : null}
@@ -365,9 +351,27 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
             </a>
           </>
         )}
-
-        <QueGuarda />
       </div>
     </div>
+  )
+}
+
+/** "Avisar que me interesa (lo ve el grupo)": la fila entera es el botón (pantallas 6 y 14). */
+function FilaInteres({ nota, onTocar, ocupado, deshabilitado }: { nota: string; onTocar: () => void; ocupado: boolean; deshabilitado: boolean }) {
+  return (
+    <button
+      type="button"
+      className="s5-fila-opcional s5-fila-boton"
+      onClick={() => {
+        if (!ocupado) onTocar()
+      }}
+      aria-busy={ocupado || undefined}
+      disabled={deshabilitado}
+    >
+      <span>
+        {ocupado ? 'Avisando…' : 'Avisar que me interesa'} <span className="t-nota">{nota}</span>
+      </span>
+      <Icono n="chevron" tam={18} />
+    </button>
   )
 }
