@@ -194,13 +194,13 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
           <a className="escena-volver" href={rutas.espacio(espacioId)}>
             <Icono n="atras" tam={20} /> {espacio.nombre}
           </a>
-          <h1 id="agente-pantalla-titulo">Agente del círculo</h1>
+          <h1 id="agente-pantalla-titulo">GRU · Planes para el grupo</h1>
         </section>
         <div className="hoja">
           {/* Siempre abierto: el summary oculto queda para los guiones que lo tocan (no lo pliega). */}
           <details id="mis-preferencias" className="agente-plegable s2-agente-pantalla" open>
             <summary className="visualmente-oculto" tabIndex={-1} onClick={(e) => e.preventDefault()}>
-              Agente del círculo
+              GRU · Planes para el grupo
             </summary>
             <Suspense fallback={<Cargando texto="Cargando el agente…" esqueleto />}>
               <AgentePanel espacioId={espacio.id} esOrganizador={esOrganizador} soloLectura={soloLectura} demo={espacio.demo} />
@@ -311,7 +311,7 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
               }}
             >
               <span className="summary-texto">
-                <span id="agente-titulo">Agente del círculo</span>
+                <span id="agente-titulo">GRU · Planes para el grupo</span>
               </span>
               <span className="s2-abrir">Abrir ›</span>
             </summary>

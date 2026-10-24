@@ -561,8 +561,6 @@ a.fila:hover {
 .resultado a.btn-turno {
   color: #fff;
 }
-@media (prefers-color-scheme: dark) {
-  .resultado a.btn-turno {
-    color: #1b0b03;
-  }
+:where(:root[data-theme='dark']) .resultado a.btn-turno {
+  color: #1b0b03;
 }
