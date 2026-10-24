@@ -571,8 +571,8 @@ function ReuniendoInteres({ p, codigo }: { p: EstadoPropuesta; codigo: string | 
       </div>
       <p className="suave">
         {p.personas_con_condiciones != null
-          ? 'Para entrar en la opción basta con que cada persona responda cuándo puede. Las condiciones de cada persona son privadas: solo se cuentan.'
-          : 'Para entrar en la opción basta con responder cuándo puedes.'}{' '}
+          ? 'Para entrar en la opción basta con que cada persona marque Sí o No en cada franja. Las condiciones de cada persona son privadas: solo se cuentan.'
+          : 'Para entrar en la opción basta con marcar Sí o No en cada franja.'}{' '}
         "Me interesa" es opcional: lo ve el grupo y no es una confirmación.
       </p>
       {p.interesados.miembros.length > 0 ? (

@@ -173,6 +173,14 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
             prefijo={`mi-${p.id}`}
           />
           <p className="suave nota-seccion">"Pendiente" = aún no lo sabes (tus condiciones quedan incompletas).</p>
+          {/* El motor solo cuenta condiciones completas: con un "Pendiente" no se entra en ninguna franja, tampoco en
+              la que se marcó "Sí". Se dice antes de guardar, no solo con la etiqueta. */}
+          {s.puede.guardar_condiciones && Object.values(b.draft).includes('pendiente') && (b.sucio || s.condiciones === 'incompletas') ? (
+            <p className="aviso-linea">
+              Con alguna franja en "Pendiente" no entras en ninguna opción, tampoco en la que marcaste "Sí puedo". Cuando
+              sepas, marca Sí o No en cada una.
+            </p>
+          ) : null}
           {!s.puede.guardar_condiciones ? <p className="aviso-linea">{razonSinGuardar(p)}</p> : null}
           {ofrecerInteres && s.puede.guardar_condiciones && b.sucio ? (
             <label htmlFor={`mi-${p.id}-interes`} className="casilla">
