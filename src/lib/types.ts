@@ -255,6 +255,8 @@ export interface PropuestaResumen {
   state_rev: number
   /** Enmienda 14: la actividad de la propuesta (null si no se eligió). */
   actividad?: ActividadPropuesta | null
+  /** 0056: inicio de la opción vigente, "YYYY-MM-DDTHH:MM" hora de Santiago; null sin versión publicada. */
+  fecha_local?: string | null
   mi_situacion: {
     interesado: boolean
     retirado: boolean
@@ -306,6 +308,15 @@ export interface EspacioResumen {
   cantidad_miembros: number
   /** Enmienda 2 (A3). */
   generacion: number
+  /** 0056: fecha del plan destacado del grupo (propuesta activa más reciente con versión), o null. */
+  fecha_local?: string | null
+}
+
+/** 0056: el plan destacado de un grupo que ve quien tiene el código (título y fecha, nada más). */
+export interface PlanPorCodigo {
+  titulo: string
+  /** "YYYY-MM-DDTHH:MM" hora de Santiago; null si todavía no hay versión publicada. */
+  fecha_local: string | null
 }
 
 /** Enmienda 15 (E-d, 0053): cuál de los dos planes prefiere la persona si puede en los dos. Privada. */
