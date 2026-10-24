@@ -3,7 +3,7 @@
 Quien edita este archivo: solo el coordinador. Última actualización: 10:57 (hora real).
 
 ## Tocando ahora
-- **MIGRACION EN CURSO (11:13)** 0059 nombres de la demo Makana (seed_demo_makana: Bastián, Nacho, Carlos, Kai, Charlie, Joaco, Pía; pedido de Nico) (coordinador)
+- [11:15] Migración 0059 aplicada (seed_demo_makana con Bastián, Nacho, Carlos, Kai, Charlie, Joaco, Pía; pedido de Nico 11:10). Marca sacada. Reversa: función de 20261024124500_demo_makana.sql.
 - [10:52] Migración 0058 demo Makana aplicada 10:33 (schema_migrations demo_makana) y probada: suite de backend 130/130 en serie (10:41–10:49). Reversa: supabase/revertir/0058_demo_makana_revertir.sql (respaldo en respaldo.funciones_pre_makana). Marca sacada.
 - `docs/contrato*.md`, `AGENTS.md`, `CLAUDE.md`, `docs/tareas/**`, `docs/contexto-proyecto.md`
 - Rama `coordinacion` (tablero, mapa de dueños)
