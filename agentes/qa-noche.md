@@ -3,7 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cruce-qa`). Rutas: `tests/e2e/**`, `docs/qa-noche.md`. Puerto de preview: 4185.
 
 ## Tocando ahora
-- [01:44] EN COLA de la base (puesto 5 del TABLERO 01:44; sin marca puesta). Mi turno de ≤10 min: `enmienda15-privacidad.test.ts` (nuevo, E15 por RPC) + `proposito.mjs`/`proposito-pantalla.mjs` + humo de producción. Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
+- [02:10] EN COLA de la base (sin marca). Leído el rediseño (`prompts/rediseno-noche.md`): atiendo los avisos de rótulos de cada sección (S1–S7) y adapto los guiones para que acepten los dos textos; `wip/qa` ya trae «Los del (asado|finde)» (merge de fundamentos 22ae202). Mi turno ≤10 min: `enmienda15-privacidad.test.ts`, `proposito*.mjs`, humo de producción sobre «Los del finde». Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
 
 ## Entregado
 - [00:37] `wip/qa`: turno corto en producción 00:34: dos sesiones 26/26, jurado 4/4, `entrada-lista.mjs` 7/7. Comprobaciones E15 preparadas (activas cuando el servidor traiga `ronda`/`regla`/`planes_totales`); foco al error en L2/L3; `fileURLToPath` en tres guiones; `proposito-pantalla` confirma «Crear sin lista».
