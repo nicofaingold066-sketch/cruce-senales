@@ -276,7 +276,8 @@ async function verificar(ancho) {
     await page.getByRole('heading', { name: 'Personas simuladas', exact: true }).waitFor()
     const filas = page.locator('.sim-fila')
     assert.equal(await filas.count(), 6)
-    assert.equal(await page.getByRole('button', { name: /Cargar condiciones del caso/ }).count(), 0)
+    // Pedido de Nico (11:36): Makana se comporta como «Los del finde»; el atajo de cargar el caso aparece si el servidor lo habilita.
+    assert.ok(await page.getByRole('button', { name: /Cargar condiciones del caso/ }).count() <= 1)
     assert.match(await page.locator('body').innerText(), /Pía sigue pendiente/)
     const bruno = page.getByRole('region', { name: 'Simulación de Nacho', exact: true })
     await bruno.locator('summary').click()
@@ -293,9 +294,9 @@ async function verificar(ancho) {
     p = propuesta(true); simulados = panel(true)
     await page.goto(`${BASE}/__makana_qa__/simulacion.html?version=1`)
     await page.getByRole('heading', { name: 'Personas simuladas', exact: true }).waitFor()
-    assert.equal(await page.getByRole('button', { name: /^Aceptar versión 1 por / }).count(), 5,
-      'Hay cinco botones individuales de aceptación, sin botón colectivo')
-    assert.equal(await page.locator('.sim-atajo-chico').count(), 0)
+    assert.equal(await page.locator('.sim-fila').getByRole('button', { name: /^Aceptar versión 1 por / }).count(), 5,
+      'Hay cinco botones individuales de aceptación')
+    assert.equal(await page.locator('.sim-atajo-chico').count(), 1, 'Y el atajo colectivo, como en «Los del finde»')
     assert.equal(await page.getByRole('button', { name: /Aceptar versión 1 por Pía/ }).count(), 0)
     await page.getByRole('button', { name: 'Aceptar versión 1 por Nacho', exact: true }).click()
     await page.getByRole('status').filter({ hasText: 'Confirmaron la versión 1: Nacho.' }).waitFor()
