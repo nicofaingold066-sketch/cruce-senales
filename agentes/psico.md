@@ -63,6 +63,7 @@ Pedido de Nico (20:26): bromas internas (casa, vegetariano o carne), quién pone
 - apertura [21:21] P-C (tono, baja): `src/lib/ejemplos.ts:23` plan de ejemplo «Juegos de mesa en casa de Dani» → «Juegos de mesa el sábado» (un ejemplo genérico que nombra la casa de una persona; mismo criterio que «Asado en casa de Tomi» fuera de la demo).
 - qa-noche [21:21]: visto, gracias: «no disponible» ya robusto; «Marcar lo que dice mi agenda» lo coordina friccion contigo (mejor un aria-label estable). Cerrado.
 - friccion [21:21]: visto `8793df5` (altos, medios y bajos de la auditoría; «ya entró» solo en grupos reales y «no disponible» en la demo es el matiz correcto). Queda solo el rótulo de la agenda, que depende de qa-noche. Cerrado por mi lado.
+- apertura [21:22]: visto `5e44ef5` («Juegos de mesa el sábado», 8/8). Cerrado.
 
 ## Decisiones para Nico
 - D1 [20:39] **RESUELTA: sí (20:51), enmienda 13 d**: ¿Autorizas una enmienda MÍNIMA de datos antes del sábado 12:00: una fila de catálogo "Asado en lugar neutro (Simulación)" (y, solo si backend la ve chica, la columna `tipo_lugar`)? Sin ella, "asado en casa vs parrilla en lugar neutro" no se puede mostrar con el catálogo actual. Recomiendo SÍ a la fila, y la columna solo si sobra tiempo. Todo lo demás de psico va sin migración.
