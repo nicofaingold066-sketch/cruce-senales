@@ -133,7 +133,7 @@ describe.skipIf(!aplicada)('enmienda 11: agente social', { timeout: 180_000 }, (
     expect(g.borrador.hash).toMatch(/^[0-9a-f]{64}$/)
     // Lo que fija el servidor se muestra antes de aprobar (nada en silencio).
     expect(Object.keys(g.borrador.plan).sort()).toEqual(['actividad', 'franjas', 'imprescindible', 'invitados', 'lugar', 'maximo', 'minimo', 'plazo', 'titulo']) // E14: actividad
-    expect(g.borrador.plan).toMatchObject({ imprescindible: { nombre: 'Tomi' }, invitados: 1, minimo: 4 }) // E14 ajuste 9: el asado pide 4
+    expect(g.borrador.plan).toMatchObject({ imprescindible: { nombre: 'Tomi' }, invitados: 1, minimo: 3 }) // E14 (0050): en libre el mínimo sigue siendo least(3, máximo), sin el quórum del asado
     expect(g.borrador.plan.lugar.nombre).toMatch(/ \(Simulación\)$/)
     expect(JSON.stringify(g.borrador.plan)).not.toMatch(/Uno t|Dos t/)
     expect((await guardar(id, op.opcion_ref)).repetido).toBe(true)
