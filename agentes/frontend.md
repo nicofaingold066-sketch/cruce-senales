@@ -4,9 +4,15 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- [03:00] Mockup OBLIGATORIO y exacto (Nico y Juan 03:05): rehago S2 (pantalla 3), S3 (4), Planes (12), Perfil (13), Simulación (18) e Historial (19) contra `prompts/rediseno-secciones.md`, en `wip/rediseno-s2|s3|s7`. Reviso entregas de friccion, ux-flujo y agente-ia contra el mockup.
+- [03:30] Reviso contra el mockup: S1/S5 de friccion (`0b5e4d1`), S4 de ux-flujo y S6 de agente-ia. Sin código abierto en mis ramas.
 
 ## Entregado
+- [03:30] **Mockup exacto, mis seis pantallas listas** (todas: tsc OK, vitest puro 90/90, build 0, sin desborde a 320/375/768/1280):
+  - `wip/rediseno-s2` = `5d67417`: Grupo pantalla 3 (`e174cf2`: «‹ Grupos», «N personas · organizas tú», «Personas ›» en hoja, «Invitar al grupo» con código mono + «Copiar enlace»/«WhatsApp», «+ Nuevo plan», Agente con tus gustos + «Que el agente proponga un plan», filas «Simulación (demo)» e «Historial») y Crear grupo pantalla 11 (`5d67417`: hoja con ✕, «Quiénes son» con avatares y ×, Opciones plegadas, **al crear va a Nuevo plan**).
+  - `wip/rediseno-s2b` = `b4e92e8`: Planes (12) y Perfil (13). Guiones adaptados: red-import-cortada, f9, f6.
+  - `wip/rediseno-s7` = `d28372f`: Simulación (18) e Historial (19). Guion adaptado: f12 l.139.
+  - Rótulos que cambian y líneas exactas de guiones: mandados al coordinador por mensaje (03:30).
+
 - [03:06] **S3 EXACTA al mockup (pantalla 4)**: `wip/rediseno-s3` = `0b7ce46` (sobre `wip/diseno` `0fa4ce5`). ✕ + «Nuevo plan» + grupo; cuatro atajos y «Más…»; filas A/B plegadas («A Sáb 31 oct · 14:00 · 3 h ✎»); «Gana la que empieza antes. Más opciones (…)»; mínimo/máximo lado a lado; «No puede faltar» con avatares; cierre como fila plegada; UN primario «Crear y abrir al grupo» con su nota; sin paso de revisión ni «Crear solo el borrador». Probado contra la base en un demo propio (crea y abre; cancelada después). Capturas cerrada/abierta a 320, 375, 768 y 1280 sin desborde. tsc OK, vitest 90/90, build 0. Guiones avisados: rincones y sinteticos (líneas exactas por mensaje); qa-noche ya había vuelto opcional «Revisar antes de crear».
 - [03:00] **Fusión pedida por el coordinador hecha**: `wip/diseno` = `0fa4ce5` (cc18c7c + `origin/wip/fundamentos` 60a98e0); y ese diseno fusionado en **S2 `4ff9b7b`**, **S3 `3c3528b`** y **S7 `1137929`**. Choques resueltos: Espacio.tsx (IconoGrupo + Confirmacion/useVolverFoco) y SimulacionTab.tsx ("Se baja" solo con versión publicada + `data-abre-confirmacion`). Las tres: tsc OK, vitest puro 90/90, build 0. Faltan los cambios del mockup exacto (en curso).
 - [02:59] **S3 paso 3** `wip/rediseno-s3` = `8b0b151`: en computadora, cabecera arriba y formulario en dos columnas (qué y cuándo | quiénes, cierre, más opciones, botón); revisión en 720 px. Capturas sin desborde a 320, 375 y 1280.
