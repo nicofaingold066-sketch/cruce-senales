@@ -18,7 +18,7 @@ type Cierre = 'dia_antes' | 'dos_dias' | 'otro'
 
 // Enmienda 15: las pantallas quedan listas pero APAGADAS hasta el aviso de cada migración (antes, el servidor
 // rechaza los parámetros nuevos). E-c (ronda de opiniones) llega con la 0052; E-d (nombre por plan y "Gana") con la 0053.
-const E15_RONDA = false
+const E15_RONDA = true
 const E15_DOS_PLANES = false
 
 interface Formulario {
@@ -620,7 +620,7 @@ function MasOpciones({ form, poner }: { form: Formulario; poner: <K extends keyo
       <summary>
         <span className="summary-texto">
           <span>Más opciones</span>
-          <small className="suave">Opcional: tiempo para opinar y cómo se elige</small>
+          <small className="suave">{E15_DOS_PLANES ? 'Opcional: tiempo para opinar y cómo se elige' : 'Opcional: tiempo para opinar'}</small>
         </span>
       </summary>
       {E15_RONDA ? (
