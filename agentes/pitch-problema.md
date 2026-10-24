@@ -1,8 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 23:25.
+Quien edita este archivo: solo esta sesión. Última actualización: 23:55.
 
 ## Tocando ahora
+- [23:55] **CORRIENDO PRUEBA (23:55)** agente-ia: despliegue de la función v12 (bucle con herramientas) + panel con la función simulada (cero modelo) + UNA llamada real con "Que el agente arme un plan" (Fable). Unos 5 minutos, sin ráfagas.
 - [23:17] Bucle de herramientas del agente (pedido de Nico 23:17, vía coordinador): `supabase/functions/agente/index.ts`, `logica.ts`, `logica.test.ts`, archivo nuevo `supabase/functions/agente/herramientas.ts` y `src/agente/AgentePanel.tsx`/`api.ts` (botón "Que el agente arme un plan" y lista de pasos). Aviso para integracion-codex-juan: toco el panel solo en el bloque del agente; nada del consentimiento.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
