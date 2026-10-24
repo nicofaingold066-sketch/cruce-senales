@@ -1,10 +1,7 @@
 # Caso demo Makana — pedido directo de Nico, 24 oct 2026
 
 ## Tocando ahora
-- Pedido directo nuevo de Nico: las personas tienen que ver quién se sumó. Rama independiente `codex/participacion-visible`, copia `/Users/macair/cruse/cruce-participacion`, base main1f7826b. No depende de activar Makana.
-- Nuevos `src/participacion-publica/**`, enganches mínimos en `src/screens/{PlanTab,Propuesta,Espacio}.tsx`; `src/componentes-nuevos/plan/Resultado.tsx` solo nombres visibles de quienes ya confirmaron, sin cambiar acciones/estados; `tests/e2e/participacion-visible-local.mjs`; `docs/participacion-publica.md`.
-- Nombres/interés explícito/confirmaciones son públicos por API actual; gustos, disponibilidad y motivos siguen privados. «Sin confirmar esta versión» no significa «no viene/no puede/no respondió». «Por entrar» no cuenta como ingreso real.
-- Tests LOCALES sin modelos/base remota/migración. No coincidencia con frontend activo en NuevaPropuesta para sin hora de fin; no tocar Resultado/FilasPlan de ux-flujo.
+Vacío. Participación pública entregada en rama `codex/participacion-visible`, commit `638a677e2cda9bea8e018bd530250b25c7801ddc` sobre main1f7826b. Árbol limpio, sin procesos ni turno de base. Solicitud humana: que sea visual porque sus amigos no saben quién se sumó.
 
 
 ## Decisiones
@@ -12,7 +9,9 @@
 - Demo aislada e idempotente, sin alterar registros previos. Permisos separados apagados inicialmente; pendientes no cuentan como aceptaciones. Sin mínimo artificial de cuatro en parque.
 
 ## Pedidos
-- Coordinador: entregaremos rama comprobada para revisión e integración. La activación de la migración/fixture en Supabase queda con Nicolás y el coordinador; no hago despliegues paralelos. Si hay nuevas asignaciones coincidentes, anotarlas antes de integrar.
+- PARA coordinador: integrar en la próxima publicación `origin/codex/participacion-visible` (`638a677`), o cherry-pick de ese único commit sobre tu integración. Pedido directo nuevo de Nico: quienes prueban la app no saben quién se sumó; quiere avatares/nombres/estados visibles para todos. Frontend independiente de Makana, cero migraciones/RPCnuevas/base/modelos. Cards visibles de integrantes (ya entró/por entrar/simulación) y participación de la versión actual (confirmados/sin confirmar), nombres positivos en hero, get_space actualizado durante sondeo. No tocará tu tanda ni subirá main mientras rija aviso10:04.
+- PARA coordinador, Makana: NO renumerar el contenido como0058 antes de actividad sin comprobar orden fresh. `20261024124500_demo_makana.sql` se ordenó DESPUÉS de actividad: captura sus wrappers y verifica43RPC (incluyeleave_space). Si corre antes, actividad borra camposdemo y falla catálogo. Tu nueva0057coherencia puede precederla; confirmar orden antes deaplicar. LaSQLMakana está en `origin/codex/demo-makana`8194e96; independiente de participación pública.
+
 
 ## Entregado
 - En preparación.
@@ -47,3 +46,8 @@
 
 ## Integración participación
 - La autorización anterior de Nico de integrar enapp para que sevea se conserva. Cambiofront independiente, sin RPCnuevas ni cambioscontracto/backend. Se entregará por ramapropia para integración delcoordinador. Makana sigue separada con migraciónposterioraactividad, salvoajustes de numbering que confirmeelcoordinador.
+
+## Participación visible entregada
+- Commit638a677, rama`codex/participacion-visible`, no se mezcló con fixtureMakana.102puras PASS(13nuevas), tsc/buildPASS,6configUI320/375/1280lightdarkPASS,82RPCsintéticas0errores/desbordes. Rolmiembro común ve mismosactos públicos; pendingnoingreso, simulacionesseparadas; versiónnueva0heredadas; getSpacepollgrupo10syplanesincambiosactualizaningresos/salidas. Revisiónindependientesinhallazgos.
+- Evidencia `/Users/macair/.codex/visualizations/2026/10/24/01a16dbb-c25b-7923-80be-5d5b64310a40/participacion-visible/`; captura abierta alusuarioidentificadaMOCKLOCAL. Noautenticación/base/modeloreal, noPRporpermiso403previo, nomainpush por avisovigente10:04.
+- Observación frontend/GRU: mascotaflotante cubre parcialmenteetiquetaVersión1a375 yconteoPorentrara320 en capturas; no nombres. No se tocaron sus estilos porqueotro dueñorecientementeanclóGRU. Revisar ensiúltimapublicaciónsiquierenpulido.
