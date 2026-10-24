@@ -1,6 +1,7 @@
 // Origen: guion de friccion. #82: corte de red sobre la parte de una pantalla (route.abort) contra el build propio.
 import { execFileSync } from 'node:child_process'
 import { createRequire } from 'node:module'
+import { fileURLToPath } from 'node:url'
 import { tmpdir } from 'node:os'
 import { baseLibre } from './base-libre.mjs'
 baseLibre() // el caso C crea un grupo en la base
@@ -9,7 +10,7 @@ let pw
 try { pw = require('playwright') } catch {
   pw = require(process.env.CRUXE_PLAYWRIGHT_DIR || '/Users/macair/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright')
 }
-const DIR = new URL('.', import.meta.url).pathname
+const DIR = fileURLToPath(new URL('.', import.meta.url))
 const BASE = process.argv[2] ?? 'http://localhost:4185'
 const browser = await pw.chromium.launch({ headless: true, executablePath: process.env.CRUXE_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' })
 let ok = 0, mal = 0
