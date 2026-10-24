@@ -4,6 +4,7 @@
 Nico aprobó la variante «A la vista» y pidió implementarla dentro del grupo, visible a todos los miembros: quién se unió, quién salió y quién se bajó de un plan. Esta autorización actual sustituye H14/E13 únicamente en la identidad pública de estos movimientos; motivos, condiciones, opiniones y preferencias siguen privados.
 
 ## Tocando ahora
+- MIGRACION EN CURSO: `20261024115616_actividad_grupo` (Supabase CRUXE producción, SQL Editor autenticado por Nico). No correr suites compartidas hasta liberar esta marca.
 - Rama propia `codex/actividad-grupo`, copia aislada `/Users/macair/cruse/cruce-actividad`, base `origin/main` `9a15539`.
 - Nuevos `src/actividad-grupo/**`: sección visible, presentación, fechas y pruebas propias.
 - `src/screens/Espacio.tsx`: importación/montaje de Actividad debajo de integrantes; salida del grupo con confirmación. Conservar cambios de títulos GRU de codex-preferencias y cualquier trabajo de otras ramas.
