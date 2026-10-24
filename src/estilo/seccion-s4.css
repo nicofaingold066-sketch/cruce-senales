@@ -536,3 +536,13 @@ a.fila:hover {
 .filas-plan .filas-botones {
   margin-bottom: var(--e-3);
 }
+
+/* `.fila-texto` global es una columna flex (estira a sus hijos): en las filas del plan es texto corrido, y la insignia
+   «demo» queda a su tamaño (defecto visto en producción a 768/1024/1280). */
+.plan-tab .fila-texto {
+  display: block;
+}
+.plan-tab .fila .rotulo-sim {
+  display: inline-block;
+  width: auto;
+}
