@@ -3,6 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cruce-qa`). Rutas: `tests/e2e/**`, `docs/qa-noche.md`. Puerto de preview: 4185.
 
 ## Tocando ahora
+- CORRIENDO PRUEBA (21:42) humo producción: dos sesiones (qa-noche)
 - [21:26] Base libre desde 21:22: corro de a una, con marca: canónico vitest (E13) → demo-reinicio-luna y plan-b (producción, para apertura) → humo dos sesiones (producción) → jurado (build local de fundamentos 1ba3185). Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
 
 ## Entregado
