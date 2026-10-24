@@ -43,6 +43,8 @@ export interface MisPreferencias {
   preferencias: Preferencias | null
   /** Enmienda 8: si es false, el agente no usa las preferencias de esta persona (siguen guardadas). true si no guardó. */
   usar_en_agente: boolean
+  /** E11: permiso independiente. null significa que el servidor no confirmó este campo. */
+  recibir_invitaciones_agente: boolean | null
   actualizadas_en: Momento | null
   opciones: { actividades: ActividadOpcion[] }
   personas_con_preferencias: number
@@ -366,10 +368,23 @@ export const agenteApi = {
     rpc<MisPreferencias>('get_my_preferences', { p_espacio_id: espacioId }, (c) => ({
       preferencias: (c.preferencias as Preferencias | null) ?? null,
       usar_en_agente: c.usar_en_agente !== false,
+      recibir_invitaciones_agente: typeof c.recibir_invitaciones_agente === 'boolean' ? c.recibir_invitaciones_agente : null,
       actualizadas_en: (c.actualizadas_en as Momento | null) ?? null,
       opciones: (c.opciones as MisPreferencias['opciones']) ?? { actividades: [] },
       personas_con_preferencias: typeof c.personas_con_preferencias === 'number' ? c.personas_con_preferencias : 0,
     }), false, opciones),
+
+  /** E11: no guarda preferencias ni confirma asistencia. Solo cambia el permiso propio. */
+  setRecibirInvitaciones: (espacioId: string, recibir: boolean) =>
+    rpc<{ recibir_invitaciones_agente: boolean }>(
+      'set_recibir_invitaciones_agente',
+      { p_espacio_id: espacioId, p_recibir: recibir },
+      (c) => {
+        if (typeof c.recibir_invitaciones_agente !== 'boolean') throw new Error('respuesta_invalida')
+        return { recibir_invitaciones_agente: c.recibir_invitaciones_agente }
+      },
+      true,
+    ),
 
   // Enmienda 8: `usar_en_agente` viaja dentro de p_preferencias; si falta, el servidor lo toma como true.
   saveMyPreferences: (espacioId: string, preferencias: Preferencias, usarEnAgente = true, opciones?: OpcionesLlamada) =>
