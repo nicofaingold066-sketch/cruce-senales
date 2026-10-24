@@ -4,6 +4,7 @@ import type { CargarCasoOk } from '../lib/api'
 import type { ApiError, Disponibilidad, EstadoPropuesta, MiembroPanel } from '../lib/types'
 import { useBorradorCondiciones, useMutacion, useSondeo } from '../lib/hooks'
 import { Avatar, Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
+import { Confirmacion, useVolverFoco } from '../components/Confirmacion'
 import { EditorCondiciones, ETIQUETA_VALOR } from '../components/Condiciones'
 import '../estilo/seccion-s7.css'
 import type { PestanaProps } from './tabs'
@@ -240,6 +241,7 @@ function TarjetaSimulado({
   const b = useBorradorCondiciones(m.condiciones.disponibilidad, claves)
   const { ocupado, error, correr } = useMutacion(viva)
   const [confirmarBaja, setConfirmarBaja] = useState(false)
+  const { zona, volver } = useVolverFoco<HTMLElement>()
   const version = p.opcion?.version ?? null
   const id = m.miembro.miembro_id
 
@@ -273,7 +275,7 @@ function TarjetaSimulado({
       : claves.map((c) => `${c}: ${ETIQUETA_VALOR[m.condiciones.disponibilidad[c] ?? 'pendiente']}`).join(' · ')
 
   return (
-    <section className={`tarjeta tarjeta-sim sim-persona ${m.retirado ? 'sim-persona-baja' : ''}`} aria-label={`Simulación de ${m.miembro.nombre}`}>
+    <section ref={zona} className={`tarjeta tarjeta-sim sim-persona ${m.retirado ? 'sim-persona-baja' : ''}`} aria-label={`Simulación de ${m.miembro.nombre}`}>
       <div className="sim-cabeza">
         <Avatar nombre={m.miembro.nombre} simulado={m.miembro.simulado} />
         <h2>
@@ -295,24 +297,24 @@ function TarjetaSimulado({
             </Boton>
           ) : null}
           {puedeBaja && !confirmarBaja ? (
-            <Boton variante="secundario" onClick={() => setConfirmarBaja(true)} disabled={soloLectura} aria-label={`Se baja: ${m.miembro.nombre}`}>
+            <Boton variante="secundario" onClick={() => setConfirmarBaja(true)} disabled={soloLectura} aria-label={`Se baja: ${m.miembro.nombre}`} data-abre-confirmacion>
               {`Se baja: ${m.miembro.nombre}`}
             </Boton>
           ) : null}
         </div>
       ) : null}
       {confirmarBaja ? (
-        <Aviso tono="aviso" titulo={`¿Dar de baja a ${m.miembro.nombre}?`}>
+        <Confirmacion titulo={`¿Dar de baja a ${m.miembro.nombre}?`}>
           Es definitivo en esta propuesta. Si el grupo queda por debajo del mínimo, el plan pasa a En revisión.
           <div className="fila-botones">
             <Boton variante="peligro" onClick={() => void bajar()} ocupado={ocupado} ocupadoTexto="Registrando baja…" aria-label={`Sí, ${m.miembro.nombre} se baja`}>
               {`Sí, ${m.miembro.nombre} se baja`}
             </Boton>
-            <Boton variante="secundario" onClick={() => setConfirmarBaja(false)} disabled={ocupado} aria-label={`Volver sin dar de baja a ${m.miembro.nombre}`}>
+            <Boton variante="secundario" onClick={() => volver(() => setConfirmarBaja(false))} disabled={ocupado} aria-label={`Volver sin dar de baja a ${m.miembro.nombre}`}>
               Volver
             </Boton>
           </div>
-        </Aviso>
+        </Confirmacion>
       ) : null}
 
       {m.puede.marcar_interes || m.puede.guardar_condiciones ? (

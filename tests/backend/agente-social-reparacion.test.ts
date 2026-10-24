@@ -47,7 +47,7 @@ describe('agente social: una propuesta del agente pasa por confirmación, baja y
     await ok(O, 'aprobar_borrador_agente', { p_ejecucion_id: ej, p_borrador_hash: hash, p_intento_id: intento() })
     const pub = await ok(O, 'publicar_borrador_agente', { p_ejecucion_id: ej, p_borrador_hash: hash, p_intento_id: intento() })
     const p = pub.propuesta.id as string
-    expect(pub.invitados).toBe(1)
+    expect(pub.invitados).toBe(6) // 0055: los 5 simulados de la demo + Uno
     const minimo = g.borrador.plan.minimo as number
     expect(minimo).toBe(3)
 
