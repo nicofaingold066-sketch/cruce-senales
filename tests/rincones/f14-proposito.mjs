@@ -2,7 +2,7 @@
 // selector "¿Para qué es este grupo?", frase en "¿Quién eres?", atajos de la familia deporte en Nueva propuesta,
 // propuesta fuera del propósito (sin actividad) → mensaje del servidor, propuesta dentro de la familia (Pádel) → crea.
 // Todo ficticio; un grupo propio; sin ráfagas.
-import { abrir, actor, BASE, rincon, nota, guardar, boton, esperarTexto, errores, CARPETA, hora } from './lib.mjs'
+import { abrir, actor, BASE, rincon, nota, guardar, boton, esperarTexto, errores, CARPETA, hora, revisar } from './lib.mjs'
 import { rinconA11y, anunciado, guardarA11y } from './a11y.mjs'
 import { escribir, guardarSesion } from './estado.mjs'
 
@@ -63,7 +63,7 @@ await corto('R404', o, async () => {
 // fuera de propósito: título libre sin atajo (no hay actividad)
 await corto('R405', o, async () => {
   await o.getByLabel('Propósito de la propuesta').fill('Cena de fin de año')
-  await o.getByRole('button', { name: /Revisar antes de crear/ }).click(); await T(o, 900)
+  await revisar(o); await T(o, 900)
   await boton(o, 'Crear y abrir al grupo').click(); await T(o, 4500)
   nota('R405', 'sin atajo en un grupo con propósito: ' + (await txt(o)).slice(0, 520))
   await anunciado(o, 'R405', 'Fuera de propósito', 'Este grupo se armó para otro tipo de plan')
@@ -72,9 +72,11 @@ await corto('R405', o, async () => {
 // dentro de la familia: Pádel
 await corto('R406', o, async () => {
   await o.goto(`${BASE}/#/e/${espacioE}/nueva`); await T(o, 3000)
-  await o.locator('[aria-label="Atajos de actividad"] button', { hasText: 'Pádel' }).first().click(); await T(o, 400)
+  const pad = o.locator('[aria-label="Atajos de actividad"] button', { hasText: 'Pádel' }).first()
+  if (!(await pad.isVisible().catch(() => false))) await o.getByRole('button', { name: /^Más…?$/ }).click().catch(() => {}) // el mockup muestra cuatro atajos y «Más…»
+  await pad.click(); await T(o, 400)
   nota('R406', 'título tras elegir el atajo Pádel: ' + await o.getByLabel('Propósito de la propuesta').inputValue())
-  await o.getByRole('button', { name: /Revisar antes de crear/ }).click(); await T(o, 900)
+  await revisar(o); await T(o, 900)
   nota('R406', 'paso 2: ' + (await txt(o)).slice(0, 300))
   await boton(o, 'Crear y abrir al grupo').click(); await o.waitForURL(/\/p\//, { timeout: 40000 }); await T(o, 3500)
   await rincon(o, 'R406', 'Propuesta de Pádel dentro de un grupo de fútbol (misma familia): se crea', { foco: false })

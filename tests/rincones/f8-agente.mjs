@@ -9,10 +9,12 @@ const txt = async (p, sel = 'main') => (await p.locator(sel).innerText()).replac
 const T = (p, ms = 1500) => p.waitForTimeout(ms)
 const corto = async (id, p, f) => { try { await f() } catch (e) { nota(id, `ERROR DEL GUION: ${String(e).split('\n')[0].slice(0, 220)}`); await p.screenshot({ path: `${CARPETA}/${id}-error.png` }).catch(() => {}) } }
 const abrirAgente = async (p) => { await p.goto(`${BASE}/#/e/${g.espacioId}`); await T(p, 3500); await p.locator('details.agente-plegable summary').click(); await T(p, 3500) }
+// Panel compacto (wip/agente-ia 81687c1, aviso 02:12): "Cómo llegas (opcional)" y "Permisos" arrancan plegados y no se dibujan; se abren si existen.
+const abrirPlegables = async (p) => { for (const n of [/Cómo llegas \(opcional\)/, /^Permisos/]) { const b = p.getByRole('button', { name: n }); if (await b.count()) { await b.first().click(); await T(p, 400) } } }
 const prefs = async (p, acts) => { for (const a of acts) await p.locator('.agente-plegable label', { hasText: new RegExp(`^\\s*${a}\\s*$`) }).first().click(); await p.getByRole('button', { name: /(Guardar|Actualizar) mis preferencias/ }).click(); await T(p, 3000) }
 const ana = await actor(b, 'ana', { storageState: rutaSesion('ana') })
 await corto('R150', ana, async () => {
-  await abrirAgente(ana); await rincon(ana, 'R150', 'Agente: preferencias de una invitada (sin guardar)', { foco: false })
+  await abrirAgente(ana); await abrirPlegables(ana); await rincon(ana, 'R150', 'Agente: preferencias de una invitada (sin guardar)', { foco: false })
   await prefs(ana, ['Pádel', 'Asado'])
   await rincon(ana, 'R151', 'Agente: preferencias guardadas por Ana'); nota('R151', await txt(ana, 'details.agente-plegable'))
 })
@@ -40,6 +42,7 @@ await corto('R156', o, async () => {
     await arme.click(); await T(o, 1500)
     await rincon(o, 'R156', 'Agente v13: "El agente está pensando…" (arme un plan)', { anchos: [{ n: '375', w: 375, h: 812 }] })
     await o.getByText(/Lo que hizo el agente|No se pudo|no pudo/i).first().waitFor({ timeout: 90000 }).catch(() => {}); await T(o, 1500)
+    await abrirPlegables(o)
     await rincon(o, 'R157', 'Agente v13: resultado de "arme un plan" y "Lo que hizo el agente"', { foco: true })
     await rinconA11y(o, 'R157', 'Agente v13: resultado (accesibilidad)', { anchos: [320, 375] })
     const t = await txt(o, 'details.agente-plegable')

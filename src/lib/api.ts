@@ -18,6 +18,7 @@ import type {
   PanelSimulacion,
   PreferenciasPropias,
   Preferencia,
+  PlanPorCodigo,
   PropuestaResumen,
   ReglaMotor,
   RondaHoras,
@@ -52,6 +53,10 @@ export type VistaPorCodigoOk = OkBase & {
   /** Enmienda 14: `proposito` y `familia` llegan desde la 0048 (opcionales hasta entonces). */
   espacio: { nombre: string; demo: boolean; proposito?: Proposito; familia?: Familia }
   miembros: { miembro_id: string; nombre: string; libre: boolean }[]
+  /** 0056: nombre visible de quien organiza el grupo. */
+  organizador?: string | null
+  /** 0056: la propuesta activa más reciente (título y fecha), o null. */
+  plan?: PlanPorCodigo | null
 }
 export type VerEspacioOk = OkBase & { espacio: Espacio }
 export type SembrarDemoOk = EspacioOk<{ espacio_id: string; creado: boolean; repetido: boolean }>

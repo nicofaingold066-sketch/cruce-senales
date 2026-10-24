@@ -18,12 +18,15 @@ export function RearmarConLoNuevo({
   viva,
   codigo,
   soloLectura,
+  compacto,
 }: {
   p: EstadoPropuesta & CamposE13
   viva: PropuestaViva
   /** `espacio.codigo_invitacion`: si viene, después de rearmar se ofrece avisar al grupo por WhatsApp. */
   codigo?: string | null
   soloLectura?: boolean
+  /** S4 (rediseño): dentro del bloque de resultado, sin tarjeta propia; el título va como rótulo. */
+  compacto?: boolean
 }) {
   const { ocupado, error, correr } = useMutacion(viva)
   const [rearmada, setRearmada] = useState<number | null>(null)
@@ -37,7 +40,7 @@ export function RearmarConLoNuevo({
   // Recién rearmada: la propuesta ya trae la versión nueva; se ofrece el aviso al grupo una vez.
   if (rearmada !== null && p.opcion?.version === rearmada) {
     return (
-      <section className="tarjeta" aria-labelledby={`${id}-rearmada`}>
+      <section className={compacto ? 'rearmar-compacto' : 'tarjeta'} aria-labelledby={`${id}-rearmada`}>
         <h2 id={`${id}-rearmada`}>Versión {rearmada} lista</h2>
         <Aviso tono="ok">Empieza sin confirmaciones. Avísale al grupo para que cada uno confirme si le sirve.</Aviso>
         {codigo ? (
@@ -55,9 +58,10 @@ export function RearmarConLoNuevo({
   const v = vistaRearmar(p, error ? { codigo: error.codigo, detalle: error.detalle } : null)
   if (!v) return null
   const otroError = error && v.clave === 'rearmar' ? error : null
+  const Titulo = compacto ? 'h3' : 'h2'
   return (
-    <section className="tarjeta" aria-labelledby={`${id}-rearmar`}>
-      <h2 id={`${id}-rearmar`}>{v.titulo}</h2>
+    <section className={compacto ? 'rearmar-compacto' : 'tarjeta'} aria-labelledby={`${id}-rearmar`}>
+      <Titulo id={`${id}-rearmar`}>{v.titulo}</Titulo>
       {v.clave === 'rearmar' ? <p>{v.texto}</p> : <Aviso tono={v.clave === 'ya_no_hace_falta' ? 'info' : 'aviso'}>{v.texto}</Aviso>}
       {v.boton ? (
         <div className="barra-accion">

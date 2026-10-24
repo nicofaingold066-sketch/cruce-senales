@@ -40,6 +40,17 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si CUALQUIER 
   - `recorrido-dos-sesiones.mjs`: mismas comprobaciones de red más el Historial de Luna tras la baja de Caro.
   - `guardia-palabras.mjs`: regla **D2** (género y pareja de una persona no se piden ni se muestran): género/sexo, hombre/mujer, masculino/femenino, casado, estado civil, "tu/su pareja", "¿vienes con pareja?", `autocomplete="sex"`… «Con parejas» / «solo el grupo» como regla de la juntada se permite. Control positivo: detecta las frases prohibidas y deja pasar las permitidas.
 
+## Rediseño de la noche: cómo se adaptan los guiones (regla 03:07: «el mockup gana y el guion se adapta»)
+El mockup validado (21 pantallas, `prompts/rediseno-secciones.md`) cambia cómo se llega a cada cosa. Lo que mis guiones tocan y puede moverse, y lo que ya dejé preparado (03:04):
+| Hoy los guiones usan | En el mockup | Preparado |
+|---|---|---|
+| Pestañas del plan: `Plan` · `Mi respuesta` · `Historial` · `Simulación` | filas y hojas: «Tu respuesta · Cambiar ›», «Historial ⌄», «Simulación (demo)» (plegadas) | `tests/e2e/nav.mjs` → `irA(p, nombre)`: prueba la pestaña y, si no existe, un botón, enlace o resumen que empiece por el nombre; si no encuentra nada falla diciendo qué buscó. Lo usan dos sesiones, jurado y plan B. Falta: los guiones de friccion/toques/convencer que tocan una pestaña suelta |
+| Enlace «Crear propuesta» | «+ Nuevo plan» (S2) | acepta `Crear propuesta`, `Nueva propuesta` y `Nuevo plan` |
+| Botón «Revisar antes de crear» antes de «Crear y abrir al grupo» | un solo primario «Crear y abrir al grupo» (S3) | «Revisar antes de crear» es opcional en los 6 guiones que crean propuestas |
+| Campos «Mínimo»/«Máximo» como cajas | «Mínimo y Máximo lado a lado con −/+» (S3) | **pendiente**: jurado los rellena con `getByLabel(...).fill`; se adapta cuando S3 (`wip/rediseno-s3`) entregue el control |
+| «Ir a Mi respuesta» | «Responder en un toque» (S4) | `convencer-uno` ya usa la pestaña «Mi respuesta» si el botón no está |
+| «Unirme» a la vista en la portada | dentro de «Tengo un código de invitación» / hoja «+ Nuevo grupo» (S1) | los guiones con sesión nueva lo ven en la portada sin sesión (pantalla 9); si cae, `entrada-lista` y `sesiones-recuperacion` L2 lo avisan |
+
 ## Registro de corridas
 | Hora | Qué | Contra | Resultado |
 |---|---|---|---|
@@ -90,6 +101,12 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si CUALQUIER 
 | 00:34–00:37 | turno corto sobre producción (main con parche 2): dos sesiones **26/26**; jurado **4/4** (E13 comprobada, E15 «pendiente en el servidor»: sin enmienda 15 aún); `entrada-lista.mjs` **7/7** (lista agotada: campo de nombre a la vista) | producción | verde |
 | 00:19 | `sesiones-recuperacion` L2/L3 con foco al error: estricto contra `wip/frontend` 094b192 (12/12), aviso contra fundamentos | localhost | verde |
 | 01:44 | `enmienda15-privacidad.test.ts` escrito (3 pruebas); tipos ok | — | sin correr: espero mi turno (puesto 5 de la cola del 01:44) |
+| 02:09 | merge de fundamentos 22ae202 (`main`, etiqueta `demo-segura`): la demo pasa a llamarse **«Los del finde»** (0054); el coordinador adaptó los guiones a `/Los del (asado|finde)/` y `wip/qa` quedó igual a fundamentos. Banco de sesiones con el nombre nuevo: 12/12 | Vite local | verde |
+| 02:20–02:23 | turno ≤10 min sobre producción («Los del finde», `main` 22ae202): `proposito.mjs` **25/25**, `proposito-pantalla.mjs` **10/10**, dos sesiones **27/27** (E15: «prefiero» ausente de lo compartido, Luna sin `planes_totales`), jurado **4/4** (E13 y E15 detectadas y comprobadas, 181 RPC sin hallazgos). `enmienda15-privacidad.test.ts` 2/3: la caída fue un supuesto mío (`opcion.franja` es un objeto `{clave, inicio, fin, etiqueta}`, no la letra); corregido; la repetición (02:31) cayó en otro supuesto mío (`get_my_conditions` normaliza `prefiero: null`; ahora se exige que Tomi no reciba un VALOR 'A'/'B'); cuarta corrida (con `condiciones.prefiero`, que va junto a la disponibilidad y no dentro): **3/3** | producción | verde |
+| 02:33–02:38 | set sin base sobre las ramas con entregas: `wip/diseno` 9c6ffe8 (fase 1 del rediseño: sistema de estilos), `wip/frontend` fee1163, `wip/friccion` d471641 (respuesta de un toque con dos planes con nombre), `wip/ux` 0597dd3, `wip/agente-ia` 54dc6a4, `wip/apertura` 258242e: typecheck, build, guardia 0/0 y red 10/10 en las seis | localhost | verde |
+| 02:42 | `sesiones-recuperacion` sobre `wip/diseno` dio 5 FAIL: falsa alarma mía (mi guion esperaba la copia guardada como «Los del finde» y el banco `.jsx` de esa rama, anterior al cambio de nombre, dice «Los del asado»). El guion ahora acepta los dos nombres: 12/12 contra diseno y contra mi copia | Vite local | no es regresión |
+| 02:42 | friccion d471641 revisado: con planes sin nombre los rótulos de la respuesta de un toque no cambian («Puedo los dos días», «Solo el …», «No puedo ninguno»); `friccion-flujo.mjs` suma la comprobación de «Prefiero «…»» (E15 en pantalla), guardada por presencia; pendiente de correr con la base | — | — |
+| 03:09 | friccion S1/S5 (`wip/friccion` 0b5e4d1, pantallas 6, 9, 10 y 14): su aviso de rótulos aplicado a mis guiones (mismos cambios que ella dejó en su rama): `sesiones-recuperacion` L2 abre la fila «Tengo un código de invitación» antes de contar «Unirme», y `demo-reinicio-luna` acepta el título «Respondiste» además de «Respuesta guardada». Banco de sesiones: 12/12 con mi código y contra su rama | Vite local | verde |
 
 ## Regresiones abiertas
 (ninguna)

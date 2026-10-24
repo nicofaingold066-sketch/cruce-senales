@@ -84,34 +84,53 @@ export function TomarDeCalendario({
   onTomar,
   deshabilitado,
   textoUsar = 'Usar esta agenda',
+  fila,
 }: {
   franjas: Franja[]
   semilla: string
   onTomar: (d: Disponibilidad) => void
   deshabilitado?: boolean
   textoUsar?: string
+  /** Pantalla 6 (bloque "Opcional"): una fila "Tomar de mi calendario (simulación)" y el botón de sugerir, secundario. */
+  fila?: boolean
 }) {
   const [abierto, setAbierto] = useState(false)
   const id = useId()
   const agenda = abierto ? agendaFicticia(franjas, semilla) : []
   return (
-    <section className="tarjeta calendario-sim" aria-labelledby={`${id}-t`}>
-      <button
-        type="button"
-        className="btn btn-secundario calendario-sim-abrir"
-        aria-expanded={abierto}
-        aria-controls={`${id}-agenda`}
-        onClick={() => setAbierto((a) => !a)}
-        disabled={deshabilitado}
-      >
-        <Icono n="calendario" tam={20} />
-        <span id={`${id}-t`}>Tomar de mi calendario</span>
-        <RotuloSimulacion />
-      </button>
+    <section className={fila ? 'calendario-sim calendario-sim-fila' : 'tarjeta calendario-sim'} aria-labelledby={`${id}-t`}>
+      {fila ? (
+        <button
+          type="button"
+          className="s5-fila-opcional s5-fila-boton"
+          aria-expanded={abierto}
+          aria-controls={`${id}-agenda`}
+          onClick={() => setAbierto((a) => !a)}
+          disabled={deshabilitado}
+        >
+          <span id={`${id}-t`}>
+            Tomar de mi calendario <span className="t-nota">(simulación)</span>
+          </span>
+          <Icono n="chevron" tam={18} />
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="btn btn-secundario calendario-sim-abrir"
+          aria-expanded={abierto}
+          aria-controls={`${id}-agenda`}
+          onClick={() => setAbierto((a) => !a)}
+          disabled={deshabilitado}
+        >
+          <Icono n="calendario" tam={20} />
+          <span id={`${id}-t`}>Tomar de mi calendario</span>
+          <RotuloSimulacion />
+        </button>
+      )}
       {abierto ? (
         <div id={`${id}-agenda`} className="calendario-sim-cuerpo">
           <p className="suave">
-            Agenda ficticia para la demo: no se conecta a ningún calendario real y nada sale de este teléfono. Revisa antes de usarla.
+            Agenda ficticia (simulación): no se conecta a ningún calendario real y nada sale de este teléfono. Revisa antes de usarla.
           </p>
           <ul className="calendario-sim-dias">
             {agenda.map((d) => (
@@ -132,7 +151,7 @@ export function TomarDeCalendario({
               </li>
             ))}
           </ul>
-          <Boton onClick={() => onTomar(disponibilidadDe(agenda))} disabled={deshabilitado}>
+          <Boton variante={fila ? 'secundario' : 'primario'} onClick={() => onTomar(disponibilidadDe(agenda))} disabled={deshabilitado}>
             {textoUsar}
           </Boton>
         </div>

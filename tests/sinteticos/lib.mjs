@@ -99,6 +99,33 @@ export class Persona {
 
 // gravedad: 'alta' (se pierde la gente o el dato) · 'media' (confunde y puede responder mal) · 'baja' (pulido).
 // destinatario: friccion | front-juan | backend | ux-flujo | apertura | coordinador
+// «Nueva propuesta» (rediseño S3, `wip/rediseno-s3` 0b7ce46): el título pasa a «Nuevo plan», «Revisar antes de crear» desaparece
+// (el primario «Crear y abrir al grupo» va en el formulario), las fechas A y B son filas plegadas y los atajos muestran cuatro y «Más…».
+// Estas ayudas aceptan lo de hoy y lo nuevo: lo viejo solo si existe.
+Persona.prototype.esperarNuevoPlan = async function () {
+  await this.page.getByRole('heading', { name: /^(Nuevo plan|Nueva propuesta)$/ }).waitFor({ timeout: 15000 })
+}
+Persona.prototype.atajo = async function (nombre) {
+  const b = this.page.getByRole('button', { name: nombre, exact: true })
+  if (!(await b.count())) {
+    const mas = this.page.getByRole('button', { name: /^Más…?$/ })
+    if (await mas.count()) await this.tocar(mas.first(), 'atajos: «Más…»')
+  }
+  await this.tocarBoton(nombre)
+}
+Persona.prototype.abrirFilasDeFechas = async function () {
+  const filas = this.page.locator('details.s3-momento:not([open]) summary')
+  for (let n = await filas.count(); n > 0; n = await filas.count()) await this.tocar(filas.first(), 'abrir una fila de fecha')
+}
+Persona.prototype.revisarYCrear = async function (alRevisar) {
+  const r = this.page.getByRole('button', { name: 'Revisar antes de crear', exact: true })
+  if (await r.count()) {
+    await this.tocar(r.first(), 'Revisar antes de crear')
+    if (alRevisar) await alRevisar()
+  }
+  await this.tocarBoton('Crear y abrir al grupo')
+}
+
 export function hallazgo({ id, persona, gravedad, destinatario, titulo, paso, vio, esperaba, captura }) {
   if (hallazgos.some((h) => h.id === id)) return
   hallazgos.push({ id, persona: persona?.nombre ?? persona, gravedad, destinatario, titulo, paso, vio, esperaba, captura })

@@ -21,7 +21,9 @@ await rincon(p, 'R02', 'Portada: nombre vacío o muy largo', { anchos: [{ n: '37
 await p.getByPlaceholder('Tu nombre').fill('')
 
 // R03 Unirme con un código vacío / inexistente
+// S1 (friccion, wip/friccion 0b5e4d1): «Unirme con un código» está dentro de la fila plegable «Tengo un código de invitación»; si no se ve, se abre.
 const unirme = p.getByRole('button', { name: 'Unirme', exact: true })
+if (!(await unirme.isVisible().catch(() => false))) { await p.getByText('Tengo un código de invitación').first().click().catch(() => {}); await p.waitForTimeout(500) }
 nota('R03', `Unirme vacío: deshabilitado=${await unirme.isDisabled()}`)
 const campos = p.locator('form').last().locator('input')
 await campos.nth(0).fill('ZZZZ9999'); await campos.nth(1).fill('Pruebas')

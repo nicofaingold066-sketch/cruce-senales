@@ -1,4 +1,4 @@
-// Enmienda 15 (E-c y E-d) con un grupo NUEVO, «Los del finde»: dos planes con nombre, «gana la que pueden más», «¿cuál
+// Enmienda 15 (E-c y E-d) con un grupo NUEVO, «Los de la terraza» (no «Los del finde»: así se llama la demo desde la 0054): dos planes con nombre, «gana la que pueden más», «¿cuál
 // prefieres?» (desempate privado) y una ronda de opiniones de 2 h.
 //   Mara  — organiza: pone nombre a cada plan, elige «La que pueden más» y ronda de 2 h; ve los totales; rearma.
 //   Teo   — puede los dos; prefiere B (desempate).
@@ -21,7 +21,7 @@ exigirBaseLibre()
 
 const BASE = (process.argv[2] || process.env.CRUXE_URL || 'https://cruce-senales.vercel.app').replace(/\/+$/, '')
 const SALIDA = carpetaDeSalida(process.env.CRUXE_SALIDA || new URL('./salida', import.meta.url).pathname)
-const GRUPO = 'Los del finde'
+const GRUPO = 'Los de la terraza'
 const TITULO = 'Plan del finde'
 const t0 = Date.now()
 
@@ -48,30 +48,35 @@ const tiene = (texto, re) => re.test(texto.replace(/\s+/g, ' '))
 
 try {
   // ── Mara crea el grupo y la propuesta con los dos planes ───────────────────────────────────────────
-  log('— Mara crea «Los del finde»')
+  log('— Mara crea «Los de la terraza»')
   await reintento(() => E.crearGrupo(mara, { integrantes: ['Teo', 'Lola', 'Nano', 'Pipo'], pegar: true }))
   await mara.tocarEnlace('Crear propuesta', false)
-  await mara.page.getByRole('heading', { name: 'Nueva propuesta' }).waitFor({ timeout: 15000 })
+  await mara.esperarNuevoPlan()
   const form = await E.ver(mara, 'nueva-propuesta-e15')
   C.formularioDiceNombreDelPlan = tiene(form.texto, /Nombre de este plan/)
   C.formularioOfreceMasOpciones = tiene(form.texto, /Más opciones/)
   await mara.page.getByLabel('Propósito de la propuesta').fill(TITULO)
-  // Nombre de cada plan (opcional) y «Más opciones».
+  // Nombre de cada plan (opcional) y «Más opciones». En el rediseño S3 las fechas A y B son filas plegadas: se abren primero.
+  await mara.abrirFilasDeFechas()
   const nombres = mara.page.locator('.campo-etiqueta-plan input')
   C.camposDeNombreDePlan = await nombres.count()
   if (C.camposDeNombreDePlan >= 2) {
     await nombres.nth(0).fill('Asado en el parque')
     await nombres.nth(1).fill('Cine y pizza')
   }
-  await mara.tocar(mara.page.getByText('Más opciones', { exact: true }).first(), 'abrir «Más opciones»')
+  await mara.tocar(mara.page.getByText('Más opciones', { exact: true }).or(mara.page.getByRole('button', { name: 'Más opciones' })).first(), 'abrir «Más opciones»')
   const mas = await E.ver(mara, 'nueva-propuesta-mas-opciones')
   C.masOpcionesRonda = tiene(mas.texto, /Sin ronda/) && tiene(mas.texto, /2 h/)
   C.masOpcionesRegla = tiene(mas.texto, /La que pueden más/)
-  await mara.tocar(mara.page.locator('label', { hasText: /^2 h$/ }).first(), 'ronda de 2 h')
-  await mara.tocar(mara.page.locator('label', { hasText: 'La que pueden más' }).first(), 'gana: la que pueden más')
+  // Solo dentro del grupo «Ronda de opiniones»: «Dura aprox.» también tiene un «2 h» antes en la pantalla.
+  await mara.tocar(mara.page.locator('[aria-label="Ronda de opiniones"] label', { hasText: /^2 h$/ }).first(), 'ronda de 2 h')
+  await mara.tocar(mara.page.locator('[aria-label="Si sirven las dos, gana"] label', { hasText: 'La que pueden más' }).first(), 'gana: la que pueden más')
   await mara.tocar(mara.page.getByLabel('Sumar uno al mínimo'), 'mínimo +1')
-  await mara.tocarBoton('Revisar antes de crear')
-  const rev = await E.ver(mara, 'nueva-propuesta-revisar-e15')
+  let rev = { texto: '' }
+  if (await mara.page.getByRole('button', { name: 'Revisar antes de crear', exact: true }).count()) {
+    await mara.tocarBoton('Revisar antes de crear')
+    rev = await E.ver(mara, 'nueva-propuesta-revisar-e15')
+  } else rev = await E.ver(mara, 'nueva-propuesta-lista-para-crear')
   C.revisarMuestraRonda = tiene(rev.texto, /Ronda de opiniones[\s\S]{0,40}2 h/)
   C.revisarMuestraRegla = tiene(rev.texto, /la que pueden más|La que pueden más/)
   await mara.tocarBoton('Crear y abrir al grupo')
@@ -90,23 +95,38 @@ try {
   // ── Teo y Lola: pueden los dos y prefieren B ──────────────────────────────────────────────────────
   for (const p of [teo, lola]) {
     log(`— ${p.nombre} responde y prefiere B`)
+    let entrada
     await reintento(async () => {
-      await E.entrarPorEnlace(p)
-      // El camino de un toque guarda las dos franjas pero no ofrece «¿cuál prefieres?»: ir a Mi respuesta del plan.
+      entrada = await E.entrarPorEnlace(p)
       await E.responder(p, 'Sí puedo', 'Sí puedo')
     })
     p.fin('del enlace a la respuesta guardada')
+    // H24 (friccion d471641): los botones de un toque dicen el nombre de cada plan y, tras «Puedo los dos días», ofrecen
+    // «Prefiero «<plan>»». Si está, se usa ahí (y se mide); si no (producción de hoy), se prefiere en Mi respuesta.
+    C[`${p.nombre}UnToqueMuestraNombres`] = p.rapida && tiene(entrada.texto, /Asado en el parque/) && tiene(entrada.texto, /Cine y pizza/)
+    const prefiereEnUnToque = p.page.getByRole('button', { name: /^Prefiero «Cine y pizza»/ })
+    if (await prefiereEnUnToque.count()) {
+      await p.tocar(prefiereEnUnToque.first(), 'Prefiero «Cine y pizza» (en un toque)')
+      await p.esperar(/Prefieres «Cine y pizza»/, 20000)
+      await E.ver(p, `${p.nombre.toLowerCase()}-prefiero-en-un-toque`)
+      C[`${p.nombre}GuardoPrefieroEnUnToque`] = true
+      p.fin('del enlace a la respuesta guardada + preferencia (un toque)')
+    } else C[`${p.nombre}GuardoPrefieroEnUnToque`] = false
     await E.volverA(p, E.datos.propuestaUrl, 'Mi respuesta')
     const mr = await E.ver(p, `${p.nombre.toLowerCase()}-mi-respuesta`)
     C[`${p.nombre}VeCualPrefieres`] = tiene(mr.texto, /Si te sirven los dos, ¿cuál prefieres\?/)
     C[`${p.nombre}VeNombresDeLosPlanes`] = tiene(mr.texto, /Asado en el parque/) && tiene(mr.texto, /Cine y pizza/)
-    const opcionB = p.page.locator('fieldset.prefiero label', { hasText: /Cine y pizza|Opción B/ }).first()
-    if (await opcionB.count()) {
-      await p.tocar(opcionB, 'prefiero el plan B')
-      await p.tocarBoton('Guardar condiciones')
-      await p.esperar('Guardado. Solo tú ves estas condiciones.', 20000)
+    if (C[`${p.nombre}GuardoPrefieroEnUnToque`]) {
       C[`${p.nombre}GuardoPrefiero`] = true
-    } else C[`${p.nombre}GuardoPrefiero`] = false
+    } else {
+      const opcionB = p.page.locator('fieldset.prefiero label', { hasText: /Cine y pizza|Opción B/ }).first()
+      if (await opcionB.count()) {
+        await p.tocar(opcionB, 'prefiero el plan B')
+        await p.tocarBoton('Guardar condiciones')
+        await p.esperar('Guardado. Solo tú ves estas condiciones.', 20000)
+        C[`${p.nombre}GuardoPrefiero`] = true
+      } else C[`${p.nombre}GuardoPrefiero`] = false
+    }
   }
 
   // ── Nano: solo el sábado (A) ───────────────────────────────────────────────────────────────────────

@@ -4,7 +4,7 @@
 // pantalla (árbol accesible guardado en <id>-aria.yml), recorrido con Tab, contraste sobre píxeles, 320 px y espaciado.
 // Además: qué anuncia el lector tras cada acción y dónde queda el foco al cambiar de pantalla; movimiento reducido.
 // Crea su propio demo (no toca el de nadie) y no llama al agente.
-import { abrir, actor, BASE, nota, guardar, boton, esperarTexto, errores, CARPETA, log } from './lib.mjs'
+import { abrir, actor, BASE, nota, guardar, boton, esperarTexto, errores, CARPETA, log, revisar } from './lib.mjs'
 import { rinconA11y, anunciado, focoTrasNavegar, guardarA11y } from './a11y.mjs'
 import { escribir, guardarSesion } from './estado.mjs'
 
@@ -40,7 +40,7 @@ await corto('A02', t, async () => {
   await t.getByRole('link', { name: /Crear propuesta/ }).first().click(); await T(t, 2500)
   await focoTrasNavegar(t, 'A02', 'Nueva propuesta')
   await rinconA11y(t, 'A02', 'Demo: Nueva propuesta precargada, paso 1')
-  await t.getByRole('button', { name: /Revisar antes de crear/ }).click(); await T(t, 900)
+  await revisar(t); await T(t, 900)
   await focoTrasNavegar(t, 'A03', 'Paso 2')
   await rinconA11y(t, 'A03', 'Demo: Nueva propuesta, paso 2 (revisar y crear)', { anchos: [320, 375] })
   await boton(t, 'Crear y abrir al grupo').click()
@@ -67,7 +67,7 @@ await corto('A10', j, async () => {
 await corto('A13', j, async () => {
   await j.getByRole('button', { name: /Tomar de mi calendario/ }).click(); await T(j, 600)
   await rinconA11y(j, 'A13', 'Jurado: agenda ficticia desplegada', { anchos: [320, 375] })
-  await boton(j, 'Marcar lo que dice mi agenda').click(); await T(j, 900)
+  await j.getByRole('button', { name: /Ver qué sugiere mi agenda|Marcar lo que dice mi agenda|Usar esta agenda/ }).click(); await T(j, 900) // el rótulo cambió el 24/10 (friccion)
   await anunciado(j, 'A13', 'Agenda', 'Tu agenda ficticia sugiere')
   const enfocado = await j.evaluate(() => { const e = document.activeElement; return e && e.id && e.id.startsWith('rapida-') ? e.id : '' })
   nota('A13', 'tras "Marcar lo que dice mi agenda", el foco va a la opción sugerida: ' + (enfocado || 'no'))
