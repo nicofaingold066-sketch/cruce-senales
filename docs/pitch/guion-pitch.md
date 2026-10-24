@@ -12,16 +12,16 @@ Reglas que no se rompen en escena (`docs/guion-demo.md`, «Reglas que no se romp
 
 ## A. Versión de 5 minutos (la del escenario)
 
-Sigue el mapa de la guía de Nico: gancho, problema, conflicto, solución + demo, Makana, cierre. Suma el bloque «cómo lo construimos» en 20 segundos dentro de la transición a Makana.
+Sigue las **8 diapositivas del deck** (sesión «Presentación para el jurado», lista final de las 11:0x): cada bloque dice qué diapositiva está en pantalla. Cifras que se dicen igual que en el deck: 8 de octubre, 6 interesados / 0 asados, 36 h, 30 personas a la vez, 152 verificaciones, ~1 000 commits.
 
-### 0:00–0:30 · Gancho
+### 0:00–0:30 · Gancho · diapositiva 1 «¿Cuándo nos juntamos?»
 - «Levanten la mano los que tienen un grupo de WhatsApp de amigos.» *(levantás la tuya)*
 - «Déjenla arriba si alguna vez alguien escribió: *che, ¿cuándo nos juntamos?*…»
 - «…y la juntada nunca pasó.»
 - *(Pausa de 2 segundos. Mirás las manos.)*
 - «A nosotros nos pasó hace dos semanas. Les cuento.»
 
-### 0:30–1:10 · Problema
+### 0:30–1:10 · Problema · diapositiva 2 «6 interesados · 0 asados»
 - «8 de octubre. Un asado. Seis interesados.»
 - «Todos: *dale, me sumo*.»
 - «Después, uno no puede el sábado. Otra no quiere gastar. Otro no dice nada.»
@@ -31,21 +31,22 @@ Sigue el mapa de la guía de Nico: gancho, problema, conflicto, solución + demo
 
 > Fuente del dato: Encuesta Bicentenario UC, vía prensa, fuente secundaria (`docs/problema.md` línea 13). Si preguntan, decir «fuente secundaria». No hablar de soledad como eje.
 
-### 1:10–1:50 · El insight (las tres trabas, con los dedos)
+### 1:10–1:50 · El insight (las tres trabas, con los dedos) · diapositiva 3 «Privado · Compromiso · Reparar»
 - «WhatsApp sirve para hablar del plan. No para cerrarlo.»
 - «Uno: nadie dice delante del grupo *no me alcanza* o *ese día no puedo*. **Lo privado tiene que quedar privado.**»
 - «Dos: *me interesa* no es *voy*. **El silencio no es asistencia.**»
 - «Tres: cuando uno se baja, se cae todo. **Una confirmación vale para una versión del plan, no para siempre.**»
 - «Creemos que ahí se muere la juntada: no en las ganas, en el cierre.»
 
-### 1:50–2:10 · Qué hace CRUXE (tres pasos)
+### 1:50–2:10 · Qué hace CRUXE (cuatro pasos, uno por dedo) · diapositiva 4 «CRUXE: que el encuentro ocurra»
 - *(lento)* «CRUXE convierte *nos tenemos que juntar* en un encuentro que ocurre.»
 - «Uno: cada uno dice en privado cuándo puede. Nadie ve lo de los demás.»
-- «Dos: el servidor busca la opción que le sirve al grupo, y cada uno confirma **esa** versión.»
-- «Tres: si alguien se baja, el plan se repara con una versión nueva, y nadie arrastra una confirmación vieja.»
+- «Dos: el servidor propone una sola opción que le sirve al grupo.»
+- «Tres: cada uno confirma **esa** versión.»
+- «Cuatro: si alguien se baja, el plan se repara con una versión nueva, y nadie arrastra una confirmación vieja.»
 - «Juan, mostrémoslo.»
 
-### 2:10–3:50 · Demo en vivo (1:40)
+### 2:10–3:50 · Demo en vivo (1:40) · diapositiva 5 «Demo en vivo» (Juan pasa a la app)
 Juan opera; Nico narra. Paso a paso con rótulos: `docs/pitch/demo-en-vivo.md` (versión a «Los del finde» o versión b «Makana»). El momento clave es la baja: **pausa** antes de que alguien se baje.
 
 Frases de narración (sirven para las dos versiones):
@@ -57,14 +58,14 @@ Frases de narración (sirven para las dos versiones):
 - «El plan no finge que sigue armado: queda *En revisión*. Y no dice quién se bajó.»
 - «Se rearma con otra fecha: versión 2. Empieza de cero; cada uno vuelve a decidir.»
 
-### 3:50–4:10 · Qué lo hace distinto (y cómo lo construimos)
+### 3:50–4:10 · Qué lo hace distinto (y cómo lo construimos) · diapositiva 6 «Lo que no se ve»
 - «Lo importante no está en la pantalla, está en el servidor: él decide los cupos, los plazos y el estado. No el teléfono de nadie.»
 - «Hay un agente, GRU, que propone planes con los gustos privados del grupo. Propone; no confirma nada. Eso siempre lo hace una persona.»
 - «Lo hicimos en 36 horas, dos personas dirigiendo un equipo de sesiones de IA coordinadas: cerca de mil commits, pruebas contra la base real antes de cada publicación, 30 personas confirmando a la vez sin pasarse del cupo, y una auditoría del agente.»
 
 > Respaldo: ~1 088 commits en `origin/main` a las 10:55 (`git rev-list --count`); pruebas contra la base en cada publicación (TABLERO del coordinador: recorrido 27/27, jurado 4/4, red 10/10…); QA de 30 a la vez: `docs/qa/gente-y-rendimiento.md` (152 verificaciones, c1–c6); auditoría: `docs/auditoria-agente.md` (rama `auditoria-agente`). No decir «sin errores»: la QA dejó 7 hallazgos medios/bajos.
 
-### 4:10–4:40 · Para Makana
+### 4:10–4:40 · Para Makana · diapositiva 7 «El último metro»
 - «Makana ya tiene grupos y desafíos. CRUXE cierra el último metro: que el encuentro ocurra.»
 - «Pasar de *tener* el beneficio a *usarlo*.»
 - «Proponemos un piloto voluntario midiendo tres cosas: encuentros que se concretan, si el grupo se repite a las 4 y a las 12 semanas, y cuántas bajas se reparan.»
@@ -72,7 +73,7 @@ Frases de narración (sirven para las dos versiones):
 
 > Ojo: hoy no existe una vista para empresas; «solo totales» es el diseño propuesto para el piloto, no una pantalla. No decir «baja el ausentismo» ni «resuelve la soledad».
 
-### 4:40–5:00 · Cierre (de memoria)
+### 4:40–5:00 · Cierre (de memoria) · diapositiva 8 «Que juntarse no dependa de uno solo» (logo + QR)
 - «¿Se acuerdan del asado del 8 de octubre? Seis interesados, cero asados.»
 - «Con CRUXE, cada uno dijo lo suyo en privado, confirmó, y cuando uno se bajó… el plan siguió en pie.»
 - *(lento)* «**Que juntarse deje de depender de que uno persiga a todos.** Gracias.»
