@@ -168,18 +168,29 @@ export async function a4Propuesta(
 // momento no decreciente con el orden de serialización.
 export function a4CadenaEventos(prop: A4R): string[] {
   const v: string[] = []
-  const h: A4R[] = prop?.historial ?? []
+  const todo: A4R[] = prop?.historial ?? []
+  // Enmienda 13 (c): la baja de otra persona se publica sin actor ni estados (estado_previo y estado_nuevo null). Ese evento no
+  // participa de la cadena de estados, pero sí del orden de state_rev y del momento. La aceptación de quien se retiró ya no sale.
+  const sinEstado = (e: A4R) => e.tipo === 'baja' && e.estado_previo == null && e.estado_nuevo == null
+  const h: A4R[] = todo.filter((e) => !sinEstado(e))
+  for (let i = 1; i < todo.length; i++) {
+    const a = todo[i - 1]
+    const b = todo[i]
+    if (!(b.state_rev > a.state_rev)) v.push(`state_rev no creciente ${a.state_rev}->${b.state_rev}`)
+    if (Date.parse(b.en.utc) < Date.parse(a.en.utc)) v.push(`momento decreciente ${a.en.utc} -> ${b.en.utc}`)
+  }
   for (let i = 1; i < h.length; i++) {
     const a = h[i - 1]
     const b = h[i]
-    if (!(b.state_rev > a.state_rev)) v.push(`state_rev no creciente ${a.state_rev}->${b.state_rev}`)
     if (b.estado_previo !== a.estado_nuevo) v.push(`cadena rota ${a.tipo}:${a.estado_nuevo} -> ${b.tipo}:${b.estado_previo}`)
-    if (Date.parse(b.en.utc) < Date.parse(a.en.utc)) v.push(`momento decreciente ${a.en.utc} -> ${b.en.utc}`)
   }
   const exp = h.filter((x) => x.tipo === 'propuesta_expirada').length
   if (exp > 1) v.push(`propuesta_expirada registrada ${exp} veces`)
   const ult = h[h.length - 1]
-  if (ult && prop.estado !== ult.estado_nuevo && ult.tipo !== undefined) {
+  // Si el último evento es una baja anónima, la transición que produjo no se publica: no hay con qué comparar el estado actual
+  // (cada prueba verifica el estado final por su cuenta, p. ej. `en_revision/2`).
+  const ultimoEsBajaAnonima = todo.length > 0 && sinEstado(todo[todo.length - 1])
+  if (ult && !ultimoEsBajaAnonima && prop.estado !== ult.estado_nuevo && ult.tipo !== undefined) {
     // el último evento debe dejar el estado actual (mark_interest no genera evento ni cambia estado)
     v.push(`estado actual ${prop.estado} distinto del último evento ${ult.estado_nuevo}`)
   }
