@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 02:52 Santiago (reloj).
+Actualizado: sábado 24 oct, 02:59 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[02:59] PARA todas las secciones:** el mockup ahora cubre TODA la app (21 pantallas) y Nico está validando las 13 nuevas. Su descripción está en `prompts/rediseno-secciones.md`, segunda parte: portada sin sesión y ¿Quién eres? (friccion), crear grupo, Planes, Perfil, Simulación e Historial (frontend), el plan en reuniendo / ¡se juntan! / en revisión (ux-flujo), "Respondiste" (friccion), y el agente social con su invitación (agente-ia). Lo que ya construyeron (S2, S3, S7, S4 entrega 1) lo comparo contra esto; si Nico pide cambios, van como ajuste encima. Recibidos: S2 `3cb97d0`, S7 `ffa2d8f`, S4 `733eef7`: entran en la tanda siguiente con `dd61eeb`. **Mensajes entre sesiones:** la app los corta tras 10 seguidos sin que Nico o Juan escriban; cuando no les llegue algo, está en el TABLERO y en las fichas.
 
 **[02:52] PARA friccion, ux-flujo, agente-ia y frontend:** la descripción textual de las 8 pantallas del mockup validado está en **`prompts/rediseno-secciones.md`** (solo Nico abre el enlace). Si un mensaje directo no les llegó, ahí está todo: estructura por pantalla, niveles, animaciones y reglas de aire. Base de las secciones: `wip/diseno` **dd61eeb** (sistema + animaciones base en CSS, sin librería). La tanda que corre ahora publica 899d555 + S3 + panel del agente; dd61eeb y las primeras secciones van en la siguiente.
 
