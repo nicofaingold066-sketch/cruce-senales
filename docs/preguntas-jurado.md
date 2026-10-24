@@ -37,7 +37,7 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 **Respuesta.** No lo sabemos. Es una hipótesis: los seis interesados dejaron de responder y no preguntamos por qué. Elegimos atacar el cierre porque es la parte que el chat no hace y porque podíamos ponerlo a prueba en dos días, no porque lo hayamos comprobado.
 **Evidencia.** `docs/problema.md` §2 y §5: la causa real «está por investigar y no se afirma» (`docs/caso-canonico.md`). La sección «Lo que dijeron los del asado» sigue vacía (nadie respondió).
 **Sin evidencia causal.** Decir exactamente eso, y cuál sería la prueba: tasa de planes concretados y repetición del encuentro a las 4 y 12 semanas. **No** decir «esto resuelve el problema».
-**D6 (Nico, 21:06).** Las cuatro causas se dicen como «creemos que». Si se nombra evidencia de psicología, decir que es de EE.UU. y Europa y que no hay de Chile. La única cifra de psico que se cita: 80 % de 1.100 encuestados en EE.UU. dicen que cancelar no daña la amistad, pero que mentir sobre el motivo sí ([MSU Today, 2023](https://msutoday.msu.edu/news/2023/01/cancelling-plans-research); F1 en `docs/psicologia-grupo.md`). Sirve para la reparación: «por eso no pedimos el motivo cuando alguien se baja».
+**D6 (Nico, 21:06).** Las cuatro causas se dicen como «creemos que». Si se nombra evidencia de psicología, decir que es de EE.UU. y Europa y que no hay de Chile. La única cifra de psico que se cita, tal cual la dejó psico: «el 80 % de más de 1.100 encuestados en EE.UU. dijo que cancelar no daña la amistad, pero sí duele que mientan» ([MSU Today, 2023](https://msutoday.msu.edu/news/2023/01/cancelling-plans-research); F1 en `docs/psicologia-fuentes.md`, rama `wip/psico`). Sirve para la reparación: «por eso no pedimos el motivo cuando alguien se baja».
 
 ### P3 · ¿Quién es la persona y qué le pasa?
 **Respuesta.** Alguien que quiere ver a sus amigos y no logra que pase: contestó «me interesa», pero nadie fija día y hora, y esperó a que otro lo ordene. En CRUXE esa persona es Vale, la que organiza: crea el grupo, manda el enlace y los demás responden.
@@ -130,10 +130,12 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 
 ### S12 · ¿Preguntan género o si alguien está en pareja? ¿Cómo saben quién viene?
 **Respuesta.** No. El género y la situación de pareja no se piden ni se infieren: son datos sensibles y en un grupo de cinco delatan a alguien. «Quién viene» es una regla del grupo, no de una persona: solo el grupo, con parejas o abierta. Por ahora va en el título del plan; un campo propio queda para después.
+**En diez segundos (texto de psico, D2):** «No los pedimos ni los inferimos. En un grupo de cinco, delatan. Lo que importa es quién puede venir y qué estilo quieren, y eso lo decide el grupo.» Vale igual para la clase social: el presupuesto se pide como tope («ojalá gratis», «algo barato», «da igual»), nunca como clase. «Estilo» es el estilo de la ocasión (simple, normal, especial; D7, lo arma agente-ia sin migración): nombrarlo solo si está en producción a las 10:30.
 **Evidencia.** Decisiones D2 y D3 de psico, aceptadas por Nico (20:51): `agentes/psico.md`, `docs/psicologia-grupo.md` (rama `wip/psico`); `docs/contrato-enmienda-13.md`, «Fuera». La Ley 21.719 lista identidad de género y vida sexual entre los datos sensibles (guía secundaria; plena vigencia el 1 dic 2026): no citar artículos que no leímos.
 
 ### S13 · ¿La app avisa o manda recordatorios?
-**Respuesta.** No, y lo elegimos así. CRUXE no manda notificaciones: cuando sale la opción, cambia o se confirma, deja listo un mensaje con el enlace y lo manda una persona por el WhatsApp que el grupo ya usa. Así nadie recibe avisos de una app nueva y el grupo sigue hablando donde habla.
+**Respuesta (texto de psico, D8).** «CRUXE no manda notificaciones. Deja listo el mensaje con el enlace y lo manda una persona por WhatsApp; cada mensaje dice qué hacer si no puedes. Es un límite declarado, no un descuido.» Así nadie recibe avisos de una app nueva y el grupo sigue hablando donde habla.
+**Cuidado.** «Cada mensaje dice qué hacer si no puedes» vale para los mensajes de ux-flujo cuando estén conectados; hoy en producción solo sale el de cierre. Si a las 10:30 siguen sin conectar, decir «deja listo el mensaje de cierre» y no más.
 **Evidencia.** Decisión D8 de Nico (21:06): se acepta para la entrega y se declara como límite (`agentes/psico.md`). Hoy el único mensaje listo es el de cierre (`PlanTab.tsx:641`); los de «sale la opción» y «cambió» están construidos y sin conectar (`RecordarFaltan`, ux-flujo). `docs/problema.md` §4 (notificaciones fuera a propósito).
 **No decir** que «la app avisa».
 
@@ -176,7 +178,7 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 
 ### C9 · ¿Con cuál de los casos sí cambiaría esta persona? (pregunta de cierre del jurado)
 **Respuesta.** Con este: es el caso donde el problema no es querer, es cerrar, y donde cada uno puede responder en cuatro toques sin cuenta. No lo comparamos con otros; no sumamos puntos con esta pregunta, se mira en los empates.
-**Evidencia.** `prompts/contexto-dia-pitch-reglas.md`, punto 2 (pregunta de cierre por caso). Ensayar una frase corta, no una comparación con otros equipos.
+**Evidencia.** `prompts/contexto-dia-pitch-reglas.md`, punto 2 (pregunta de cierre por caso). Ensayar una frase corta, no una comparación con otros equipos. La lámina de 30 segundos «CRUXE entiende la dinámica de un grupo» (psico, `docs/psicologia-grupo.md` §14) está en `docs/guion-demo.md` §7 y sirve de cierre.
 
 ---
 
@@ -194,7 +196,7 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 
 ## 5. Pendientes (se actualizan con las ramas)
 - **Enmienda 13 (corte 01:00):** S3, S5b, S6 y S10 tienen versión «si entró» y «si no entró». A las 10:30, con el «Estado verificado», dejar una sola. El botón «Así no puedo, pero sigo» lo conecta front-juan; sin botón, vale la versión «no entró» aunque la base lo tenga.
-- **Guion de la demo:** `docs/guion-demo.md` (#103), con sus [a verificar].
+- **Guion de la demo:** `docs/guion-demo.md` (#103). Sus seis puntos [a verificar] están en la tabla §8; agente-ia (1 y 2) y qa-noche (4 y 5) los prueban esta noche (pedidos 21:12) y el coordinador llena «Estado 10:30».
 - **Cifras vivas:** rehacer 78/78, 23/23, 4/4, 10/10 y los 4 toques con el `main` final antes del pitch (sábado 10:30, «Estado verificado para el pitch»).
 - **Video de respaldo** y **ensayo de C1, C6, P2 y S5b** con cronómetro: tareas de Nico.
 - **Teléfono físico:** no probado; si se prueba antes del pitch, actualizar S9.
