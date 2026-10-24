@@ -1,6 +1,6 @@
 # Auditoría del agente social (GRU / S6): creatividad, coherencia y trato parejo
 
-Sesión **auditoria-agente**, sábado 24 oct 2026, 09:15–09:45 (hora del reloj, America/Santiago). Base: `main` = `8fba205`.
+Sesión **auditoria-agente**, sábado 24 oct 2026, desde las 09:15 (hora del reloj, America/Santiago). Base: `main` = `8fba205`.
 Solo lectura de código y una consulta de lectura al catálogo en la base (`select` sobre `cruce.catalogo_agente`). **Cero llamadas al modelo.** No toqué código.
 
 **Cambio de alcance (Nico, 09:2x, en esta sesión):** «no me importa la privacidad ni los costos ni la seguridad; me importa que funcione y que sus respuestas sean creativas, coherentes y que no discriminen a nadie». Después sumó: qué parámetros usa y cuáles le faltan (hora, clima, distancia, presupuesto, horarios, si viene con alguien, reserva, plan B), qué fuentes reales podría usar y con qué costo, e ideas. Las partes de privacidad, costos y seguridad del encargo original quedan **fuera de alcance**; al final dejo tres observaciones que vi de pasada, sin auditar.
@@ -153,6 +153,25 @@ Sin activar nada facturable. Cifras de precio a verificar en la página oficial 
 | **Passline / Puntoticket / agendas municipales** | Eventos chilenos | — | — | Sin API pública encontrada | Lista curada a mano para la demo |
 | **EasyCancha** | Canchas de pádel, fútbol y tenis en Chile (450+ clubes) | — | — | Sin API pública encontrada | Mantener el enlace; pedir convenio después |
 | **OSRM / GTFS Red** | Minutos reales de viaje | Gratis | Estática | ODbL / datos abiertos | Reemplaza la tabla de 8 zonas |
+
+### Muestra gratis de OpenStreetMap (Región Metropolitana, 24 oct 09:34)
+
+Una consulta de conteo a Overpass (servidor público, gratis, ODbL). Los datos existen, pero hay que limpiarlos antes de usarlos.
+
+| Qué | Cuántos hay en OSM | Lectura |
+|---|---|---|
+| Canchas o centros con `sport=padel` | **242** | Hay base para «canchas de pádel reales cerca de la zona del grupo». Falta medir cuántas tienen nombre y horario: la segunda consulta la rechazó el servidor público (está sobrecargado) y no insistí. |
+| Parrillas (`amenity=bbq`) | **26**, solo 1 con nombre | Pobre: varias son el mismo punto repetido. Para «Asado en una parrilla del parque» no alcanza; mejor parques grandes conocidos + carga manual. |
+| Parques (`leisure=park`) | **5 461** | Sobra; incluye plazas chicas. Filtrar por superficie o por nombre. |
+| Restaurantes | **3 326**, solo **224** con horario (7 %) | Sirve para «hay un lugar»; no sirve para saber si está abierto. Para horario, Google Places. |
+| Bares | **225** | Pocos para Santiago: OSM está incompleto en vida nocturna. |
+| Cines | **42** | Bien cubierto. |
+
+Conclusión: OSM sirve para parques, cines y canchas de pádel (lugares que no cambian). Para restaurantes, bares y horarios hace falta Google Places (facturable) o una lista curada.
+
+### «Viene con alguien»: ya existe algo, pero el agente no lo lee
+
+friccion dejó «¿Quién viene?» (D3, aprobada por Nico): el organizador marca el grupo o el plan como «Solo el grupo / Con parejas / Abierta», y queda escrito al final del nombre («Los del pádel · con parejas», `src/lib/compartir.ts`). El agente no usa esa marca: no suma las parejas al tamaño del grupo ni cambia el tipo de plan. Para hoy, el prompt podría recibir esa marca como dato del grupo (no es privada: está en el nombre).
 
 ## 6. Ideas para que sea creativo (ordenadas por esfuerzo)
 
