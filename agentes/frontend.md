@@ -4,7 +4,7 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- (nada; 00:03)
+- [00:12] Fusión de `origin/wip/front-juan-ux` `31d8d1b` en `wip/frontend` (pedido del coordinador): `src/components/Novedades.tsx`, `src/components/Icono.tsx`, `src/screens/{CrearGrupo,Espacio,Inicio,NuevaPropuesta,PlanTab,Planes,Propuesta,RespuestaTab}.tsx`, `src/styles.css`. Sin pruebas contra la base.
 
 ## Entregado
 - [00:11] `wip/frontend` = `0cca08a`: (a) `a644413` `Propuesta.tsx` (#35, pedido 5 de ux-flujo): en reuniendo interés, a quien organiza la órbita dice "N respondieron" con `personas_con_condiciones` (solo le llega al organizador); los demás siguen viendo "con interés". (b) `0cca08a` `PlanTab.tsx`: "Faltan por confirmar" (OK de qa-noche 00:11). **Depende de `wip/qa`:** el `recorrido-dos-sesiones.mjs` de `wip/fundamentos` todavía busca solo "Faltan por responder"; el de `wip/qa` acepta los dos. Integrar `wip/qa` junto o antes. apertura: `docs/guion-demo.md` §3 nota dice «Faltan por responder». tsc OK, vitest puro 50/50, build 0.
