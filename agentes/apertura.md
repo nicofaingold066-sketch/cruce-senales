@@ -3,9 +3,11 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md`, `docs/catalogo-ampliado.md`, `src/lib/ejemplos.ts` (nuevo).
 
 ## Tocando ahora
-- [20:53] #103: `docs/guion-demo.md` (nuevo, asignado por el coordinador) y actualización de `docs/preguntas-jurado.md` con D2 y la enmienda 13.
+- [21:07] Nada editándose. #103 y #101 entregados; a las 10:30 (Estado verificado) dejo una sola versión en `docs/preguntas-jurado.md` y marco los [a verificar] de `docs/guion-demo.md`.
 
 ## Entregado
+- [21:07] #103 entregado: `docs/guion-demo.md` (commit `6bdce63`): reparto de tiempo (problema 0:45, Parte A 1:00, Parte B 2:10), lista de control antes de subir, cada paso con rótulo exacto, frase y prueba ([visto]/[leído]/[a verificar]), plan B por falla (red, sesión, agente lento o caído, sin «viaje», Luna no reclamable, sin red). Rótulos tomados de los guiones e2e que pasaron en producción (`recorrido-dos-sesiones` 23/23 sobre `3ace04e`, `toques-invitacion` = 4) y del código. Solo docs.
+- [21:07] #101 actualizado (commit `9d6505f`): S3 con las dos versiones de debate de ux-flujo (`a4d78ed`), S5b/S6/S10 con la enmienda 13 (baja sin nombre, asado en lugar neutro), S4 con la enmienda 11 (base sí, interfaz no), S12 nueva (D2/D3: género y pareja no se piden), enlace al guion. 30 preguntas.
 - [20:32] #101 entregado: `docs/preguntas-jurado.md` (29 preguntas: 8 Problema, 12 Solución, 9 Convicción; 5 marcadas ★ más probables y 3 ⚠ más peligrosas; cada una con respuesta de 2-3 frases y evidencia o «Sin evidencia»). Rama `wip/apertura`, commit en el push de las 20:32. Solo docs: sin código que probar. Falta unir la respuesta de debate de ux-flujo (`docs/output-debate.md` §4) en S3 cuando esté en `main`.
 - [19:29] `docs/apertura.md` §6 (respuestas de 30 segundos para el jurado) y `docs/catalogo-ampliado.md` (segunda tanda, borrador, no entra hoy): commit `a917b05`.
 - [19:24] #95 entregado: `docs/catalogo-ampliado.md` en rama `wip/apertura`, commit `ccf168f` (8 filas `lugar-sim-06` a `13`, con SQL listo y sugerencia de zona para las 5 filas actuales). Sin código: no hay pruebas que correr.
@@ -24,6 +26,9 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md
 - agente-ia [20:36]: en `src/agente/AgentePanel.tsx` (donde hace `setActividades(r.data.opciones.actividades)`, hacia la línea 112) usar `setActividades(ordenarActividadesParaGrupo(r.data.opciones.actividades, nombreGrupo))`, con `import { ordenarActividadesParaGrupo } from '../lib/ejemplos'` (rama `wip/apertura`, `0e03b8a`). Necesita el nombre del grupo (`espacio.nombre`) como prop. Es solo el orden de los chips; no cambia qué opciones hay ni lo que se guarda.
 - psico [20:38]: redactada en `docs/catalogo-ampliado.md` (rama `wip/apertura`) la fila `lugar-sim-14` «Parrilla del parque (Simulación)», con SQL y efectos a revisar. NO la pedí a backend: espera el OK de Nico (D1). Cuando lo tengas, avisame y se la paso a backend.
 - psico/backend [20:53]: D1 aprobada por Nico (20:51): `lugar-sim-14` entra en la enmienda 13 (`docs/contrato-enmienda-13.md` §d), la aplica backend. No hace falta otro pedido.
+- ux-flujo [21:07]: incorporadas tus DOS versiones de `docs/output-debate.md` §4 (`a4d78ed`) en S3 de `docs/preguntas-jurado.md` (commit `9d6505f`), con la condición exacta («enmienda 13 en producción Y botón conectado»). Gracias.
+- agente-ia [21:07]: `docs/guion-demo.md` §0 propone un reparto nuevo para `docs/pitch.md` (tu ruta): problema 0:00–0:45, Parte A 0:45–1:45, Parte B 1:45–3:55, fuera 3:55–4:25, cierre 4:25–5:00; el bloque del agente queda dentro de la Parte B. Adoptalo o proponé otro; Nico reescribe el pitch el sábado.
+- coordinador [21:07]: para el «Estado verificado» de las 10:30, el guion tiene 6 puntos [a verificar]: (1) función del agente con enmienda 10 desplegada (si no, no sale «Queda a menos de N minutos»; hay plan B), (2) tiempo de respuesta con Opus, (3) enmienda 13 (c) en producción (texto de la baja), (4) Luna reclamable en el demo de T1, (5) plan B de un solo aparato (Luna recibe el caso como simulada), (6) teléfono físico. Y una decisión: ¿la Parte B lleva segundo aparato (Luna) o un solo aparato?
 
 ## Hallazgo → cambio → dueño (regla de Nico, 20:34)
 | Hallazgo | Cambio | Dueño | Cuándo | Estado |
@@ -40,6 +45,8 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md
 1. ¿Las etiquetas «sin alcohol», «apto para peques y mascotas» y «sin escaleras» entran como siguiente paso del README (propiedad del lugar, no de la persona), o antes del sábado? Recomiendo siguiente paso: el congelamiento es a las 11:00 y requeriría una migración.
 2. ¿La segunda tanda del catálogo (12 actividades, `docs/catalogo-ampliado.md`) queda como siguiente paso? Recomiendo sí.
 3. Grabar el video de respaldo y ensayar las cuatro respuestas incómodas de `docs/preguntas-jurado.md` (C1, C6, P2, S5b) antes de las 13:00.
+4. Ensayo de la demo con cronómetro entre 10:00 y 11:00 siguiendo `docs/guion-demo.md`, en los dos aparatos y con UNA sola llamada al agente; grabar ahí el video de respaldo. Es la primera vez en teléfono físico.
+5. Reparto del tiempo del pitch: el guion propone problema 0:45 + demo 3:10 (dos partes) + cierre 1:05. Si no entra en el ensayo, se recorta lo marcado «recortable» en la Parte B; la Parte A no se recorta.
 
 ## Ideas
 (prioridad, quién lo hace)
