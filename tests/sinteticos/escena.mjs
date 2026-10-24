@@ -148,14 +148,12 @@ export function armarEscena({ base, salida, grupo, titulo, fugas = [] }) {
   async function crearPropuesta(org, { actividad, minimoMas = 1 }) {
     const t = org.toques
     await org.tocarEnlace('Crear propuesta', false)
-    await org.page.getByRole('heading', { name: 'Nueva propuesta' }).waitFor({ timeout: 15000 })
+    await org.esperarNuevoPlan()
     const vacia = await ver(org, 'nueva-propuesta-vacia')
-    if (actividad) await org.tocarBoton(actividad)
+    if (actividad) await org.atajo(actividad)
     await org.page.getByLabel('Propósito de la propuesta').fill(titulo)
     for (let i = 0; i < minimoMas; i++) await org.tocar(org.page.getByLabel('Sumar uno al mínimo'), 'mínimo +1')
-    await org.tocarBoton('Revisar antes de crear')
-    await ver(org, 'nueva-propuesta-revisar')
-    await org.tocarBoton('Crear y abrir al grupo')
+    await org.revisarYCrear(() => ver(org, 'nueva-propuesta-revisar'))
     await org.page.getByRole('tab', { name: 'Plan' }).waitFor({ timeout: 30000 })
     await org.page.waitForTimeout(1200)
     datos.propuestaUrl = org.page.url()

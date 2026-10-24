@@ -51,19 +51,20 @@ try {
   log('— Mara crea «Los de la terraza»')
   await reintento(() => E.crearGrupo(mara, { integrantes: ['Teo', 'Lola', 'Nano', 'Pipo'], pegar: true }))
   await mara.tocarEnlace('Crear propuesta', false)
-  await mara.page.getByRole('heading', { name: 'Nueva propuesta' }).waitFor({ timeout: 15000 })
+  await mara.esperarNuevoPlan()
   const form = await E.ver(mara, 'nueva-propuesta-e15')
   C.formularioDiceNombreDelPlan = tiene(form.texto, /Nombre de este plan/)
   C.formularioOfreceMasOpciones = tiene(form.texto, /Más opciones/)
   await mara.page.getByLabel('Propósito de la propuesta').fill(TITULO)
-  // Nombre de cada plan (opcional) y «Más opciones».
+  // Nombre de cada plan (opcional) y «Más opciones». En el rediseño S3 las fechas A y B son filas plegadas: se abren primero.
+  await mara.abrirFilasDeFechas()
   const nombres = mara.page.locator('.campo-etiqueta-plan input')
   C.camposDeNombreDePlan = await nombres.count()
   if (C.camposDeNombreDePlan >= 2) {
     await nombres.nth(0).fill('Asado en el parque')
     await nombres.nth(1).fill('Cine y pizza')
   }
-  await mara.tocar(mara.page.getByText('Más opciones', { exact: true }).first(), 'abrir «Más opciones»')
+  await mara.tocar(mara.page.getByText('Más opciones', { exact: true }).or(mara.page.getByRole('button', { name: 'Más opciones' })).first(), 'abrir «Más opciones»')
   const mas = await E.ver(mara, 'nueva-propuesta-mas-opciones')
   C.masOpcionesRonda = tiene(mas.texto, /Sin ronda/) && tiene(mas.texto, /2 h/)
   C.masOpcionesRegla = tiene(mas.texto, /La que pueden más/)
@@ -71,8 +72,11 @@ try {
   await mara.tocar(mara.page.locator('[aria-label="Ronda de opiniones"] label', { hasText: /^2 h$/ }).first(), 'ronda de 2 h')
   await mara.tocar(mara.page.locator('[aria-label="Si sirven las dos, gana"] label', { hasText: 'La que pueden más' }).first(), 'gana: la que pueden más')
   await mara.tocar(mara.page.getByLabel('Sumar uno al mínimo'), 'mínimo +1')
-  await mara.tocarBoton('Revisar antes de crear')
-  const rev = await E.ver(mara, 'nueva-propuesta-revisar-e15')
+  let rev = { texto: '' }
+  if (await mara.page.getByRole('button', { name: 'Revisar antes de crear', exact: true }).count()) {
+    await mara.tocarBoton('Revisar antes de crear')
+    rev = await E.ver(mara, 'nueva-propuesta-revisar-e15')
+  } else rev = await E.ver(mara, 'nueva-propuesta-lista-para-crear')
   C.revisarMuestraRonda = tiene(rev.texto, /Ronda de opiniones[\s\S]{0,40}2 h/)
   C.revisarMuestraRegla = tiene(rev.texto, /la que pueden más|La que pueden más/)
   await mara.tocarBoton('Crear y abrir al grupo')
