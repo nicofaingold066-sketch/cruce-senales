@@ -2,7 +2,7 @@
 
 Dueño: apertura. Pedido #96. Viernes 23 oct 2026. Todo ficticio: los grupos y las personas de abajo son inventados.
 
-**Por qué existe este documento.** El jurado nos marcó que damos siempre el ejemplo del asado. El asado es el caso canónico de la demo y lo seguimos usando ("Los del asado"), pero el problema que resolvemos no es el asado: es que **un grupo quiere hacer algo juntos y no logra cerrarlo**. Acá se muestra cómo el mismo motor sirve para otras juntadas y qué pesa en cada una.
+**Por qué existe este documento.** El jurado nos marcó que damos siempre el ejemplo del asado. El asado es el caso canónico de la demo y lo seguimos usando ("Los del finde"), pero el problema que resolvemos no es el asado: es que **un grupo quiere hacer algo juntos y no logra cerrarlo**. Acá se muestra cómo el mismo motor sirve para otras juntadas y qué pesa en cada una.
 
 Marcas, como en `docs/problema.md`: **[HOY]** = ya existe en el producto o en el contrato aprobado; **[ENM10]** = entra con la enmienda 10 (zona, movilidad, tiempo máximo, momento del día; catálogo ampliado) si migra antes del corte de las 23:00; **[PENDIENTE]** = no existe y se dice así; **[DATO]** = cifra con fuente; **[HIPÓTESIS]** = lo creemos y no lo comprobamos.
 

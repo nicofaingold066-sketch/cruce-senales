@@ -53,8 +53,8 @@ const t0 = Date.now()
 try {
   // 1. Demo fresco con una sesión nueva. Nadie reclama a Luna.
   await T.goto(BASE)
-  const seed = await accion('seed_demo_space', () => tocar('Probar la demo «Los del asado»'))
-  await T.getByRole('heading', { name: 'Los del asado' }).waitFor({ timeout: 20000 })
+  const seed = await accion('seed_demo_space', () => tocar(/^Probar la demo «Los del (asado|finde)»$/))
+  await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
   const luna = (seed.espacio?.miembros ?? []).find((m) => m.nombre === 'Luna')
   verificar('Demo fresco; Luna figura como persona simulada (reclamable, sin reclamar)', seed.ok === true && luna?.simulado === true,
     luna ? `simulado ${luna.simulado}${'reclamable' in luna ? `, reclamable ${luna.reclamable}` : ''}` : 'Luna no está en el espacio')

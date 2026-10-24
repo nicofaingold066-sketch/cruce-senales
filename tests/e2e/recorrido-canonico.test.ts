@@ -190,7 +190,7 @@ describe.skipIf(BASE_OCUPADA)('recorrido canónico real · dos sesiones · contr
     }
     expect(authIds[0]).not.toBe(authIds[1])
     espacio = (await llamar(tomi, 'seed_demo_space')).espacio
-    expect(espacio.nombre).toBe('Los del asado')
+    expect(espacio.nombre).toMatch(/^Los del (asado|finde)$/)
     expect(espacio.demo).toBe(true)
     ids = Object.fromEntries(espacio.miembros.map((m: Json) => [m.nombre, m.miembro_id]))
     // Solo se reinicia el demo recién creado por ESTA identidad, nunca la demo humana.

@@ -8,7 +8,7 @@
 // Capturas: solo si se define CRUXE_CAPTURAS=<carpeta> (una subcarpeta por corrida). Playwright y Chrome como en red-controlada.mjs
 // (CRUXE_PLAYWRIGHT_DIR, CRUXE_CHROME); no instala nada.
 //
-// Datos: todo ficticio. Cada ejecución crea UN demo propio ("Los del asado") y tres identidades anónimas,
+// Datos: todo ficticio. Cada ejecución crea UN demo propio ("Los del finde") y tres identidades anónimas,
 // cada una reutilizada en todo el recorrido: Tomi, Luna y Pepe (Pepe entra en el navegador de Tomi; ese caso
 // necesita una sesión nueva). No escribe fuera de ese demo, no llama al modelo y no guarda archivos salvo las
 // capturas pedidas.
@@ -135,8 +135,8 @@ paso(`Recorrido con dos sesiones contra ${new URL(BASE).origin}${new URL(BASE).p
 try {
   // 1. Tomi abre la demo.
   await T.goto(BASE)
-  await tocar(T, 'Probar la demo «Los del asado»')
-  await T.getByRole('heading', { name: 'Los del asado' }).waitFor({ timeout: 20000 })
+  await tocar(T, /^Probar la demo «Los del (asado|finde)»$/)
+  await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
   const codigo = (await T.locator('.codigo').first().textContent())?.trim()
   const urlEspacio = T.url()
   verificar('Tomi entra a su demo como organizador', !!codigo && (await T.getByText('Herramientas del organizador').count()) > 0, `código ${enmascarar(codigo)}`)
@@ -157,7 +157,7 @@ try {
   await L.goto(`${BASE}/#/unirse/${codigo}`)
   await L.getByRole('textbox').nth(1).fill('Luna')
   await tocar(L, 'Unirme')
-  await L.getByRole('heading', { name: 'Los del asado' }).waitFor({ timeout: 20000 })
+  await L.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
   const t0 = Date.now()
   const listaSola = await L.getByText('Asado en casa de Tomi', { exact: false }).first().waitFor({ timeout: 4000 }).then(() => true, () => false)
   verificar('F1: la lista de propuestas aparece sola al entrar', listaSola, listaSola ? `${Date.now() - t0} ms después del título, sin recargar` : 'no apareció en 4 s')
@@ -169,7 +169,7 @@ try {
   await L.getByText('Asado en casa de Tomi', { exact: false }).first().click()
   await L.getByRole('tab', { name: 'Mi respuesta' }).waitFor({ timeout: 15000 })
   // La pestaña depende del espacio (get_space aparte): se espera a que llegue y se mira un rato, no un instante.
-  await L.getByRole('link', { name: /Los del asado/ }).first().waitFor({ timeout: 15000 }) // rediseño: el volver lleva ícono, no '←'
+  await L.getByRole('link', { name: /Los del (asado|finde)/ }).first().waitFor({ timeout: 15000 }) // rediseño: el volver lleva ícono, no '←'
   let conSimulacion = false
   for (let i = 0; i < 6 && !conSimulacion; i++) {
     conSimulacion = (await L.getByRole('tab', { name: 'Simulación' }).count()) > 0
@@ -256,7 +256,7 @@ try {
   verificar('Confirmación: la sesión de Tomi queda guardada en este navegador',
     await esperarTexto(T, 'queda guardada en este navegador').then(() => true, () => false))
   await tocar(T, 'Sí, entrar como Pepe')
-  await T.getByRole('heading', { name: 'Los del asado' }).waitFor({ timeout: 20000 })
+  await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
   const cab = await T.locator('header').innerText()
   verificar('Entra como Pepe con sesión nueva, sin herramientas del organizador',
     /Pepe/.test(cab) && (await T.getByText('Herramientas del organizador').count()) === 0, cab.replace(/\s+/g, ' ').slice(0, 80))
@@ -278,7 +278,7 @@ try {
   // La pantalla se recarga con la sesión recuperada: el aviso desaparece porque ya no hay nada guardado.
   await T.getByText('Este navegador guarda otra sesión', { exact: false }).first().waitFor({ state: 'detached', timeout: 20000 }).catch(() => {})
   await T.goto(urlEspacio)
-  await T.getByRole('heading', { name: 'Los del asado' }).waitFor({ timeout: 20000 })
+  await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
   const cabTomi = (await T.locator('header').innerText()).replace(/\s+/g, ' ')
   const herramientas = await T.getByText('Herramientas del organizador').first().waitFor({ timeout: 15000 }).then(() => true, () => false)
   verificar('Vuelve a ser Tomi, organizador, con sus herramientas', /Tomi/.test(cabTomi) && /organizador/.test(cabTomi) && herramientas, cabTomi.slice(0, 80))

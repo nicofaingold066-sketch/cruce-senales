@@ -1,6 +1,6 @@
 # Usuarios sintéticos de CRUXE
 
-Seis amigos ficticios usan la app como lo haría gente real, para contar dónde se traban, qué no entienden y qué responden mal. Todo ficticio: los nombres no corresponden a personas reales. Cada corrida crea un grupo nuevo ("Los de la facu"); nunca se usa el demo «Los del asado».
+Seis amigos ficticios usan la app como lo haría gente real, para contar dónde se traban, qué no entienden y qué responden mal. Todo ficticio: los nombres no corresponden a personas reales. Cada corrida crea un grupo nuevo ("Los de la facu"); nunca se usa el demo «Los del finde».
 
 - Guion: `tests/sinteticos/seis-amigos.mjs` (más `lib.mjs`, `revisar.mjs`, `guardia.mjs`).
 - Correr contra un build propio: `npx vite build && npx vite preview --port 4186` y `node tests/sinteticos/seis-amigos.mjs http://localhost:4186`. Contra producción: sin argumento.
@@ -59,7 +59,7 @@ Ideas para quienes puedan hacerlas, también en la ficha:
 
 ## Ensayo de la demo con los perfiles (guion `docs/guion-demo.md` de apertura, `b52e0ad`; leído 21:15)
 
-Cómo lo hice: recorrí cada paso del guion contra las pantallas que mis perfiles vieron **en producción a las 20:54** (`main` `3ace04e`, salida `20261023205443`) y en los builds integrados de las 20:06–20:43, más el código de hoy para los rótulos. La Parte B la cotejé solo contra el código y el guion e2e (`recorrido-dos-sesiones.mjs`): mis perfiles nunca tocan el demo «Los del asado». Los segundos son de máquina (cota inferior; una persona que lee tarda el doble o el triple).
+Cómo lo hice: recorrí cada paso del guion contra las pantallas que mis perfiles vieron **en producción a las 20:54** (`main` `3ace04e`, salida `20261023205443`) y en los builds integrados de las 20:06–20:43, más el código de hoy para los rótulos. La Parte B la cotejé solo contra el código y el guion e2e (`recorrido-dos-sesiones.mjs`): mis perfiles nunca tocan el demo «Los del finde». Los segundos son de máquina (cota inferior; una persona que lee tarda el doble o el triple).
 
 ### Los perfiles en el jurado: qué preguntaría cada uno y qué respalda la pantalla hoy
 
@@ -258,7 +258,7 @@ Una persona real tarda más que la máquina (leer, buscar con el dedo): 7 toques
 ### BAJA
 
 - **H10.** «hora de Santiago (America/Santiago)» (`vale-08`): un grupo en otra ciudad lo toma por error. → front-juan.
-- **H11.** «Asado», «Fiesta», «Bar» entre las actividades de «Me gustaría» de Bruno, y «Los del asado» en el ejemplo del título del grupo: son del catálogo, ya ampliado con cena, cine, cultura, etc. Nada que hacer salvo el orden. → apertura.
+- **H11.** «Asado», «Fiesta», «Bar» entre las actividades de «Me gustaría» de Bruno, y «Los del finde» en el ejemplo del título del grupo: son del catálogo, ya ampliado con cena, cine, cultura, etc. Nada que hacer salvo el orden. → apertura.
 - **H12.** «1 confirmaron» (singular mal). → front-juan.
 - **H13.** Gonza: tras «No voy» la página sigue mostrando el editor de condiciones con «Completas» y un «Guardar condiciones» apagado: queda abierta una pantalla que ya no sirve. → front-juan.
 - **H14 (RESUELTO en producción, 22:18: «Una persona se retiró», sin nombre; enmienda 13 c).** La baja era pública con nombre y «había confirmado» («Gonza se bajó (versión 1) · había confirmado», visible para Joaco y Vale). Es por diseño; para quien se baja por un mal momento es lo más expuesto de toda la app. → decisión de Nico (¿mostrar solo «una persona se bajó»?).

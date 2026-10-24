@@ -135,7 +135,7 @@ Autoprueba del módulo: `node tests/rincones/prueba-a11y/correr.mjs` (página lo
 | R90/R91 | Cancelada vista de invitada; Planes de invitada | auto | A |
 | R92 | Espacio con propuesta confirmada y propuesta cancelada | auto | A |
 
-### Demo "Los del asado" (`f5` 19:46, `f5b` 19:49; sesión propia, sin reset)
+### Demo "Los del finde" (`f5` 19:46, `f5b` 19:49; sesión propia, sin reset)
 | Id | Rincón | Rev. | Estado |
 |---|---|---|---|
 | R100 | Demo recién abierto (Tomi organiza, 5 simulados) | ojo | A |
@@ -225,7 +225,7 @@ Observaciones (ninguna rompe nada): (1) el caso "Organizador a menos de 36 h del
 |---|---|---|---|
 | R250 | Crear grupo: elegir el propósito (libre, una familia o una actividad); el valor por defecto es "libre" | — | pendiente |
 | R251 | Nueva propuesta en un grupo con propósito: solo actividades de esa familia; qué pasa al elegir otra ("Este grupo se armó para otro tipo de plan. Elige una actividad de ese tipo o crea un grupo en modo libre.") | — | pendiente |
-| R252 | Grupo en modo libre: igual que hoy (cualquier propuesta) y el demo "Los del asado" sigue libre | — | pendiente |
+| R252 | Grupo en modo libre: igual que hoy (cualquier propuesta) y el demo "Los del finde" sigue libre | — | pendiente |
 | R253 | "¿Quién eres?" e invitación muestran el propósito del grupo (`preview_space_by_code`) | — | pendiente |
 | R254 | Agente restringido a la familia del grupo y "propón parecidas" cuando no hay quórum | — | pendiente |
 | R255 | Regresión de mis guiones: `f1`, `f4`, `f7` y `f11` crean propuestas sin actividad; en un grupo con propósito fallarían ("campo_faltante"). Los grupos de rincones se crean en modo libre salvo `f13` | — | adaptar al llegar |

@@ -58,10 +58,10 @@ test('la explicación bajo el selector dice el tipo y no promete otra cosa', () 
 test('la invitación: con propósito dice "para jugar fútbol"; libre o sin dato, el texto de siempre; junto a "quién viene"', () => {
   const con = textoInvitacion('Los del fútbol', 'ABCD1234', null, 'futbol')
   expect(con).toBe('Súmate a «Los del fútbol» en CRUXE para jugar fútbol: toca el enlace, elige tu nombre y marca cuándo puedes. Sin cuenta ni contraseña; tus condiciones solo las ve la app: https://ejemplo.test/#/unirse/ABCD1234')
-  const antes = 'Súmate a «Los del asado» en CRUXE: toca el enlace, elige tu nombre y marca cuándo puedes. Sin cuenta ni contraseña; tus condiciones solo las ve la app: https://ejemplo.test/#/unirse/ABCD1234'
-  expect(textoInvitacion('Los del asado', 'ABCD1234')).toBe(antes)
-  expect(textoInvitacion('Los del asado', 'ABCD1234', null, 'libre')).toBe(antes)
-  expect(textoInvitacion('Los del asado', 'ABCD1234', null, null)).toBe(antes)
+  const antes = 'Súmate a «Los del finde» en CRUXE: toca el enlace, elige tu nombre y marca cuándo puedes. Sin cuenta ni contraseña; tus condiciones solo las ve la app: https://ejemplo.test/#/unirse/ABCD1234'
+  expect(textoInvitacion('Los del finde', 'ABCD1234')).toBe(antes)
+  expect(textoInvitacion('Los del finde', 'ABCD1234', null, 'libre')).toBe(antes)
+  expect(textoInvitacion('Los del finde', 'ABCD1234', null, null)).toBe(antes)
   const ambos = textoInvitacion('Los del pádel · solo el grupo', 'ABCD1234', null, 'padel')
   expect(ambos).toContain('en CRUXE para jugar pádel: toca el enlace')
   expect(ambos).toContain('Esta vez es solo el grupo.')
