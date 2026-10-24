@@ -14,7 +14,7 @@ Hackatón Señales (Makana), caso 06 social. Un grupo de amigos cierra un plan: 
 ## Equipo
 | Sesión (nombre en la vigía) | Modelo | Copia de trabajo | Rama | Escribe en |
 |---|---|---|---|---|
-| backend | Opus | `/Users/macair/cruse/cruce-backend` | `wip/backend` | `supabase/**`, `tests/backend/**`, `src/lib/api.ts`, `src/lib/types.ts` |
+| pendientes (antes backend) | Opus | `/Users/macair/cruse/cruce-pendientes` | `wip/pendientes` | `supabase/**`, `tests/backend/**`, `src/lib/api.ts`, `src/lib/types.ts` |
 | friccion | Opus | `/Users/macair/cruse/cruce-friccion` | `wip/friccion` | `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, archivos NUEVOS en `src/friccion/**` |
 | ux-flujo | Opus | `/Users/macair/cruse/cruce-ux` | `wip/ux` | `docs/flujo-usuario.md`, `docs/front-back-puente.md`, archivos NUEVOS en `src/componentes-nuevos/**` |
 | apertura | Sonnet | `/Users/macair/cruse/cruce-apertura` | `wip/apertura` | `docs/apertura.md`, `docs/catalogo-ampliado.md`, `src/lib/ejemplos.ts` (nuevo) |
@@ -22,7 +22,7 @@ Hackatón Señales (Makana), caso 06 social. Un grupo de amigos cierra un plan: 
 | sinteticos | Sonnet | `/Users/macair/cruse/cruce-sinteticos` | `wip/sinteticos` | `tests/sinteticos/**`, `docs/usuarios-sinteticos.md` |
 | rincones | Sonnet | `/Users/macair/cruse/cruce-rincones` | `wip/rincones` | `tests/rincones/**`, `docs/rincones.md` |
 | psico | Sonnet | `/Users/macair/cruse/cruce-psico` | `wip/psico` | `docs/psicologia-grupo.md`, `docs/psicologia-fuentes.md` |
-| front-juan (Juan, otra compu) | — | — | `wip/front-juan` | `src/screens/**`, `src/components/**`, `src/styles.css` |
+| frontend (Nico y Juan) | Opus | `/Users/macair/cruse/cruce-frontend` | `wip/frontend` | `src/screens/**`, `src/components/**`, `src/styles.css` |
 | agente-ia (sesión "Pitch y Agente IA del círculo") | — | — | `wip/agente-ia` | `src/agente/**`, `supabase/functions/agente/**`, `docs/agente*.md`, `docs/pitch*.md` |
 | coordinador | Opus | `/Users/macair/cruse/cruce-senales` | `wip/fundamentos` → `main` | contrato, integración, publicación |
 

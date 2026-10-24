@@ -6,7 +6,7 @@ Solo el coordinador edita este archivo. Si una ruta no figura acá, es del coord
 Detalle y reglas: `prompts/equipo-noche.md`.
 | Ruta | Único escritor esta noche | Rama |
 |---|---|---|
-| `supabase/**` (salvo `functions/agente/**`), `tests/backend/**`, `src/lib/api.ts`, `src/lib/types.ts`, `docs/seguridad-final.md` | backend (sesión nueva, Opus) | `wip/backend` |
+| `supabase/**` (salvo `functions/agente/**`), `tests/backend/**`, `src/lib/api.ts`, `src/lib/types.ts`, `docs/seguridad-final.md`, `docs/contrato-enmienda-15-borrador.md`, nuevos en `src/agente-social/**` | **pendientes** (desde 23:52; reemplaza a backend, archivada) | `wip/pendientes` |
 | `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, `src/lib/compartir.ts` (desde las 19:42), nuevos en `src/friccion/**` | friccion (sesión nueva, Opus) | `wip/friccion` |
 | `docs/flujo-usuario.md`, `docs/front-back-puente.md`, `docs/output-debate.md`, `docs/investigacion-a-producto.md`, nuevos en `src/componentes-nuevos/**` | ux-flujo (sesión nueva, Opus) | `wip/ux` |
 | `docs/apertura.md`, `docs/catalogo-ampliado.md`, `src/lib/ejemplos.ts`, `docs/preguntas-jurado.md` | apertura (sesión nueva, Sonnet) | `wip/apertura` |
@@ -14,7 +14,7 @@ Detalle y reglas: `prompts/equipo-noche.md`.
 | `tests/sinteticos/**`, `docs/usuarios-sinteticos.md` | sinteticos (sesión nueva, Sonnet) | `wip/sinteticos` |
 | `tests/rincones/**`, `docs/rincones.md` | rincones (sesión nueva, Sonnet) | `wip/rincones` |
 | `docs/psicologia-grupo.md`, `docs/psicologia-fuentes.md` | psico (sesión nueva, Sonnet; solo investigación y diseño, sin código) | `wip/psico` |
-| `src/screens/**`, `src/components/**`, `src/styles.css` | front-juan (Juan) | `wip/front-juan` |
+| `src/screens/**`, `src/components/**`, `src/styles.css` | **frontend** (desde 23:52; sesión que manejan Nico y Juan; reemplaza a front-juan) | `wip/frontend` |
 | `src/agente/**`, `supabase/functions/agente/**`, `docs/agente*.md`, `docs/pitch*.md` | agente-ia | `wip/agente-ia` |
 | `src/agente/ConsentimientoInvitaciones.tsx` y las líneas del consentimiento E11 en `src/agente/api.ts` y `AgentePanel.tsx`, `tests/consentimiento-invitaciones.test.ts` | integracion-codex-juan (autorizado por Juan, 22:08) | `codex/e11-consentimiento-invitaciones` |
 | Lo demás de `src/` | nadie esta noche (pedir al coordinador) | — |

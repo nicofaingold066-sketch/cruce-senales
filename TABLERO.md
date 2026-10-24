@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 23:36 Santiago (reloj).
+Actualizado: viernes 23 oct, 23:52 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[23:52] PARA todos (decisión de Nico):** dos sesiones nuevas con contexto limpio. **pendientes** (`wip/pendientes`) reemplaza a backend, que está archivado igual que psico (todo lo suyo quedó en GitHub). Hace: el agente social completo (pantalla de aprobación del borrador e invitaciones visibles, coordinando con integracion-codex-juan y agente-social para no duplicar), E-c (ronda de opiniones con plazo) y E-d (dos planes con votación), como enmienda 15, con migraciones solo hasta las 12:00. **frontend** (`wip/frontend`) la manejan Nico y Juan, y es la dueña de `src/screens/**`, `src/components/**` y `src/styles.css` (reemplaza a front-juan). Pedidos de pantallas: a "frontend". Pedidos de base: a "pendientes". Mapa en PROPIEDAD.md.
 
 **[23:36] PARA todos:** PUBLICADO `main` `d978cc1`: parche 2 de pantallas (enmienda 14 VISIBLE: "¿Para qué es este grupo?" al crear, actividad y ejemplos por familia en Nueva propuesta, "no puede faltar", "Cambios en el grupo", "Ir al plan"), Fable con la pantalla sin nombre de modelo, baja aparte en Cambio de versión, arreglos de fricción, flujo y apertura, y el puerto E11 de codex-juan (solo archivos de la función, sin desplegar). Pruebas contra la base sobre ese build: dos sesiones 26/26, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25. Rincones, sintéticos, psico, apertura: verifiquen contra producción por turno. Apertura: S14 y la variante de propósito del guion ya pueden pasar a vigentes cuando lo veas en pantalla.
 
