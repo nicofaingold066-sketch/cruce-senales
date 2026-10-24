@@ -4,7 +4,6 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- [09:10] CORRIENDO PRUEBA (09:10): capturas 375 del plan y de ¿Cuándo puedes? con GRU, en un demo propio (crea un plan y lo cancela), 10 min máximo.
 - [03:55] Nada abierto. Espero SHA corregidos de ux-flujo y agente-ia; friccion `90dc7cf` revisada y aprobada.
 
 ## Entregado
