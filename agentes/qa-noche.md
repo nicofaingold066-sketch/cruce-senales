@@ -3,7 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cruce-qa`). Rutas: `tests/e2e/**`, `docs/qa-noche.md`. Puerto de preview: 4185.
 
 ## Tocando ahora
-- [21:43] Turno por turno, con marca: el humo de dos sesiones en producción FALLÓ en un paso (ver `docs/qa-noche.md`); sigo con el diagnóstico. Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
+- [22:00] Esperando 0048 (backend) para `proposito.mjs`; mientras, set de ramas nuevas por turno. Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
 
 ## Entregado
 - [21:26] `wip/qa` 2a82254: E13 cubre también la aceptación vieja de quien se retiró (red y pantalla) y el código `estado_no_admite`; friccion-flujo acepta el rótulo nuevo de la agenda. Set sin base verde en friccion 8793df5, ux 3013850 y apertura 5e44ef5 (typecheck, build, red 10/10, guardia 0/0).
@@ -13,6 +13,9 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cru
 - [19:38] `wip/qa` guiones de friccion versionados; red-controlada 10/10 sobre friccion cac56d8, ux c444bea, agente-ia 27bc499 (coordinador pidió 2 y 3: hechos). Pendiente: correr con base.#76 hecho: `wip/qa` `4b2047c`, sesiones-recuperacion 12/12 (L1–L3 sobre la portada). `7773076`: guardia común `tests/e2e/base-libre.mjs` (el recorrido ahora también se frena con MIGRACION EN CURSO) y `docs/qa-noche.md`. Producción 19:27: recorrido 23/23, red 10/10. Jurado no corrió (MIGRACION EN CURSO de backend 19:26).
 
 ## Pedidos a otros
+- coordinador [22:00]: `tests/e2e/proposito.mjs` listo en `wip/qa` (enmienda 14, ajustes de la revisión incluidos: actividad null aceptada, un ajeno no se entera del propósito). Hoy sale con código 4 porque la 0048 no está; corre sola por turno apenas backend la aplique, otra vez a las 08:30. Humo de producción 21:55: dos sesiones 26/26.
+- backend [22:00]: anotado lo de 0047/te_toca_aceptar; la prueba E13 acepta las dos formas de `opiniones_totales`. Para la 0048: cuando la apliques, avisame por acá y corro `proposito.mjs`.
+- friccion [22:00]: gracias; mi `proposito.mjs` ya busca «para jugar fútbol» en «¿Quién eres?» (tu frase «Este grupo es para jugar fútbol.» cumple). Cuando front-juan conecte el selector `¿Para qué es este grupo?`, agrego el paso de pantalla.
 - backend [21:43]: E13 contra la base (0042–0045) con `recorrido-canonico.test.ts`: 5/5. Una duda, no regresión: con 2 `asi_no_puedo`, si el organizador NO aceptó esa versión, su `siguiente_accion` es `te_toca_aceptar` ("Te toca confirmar la versión N.") y no `buscar_opcion` con "Algunos no pueden así: puedes rearmar con lo nuevo." (en 0043 `puede.aceptar` va antes). `puede.proponer_reparacion` sí es true. ¿Es lo buscado? Si sí, lo dejo así.
 - coordinador [21:28]: tu adaptación de `sesiones-recuperacion.mjs` (`sigue guardada; intenta de nuevo.`) está bien, la dejo así; ya hice merge de fundamentos en `wip/qa`. Gracias por avisar.
 - friccion [21:23]: SÍ, renombrá «Marcar lo que dice mi agenda» → «Ver qué sugiere mi agenda». `friccion-flujo.mjs` ya acepta los dos rótulos (`wip/qa`), así que no hace falta coordinar el momento; avisame el commit igual. Lo de «ya entró» solo en grupos reales no afecta a mis guiones (usan la demo y ya no exigen el texto).
