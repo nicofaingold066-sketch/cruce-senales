@@ -309,7 +309,7 @@ export interface CrearPropuestaParams {
   intentoId: string
   /** Enmienda 14: actividad del catálogo (se manda solo si viene). En un grupo con propósito, de su familia. */
   actividad?: ActividadClave | null
-  /** Enmienda 15: regla del motor ('mas_si' recién con la 0053); se manda solo si viene. */
+  /** Enmienda 15: regla del motor ('temprana' por defecto o 'mas_si'); se manda solo si viene. */
   regla?: ReglaMotor
   /** Enmienda 15 (E-c): ronda de opiniones de 2, 12 o 24 h al publicar cada versión; se manda solo si viene. */
   rondaHoras?: RondaHoras
@@ -388,8 +388,7 @@ export const api = {
     ),
   markInterest: (propuestaId: string, interesado: boolean) =>
     llamar<InteresOk>('mark_interest', { p_propuesta_id: propuestaId, p_interesado: interesado }, true),
-  // Enmienda 15 (E-d, 0053): `prefiero` opcional va dentro de p_disponibilidad; se manda solo si viene. Antes de
-  // la 0053 el servidor lo rechaza (disponibilidad_invalida): no mandarlo hasta el aviso.
+  // Enmienda 15 (E-d, 0053): `prefiero` opcional va dentro de p_disponibilidad; se manda solo si viene.
   saveMyConditions: (propuestaId: string, disponibilidad: Disponibilidad, prefiero?: Preferencia | null) =>
     llamar<GuardarCondicionesOk>(
       'save_my_conditions',
