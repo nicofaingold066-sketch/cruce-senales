@@ -2,7 +2,7 @@
 
 Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo ficticio; nada de esto lleva datos de personas reales.
 
-**Para qué sirve.** El pitch dura 5 minutos con demo en vivo y hay 3 minutos de preguntas. El jurado (equipo de producto de Makana) puntúa **Problema, Solución y Convicción**, de 1 a 7, con el mismo peso; en la convicción cuentan las respuestas a las preguntas (`prompts/contexto-dia-pitch-reglas.md`, bases §10). Acá hay 31 preguntas probables, incluidas las incómodas, con una respuesta de 2 o 3 frases y la evidencia que la respalda.
+**Para qué sirve.** El pitch dura 5 minutos con demo en vivo y hay 3 minutos de preguntas. El jurado (equipo de producto de Makana) puntúa **Problema, Solución y Convicción**, de 1 a 7, con el mismo peso; en la convicción cuentan las respuestas a las preguntas (`prompts/contexto-dia-pitch-reglas.md`, bases §10). Acá hay 32 preguntas probables, incluidas las incómodas, con una respuesta de 2 o 3 frases y la evidencia que la respalda.
 
 **Cómo usarlo.**
 - **★ = una de las 5 más probables.** **⚠ = una de las 3 más peligrosas** (la respuesta honesta cuesta; hay que ensayarla).
@@ -132,6 +132,11 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 **Respuesta.** No. El género y la situación de pareja no se piden ni se infieren: son datos sensibles y en un grupo de cinco delatan a alguien. «Quién viene» es una regla del grupo, no de una persona: solo el grupo, con parejas o abierta. Por ahora va en el título del plan; un campo propio queda para después.
 **En diez segundos (texto de psico, D2):** «No los pedimos ni los inferimos. En un grupo de cinco, delatan. Lo que importa es quién puede venir y qué estilo quieren, y eso lo decide el grupo.» Vale igual para la clase social: el presupuesto se pide como tope («ojalá gratis», «algo barato», «da igual»), nunca como clase. «Estilo» es el estilo de la ocasión (simple, normal, especial; D7, lo arma agente-ia sin migración): nombrarlo solo si está en producción a las 10:30.
 **Evidencia.** Decisiones D2 y D3 de psico, aceptadas por Nico (20:51): `agentes/psico.md`, `docs/psicologia-grupo.md` (rama `wip/psico`); `docs/contrato-enmienda-13.md`, «Fuera». La Ley 21.719 lista identidad de género y vida sexual entre los datos sensibles (guía secundaria; plena vigencia el 1 dic 2026): no citar artículos que no leímos.
+
+### S14 · Si el grupo es de fútbol, ¿puede alguien proponer un asado? ¿Y si somos pocos?
+**Respuesta (solo si la enmienda 14 está en producción a las 10:30).** Un grupo puede armarse para algo concreto, por ejemplo jugar fútbol: entonces solo recibe propuestas de ese tipo (deporte), y hay un modo libre sin restricción. El servidor decide, no la pantalla. Si el grupo es chico para el fútbol, el agente no propone lo que no se puede armar: dice cuántas personas hacen falta y ofrece algo parecido que sí alcance (tenis, pádel). Se habla de tamaño de grupo, nunca de quién va a asistir.
+**Si no está en producción:** «Hoy cualquier grupo propone cualquier cosa; que un grupo se arme para un tipo de plan es lo siguiente que tenemos diseñado» (`docs/contrato-enmienda-14.md`).
+**Evidencia.** `docs/contrato-enmienda-14.md` (aprobada por Nico, 21:55): propósito, familias y quórum; atajos por familia en `src/lib/ejemplos.ts` (prueba 12/12). **Cuidado:** «Me interesa más sushi» = marcar Cena en «Me gustaría»; en grupos de 3 o menos (además de quien pide) los gustos no ordenan por privacidad, y el camino es que el organizador escriba el título y elija la actividad.
 
 ### S13 · ¿La app avisa o manda recordatorios?
 **Respuesta (texto de psico, D8).** «CRUXE no manda notificaciones. Deja listo el mensaje con el enlace y lo manda una persona por WhatsApp; cada mensaje dice qué hacer si no puedes. Es un límite declarado, no un descuido.» Así nadie recibe avisos de una app nueva y el grupo sigue hablando donde habla.
