@@ -99,3 +99,26 @@ Hoja con X, "Revisar antes de invitar", "Paso 1 de 2 · el agente propone, tú d
 
 ## Pantalla 21 · Invitación del agente, vista por un invitado (S6 + S4)
 Arriba del bloque del plan, una línea punteada: "El agente de Tomi te invita. Tomi revisó y aprobó este plan. Lo redactó la IA; no es una confirmación." Debajo, el plan de siempre en estado reuniendo, con "Te toca decir cuándo puedes. Es privado." y el primario "Responder en un toque". Filas: "No me interesa este plan (solo lo sabe el servidor)" y "Ficha del plan". Nada nuevo que aprender.
+
+# Computadora e iPad (03:15, validado con el resto: "nada de cambiar ningún botón")
+
+Mismos bloques, mismos botones y mismos rótulos que en móvil; cambia solo cómo se reparten en el ancho.
+
+## Computadora (1280 px): pantallas C1 a C9 del lienzo
+- Barra superior de 64 px en todas: CRUXE, las pestañas Grupos · Planes · Perfil (la activa subrayada), chip "Datos ficticios" y el avatar. Sin barra inferior.
+- Márgenes de 40 px; rejilla de 12 columnas con 24 px de separación. **Sin scroll** si el contenido entra.
+- Portada sin sesión (C1): izquierda 7/12 el título grande, la línea y la órbita chica; derecha 5/12 la card "Entrar" y las filas de la demo y del código.
+- ¿Quién eres? (C2): izquierda 5/12 quién te invitó y el plan; derecha 7/12 los nombres en dos columnas.
+- Grupo (C3): la cabecera oscura ocupa el ancho (nombre, personas y avatares a la derecha); izquierda 7/12 "Planes" con la card del plan activo y las pasadas; derecha 5/12 "Invitar al grupo", "Agente del círculo", Simulación e Historial.
+- Nueva propuesta (C4): hoja CENTRADA de 880 × 720 sobre el grupo atenuado, con el formulario en dos columnas (qué hacen y cuándo a la izquierda; cupos, no puede faltar, cierre y el primario a la derecha).
+- El plan (C5): izquierda 7/12 el bloque de resultado con el primario adentro; derecha 5/12 las filas plegadas y "Retirarme" chico.
+- ¿Cuándo puedes? (C6): izquierda 5/12 el título, la explicación y lo opcional; derecha 7/12 los cuatro botones grandes.
+- Agente (C7): izquierda 5/12 título, finde, clima, el primario y "Mis preferencias"; derecha 7/12 la card del resultado recomendado con "Usar esta opción".
+- Planes (C8): las cards en tres columnas, la que te toca con borde brasa.
+- Perfil (C9): izquierda 4/12 avatar grande, nombre y "Salir"; derecha 8/12 los dos bloques de filas.
+- Las demás pantallas (crear grupo, respondiste, estados del plan, simulación, historial, agente social, invitación) siguen la misma regla: bloque principal a la izquierda, filas y acciones secundarias a la derecha; las hojas, centradas.
+
+## iPad (768 px vertical): pantallas T1 a T3
+- La pantalla de móvil, centrada en una columna de **640 px**; las filas cortas van de a dos por fila; la barra inferior queda, centrada en los 640 px.
+- Las hojas (nueva propuesta, crear grupo, "+") suben desde abajo con 640 px de ancho.
+- iPad apaisado (1024 px o más): como computadora.
