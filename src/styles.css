@@ -2957,15 +2957,9 @@ fieldset:disabled .opcion-radio {
   padding: 8px 10px;
   font-size: 0.9rem;
 }
+/* "Me interesa" marcado: se lee como hecho, sin el verde de "confirmó" (interés no es confirmación). */
 .interes-botones .btn[aria-pressed='true']:disabled {
   opacity: 1;
-  background: var(--ok);
-  color: #fff;
-}
-@media (prefers-color-scheme: dark) {
-  .interes-botones .btn[aria-pressed='true']:disabled {
-    color: #0c0b0a;
-  }
 }
 .avatar-pila > .avatar {
   --av: 34px;
@@ -5580,4 +5574,29 @@ li:has(> .plan-vivo) {
 }
 .recordar-faltan > p {
   margin: 8px 2px 0;
+}
+
+/* ---- "Avisar también al grupo que me interesa" al guardar condiciones (Mi respuesta). Opcional y desmarcada:
+   zona tocable de 44 px, como la casilla del agente. ---- */
+.casilla {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 12px;
+  padding: 6px 0;
+  cursor: pointer;
+}
+.casilla input {
+  width: 22px;
+  height: 22px;
+  margin: 2px 0 0;
+  flex: none;
+  accent-color: var(--brasa);
+}
+.casilla small {
+  display: block;
+  margin-top: 2px;
+  color: var(--tinta-2);
+  line-height: 1.4;
 }

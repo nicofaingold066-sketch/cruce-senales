@@ -32,8 +32,9 @@ export default function RespuestaTab({ p, viva, soloLectura }: PestanaProps) {
           Ya no puedes participar en ella.
         </Aviso>
       ) : null}
-      <Interes p={p} viva={viva} soloLectura={soloLectura} />
+      {/* Primero lo que usa el motor (las condiciones); "Me interesa" es opcional y va después. */}
       <MisCondiciones p={p} viva={viva} soloLectura={soloLectura} />
+      <Interes p={p} viva={viva} soloLectura={soloLectura} />
       <Retiro p={p} viva={viva} soloLectura={soloLectura} />
     </div>
   )
@@ -56,15 +57,25 @@ function Interes({ p, viva, soloLectura }: VivaProps) {
   return (
     <section className="tarjeta">
       <div className="tarjeta-cabeza">
-        <h2>Tu interés</h2>
-        <span className={`etiqueta ${s.interesado ? 'etiqueta-ok' : ''}`}>
-          <span className="visualmente-oculto">Estado: </span>
-          {s.interesado ? 'Me interesa' : 'Sin interés marcado'}
+        <h2>Avisar al grupo</h2>
+        {/* Etiqueta neutra: el verde es de "confirmó" y el interés no lo es. */}
+        <span className="etiqueta">
+          {s.interesado ? (
+            <>
+              <span className="visualmente-oculto">Estado: </span>Me interesa
+            </>
+          ) : (
+            'Opcional'
+          )}
         </span>
       </div>
-      <p className="suave">Interés no es confirmación: no suma confirmados. Tampoco el silencio.</p>
+      <p className="suave">
+        Para entrar en la opción alcanza con tus condiciones. Si quieres, avisa que te interesa: el grupo verá tu nombre.
+        Interés no es confirmación: no suma confirmados. Tampoco el silencio.
+      </p>
       <div className="interes-botones">
         <Boton
+          variante="secundario"
           onClick={() => void marcar(true)}
           ocupado={ocupado}
           disabled={!s.puede.marcar_interes || s.interesado || soloLectura}
@@ -73,14 +84,17 @@ function Interes({ p, viva, soloLectura }: VivaProps) {
           {s.interesado ? <Icono n="check" tam={18} /> : null}
           Me interesa
         </Boton>
-        <Boton
-          variante="secundario"
-          onClick={() => void marcar(false)}
-          ocupado={ocupado}
-          disabled={!s.puede.marcar_interes || !s.interesado || soloLectura}
-        >
-          Hoy paso
-        </Boton>
+        {/* Solo quita el nombre de la lista de interesados: no es una baja ni cambia tus condiciones. */}
+        {s.interesado ? (
+          <Boton
+            variante="secundario"
+            onClick={() => void marcar(false)}
+            ocupado={ocupado}
+            disabled={!s.puede.marcar_interes || soloLectura}
+          >
+            Quitar mi interés
+          </Boton>
+        ) : null}
       </div>
       {!s.puede.marcar_interes ? <p className="suave">Ahora no puedes cambiar tu interés en esta propuesta.</p> : null}
       {nota ? <p role="status">{nota}</p> : null}
@@ -96,7 +110,13 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
   const b = useBorradorCondiciones(cond?.disponibilidad ?? null, claves)
   const { ocupado, error, correr } = useMutacion(viva)
   const [guardado, setGuardado] = useState(false)
+  // "Me interesa" en el mismo toque, solo si la persona lo marca: el interés lo ve el grupo y nunca se deduce
+  // de las condiciones (que son privadas). Desmarcada por defecto.
+  const [avisarInteres, setAvisarInteres] = useState(false)
+  const [notaInteres, setNotaInteres] = useState<string | null>(null)
   const s = p.mi_situacion
+  const ofrecerInteres =
+    s.puede.marcar_interes && !s.interesado && !soloLectura && Object.values(b.draft).includes('si')
 
   const cargar = useCallback(async () => {
     const r = await api.getMyConditions(p.id)
@@ -113,11 +133,19 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
 
   async function guardar() {
     setGuardado(false)
+    setNotaInteres(null)
     const r = await correr(`cond:${p.id}:${JSON.stringify(b.draft)}`, () => api.saveMyConditions(p.id, b.draft))
     if (r?.ok) {
       vibrar(10)
       setCond(r.data.condiciones)
       setGuardado(true)
+      if (avisarInteres && ofrecerInteres) {
+        const i = await correr(`interes:${p.id}:true`, () => api.markInterest(p.id, true))
+        if (i?.ok) {
+          setAvisarInteres(false)
+          setNotaInteres('Marcaste "Me interesa": el grupo ve tu nombre entre los interesados. No es una confirmación.')
+        }
+      }
     }
   }
 
@@ -146,6 +174,24 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
           />
           <p className="suave nota-seccion">"Pendiente" = aún no lo sabes (tus condiciones quedan incompletas).</p>
           {!s.puede.guardar_condiciones ? <p className="aviso-linea">{razonSinGuardar(p)}</p> : null}
+          {ofrecerInteres && s.puede.guardar_condiciones && b.sucio ? (
+            <label htmlFor={`mi-${p.id}-interes`} className="casilla">
+              <input
+                id={`mi-${p.id}-interes`}
+                type="checkbox"
+                checked={avisarInteres}
+                disabled={ocupado}
+                aria-describedby={`mi-${p.id}-interes-ayuda`}
+                onChange={(e) => setAvisarInteres(e.target.checked)}
+              />
+              <span>
+                Avisar también al grupo que me interesa
+                <small id={`mi-${p.id}-interes-ayuda`}>
+                  Opcional. El grupo verá tu nombre entre los interesados, no tus condiciones. No es confirmar.
+                </small>
+              </span>
+            </label>
+          ) : null}
           <div className={`fila-botones ${b.sucio ? 'barra-accion' : ''}`}>
             <Boton
               onClick={guardar}
@@ -163,6 +209,7 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
           </div>
           {b.sucio ? <p className="suave">Tienes cambios sin guardar.</p> : null}
           {guardado && !b.sucio ? <p role="status">Guardado. Solo tú ves estas condiciones.</p> : null}
+          {notaInteres ? <p role="status">{notaInteres}</p> : null}
         </>
       ) : null}
       {error ? <ErrorCaja error={error} enfocar /> : null}
