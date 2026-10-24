@@ -547,29 +547,33 @@ function HistorialResumido({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: 
 
 // ------------------------------------------------------------------ fase de interés y evaluación
 
+// El motor arma la opción con las respuestas (condiciones completas), no con el interés: la tarjeta pone primero
+// lo que cuenta y deja "Me interesa" como lo que es, una señal opcional que ve el grupo.
 function ReuniendoInteres({ p, codigo }: { p: EstadoPropuesta; codigo: string | null }) {
   return (
     <section className="tarjeta">
-      <h2>Interés del grupo</h2>
+      <h2>Respuestas del grupo</h2>
       <div className="stats">
-        <div className="stat">
-          <span className="stat-etiqueta">Con interés</span>
-          <span className="stat-valor">{p.interesados.cantidad}</span>
-        </div>
-        <div className="stat">
-          <span className="stat-etiqueta">Confirmados</span>
-          <span className="stat-valor">{p.confirmados}</span>
-        </div>
         {p.personas_con_condiciones != null ? (
           <div className="stat">
             <span className="stat-etiqueta">Con condiciones</span>
             <span className="stat-valor">{p.personas_con_condiciones}</span>
           </div>
         ) : null}
+        <div className="stat">
+          <span className="stat-etiqueta">Mínimo</span>
+          <span className="stat-valor">{p.minimo}</span>
+        </div>
+        <div className="stat">
+          <span className="stat-etiqueta">Con interés</span>
+          <span className="stat-valor">{p.interesados.cantidad}</span>
+        </div>
       </div>
       <p className="suave">
-        Marcar "Me interesa" no es una confirmación.
-        {p.personas_con_condiciones != null ? ' Las condiciones de cada persona son privadas: solo se cuentan.' : ''}
+        {p.personas_con_condiciones != null
+          ? 'Para entrar en la opción basta con que cada persona responda cuándo puede. Las condiciones de cada persona son privadas: solo se cuentan.'
+          : 'Para entrar en la opción basta con responder cuándo puedes.'}{' '}
+        "Me interesa" es opcional: lo ve el grupo y no es una confirmación.
       </p>
       {p.interesados.miembros.length > 0 ? (
         <ul className="chips-personas" aria-label="Marcaron Me interesa">
