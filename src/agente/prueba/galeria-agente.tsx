@@ -2,7 +2,9 @@
 // /src/agente/prueba/galeria-agente.html (con `?caso=<id>` dibuja uno solo, para las capturas a 375 y 1280 px).
 // Los botones no tocan nada real salvo «Usar esta opción», que lleva a Nueva propuesta: no tocarlo acá.
 import { createRoot } from 'react-dom/client'
+import '../../lib/tema'
 import '../../styles.css'
+import '../../estilo/vida.css'
 import { Card } from '../../components/ui'
 import { BorradorTarjeta } from '../AgentePanel'
 import type { BorradorAgente } from '../api'

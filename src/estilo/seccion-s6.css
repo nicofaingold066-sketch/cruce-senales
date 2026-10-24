@@ -675,3 +675,89 @@
 .gru-card .gru-datos > li::before {
   content: none;
 }
+
+/* ---- Más aire en la tarjeta de GRU (Nico, 11:54: «más espaciado, más legible, más visible») ---- */
+.gru-card {
+  padding: 20px 16px;
+}
+.gru-card > * + * {
+  margin-top: 16px;
+}
+.gru-card-cabeza,
+.gru-card-titulo-fila {
+  row-gap: 10px;
+}
+.gru-card-titulo-fila {
+  margin-bottom: 4px;
+}
+.gru-card-titulo-fila h3 {
+  line-height: 1.25;
+}
+.gru-datos {
+  gap: 10px;
+}
+.gru-dato {
+  min-height: 36px;
+  padding: 6px 14px;
+  line-height: 1.35;
+  white-space: normal;
+}
+.gru-cita {
+  padding: 18px 20px;
+}
+.gru-cita blockquote {
+  font-size: 1rem;
+  line-height: 1.55;
+}
+.gru-cita figcaption {
+  margin-top: 10px;
+  line-height: 1.4;
+}
+.gru-card > .btn-primario {
+  min-height: 52px;
+}
+.gru-secundarios {
+  gap: 12px;
+}
+.gru-secundarios > .agente-enlace {
+  min-height: var(--toque);
+  line-height: 1.4;
+}
+.gru-secundarios .agente-plegable-boton {
+  min-height: var(--toque);
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.gru-otras {
+  gap: 12px;
+}
+.gru-mini {
+  gap: 6px;
+  padding: 14px 16px;
+}
+.gru-mini-titulo {
+  line-height: 1.35;
+}
+.gru-card .agente-plegable-cuerpo > * + * {
+  margin-top: 14px;
+}
+.gru-card .agente-plegable-cuerpo p {
+  line-height: 1.5;
+}
+@media (max-width: 600px) {
+  .gru-card .gru-cita blockquote,
+  .gru-card .agente-plegable-cuerpo p {
+    font-size: 15px;
+  }
+}
+@media (min-width: 960px) {
+  .gru-card {
+    padding: 24px;
+  }
+  .gru-card > * + * {
+    margin-top: 18px;
+  }
+  .gru-cita {
+    padding: 20px 24px;
+  }
+}
