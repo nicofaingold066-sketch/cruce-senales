@@ -368,7 +368,7 @@ function escenaDe(
       if (s.retirado) return { nodos, valor: '—', etiqueta: 'te retiraste', fraccion: 0, tono: 'neutro' }
       return s.condiciones === 'completas'
         ? { nodos, valor: '✓', etiqueta: 'respondiste', fraccion: 0, tono: 'info' }
-        : { nodos, valor: '—', etiqueta: 'falta tu respuesta', fraccion: 0, tono: 'info' }
+        : { nodos, valor: '—', etiqueta: s.condiciones === 'incompletas' ? 'respuesta incompleta' : 'falta tu respuesta', fraccion: 0, tono: 'info' }
     }
     case 'borrador':
       return { nodos, valor: '—', etiqueta: 'borrador', fraccion: 0, tono: 'neutro' }

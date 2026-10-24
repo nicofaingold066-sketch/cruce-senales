@@ -5715,3 +5715,16 @@ li:has(> .plan-vivo) {
     animation: none;
   }
 }
+
+/* La casilla de "Me interesa" va dentro de la barra fija de Mi respuesta: a todo el ancho, encima del botón y legible
+   sobre el degradé de la barra. */
+.fila-botones > .casilla {
+  flex: 1 1 100%;
+  margin-top: 0;
+}
+.barra-accion > .casilla {
+  padding: 6px 10px;
+  border-radius: var(--r-s);
+  background: var(--hoja);
+  box-shadow: 0 0 0 1px var(--linea);
+}

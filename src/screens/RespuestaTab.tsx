@@ -59,7 +59,7 @@ function Interes({ p, viva, soloLectura }: VivaProps) {
   return (
     <section className="tarjeta">
       <div className="tarjeta-cabeza">
-        <h2>Avisar al grupo</h2>
+        <h2>¿Avisar que te interesa?</h2>
         {/* Etiqueta neutra: el verde es de "confirmó" y el interés no lo es. */}
         <span className="etiqueta">
           {s.interesado ? (
@@ -72,7 +72,7 @@ function Interes({ p, viva, soloLectura }: VivaProps) {
         </span>
       </div>
       <p className="suave">
-        Para entrar en la opción alcanza con tus condiciones. Si quieres, avisa que te interesa: el grupo verá tu nombre.
+        La opción se arma con tus condiciones, no con esto. Si quieres, avisa que te interesa: el grupo verá tu nombre.
         Interés no es confirmación: no suma confirmados. Tampoco el silencio.
       </p>
       <div className="interes-botones">
@@ -148,7 +148,10 @@ function MisCondiciones({
       vibrar(10)
       setCond(r.data.condiciones)
       setGuardado(true)
-      if (avisarInteres && ofrecerInteres) await avisar()
+      const conInteres = avisarInteres && ofrecerInteres
+      // La casilla vale para este guardado; si el aviso falla, el reintento queda en su propia caja de error.
+      setAvisarInteres(false)
+      if (conInteres) await avisar()
     }
   }
 
@@ -194,34 +197,18 @@ function MisCondiciones({
             deshabilitado={!s.puede.guardar_condiciones || soloLectura}
             prefijo={`mi-${p.id}`}
           />
-          <p className="suave nota-seccion">"Pendiente" = aún no lo sabes (tus condiciones quedan incompletas).</p>
           {/* El motor solo cuenta condiciones completas: con un "Pendiente" no se entra en ninguna franja, tampoco en
-              la que se marcó "Sí". Se dice antes de guardar, no solo con la etiqueta. */}
+              la que se marcó "Sí". Se dice antes de guardar, no solo con la etiqueta, y en una sola nota. */}
           {s.puede.guardar_condiciones && Object.values(b.draft).includes('pendiente') && (b.sucio || s.condiciones === 'incompletas') ? (
             <p className="aviso-linea">
-              Con alguna franja en "Pendiente" no entras en ninguna opción, tampoco en la que marcaste "Sí puedo". Cuando
-              sepas, marca Sí o No en cada una.
+              "Pendiente" = aún no lo sabes. Con alguna franja en "Pendiente" no entras en ninguna opción
+              {Object.values(b.draft).includes('si') ? ', tampoco en la que marcaste "Sí puedo"' : ''}. Cuando sepas, marca
+              Sí o No en cada una.
             </p>
-          ) : null}
+          ) : (
+            <p className="suave nota-seccion">"Pendiente" = aún no lo sabes (tus condiciones quedan incompletas).</p>
+          )}
           {!s.puede.guardar_condiciones ? <p className="aviso-linea">{razonSinGuardar(p)}</p> : null}
-          {ofrecerInteres && s.puede.guardar_condiciones && b.sucio ? (
-            <label htmlFor={`mi-${p.id}-interes`} className="casilla">
-              <input
-                id={`mi-${p.id}-interes`}
-                type="checkbox"
-                checked={avisarInteres}
-                disabled={ocupado}
-                aria-describedby={`mi-${p.id}-interes-ayuda`}
-                onChange={(e) => setAvisarInteres(e.target.checked)}
-              />
-              <span>
-                Avisar también al grupo que me interesa
-                <small id={`mi-${p.id}-interes-ayuda`}>
-                  Opcional. El grupo verá tu nombre entre los interesados, no tus condiciones. No es confirmar.
-                </small>
-              </span>
-            </label>
-          ) : null}
           {/* H16 (sinteticos): la frase manda a un botón que está en el Plan; se ofrece el camino en un toque. */}
           {!s.puede.guardar_condiciones && !s.retirado && !p.plazo_vencido && s.elegible_en_version === true ? (
             <button type="button" className="btn btn-secundario" onClick={() => irAPestana('plan')}>
@@ -229,6 +216,25 @@ function MisCondiciones({
             </button>
           ) : null}
           <div className={`fila-botones ${b.sucio ? 'barra-accion' : ''}`}>
+            {/* Dentro de la barra fija, encima del botón: se ve justo cuando se decide (a 375 px la barra tapa lo de arriba). */}
+            {ofrecerInteres && s.puede.guardar_condiciones && b.sucio ? (
+              <label htmlFor={`mi-${p.id}-interes`} className="casilla">
+                <input
+                  id={`mi-${p.id}-interes`}
+                  type="checkbox"
+                  checked={avisarInteres}
+                  disabled={ocupado}
+                  aria-describedby={`mi-${p.id}-interes-ayuda`}
+                  onChange={(e) => setAvisarInteres(e.target.checked)}
+                />
+                <span>
+                  Avisar también al grupo que me interesa
+                  <small id={`mi-${p.id}-interes-ayuda`}>
+                    Opcional. El grupo verá tu nombre entre los interesados, no tus condiciones. No es confirmar.
+                  </small>
+                </span>
+              </label>
+            ) : null}
             <Boton
               onClick={guardar}
               ocupado={ocupado}
@@ -238,7 +244,14 @@ function MisCondiciones({
               Guardar condiciones
             </Boton>
             {b.sucio ? (
-              <Boton variante="secundario" onClick={b.descartar} disabled={ocupado}>
+              <Boton
+                variante="secundario"
+                onClick={() => {
+                  b.descartar()
+                  setAvisarInteres(false)
+                }}
+                disabled={ocupado}
+              >
                 Descartar cambios
               </Boton>
             ) : null}

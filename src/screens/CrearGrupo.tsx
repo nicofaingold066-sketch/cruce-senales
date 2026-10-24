@@ -36,14 +36,14 @@ export default function CrearGrupo() {
   const { ocupado, error, ejecutar } = useAccion()
   const faltan = nombre.trim() === '' || visible.trim() === ''
   // Entrada como Tricount: con la lista del grupo, al abrir el enlace cada uno toca su nombre. Sin ella, cada uno tiene
-  // que escribirlo y no hay a quién elegir; por eso, con la lista vacía, "Crear grupo" pide confirmar una vez.
-  const [preguntarSinLista, setPreguntarSinLista] = useState(false)
+  // que escribirlo y no hay a quién elegir. Por eso "Crear grupo" pregunta una vez si la lista está vacía o si quedó un
+  // nombre escrito sin "Agregar" (se perdería en silencio). Se mira al tocar, no al dibujar.
+  const [pregunta, setPregunta] = useState<{ sinLista: boolean; escrito: boolean } | null>(null)
   const zonaIntegrantes = useRef<HTMLDivElement>(null)
-  // Un nombre escrito y no agregado (el campo de CampoIntegrantes) se pierde al crear: se avisa en la misma pregunta.
   const escritoSinAgregar = () => (zonaIntegrantes.current?.querySelector('input')?.value.trim() ?? '') !== ''
 
   function irALista() {
-    setPreguntarSinLista(false)
+    setPregunta(null)
     const campo = zonaIntegrantes.current?.querySelector('input')
     campo?.scrollIntoView({ block: 'center', behavior: 'smooth' })
     campo?.focus({ preventScroll: true })
@@ -52,8 +52,9 @@ export default function CrearGrupo() {
   function hacer(e: FormEvent) {
     e.preventDefault()
     if (faltan) return
-    if (integrantes.length === 0) {
-      setPreguntarSinLista(true)
+    const escrito = escritoSinAgregar()
+    if (integrantes.length === 0 || escrito) {
+      setPregunta({ sinLista: integrantes.length === 0, escrito })
       return
     }
     void crear()
@@ -103,16 +104,16 @@ export default function CrearGrupo() {
               integrantes={integrantes}
               cambiar={(lista) => {
                 setIntegrantes(lista)
-                if (lista.length > 0) setPreguntarSinLista(false)
+                if (lista.length > 0) setPregunta(null)
               }}
               tuNombre={visible}
             />
           </div>
           {/* Lo que va a ver cada uno al abrir el enlace: su nombre para tocar (enmienda 9, "¿Quién eres?"). */}
-          <p className="suave lista-resumen" aria-live="polite">
+          <p className="suave lista-resumen">
             {integrantes.length > 0
               ? `Al abrir el enlace, cada uno toca su nombre: ${[visible.trim() ? `${visible.trim()} (tú)` : 'tú', ...integrantes].join(', ')}.`
-              : 'Anota a los del grupo: al abrir el enlace, cada uno toca su nombre y listo. Puedes pegar la lista del chat.'}
+              : 'Anota a los del grupo: al abrir el enlace, cada uno toca su nombre y listo. Puedes escribir varios separados por comas.'}
           </p>
           <CampoQuienViene valor={quienViene} cambiar={setQuienViene} nombre={nombre} />
           <CampoProposito valor={proposito} cambiar={setProposito} deshabilitado={soloLectura} />
@@ -121,24 +122,27 @@ export default function CrearGrupo() {
             privadas, también para ti.
           </Aviso>
           {error ? <ErrorCaja error={error} enfocar /> : null}
-          {preguntarSinLista ? (
-            <Aviso tono="aviso" titulo="¿Crear sin la lista del grupo?">
-              {escritoSinAgregar()
-                ? 'Escribiste un nombre pero no lo agregaste: toca «Agregar» para que quede en la lista. '
-                : ''}
-              Sin la lista, al abrir el enlace nadie tiene un nombre para tocar: cada uno tiene que escribir el suyo.
+          {pregunta ? (
+            <Aviso tono="aviso" titulo={pregunta.sinLista ? '¿Crear sin la lista del grupo?' : '¿Crear sin el nombre que escribiste?'}>
+              <span id="crear-pregunta">
+                {pregunta.escrito ? 'Escribiste un nombre pero no lo agregaste: toca «Agregar» para que quede en la lista. ' : ''}
+                {pregunta.sinLista
+                  ? 'Sin la lista, al abrir el enlace nadie tiene un nombre para tocar: cada uno tiene que escribir el suyo.'
+                  : 'Si creas el grupo así, ese nombre no queda en la lista.'}
+              </span>
               <div className="fila-botones">
-                <Boton autoFocus onClick={irALista}>
-                  Agregar nombres
+                <Boton autoFocus onClick={irALista} disabled={ocupado} aria-describedby="crear-pregunta">
+                  {pregunta.sinLista ? 'Agregar nombres' : 'Agregarlo'}
                 </Boton>
-                <Boton variante="secundario" onClick={() => void crear()} ocupado={ocupado} ocupadoTexto="Creando…" disabled={soloLectura}>
-                  Crear sin lista
+                <Boton variante="secundario" onClick={() => void crear()} ocupado={ocupado} ocupadoTexto="Creando…" disabled={faltan || soloLectura}>
+                  {pregunta.sinLista ? 'Crear sin lista' : 'Crear sin agregarlo'}
                 </Boton>
               </div>
             </Aviso>
           ) : null}
           <div className="barra-accion">
-            <Boton type="submit" ocupado={ocupado} ocupadoTexto="Creando…" disabled={faltan || soloLectura}>
+            {/* Mientras está la pregunta, la decisión es la de arriba: el botón de siempre baja a secundario. */}
+            <Boton type="submit" variante={pregunta ? 'secundario' : 'primario'} ocupado={ocupado} ocupadoTexto="Creando…" disabled={faltan || soloLectura}>
               Crear grupo
             </Boton>
           </div>

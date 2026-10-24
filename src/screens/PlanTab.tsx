@@ -33,10 +33,12 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana, espacio }: P
     p.ultima_evaluacion.version === p.opcion?.version
   // "Esta versión no te incluye" con la disponibilidad completa diría "con lo que marcaste, esta fecha no te queda", un
   // motivo que puede ser falso: la elegibilidad es una foto al publicar (0002_utilidades.sql:262) y se pudo completar con
-  // "Sí" después. Con el plazo vencido, "si la completas, cuenta si el plan se rearma" ya no es cierto. En esos dos casos
-  // el aviso no se dibuja y lo dice una sola vez la opción vigente (razonNoAceptar), sin dar motivo (7930e66).
-  const sinTiSinAviso =
-    avisoParaMi(p)?.clave === 'version_sin_ti' && (p.mi_situacion.condiciones === 'completas' || p.plazo_vencido)
+  // "Sí" después (7930e66). En ese caso el aviso va igual arriba, con un texto cierto y sin motivo (avisoSinTi). Con el
+  // plazo vencido, "si la completas, cuenta si el plan se rearma" ya no es cierto: lo dice solo razonNoAceptar.
+  // Pedido a ux-flujo: el texto de avisoPersonal.ts para este caso; cuando cambie, este reemplazo sobra.
+  const sinTi = avisoParaMi(p)?.clave === 'version_sin_ti'
+  const sinTiSinAviso = sinTi && (p.mi_situacion.condiciones === 'completas' || p.plazo_vencido)
+  const avisoSinTi = sinTi && p.mi_situacion.condiciones === 'completas' && !p.plazo_vencido
   // El énfasis sigue al servidor: "Buscar opción compatible" es la acción principal solo cuando su próxima acción es
   // `buscar_opcion` (ya respondieron al menos el mínimo) o para volver a buscar después de "Sin opción". Un toque temprano
   // deja "Sin opción compatible" a la vista de todo el grupo (D-3 de la revisión UX).
@@ -47,6 +49,11 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana, espacio }: P
       {sinTiSinAviso ? null : (
         <AvisoParaMi p={p} servidorAhora={viva.servidorAhora} irARespuesta={() => irAPestana('respuesta')} />
       )}
+      {avisoSinTi ? (
+        <Aviso tono="info" titulo="Esta versión no te incluye">
+          Se armó sin ti. No tienes que hacer nada: si el plan se rearma, cuenta lo que marcaste.
+        </Aviso>
+      ) : null}
 
       {p.estado === 'cancelado' || p.estado === 'expirado' ? (
         <Aviso tono="aviso" titulo={p.estado_etiqueta}>
@@ -188,10 +195,9 @@ function razonNoAceptar(p: EstadoPropuesta): string {
   if (s.acepte_version) return `Ya confirmaste la versión ${v}. Tu confirmación vale solo para esa versión.`
   if (s.elegible_en_version === false) {
     // Va antes del plazo: un grupo confirmado no vence, pero `plazo_vencido` sí, y solo con "El plazo cerró" no se
-    // entera de que la versión es sin ella. En estos dos casos AvisoParaMi no se dibuja (sinTiSinAviso): esta es la
+    // entera de que la versión es sin ella. Con el plazo vencido AvisoParaMi no se dibuja (sinTiSinAviso): esta es la
     // única línea, sin dar motivo ni prometer un rearme que ya no puede pasar (7930e66).
     if (p.plazo_vencido) return 'Esta versión se armó sin ti y el plazo de aceptación ya cerró.'
-    if (s.condiciones === 'completas') return 'Esta versión se armó sin ti. Si el plan se rearma, cuenta lo que marcaste.'
     return 'No formas parte de las personas que pueden aceptar esta versión.'
   }
   if (p.plazo_vencido) return 'El plazo de aceptación ya cerró.'
@@ -473,10 +479,7 @@ function AlternativaOrganizador({ p, viva, soloLectura, sinAlternativa }: VivaPr
           </Boton>
           <p className="suave">La nueva versión empieza con cero aceptaciones.</p>
         </div>
-      ) : p.mi_situacion.retirado ? (
-        // E-7: a quien se bajó no se le pide nada que no puede hacer.
-        <p className="suave">Te bajaste de este plan: el grupo sigue sin ti y no tienes que hacer nada más.</p>
-      ) : (
+      ) : p.mi_situacion.retirado ? null : ( // E-7: a quien se retiró no se le pide nada (ya lo dice AvisoParaMi arriba).
         <p className="suave">
           El organizador ({p.organizador.nombre}) debe buscar una alternativa.
           {p.mi_situacion.puede.guardar_condiciones ? ' Mientras tanto puedes actualizar tus condiciones en "Mi respuesta".' : ''}
@@ -538,26 +541,24 @@ function ReuniendoInteres({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: P
   return (
     <section className="tarjeta">
       <h2>Respuestas del grupo</h2>
-      <div className="stats">
-        {p.personas_con_condiciones != null ? (
+      {/* Las cifras, solo para quien organiza (E7.2): respuestas frente al mínimo. "Con interés" no va como cifra:
+          al lado del mínimo se leía como avance hacia él, y el motor no lo usa (los nombres siguen abajo). */}
+      {p.personas_con_condiciones != null ? (
+        <div className="stats">
           <div className="stat">
             <span className="stat-etiqueta">Con condiciones</span>
             <span className="stat-valor">{p.personas_con_condiciones}</span>
           </div>
-        ) : null}
-        <div className="stat">
-          <span className="stat-etiqueta">Mínimo</span>
-          <span className="stat-valor">{p.minimo}</span>
+          <div className="stat">
+            <span className="stat-etiqueta">Mínimo</span>
+            <span className="stat-valor">{p.minimo}</span>
+          </div>
         </div>
-        <div className="stat">
-          <span className="stat-etiqueta">Con interés</span>
-          <span className="stat-valor">{p.interesados.cantidad}</span>
-        </div>
-      </div>
+      ) : null}
       <p className="suave">
         {p.personas_con_condiciones != null
-          ? 'Para entrar en la opción basta con que cada persona marque Sí o No en cada franja. Las condiciones de cada persona son privadas: solo se cuentan.'
-          : 'Para entrar en la opción basta con marcar Sí o No en cada franja.'}{' '}
+          ? 'La opción sale de lo que cada persona marca en privado, Sí o No en cada franja: aquí solo se cuenta quién respondió.'
+          : `La opción sale de lo que cada uno marca en privado, Sí o No en cada franja. Hacen falta al menos ${p.minimo} que puedan en el mismo horario.`}{' '}
         "Me interesa" es opcional: lo ve el grupo y no es una confirmación.
       </p>
       {p.interesados.miembros.length > 0 ? (
