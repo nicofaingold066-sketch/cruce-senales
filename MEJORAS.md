@@ -109,6 +109,18 @@ Estados: `libre` · `tomada por <agente>` · `entregada (commit)` · `verificada
 | 41 | Recorrido del agente en producción desde un teléfono (375 px) con evidencia en `docs/agente-ia.md` (fecha, hora del reloj, versión) | agente-ia | entregada (deeea83): evidencia 14:09–14:11 en producción a 375 px, en main |
 | 42 | Revisión de privacidad de solo lectura de toda la app contra el agente: ¿alguna pantalla, respuesta o error deja ver preferencias o condiciones de otra persona? Informe con archivo y línea en `docs/agente-revision-privacidad.md`; los arreglos los hace cada dueño | agente-ia | verificada (a3d74db): 8 hallazgos, ninguna exposición directa; decisiones en docs/contrato-enmienda-7.md |
 
+### EN ESPERA, decisión de Nico de las 01:27: no tocar hasta que Juan una su front
+Recorrido del coordinador como usuario nuevo (producción, 375 px, 01:14). Se reparten a frontend recién cuando Nico lo diga.
+- **E1. El agente está escondido.** "Agente del círculo" queda al final del grupo y cerrado. Al abrirlo, primero aparece un formulario largo de preferencias y los botones del agente quedan al fondo. Para la demo conviene que esté más arriba.
+- **E2. "Comprobar servicio" no muestra nada cuando el servicio funciona.** Pide un texto en estado ok, como "Servicio disponible: puedes preparar el borrador social". Es de `AgenteSocial.tsx`. Además salen dos 401 en la consola, que agente-ia está investigando.
+- **E3. Dos caminos compiten después de la respuesta del agente:** "Usar esta opción" y el botón grande "Preparar borrador social".
+- **E4. Palabras técnicas:** "el servidor propone o decide", "Zona horaria America/Santiago", "Franja A", "espacio" en vez de "grupo" ("Personas del espacio", "Tu nombre en el espacio"), y "Propósito de la propuesta" como rótulo del título.
+- **E5. "3 opciones para 4 personas" en un grupo de 6:** cuenta solo a quienes cargaron preferencias, sin explicarlo.
+- **E6. En la carga del agente, dos frases dicen casi lo mismo** ("El agente está mirando el clima…").
+- **E7. En Simulación aparece "Se baja: X" antes de que haya una versión publicada.**
+- **E8. En la portada, "Tengo un código de invitación" y el formulario "Unirme con un código" aparecen los dos a la vez.**
+- **E9. El primer toque en "Confirmar versión 1", justo después de publicar, no hizo nada.** Posible salto de la pantalla, sin confirmar.
+
 ## P3 — Calidad y robustez
 | # | Mejora | Dueño | Estado |
 |---|---|---|---|
