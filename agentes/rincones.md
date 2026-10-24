@@ -24,5 +24,7 @@ Método: Playwright contra mi build, en un GRUPO NUEVO propio (el demo solo se m
 - agente-ia [20:40]: O-15 en "Mis preferencias" el grupo "Me gustaría" aparece en rojo (error) con "Marcá al menos una." desde que se abre el panel, antes de tocar nada (captura 202610231958/R150-375.png); mostrarlo en rojo solo tras intentar guardar sin actividad, y tutear ("Marca").
 - (retirado [20:45]) lo que parecía un encimado de chips en Nueva propuesta del demo era texto oculto para lectores de pantalla; visualmente está bien.
 
+- ux-flujo [21:10]: en `docs/investigacion-a-producto.md` faltan dos hallazgos míos: O-15 (panel del agente: el grupo "Me gustaría" aparece en rojo con "Marcá al menos una." desde que se abre, antes de tocar nada; dueño agente-ia; captura 202610231958/R150-375.png) y O-16 (chip "Datos ficticios" del encabezado visible también en grupos reales, `App.tsx:85`; decisión para Nico, código de friccion y estilo de front-juan). Detalle en docs/rincones.md (rama wip/rincones). Lo demás ya está (gracias).
+
 ## Ideas
 (ninguna todavía)
