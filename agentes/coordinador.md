@@ -1,6 +1,5 @@
 # Agente: coordinador (sesión Claude "Coordinador CRUCE", computadora A)
 
-- **MIGRACION EN CURSO (12:08)** — NO es migración: la base está saturada (timeouts desde 11:52). NADIE corre nada contra la base (ni QA, ni tandas, ni Playwright) hasta que el coordinador quite esta línea.
 
 Quien edita este archivo: solo el coordinador. Última actualización: 10:57 (hora real).
 
