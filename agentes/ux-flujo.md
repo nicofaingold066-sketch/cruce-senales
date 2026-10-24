@@ -10,7 +10,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cru
 - [19:49] `src/componentes-nuevos/**` (componentes listos para conectar, porque front-juan no responde desde las 18:49) y los dos docs.
 - [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: último `084ee0e`, puente con la enmienda 11).
 
-## Entregado (rama `wip/ux`, último `55e4958`)
+## Entregado (rama `wip/ux`, último `2207353`)
 - #98 + #91 `a3797af` (19:31): `docs/flujo-usuario.md` reescrito con el recorrido REAL "convencer a uno" (build propio 4183, 375 px, 19:24-19:27): organizador 21 toques (19 sin el tropiezo), cada invitado 8 toques y 4 vistas hasta la primera respuesta, +2 para confirmar. Marcas [visto]/[leído], 9 dudas vistas en pantalla, recortes con dueño, mapa input → servidor → output en mermaid con la enmienda 10 (pendiente) y tabla "quién ve qué".
 - #94 `bfa6218` (19:32): `docs/front-back-puente.md`: RPC y campos por pantalla, lo que el back expone y el front no usa (E10 incluida), lo que falta de cada lado, registro de entregas.
 - #89 `419ac2a` (19:34) + `ede33ca` (19:36, nota según el motivo y banco sin base `src/componentes-nuevos/prueba/recordar.html`, revisado a 375 y 320 px sin desborde): `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (lógica pura) + `recordar.test.mjs`. `node --test "src/componentes-nuevos/*.test.mjs"` 7/7; `npm run typecheck` y `npm run build` en verde (19:34).
@@ -27,6 +27,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cru
 - `855bf7c` (21:01): `RearmarConLoNuevo` aparece solo con 2 o más "así no puedo" (con 1 delataría a esa persona, psico §8.10); textos de psico para el tope ("Ya van tres versiones. Pueden quedarse con esta o probar otro día…") y para quien lo marcó ("Anotado. Sigues en el plan…"). 27/27. Límite declarado en `docs/output-debate.md` §0.1 (`4f065ae`).
 - `66ad5af` (21:03): `AyudaRetiro` (texto junto a "Retirarme", psico §8.10 y OD §3.1): antes de la opción, "márcala como No puedo"; con la versión publicada, "usa Así no puedo, pero sigo" (o "no confirmes" sin la enmienda 13); a quien ya confirmó, "sin decir quién. No hace falta contar por qué". 32/32.
 - `85bd0bb` (21:06): `RearmarConLoNuevo` con la forma de backend (21:05): el aviso "Ya van tres versiones" sale aunque `proponer_reparacion` venga apagado en la versión 3; `estado_no_admite` → "Ya no hace falta rearmar". 33/33.
+- `2207353` (21:10): `BuscarLugar` + `lugarMapa.ts` (psico D10, aprobada por Nico): "Buscar el lugar en el mapa" con el título del plan (Google Maps, sin clave, sin ubicación, sin personas), oculto en el demo; `duracionTexto` ("(3 h)", "(90 min)") para la línea de día y hora. 36/36; banco a 375 px.
 
 ## Pedidos a otros
 Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo ficticio "Los del pádel": Vale organiza, Ana, Beto, Coni, Diego y Ema entran por el enlace). Detalle en `docs/flujo-usuario.md` §3 (rama `wip/ux`).
@@ -74,6 +75,10 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - friccion [21:07]: reparto aceptado, gracias. `AvisoParaMi` usa tu texto exacto (`55e4958`): título "Así no puedes, pero sigues", texto "Marcaste que así no puedes. Sigues en el plan: si se rearma, cuenta lo que marques ahora." (lo copié en vez de importar tu constante porque `src/friccion/AsiNoPuedo.tsx` todavía no está en mi rama).
 - front-juan [21:07] (orden de E13 en pantalla, para no duplicar): `AvisoParaMi` va arriba de la pestaña Plan; la tarjeta de friccion ("Así no puedo, pero sigo" / "Ya no: puedo así") va en Mi respuesta junto a "Confirmar versión N"; `AyudaRetiro` junto a "Retirarme". Si ponés el botón de friccion pegado a "Retirarme", basta con la ayuda de friccion en `esperando_compromisos` (las dos dicen lo mismo).
 - psico [21:07]: el texto para quien marcó "así no puedo" quedó el de friccion ("Marcaste que así no puedes. Sigues en el plan: si se rearma, cuenta lo que marques ahora."), igual en las dos pantallas; no promete avisos.
+- front-juan [21:10]: nuevo `BuscarLugar` (`src/componentes-nuevos/BuscarLugar.tsx`, `2207353`): en `PlanTab.tsx`, en la tarjeta de la opción publicada, debajo de la franja y para todo el grupo: `<BuscarLugar titulo={p.titulo} demo={espacio.demo} />` (`espacio` desde `Propuesta.tsx`). Para la línea fija de día y hora (U1 de psico): `duracionTexto(o.franja.inicio.utc, o.franja.fin.utc)` de `src/componentes-nuevos/lugarMapa.ts`.
+- psico [21:10]: D10 hecho como pediste (`BuscarLugar`, `2207353`); la lógica quedó en `lugarMapa.ts` en vez de `buscarLugar.ts` (para no tener dos archivos que solo se distinguen por la mayúscula). También `duracionTexto`.
+- rincones [21:10]: O-15 y O-16 en la tabla #102 (`603678e`); O-16 quedó unido a H3 (chip decidido por el coordinador: se queda).
+- qa-noche [21:10]: anotado; te aviso cuando front-juan conecte `AvisoParaMi` (y ahora también `RearmarConLoNuevo`, `AyudaRetiro` y `BuscarLugar`).
 
 ## Decisiones para Nico
 - [20:43] #102: de la tabla, las que esperan a Nico (además de E-a…E-d de arriba): H6 `personas_que_pueden` (sinteticos; riesgo de delatar en grupos chicos), H14 baja pública con nombre (sinteticos), D1-D6 de psico (fila "Asado en lugar neutro", regla de género y pareja, composición del grupo en el título, casa pública o privada, datos sensibles, "creemos que"), tope del Gateway y si se mide, y si el agente va en vivo (corte 10:00). Todas con fila en `docs/investigacion-a-producto.md`.
