@@ -1,0 +1,25 @@
+.administrar-grupo > summary {
+  min-height: var(--toque);
+}
+.eliminar-grupo {
+  padding-top: var(--e-3);
+}
+.eliminar-grupo > .suave {
+  margin: 0 0 var(--e-3);
+}
+.eliminar-grupo .aviso-texto > p {
+  margin: 0 0 var(--e-3);
+}
+.eliminar-grupo .fila-botones {
+  gap: var(--e-2);
+  margin-top: var(--e-4);
+}
+@media (max-width: 480px) {
+  .eliminar-grupo .fila-botones {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .eliminar-grupo .fila-botones .btn {
+    width: 100%;
+  }
+}

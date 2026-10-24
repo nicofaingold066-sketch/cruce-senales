@@ -60,6 +60,7 @@ export type VistaPorCodigoOk = OkBase & {
 }
 export type VerEspacioOk = OkBase & { espacio: Espacio }
 export type SalirEspacioOk = OkBase & { resultado: { espacio_id: string; miembro_id: string; repetido: boolean } }
+export type EliminarEspacioOk = OkBase & { resultado: { espacio_id: string; eliminado: true; repetido: boolean } }
 export type SembrarDemoOk = EspacioOk<{ espacio_id: string; creado: boolean; repetido: boolean }>
 export type AgregarSimuladoOk = EspacioOk<{ miembro_id: string }>
 export type ReiniciarDemoOk = EspacioOk<{ propuestas_eliminadas: number; generacion: number }>
@@ -354,6 +355,18 @@ export const api = {
   getSpace: (espacioId: string) => llamar<VerEspacioOk>('get_space', { p_espacio_id: espacioId }, false),
   leaveSpace: (espacioId: string, intentoId: string) =>
     llamar<SalirEspacioOk>('leave_space', { p_espacio_id: espacioId, p_intento_id: intentoId }, true),
+  deleteSpace: async (espacioId: string, intentoId: string): Promise<ApiResult<EliminarEspacioOk>> => {
+    const r = await llamar<EliminarEspacioOk>('delete_space', { p_espacio_id: espacioId, p_intento_id: intentoId }, true)
+    if (r.ok && (r.data.resultado?.espacio_id !== espacioId || r.data.resultado?.eliminado !== true)) {
+      return fallo('respuesta_invalida', 'No se pudo confirmar la eliminación. Reintenta para comprobar el resultado.', { resultadoIncierto: true })
+    }
+    if (!r.ok && r.error.reintentable && !r.error.sinConexion && r.error.detalle !== 'operacion_no_publicada') {
+      // Una respuesta ilegible también puede llegar después del borrado. Conservamos
+      // el intento para consultar el recibo, sin prometer que el grupo se conservó.
+      return { ok: false, error: { ...r.error, resultadoIncierto: true } }
+    }
+    return r
+  },
   seedDemoSpace: () => llamar<SembrarDemoOk>('seed_demo_space', {}, true),
   addSimulatedMember: (espacioId: string, nombreVisible: string) =>
     llamar<AgregarSimuladoOk>(

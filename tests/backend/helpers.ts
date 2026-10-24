@@ -66,6 +66,7 @@ export const PERMITIDAS: Record<string, () => Record<string, unknown>> = {
   list_my_spaces: () => ({}),
   get_space: () => ({ p_espacio_id: Z }),
   leave_space: () => ({ p_espacio_id: Z, p_intento_id: randomUUID() }), // actividad del grupo
+  delete_space: () => ({ p_espacio_id: Z, p_intento_id: randomUUID() }), // solo administrador
   seed_demo_space: () => ({}),
   add_simulated_member: () => ({ p_espacio_id: Z, p_nombre_visible: 'x' }),
   reset_demo: () => ({ p_espacio_id: Z, p_intento_id: randomUUID() }),
@@ -116,8 +117,8 @@ export const PERMITIDAS: Record<string, () => Record<string, unknown>> = {
   opinar_version: () => ({ p_propuesta_id: Z, p_version: 1, p_opinion: 'asi_no_puedo', p_intento_id: randomUUID() }),
 }
 
-/** Tamaño de la lista permitida (A5): 41 con E13; 42 con la salida explícita del grupo. */
-export const TOTAL_PERMITIDAS = 42
+/** Tamaño de la lista permitida (A5): 41 con E13; 43 con la salida y eliminación explícitas del grupo. */
+export const TOTAL_PERMITIDAS = 43
 
 /** Lista cerrada de siguiente_accion.codigo (enmienda 3). */
 export const CODIGOS_SIGUIENTE = [

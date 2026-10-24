@@ -11,6 +11,7 @@ import { Icono } from '../components/Icono'
 import { PlanVivo } from '../components/PlanVivo'
 import { ActividadGrupo } from '../actividad-grupo/ActividadGrupo'
 import { SalirGrupo } from '../actividad-grupo/SalirGrupo'
+import { EliminarGrupo } from '../components/EliminarGrupo'
 import { etiquetaPlan } from '../componentes-nuevos/plan/accion'
 import { textoInvitacion, urlWhatsApp } from '../lib/compartir'
 import '../estilo/seccion-s2.css'
@@ -49,6 +50,12 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
   const [propuestas, setPropuestas] = useState<PropuestaResumen[] | null>(null)
   const [errorEspacio, setErrorEspacio] = useState<ApiError | null>(null)
   const [errorLista, setErrorLista] = useState<ApiError | null>(null)
+  const [confirmandoEliminacion, setConfirmandoEliminacion] = useState(false)
+  const eliminacionAbierta = useRef(false)
+  const alConfirmarEliminacion = useCallback((abierta: boolean) => {
+    eliminacionAbierta.current = abierta
+    setConfirmandoEliminacion(abierta)
+  }, [])
   const [aviso, setAviso] = useState<string | null>(() => (fondo ? null : tomarAviso()))
 
   const yo = espacio?.miembros.find((m) => m.es_yo) ?? null
@@ -68,6 +75,7 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
     const mia = ++secLista.current
     const gen = generacion.current
     const r = await api.listProposals(espacioId)
+    if (eliminacionAbierta.current) return
     if (mia < aplLista.current || gen !== generacion.current) return
     aplLista.current = mia
     if (r.ok) {
@@ -86,6 +94,7 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
   const cargarEspacio = useCallback(async () => {
     const mia = ++secEspacio.current
     const r = await api.getSpace(espacioId)
+    if (eliminacionAbierta.current) return
     if (mia < aplEspacio.current) return
     aplEspacio.current = mia
     if (r.ok) {
@@ -149,7 +158,9 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
     }
   }, [espacioId, enAgente])
   // Contrato 4: con la lista visible, list_proposals cada 10 s.
-  useSondeo(cargarTodo, 10000, !fondo)
+  // Una respuesta perdida al borrar se recupera con el mismo intento. El sondeo no debe
+  // desmontar esa confirmación al observar que el grupo ya no existe en el servidor.
+  useSondeo(cargarTodo, 10000, !fondo && !confirmandoEliminacion)
 
   if (errorEspacio && !espacio) {
     const fuera = errorEspacio.codigo === 'fuera_de_audiencia'
@@ -353,6 +364,9 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
             <p className="suave">El detalle de cada versión está en el historial de cada plan.</p>
           ) : null}
         </details>
+        {esOrganizador && !fondo ? (
+          <EliminarGrupo espacioId={espacio.id} nombre={espacio.nombre} deshabilitado={soloLectura} alConfirmar={alConfirmarEliminacion} />
+        ) : null}
       </div>
 
       {verPersonas ? (
