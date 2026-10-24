@@ -11,7 +11,7 @@ import { useAccion } from '../lib/hooks'
 import { dejarAviso, rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { diaDe, hora } from '../lib/format'
 import { vibrar } from '../lib/tacto'
-import { Aviso, Boton, Cargando, DiaTile, ErrorCaja } from '../components/ui'
+import { Boton, Cargando, DiaTile, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { TomarDeCalendario } from './Calendario'
 import { QueGuarda } from './QueGuarda'
@@ -209,8 +209,8 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
         <p className="escena-sub">
           {!elegida
             ? lista.reabierta
-              ? 'Marcaste que así no puedes. ¿Cuándo sí? Toca una opción: si se rearma, cuenta esto. Solo el servidor lo ve.'
-              : 'Toca una opción y listo. Solo el servidor ve lo que respondes; el grupo no sabe qué elegiste.'
+              ? 'Marcaste que así no puedes. ¿Cuándo sí? Toca una opción: si se rearma, cuenta esto. Es privado: nadie del grupo lo ve.'
+              : 'Toca una opción y listo. Es privado: nadie del grupo ve qué elegiste.'
             : Object.values(elegida.disponibilidad).includes('si')
               ? s.es_organizador
                 ? 'Cuando el grupo haya respondido, busca una opción compatible desde el plan.'
@@ -259,7 +259,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
                 franjas={p.franjas}
                 semilla={s.miembro_id}
                 deshabilitado={soloLectura || guardar.ocupado}
-                textoUsar="Marcar lo que dice mi agenda"
+                textoUsar="Ver qué sugiere mi agenda"
                 onTomar={(d) => {
                   const o = opciones.find((x) => p.franjas.every((f) => x.disponibilidad[f.clave] === d[f.clave]))
                   if (!o) return
@@ -284,21 +284,6 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
             <p className="suave">
               Guardado. Solo tú ves estas condiciones. Puedes cambiarlas en el plan mientras se reúnen respuestas.
             </p>
-            {algunSi && s.puede.marcar_interes && !s.interesado ? (
-              <Aviso
-                tono="info"
-                titulo="¿Avisar al grupo que te interesa?"
-                accion={
-                  <Boton variante="secundario" onClick={() => void marcarInteres()} ocupado={interes.ocupado} disabled={soloLectura}>
-                    Me interesa
-                  </Boton>
-                }
-              >
-                Es opcional: el grupo verá tu nombre entre los interesados. Interés no es confirmación.
-              </Aviso>
-            ) : null}
-            {interesNota ? <p role="status">{interesNota}</p> : null}
-            {interes.error ? <ErrorCaja error={interes.error} enfocar /> : null}
             <div className="entrada-botones">
               <a className="btn btn-primario" href={verPlan}>
                 Ver el plan
@@ -307,6 +292,20 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
                 Cambiar mi respuesta
               </Boton>
             </div>
+            {algunSi && s.puede.marcar_interes && !s.interesado ? (
+              // sinteticos: después de las acciones y más bajo, porque la escena acaba de decir que la respuesta es privada.
+              <div className="rapida-interes">
+                <p className="suave">
+                  ¿Quieres avisar al grupo que te interesa? Es opcional, y esto sí lo ve el grupo: tu nombre entre los interesados. Interés
+                  no es confirmación.
+                </p>
+                <Boton variante="secundario" onClick={() => void marcarInteres()} ocupado={interes.ocupado} disabled={soloLectura}>
+                  Me interesa
+                </Boton>
+              </div>
+            ) : null}
+            {interesNota ? <p role="status">{interesNota}</p> : null}
+            {interes.error ? <ErrorCaja error={interes.error} enfocar /> : null}
             <a
               className="rapida-preferencias"
               href={rutas.espacio(espacioId)}
