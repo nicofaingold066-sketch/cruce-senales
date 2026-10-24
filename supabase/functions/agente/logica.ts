@@ -164,20 +164,29 @@ const AMBIENTE_TEXTO: Record<string, string> = { fiesta: 'de fiesta', tranquilo:
 /** Una actividad con menos de esta cantidad de personas no se muestra ni se le manda al modelo (mejora #26). */
 export const MINIMO_POR_GUSTO = 2
 
-// Expresiones que delatan la situación de una persona o prometen algo que no pasó. Se comparan como
-// palabras completas (las que terminan en * son prefijos). Si el modelo usa una, se descarta su salida.
+// Lo que el texto del modelo de verdad no puede decir. Se comparan como palabras completas (las que terminan en * son
+// prefijos). Si el modelo usa una, se descarta su salida y se registra cuál (nunca el texto).
+// Auditoría A2 (24 oct): la lista tumbaba frases normales («¿hay ánimo?», «agéndense», «reserven la tarde», «es
+// gratis», «si alguien quiere traer algo») y caía al texto fijo. Quedan solo cinco cosas: delatar la situación de
+// alguien, prometer o confirmar algo que no pasó (estados), decir dónde vive o cómo se mueve alguien, contar
+// asistencia, y nombrar el modelo. Los nombres del grupo se revisan aparte.
 const PROHIBIDAS = [
-  'alguien', 'algunos de ustedes', 'algunas de ustedes', 'uno de ustedes no', 'una de ustedes no', 'quien no puede',
-  'plata', 'dinero', 'pobre*', 'caro para', 'no le alcanza', 'no les alcanza', 'no puede pagar', 'no pueden pagar',
-  'no puede ir', 'no pueden ir', 'enferm*', 'problemas de salud', 'su salud', 'tu salud', 'ánimo', 'animo', 'triste*',
-  'cansad*', 'deprim*', 'restricci*', 'confirmad*', 'reserv*', 'agend*', 'ya está listo',
-  // Presupuesto (hallazgo 7 de la revisión de privacidad): el servidor ya descarta por precio; el texto no lo menciona.
-  'gratis', 'barat*', 'económic*', 'economic*', 'poco presupuesto', 'presupuesto bajo', 'presupuesto ajustado', 'presupuesto limitado',
-  // Enmienda 10: ni dónde vive nadie ni cómo se mueve (el servidor ya lo tuvo en cuenta).
-  'vive', 'viven', 'sin auto', 'no tiene auto', 'no tienen auto', 'que lo lleven', 'que la lleven', 'que los lleven', 'lo pasen a buscar',
+  // 1. La situación de una persona (dinero, salud, ánimo personal, quién no puede).
+  'algunos de ustedes', 'algunas de ustedes', 'uno de ustedes no', 'una de ustedes no', 'quien no puede', 'alguien no puede',
+  'alguien no tiene', 'plata', 'dinero', 'pobre*', 'caro para', 'no le alcanza', 'no les alcanza', 'no puede pagar',
+  'no pueden pagar', 'no puede ir', 'no pueden ir', 'enferm*', 'problemas de salud', 'su salud', 'tu salud', 'triste*',
+  'cansad*', 'deprim*', 'restricci*', 'poco presupuesto', 'presupuesto bajo', 'presupuesto ajustado', 'presupuesto limitado',
+  // 2. Estados que no cambió nadie: confirmar, aceptar, reservar o agendar como hecho (invitar a hacerlo sí se puede).
+  'confirmad*', 'aceptad*', 'aceptaron', 'ya aceptó', 'reservad*', 'reservamos', 'reservé', 'reservó', 'agendad*', 'agendé',
+  'agendamos', 'agendó', 'ya está listo',
+  // 3. Enmienda 10: ni dónde vive nadie ni cómo se mueve (el servidor ya lo tuvo en cuenta).
+  'donde vive', 'donde viven', 'dónde vive', 'dónde viven', 'vive cerca', 'viven cerca', 'vive lejos', 'viven lejos',
+  'sin auto', 'no tiene auto', 'no tienen auto', 'que lo lleven', 'que la lleven', 'que los lleven', 'lo pasen a buscar',
   'la pasen a buscar', 'sin movilidad', 'comuna de',
-  // Enmienda 14 (ajuste 7): tamaño del grupo, nunca asistencia ("van 4", "se sumaron 4").
+  // 4. Enmienda 14 (ajuste 7): tamaño del grupo, nunca asistencia ("van 4", "se sumaron 4").
   'se sumaron', 'se sumó', 'ya van',
+  // 5. La pantalla no nombra el modelo (decisión de Nico, 23 oct).
+  'claude', 'fable', 'opus', 'haiku', 'sonnet', 'anthropic',
 ]
 const LETRA = '\\p{L}'
 
@@ -188,7 +197,7 @@ function escapar(t: string): string {
 const PROHIBIDAS_RE = PROHIBIDAS.map((p) => {
   const prefijo = p.endsWith('*')
   const base = escapar(prefijo ? p.slice(0, -1) : p)
-  return new RegExp(`(^|[^${LETRA}])${base}${prefijo ? '' : `($|[^${LETRA}])`}`, 'u')
+  return { regla: p, re: new RegExp(`(^|[^${LETRA}])${base}${prefijo ? '' : `($|[^${LETRA}])`}`, 'u') }
 })
 
 export function sumarDia(fecha: string): string {
@@ -321,16 +330,28 @@ export function sinNombres(texto: string, nombres: string[]): string {
  * Los nombres se buscan con su mayúscula inicial (son nombres propios), así "caro" no choca con Caro.
  */
 export function textoValido(texto: unknown, max: number, nombres: string[]): texto is string {
-  if (typeof texto !== 'string') return false
+  return motivoRechazo(texto, max, nombres) === null
+}
+
+/**
+ * Por qué un texto del modelo no pasa, como código corto y sin datos: 'no_texto', 'corto', 'largo', 'salto_de_linea',
+ * 'palabra:<regla de la lista>' o 'nombre' (nunca cuál). null si pasa. Es lo que se registra (auditoría A2).
+ */
+export function motivoRechazo(texto: unknown, max: number, nombres: string[]): string | null {
+  if (typeof texto !== 'string') return 'no_texto'
   const t = texto.trim()
-  if (t.length < 15 || t.length > max || t.includes('\n')) return false
+  if (t.length < 15) return 'corto'
+  if (t.length > max) return 'largo'
+  if (t.includes('\n')) return 'salto_de_linea'
   const bajo = t.toLowerCase()
-  if (PROHIBIDAS_RE.some((re) => re.test(bajo))) return false
-  return !nombres.some((n) => {
+  const regla = PROHIBIDAS_RE.find(({ re }) => re.test(bajo))
+  if (regla) return `palabra:${regla.regla}`
+  const nombra = nombres.some((n) => {
     if (n.length < 2) return false
     const propio = n.charAt(0).toUpperCase() + n.slice(1)
     return new RegExp(`(^|[^${LETRA}])${escapar(propio)}($|[^${LETRA}])`, 'u').test(t)
   })
+  return nombra ? 'nombre' : null
 }
 
 function gustoVisible(perfil: PerfilGrupo, actividad: string): { actividad_etiqueta: string; cuantos: number } | undefined {
@@ -410,17 +431,33 @@ export function validarSalidaModelo(
   candidatas: Candidata[],
   nombres: string[],
 ): { eleccion: Candidata; explicacion: string; mensaje: string } | null {
+  const r = revisarSalidaModelo(texto, candidatas, nombres)
+  return 'motivo' in r ? null : r
+}
+
+/**
+ * Lo mismo que validarSalidaModelo, pero si no pasa dice qué regla falló (código sin datos), para el registro:
+ * 'json', 'eleccion', 'explicacion:<motivo>' o 'mensaje:<motivo>' (ver motivoRechazo).
+ */
+export function revisarSalidaModelo(
+  texto: string,
+  candidatas: Candidata[],
+  nombres: string[],
+): { eleccion: Candidata; explicacion: string; mensaje: string } | { motivo: string } {
   let salida: { eleccion_id?: unknown; explicacion?: unknown; mensaje_al_grupo?: unknown }
   try {
     salida = JSON.parse(texto)
   } catch {
-    return null
+    return { motivo: 'json' }
   }
-  if (!salida || typeof salida !== 'object') return null
+  if (!salida || typeof salida !== 'object') return { motivo: 'json' }
   const eleccion = candidatas.find((c) => c.id === salida.eleccion_id)
-  if (!eleccion) return null
-  if (!textoValido(salida.explicacion, 240, nombres) || !textoValido(salida.mensaje_al_grupo, 320, nombres)) return null
-  return { eleccion, explicacion: salida.explicacion.trim(), mensaje: salida.mensaje_al_grupo.trim() }
+  if (!eleccion) return { motivo: 'eleccion' }
+  const enExplicacion = motivoRechazo(salida.explicacion, 240, nombres)
+  if (enExplicacion) return { motivo: `explicacion:${enExplicacion}` }
+  const enMensaje = motivoRechazo(salida.mensaje_al_grupo, 320, nombres)
+  if (enMensaje) return { motivo: `mensaje:${enMensaje}` }
+  return { eleccion, explicacion: (salida.explicacion as string).trim(), mensaje: (salida.mensaje_al_grupo as string).trim() }
 }
 
 // ---------------------------------------------------------------------------------------------

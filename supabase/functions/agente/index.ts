@@ -37,7 +37,7 @@ import {
   tipoDeIdGeneracion,
   unirFrases,
   usuarioDe,
-  validarSalidaModelo,
+  revisarSalidaModelo,
   viajeDe,
   type Candidata,
   type Clima,
@@ -86,7 +86,7 @@ const SISTEMA = [
   'agregado del grupo. Elige la opción que mejor equilibra los gustos del grupo, su ritmo y el clima; ante la duda, la primera.',
   'Escribe en español de Chile, cercano y concreto, sin exagerar.',
   'Reglas que no se rompen: no nombres a ninguna persona; no hables de la situación de nadie en particular (dinero, salud, ánimo,',
-  'disponibilidad); no uses las palabras "alguien", "plata", "dinero", "confirmado", "reservado" ni "agendado"; no inventes datos',
+  'disponibilidad); no uses las palabras "plata", "dinero", "confirmado", "reservado" ni "agendado"; no inventes datos',
   'que no te dieron; no digas que algo está confirmado, reservado o agendado: el grupo todavía tiene que aceptarlo, y los lugares',
   'son de simulación. Si el clima empieza con "Simulación", es un clima de prueba: no lo presentes como pronóstico real.',
   'explicacion: una o dos frases, máximo 240 caracteres, sobre por qué esa opción le sirve al grupo.',
@@ -230,12 +230,13 @@ async function coordinarConModelo(
         continue
       }
       // La elección tiene que ser una de las opciones que el servidor ya validó, y los textos, válidos.
-      const valida = validarSalidaModelo(texto, candidatas, nombres)
-      if (valida) {
+      const revisada = revisarSalidaModelo(texto, candidatas, nombres)
+      if (!('motivo' in revisada)) {
         registrarGeneracion(proveedor, clave, (respuesta as { id?: unknown }).id)
-        return { ...valida, modelo: familia }
+        return { ...revisada, modelo: familia }
       }
-      console.error('agente: salida del modelo rechazada por la validación', proveedor.tipo, familia)
+      // Auditoría A2: qué regla falló (un código fijo como 'mensaje:palabra:plata' o 'explicacion:nombre'), nunca el texto.
+      console.error('agente: salida del modelo rechazada por la validación', proveedor.tipo, familia, revisada.motivo)
     } catch (e) {
       // Solo el proveedor, el modelo, el tipo de error y el código HTTP: nunca el contenido, la clave ni datos del grupo.
       const estado = e instanceof Error && typeof (e as { status?: unknown }).status === 'number' ? (e as { status: number }).status : 0

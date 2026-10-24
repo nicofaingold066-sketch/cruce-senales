@@ -2,9 +2,9 @@
 // El modelo decide qué mirar y cuándo (clima, planes, canchas) y cada resultado sale de los filtros del servidor:
 // buscar_planes llama a proponer_plan_borrador, que ya descarta por presupuesto, techo, viaje, familia y quórum.
 // El modelo nunca recibe datos de una persona: lo mismo que entradaModelo (totales del grupo y opciones validadas).
-// Al final elige con elegir_plan entre las candidatas del servidor y pasa por validarSalidaModelo, como siempre.
+// Al final elige con elegir_plan entre las candidatas del servidor y pasa por revisarSalidaModelo, como siempre.
 // Sin red, sin base y sin modelo: index.ts inyecta las implementaciones reales; las pruebas, las simuladas.
-import { validarSalidaModelo, type Candidata } from './logica.ts'
+import { revisarSalidaModelo, type Candidata } from './logica.ts'
 
 /** Tope de llamadas a herramientas (sin contar la elección final) y tiempo total del bucle. */
 export const MAX_HERRAMIENTAS = 4
@@ -238,7 +238,10 @@ export async function bucleHerramientas(opciones: {
       // Solo se elige entre las candidatas del servidor (de esta vuelta o de una anterior).
       let motivo = 'Primero usa buscar_planes: solo puedes elegir entre las opciones que devuelve.'
       if (busqueda?.tipo === 'borrador') {
-        const valida = validarSalidaModelo(JSON.stringify(eleccion.input ?? {}), busqueda.candidatas, opciones.nombres)
+        const revisada = revisarSalidaModelo(JSON.stringify(eleccion.input ?? {}), busqueda.candidatas, opciones.nombres)
+        const valida = 'motivo' in revisada ? null : revisada
+        // Auditoría A2: qué regla falló (código fijo, nunca el texto), para medir cuántas veces se cae al texto fijo.
+        if (!valida) console.error('agente: elección con herramientas rechazada', (revisada as { motivo: string }).motivo)
         if (valida) {
           anotar(`Elegí: ${valida.eleccion.actividad_etiqueta} en ${valida.eleccion.lugar.nombre}`)
           return { ...valida, candidatas: busqueda.candidatas, pasos, idRespuesta: r.id }
@@ -248,7 +251,7 @@ export async function bucleHerramientas(opciones: {
         segundaOportunidad = false
         motivo =
           'La elección no pasó las reglas: usa un eleccion_id de buscar_planes, no nombres a nadie, no hables de dinero, ' +
-          'salud, ánimo ni de quién falta, no digas que algo está confirmado o reservado, y respeta los largos máximos.'
+          'salud ni de quién falta, no digas que algo está confirmado, aceptado o reservado, y respeta los largos máximos.'
       }
       resultados.push({ type: 'tool_result', tool_use_id: eleccion.id, content: JSON.stringify({ error: motivo }), is_error: true })
     }

@@ -10,6 +10,8 @@ import {
   datosGeneracion,
   tipoDeIdGeneracion,
   candidataSegura,
+  motivoRechazo,
+  revisarSalidaModelo,
   candidatasDe,
   familiaSegura,
   personasSeguras,
@@ -95,6 +97,13 @@ test('textoValido acepta invitaciones normales', () => {
     '¡No pueden faltar! Queda cerca y no es caro llegar.',
     '¡Salud por el asado del sábado con todo el grupo!',
     'Marquen si les interesa y confirmen en CRUXE cuando se publique.',
+    // Auditoría A2: frases normales que antes caían al texto fijo.
+    '¿Hay ánimo para un asado el sábado? Marquen si les interesa.',
+    'Agéndense el sábado y reserven la tarde para el picnic.',
+    'Es gratis y queda en el parque: marquen si les interesa.',
+    'Si alguien quiere traer algo para la parrilla, bienvenido.',
+    'Es barato y le sirve a todos.',
+    'Una opción gratis para el finde.',
   ]) {
     assert.equal(textoValido(t, 320, NOMBRES), true, t)
   }
@@ -110,9 +119,9 @@ test('textoValido rechaza nombres, situaciones personales y promesas que no pasa
     'Es ideal para quien anda cansado esta semana.',
     'Lo reservamos en el club para el domingo.',
     'Ya agendé el quincho para el sábado.',
-    'Es barato y le sirve a todos.',
-    'Una opción gratis para el finde.',
     'Pensado para un presupuesto ajustado.',
+    'Todos aceptaron el plan del sábado en el parque.',
+    'Lo armó Claude con las preferencias del grupo.',
   ]) {
     assert.equal(textoValido(t, 320, NOMBRES), false, t)
   }
@@ -616,4 +625,15 @@ test('M1: el modelo recibe el tamaño del grupo y las personas mínimas y máxim
   assert.deepEqual(e.opciones[0].personas, { min: 2, max: 4 })
   const sinNombres = entradaModelo([ASADO], PERFIL_5, 'Sábado seco', []) as Record<string, any>
   assert.equal(sinNombres.grupo.tamano, null)
+})
+
+test('A2: el rechazo dice qué regla falló, con un código fijo y sin el texto', () => {
+  assert.equal(motivoRechazo('Como no tiene plata, elegimos el parque del sábado.', 320, NOMBRES), 'palabra:plata')
+  assert.equal(motivoRechazo('Caro, este plan es para ti el sábado.', 320, NOMBRES), 'nombre')
+  assert.equal(motivoRechazo('Corto.', 320, NOMBRES), 'corto')
+  assert.equal(motivoRechazo('¡Hola! Les propongo un asado el sábado 31.', 320, NOMBRES), null)
+  const r = revisarSalidaModelo(JSON.stringify({ eleccion_id: ASADO.id, explicacion: 'El asado le sirve al grupo entero.', mensaje_al_grupo: 'Ya está confirmado el asado del sábado.' }), [ASADO], NOMBRES)
+  assert.deepEqual(r, { motivo: 'mensaje:palabra:confirmad*' })
+  assert.deepEqual(revisarSalidaModelo('no es json', [ASADO], NOMBRES), { motivo: 'json' })
+  assert.deepEqual(revisarSalidaModelo(JSON.stringify({ eleccion_id: 'otra' }), [ASADO], NOMBRES), { motivo: 'eleccion' })
 })
