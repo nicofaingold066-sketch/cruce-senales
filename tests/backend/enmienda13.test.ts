@@ -233,9 +233,9 @@ describe('enmienda 13: opinar sin bajarse, rearmar, baja sin nombre y parrilla d
     expect(c).toMatchObject({ actividad: 'asado', lugar: { nombre: 'Parrilla del parque (Simulación)', simulado: true }, titulo: 'Asado en una parrilla del parque' })
   })
 
-  it('6. catálogo 41/0: opinar_version sin sesión no se ejecuta', async () => {
+  it('6. catálogo 42/0: opinar_version sin sesión no se ejecuta', async () => {
     expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS)
-    expect(TOTAL_PERMITIDAS).toBe(41)
+    expect(TOTAL_PERMITIDAS).toBe(42)
     const a = await rpcCrudo(clienteSinSesion(), 'opinar_version', PERMITIDAS.opinar_version())
     expect(a.error?.code).toBe('42501')
     expect(err(await rpc(O, 'opinar_version', PERMITIDAS.opinar_version()))).toBe('fuera_de_audiencia/no_miembro')
