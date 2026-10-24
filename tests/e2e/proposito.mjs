@@ -110,7 +110,7 @@ try {
   const mismoIntento = propuesta(futbol.id, futbol.yo, { p_actividad: 'tenis' })
   const t1 = await rpc(T, 'create_proposal', mismoIntento); if (t1.ok) creados.push(t1.resultado.propuesta_id)
   const t2 = await rpc(T, 'create_proposal', { ...mismoIntento, p_actividad: 'basquet' })
-  verificar('Mismo p_intento_id con otra actividad → intento_reutilizado', t1.ok === true && t2.ok === false && t2.error?.codigo === 'intento_reutilizado', `${t2.error?.codigo ?? 'ok'}`)
+  verificar('Mismo p_intento_id con otra actividad → intento_reutilizado', t1.ok === true && t2.ok === false && t2.error?.codigo === 'entrada_incompleta' && t2.error?.detalle === 'intento_reutilizado', `${t2.error?.codigo ?? 'ok'}/${t2.error?.detalle ?? ''}`)
   const lista = (await rpc(T, 'list_proposals', { p_espacio_id: futbol.id }))?.propuestas ?? []
   verificar('list_proposals trae la actividad de cada propuesta (aditivo)', lista.length > 0 && lista.every((p) => 'actividad' in p), `${lista.length} propuestas`)
 
