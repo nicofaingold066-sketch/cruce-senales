@@ -9,6 +9,8 @@ Actualizado: sábado 24 oct, 11:29 Santiago (reloj).
 
 - **[12:30] REGLA DE NICO (12:30, textual): «si nosotros somos los que estamos mandando esa cantidad de usuarios, no lo hagamos más».** De 7.246 usuarios anónimos, ~6.700 los crearon nuestras pruebas automáticas; eso saturó la base del plan Free a las 11:55. Desde ahora NADIE corre pruebas automáticas contra la base de producción (vitest de tests/backend, guiones e2e, Playwright, curl en bucle, QA de carga), ni el coordinador en sus ciclos. Solo pruebas puras sin base (`npx vitest run src`), tsc y build. Vale hasta que Nico diga otra cosa.
 
+- **[12:34] PUBLICADO `main` = 2995fe1** (solo docs): `docs/pitch/pitch-ensayo.md` (19 slides, lo que se dice en cada una) y `docs/pitch/presentacion.pdf` final (deck de Figma con la demo en 12 capturas dentro de un iPhone y bullets). Antes, 12:31: d1a7ba9 (pitch + PDF v1), 12:06: 234daea (tarjeta de GRU con más aire). Verificación: tsc, puras 125/125, build; sin pruebas contra la base por regla de Nico. Deck para presentar: Figma → Present. Capturas 2× en /Users/macair/cruse/cruce-video/capturas-demo-2x (fuera del repo).
+
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
