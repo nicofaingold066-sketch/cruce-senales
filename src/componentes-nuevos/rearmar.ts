@@ -2,7 +2,8 @@
 // Con la versión publicada, quien no puede marca "Así no puedo, pero sigo" (enmienda 13 (a)) y actualiza su
 // disponibilidad. Si la versión no llega al mínimo, el organizador la rearma con `propose_repair`: la versión N+1
 // usa la disponibilidad actual y nace sin aceptaciones ni opiniones. Tope: 3 versiones.
-// El servidor decide si se puede (`mi_situacion.puede.proponer_reparacion`); esta función solo arma los textos.
+// El servidor decide si se puede (`mi_situacion.puede.proponer_reparacion`, que en `esperando_compromisos` solo se
+// prende con 2 o más "así no puedo" y versión menor que 3; backend 21:05); esta función solo arma los textos.
 // Privacidad: el organizador ve el total de "así no puedo" solo si son 2 o más (`opiniones_totales`), nunca quiénes.
 // Con 0 o 1 no se muestra nada aunque el servidor lo permita: con 1, mostrar algo delataría a esa persona
 // (psico §8.10). Esa persona igual puede retirarse (sin nombre, 13 (c)) y el plan sigue por "Buscar alternativa".
@@ -24,7 +25,7 @@ export interface ErrorRearmar {
 }
 
 export interface VistaRearmar {
-  clave: 'rearmar' | 'sin_alternativa' | 'tope_versiones'
+  clave: 'rearmar' | 'sin_alternativa' | 'tope_versiones' | 'ya_no_hace_falta'
   titulo: string
   texto: string
   /** Rótulo del botón, o null si no hay nada que tocar. */
@@ -43,11 +44,21 @@ export function vistaRearmar(p: DatosRearmar, error?: ErrorRearmar | null): Vist
   const n = p.opiniones_totales?.asi_no_puedo ?? null
   const hayVarios = n !== null && n >= 2
 
-  if (error?.detalle === 'tope_versiones' || (version !== null && version >= TOPE_VERSIONES && yo.puede.proponer_reparacion && hayVarios)) {
+  // Con la versión 3 el servidor ya no prende `proponer_reparacion`: el aviso sale igual si hay 2 o más que no pueden.
+  if (error?.detalle === 'tope_versiones' || (version !== null && version >= TOPE_VERSIONES && hayVarios)) {
     return {
       clave: 'tope_versiones',
       titulo: 'Ya van tres versiones',
       texto: 'Pueden quedarse con esta o probar otro día con un plan nuevo.',
+      boton: null,
+      nota: null,
+    }
+  }
+  if (error?.detalle === 'estado_no_admite') {
+    return {
+      clave: 'ya_no_hace_falta',
+      titulo: 'Ya no hace falta rearmar',
+      texto: 'Cambiaron las respuestas desde que abriste esta pantalla. La versión vigente sigue.',
       boton: null,
       nota: null,
     }

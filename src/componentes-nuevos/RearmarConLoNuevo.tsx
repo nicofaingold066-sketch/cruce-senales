@@ -57,7 +57,7 @@ export function RearmarConLoNuevo({
   return (
     <section className="tarjeta" aria-labelledby="rearmar-titulo">
       <h2 id="rearmar-titulo">{v.titulo}</h2>
-      {v.clave === 'rearmar' ? <p>{v.texto}</p> : <Aviso tono="aviso">{v.texto}</Aviso>}
+      {v.clave === 'rearmar' ? <p>{v.texto}</p> : <Aviso tono={v.clave === 'ya_no_hace_falta' ? 'info' : 'aviso'}>{v.texto}</Aviso>}
       {v.boton ? (
         <div className="barra-accion">
           <Boton onClick={() => void rearmar()} ocupado={ocupado} ocupadoTexto="Rearmando…" disabled={soloLectura}>

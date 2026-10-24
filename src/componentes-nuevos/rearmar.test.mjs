@@ -44,6 +44,9 @@ test('tope de versiones: aviso sin botón; la última posible se avisa antes', (
   assert.equal(v3.boton, null)
   const porError = vistaRearmar(base(), { codigo: 'sin_alternativa', detalle: 'tope_versiones' })
   assert.equal(porError.clave, 'tope_versiones')
+  // El servidor apaga proponer_reparacion con la versión 3: el aviso sale igual con 2 o más que no pueden.
+  assert.equal(vistaRearmar(base({ opcion: { version: 3 }, mi_situacion: org(false) })).clave, 'tope_versiones')
+  assert.equal(vistaRearmar(base({ opcion: { version: 3 }, mi_situacion: org(false), opiniones_totales: { asi_no_puedo: null } })), null)
 })
 
 test('sin alternativa: no baja el mínimo ni finge un plan; deja reintentar si el servidor lo permite', () => {
@@ -58,4 +61,10 @@ test('ningún texto nombra a nadie', () => {
   for (const v of [vistaRearmar(base({ opiniones_totales: { asi_no_puedo: 3 } })), vistaRearmar(base({ opcion: { version: 3 } }))]) {
     assert.doesNotMatch(v.titulo + v.texto + (v.nota ?? ''), /Vale/)
   }
+})
+
+test('si entre tanto cambiaron las respuestas (estado_no_admite), lo dice y no ofrece botón', () => {
+  const a = vistaRearmar(base(), { codigo: 'opcion_desactualizada', detalle: 'estado_no_admite' })
+  assert.equal(a.clave, 'ya_no_hace_falta')
+  assert.equal(a.boton, null)
 })
