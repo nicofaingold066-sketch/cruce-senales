@@ -1,0 +1,64 @@
+[11:41:15 a. m.] choque con coordinador: suelto
+[11:41:56 a. m.] choque con coordinador: suelto
+[11:42:37 a. m.] choque con coordinador: suelto
+[11:43:19 a. m.] choque con coordinador: suelto
+[11:44:01 a. m.] choque con coordinador: suelto
+[11:44:34 a. m.] esperando turno: coordinador
+[11:44:56 a. m.] esperando turno: coordinador
+[11:45:17 a. m.] esperando turno: coordinador
+[11:45:38 a. m.] esperando turno: coordinador
+[11:45:59 a. m.] esperando turno: coordinador
+[11:46:20 a. m.] esperando turno: coordinador
+[11:46:42 a. m.] esperando turno: coordinador
+[11:47:03 a. m.] esperando turno: coordinador
+[11:47:24 a. m.] esperando turno: coordinador
+[11:47:45 a. m.] esperando turno: coordinador
+[11:48:15 a. m.] turno tomado 11:48: qa-gente vuelta 2 bloque d
+[11:48:21 a. m.] PASS d1: el segundo navegador no puede tomar a Rosa sin una advertencia → Rosa ya no aparece libre en la lista
+[11:48:27 a. m.] PASS d1: escribir un nombre repetido es rechazado con claridad o queda distinguible → join_space 200 entrada_incompleta:nombre_en_uso; «Olga Qa te invitó a Mismo 1141 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraron. Escribe el tuyo para sumarte al grupo; no pedimos correo ni contraseña. No estoy en la »; grupo: 2 personas
+[11:48:27 a. m.] PASS d1 mismo nombre desde dos navegadores (11.5 s)
+[11:48:43 a. m.] PASS d2: volver tres veces no duplica a la persona (el grupo sigue en 2) ni la expulsa → personas=2; join_space nuevos=0; vistas: Ema Qa te invitó a Vuelve 1141 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraro || Ema Qa te invitó a Vuelve 1141 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraro || Ema Qa te invitó a Vuelve 1141 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraro
+[11:48:44 a. m.] PASS d2: su respuesta anterior sigue guardada → Tu respuesta: puedo los dos días Cambiar Ficha del plan
+[11:48:44 a. m.] PASS d2 una persona vuelve con el enlace tres veces (17.7 s)
+[11:48:53 a. m.] PASS d3: el navegador de Gabi avisa «Ya estás en este grupo como Gabi» → Hilda Qa te invitó a Compartido 1141 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraron. Escribe el tuyo para sumarte al grupo; no
+[11:48:58 a. m.] PASS d3: el teléfono pasa a ser Tito; ve su propio estado y no la respuesta de Gabi → CRU E Datos ficticios Ficticio ? TQ Sesión activa: Tito Qa . Ver tu perfil
+[11:48:59 a. m.] PASS d3: el grupo cuenta 3 personas (Gabi no desaparece) → 3 personas
+[11:48:59 a. m.] PASS d3 navegador compartido: otra persona entra en el teléfono de Gabi (14.5 s)
+[11:49:08 a. m.] PASS d4: segundo plan creado y distinto del primero
+[11:49:09 a. m.] PASS d4: quien entró antes ve los dos planes en el grupo → Grupos D1 DosPlanes 1141 3 personas IQ JQ KQ Personas › Integrantes del grupo 3 personas · 3 ya entraron 3 Ya están en el grupo IQ Ines Qa Ya entró JQ Jaime Qa (tú) Ya entró KQ Kika Qa Ya entró Estar en el grupo no confirma el encuentro. Actividad del grupo Vi
+[11:49:16 a. m.] PASS d4: cada plan guarda su propia respuesta (sábado en uno, domingo en otro) → Tu respuesta: solo el sábado Cambiar Ficha del plan | Tu respuesta: solo el domingo Cambiar Ficha del plan
+[11:49:16 a. m.] PASS d4 dos planes en el mismo grupo (17.1 s)
+[11:49:36 a. m.] PASS d5: queda ¡Se juntan! → ¡Se juntan!
+[11:49:41 a. m.] PASS d5: tras la baja, el plan sigue confirmado (quedan ≥ mínimo) o pasa a «En revisión» con explicación y sin nombre → estado «¡Se juntan!»; «Baja 1141 v1 · cierra vie 30 oct, 20:00 ¡Se juntan! Próxima acción: Grupo confirmado en la versión 1. Cupos disponibles: 1. Opción vigente · Versión 1 Sábado 31 oct 20:00 Cena de prueba LQ MQ Van 2: tú y Mauro Qa Respuestas Opción Confirmar Encuentro Participación del plan Versión 1 · 2 confirmacion»
+[11:49:41 a. m.] PASS d5: la pantalla no muestra quién se retiró
+[11:49:41 a. m.] PASS d5 una baja después de ¡Se juntan! (25.6 s)
+[11:50:31 a. m.] FAIL d6 recarga en medio de una confirmación → locator.waitFor: Timeout 45000ms exceeded.
+[11:50:47 a. m.] PASS d7: sin conexión, «Confirmar» avisa con claridad (sin error técnico) y no confirma → Sin conexión Las acciones que hagas ahora no se registrarán.
+[11:50:52 a. m.] d7 observación: al volver la conexión los botones son: 
+[11:50:52 a. m.] PASS d7: con red lenta (+4 s por llamada) el botón da señal de «trabajando» y al final confirma una vez → señal de ocupado=sí; tardó 4.6 s
+[11:50:53 a. m.] PASS d7 conexión lenta y sin conexión al confirmar (22.0 s)
+[11:51:05 a. m.] PASS d8: con un 401 en la lectura del plan, la app renueva la sesión y el plan carga sin error visible → get_proposal_state: 200,401,200; llamadas de auth: token?refresh_token
+[11:51:06 a. m.] PASS d8: con un 401 al confirmar, la app renueva, reintenta una sola vez y la confirmación queda una sola vez → accept_version: 401,200; llamadas de auth: token?refresh_token token?refresh_token
+[11:51:06 a. m.] PASS d8 sesión vencida (401): la app renueva la sesión y reintenta una vez, sin error visible (13.6 s)
+RPC:
+  server_info                n=42 p50=112ms p95=223ms max=282ms
+  create_space               n=7 p50=202ms p95=341ms max=341ms
+  get_space                  n=362 p50=99ms p95=181ms max=686ms
+  create_proposal            n=8 p50=206ms p95=448ms max=448ms
+  open_proposal              n=8 p50=181ms p95=371ms max=371ms
+  get_proposal_state         n=264 p50=138ms p95=246ms max=2998ms
+  get_my_preferences         n=15 p50=128ms p95=323ms max=323ms
+  list_proposals             n=75 p50=125ms p95=234ms max=308ms
+  list_my_spaces             n=15 p50=125ms p95=262ms max=262ms
+  preview_space_by_code      n=15 p50=134ms p95=286ms max=286ms
+  join_space                 n=12 p50=186ms p95=369ms max=369ms
+  save_my_conditions         n=11 p50=222ms p95=339ms max=339ms
+  get_my_conditions          n=26 p50=108ms p95=236ms max=489ms
+  evaluate_and_publish       n=3 p50=269ms p95=295ms max=295ms
+  accept_version             n=6 p50=178ms p95=4229ms max=4229ms
+  withdraw_commitment        n=1 p50=219ms p95=219ms max=219ms
+Errores RPC: {"join_space:200:entrada_incompleta:nombre_en_uso":1,"get_proposal_state:401:PGRST301":1,"accept_version:401:PGRST301":1}
+[11:51:06 a. m.] PASS sin errores de consola inesperados
+[11:51:09 a. m.] turno liberado
+d-situaciones: 25 PASS, 1 FAIL
+JSON {"guion":"d-situaciones","filas":[{"nombre":"d1: el segundo navegador no puede tomar a Rosa sin una advertencia","cond":true,"detalle":"Rosa ya no aparece libre en la lista"},{"nombre":"d1: escribir un nombre repetido es rechazado con claridad o queda distinguible","cond":true,"detalle":"join_space 200 entrada_incompleta:nombre_en_uso; «Olga Qa te invitó a Mismo 1141 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraron. Escribe el tuyo para sumarte al grupo; no pedimos correo ni contraseña. No estoy en la »; grupo: 2 personas"},{"nombre":"d1 mismo nombre desde dos navegadores (11.5 s)","cond":true,"detalle":""},{"nombre":"d2: volver tres veces no duplica a la persona (el grupo sigue en 2) ni la expulsa","cond":true,"detalle":"personas=2; join_space nuevos=0; vistas: Ema Qa te invitó a Vuelve 1141 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraro || Ema Qa te invitó a Vuelve 1141 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraro || Ema Qa te invitó a Vuelve 1141 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraro"},{"nombre":"d2: su respuesta anterior sigue guardada","cond":true,"detalle":"Tu respuesta: puedo los dos días Cambiar Ficha del plan"},{"nombre":"d2 una persona vuelve con el enlace tres veces (17.7 s)","cond":true,"detalle":""},{"nombre":"d3: el navegador de Gabi avisa «Ya estás en este grupo como Gabi»","cond":true,"detalle":"Hilda Qa te invitó a Compartido 1141 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraron. Escribe el tuyo para sumarte al grupo; no"},{"nombre":"d3: el teléfono pasa a ser Tito; ve su propio estado y no la respuesta de Gabi","cond":true,"detalle":"CRU E Datos ficticios Ficticio ? TQ Sesión activa: Tito Qa . Ver tu perfil"},{"nombre":"d3: el grupo cuenta 3 personas (Gabi no desaparece)","cond":true,"detalle":"3 personas"},{"nombre":"d3 navegador compartido: otra persona entra en el teléfono de Gabi (14.5 s)","cond":true,"detalle":""},{"nombre":"d4: segundo plan creado y distinto del primero","cond":true,"detalle":""},{"nombre":"d4: quien entró antes ve los dos planes en el grupo","cond":true,"detalle":"Grupos D1 DosPlanes 1141 3 personas IQ JQ KQ Personas › Integrantes del grupo 3 personas · 3 ya entraron 3 Ya están en el grupo IQ Ines Qa Ya entró JQ Jaime Qa (tú) Ya entró KQ Kika Qa Ya entró Estar en el grupo no confirma el encuentro. Actividad del grupo Vi"},{"nombre":"d4: cada plan guarda su propia respuesta (sábado en uno, domingo en otro)","cond":true,"detalle":"Tu respuesta: solo el sábado Cambiar Ficha del plan | Tu respuesta: solo el domingo Cambiar Ficha del plan"},{"nombre":"d4 dos planes en el mismo grupo (17.1 s)","cond":true,"detalle":""},{"nombre":"d5: queda ¡Se juntan!","cond":true,"detalle":"¡Se juntan!"},{"nombre":"d5: tras la baja, el plan sigue confirmado (quedan ≥ mínimo) o pasa a «En revisión» con explicación y sin nombre","cond":true,"detalle":"estado «¡Se juntan!»; «Baja 1141 v1 · cierra vie 30 oct, 20:00 ¡Se juntan! Próxima acción: Grupo confirmado en la versión 1. Cupos disponibles: 1. Opción vigente · Versión 1 Sábado 31 oct 20:00 Cena de prueba LQ MQ Van 2: tú y Mauro Qa Respuestas Opción Confirmar Encuentro Participación del plan Versión 1 · 2 confirmacion»"},{"nombre":"d5: la pantalla no muestra quién se retiró","cond":true,"detalle":""},{"nombre":"d5 una baja después de ¡Se juntan! (25.6 s)","cond":true,"detalle":""},{"nombre":"d6 recarga en medio de una confirmación","cond":false,"detalle":"locator.waitFor: Timeout 45000ms exceeded."},{"nombre":"d7: sin conexión, «Confirmar» avisa con claridad (sin error técnico) y no confirma","cond":true,"detalle":"Sin conexión Las acciones que hagas ahora no se registrarán."},{"nombre":"d7: con red lenta (+4 s por llamada) el botón da señal de «trabajando» y al final confirma una vez","cond":true,"detalle":"señal de ocupado=sí; tardó 4.6 s"},{"nombre":"d7 conexión lenta y sin conexión al confirmar (22.0 s)","cond":true,"detalle":""},{"nombre":"d8: con un 401 en la lectura del plan, la app renueva la sesión y el plan carga sin error visible","cond":true,"detalle":"get_proposal_state: 200,401,200; llamadas de auth: token?refresh_token"},{"nombre":"d8: con un 401 al confirmar, la app renueva, reintenta una sola vez y la confirmación queda una sola vez","cond":true,"detalle":"accept_version: 401,200; llamadas de auth: token?refresh_token token?refresh_token"},{"nombre":"d8 sesión vencida (401): la app renueva la sesión y reintenta una vez, sin error visible (13.6 s)","cond":true,"detalle":""},{"nombre":"sin errores de consola inesperados","cond":true,"detalle":""}],"defectos":[]}

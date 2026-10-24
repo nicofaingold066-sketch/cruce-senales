@@ -14,7 +14,7 @@ try { pw = require('playwright') } catch {
 }
 export const aqui = dirname(fileURLToPath(import.meta.url))
 export const RAIZ = resolve(aqui, '../..')
-export const CAPTURAS = resolve(RAIZ, 'docs/qa/capturas')
+export const CAPTURAS = resolve(RAIZ, 'docs/qa/capturas/v2')  // vuelta 2 (main 018215d)
 export const BASE = (process.argv[2] || process.env.CRUXE_URL || 'https://cruce-senales.vercel.app').replace(/\/+$/, '')
 export const hora = () => new Date().toLocaleTimeString('es-CL', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit', second: '2-digit' })
 export const log = (t) => console.log(`[${hora()}] ${t}`)
@@ -22,7 +22,7 @@ export const dormir = (ms) => new Promise((r) => setTimeout(r, ms))
 mkdirSync(CAPTURAS, { recursive: true })
 
 // ---------- corte y turno de base ----------
-const corteHHMM = process.env.QA_CORTE || '11:00'
+const corteHHMM = process.env.QA_CORTE || '12:15'
 export function pasoElCorte() {
   const h = new Date().toLocaleTimeString('es-CL', { timeZone: 'America/Santiago', hour12: false, hour: '2-digit', minute: '2-digit' })
   return h >= corteHHMM && h < '20:00'
@@ -52,8 +52,11 @@ function editarFicha(linea) {
   git('push', '-q', 'origin', 'HEAD:coordinacion')
 }
 export async function tomarTurno(que) {
+  // Marca pedida por la coordinación: «qa-gente vuelta 2 bloque X (qa-gente)»; X = letra del guion (a-pocas → a).
+  const bloque = (process.argv[1] ?? '').split('/').pop().replace(/\.mjs$/, '').split('-')[0] || que
+  que = `qa-gente vuelta 2 bloque ${bloque}`
   for (;;) {
-    if (pasoElCorte()) { log('Pasó la hora de corte (11:00): no se corre.'); process.exit(4) }
+    if (pasoElCorte()) { log(`Pasó la hora de corte (${corteHHMM}): no se corre.`); process.exit(4) }
     let o; while ((o = ocupadoPor()).length) { log(`esperando turno: ${o.join(', ')}`); await dormir(20000) }
     const h = new Date().toLocaleTimeString('es-CL', { timeZone: 'America/Santiago', hour12: false, hour: '2-digit', minute: '2-digit' })
     try { editarFicha(`CORRIENDO PRUEBA (${h}) ${que} (qa-gente)`) } catch (e) {
@@ -96,8 +99,11 @@ export class Persona {
     this.rpc = []; this.errores = []; this.malas = [] }
   async abrir() {
     this.ctx = await this.browser.newContext({ viewport: { width: this.ancho, height: this.alto }, isMobile: this.ancho < 700, hasTouch: this.ancho < 700, locale: 'es-CL', reducedMotion: this.reducedMotion })
-    // Desde main 9364cd8 la primera visita muestra una intro de 2,6 s (diálogo modal): se marca como vista salvo que se pruebe la intro (f-intro).
-    if (!this.intro) await this.ctx.addInitScript(() => { try { localStorage.setItem('cruxe:entrada-vista', '1') } catch {} })
+    // La primera visita muestra la intro (2,6 s, `cruxe:entrada-vista`) y la guía de tres pasos (`cruxe:guia-vista:v1`), ambas diálogos modales:
+    // se marcan como vistas (igual que `sinIntro` en tests/e2e/nav.mjs) salvo que se pruebe la intro/guía (f-intro, h-guia).
+    if (!this.intro) await this.ctx.addInitScript(() => {
+      for (const tipo of ['localStorage', 'sessionStorage']) for (const clave of ['cruxe:entrada-vista', 'cruxe:guia-vista:v1']) { try { window[tipo].setItem(clave, '1') } catch {} }
+    })
     this.page = await this.ctx.newPage()
     const ini = new Map()
     this.page.on('pageerror', (e) => this.errores.push(`pageerror: ${e.message}`.slice(0, 200)))

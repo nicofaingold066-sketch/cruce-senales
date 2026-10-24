@@ -2,6 +2,8 @@
 //   node tests/qa-gente/h-guia.mjs [url]
 import { BASE, conTurno, lanzar, Informe, Persona, dormir, textoMain } from './lib.mjs'
 const inf = new Informe('h-guia'); const todas = []
+// Voseo rioplatense. OJO: el \b de JS no reconoce «í»/«á» como letra, por eso se usan límites con \p{L} (la vuelta 1 del guion no detectaba «Elegí», «Probá», «Tocá»).
+const VOSEO = /(?<!\p{L})(Elegí|Probá|Tocá|Agregá|Escribí|Poné|Vos|vos|decís|Mirá|Pedí|Sumá|Mandá|Seguí|Fijate|Avisá|Invitá|Compartí|Copiá|Abrí|Cerrá|Anotá|Esperá|Respondé|Confirmá|Marcá|Decí|volvés|tenés|podés|querés|sabés|hacés|ponés|elegís|marcás|tocás|confirmás|llegás|sos|vas a poder|vas a encontrar|Me vas a)(?!\p{L})/gu
 await conTurno('qa-gente (h) guía de tres pasos en la primera visita', async () => {
   const browser = await lanzar()
   try {
@@ -19,7 +21,7 @@ await conTurno('qa-gente (h) guía de tres pasos en la primera visita', async ()
         const dd = await a.page.evaluate(() => { const d = document.querySelector('dialog.cruxe-guia'); return d.scrollWidth - d.clientWidth })
         const sig = a.page.locator('.cruxe-guia__siguiente'); const bb = await sig.boundingBox(); const visible = bb && bb.y + bb.height <= h + 1
         inf.ok(`h2 @${w} paso ${paso + 1}: sin desborde lateral y el botón «Siguiente/Empezar» cabe en pantalla`, dd <= 0 && !!visible, `desborde ${dd}px; botón y=${bb ? Math.round(bb.y) : '?'}+${bb ? Math.round(bb.height) : '?'} de ${h}`)
-        if (w === 320 || paso === 0) await a.captura(`h-guia-${w}-paso${paso + 1}`)
+        if (w === 320 || paso === 0 || paso === 2) await a.captura(`h-guia-${w}-paso${paso + 1}`)
         if (paso === 0) { // ¿deja avanzar sin elegir?
           await sig.click(); await dormir(400); const en2 = /Vos decís|Cuándo/.test((await g.innerText()))
           inf.ok(`h3 @${w}: se puede avanzar sin haber tocado el ejemplo (no obliga)`, en2, en2 ? 'avanzó' : 'no avanzó sin elegir')
@@ -41,11 +43,16 @@ await conTurno('qa-gente (h) guía de tres pasos en la primera visita', async ()
       if (await ay.isVisible().catch(() => false)) { await ay.click(); await dormir(3500); const ab = await a.page.locator('dialog.cruxe-guia[open], dialog.cruxe-intro[open]').count(); await a.page.keyboard.press('Escape'); await dormir(800)
         inf.ok(`h6 @${w}: «Ayuda» reabre el recorrido y Escape lo cierra`, ab > 0 && (await a.page.locator('dialog[open]').count()) === 0, `abiertos tras Ayuda: ${ab}; tras Escape: ${await a.page.locator('dialog[open]').count()}`) }
       if (w === 375) {
-        const voseo = textos.join(' ').match(/\b(Elegí|Probá|Tocá|Vos|decís|Mirá|Pedí|Sumá)\b/g) ?? []
+        const voseo = textos.join(' ').match(VOSEO) ?? []
         inf.ok('h7: el texto de la guía usa el mismo trato que el resto de la app (tú), no voseo', voseo.length === 0, `voseo en la guía: ${[...new Set(voseo)].join(', ') || 'ninguno'}`)
         await a.page.goto(`${BASE}/#/crear`); await a.page.getByRole('heading', { name: 'Crear un grupo' }).waitFor({ timeout: 20000 })
-        const resto = (await textoMain(a.page)).match(/\b(Elegí|Probá|Tocá|Agregá|Escribí|Poné)\b/g) ?? []
+        const resto = (await textoMain(a.page)).match(VOSEO) ?? []
         inf.ok('h7b: «Crear un grupo» usa «tú» (control: sin voseo)', resto.length === 0, resto.join(', '))
+        // h7c (vuelta 2): el asistente GRU de la portada (texto y aria-label) también debe hablar de «tú».
+        await a.page.goto(`${BASE}/#/`); await dormir(1500)
+        const gru = await a.page.evaluate(() => [...document.querySelectorAll('[aria-label],[title]')].map((e) => e.getAttribute('aria-label') || e.getAttribute('title') || '').join(' · ') + ' · ' + document.body.innerText)
+        const vgru = gru.match(VOSEO) ?? []
+        inf.ok('h7c: la portada y el asistente GRU (aria-label incluido) usan «tú», sin voseo', vgru.length === 0, `voseo: ${[...new Set(vgru)].join(', ') || 'ninguno'}; ${gru.match(/[^·.]*(Elegí|Me vas a)[^·.]*/)?.[0]?.trim().slice(0, 140) ?? ''}`)
       }
     }
     // Invitación nueva: sin guía (va directo).

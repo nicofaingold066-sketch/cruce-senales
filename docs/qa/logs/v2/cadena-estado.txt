@@ -1,0 +1,9 @@
+b-muchas exit=1 11:15:08
+c-treinta exit=0 11:15:50
+d-situaciones exit=1 11:18:00
+e-visual exit=0 11:20:45
+f-intro exit=1 11:21:32
+g-carreras exit=0 11:24:47
+h-guia exit=1 11:27:28
+i-demo-makana exit=1 11:29:33
+FIN

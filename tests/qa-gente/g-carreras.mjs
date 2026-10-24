@@ -128,7 +128,25 @@ await conTurno('qa-gente (g) carreras: mismo nombre, doble toque, dos aparatos, 
       const q0 = g.invitados[0]; await q0.page.waitForTimeout(500)
       inf.ok('g7: quien respondía en ese instante no queda con una pantalla rota', !/Falla temporal|undefined/.test(await plano(q0.page)), (await plano(q0.page)).slice(0, 200))
       await q0.captura('g7-invitado-al-cancelarse')
-      // g8 (observación): en «Esperando confirmaciones» no hay «Cancelar la propuesta» para la organizadora.
+    })
+
+    // g8 (H2 de la vuelta 1): ¿puede la organizadora cancelar el plan con una versión publicada y con ¡Se juntan!? (QA_SOLO=g8 para correr solo este)
+    await escenario('g8 la organizadora cancela con versión publicada y con ¡Se juntan!', async (ab) => {
+      const g = await montar(browser, { grupo: `Cancela2 ${sello}`, organiza: 'Pia G', nombres: ['Quin G'], minimo: 2, maximo: 3 }); ab.push(g.org, ...g.invitados)
+      const quin = g.invitados[0]; const p = g.org.page
+      await responderRapido(quin, 'dos'); await verPlan(p, g.urlPlan); await irA(p, 'Mi respuesta'); await responderRapido(g.org, 'dos'); await irA(p, 'Plan')
+      await p.getByRole('button', { name: /^Buscar opción compatible$/ }).click(); await p.getByRole('button', { name: /^Confirmar versión 1/ }).waitFor({ timeout: 30000 }); await p.waitForTimeout(1200)
+      const botones = async (q) => (await q.getByRole('button').allInnerTexts()).map((t) => t.replace(/\s+/g, ' ').trim()).filter((t) => /cancel|retir|no puedo|no voy/i.test(t)).join(' | ')
+      const hay1 = await p.getByRole('button', { name: /^Cancelar la propuesta$/ }).count()
+      inf.ok('g8: con la versión publicada («Esperando confirmaciones») la organizadora tiene «Cancelar la propuesta»', hay1 > 0, `estado «${await estadoPlan(p)}»; controles de salida: ${await botones(p) || 'ninguno'}`)
+      await g.org.captura('g8-esperando-confirmaciones')
+      await p.getByRole('button', { name: /^Confirmar versión 1/ }).click(); await p.waitForTimeout(1800)
+      await verPlan(quin.page, g.urlPlan); await quin.page.getByRole('button', { name: /^Confirmar versión 1/ }).click()
+      await quin.page.locator('.estado-hero-etiqueta').filter({ hasText: /¡Se juntan!|Grupo confirmado/ }).first().waitFor({ timeout: 30000 })
+      await verPlan(p, g.urlPlan)
+      const hay2 = await p.getByRole('button', { name: /^Cancelar la propuesta$/ }).count()
+      inf.ok('g8: con ¡Se juntan! la organizadora tiene «Cancelar la propuesta»', hay2 > 0, `estado «${await estadoPlan(p)}»; controles de salida: ${await botones(p) || 'ninguno'}`)
+      await g.org.captura('g8-se-juntan')
     })
   } finally {
     const t = tablaRpc(todas); console.log('RPC:\n' + t.texto); console.log('Errores RPC: ' + JSON.stringify(t.errores))

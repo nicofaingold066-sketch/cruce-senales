@@ -1,0 +1,41 @@
+[11:06:18 a. m.] turno tomado 11:06: qa-gente vuelta 2 bloque a
+[11:06:32 a. m.] PASS a1: la organizadora ve ¡Se juntan!
+[11:06:32 a. m.] PASS a1 grupo de 2, mínimo 2: ambos responden, se confirma y se juntan (13.2 s)
+[11:06:41 a. m.] PASS a2: con nadie respondiendo, el botón de buscar opción existe o la pantalla explica por qué no → botón=0; «Trío 1106 Reuniendo respuestas Próxima acción: Primero marca tu disponibilidad: eres quien no puede faltar. Cena de prueba sáb 31 oct 20:00 »
+[11:06:43 a. m.] PASS a2b: con solo la organizadora respondida, aparece «Buscar opción compatible» → Reuniendo respuestas
+[11:06:47 a. m.] PASS a2b: dice que no hay opción compatible y no publica versión → Trío 1106 Reuniendo respuestas Próxima acción: Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar. Cena de prueba sáb 31 oct 20:00 · dom 1 nov 20:00 1 de 3 respondieron Respuestas Opción Confirmar Encuentro Cómo 
+[11:06:47 a. m.] PASS a3: «No puedo ninguno» se guarda
+[11:06:52 a. m.] PASS a3: con un «No puedo ninguno» y mínimo 3 no hay versión que lo incluya (sin Confirmar versión) → estado «Reuniendo respuestas»; «Trío 1106 Reuniendo respuestas Próxima acción: Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar. Cena de prueba sáb 31 oct 20:00 · dom 1 nov 20:00 3 de 3 respondieron Respuestas Opción Confi»
+[11:06:53 a. m.] PASS a3: quien dijo «No puedo ninguno» ve el plan sin error → «Trío 1106 Reuniendo respuestas Próxima acción: Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar. Cena de prueb»
+[11:06:53 a. m.] PASS a2 grupo de 3, mínimo 3: nadie responde y se busca opción (21.5 s)
+[11:07:10 a. m.] PASS a4: con una versión publicada existe «Retirarme de este plan» → Esperando confirmaciones
+[11:07:14 a. m.] PASS a4: tras retirarse la organizadora (imprescindible) el plan queda en revisión / explicado, sin error → estado «En revisión»; «Retiro 1106 v1 · cierra vie 30 oct, 20:00 En revisión · Una persona se retiró Próxima acción: Gracias por avisar. No hace falta contar por qué. Versión 1 (en revisión, no confirmada) Sábado 31 oct 20:00 a 22:00 ya no llega al mínimo (3) Cena de prueba ? 0 sigu»
+[11:07:15 a. m.] PASS a4: un invitado ve el plan sin el nombre de quien se retiró → estado «En revisión»; «Retiro 1106 v1 · cierra vie 30 oct, 20:00 En revisión · Una persona se retiró Próxima acción: La versión 1 ya no reúne lo necesario para juntarse. Versión 1 (en revisión, no confirmada) Sábado 31 oct 20:00 a 22:00 ya no »
+[11:07:15 a. m.] PASS a4 la organizadora se retira con una versión publicada (21.7 s)
+[11:07:25 a. m.] PASS a5: queda «Cancelado» para la organizadora
+[11:07:27 a. m.] PASS a5: quien había respondido ve el plan cancelado (sin botones de confirmar) → Cancel 1106 Cancelado Próxima acción: El organizador canceló la propuesta. Cena de prueba Ficha del plan · Historial
+[11:07:29 a. m.] PASS a5: abrir «¿Cuándo puedes?» de un plan cancelado no muestra botones de respuesta activos → Grupos C1 Cancel 1106 3 personas FQ GQ HQ Personas › Integrantes del grupo 3 personas · 3 ya entraron 3 Ya están en el grupo FQ Fabi Qa Ya entró GQ Gus Qa (tú) 
+[11:07:29 a. m.] PASS a5 cancelar la propuesta con respuestas cargadas (14.2 s)
+RPC (todas las personas):
+  server_info                n=21 p50=113ms p95=238ms max=331ms
+  create_space               n=4 p50=247ms p95=404ms max=404ms
+  get_space                  n=137 p50=99ms p95=216ms max=240ms
+  create_proposal            n=4 p50=174ms p95=481ms max=481ms
+  open_proposal              n=4 p50=188ms p95=209ms max=209ms
+  get_proposal_state         n=101 p50=131ms p95=217ms max=276ms
+  list_proposals             n=16 p50=128ms p95=243ms max=243ms
+  get_my_preferences         n=5 p50=236ms p95=295ms max=295ms
+  save_my_conditions         n=10 p50=223ms p95=297ms max=297ms
+  get_my_conditions          n=16 p50=121ms p95=408ms max=408ms
+  evaluate_and_publish       n=4 p50=228ms p95=316ms max=316ms
+  accept_version             n=3 p50=267ms p95=348ms max=348ms
+  list_my_spaces             n=7 p50=132ms p95=329ms max=329ms
+  preview_space_by_code      n=7 p50=161ms p95=333ms max=333ms
+  join_space                 n=7 p50=231ms p95=358ms max=358ms
+  withdraw_commitment        n=1 p50=294ms p95=294ms max=294ms
+  cancel_proposal            n=1 p50=219ms p95=219ms max=219ms
+Errores RPC: {}
+[11:07:29 a. m.] PASS sin errores de consola
+[11:07:32 a. m.] turno liberado
+a-pocas: 18 PASS, 0 FAIL
+JSON {"guion":"a-pocas","filas":[{"nombre":"a1: la organizadora ve ¡Se juntan!","cond":true,"detalle":""},{"nombre":"a1 grupo de 2, mínimo 2: ambos responden, se confirma y se juntan (13.2 s)","cond":true,"detalle":""},{"nombre":"a2: con nadie respondiendo, el botón de buscar opción existe o la pantalla explica por qué no","cond":true,"detalle":"botón=0; «Trío 1106 Reuniendo respuestas Próxima acción: Primero marca tu disponibilidad: eres quien no puede faltar. Cena de prueba sáb 31 oct 20:00 »"},{"nombre":"a2b: con solo la organizadora respondida, aparece «Buscar opción compatible»","cond":true,"detalle":"Reuniendo respuestas"},{"nombre":"a2b: dice que no hay opción compatible y no publica versión","cond":true,"detalle":"Trío 1106 Reuniendo respuestas Próxima acción: Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar. Cena de prueba sáb 31 oct 20:00 · dom 1 nov 20:00 1 de 3 respondieron Respuestas Opción Confirmar Encuentro Cómo "},{"nombre":"a3: «No puedo ninguno» se guarda","cond":true,"detalle":""},{"nombre":"a3: con un «No puedo ninguno» y mínimo 3 no hay versión que lo incluya (sin Confirmar versión)","cond":true,"detalle":"estado «Reuniendo respuestas»; «Trío 1106 Reuniendo respuestas Próxima acción: Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar. Cena de prueba sáb 31 oct 20:00 · dom 1 nov 20:00 3 de 3 respondieron Respuestas Opción Confi»"},{"nombre":"a3: quien dijo «No puedo ninguno» ve el plan sin error","cond":true,"detalle":"«Trío 1106 Reuniendo respuestas Próxima acción: Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar. Cena de prueb»"},{"nombre":"a2 grupo de 3, mínimo 3: nadie responde y se busca opción (21.5 s)","cond":true,"detalle":""},{"nombre":"a4: con una versión publicada existe «Retirarme de este plan»","cond":true,"detalle":"Esperando confirmaciones"},{"nombre":"a4: tras retirarse la organizadora (imprescindible) el plan queda en revisión / explicado, sin error","cond":true,"detalle":"estado «En revisión»; «Retiro 1106 v1 · cierra vie 30 oct, 20:00 En revisión · Una persona se retiró Próxima acción: Gracias por avisar. No hace falta contar por qué. Versión 1 (en revisión, no confirmada) Sábado 31 oct 20:00 a 22:00 ya no llega al mínimo (3) Cena de prueba ? 0 sigu»"},{"nombre":"a4: un invitado ve el plan sin el nombre de quien se retiró","cond":true,"detalle":"estado «En revisión»; «Retiro 1106 v1 · cierra vie 30 oct, 20:00 En revisión · Una persona se retiró Próxima acción: La versión 1 ya no reúne lo necesario para juntarse. Versión 1 (en revisión, no confirmada) Sábado 31 oct 20:00 a 22:00 ya no »"},{"nombre":"a4 la organizadora se retira con una versión publicada (21.7 s)","cond":true,"detalle":""},{"nombre":"a5: queda «Cancelado» para la organizadora","cond":true,"detalle":""},{"nombre":"a5: quien había respondido ve el plan cancelado (sin botones de confirmar)","cond":true,"detalle":"Cancel 1106 Cancelado Próxima acción: El organizador canceló la propuesta. Cena de prueba Ficha del plan · Historial"},{"nombre":"a5: abrir «¿Cuándo puedes?» de un plan cancelado no muestra botones de respuesta activos","cond":true,"detalle":"Grupos C1 Cancel 1106 3 personas FQ GQ HQ Personas › Integrantes del grupo 3 personas · 3 ya entraron 3 Ya están en el grupo FQ Fabi Qa Ya entró GQ Gus Qa (tú) "},{"nombre":"a5 cancelar la propuesta con respuestas cargadas (14.2 s)","cond":true,"detalle":""},{"nombre":"sin errores de consola","cond":true,"detalle":""}],"defectos":[]}

@@ -1,0 +1,6 @@
+i-demo-makana exit=1 11:33:29
+d-situaciones exit=1 11:35:54
+f-intro exit=0 11:36:49
+h-guia exit=1 11:37:24
+c-treinta exit=0 11:38:10
+FIN2

@@ -1,0 +1,47 @@
+[11:21:40 a. m.] turno tomado 11:21: qa-gente vuelta 2 bloque g
+[11:21:51 a. m.] PASS g1: cinco toques simultáneos en «Rosa G»: exactamente un teléfono la reclama → join_space {"200:no_autorizado:miembro_ya_reclamado":4,"200:ok":1}; 1 dentro
+[11:21:52 a. m.] PASS g1: quien pierde ve un mensaje claro → Olga G te invitó a Carrera 1121 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraron. Escribe el tuyo para sumarte al grupo; no pedimos correo ni contraseña. No estoy en la lista Tu nombre Ent
+[11:21:58 a. m.] PASS g2: cinco teléfonos escriben «Zeta G» a la vez: entra uno y los demás reciben «nombre en uso» → {"200:entrada_incompleta:nombre_en_uso":4,"200:ok":1}
+[11:21:59 a. m.] PASS g1/g2: el grupo termina con 3 personas (organizadora, Rosa, Zeta), sin duplicados → 3 personas
+[11:21:59 a. m.] PASS g1/g2 cinco teléfonos reclaman el mismo lugar y escriben el mismo nombre a la vez
+[11:22:46 a. m.] PASS g5: doble toque en «Buscar opción compatible» deja una sola versión (v1) y sin error → evaluate_and_publish {"200:ok":1}
+[11:22:50 a. m.] PASS g3: doble toque en «Confirmar»: una sola confirmación, la segunda no rompe nada → accept_version {"200:ok":1}
+[11:22:59 a. m.] PASS g4: la misma persona confirmando desde dos aparatos a la vez cuenta UNA vez (2 de 3: Juana y Karl) → aparato1 {"200:ok":1} aparato2 {"200:ok":1}; dice «2 de 3 confirmaron · faltan 1 Confirmaron: Juana G y Karl G»; estado «Esperando confirmaciones»
+[11:22:59 a. m.] PASS g3 doble toque en «Confirmar» y g4 la misma persona desde dos aparatos
+[11:23:19 a. m.] PASS g4b.1: tras la carrera el plan dice «1 de 3 confirmaron» (Karl una vez) → aparato1 {"200:ok":1} aparato2 ["ok"]; dice «1 de 3 confirmaron · faltan 2 Confirmaron: Karl H»
+[11:23:27 a. m.] PASS g4b.1: la organizadora puede confirmar al final (hay cupo para ella) → {"200:ok":1}
+[11:23:28 a. m.] PASS g4b.1: el plan termina en «¡Se juntan!» con 3 reales (no «4 confirmaron» ni sin cupo) → estado «¡Se juntan!»; «Cupos disponibles: 0»
+[11:23:28 a. m.] PASS g4b intento 1: carrera de la misma persona y luego confirma la organizadora
+[11:23:47 a. m.] PASS g4b.2: tras la carrera el plan dice «1 de 3 confirmaron» (Karl una vez) → aparato1 {"200:ok":1} aparato2 ["ok"]; dice «1 de 3 confirmaron · faltan 2 Confirmaron: Karl H»
+[11:23:55 a. m.] PASS g4b.2: la organizadora puede confirmar al final (hay cupo para ella) → {"200:ok":1}
+[11:23:56 a. m.] PASS g4b.2: el plan termina en «¡Se juntan!» con 3 reales (no «4 confirmaron» ni sin cupo) → estado «¡Se juntan!»; «Cupos disponibles: 0»
+[11:23:56 a. m.] PASS g4b intento 2: carrera de la misma persona y luego confirma la organizadora
+[11:24:16 a. m.] PASS g4b.3: tras la carrera el plan dice «1 de 3 confirmaron» (Karl una vez) → aparato1 {"200:ok":1} aparato2 ["ok"]; dice «1 de 3 confirmaron · faltan 2 Confirmaron: Karl H»
+[11:24:24 a. m.] PASS g4b.3: la organizadora puede confirmar al final (hay cupo para ella) → {"200:ok":1}
+[11:24:25 a. m.] PASS g4b.3: el plan termina en «¡Se juntan!» con 3 reales (no «4 confirmaron» ni sin cupo) → estado «¡Se juntan!»; «Cupos disponibles: 0»
+[11:24:25 a. m.] PASS g4b intento 3: carrera de la misma persona y luego confirma la organizadora
+[11:24:42 a. m.] PASS g7: queda «Cancelado»; lo que alguien alcanzó a responder se guarda o se rechaza con código claro (nada de 500) → estado «Cancelado»; save_my_conditions {"200:ok":2,"200:opcion_desactualizada:estado_no_admite":1}
+[11:24:43 a. m.] PASS g7: quien respondía en ese instante no queda con una pantalla rota → Respuesta guardada Respondiste Puedes los dos días. Cuando haya un plan, lo ves acá. Solo tú ves lo que marcaste. Cancela 1121 Reuniendo respuestas Quien organiza busca la opción cuando haya suficient
+[11:24:43 a. m.] PASS g7 la organizadora cancela mientras otros responden
+RPC:
+  server_info                n=52 p50=110ms p95=217ms max=263ms
+  create_space               n=6 p50=269ms p95=290ms max=290ms
+  get_space                  n=409 p50=92ms p95=173ms max=414ms
+  create_proposal            n=6 p50=254ms p95=452ms max=452ms
+  open_proposal              n=6 p50=210ms p95=377ms max=377ms
+  get_proposal_state         n=338 p50=144ms p95=198ms max=437ms
+  get_my_preferences         n=7 p50=149ms p95=393ms max=393ms
+  list_proposals             n=44 p50=121ms p95=323ms max=381ms
+  list_my_spaces             n=21 p50=135ms p95=215ms max=248ms
+  preview_space_by_code      n=25 p50=150ms p95=216ms max=276ms
+  join_space                 n=21 p50=206ms p95=297ms max=313ms
+  save_my_conditions         n=15 p50=200ms p95=315ms max=315ms
+  get_my_conditions          n=55 p50=108ms p95=170ms max=176ms
+  evaluate_and_publish       n=4 p50=233ms p95=373ms max=373ms
+  accept_version             n=11 p50=261ms p95=353ms max=353ms
+  cancel_proposal            n=1 p50=224ms p95=224ms max=224ms
+Errores RPC: {"join_space:200:no_autorizado:miembro_ya_reclamado":4,"join_space:200:entrada_incompleta:nombre_en_uso":4,"save_my_conditions:200:opcion_desactualizada:estado_no_admite":1}
+[11:24:43 a. m.] PASS sin errores de consola
+[11:24:47 a. m.] turno liberado
+g-carreras: 25 PASS, 0 FAIL
+JSON {"guion":"g-carreras","filas":[{"nombre":"g1: cinco toques simultáneos en «Rosa G»: exactamente un teléfono la reclama","cond":true,"detalle":"join_space {\"200:no_autorizado:miembro_ya_reclamado\":4,\"200:ok\":1}; 1 dentro"},{"nombre":"g1: quien pierde ve un mensaje claro","cond":true,"detalle":"Olga G te invitó a Carrera 1121 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraron. Escribe el tuyo para sumarte al grupo; no pedimos correo ni contraseña. No estoy en la lista Tu nombre Ent"},{"nombre":"g2: cinco teléfonos escriben «Zeta G» a la vez: entra uno y los demás reciben «nombre en uso»","cond":true,"detalle":"{\"200:entrada_incompleta:nombre_en_uso\":4,\"200:ok\":1}"},{"nombre":"g1/g2: el grupo termina con 3 personas (organizadora, Rosa, Zeta), sin duplicados","cond":true,"detalle":"3 personas"},{"nombre":"g1/g2 cinco teléfonos reclaman el mismo lugar y escriben el mismo nombre a la vez","cond":true,"detalle":""},{"nombre":"g5: doble toque en «Buscar opción compatible» deja una sola versión (v1) y sin error","cond":true,"detalle":"evaluate_and_publish {\"200:ok\":1}"},{"nombre":"g3: doble toque en «Confirmar»: una sola confirmación, la segunda no rompe nada","cond":true,"detalle":"accept_version {\"200:ok\":1}"},{"nombre":"g4: la misma persona confirmando desde dos aparatos a la vez cuenta UNA vez (2 de 3: Juana y Karl)","cond":true,"detalle":"aparato1 {\"200:ok\":1} aparato2 {\"200:ok\":1}; dice «2 de 3 confirmaron · faltan 1 Confirmaron: Juana G y Karl G»; estado «Esperando confirmaciones»"},{"nombre":"g3 doble toque en «Confirmar» y g4 la misma persona desde dos aparatos","cond":true,"detalle":""},{"nombre":"g4b.1: tras la carrera el plan dice «1 de 3 confirmaron» (Karl una vez)","cond":true,"detalle":"aparato1 {\"200:ok\":1} aparato2 [\"ok\"]; dice «1 de 3 confirmaron · faltan 2 Confirmaron: Karl H»"},{"nombre":"g4b.1: la organizadora puede confirmar al final (hay cupo para ella)","cond":true,"detalle":"{\"200:ok\":1}"},{"nombre":"g4b.1: el plan termina en «¡Se juntan!» con 3 reales (no «4 confirmaron» ni sin cupo)","cond":true,"detalle":"estado «¡Se juntan!»; «Cupos disponibles: 0»"},{"nombre":"g4b intento 1: carrera de la misma persona y luego confirma la organizadora","cond":true,"detalle":""},{"nombre":"g4b.2: tras la carrera el plan dice «1 de 3 confirmaron» (Karl una vez)","cond":true,"detalle":"aparato1 {\"200:ok\":1} aparato2 [\"ok\"]; dice «1 de 3 confirmaron · faltan 2 Confirmaron: Karl H»"},{"nombre":"g4b.2: la organizadora puede confirmar al final (hay cupo para ella)","cond":true,"detalle":"{\"200:ok\":1}"},{"nombre":"g4b.2: el plan termina en «¡Se juntan!» con 3 reales (no «4 confirmaron» ni sin cupo)","cond":true,"detalle":"estado «¡Se juntan!»; «Cupos disponibles: 0»"},{"nombre":"g4b intento 2: carrera de la misma persona y luego confirma la organizadora","cond":true,"detalle":""},{"nombre":"g4b.3: tras la carrera el plan dice «1 de 3 confirmaron» (Karl una vez)","cond":true,"detalle":"aparato1 {\"200:ok\":1} aparato2 [\"ok\"]; dice «1 de 3 confirmaron · faltan 2 Confirmaron: Karl H»"},{"nombre":"g4b.3: la organizadora puede confirmar al final (hay cupo para ella)","cond":true,"detalle":"{\"200:ok\":1}"},{"nombre":"g4b.3: el plan termina en «¡Se juntan!» con 3 reales (no «4 confirmaron» ni sin cupo)","cond":true,"detalle":"estado «¡Se juntan!»; «Cupos disponibles: 0»"},{"nombre":"g4b intento 3: carrera de la misma persona y luego confirma la organizadora","cond":true,"detalle":""},{"nombre":"g7: queda «Cancelado»; lo que alguien alcanzó a responder se guarda o se rechaza con código claro (nada de 500)","cond":true,"detalle":"estado «Cancelado»; save_my_conditions {\"200:ok\":2,\"200:opcion_desactualizada:estado_no_admite\":1}"},{"nombre":"g7: quien respondía en ese instante no queda con una pantalla rota","cond":true,"detalle":"Respuesta guardada Respondiste Puedes los dos días. Cuando haya un plan, lo ves acá. Solo tú ves lo que marcaste. Cancela 1121 Reuniendo respuestas Quien organiza busca la opción cuando haya suficient"},{"nombre":"g7 la organizadora cancela mientras otros responden","cond":true,"detalle":""},{"nombre":"sin errores de consola","cond":true,"detalle":""}],"defectos":[]}
