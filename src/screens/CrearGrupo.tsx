@@ -9,6 +9,9 @@ import { ayudaGrupo, ejemploPorSemilla, placeholderGrupo } from '../lib/ejemplos
 import { Aviso, Boton, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { CampoIntegrantes } from '../login/Integrantes'
+import { CampoQuienViene } from '../friccion/QuienViene'
+import { conQuienViene } from '../lib/compartir'
+import type { QuienViene } from '../lib/compartir'
 
 // Crear un grupo propio (un "espacio" del contrato). Solo lo social: el tipo queda fijo en "amigos"
 // (decisión de Nico y Juan, 11:51). Después se invita con el enlace desde la pantalla del grupo.
@@ -23,6 +26,8 @@ export default function CrearGrupo() {
   // Ejemplo del placeholder y de la ayuda (#92, apertura): rota cada hora y se fija al abrir la pantalla, así no
   // cambia mientras se escribe. Nunca asume asado.
   const [ej] = useState(() => ejemploPorSemilla(String(Math.floor(Date.now() / 3600000))))
+  // D3 de psico (friccion): quién viene es una regla del grupo; va como marca en el nombre, sin migración.
+  const [quienViene, setQuienViene] = useState<QuienViene | null>(null)
   const tipo: TipoEspacio = 'amigos'
   const { ocupado, error, ejecutar } = useAccion()
   const faltan = nombre.trim() === '' || visible.trim() === ''
@@ -31,7 +36,7 @@ export default function CrearGrupo() {
     e.preventDefault()
     if (faltan) return
     const r = await ejecutar(`crear:${nombre}:${tipo}:${visible}:${integrantes.join('|')}`, () =>
-      api.createSpace(nombre.trim(), tipo, visible.trim(), integrantes),
+      api.createSpace(conQuienViene(nombre.trim(), quienViene), tipo, visible.trim(), integrantes),
     )
     if (r?.ok) {
       recordarNombreSiFalta(visible)
@@ -68,6 +73,7 @@ export default function CrearGrupo() {
             </label>
           </fieldset>
           <CampoIntegrantes integrantes={integrantes} cambiar={setIntegrantes} tuNombre={visible} />
+          <CampoQuienViene valor={quienViene} cambiar={setQuienViene} nombre={nombre} />
           <Aviso tono="info">
             Vas a ser quien organiza: creas las propuestas y buscas la opción compatible. Las condiciones de cada persona son
             privadas, también para ti.

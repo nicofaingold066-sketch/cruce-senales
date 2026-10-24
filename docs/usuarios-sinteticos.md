@@ -39,6 +39,9 @@ Variables que existen hoy: **franjas** Sí / No / Pendiente por opción A y B (p
 | Tiene ganas pero no puede este finde | «Me interesa» + No / No | Interés es público; las franjas no. El grupo ve «le interesa» sin saber que no puede | Las franjas sí (queda fuera); el interés no suma confirmados | «Quiero, pero otro día»: no hay otra fecha ni «avisenme». La señal de ganas llega al grupo y puede leerse como que viene |
 | Niños o mascota | Hoy: nada | — | No | No hay etiqueta ni «apto para ir con peques/mascota». Parte de la solución: «bajo techo», un momento temprano, pero no lo dice |
 | No toma alcohol | Ambiente «tranquilo» (aproximado) | Sí | Aproximado vía agente | No hay forma de decir «sin alcohol», ni el plan lo muestra como propiedad del lugar. Fiesta/bar lo dejan afuera sin decirlo |
+| No come carne («Ana») | Hoy: nada explícito (ambiente/actividad aproximan) | — | No | Pedido de psico (20:39, P-A): comprobar que el texto compartido del plan sea IDÉNTICO haya o no respondido alguien eso. **Pendiente**: lo compruebo cuando agente-ia aplique A1 (corrida con y sin la respuesta, comparando el texto compartido) |
+| No toma («Beto») | Hoy: nada (ambiente «tranquilo» aproxima) | — | No | Idem: el texto compartido no puede cambiar si Beto respondió o no. **Pendiente** de A1 |
+| Juntada solo del grupo (sin género ni pareja) | — | — | — | Comprobar que ninguna pantalla compartida diga género ni estado de pareja. **Pendiente** de A1; el revisor de textos (`revisar.mjs`) ya busca esas palabras en cada pantalla de la corrida |
 | Prefiere algo tranquilo | Energía «algo tranquilo» + ambiente «tranquilo» | Sí; el grupo ve solo «La mayoría prefiere…» con 4 o más personas | Sí, vía agente | — (está cubierto) |
 | No responde nunca | Silencio | — | **Nunca cuenta como asistencia**: ni elegible ni confirmada; el grupo la ve «Sin confirmar» como a cualquiera que no confirmó | Nada de más: sigue «por entrar» hasta que abra el enlace. El organizador no tiene un «recordarle» (mejora #89, ux-flujo) |
 
@@ -53,6 +56,111 @@ Ideas para quienes puedan hacerlas, también en la ficha:
 - ux-flujo: «Me interesa pero otro día» (aviso de próxima fecha) y proponer una tercera fecha cuando el motor no encuentra.
 - backend: una preferencia opcional «prefiero algo corto» (duración máxima), en la misma lista cerrada.
 - friccion / front-juan: mostrar la energía por defecto como «sin elegir» y no como «algo tranquilo».
+
+## Ensayo de la demo con los perfiles (guion `docs/guion-demo.md` de apertura, `b52e0ad`; leído 21:15)
+
+Cómo lo hice: recorrí cada paso del guion contra las pantallas que mis perfiles vieron **en producción a las 20:54** (`main` `3ace04e`, salida `20261023205443`) y en los builds integrados de las 20:06–20:43, más el código de hoy para los rótulos. La Parte B la cotejé solo contra el código y el guion e2e (`recorrido-dos-sesiones.mjs`): mis perfiles nunca tocan el demo «Los del asado». Los segundos son de máquina (cota inferior; una persona que lee tarda el doble o el triple).
+
+### Los perfiles en el jurado: qué preguntaría cada uno y qué respalda la pantalla hoy
+
+| Perfil | Pregunta que haría | Lo que la pantalla respalda hoy | Lo que no |
+|---|---|---|---|
+| Joaco, el apurado (320 px) | «¿Cuánto tardo en responder?» | 3 toques tras abrir el enlace (nombre, «Sí, soy», «Puedo los dos días»), 4 s de máquina; el guion dice 4 toques contando el enlace: coincide | A 320×640, «No puedo ninguno» y «Todavía no sé» quedan bajo el pliegue (captura `capturas/2006/joaco-03-responder-en-un-paso.png`): si T2 es un teléfono chico y hay que decir que no, hay que deslizar |
+| Renata, la que no puede ninguna | «¿Y si no puedo ninguno de los dos?» | «No puedo ninguno · Puedes cambiarlo después», en un toque, sin explicar | Si lo pide en vivo en la Parte A (mínimo 2, solo Vale), «Buscar opción» da «Sin opción compatible» y la demo no cierra: dejarlo para las preguntas (variantes del jurado 4/4) o mostrarlo en la Parte B con «Tomi no puede» |
+| Gonza, el que dice que le interesa y se baja | «¿Y si confirmo y después no puedo?» | La Parte B lo muestra con Caro: «En revisión», versión 2 desde cero | «¿Y si digo que me interesa y no confirmo?»: no suma («Interés no es confirmación»); en escena, tras «Respuesta guardada» aparece «¿Avisar al grupo que te interesa? Me interesa»: no tocarlo |
+| Bruno, el de condiciones | «¿Dónde digo que no tengo plata o que prefiero techo?» | Parte B 1:45: «Presupuesto este finde», «Lugar», zona y movilidad, privados | En la Parte A no se ve nada de eso. «¿Y si solo sé el sábado?»: «Solo el sábado 31 oct · el domingo queda como No»: decirlo como decisión (lo que no se sabe no arma plan) |
+| Pili, la que nunca abre | «¿Cómo se enteran los que no abrieron el enlace?» | «Beto, Coni, Diego y Ema… no cuentan. El silencio nunca es asistencia» coincide con la órbita («Sin confirmar») | La app no manda nada (D8) y «Recordar a quien falta» está construido y sin conectar: si piden verlo, no hay botón |
+| Vale, la que siempre organiza | «¿Cuánto trabajo me da a mí?» | 17 toques desde la portada hasta «Buscar opción» (8 grupo + 5 propuesta + 4 su respuesta), 13 si pega la lista de una vez; por eso el guion lo hace antes | «¿La app avisa cuando sale la opción?» No: lo manda una persona (D8) |
+| Dani (casa), Ana (sin carne), Beto (pareja), de psico | «¿Dónde digo…?» | Nada en pantalla hoy; las respuestas están en `docs/preguntas-jurado.md` | «Anfitrión (Vale)» en un plan de fútbol es lo primero que Dani señalaría (abajo, 1:18) |
+
+### Parte A paso a paso: paso → riesgo → qué decir o qué cambiar
+
+| Paso del guion | Qué dice la pantalla hoy (visto) | Riesgo en vivo | Qué decir o qué cambiar |
+|---|---|---|---|
+| Lista 1: crear «Los del fútbol» con 5 nombres | 8 toques (un «Agregar» por nombre), 9 s; con la lista pegada «Ana, Beto, Coni, Diego, Ema» en un solo «Agregar» (friccion `ee27fc5`, en el build integrado) son 4 | Si se reutiliza el grupo del ensayo de las 10:00, «Ana» puede quedar «no disponible» (ya reclamada por T2 en el ensayo) | Crear un grupo **nuevo** a las 13:30 (cuesta 9 s) y tener «Beto» de repuesto para T2 |
+| Lista 2: «Crear propuesta» → «Fútbol» → «Revisar» → «Crear y abrir» | Valores por defecto confirmados: sábado 31 oct y domingo 1 nov, 20:00 a 22:00; mínimo 2; máximo 6; «Cierra vie 30 oct, 20:00» | Tocar solo el atajo deja el título «Fútbol» a secas en la tarjeta del plan | Escribir un título antes (p. ej. «Fútbol del sábado»); «Asado» sigue primero: no tocarlo |
+| Lista 3: Vale responde «Sí puedo» A y B → «Guardar condiciones» | «Guardado. Solo tú ves estas condiciones.» ✔ | «Primero marca tu disponibilidad…» no lo vi en ninguna corrida (mis organizadoras siempre respondieron antes de buscar) | Mantener el orden del guion: responder antes de buscar |
+| Lista 4: dejar T1 en el espacio | Bajo el código: «Compartir · Copiar · WhatsApp». La tarjeta «Invita a tu grupo», que es la que tiene «Mandar invitación por WhatsApp», **solo aparece con menos de 3 personas** (`Espacio.tsx:158-175`): con 6 nombres no se ve | El guion nombra un botón que no va a estar | **apertura**: en 0:55 decir «WhatsApp» (bajo el código) |
+| Lista 5: T2 con el enlace en ventana privada | Si el mismo teléfono ya entró: «Ya estás en este grupo como Ana · Este teléfono ya entró como Ana. Sigue para responder o ver el plan.» y el botón **«Seguir como Ana»** (visto 19:59) | El plan B del guion dice tocar «Sigue para responder», que es texto, no botón. Si T2 fuera el mismo navegador de T1: «Este navegador ya está en este espacio como Vale» → «Entrar como otra persona» → «Sí, entrar como Ana» (3 toques más, texto largo) | **apertura**: plan B = «Seguir como Ana»; T2 siempre otro aparato o ventana privada nueva, cerrada después del ensayo |
+| 0:45 «Los del fútbol» con Ana…Ema «por entrar» | ✔ «Personas del espacio … por entrar» | — | — |
+| 0:55 mostrar la invitación por WhatsApp | El botón «WhatsApp» abre `wa.me` con el texto: «Súmate a «Los del fútbol» en CRUXE: toca el enlace, elige tu nombre y marca cuándo puedes. Sin cuenta ni contraseña; tus condiciones solo las ve la app: <enlace>» | En la notebook, `wa.me` abre otra pestaña (WhatsApp Web o «abrir la app») y puede robar la pantalla del proyector | Mostrarlo en el teléfono, o «Copiar» y leer la frase |
+| 1:00 T2: «¿Quién eres?» → «Ana» → «¿Eres Ana?» → «Sí, soy Ana» | ✔ rótulos exactos. Arriba de la lista: «Vale — no disponible» | Red lenta: «No se pudo cargar la lista del grupo: El servidor tarda en responder. Seguimos intentando.» con «Reintentar» (lo vi a las 20:41, justo después de una migración) | Plan B: «Reintentar». Si preguntan por «Vale no disponible»: es quien creó el grupo |
+| 1:10 «¿Cuándo puedes?» → «Puedo los dos días» → «Respuesta guardada» | ✔ La frase dicha coincide palabra por palabra con la pantalla («Solo el servidor ve lo que respondes; el grupo no sabe qué elegiste» y «Responder no es confirmar») | Debajo de «Respuesta guardada» salen «¿Avisar al grupo que te interesa? Me interesa» y «Contar mis gustos y presupuesto (opcional, privado)»: Gonza lo tocaría | No tocar; frase lista: «eso es opcional y lo ve el grupo; cuándo puede, no» |
+| 1:18 T1: «Plan» → «Buscar opción compatible» | Antes: «Ya hay 2 personas con condiciones. Busca una opción compatible.» Después: «Te toca confirmar la versión 1.» ✔ | T1 quedó en el espacio (lista 4): primero hay que **tocar la tarjeta del plan** (+1 toque). Y la ficha dice «Anfitrión (Vale)», «Cupo del anfitrión reservado hasta que Vale confirme. Cupos libres para el resto: 5» y «Faltan por responder 1 persona» en un plan de fútbol | **apertura**: agregar el toque. **front-juan** (H9): «Quien no puede faltar (Vale)» antes de las 11:00; si no, frase lista: «anfitrión = quien no puede faltar» |
+| 1:28 «Confirmar versión 1» | «Ya confirmaste la versión 1. Falta 1 para el mínimo.» ✔ | — | — |
+| 1:33 T2: «Ver el plan» → «Confirmar versión 1» → «Grupo confirmado», «¡Se juntan!», «Calendario», «WhatsApp» | ✔ rótulos (visto: «¡Se juntan! … 3 personas confirmaron la versión 1. CRUXE coordina el plan; no reserva nada. Calendario / WhatsApp») | «Respuesta guardada» **no se actualiza sola**; solo la pantalla del plan sondea cada 3 s. Si Ana sigue en «Respuesta guardada» cuando Vale busca, no ve nada hasta tocar «Ver el plan» | **apertura**: T2 toca «Ver el plan» justo después de responder, antes de que Vale busque; así el botón aparece solo |
+| 1:42 cierre | — | Tiempo: 60 s para la Parte A solo si T1 ya está en el plan y nadie lee los textos en voz alta | Cronometrar en el ensayo |
+
+### Parte B (contra el código y el guion e2e; sin corrida propia)
+
+| Paso | Qué respalda el código | Riesgo | Qué decir o qué cambiar |
+|---|---|---|---|
+| Lista 6: «Reiniciar demo» → «¿Reiniciar la demo?» | Existen (`Espacio.tsx:430,440`) | El rótulo del botón que confirma no lo encontré como «Sí, reiniciar» | Verificar el rótulo en el ensayo |
+| 1:45 «Mis preferencias» con las cuatro preguntas de E10 | Vistas por Bruno en el build integrado: «Tu zona», «Cómo te movés», «Hasta cuánto viajás», «Momento del día», cada una con «Prefiero no responder» | Voseo («movés», «viajás», «Marcá al menos una») en una app que habla de tú; y «Guardar» exige marcar una actividad (H5) | Ya pedido a agente-ia; en escena no se guarda |
+| 1:58 «Clima para la demo (Simulación)» → «Simular sol» → «Que el agente proponga» | Rótulos exactos (`AgentePanel.tsx:527,605,622`) | Con Opus, hasta 30 s: «El agente sigue pensando: puede tardar hasta medio minuto…» | Una sola llamada; frase de relleno lista (el guion la tiene) |
+| 2:15 «Queda a menos de N minutos para todos (estimado)» | `AgentePanel.tsx:406`; necesita la función redesplegada y 4 o más personas con zona y movilidad | En un grupo real de 6 amigos casi nunca aparece (no cargan 4): no prometerlo fuera del demo | Plan B del guion ✔ |
+| 2:48 Luna por enlace en T2 | Ventana privada nueva; «Solo Luna es reclamable» | Si alguien reclamó a Luna en ese demo: «no disponible», y «Reiniciar demo» no lo libera | Plan B del guion ✔ |
+| 3:22 «Se baja: Caro» | Con E13 (c) el grupo verá «Una persona se retiró» mientras el orador dice «Caro» y Tomi toca «Se baja: Caro» en Simulación | Coherente, pero el nombre lo pone el orador, no la app; los botones «Aceptar versión 2 por …» muestran a los que quedan | Decirlo así: «la app no dice quién; lo digo yo porque es una simulación» |
+| 3:35 «Sábado 31 oct 20:00 → Domingo 1 nov 20:00» | ✔ en el demo las franjas son distintas | En la Parte A una reparación diría «Sábado → Sábado» (H8); no hay reparación en la Parte A | — |
+| 3:45 «Confirmaron 5 (mínimo 4)» | ✔ #56 | — | — |
+
+### Riesgos transversales (red, segundo teléfono, nombre repetido, código)
+
+| Situación | Qué muestra la app (visto) | Qué hacer |
+|---|---|---|
+| Red lenta o corte justo al abrir el enlace | «No se pudo cargar la lista del grupo: El servidor tarda en responder. Seguimos intentando.» + «Reintentar» (20:41) | «Reintentar». Después de las 12:00 no hay migraciones, que fue la causa de ese caso |
+| Mismo teléfono abre el enlace por segunda vez | «Ya estás en este grupo como Ana» → «Seguir como Ana» | Un toque y sigue |
+| El enlace se abre en el navegador de Vale | «Este navegador ya está en este espacio como Vale» → «Entrar como otra persona» → «Sí, entrar como Ana» | Evitarlo: T2 siempre aparte |
+| Otra persona ya reclamó «Ana» | «Ana — no disponible» | Tocar otro nombre o «No estoy en la lista» (escribir un nombre nuevo) |
+| Se escribe un nombre que ya existe en «No estoy en la lista» | «nombre en uso» (el servidor) | Elegir de la lista |
+| Código tipeado a mano (8 letras y números en mayúscula, p. ej. «9PA9YTJW») | Enlace malo: «Ese enlace de invitación no es válido»; código inexistente en «Unirme con un código» | Nunca tipearlo en escena: el enlace ya trae el código |
+| T1 se recarga en la portada | Entrada animada de 2,9 s con «Toca para saltar» | Tocar |
+| «Datos ficticios» en la cabecera toda la demo | Decisión del coordinador (19:44): se queda | Frase lista: «todo lo que ven es ficticio por regla del evento; el flujo y el servidor son reales» |
+| «Mínimo 2, máximo 6» en la tarjeta del plan | — | El guion ya lo prevé |
+
+Pedidos de este ensayo y su estado (21:25): **apertura, hecho** en `5bd4d9e`: los 7 puntos (rótulo «WhatsApp» en 0:55, «Seguir como Ana» en el plan B, el toque de 1:18, «Ver el plan» en 1:33, grupo nuevo a las 13:30 y nombre de repuesto, frases listas, título antes del atajo) y los riesgos transversales están en `docs/guion-demo.md` §1, §2 y §4. **friccion, hecho** en `8793df5`: «¿Quieres avisar al grupo que te interesa?» pasa debajo de «Ver el plan» y «Cambiar mi respuesta», en letra chica y con «esto sí lo ve el grupo» (a verificar en la próxima corrida). **front-juan, pendiente**: H9 («Anfitrión (Vale)» en un plan de fútbol) queda como frase lista en el guion hasta que cambie el texto; conectar `RecordarFaltan` y `AvisoParaMi`.
+
+## Perfiles de psico (pedido del coordinador, 20:53): guion `tests/sinteticos/psico-perfiles.mjs`
+
+Grupo nuevo «Los del reencuentro», plan «Asado del reencuentro · solo el grupo» (la modalidad en el título, regla D3; hoy la escribe la organizadora a mano porque no hay selector). Mínimo 3. Fuente de los perfiles: `docs/psicologia-grupo.md` (§3.2, §3.4, §3.6, §3.8, §3.9, §8).
+
+| Persona | Perfil | Qué hace | Qué se comprueba en pantalla |
+|---|---|---|---|
+| **Vale** | la que siempre organiza | crea el grupo **pegando la lista de una vez** (friccion), arma el plan, responde, busca la opción, confirma, repara | toques totales de quien organiza frente a los de un invitado; si ve «Tú armas el plan…», «Gracias por moverlo», «Hoy conviene recordar», «Recordar a quien falta» (psico §8.6, §8.9; `AvisoParaMi`/`RecordarFaltan` de ux-flujo, que Juan conecta); si «Nueva propuesta» ofrece «¿Dónde se juntan?» (A5) y la modalidad (A4); si la invitación de WhatsApp repite «solo el grupo» |
+| **Dani** | se ofende si no van a su casa | entra, responde Sí/Sí, mira la ficha del plan, busca dónde ofrecer su casa | que ninguna pantalla compare casas ni diga «casa de Dani»; qué ve con «Anfitrión (Vale)» / «Imprescindible (anfitrión)» (elección pública de quien organiza, psico §3.2); que no haya forma de ofrecer la casa (V6, después) |
+| **Ana** | no come carne, en un asado | entra, responde Sí/Sí, busca dónde decirlo en «Mis preferencias», mira la ficha del plan | que no exista el campo (V2: pendiente); que el plan **no diga nada** que la delate ni «hay un vegetariano»; si dice «Habrá opción sin carne» (A1: pendiente de agente-ia); orden de «Me gustaría» (apertura `0e03b8a`) |
+| **Beto** (320 px) | va con pareja a una juntada «solo el grupo» | entra, responde Sí/Sí, mira el plan | que ninguna pantalla pregunte género ni pareja (revisor `psico-genero-pareja`); que «solo el grupo» se lea como regla de la ocasión y no quede solo en el título; que no haya «vengo con alguien» (V7, después) |
+| **Flor** | se baja por un mal momento | entra, responde Sí/Sí, confirma la versión 1 (el grupo llega a 3), se baja | qué le dice la app al bajarse («Gracias por avisar. No hace falta contar por qué.», psico §8.1 / E13 c); qué ven Vale, Dani, Ana y Beto: con nombre y «había confirmado» (H14, hoy) o «Una persona se retiró» (E13 c); historial |
+| **Pili** | nunca abre el enlace | nada | sigue «por entrar»; nunca cuenta |
+
+Fugas que se revisan en cada pantalla ajena: Ana + comida, Beto + pareja, «casa de Dani», y la baja de Flor con nombre.
+
+**Resultado (producción, 22:17–22:18, grupo «Los del reencuentro», sin errores del guion; capturas en `tests/sinteticos/capturas/2217/`):**
+
+| Persona / tema | Qué se vio | Lectura |
+|---|---|---|
+| Vale crea el grupo | **4 toques** (antes 8): la lista de 5 nombres se pega de una vez («Agregar» una sola vez); 7 s | friccion, ✔ |
+| Vale, la propuesta | Atajos nuevos (Pádel, Tenis, Cena, Cine, Cumple, Asado, Básquet, Bar, Bowling o escape room, Juegos de mesa, Película en casa, Café o brunch, Cerro, Picnic en el parque, Museo o feria, Fútbol, Juntada); «Si sirven las dos, gana la A.» sigue; sin ayuda «¿Dónde se juntan?» ni selector de «quién viene» (la modalidad solo va en el título que escribe ella) | A4/A5 de psico no conectados; la regla «solo el grupo» no llega al texto de la invitación de WhatsApp |
+| Vale, aviso personal | ✔ conectado (`AvisoParaMi`): «Primero marca tu disponibilidad… Eres quien no puede faltar: si se busca la opción antes de que respondas, no va a haber ninguna.»; «Si no llegan 3, nadie queda comprometido. Tu confirmación solo vale si llegan 3…»; «Se armó la juntada · Gracias por moverlo.» | ✔ psico §8.6/§8.9 |
+| Vale, recordar | ✔ conectado (`RecordarFaltan`): «Avisar al grupo · Recordar a quien falta · Copiar mensaje. El mensaje va a todo el grupo: no nombra a nadie ni dice cuántos faltan.» | ✔ responde la pregunta «¿cómo se enteran los que no abrieron?» con un mensaje listo, no un aviso automático |
+| Dani (casa) | «Imprescindible (anfitrión) Vale» y «Cupo del anfitrión» sigue en un plan de asado entre amigos: no hay «casa de X» en ninguna pantalla; no hay dónde ofrecer la casa (V6, después) | sin fuga; «anfitrión» ya no es solo un problema de fútbol: también lo ve Dani en un asado |
+| Ana (sin carne) | Las preferencias no tienen comida (V2 pendiente); el plan no dice «habrá opción sin carne» (A1 pendiente de agente-ia); ningún texto de la propuesta la delata ni nombra a nadie | sin fuga, y sin forma de decirlo: el hueco sigue |
+| Beto (pareja, «solo el grupo», 320 px) | Ve «solo el grupo» solo porque está escrito en el título («Asado del reencuentro · solo el grupo»); no hay frase de regla («Esta vez es solo el grupo.»); nadie le pregunta por pareja ni género; no hay «traer a alguien» (V7) | sin fuga y sin exposición; la regla queda como parte del nombre del plan |
+| Flor (se baja) | Ve «Gracias por avisar. No hace falta contar por qué.»; luego «Te retiraste de esta propuesta»; el editor de condiciones queda a la vista con «Guardar» apagado (H13) | ✔ texto de psico; H13 sigue |
+| Los demás ven la baja | «**Cambió el plan.** Una persona se retiró. Falta 1 para el mínimo. Si sale una versión nueva, las confirmaciones anteriores no cuentan: si esa te sirve, la confirmas.»; el historial dice «Una persona se retiró (versión 1)» **sin nombre** y la aceptación de Flor desaparece de la lista (E13 c y `1ba3185`); «2 confirmaciones en total · 1 baja» | ✔ **H14 resuelto** |
+| Quien mira la órbita | El nodo de Flor se queda gris «Sin confirmar» como el de Pili y Ana; pero el anillo naranja de «Confirmó» que tenía Flor desaparece entre una pantalla y la otra: quien mire en vivo puede ver **quién** cayó | límite de diseño de la órbita (es público quién confirmó), no un defecto de la baja; se anota para la pregunta del jurado |
+| Reparación | v2 empieza de cero («Si no llegan 3, nadie queda comprometido…»); «El plan cambió: versión 1 → versión 2 · Sábado 31 oct 20:00 → Sábado 31 oct 20:00» (H8 sigue) | |
+| Pili | «por entrar» hasta el final | ✔ |
+
+Fugas revisadas en cada pantalla ajena (Ana + comida, Beto + pareja, «casa de Dani», baja de Flor con nombre): **ninguna**. El revisor de género y pareja no encontró «novia/pareja/mujeres/chicos» en ninguna pantalla compartida.
+
+## Enmienda 13, «Así no puedo, pero sigo»: guion `tests/sinteticos/asi-no-puedo.mjs`
+
+Grupo nuevo «Los del cerro» (Vale, Joaco, Renata, Gonza, Pili), plan «Subida al cerro», mínimo 3. Versión 1 (sábado) con Vale, Joaco y Gonza; Vale confirma (1 de 3). Gonza dice «así no puedo, pero sigo», cambia su sábado a No (el domingo sigue Sí); Joaco hace lo mismo (con dos opiniones el total le llega a la organizadora); Vale prueba opinar habiendo aceptado (debe rechazarse: `ya_acepto`); Vale rearma con lo nuevo; versión 2 (domingo) con cero aceptaciones y cero opiniones heredadas; Renata y Joaco miran plan e historial: nadie ve quién opinó; Gonza confirma la versión 2 (no quedó como baja); el grupo se confirma.
+
+Si la interfaz todavía no tiene los botones («Así no puedo, pero sigo» en Mi respuesta, «Rearmar con lo nuevo» para la organizadora), esos dos pasos se hacen por RPC con la sesión que esa persona ya tiene en su navegador (sin abrir otra) y quedan como hallazgo para front-juan. Si la RPC `opinar_version` no existe, el guion lo dice y sale sin fallar.
+
+**Resultado:** pendiente de que backend termine la migración (en curso a las 21:04).
 
 ## Revisión de código de lo entregado hoy (sin correr; 23 oct, 19:55)
 
@@ -123,7 +231,7 @@ Una persona real tarda más que la máquina (leer, buscar con el dedo): 7 toques
 
 **H6. Quedan «Con condiciones 4» aunque solo 3 pueden.** Renata dijo «No puedo» en las dos y cuenta como condiciones completas; Vale ve 4 y «Ya hay 3 personas con condiciones» y no puede saber que una de ellas no va. → backend/front-juan: decir «3 pueden» o contar solo con al menos un Sí (sin decir quién).
 
-**H7. «Me interesa» separado de la respuesta.** Joaco, Renata y Bruno contestaron las franjas; el grupo ve «2 con interés» (Vale y Gonza) y a Joaco como los demás. Sí puedo no suma interés. Es la duplicación que friccion saca con #88. A comprobar cuando entre.
+**H7 (decidido por ux-flujo 20:43: un Sí no se vuelve interés público porque haría públicas las condiciones; a quien organiza el centro dirá «N respondieron»). «Me interesa» separado de la respuesta.** Joaco, Renata y Bruno contestaron las franjas; el grupo ve «2 con interés» (Vale y Gonza) y a Joaco como los demás. Sí puedo no suma interés. Es la duplicación que friccion saca con #88. A comprobar cuando entre.
 
 **H8. La reparación dice «Sábado → Sábado».** Tras la baja de Gonza, «Buscar alternativa» publica la versión 2 en la misma franja (con Bruno adentro); el cartel «El plan cambió: versión 1 → versión 2 · Sábado 31 oct 20:00 → Sábado 31 oct 20:00» no explica qué cambió (cambió la gente, no la fecha). Captura: `vale-15`. → front-juan: «Misma fecha; cambió quién va».
 
@@ -135,7 +243,7 @@ Una persona real tarda más que la máquina (leer, buscar con el dedo): 7 toques
 - **H11.** «Asado», «Fiesta», «Bar» entre las actividades de «Me gustaría» de Bruno, y «Los del asado» en el ejemplo del título del grupo: son del catálogo, ya ampliado con cena, cine, cultura, etc. Nada que hacer salvo el orden. → apertura.
 - **H12.** «1 confirmaron» (singular mal). → front-juan.
 - **H13.** Gonza: tras «No voy» la página sigue mostrando el editor de condiciones con «Completas» y un «Guardar condiciones» apagado: queda abierta una pantalla que ya no sirve. → front-juan.
-- **H14.** La baja es pública con nombre y «había confirmado» («Gonza se bajó (versión 1) · había confirmado», visible para Joaco y Vale). Es por diseño; para quien se baja por un mal momento es lo más expuesto de toda la app. → decisión de Nico (¿mostrar solo «una persona se bajó»?).
+- **H14 (RESUELTO en producción, 22:18: «Una persona se retiró», sin nombre; enmienda 13 c).** La baja era pública con nombre y «había confirmado» («Gonza se bajó (versión 1) · había confirmado», visible para Joaco y Vale). Es por diseño; para quien se baja por un mal momento es lo más expuesto de toda la app. → decisión de Nico (¿mostrar solo «una persona se bajó»?).
 
 ### Lo que anduvo bien
 
@@ -175,5 +283,8 @@ Nuevo en esta corrida:
 |---|---|---|
 | 19:28 | build `95def89` (parcial: el guion se cortó al confirmar Gonza; corrió durante MIGRACION EN CURSO) | descartada |
 | 19:40 | build `95def89`, base libre | completa; hallazgos H1–H14 |
+| 22:17–22:20 | **PRODUCCIÓN** (con el parche de pantallas y la enmienda 13) | `psico-perfiles` completo (Vale 4 toques para crear el grupo, Dani/Ana/Beto/Flor 3 toques cada uno) y `seis-amigos` completo (Joaco 3, Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2). Sin fugas. **H14 resuelto**: la baja sale como «Una persona se retiró» |
+| 20:41 y 20:43 | build integrado local (+ apertura `0e03b8a`), base recién liberada tras la 0041 | 20:41: Renata no recibió «Respuesta guardada» en 20 s y vio «No se pudo cargar la lista del grupo: El servidor tarda en responder» (un tiempo del servidor justo después de la migración). 20:43: repetida, completa y sin fallas (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6). Un solo caso: no lo trato como defecto, pero si vuelve a verse en producción va a backend |
+| 20:26 | **PRODUCCIÓN** https://cruce-senales.vercel.app (`main` `7f2423e`) | completa, sin fugas, mismos números que el build integrado: Joaco 3 toques (4,2 s), Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2. Solo 3 hallazgos automáticos (todos bajos: «asado», «hora de Santiago», «anfitrión») |
 | 20:12 | mismo build integrado, rehecho con `b8e19ae` (enmienda 12 b), friccion `05e148d` | completa, sin fugas; Joaco 3 toques (3,5 s), Renata 3, Gonza 4, Bruno 6. **H1 cerrado en lo importante**: Bruno lee «Tu disponibilidad está incompleta: no entraste en esta versión. Si la completas, cuenta si el plan se rearma.» (queda además la línea repetida «No formas parte de las personas…», menor) |
 | 20:06 | build integrado local (fundamentos + friccion + ux + agente-ia + front-juan), base con 0035–0039 | completa; Joaco 3 toques; H1 y H4 en parte arreglados |

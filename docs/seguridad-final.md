@@ -69,3 +69,7 @@ select
       and (has_table_privilege('anon', c.oid, 'SELECT') or has_table_privilege('authenticated', c.oid, 'SELECT'))) as tablas_legibles;
 -- Esperado: 31, 31, 31, 0, 31, 0, 0, 0.
 ```
+
+
+## Actualización 20:39: enmienda 11 (agente social, 0041)
+Lista permitida **40** (9 funciones nuevas del agente social), 40 nombres, 40 ejecutables por `authenticated`, **0** por `anon`, 40 `SECURITY DEFINER` con `search_path=''`, 0 internas expuestas. **21** tablas en `cruce`, todas con RLS deny-all (nuevas: `politicas_agente`, `opciones_agente`, `ejecuciones_agente`, `invitaciones_agente`). `verificar_privilegios` sin hallazgos. Advisors: los mismos tres tipos esperados (INFO 21, WARN 40, contraseñas no aplica). Suite 84/84 (20:36 a 20:39). Las tablas de arriba del informe reflejan el corte de las 19:51 (31 y 17).

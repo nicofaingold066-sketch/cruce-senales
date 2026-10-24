@@ -6,26 +6,21 @@ import { cuentaRegresiva, describirEvento, diaDe, franjaTexto, hora, momentoCort
 import { Avatar, Aviso, Boton, DiaTile, ErrorCaja, Nombre, Progreso } from '../components/ui'
 import type { PestanaProps } from './tabs'
 import { Icono } from '../components/Icono'
-import type { NombreIcono } from '../components/Icono'
 import { Confeti } from '../components/Confeti'
 import { Resaltado } from '../components/Resaltado'
 import { descargarCalendario, urlWhatsApp } from '../lib/compartir'
 import { vibrar } from '../lib/tacto'
 import { AvisoParaMi } from '../componentes-nuevos/AvisoParaMi'
 import { avisoParaMi } from '../componentes-nuevos/avisoPersonal'
+import { BuscarLugar } from '../componentes-nuevos/BuscarLugar'
+import { RearmarConLoNuevo } from '../componentes-nuevos/RearmarConLoNuevo'
 import { RecordarFaltan } from '../componentes-nuevos/RecordarFaltan'
+import { AsiNoPuedo } from '../friccion/AsiNoPuedo'
 import { FaltaTuRespuesta } from '../friccion/FaltaTuRespuesta'
 
-export default function PlanTab({
-  p,
-  viva,
-  soloLectura,
-  irAPestana,
-  codigoInvitacion = null,
-}: PestanaProps & {
-  /** Código de invitación del espacio (Propuesta lo trae con get_space). Mientras no llega, no se ofrece recordar. */
-  codigoInvitacion?: string | null
-}) {
+export default function PlanTab({ p, viva, soloLectura, irAPestana, espacio }: PestanaProps) {
+  const codigo = espacio?.codigo_invitacion ?? null
+  const organiza = p.mi_situacion.es_organizador
   const enRevision = p.estado === 'en_revision'
   const conOpcion = p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado'
   const reuniendo = p.estado === 'borrador' || p.estado === 'reuniendo_interes'
@@ -36,15 +31,22 @@ export default function PlanTab({
     (p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado') &&
     p.ultima_evaluacion?.resultado === 'reparacion_publicada' &&
     p.ultima_evaluacion.version === p.opcion?.version
+  // "Esta versión no te incluye" con la disponibilidad completa diría "con lo que marcaste, esta fecha no te queda", un
+  // motivo que puede ser falso: la elegibilidad es una foto al publicar (0002_utilidades.sql:262) y se pudo completar con
+  // "Sí" después. Con el plazo vencido, "si la completas, cuenta si el plan se rearma" ya no es cierto. En esos dos casos
+  // el aviso no se dibuja y lo dice una sola vez la opción vigente (razonNoAceptar), sin dar motivo (7930e66).
+  const sinTiSinAviso =
+    avisoParaMi(p)?.clave === 'version_sin_ti' && (p.mi_situacion.condiciones === 'completas' || p.plazo_vencido)
   // El énfasis sigue al servidor: "Buscar opción compatible" es la acción principal solo cuando su próxima acción es
-  // `buscar_opcion` (ya respondieron al menos el mínimo) o para volver a buscar después de "Sin opción". Antes bastaba
-  // con que el organizador completara lo suyo, y un toque temprano dejaba "Sin opción compatible" a la vista de todos
-  // (D-3 de la revisión). Mientras falte mi respuesta, <FaltaTuRespuesta/> sigue siendo lo principal (enmienda 12 a).
+  // `buscar_opcion` (ya respondieron al menos el mínimo) o para volver a buscar después de "Sin opción". Un toque temprano
+  // deja "Sin opción compatible" a la vista de todo el grupo (D-3 de la revisión UX).
   const buscarSecundario = p.estado === 'reuniendo_interes' && p.siguiente_accion.codigo !== 'buscar_opcion' && !sinOpcion
 
   return (
     <div>
-      {verAvisoParaMi(p) ? <AvisoParaMi p={p} irARespuesta={() => irAPestana('respuesta')} /> : null}
+      {sinTiSinAviso ? null : (
+        <AvisoParaMi p={p} servidorAhora={viva.servidorAhora} irARespuesta={() => irAPestana('respuesta')} />
+      )}
 
       {p.estado === 'cancelado' || p.estado === 'expirado' ? (
         <Aviso tono="aviso" titulo={p.estado_etiqueta}>
@@ -59,7 +61,7 @@ export default function PlanTab({
       {p.estado === 'borrador' ? <AbrirPropuesta p={p} viva={viva} soloLectura={soloLectura} /> : null}
 
       {/* El cierre (calendario, aviso) es para quien va: quien confirmó esta versión. */}
-      {p.estado === 'grupo_confirmado' && p.opcion && p.mi_situacion.acepte_version ? <CierrePlan p={p} /> : null}
+      {p.estado === 'grupo_confirmado' && p.opcion && p.mi_situacion.acepte_version ? <CierrePlan p={p} codigo={codigo} /> : null}
 
       {conOpcion && p.opcion ? (
         <OpcionVigente
@@ -67,9 +69,26 @@ export default function PlanTab({
           p={p}
           viva={viva}
           soloLectura={soloLectura}
-          codigo={codigoInvitacion}
           irAPestana={irAPestana}
+          demo={espacio?.demo ?? true}
         />
+      ) : null}
+
+      {/* Enmienda 13 (b): solo para quien organiza, con 2 o más "así no puedo"; se oculta solo si no corresponde. */}
+      {p.estado === 'esperando_compromisos' && organiza ? <RearmarConLoNuevo p={p} viva={viva} soloLectura={soloLectura} /> : null}
+
+      {/* Solo si el servidor dice que queda lugar para otros: con el último cupo reservado al anfitrión, "si vas,
+          confírmala" invitaría a todo el grupo a algo que el servidor rechaza. */}
+      {p.estado === 'esperando_compromisos' && organiza && codigo && p.opcion && p.opcion.cupos.libres_para_otros > 0 ? (
+        <section className="tarjeta" aria-labelledby="avisar-version">
+          <h2 id="avisar-version">Avisar al grupo</h2>
+          <RecordarFaltan
+            codigo={codigo}
+            titulo={p.titulo}
+            motivo={p.opcion_anterior ? 'reparacion' : 'version_nueva'}
+            cuando={franjaTexto(p.opcion.franja.inicio, p.opcion.franja.fin)}
+          />
+        </section>
       ) : null}
 
       {enRevision ? (
@@ -78,10 +97,16 @@ export default function PlanTab({
 
       {enRevision && p.opcion ? <OpcionAnterior p={p} /> : null}
 
-      {reuniendo ? <ReuniendoInteres p={p} codigo={codigoInvitacion} /> : null}
+      {reuniendo ? <ReuniendoInteres p={p} irAPestana={irAPestana} /> : null}
 
-      {/* Falta mi respuesta: una sola tarjeta (friccion), con el acceso de un toque. Se oculta sola si no corresponde. */}
       <FaltaTuRespuesta p={p} espacioId={p.espacio_id} />
+
+      {p.estado === 'reuniendo_interes' && organiza && codigo ? (
+        <section className="tarjeta" aria-labelledby="avisar-faltan">
+          <h2 id="avisar-faltan">Avisar al grupo</h2>
+          <RecordarFaltan codigo={codigo} titulo={p.titulo} motivo="faltan" />
+        </section>
+      ) : null}
 
       {p.estado === 'reuniendo_interes' ? (
         <BuscarOpcion p={p} viva={viva} soloLectura={soloLectura} sinOpcion={sinOpcion} secundaria={buscarSecundario} />
@@ -99,45 +124,6 @@ export default function PlanTab({
 }
 
 type VivaProps = Pick<PestanaProps, 'p' | 'viva' | 'soloLectura'>
-
-// ------------------------------------------------------------------ aviso personal
-
-/**
- * Un mensaje por situación. La próxima acción del servidor ya está en la cabecera (Propuesta.tsx, en todas las
- * pestañas); acá se suma como mucho UNA tarjeta con lo que le toca a esta persona:
- * - Falta su respuesta (reuniendo interés): <FaltaTuRespuesta/>, que distingue a quien no puede faltar y lleva a
- *   responder en un toque. El caso 'primero_tu_disponibilidad' de AvisoParaMi diría lo mismo una segunda vez (y lo
- *   decide solo por el imprescindible, mientras la enmienda 12 (a) pide además ser organizador): no se dibuja.
- *   Pendiente (pedido a friccion): con 12 (a) en la cabecera, el texto de FaltaTuRespuesta para el imprescindible
- *   repite "eres quien no puede faltar"; el cambio es de su componente, no de esta pantalla.
- * - La versión es sin ella y su disponibilidad está incompleta: <AvisoParaMi/> arriba, salvo que la próxima acción ya
- *   sea la de la enmienda 12 (b) (`reunir_condiciones` con una opción publicada), que dice lo mismo casi con las mismas
- *   palabras. En ese caso el texto queda solo en la cabecera y la acción que el aviso traía ("Ir a Mi respuesta")
- *   pasa sola a la opción vigente (accionSinAviso): el texto no se repite y la persona no se queda sin el camino
- *   para completar.
- * - La versión es sin ella con la disponibilidad completa: AvisoParaMi no se dibuja. Su texto ("con lo que marcaste,
- *   esta fecha no te queda") da un motivo que puede ser falso: la elegibilidad es una foto al publicar la versión
- *   (0002_utilidades.sql:262) y quien no entró puede seguir guardando condiciones
- *   (0028_e7_simular_solo_demo_y_mensaje.sql:84), así que pudo completar con "Sí" después. Lo dice una sola vez la
- *   opción vigente, sin dar motivo (razonNoAceptar).
- * - La versión es sin ella y el plazo de aceptación ya cerró (un grupo confirmado sigue así pasado el plazo): tampoco
- *   se dibuja AvisoParaMi, cuyo "Si la completas, cuenta si el plan se rearma" ya no es cierto (no puede guardar
- *   condiciones ni hay reparación). Lo dice una sola vez la opción vigente, junto con el cierre del plazo.
- */
-function verAvisoParaMi(p: EstadoPropuesta): boolean {
-  return (
-    avisoParaMi(p)?.clave === 'version_sin_ti' &&
-    p.mi_situacion.condiciones !== 'completas' &&
-    !p.plazo_vencido &&
-    p.siguiente_accion.codigo !== 'reunir_condiciones'
-  )
-}
-
-/** El aviso "Esta versión es sin ti" ofrecía ir a completar (`irARespuesta`), pero no se dibuja: se ofrece solo el botón. */
-function accionSinAviso(p: EstadoPropuesta): boolean {
-  const a = avisoParaMi(p)
-  return a?.clave === 'version_sin_ti' && a.irARespuesta && !verAvisoParaMi(p)
-}
 
 // ------------------------------------------------------------------ ficha
 
@@ -195,33 +181,25 @@ function PlazoInformativo({ p, viva, ahora }: { p: EstadoPropuesta; viva: Pestan
 
 // ------------------------------------------------------------------ opción vigente
 
-function razonNoAceptar(p: EstadoPropuesta): { texto: string; icono: NombreIcono } | null {
+function razonNoAceptar(p: EstadoPropuesta): string {
   const s = p.mi_situacion
   const v = p.opcion?.version
-  const candado = (texto: string) => ({ texto, icono: 'candado' as const })
-  if (s.retirado) return candado('Te retiraste de esta propuesta y ya no puedes participar en ella.')
-  if (s.acepte_version) return { texto: `Ya confirmaste la versión ${v}. Tu confirmación vale solo para esa versión.`, icono: 'check' }
+  if (s.retirado) return 'Te retiraste de esta propuesta y ya no puedes participar en ella.'
+  if (s.acepte_version) return `Ya confirmaste la versión ${v}. Tu confirmación vale solo para esa versión.`
   if (s.elegible_en_version === false) {
-    // Va antes del plazo: un grupo confirmado no vence (0008_enmienda2_esquema.sql:150), pero `plazo_vencido` sí, y
-    // solo con "El plazo cerró" no se entera de que la versión es sin ella. Con el plazo vencido ya no puede guardar
-    // condiciones ni hay reparación (0028_e7_simular_solo_demo_y_mensaje.sql:84 y :90): AvisoParaMi no se dibuja
-    // (verAvisoParaMi) y esta es la única línea, sin promesa de rearme, completas o no.
-    if (p.plazo_vencido) return candado('Esta versión se armó sin ti y el plazo de aceptación ya cerró.')
-    // Con la disponibilidad completa, AvisoParaMi no se dibuja (verAvisoParaMi): se dice acá, una vez y sin motivo,
-    // porque la elegibilidad es la foto de cuando se publicó la versión y lo marcado después no la cambia.
-    if (s.condiciones === 'completas') {
-      return { texto: 'Esta versión se armó sin ti. Si el plan se rearma, cuenta lo que marcaste.', icono: 'cambiar' }
-    }
-    // Incompleta: "Esta versión es sin ti" ya lo dice una vez AvisoParaMi arriba (o la próxima acción, enmienda 12 b).
-    // Con 12 (b), en este lugar va solo el botón "Ir a Mi respuesta" (accionSinAviso).
-    return null
+    // Va antes del plazo: un grupo confirmado no vence, pero `plazo_vencido` sí, y solo con "El plazo cerró" no se
+    // entera de que la versión es sin ella. En estos dos casos AvisoParaMi no se dibuja (sinTiSinAviso): esta es la
+    // única línea, sin dar motivo ni prometer un rearme que ya no puede pasar (7930e66).
+    if (p.plazo_vencido) return 'Esta versión se armó sin ti y el plazo de aceptación ya cerró.'
+    if (s.condiciones === 'completas') return 'Esta versión se armó sin ti. Si el plan se rearma, cuenta lo que marcaste.'
+    return 'No formas parte de las personas que pueden aceptar esta versión.'
   }
-  if (p.plazo_vencido) return candado('El plazo de aceptación ya cerró.')
+  if (p.plazo_vencido) return 'El plazo de aceptación ya cerró.'
   if (s.motivo_aceptar === 'cupo_reservado') {
-    return candado('El último cupo está reservado para el anfitrión. Podrás confirmar si se libera un cupo para otros.')
+    return 'El último cupo está reservado para el anfitrión. Podrás confirmar si se libera un cupo para otros.'
   }
-  if (p.opcion && p.opcion.cupos.disponibles <= 0) return candado('Ya se completaron los cupos de esta versión.')
-  return candado('Ahora no puedes confirmar esta versión.')
+  if (p.opcion && p.opcion.cupos.disponibles <= 0) return 'Ya se completaron los cupos de esta versión.'
+  return 'Ahora no puedes confirmar esta versión.'
 }
 
 // Mejora #56: con más confirmaciones que el mínimo, "5 de 4" se lee raro; se dice "5 (mínimo 4)".
@@ -233,15 +211,14 @@ function OpcionVigente({
   p,
   viva,
   soloLectura,
-  codigo,
   irAPestana,
-}: VivaProps & { codigo: string | null; irAPestana: PestanaProps['irAPestana'] }) {
+  demo,
+}: VivaProps & { irAPestana: PestanaProps['irAPestana']; demo: boolean }) {
   const o = p.opcion!
   const { ocupado, error, correr } = useMutacion(viva)
   const confirmado = p.estado === 'grupo_confirmado'
   const sobreMinimo = o.cupos.confirmados > o.cupos.minimo
   const cuenta = cuentaConfirmados(o.cupos.confirmados, o.cupos.minimo)
-  const razon = razonNoAceptar(p)
 
   async function aceptar() {
     // Siempre se envía la versión que la persona está viendo, nunca una calculada.
@@ -261,6 +238,7 @@ function OpcionVigente({
           </p>
         </div>
       </div>
+      <BuscarLugar titulo={p.titulo} demo={demo} />
 
       {/* Solo dibuja los números que entrega el servidor: confirmados, mínimo (la marca) y máximo. */}
       <div>
@@ -357,33 +335,16 @@ function OpcionVigente({
             </p>
           )}
         </div>
-      ) : razon ? (
+      ) : (
         <p className="nota-linea" role="note">
-          <Icono n={razon.icono} tam={16} />
-          {razon.texto}
+          <Icono n={p.mi_situacion.acepte_version ? 'check' : 'candado'} tam={16} />
+          {razonNoAceptar(p)}
         </p>
-      ) : accionSinAviso(p) ? (
-        <div className="fila-botones">
-          <button type="button" className="btn btn-secundario" onClick={() => irAPestana('respuesta')}>
-            Ir a Mi respuesta
-          </button>
-        </div>
-      ) : null}
+      )}
+      <AsiNoPuedo p={p} viva={viva} soloLectura={soloLectura} irAPestana={irAPestana} />
       {/* Si el servidor ya muestra la confirmación hecha, la duda de "pudo haberse registrado o no" quedó resuelta (E-1). */}
       {error && error.codigo !== 'sin_alternativa' && !(error.resultadoIncierto && p.mi_situacion.acepte_version) ? (
         <ErrorCaja error={error} enfocar />
-      ) : null}
-
-      {/* #89 (ux-flujo): el organizador avisa al grupo de la versión publicada; el mensaje no nombra a nadie ni cuenta.
-          Solo si el servidor dice que queda lugar para otros: con el último cupo reservado al anfitrión, "si vas,
-          confírmala" invitaría a todo el grupo a algo que el servidor rechaza. */}
-      {p.estado === 'esperando_compromisos' && p.mi_situacion.es_organizador && codigo && o.cupos.libres_para_otros > 0 ? (
-        <RecordarFaltan
-          codigo={codigo}
-          titulo={p.titulo}
-          motivo={p.opcion_anterior ? 'reparacion' : 'version_nueva'}
-          cuando={franjaTexto(o.franja.inicio, o.franja.fin)}
-        />
       ) : null}
     </section>
   )
@@ -394,7 +355,8 @@ function OpcionVigente({
 function BloqueRevision({ p }: { p: EstadoPropuesta }) {
   return (
     <Aviso tono="aviso" titulo="Una baja dejó el plan sin cumplir">
-      {p.opcion ? `La versión ${p.opcion.version} ya no alcanza el mínimo o perdió al anfitrión. ` : ''}
+      {/* Enmienda 14, 0050: texto neutro; nombrar la causa ("perdió al anfitrión") junto a los conteos dejaba deducir quién se fue. */}
+      {p.opcion ? `La versión ${p.opcion.version} ya no reúne lo necesario para juntarse. ` : ''}
       Sus confirmaciones ya no bastan para confirmar el encuentro. El plan está <strong>En revisión</strong> hasta que se
       publique una alternativa y se reúnan de nuevo las confirmaciones necesarias.
     </Aviso>
@@ -485,12 +447,8 @@ function OpcionAnterior({ p }: { p: EstadoPropuesta }) {
     <section className="tarjeta opcion-anterior">
       <h2>Versión {o.version} (en revisión, no confirmada)</h2>
       <p>{franjaTexto(o.franja.inicio, o.franja.fin)}</p>
-      <p className="suave">
-        {o.cupos.confirmados > o.cupos.minimo
-          ? `Conserva ${o.cupos.confirmados} confirmaciones (mínimo ${o.cupos.minimo}).`
-          : `Conserva ${o.cupos.confirmados} confirmación(es) de ${o.cupos.minimo} necesarias.`}{' '}
-        No se transfiere a la próxima versión.
-      </p>
+      {/* Enmienda 14, 0050: en revisión no se compara con el mínimo; con el mínimo cumplido a la vista se deducía que se fue quien no podía faltar. */}
+      <p className="suave">Sus confirmaciones no pasan a la próxima versión.</p>
     </section>
   )
 }
@@ -519,6 +477,7 @@ function AlternativaOrganizador({ p, viva, soloLectura, sinAlternativa }: VivaPr
           <p className="suave">La nueva versión empieza con cero aceptaciones.</p>
         </div>
       ) : p.mi_situacion.retirado ? (
+        // E-7: a quien se bajó no se le pide nada que no puede hacer.
         <p className="suave">Te bajaste de este plan: el grupo sigue sin ti y no tienes que hacer nada más.</p>
       ) : (
         <p className="suave">
@@ -582,7 +541,7 @@ function HistorialResumido({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: 
 
 // El motor arma la opción con las respuestas (condiciones completas), no con el interés: la tarjeta pone primero
 // lo que cuenta y deja "Me interesa" como lo que es, una señal opcional que ve el grupo.
-function ReuniendoInteres({ p, codigo }: { p: EstadoPropuesta; codigo: string | null }) {
+function ReuniendoInteres({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: PestanaProps['irAPestana'] }) {
   return (
     <section className="tarjeta">
       <h2>Respuestas del grupo</h2>
@@ -618,10 +577,17 @@ function ReuniendoInteres({ p, codigo }: { p: EstadoPropuesta; codigo: string | 
           ))}
         </ul>
       ) : null}
-      {/* #89 (ux-flujo): el organizador recuerda al grupo que responda, sin nombrar a nadie ni dar conteos.
-          Lo que le falta a uno mismo lo dice <FaltaTuRespuesta/>, debajo de esta tarjeta. */}
-      {p.estado === 'reuniendo_interes' && p.mi_situacion.es_organizador && codigo ? (
-        <RecordarFaltan codigo={codigo} titulo={p.titulo} />
+      {p.estado === 'reuniendo_interes' && p.mi_situacion.condiciones !== 'completas' && !p.mi_situacion.retirado ? (
+        <Aviso
+          tono="info"
+          accion={
+            <button type="button" className="btn btn-secundario" onClick={() => irAPestana('respuesta')}>
+              Ir a Mi respuesta
+            </button>
+          }
+        >
+          Aún no completaste tus condiciones.
+        </Aviso>
       ) : null}
     </section>
   )
@@ -731,7 +697,7 @@ function Cancelar({ p, viva, soloLectura }: VivaProps) {
 // ------------------------------------------------------------------ cierre: el encuentro ocurre
 
 /** Final del recorrido: el servidor confirmó el grupo. Llevarlo al calendario y avisar afuera de CRUXE. */
-function CierrePlan({ p }: { p: EstadoPropuesta }) {
+function CierrePlan({ p, codigo }: { p: EstadoPropuesta; codigo: string | null }) {
   const o = p.opcion!
   const [nota, setNota] = useState<string | null>(null)
   const cuando = franjaTexto(o.franja.inicio, o.franja.fin)
@@ -769,10 +735,16 @@ function CierrePlan({ p }: { p: EstadoPropuesta }) {
         <button type="button" className="btn btn-primario btn-chico" onClick={agendar} aria-label="Agregar al calendario">
           <Icono n="agendar" tam={18} /> Calendario
         </button>
-        <a className="btn btn-secundario btn-chico" href={urlWhatsApp(texto)} target="_blank" rel="noopener noreferrer" aria-label="Avisar por WhatsApp">
-          <Icono n="whatsapp" tam={18} /> WhatsApp
-        </a>
+        {codigo ? null : (
+          <a className="btn btn-secundario btn-chico" href={urlWhatsApp(texto)} target="_blank" rel="noopener noreferrer" aria-label="Avisar por WhatsApp">
+            <Icono n="whatsapp" tam={18} /> WhatsApp
+          </a>
+        )}
       </div>
+      {/* Con el código, el aviso lleva el enlace y los cupos libres (sin nombres) para que se sume quien no confirmó. */}
+      {codigo ? (
+        <RecordarFaltan codigo={codigo} titulo={p.titulo} motivo="confirmado" cuando={cuando} cuposLibres={o.cupos.disponibles} />
+      ) : null}
       {nota ? <p role="status">{nota}</p> : null}
     </section>
   )

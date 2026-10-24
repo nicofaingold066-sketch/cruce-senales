@@ -20,20 +20,35 @@ export function CampoIntegrantes({
   const [aviso, setAviso] = useState<string | null>(null)
   const campo = useRef<HTMLInputElement>(null)
 
-  function agregar() {
-    const n = nuevo.trim()
-    if (!n) return
-    const igual = (a: string) => a.trim().toLocaleLowerCase('es') === n.toLocaleLowerCase('es')
-    if (igual(tuNombre) || integrantes.some(igual)) {
-      setAviso(`${n} ya está en la lista.`)
-    } else if (integrantes.length >= MAX_INTEGRANTES) {
-      setAviso(`Hasta ${MAX_INTEGRANTES} personas por ahora.`)
-    } else {
-      cambiar([...integrantes, n])
-      setNuevo('')
-      setAviso(`Agregaste a ${n}.`)
+  /** Agrega uno o varios nombres (una lista pegada o escrita con comas, punto y coma o saltos de línea). */
+  function agregarVarios(texto: string) {
+    const nombres = texto.split(/[,;\n\r]+/).map((x) => x.replace(/\s+/g, ' ').trim()).filter(Boolean)
+    if (nombres.length === 0) return
+    const igual = (a: string, b: string) => a.trim().toLocaleLowerCase('es') === b.toLocaleLowerCase('es')
+    const lista = [...integrantes]
+    const agregados: string[] = []
+    const avisos: string[] = []
+    for (const n of nombres) {
+      if (n.length > 30) avisos.push(`${n.slice(0, 30)}… es muy largo (hasta 30 letras).`)
+      else if (igual(tuNombre, n) || lista.some((a) => igual(a, n))) avisos.push(`${n} ya está en la lista.`)
+      else if (lista.length >= MAX_INTEGRANTES) {
+        avisos.push(`Hasta ${MAX_INTEGRANTES} personas por ahora.`)
+        break
+      } else {
+        lista.push(n)
+        agregados.push(n)
+      }
     }
+    if (agregados.length) {
+      cambiar(lista)
+      setNuevo('')
+    }
+    setAviso([agregados.length ? `Agregaste a ${agregados.join(', ')}.` : null, ...avisos].filter(Boolean).join(' '))
     campo.current?.focus()
+  }
+
+  function agregar() {
+    agregarVarios(nuevo)
   }
 
   return (
@@ -45,6 +60,14 @@ export function CampoIntegrantes({
           ref={campo}
           value={nuevo}
           onChange={(e) => setNuevo(e.target.value)}
+          onPaste={(e) => {
+            // Una lista pegada (por ejemplo, copiada del chat del grupo) se agrega entera; un nombre suelto se pega normal.
+            const t = e.clipboardData.getData('text')
+            if (/[,;\n\r]/.test(t)) {
+              e.preventDefault()
+              agregarVarios(`${nuevo}${nuevo ? ',' : ''}${t}`)
+            }
+          }}
           onKeyDown={(e) => {
             // Enter agrega el nombre en vez de enviar el formulario.
             if (e.key === 'Enter') {
@@ -52,10 +75,13 @@ export function CampoIntegrantes({
               agregar()
             }
           }}
-          maxLength={30}
+          maxLength={200}
           autoComplete="off"
         />
-        <small>Opcional. Solo un nombre o apodo: al abrir la invitación, cada persona elige el suyo.</small>
+        <small>
+          Opcional. Escribe los nombres como les gusta que los llamen; puedes pegar varios separados por comas. Al abrir la
+          invitación, cada persona elige el suyo.
+        </small>
       </label>
       <Boton variante="secundario" onClick={agregar} disabled={nuevo.trim() === ''}>
         Agregar

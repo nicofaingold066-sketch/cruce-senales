@@ -124,3 +124,75 @@
   font-size: 0.85rem;
   text-align: center;
 }
+
+/* "¿Qué guarda CRUXE de mí?" */
+.que-guarda {
+  margin: 12px 0 0;
+}
+.que-guarda > summary {
+  font-size: 0.95rem;
+}
+.que-guarda-lista {
+  margin: 0;
+  padding: 0 0 0 18px;
+  display: grid;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+/* "Así no puedo, pero sigo" (enmienda 13) */
+.asi-no-puedo {
+  margin: 0 0 12px;
+}
+.asi-no-puedo > .btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: normal;
+}
+.asi-no-puedo-nota {
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+}
+.asi-no-puedo h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+  margin: 0 0 6px;
+}
+
+/* ¿Quién viene? (D3) */
+.quien-viene .opciones {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+.quien-viene .opcion-radio {
+  justify-content: flex-start;
+  text-align: left;
+  white-space: normal;
+}
+
+/* "¿Quieres avisar al grupo que te interesa?" (después de las acciones; sinteticos) */
+.rapida-interes {
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--linea);
+}
+.rapida-interes p {
+  margin: 0 0 8px;
+  font-size: 0.88rem;
+}
+.rapida-interes .btn {
+  width: 100%;
+}
+
+/* ¿Para qué es este grupo? (enmienda 14) */
+.proposito-sel {
+  width: 100%;
+  min-height: 48px;
+  font: inherit;
+}

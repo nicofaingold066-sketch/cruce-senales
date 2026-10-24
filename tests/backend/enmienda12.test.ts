@@ -5,6 +5,7 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 import {
   CODIGOS_SIGUIENTE, crearPropuesta, demoPrueba, intento, nuevaSesion, ok, PERMITIDAS, type Json, type Sesion,
+  TOTAL_PERMITIDAS,
 } from './helpers'
 
 const SI = { A: 'si', B: 'si' }
@@ -79,6 +80,6 @@ describe('enmienda 12: avisos personales de siguiente acción', { timeout: 120_0
 
   it('la lista cerrada de códigos y el catálogo no cambian', async () => {
     expect(CODIGOS_SIGUIENTE).toHaveLength(12)
-    expect(Object.keys(PERMITIDAS)).toHaveLength(31)
+    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40; E13: 41
   })
 })

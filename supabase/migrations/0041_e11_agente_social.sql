@@ -1,7 +1,6 @@
 -- CRUCE · 0041 · Enmienda 11 (BORRADOR: docs/contrato-enmienda-11-borrador.md): backend del agente social.
--- PREPARADA, NO APLICADA. Se aplica solo con el OK explícito de Nico (vía coordinador) y antes de las 12:00 del
--- sábado. Al aplicarla, actualizar en el mismo commit tests/backend/helpers.ts (PERMITIDAS 31 → 40) y las pruebas
--- que fijan 31 (enmienda4 prueba 7, enmienda12).
+-- Aplicada el viernes 23 oct 2026 con el OK explícito de Nico (20:33, vía coordinador). En el mismo commit:
+-- tests/backend/helpers.ts (PERMITIDAS 31 → 40, TOTAL_PERMITIDAS) y las pruebas que fijaban 31.
 --
 -- Resumen:
 --   * Datos: miembros.recibir_invitaciones_agente (false por defecto), espacios.localidad, politicas_agente,

@@ -5600,3 +5600,15 @@ li:has(> .plan-vivo) {
   color: var(--tinta-2);
   line-height: 1.4;
 }
+
+/* Mantiene las cuatro pestañas visibles en móviles angostos. */
+@media (max-width:359px) {
+  .pestanas-carril .pestana {
+    flex:1 1 0;
+    min-width:0;
+    white-space:normal;
+    padding:8px 6px;
+    font-size:0.82rem;
+    line-height:1.3;
+  }
+}

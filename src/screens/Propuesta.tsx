@@ -160,7 +160,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
     if (t !== activa) enfocarPestana.current = t
     setPestana(t)
   }
-  const props = { p, viva, soloLectura, irAPestana }
+  const props = { p, viva, soloLectura, irAPestana, espacio }
 
   const escena = escenaDe(p, espacio)
 
@@ -279,8 +279,8 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
       </div>
 
       <div id={`panel-${activa}`} className="panel-pestana" role="tabpanel" aria-labelledby={`tab-${activa}`} key={activa}>
-        {/* El código de invitación es para "Recordar a quien falta" / "Avisar al grupo" del organizador. */}
-        {activa === 'plan' ? <PlanTab {...props} codigoInvitacion={espacio?.codigo_invitacion ?? null} /> : null}
+        {/* PlanTab toma el código de invitación de `espacio` ("Recordar a quien falta" / "Avisar al grupo"). */}
+        {activa === 'plan' ? <PlanTab {...props} /> : null}
         {activa === 'respuesta' ? <RespuestaTab {...props} /> : null}
         {activa === 'historial' ? <HistorialTab {...props} /> : null}
         {activa === 'simulacion' ? <SimulacionTab {...props} /> : null}

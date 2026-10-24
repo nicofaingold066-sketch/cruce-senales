@@ -20,7 +20,7 @@ export const EJEMPLOS: readonly Ejemplo[] = [
   { clave: 'cena', grupo: 'Cena de ex compañeros', plan: 'Cena el viernes en un restaurante', tipo: 'ex compañeros del colegio' },
   { clave: 'cine', grupo: 'Los del cine', plan: 'Ir al cine el domingo en la tarde', tipo: 'amigos del cine' },
   { clave: 'cerro', grupo: 'Los del cerro', plan: 'Caminata por el cerro el sábado en la mañana', tipo: 'amigos de la caminata' },
-  { clave: 'juegos', grupo: 'Noche de juegos', plan: 'Juegos de mesa en casa de Dani', tipo: 'amigos de los juegos de mesa' },
+  { clave: 'juegos', grupo: 'Noche de juegos', plan: 'Juegos de mesa el sábado', tipo: 'amigos de los juegos de mesa' },
   { clave: 'lectura', grupo: 'Club de lectura', plan: 'Reunión del club de lectura', tipo: 'un club de lectura' },
   { clave: 'brunch', grupo: 'La familia de Emi', plan: 'Brunch del domingo en un café', tipo: 'la familia' },
 ]
@@ -54,30 +54,62 @@ export function ayudaGrupo(e: Ejemplo): string {
   return `Cualquier grupo sirve, por ejemplo ${e.tipo}.`
 }
 
-// Atajos de actividad de «Nueva propuesta» (pedido de ux-flujo, 19:35): en un grupo «Los del pádel» el primer atajo no
-// puede ser «Asado». Los datos son los mismos que usa la pantalla (título, ícono, duración en minutos); los íconos son
-// nombres que ya existen en components/Icono.tsx. «Asado» no va primero: queda en el medio.
+// Atajos de actividad de «Nueva propuesta» (pedido de ux-flujo, 19:35; enmienda 14, 21:55): en un grupo «Los del pádel» el
+// primer atajo no puede ser «Asado», y en un grupo con propósito (familia) solo se ofrecen los atajos de esa familia.
+// Los datos son los mismos que usa la pantalla (título, ícono, duración en minutos); los íconos son nombres que ya
+// existen en components/Icono.tsx. «Asado» no va primero: queda en el medio.
+
+/** Familias de la enmienda 14 (`docs/contrato-enmienda-14.md` (a)). `libre` es el modo sin restricción. */
+export type Familia = 'deporte' | 'comida' | 'salida_noche' | 'cultura' | 'aire_libre' | 'en_casa' | 'libre'
+
+/** Tabla fija del contrato: actividad del catálogo → familia (el servidor es la autoridad; esto solo filtra atajos). */
+export const FAMILIA_DE_ACTIVIDAD: Readonly<Record<string, Exclude<Familia, 'libre'>>> = {
+  futbol: 'deporte',
+  padel: 'deporte',
+  tenis: 'deporte',
+  basquet: 'deporte',
+  asado: 'comida',
+  cena: 'comida',
+  cafe: 'comida',
+  fiesta: 'salida_noche',
+  bar: 'salida_noche',
+  juegos_salida: 'salida_noche',
+  cultura: 'cultura',
+  cine: 'cultura',
+  parque: 'aire_libre',
+  cerro: 'aire_libre',
+  juegos_casa: 'en_casa',
+  peli_casa: 'en_casa',
+}
+
 export interface Atajo {
   titulo: string
   icono: 'asado' | 'futbol' | 'cena' | 'juntada' | 'cine' | 'cumple' | 'paseo'
   min: number
+  /** Clave de la actividad del catálogo (`create_proposal.p_actividad`); `null` = solo para grupos en modo libre. */
+  actividad: string | null
   /** Palabras (sin tildes, en minúscula) que, si aparecen en el nombre del grupo, sugieren este atajo. */
   palabras: readonly string[]
 }
 
 export const ATAJOS: readonly Atajo[] = [
-  { titulo: 'Pádel', icono: 'futbol', min: 90, palabras: ['padel'] },
-  { titulo: 'Tenis', icono: 'futbol', min: 90, palabras: ['tenis'] },
-  { titulo: 'Cena', icono: 'cena', min: 120, palabras: ['cena', 'restaurante'] },
-  { titulo: 'Cine', icono: 'cine', min: 150, palabras: ['cine', 'pelicula'] },
-  { titulo: 'Cumple', icono: 'cumple', min: 180, palabras: ['cumple', 'cumpleanos'] },
-  { titulo: 'Asado', icono: 'asado', min: 180, palabras: ['asado', 'parrilla', 'quincho'] },
-  { titulo: 'Juegos de mesa', icono: 'juntada', min: 180, palabras: ['juegos', 'mesa'] },
-  { titulo: 'Café o brunch', icono: 'juntada', min: 120, palabras: ['cafe', 'brunch', 'once', 'lectura'] },
-  { titulo: 'Cerro', icono: 'paseo', min: 180, palabras: ['cerro', 'trekking', 'caminata'] },
-  { titulo: 'Museo o feria', icono: 'paseo', min: 120, palabras: ['museo', 'feria', 'cultura'] },
-  { titulo: 'Fútbol', icono: 'futbol', min: 60, palabras: ['futbol', 'pichanga', 'baby'] },
-  { titulo: 'Juntada', icono: 'juntada', min: 120, palabras: [] },
+  { titulo: 'Pádel', icono: 'futbol', min: 90, actividad: 'padel', palabras: ['padel'] },
+  { titulo: 'Tenis', icono: 'futbol', min: 90, actividad: 'tenis', palabras: ['tenis'] },
+  { titulo: 'Cena', icono: 'cena', min: 120, actividad: 'cena', palabras: ['cena', 'restaurante', 'sushi'] },
+  { titulo: 'Cine', icono: 'cine', min: 150, actividad: 'cine', palabras: ['cine', 'pelicula'] },
+  { titulo: 'Cumple', icono: 'cumple', min: 180, actividad: null, palabras: ['cumple', 'cumpleanos'] },
+  { titulo: 'Asado', icono: 'asado', min: 180, actividad: 'asado', palabras: ['asado', 'parrilla', 'quincho'] },
+  { titulo: 'Básquet', icono: 'futbol', min: 90, actividad: 'basquet', palabras: ['basquet', 'basket'] },
+  { titulo: 'Bar', icono: 'juntada', min: 150, actividad: 'bar', palabras: ['bar', 'tragos', 'cerveza'] },
+  { titulo: 'Bowling o escape room', icono: 'juntada', min: 120, actividad: 'juegos_salida', palabras: ['bowling', 'escape'] },
+  { titulo: 'Juegos de mesa', icono: 'juntada', min: 180, actividad: 'juegos_casa', palabras: ['juegos', 'mesa'] },
+  { titulo: 'Película en casa', icono: 'cine', min: 150, actividad: 'peli_casa', palabras: ['peli', 'maraton'] },
+  { titulo: 'Café o brunch', icono: 'juntada', min: 120, actividad: 'cafe', palabras: ['cafe', 'brunch', 'once', 'lectura'] },
+  { titulo: 'Cerro', icono: 'paseo', min: 180, actividad: 'cerro', palabras: ['cerro', 'trekking', 'caminata'] },
+  { titulo: 'Picnic en el parque', icono: 'paseo', min: 180, actividad: 'parque', palabras: ['parque', 'picnic'] },
+  { titulo: 'Museo o feria', icono: 'paseo', min: 120, actividad: 'cultura', palabras: ['museo', 'feria', 'cultura'] },
+  { titulo: 'Fútbol', icono: 'futbol', min: 60, actividad: 'futbol', palabras: ['futbol', 'pichanga', 'baby'] },
+  { titulo: 'Juntada', icono: 'juntada', min: 120, actividad: null, palabras: [] },
 ]
 
 function sinTildes(t: string): string {
@@ -93,4 +125,59 @@ export function atajosParaGrupo(nombreGrupo: string): readonly Atajo[] {
   const palabras = nombre.split(/[^a-z0-9]+/).filter(Boolean)
   const elegido = ATAJOS.find((a) => a.palabras.some((p) => palabras.includes(p)))
   return elegido ? [elegido, ...ATAJOS.filter((a) => a !== elegido)] : ATAJOS
+}
+
+/**
+ * Los atajos de una familia (enmienda 14): en un grupo con propósito solo se ofrecen las actividades de su familia, y los
+ * atajos sin actividad («Cumple», «Juntada») quedan solo para el modo libre. `libre` o sin familia devuelve todos.
+ * Cada familia tiene 2 o más atajos, así que el carrusel nunca queda vacío.
+ */
+export function atajosParaFamilia(familia?: Familia | null): readonly Atajo[] {
+  if (!familia || familia === 'libre') return ATAJOS
+  return ATAJOS.filter((a) => a.actividad !== null && FAMILIA_DE_ACTIVIDAD[a.actividad] === familia)
+}
+
+/** Lo que usa «Nueva propuesta»: la familia del espacio filtra y el nombre del grupo ordena (la actividad nombrada va primero). */
+export function atajosParaEspacio(nombreGrupo: string, familia?: Familia | null): readonly Atajo[] {
+  const permitidos = atajosParaFamilia(familia)
+  const ordenados = atajosParaGrupo(nombreGrupo)
+  return ordenados.filter((a) => permitidos.includes(a))
+}
+
+// Orden de los chips de «Me gustaría» (pedido de sinteticos, H11): el servidor las devuelve por `orden` del catálogo y
+// «Asado» sale primero siempre. Esta función solo reordena lo que la pantalla ya recibió; no cambia qué actividades hay.
+const PALABRAS_ACTIVIDAD: Readonly<Record<string, readonly string[]>> = {
+  asado: ['asado', 'parrilla', 'quincho'],
+  padel: ['padel'],
+  tenis: ['tenis'],
+  basquet: ['basquet', 'basket'],
+  peli_casa: ['peli', 'maraton'],
+  futbol: ['futbol', 'pichanga', 'baby'],
+  parque: ['parque', 'picnic'],
+  fiesta: ['fiesta', 'carrete'],
+  cena: ['cena', 'restaurante'],
+  bar: ['bar', 'tragos', 'cerveza'],
+  juegos_casa: ['juegos', 'mesa'],
+  cine: ['cine', 'pelicula'],
+  cultura: ['museo', 'feria', 'cultura', 'teatro'],
+  juegos_salida: ['bowling', 'escape'],
+  cerro: ['cerro', 'trekking', 'caminata'],
+  cafe: ['cafe', 'brunch', 'once', 'lectura'],
+}
+
+/**
+ * Misma lista, otro orden: la actividad que nombra el grupo («Los del pádel») va primero; si ninguna, «Asado» deja el
+ * primer lugar y queda en el medio. Estable (el resto conserva su orden) y sin perder ni repetir actividades.
+ */
+export function ordenarActividadesParaGrupo<T extends { clave: string }>(actividades: readonly T[], nombreGrupo: string): T[] {
+  const lista = [...actividades]
+  const palabras = sinTildes(nombreGrupo).split(/[^a-z0-9]+/).filter(Boolean)
+  const nombrada = lista.find((a) => (PALABRAS_ACTIVIDAD[a.clave] ?? []).some((p) => palabras.includes(p)))
+  if (nombrada) return [nombrada, ...lista.filter((a) => a !== nombrada)]
+  if (lista[0]?.clave === 'asado' && lista.length > 2) {
+    const [asado, ...resto] = lista
+    resto.splice(Math.floor(lista.length / 2) - 1, 0, asado)
+    return resto
+  }
+  return lista
 }

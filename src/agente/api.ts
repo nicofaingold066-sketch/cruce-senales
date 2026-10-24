@@ -43,6 +43,8 @@ export interface MisPreferencias {
   preferencias: Preferencias | null
   /** Enmienda 8: si es false, el agente no usa las preferencias de esta persona (siguen guardadas). true si no guardó. */
   usar_en_agente: boolean
+  /** E11: permiso independiente. null significa que el servidor no confirmó este campo. */
+  recibir_invitaciones_agente: boolean | null
   actualizadas_en: Momento | null
   opciones: { actividades: ActividadOpcion[] }
   personas_con_preferencias: number
@@ -63,7 +65,36 @@ export interface CandidataAgente {
   franjas: FranjaBorrador[]
   frases_grupo: string[]
   viaje?: Viaje | null
+  /** Enmienda 14: familia de la actividad y personas mínimas y máximas del catálogo (públicas). */
+  familia?: string | null
+  personas?: PersonasActividad | null
 }
+
+/** Enmienda 14: personas mínimas y máximas que pide la actividad (catálogo). */
+export interface PersonasActividad {
+  min: number
+  max: number
+}
+
+/** Enmienda 14: la actividad del propósito que quedó afuera por el tamaño del grupo (números públicos del espacio). */
+export interface Quorum {
+  actividad: string
+  etiqueta: string
+  personas_min: number
+  personas_posibles: number
+}
+
+/**
+ * Texto fijo del tamaño del grupo (enmienda 14, ajuste 7): habla del grupo, nunca de asistencia. Igual a `textoQuorum`
+ * de `src/lib/types.ts` (puente de backend 3efc838, con el cierre de psico); cuando el puente esté integrado, se usa ese.
+ */
+export function textoQuorum(q: Quorum): string {
+  return `Para ${q.etiqueta} hacen falta al menos ${q.personas_min} personas; este grupo tiene ${q.personas_posibles} por ahora. Estas opciones se pueden armar con el grupo actual. Cuando se sumen más, vuelve a pedir una propuesta.`
+}
+
+/** Enmienda 14: motivo `faltan_personas` (ninguna actividad del propósito alcanza con el grupo actual). */
+export const TEXTO_FALTAN_PERSONAS =
+  'Todavía no hay suficientes personas para las actividades de este grupo. Cuando se sumen más, vuelve a pedir una propuesta.'
 
 /** Totales del grupo (enmienda 4.1). Con 3 personas o menos solo trae `personas`. */
 export interface PerfilGrupo {
@@ -90,9 +121,14 @@ export interface BorradorAgente extends CandidataAgente {
   perfil_grupo?: PerfilGrupo | null
   /** Enmienda 10: el de la opción destacada. */
   viaje?: Viaje | null
+  /** Enmienda 14: no nulo solo si la actividad del propósito quedó afuera por quórum y hubo otras que sí entraron. */
+  quorum?: Quorum | null
 }
 
-/** `motivo: "sin_lugar_cerca_para_todos"` cuando el tiempo de viaje descartó todas las opciones (enmienda 10). */
+/**
+ * `motivo: "sin_lugar_cerca_para_todos"` cuando el tiempo de viaje descartó todas las opciones (enmienda 10);
+ * `"faltan_personas"` cuando ninguna actividad del propósito alcanza con el grupo actual (enmienda 14).
+ */
 export type ResultadoAgente = BorradorAgente | { tipo: 'sin_plan_compatible'; motivo?: string }
 
 /** Clima de simulación para la demo (mejora #23). */
@@ -105,6 +141,8 @@ const FRASES: Record<string, string> = {
   al_aire_libre_con_buen_tiempo: 'es al aire libre con buen pronóstico',
   el_mas_elegido: 'es lo que más eligieron',
   ritmo_del_grupo: 'va con el ritmo que prefiere el grupo',
+  // Enmienda 14 (0049): la actividad del propósito del grupo.
+  proposito_del_grupo: 'es lo que este grupo vino a hacer',
 }
 
 const ENERGIA_PLAN: Record<string, string> = { con_todo: 'un plan con todo', algo_tranquilo: 'un plan algo tranquilo' }
@@ -233,7 +271,10 @@ function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
 // La función del servidor corta sola a los ~8 s; si igual tarda más, se usa el respaldo por RPC.
 // Con Opus la función puede tardar hasta unos 30 s (20 s Opus y, si falla, unos 8 s Haiku): el cliente espera un poco más.
 const TIEMPO_FUNCION_MS = 35000
-const TIEMPO_RPC_MS = 8000
+// #108 (incidente del 23 oct, 21:13): la base llegó a parones de ~7 s, al borde de su propio límite de 8 s.
+// El cliente espera 15 s y reintenta UNA vez si se agotó el tiempo o la base cortó la consulta (57014).
+const TIEMPO_RPC_MS = 15000
+export const AVISO_REINTENTO = 'La red o el servidor tardaron más de lo normal. Reintentando…'
 
 function tiempoAgotado(): { ok: false; error: ApiError } {
   return falloTemporal('tiempo_agotado', 'El servidor tardó demasiado en responder. Intenta de nuevo.')
@@ -242,7 +283,8 @@ function tiempoAgotado(): { ok: false; error: ApiError } {
 function esAborto(e: unknown): boolean {
   const nombre = (e as { name?: string } | null)?.name ?? ''
   const mensaje = (e as { message?: string } | null)?.message ?? ''
-  return nombre === 'AbortError' || nombre === 'TimeoutError' || /abort/i.test(mensaje)
+  // postgrest-js no rechaza: devuelve `message: "TimeoutError: signal timed out"` (Chrome) sin `name`.
+  return nombre === 'AbortError' || nombre === 'TimeoutError' || /abort|timeouterror|timed out/i.test(mensaje)
 }
 
 function incompatibleError(): { ok: false; error: ApiError } {
@@ -273,42 +315,79 @@ function leerSobre<T>(cuerpo: unknown, tomar: (c: Record<string, unknown>) => T)
   return { ok: false, error: { ...c.error, state_rev: null } }
 }
 
+/** Opciones de una llamada del panel: `alReintentar` avisa a la pantalla que se está reintentando. */
+export interface OpcionesLlamada {
+  alReintentar?: () => void
+}
+
+async function rpcUnaVez<T>(
+  fn: string,
+  args: Record<string, unknown>,
+  tomar: (c: Record<string, unknown>) => T,
+): Promise<{ r: ApiResult<T>; reintentar: boolean }> {
+  try {
+    const { data, error } = await supabase.rpc(fn as never, args as never).abortSignal(AbortSignal.timeout(TIEMPO_RPC_MS))
+    if (error) {
+      const codigo = (error as { code?: string }).code
+      if (codigo === 'PGRST202') {
+        return { r: falloTemporal('operacion_no_publicada', 'El agente todavía no está disponible en el servidor.'), reintentar: false }
+      }
+      // 57014: la base cortó la consulta por su propio límite de tiempo (no la atrapa el manejo de errores de la RPC).
+      if (codigo === '57014' || esAborto(error)) return { r: tiempoAgotado(), reintentar: true }
+      return { r: falloTemporal(), reintentar: false }
+    }
+    return { r: leerSobre(data, tomar), reintentar: false }
+  } catch (e) {
+    return esAborto(e) ? { r: tiempoAgotado(), reintentar: true } : { r: falloTemporal(), reintentar: false }
+  }
+}
+
+/**
+ * Una RPC del panel. Si se agota el tiempo o la base corta la consulta, reintenta UNA vez (las del panel son
+ * lecturas o, como save_my_preferences, idempotentes por contenido: repetirla no duplica nada).
+ */
 async function rpc<T>(
   fn: string,
   args: Record<string, unknown>,
   tomar: (c: Record<string, unknown>) => T,
   escritura = false,
+  opciones: OpcionesLlamada = {},
 ): Promise<ApiResult<T>> {
   if (escritura && contratoIncompatible()) return incompatibleError()
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {
     return { ok: false, error: { ...falloTemporal('sin_conexion', 'Sin conexión con el servidor. Reintenta cuando vuelva la conexión.').error, sinConexion: true } }
   }
-  try {
-    const { data, error } = await supabase.rpc(fn as never, args as never).abortSignal(AbortSignal.timeout(TIEMPO_RPC_MS))
-    if (error) {
-      if ((error as { code?: string }).code === 'PGRST202') {
-        return falloTemporal('operacion_no_publicada', 'El agente todavía no está disponible en el servidor.')
-      }
-      return esAborto(error) ? tiempoAgotado() : falloTemporal()
-    }
-    return leerSobre(data, tomar)
-  } catch (e) {
-    return esAborto(e) ? tiempoAgotado() : falloTemporal()
-  }
+  const primera = await rpcUnaVez(fn, args, tomar)
+  if (!primera.reintentar) return primera.r
+  opciones.alReintentar?.()
+  return (await rpcUnaVez(fn, args, tomar)).r
 }
 
 export const agenteApi = {
-  getMyPreferences: (espacioId: string) =>
+  getMyPreferences: (espacioId: string, opciones?: OpcionesLlamada) =>
     rpc<MisPreferencias>('get_my_preferences', { p_espacio_id: espacioId }, (c) => ({
       preferencias: (c.preferencias as Preferencias | null) ?? null,
       usar_en_agente: c.usar_en_agente !== false,
+      recibir_invitaciones_agente: typeof c.recibir_invitaciones_agente === 'boolean' ? c.recibir_invitaciones_agente : null,
       actualizadas_en: (c.actualizadas_en as Momento | null) ?? null,
       opciones: (c.opciones as MisPreferencias['opciones']) ?? { actividades: [] },
       personas_con_preferencias: typeof c.personas_con_preferencias === 'number' ? c.personas_con_preferencias : 0,
-    })),
+    }), false, opciones),
+
+  /** E11: no guarda preferencias ni confirma asistencia. Solo cambia el permiso propio. */
+  setRecibirInvitaciones: (espacioId: string, recibir: boolean) =>
+    rpc<{ recibir_invitaciones_agente: boolean }>(
+      'set_recibir_invitaciones_agente',
+      { p_espacio_id: espacioId, p_recibir: recibir },
+      (c) => {
+        if (typeof c.recibir_invitaciones_agente !== 'boolean') throw new Error('respuesta_invalida')
+        return { recibir_invitaciones_agente: c.recibir_invitaciones_agente }
+      },
+      true,
+    ),
 
   // Enmienda 8: `usar_en_agente` viaja dentro de p_preferencias; si falta, el servidor lo toma como true.
-  saveMyPreferences: (espacioId: string, preferencias: Preferencias, usarEnAgente = true) =>
+  saveMyPreferences: (espacioId: string, preferencias: Preferencias, usarEnAgente = true, opciones?: OpcionesLlamada) =>
     rpc<{ repetido: boolean; usar_en_agente: boolean }>(
       'save_my_preferences',
       { p_espacio_id: espacioId, p_preferencias: { ...preferencias, usar_en_agente: usarEnAgente } },
@@ -317,6 +396,7 @@ export const agenteApi = {
         usar_en_agente: c.usar_en_agente !== false,
       }),
       true,
+      opciones,
     ),
 
   /** Pide el borrador al agente. Si la función del servidor no responde, usa la RPC directa sin clima. */
@@ -357,22 +437,43 @@ export const agenteApi = {
 
 const CLAVE = (espacioId: string) => `cruxe:borrador-agente:${espacioId}`
 
-export function guardarBorradorAgente(espacioId: string, b: { titulo: string; franjas: FranjaBorrador[] }): void {
+/** Lo que "Usar esta opción" deja para Nueva propuesta. Enmienda 14: también la actividad y sus personas. */
+export interface BorradorParaPropuesta {
+  titulo: string
+  franjas: FranjaBorrador[]
+  actividad?: string | null
+  personas?: PersonasActividad | null
+}
+
+export function guardarBorradorAgente(espacioId: string, b: BorradorParaPropuesta): void {
   try {
-    sessionStorage.setItem(CLAVE(espacioId), JSON.stringify({ titulo: b.titulo, franjas: b.franjas }))
+    sessionStorage.setItem(
+      CLAVE(espacioId),
+      JSON.stringify({ titulo: b.titulo, franjas: b.franjas, actividad: b.actividad ?? null, personas: b.personas ?? null }),
+    )
   } catch {
     // Sin almacenamiento: el organizador completa a mano.
   }
 }
 
-export function tomarBorradorAgente(espacioId: string): { titulo: string; franjas: FranjaBorrador[] } | null {
+export function tomarBorradorAgente(espacioId: string): BorradorParaPropuesta | null {
   try {
     const crudo = sessionStorage.getItem(CLAVE(espacioId))
     if (!crudo) return null
     sessionStorage.removeItem(CLAVE(espacioId))
-    const b = JSON.parse(crudo) as { titulo?: unknown; franjas?: unknown }
+    const b = JSON.parse(crudo) as { titulo?: unknown; franjas?: unknown; actividad?: unknown; personas?: unknown }
     if (typeof b.titulo !== 'string' || !Array.isArray(b.franjas) || b.franjas.length !== 2) return null
-    return { titulo: b.titulo, franjas: b.franjas as FranjaBorrador[] }
+    const p = b.personas as { min?: unknown; max?: unknown } | null
+    const personas =
+      p && Number.isInteger(p.min) && Number.isInteger(p.max) && (p.min as number) <= (p.max as number)
+        ? { min: p.min as number, max: p.max as number }
+        : null
+    return {
+      titulo: b.titulo,
+      franjas: b.franjas as FranjaBorrador[],
+      actividad: typeof b.actividad === 'string' && /^[a-z_]{1,30}$/.test(b.actividad) ? b.actividad : null,
+      personas,
+    }
   } catch {
     return null
   }

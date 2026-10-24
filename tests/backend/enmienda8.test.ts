@@ -5,6 +5,7 @@ import { beforeAll, describe, expect, it } from 'vitest'
 import {
   clienteSinSesion, crearEspacioPrueba, crearPropuesta, demoPrueba, err, intento, nuevaSesion, ok, PERMITIDAS, rpc, rpcCrudo,
   type Json, type Sesion,
+  TOTAL_PERMITIDAS,
 } from './helpers'
 
 type Pref = { presupuesto: string; energia: string; ambiente: string; lugar: string; me_gustaria: string[] }
@@ -197,7 +198,7 @@ describe('enmienda 8: el agente solo usa las preferencias de quien lo permite', 
   })
 
   it('5. catálogo: 31 para authenticated y 0 para anon, una sola firma por nombre', async () => {
-    expect(Object.keys(PERMITIDAS)).toHaveLength(31)
+    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40; E13: 41
     const anon = clienteSinSesion()
     for (const fn of ['save_my_preferences', 'get_my_preferences', 'proponer_plan_borrador']) {
       const a = await rpcCrudo(anon, fn, PERMITIDAS[fn]())

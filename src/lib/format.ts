@@ -107,9 +107,11 @@ export function describirEvento(e: Evento): string {
     case 'evaluacion_sin_opcion':
       return 'Se buscó una opción: sin opción compatible'
     case 'aceptacion':
-      return `${quien} aceptó la versión ${e.version_nueva ?? e.version_previa ?? ''}`.trim()
+      // Enmienda 13 (c): la aceptación de quien después se retiró llega sin actor; nunca se completa con un nombre.
+      return `${e.actor?.nombre ?? 'Una persona'} aceptó la versión ${e.version_nueva ?? e.version_previa ?? ''}`.trim()
     case 'baja':
-      return e.version_previa != null ? `${quien} se bajó (versión ${e.version_previa})` : `${quien} se bajó`
+      // Enmienda 13 (c): la baja es sin nombre ni motivo para los demás, aunque el servidor mande actor.
+      return e.version_previa != null ? `Una persona se retiró (versión ${e.version_previa})` : 'Una persona se retiró'
     case 'reparacion_publicada':
       return `Se publicó la versión ${e.version_nueva ?? ''} como alternativa; ninguna aceptación anterior cuenta`
     case 'reparacion_sin_alternativa':

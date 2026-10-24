@@ -36,10 +36,10 @@ describe('E7.1: el orden de las candidatas no delata gustos en grupos chicos', {
     await ok(B, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['parque']) })
     const r1 = await plan()
     expect(r1.personas_consideradas).toBe(2)
-    // Sin marcas (energía con_todo, ambiente sin mayoría, seco): Cerro 2 (gratis, E10 Parte B) y Fútbol 2 (barato);
-    // Parque 1 (gratis) antes que Pádel 1 (medio).
+    // Sin marcas (energía con_todo, ambiente sin mayoría, seco): Cerro 2 (gratis, E10 Parte B), Fútbol 2 (barato)
+    // y Básquet 2 (barato, E14 0048), detrás del fútbol.
     // Con el orden anterior, la marca de B ponía al Parque primero y con "el más elegido".
-    expect(r1.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-12', 'lugar-sim-03', 'lugar-sim-04'])
+    expect(r1.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-12', 'lugar-sim-03', 'lugar-sim-16'])
     for (const c of r1.candidatas) expect(c.frases_grupo).not.toContain('el_mas_elegido')
 
     // Otras marcas (las dos eligen asado, que antes sumaba 6): mismas candidatas, mismo orden, mismas frases.
@@ -116,7 +116,8 @@ describe('E7.2: los conteos de la propuesta solo los ve el organizador', { timeo
     const [d1, d2] = [await estado(B, p1), await estado(B, p2)]
     expect(sinVariables(d2)).toEqual(sinVariables(d1))
     expect(d1.bajas).toHaveLength(1)
-    expect(d1.bajas[0]).toMatchObject({ version: 1, habia_aceptado: false })
+    // Enmienda 13 (c): la baja de otra persona sale sin nombre y sin decir si había confirmado.
+    expect(d1.bajas[0]).toMatchObject({ miembro: { miembro_id: null, nombre: 'Una persona' }, version: 1, habia_aceptado: null })
     expect(d1.personas_con_condiciones).toBeNull()
     expect(d1.opcion.cupos.pendientes).toBeNull()
     // El organizador sigue viendo los dos conteos; la baja no descuenta a W de personas_con_condiciones.

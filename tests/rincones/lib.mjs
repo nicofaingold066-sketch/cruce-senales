@@ -97,12 +97,21 @@ const AUDITORIA = () => {
       if (oculto && e.scrollWidth > e.clientWidth + 2) out.push({ tipo: 'texto-cortado', detalle: `${desc(e)}: "${e.textContent.trim().slice(0, 50)}" (${e.scrollWidth}>${e.clientWidth})` })
     }
   }
-  // 3b. texto cortado en vertical (caja con overflow oculto más baja que su contenido) y pestañas recortadas por el borde
+  // 3b. texto cortado en vertical: una caja con overflow oculto cuyo TEXTO termina más abajo que su borde (un fondo
+  // decorativo que sobra no cuenta: se miden los rectángulos de los nodos de texto, que se calculan aunque estén recortados).
   for (const e of document.querySelectorAll('body *')) {
-    if (!visible(e) || e.closest('.visualmente-oculto')) continue
+    if (!visible(e) || e.closest('.visualmente-oculto') || e.clientHeight === 0) continue
     const s = getComputedStyle(e)
-    if ((s.overflowY === 'hidden' || s.overflow === 'hidden') && (e.textContent || '').trim().length > 1 && e.scrollHeight > e.clientHeight + 2 && e.clientHeight > 0 && e.children.length < 3)
-      out.push({ tipo: 'texto-cortado-vertical', detalle: `${desc(e)}: "${e.textContent.trim().slice(0, 40)}" (${e.scrollHeight}>${e.clientHeight})` })
+    if (!(s.overflowY === 'hidden' || s.overflow === 'hidden' || s.overflowY === 'clip') || e.scrollHeight <= e.clientHeight + 2) continue
+    const caja = e.getBoundingClientRect()
+    const andar = document.createTreeWalker(e, NodeFilter.SHOW_TEXT)
+    let fondoTexto = -Infinity, nodo, muestra = ''
+    while ((nodo = andar.nextNode())) {
+      if (!nodo.textContent.trim() || nodo.parentElement.closest('.visualmente-oculto, [aria-hidden="true"]')) continue
+      const rg = document.createRange(); rg.selectNodeContents(nodo)
+      for (const r of rg.getClientRects()) if (r.height > 0 && r.bottom > fondoTexto) { fondoTexto = r.bottom; muestra = nodo.textContent.trim().slice(0, 40) }
+    }
+    if (fondoTexto > caja.bottom + 2) out.push({ tipo: 'texto-cortado-vertical', detalle: `${desc(e)}: "${muestra}" termina ${Math.round(fondoTexto - caja.bottom)}px por debajo del borde de la caja` })
   }
   for (const e of document.querySelectorAll('[role=tab]')) {
     const r = e.getBoundingClientRect()

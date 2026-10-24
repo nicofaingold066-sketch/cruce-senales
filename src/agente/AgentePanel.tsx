@@ -11,10 +11,14 @@ import { irA, rutas } from '../lib/shell'
 import type { ApiError } from '../lib/types'
 import { Aviso, Boton, Cargando, ErrorCaja, RotuloSimulacion } from '../components/ui'
 import './agente.css'
+import { ConsentimientoInvitaciones } from './ConsentimientoInvitaciones'
 import {
+  AVISO_REINTENTO,
+  TEXTO_FALTAN_PERSONAS,
   agenteApi,
   guardarBorradorAgente,
   mensajeFijo,
+  textoQuorum,
   textoFijo,
   type ActividadOpcion,
   type Ambiente,
@@ -141,20 +145,31 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   const [errorCarga, setErrorCarga] = useState<ApiError | null>(null)
   const [actividades, setActividades] = useState<ActividadOpcion[]>([])
   const [borrador, setBorrador] = useState<Preferencias>(VACIAS)
-  // Enmienda 8 (mejora #72): marcada por defecto; desmarcada, el agente no usa estas preferencias.
+  // Enmienda 8: la casilla es un borrador; el permiso cambia al guardar y recibir confirmación.
   const [usar, setUsar] = useState(true)
+  const [usarConfirmado, setUsarConfirmado] = useState<boolean | null>(null)
+  const [recibirInicial, setRecibirInicial] = useState<boolean | null>(null)
   const [guardadas, setGuardadas] = useState(false)
   const [aviso, setAviso] = useState<string | null>(null)
+  // #108: la primera llamada tardó demasiado y se está reintentando una vez.
+  const [reintentando, setReintentando] = useState(false)
+  // Rincones O-15: "Me gustaría" se marca en rojo recién al intentar guardar sin ninguna actividad.
+  const [intentoSinActividad, setIntentoSinActividad] = useState(false)
+  const refGustos = useRef<HTMLFieldSetElement>(null)
   const { ocupado, error, ejecutar } = useAccion()
   const refError = useFocoEnError(error)
 
   const cargar = useCallback(async () => {
     setCargando(true)
-    const r = await agenteApi.getMyPreferences(espacioId)
+    setReintentando(false)
+    const r = await agenteApi.getMyPreferences(espacioId, { alReintentar: () => setReintentando(true) })
+    setReintentando(false)
     if (r.ok) {
       setActividades(r.data.opciones.actividades)
       if (r.data.preferencias) setBorrador(r.data.preferencias)
       setUsar(r.data.usar_en_agente)
+      setUsarConfirmado(r.data.usar_en_agente)
+      setRecibirInicial(r.data.recibir_invitaciones_agente)
       setGuardadas(Boolean(r.data.preferencias))
       setErrorCarga(null)
     } else setErrorCarga(r.error)
@@ -165,7 +180,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
     void cargar()
   }, [cargar])
 
-  if (cargando) return <Cargando texto="Cargando tus preferencias…" />
+  if (cargando) return <Cargando texto={reintentando ? AVISO_REINTENTO : 'Cargando tus preferencias…'} />
   if (errorCarga) return <ErrorCaja error={errorCarga} onReintentar={() => void cargar()} />
 
   const poner = <K extends keyof Preferencias>(k: K, v: Preferencias[K]) => {
@@ -190,24 +205,40 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   const sinActividades = borrador.me_gustaria.length === 0
 
   async function guardar() {
-    const r = await ejecutar(`preferencias:${espacioId}`, () => agenteApi.saveMyPreferences(espacioId, borrador, usar))
+    if (sinActividades) {
+      setIntentoSinActividad(true)
+      refGustos.current?.querySelector('input')?.focus()
+      return
+    }
+    setReintentando(false)
+    const r = await ejecutar(`preferencias:${espacioId}`, () =>
+      agenteApi.saveMyPreferences(espacioId, borrador, usar, { alReintentar: () => setReintentando(true) }),
+    )
+    setReintentando(false)
     if (r?.ok) {
       setGuardadas(true)
-      setUsar(r.data.usar_en_agente)
-      setAviso(r.data.usar_en_agente ? 'Guardado. Nadie más ve tus preferencias.' : 'Guardado. El agente no usa tus preferencias; siguen guardadas solo para ti.')
+      setUsarConfirmado(r.data.usar_en_agente)
+      setAviso(r.data.usar_en_agente !== usar
+        ? 'El servidor confirmó otro permiso. Tu cambio sigue sin guardar; revisa y vuelve a guardar.'
+        : r.data.usar_en_agente ? 'Guardado. Nadie más ve tus preferencias.' : 'Guardado. El agente no usa tus preferencias; siguen guardadas solo para ti.')
     }
   }
 
   return (
     <div className="bloque">
       <p className="suave">
-        Solo las ves tú. El agente las usa para elegir el plan, pero al grupo le llega solo la propuesta, nunca lo que pusiste.
+        Solo las ves tú. Con tu permiso guardado, el agente puede usarlas para sugerir un plan. Al grupo le llega solo la propuesta, nunca lo que pusiste.
       </p>
       <Opciones nombre="pref-presupuesto" titulo="Presupuesto este finde" opciones={PRESUPUESTO} valor={borrador.presupuesto} onCambio={(v) => poner('presupuesto', v)} deshabilitado={soloLectura || ocupado} />
       <Opciones nombre="pref-energia" titulo="Energía" opciones={ENERGIA} valor={borrador.energia} onCambio={(v) => poner('energia', v)} deshabilitado={soloLectura || ocupado} />
       <Opciones nombre="pref-ambiente" titulo="Ambiente" opciones={AMBIENTE} valor={borrador.ambiente} onCambio={(v) => poner('ambiente', v)} deshabilitado={soloLectura || ocupado} />
       <Opciones nombre="pref-lugar" titulo="Lugar" opciones={LUGAR} valor={borrador.lugar} onCambio={(v) => poner('lugar', v)} deshabilitado={soloLectura || ocupado} />
-      <fieldset className={`grupo ${sinActividades ? 'grupo-error' : ''}`} disabled={soloLectura || ocupado}>
+      <fieldset
+        ref={refGustos}
+        className={`grupo ${sinActividades && intentoSinActividad ? 'grupo-error' : ''}`}
+        disabled={soloLectura || ocupado}
+        aria-describedby={sinActividades ? 'pref-gusta-ayuda' : undefined}
+      >
         <legend>Me gustaría</legend>
         <div className="opciones">
           {actividades.map((a) => {
@@ -221,14 +252,18 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
             )
           })}
         </div>
-        {sinActividades ? <small>Marcá al menos una.</small> : null}
+        {sinActividades ? (
+          <small id="pref-gusta-ayuda" role={intentoSinActividad ? 'alert' : undefined}>
+            Marca al menos una actividad para guardar.
+          </small>
+        ) : null}
       </fieldset>
       <div className="bloque agente-viaje">
         <h3 className="agente-subtitulo">Para elegir un lugar a mano (opcional)</h3>
-        <p className="suave">Solo lo usa el servidor para elegir un lugar que te quede a mano. Nadie del grupo ve tu zona ni cómo te movés.</p>
+        <p className="suave">Solo lo usa el servidor para elegir un lugar que te quede a mano. Nadie del grupo ve tu zona ni cómo te mueves.</p>
         <Opciones nombre="pref-zona" titulo="Tu zona" opciones={ZONA} valor={borrador.zona ?? ''} onCambio={(v) => ponerOpcional('zona', v)} deshabilitado={soloLectura || ocupado} />
-        <Opciones nombre="pref-movilidad" titulo="Cómo te movés" opciones={MOVILIDAD} valor={borrador.movilidad ?? ''} onCambio={(v) => ponerOpcional('movilidad', v)} deshabilitado={soloLectura || ocupado} />
-        <Opciones nombre="pref-tiempo" titulo="Hasta cuánto viajás" opciones={TIEMPO} valor={borrador.tiempo_max ?? ''} onCambio={(v) => ponerOpcional('tiempo_max', v)} deshabilitado={soloLectura || ocupado} />
+        <Opciones nombre="pref-movilidad" titulo="Cómo te mueves" opciones={MOVILIDAD} valor={borrador.movilidad ?? ''} onCambio={(v) => ponerOpcional('movilidad', v)} deshabilitado={soloLectura || ocupado} />
+        <Opciones nombre="pref-tiempo" titulo="Hasta cuánto viajas" opciones={TIEMPO} valor={borrador.tiempo_max ?? ''} onCambio={(v) => ponerOpcional('tiempo_max', v)} deshabilitado={soloLectura || ocupado} />
         <Opciones nombre="pref-momento" titulo="Momento del día" opciones={MOMENTO} valor={borrador.momento ?? ''} onCambio={(v) => ponerOpcional('momento', v)} deshabilitado={soloLectura || ocupado} />
       </div>
       <label htmlFor="pref-usar" className="agente-casilla">
@@ -245,17 +280,23 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
         />
         <span>
           Que el agente use mis preferencias
-          <small id="pref-usar-ayuda">Si la desmarcas, el agente no las usa; siguen guardadas solo para ti.</small>
+          <small id="pref-usar-ayuda">El cambio se aplica cuando guardas y el servidor lo confirma. Tus preferencias siguen siendo privadas.</small>
         </span>
       </label>
-      <div ref={refError}>{error ? <ErrorCaja error={error} onReintentar={() => void guardar()} /> : null}</div>
-      {aviso ? <Aviso tono="ok">{aviso}</Aviso> : null}
-      <p className="agente-sr" aria-live="polite">
-        {ocupado ? 'Guardando tus preferencias…' : aviso ?? ''}
+      <p role="status">
+        {usarConfirmado === true ? 'Permiso guardado: el agente puede usar tus preferencias.' : usarConfirmado === false ? 'Permiso guardado: el agente no usa tus preferencias.' : 'Permiso guardado pendiente de lectura.'}
+        {usarConfirmado !== null && usar !== usarConfirmado ? ' Cambio sin guardar: el permiso anterior sigue vigente.' : ''}
       </p>
-      <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura || sinActividades}>
+      <div ref={refError}>{error ? <ErrorCaja error={error} onReintentar={() => void guardar()} /> : null}</div>
+      {ocupado && reintentando ? <Aviso tono="aviso">{AVISO_REINTENTO}</Aviso> : null}
+      {aviso ? <Aviso tono={usarConfirmado !== null && usar !== usarConfirmado ? 'info' : 'ok'}>{aviso}</Aviso> : null}
+      <p className="agente-sr" aria-live="polite">
+        {ocupado ? (reintentando ? AVISO_REINTENTO : 'Guardando tus preferencias…') : aviso ?? ''}
+      </p>
+      <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura}>
         {guardadas ? 'Actualizar mis preferencias' : 'Guardar mis preferencias'}
       </Boton>
+      <ConsentimientoInvitaciones espacioId={espacioId} inicial={recibirInicial} soloLectura={soloLectura} />
     </div>
   )
 }
@@ -354,15 +395,22 @@ function BorradorTarjeta({
   const viaje = viajeDeOpcion(elegida, b)
 
   function usar() {
-    guardarBorradorAgente(espacioId, { titulo: titulo.trim(), franjas: elegida.franjas })
+    // Enmienda 14: la actividad y sus personas, para precargar actividad, mínimo y máximo en Nueva propuesta.
+    guardarBorradorAgente(espacioId, {
+      titulo: titulo.trim(),
+      franjas: elegida.franjas,
+      actividad: elegida.actividad ?? null,
+      personas: elegida.personas ?? null,
+    })
     irA(rutas.nueva(espacioId))
   }
 
   return (
     <div className="bloque">
       <Aviso tono="info" titulo="Opciones del agente">
-        Todas le sirven al grupo según lo que cargó cada uno. Elegís vos: todavía nadie está invitado ni confirmado.
+        Son ideas según las preferencias habilitadas. La disponibilidad y la confirmación se resuelven después, para una versión del plan.
       </Aviso>
+      {b.quorum ? <p className="suave agente-quorum">{textoQuorum(b.quorum)}</p> : null}
       <fieldset className="grupo agente-candidatas">
         <legend>
           {b.candidatas.length > 1 ? `${b.candidatas.length} opciones` : 'Opción'} para {b.personas_consideradas} personas
@@ -403,7 +451,8 @@ function BorradorTarjeta({
       </ul>
       {viaje ? (
         <p className="agente-viaje-linea">
-          <strong>Queda a menos de {viaje.max_minutos} minutos para todos{viaje.estimado ? ' (estimado)' : ''}.</strong>
+          <strong>Queda a menos de {viaje.max_minutos} minutos para todos{viaje.estimado ? ' (estimado)' : ''}.</strong>{' '}
+          Elegido para que nadie viaje demasiado.
         </p>
       ) : null}
       {canchas.length > 0 ? (
@@ -430,7 +479,16 @@ function BorradorTarjeta({
       ) : (
         <p className="suave">
           Clima: {b.clima.resumen}
-          {b.clima.fuente === 'open-meteo' ? ' (pronóstico de Open-Meteo)' : ''}
+          {b.clima.fuente === 'open-meteo' ? (
+            <>
+              {' '}
+              (pronóstico de{' '}
+              <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">
+                Open-Meteo
+              </a>
+              )
+            </>
+          ) : null}
         </p>
       )}
       <p>
@@ -455,9 +513,9 @@ function BorradorTarjeta({
       <p className="suave">
         {deModelo
           ? `Lo redactó la IA${quien ? ` (${quien})` : ''}, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.`
-          : 'Texto fijo. Las opciones las armó el servidor con reglas fijas a partir de las preferencias de todos.'}
+          : 'Texto fijo. Las opciones las armó el servidor con reglas fijas a partir de las preferencias habilitadas.'}
       </p>
-      <p className="suave">El mínimo, el máximo, la persona imprescindible y el cierre los completás vos en el paso siguiente.</p>
+      <p className="suave">El mínimo, el máximo, la persona imprescindible y el cierre los completas tú en el paso siguiente.</p>
       <Boton onClick={usar} disabled={soloLectura || !tituloValido}>
         Usar esta opción
       </Boton>
@@ -513,7 +571,7 @@ function ErrorAgente({ error, espacioId, onReintentar }: { error: ApiError; espa
           </div>
         }
       >
-        {error.mensaje} No se creó nada; podés reintentar o crear la propuesta a mano.
+        {error.mensaje} No se creó nada; puedes reintentar o crear la propuesta a mano.
       </Aviso>
     )
   }
@@ -636,7 +694,9 @@ function ProponerPlan({
         <Aviso tono="aviso" titulo="Sin plan compatible" accion={<PropuestaAMano espacioId={espacioId} />}>
           {resultado.motivo === 'sin_lugar_cerca_para_todos'
             ? 'Ningún plan del catálogo queda dentro del tiempo de viaje de todos. Por privacidad no se dice para quién.'
-            : 'Con las preferencias cargadas no hay un plan del catálogo que le sirva a todos. Por privacidad no se muestran los motivos.'}
+            : resultado.motivo === 'faltan_personas'
+              ? TEXTO_FALTAN_PERSONAS
+              : 'Con las preferencias cargadas no hay un plan del catálogo que le sirva a todos. Por privacidad no se muestran los motivos.'}
         </Aviso>
       ) : null}
       {resultado?.tipo === 'borrador' ? <BorradorTarjeta espacioId={espacioId} b={resultado} soloLectura={soloLectura} invitacion={invitacion} /> : null}
@@ -670,7 +730,7 @@ class BarreraAgente extends Component<{ children: ReactNode }, { fallo: boolean 
               </button>
             }
           >
-            El resto del espacio funciona igual: podés crear la propuesta a mano.
+            El resto del espacio funciona igual: puedes crear la propuesta a mano.
           </Aviso>
         </div>
       )
@@ -729,7 +789,7 @@ function PanelAgente({
         <section className="tarjeta agente-panel">
           <h2>Agente del círculo</h2>
           <p className="suave">
-            Lee las preferencias de todo el grupo, mira el clima y un catálogo de lugares (de Simulación) y te propone opciones que le sirven a todos. Propone, pero no decide por nadie.
+            Usa las preferencias habilitadas, mira el clima y un catálogo de lugares (de Simulación) para sugerir ideas. La disponibilidad y la confirmación se resuelven después, para una versión del plan.
           </p>
           <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} invitacion={invitacion} />
         </section>

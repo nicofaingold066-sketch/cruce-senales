@@ -5,6 +5,7 @@ import { beforeAll, describe, expect, it } from 'vitest'
 import {
   clienteSinSesion, crearEspacioPrueba, crearPropuesta, demoPrueba, err, intento, nuevaSesion, ok, PERMITIDAS, rpc,
   rpcCrudo, type Json, type Sesion,
+  TOTAL_PERMITIDAS,
 } from './helpers'
 
 describe('enmienda 9, fase 1: ¿quién eres? (preview y reclamo por integrante)', { timeout: 120_000 }, () => {
@@ -26,7 +27,7 @@ describe('enmienda 9, fase 1: ¿quién eres? (preview y reclamo por integrante)'
     const r = await preview(A, demo.codigo.toLowerCase()) // el código se normaliza como en join_space
     expect(r.ok).toBe(true)
     expect(Object.keys(r).sort()).toEqual(['contrato', 'espacio', 'miembros', 'ok', 'servidor_ahora'])
-    expect(r.espacio).toEqual({ nombre: 'Los del asado', demo: true })
+    expect(r.espacio).toEqual({ nombre: 'Los del asado', demo: true, proposito: 'libre', familia: 'libre' }) // E14 (0048)
     for (const m of r.miembros) expect(Object.keys(m).sort()).toEqual(['libre', 'miembro_id', 'nombre'])
     const porNombre = Object.fromEntries(r.miembros.map((m: Json) => [m.nombre, m.libre]))
     // Luna no tiene semilla (libre); Mati, Caro, Fede y Sofi la tienen (asiento en uso); Tomi es real.
@@ -110,7 +111,7 @@ describe('enmienda 9, fase 1: ¿quién eres? (preview y reclamo por integrante)'
   })
 
   it('5. catálogo: 31 para authenticated, 0 para anon, una sola firma de join_space', async () => {
-    expect(Object.keys(PERMITIDAS)).toHaveLength(31)
+    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40; E13: 41
     for (const fn of ['preview_space_by_code', 'join_space']) {
       expect((await rpcCrudo(clienteSinSesion(), fn, PERMITIDAS[fn]())).error?.code, fn).toBe('42501')
       const b = await rpcCrudo(O, fn, PERMITIDAS[fn]())
@@ -147,7 +148,7 @@ describe('enmienda 9, fase 2: integrantes pendientes', { timeout: 120_000 }, () 
     expect(esp.pendientes.map((p: Json) => p.miembro_id)).toEqual([ids['Ana t'], ids['beto T'], ids['Cata t']])
     // Vista previa: los tres libres, el organizador no.
     const pv = await ok(R, 'preview_space_by_code', { p_codigo: esp.codigo_invitacion })
-    expect(pv.espacio).toEqual({ nombre: c.espacio.nombre, demo: false })
+    expect(pv.espacio).toEqual({ nombre: c.espacio.nombre, demo: false, proposito: 'libre', familia: 'libre' }) // E14 (0048)
     expect(pv.miembros.map((m: Json) => [m.nombre, m.libre])).toEqual([['Org t', false], ['Ana t', true], ['beto T', true], ['Cata t', true]])
 
     // E entra por nombre; escribir el nombre de un pendiente no lo reclama (nombre_en_uso).

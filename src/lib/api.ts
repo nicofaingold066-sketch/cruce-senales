@@ -11,6 +11,10 @@ import type {
   EstadoPropuesta,
   MiembroRef,
   Momento,
+  ActividadClave,
+  Familia,
+  OpinionVersion,
+  Proposito,
   PanelSimulacion,
   PreferenciasPropias,
   PropuestaResumen,
@@ -42,7 +46,8 @@ export type UnirseOk = EspacioOk<{
 export type ListaEspaciosOk = OkBase & { espacios: EspacioResumen[] }
 /** Enmienda 9: lo único que se ve con el código antes de unirse. */
 export type VistaPorCodigoOk = OkBase & {
-  espacio: { nombre: string; demo: boolean }
+  /** Enmienda 14: `proposito` y `familia` llegan desde la 0048 (opcionales hasta entonces). */
+  espacio: { nombre: string; demo: boolean; proposito?: Proposito; familia?: Familia }
   miembros: { miembro_id: string; nombre: string; libre: boolean }[]
 }
 export type VerEspacioOk = OkBase & { espacio: Espacio }
@@ -97,6 +102,8 @@ export type ReparacionOk = PropuestaOk<{
   repetido: boolean
 }>
 export type PanelOk = OkBase & { state_rev: number; simulacion: PanelSimulacion }
+/** Enmienda 13 (a): "así no puedo, pero sigo". No es baja ni cambia la versión; idempotente por intento. */
+export type OpinarOk = PropuestaOk<{ opinion: 'asi_no_puedo' | null; repetido: boolean }>
 /**
  * Preferencias privadas propias (enmiendas 4, 8 y 10). `preferencias` solo trae zona, movilidad, tiempo_max y
  * momento si la persona los cargó. `usar_en_agente` es true si todavía no guardó nada.
@@ -132,10 +139,11 @@ export function alIncompatible(fn: () => void): () => void {
 
 // Detectada ANTES de enviar: la acción no salió del dispositivo y no quedó registrada.
 const MENSAJE_SIN_CONEXION =
-  'Sin conexión con el servidor. La acción no quedó registrada. Lo que escribiste se conserva; reintenta cuando vuelva la conexión.'
-// Cortada DESPUÉS de enviar: no sabemos si el servidor la registró.
+  'Sin conexión. No se guardó, pero lo que escribiste se conserva; reintenta cuando vuelva la conexión.'
+// Cortada DESPUÉS de enviar: no sabemos si el servidor la registró. (Texto de psico, §16.6: "confirmar" se lee como
+// la confirmación del plan; acá se dice "no sabemos si llegó".)
 const MENSAJE_RESULTADO_INCIERTO =
-  'No pudimos confirmar el resultado. Tu acción pudo haberse registrado o no. Actualizamos el estado; si sigue sin aparecer, reintenta (se reutiliza el mismo intento, no se duplica).'
+  'No sabemos si llegó. Actualizamos la pantalla: si lo que hiciste no aparece, vuelve a intentarlo; no se duplica.'
 
 export function nuevoIntento(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID()
@@ -172,7 +180,7 @@ export const TOPE_RPC_MS = 10_000
 function falloPorTope(escritura: boolean) {
   return escritura
     ? fallo('tope_de_espera', MENSAJE_RESULTADO_INCIERTO, { resultadoIncierto: true })
-    : fallo('tope_de_espera', 'El servidor tarda en responder. Seguimos intentando.')
+    : fallo('tope_de_espera', 'Está tardando más de lo normal. Seguimos intentando.')
 }
 
 function esErrorDeRed(msg: string): boolean {
@@ -190,7 +198,7 @@ async function llamar<T extends OkBase>(
       error: {
         codigo: 'contrato_incompatible',
         detalle: 'contrato_incompatible',
-        mensaje: 'Versión incompatible: recarga la aplicación.',
+        mensaje: 'Hay una versión nueva de CRUXE: recarga la página.',
         reintentable: false,
         state_rev: null,
       },
@@ -234,7 +242,7 @@ async function llamar<T extends OkBase>(
       // Operación aún no publicada en la base: se trata como falla temporal (contrato 0.3).
       return fallo(
         'operacion_no_publicada',
-        'El servidor todavía no tiene publicada esta operación. Intenta más tarde.',
+        'Esta función todavía no está disponible. Intenta más tarde.',
       )
     }
     return fallo('reintentar', 'Falla temporal. Intenta de nuevo.')
@@ -258,7 +266,7 @@ async function llamar<T extends OkBase>(
       error: {
         codigo: 'contrato_incompatible',
         detalle: 'contrato_incompatible',
-        mensaje: 'Versión incompatible: recarga la aplicación.',
+        mensaje: 'Hay una versión nueva de CRUXE: recarga la página.',
         reintentable: false,
         state_rev: null,
       },
@@ -294,6 +302,8 @@ export interface CrearPropuestaParams {
   imprescindibleId: string
   plazo: string
   intentoId: string
+  /** Enmienda 14: actividad del catálogo (se manda solo si viene). En un grupo con propósito, de su familia. */
+  actividad?: ActividadClave | null
 }
 
 // ---- Operaciones ----
@@ -303,12 +313,17 @@ export const api = {
   serverInfo: () => llamar<ServerInfoOk>('server_info', {}, false),
 
   // 1.1 - 1.7 Espacios
-  createSpace: (nombre: string, tipo: TipoEspacio, nombreVisible: string, integrantes?: string[]) =>
+  // Enmienda 14: `proposito` opcional; se manda solo si no es 'libre' (sin él, el grupo queda en modo libre, como hoy).
+  createSpace: (nombre: string, tipo: TipoEspacio, nombreVisible: string, integrantes?: string[], proposito?: Proposito) =>
     llamar<CrearEspacioOk>(
       'create_space',
-      integrantes && integrantes.length > 0
-        ? { p_nombre: nombre, p_tipo: tipo, p_nombre_visible: nombreVisible, p_integrantes: integrantes }
-        : { p_nombre: nombre, p_tipo: tipo, p_nombre_visible: nombreVisible },
+      {
+        p_nombre: nombre,
+        p_tipo: tipo,
+        p_nombre_visible: nombreVisible,
+        ...(integrantes && integrantes.length > 0 ? { p_integrantes: integrantes } : {}),
+        ...(proposito && proposito !== 'libre' ? { p_proposito: proposito } : {}),
+      },
       true,
     ),
   joinSpace: (codigo: string, nombreVisible: string, miembroId?: string | null) =>
@@ -346,6 +361,7 @@ export const api = {
         p_plazo: p.plazo,
         p_zona_horaria: 'America/Santiago',
         p_intento_id: p.intentoId,
+        ...(p.actividad ? { p_actividad: p.actividad } : {}),
       },
       true,
     ),
@@ -413,6 +429,14 @@ export const api = {
   getSimulationPanel: (propuestaId: string) =>
     llamar<PanelOk>('get_simulation_panel', { p_propuesta_id: propuestaId }, false),
 
+  // Enmienda 13 (a): opinar sobre la versión vigente sin bajarse ('asi_no_puedo' o 'retirar_opinion').
+  opinarVersion: (propuestaId: string, version: number, opinion: OpinionVersion, intentoId: string) =>
+    llamar<OpinarOk>(
+      'opinar_version',
+      { p_propuesta_id: propuestaId, p_version: version, p_opinion: opinion, p_intento_id: intentoId },
+      true,
+    ),
+
   // Preferencias privadas (enmiendas 4, 8 y 10). El agente tiene sus propias llamadas en src/agente/api.ts.
   getMyPreferences: (espacioId: string) =>
     llamar<MisPreferenciasOk>('get_my_preferences', { p_espacio_id: espacioId }, false),
@@ -436,10 +460,10 @@ export function textoError(e: ApiError): string {
 /** Orientación adicional para el usuario según el error (enmienda 2). No calcula nada: solo explica. */
 export function ayudaError(e: ApiError): string | null {
   if (e.codigo === 'cupo_completo' && e.detalle === 'reservado_imprescindible') {
-    return 'El último cupo está reservado para el anfitrión. Podrás confirmar si se libera un cupo para otros.'
+    return 'El último cupo está reservado para quien no puede faltar. Si se libera otro, podrás confirmar.'
   }
   if (e.codigo === 'asiento_en_uso') {
-    return 'Ese lugar ya tiene actividad en el espacio. Entra con otro nombre visible: serás una persona nueva, sin compromisos heredados.'
+    return 'Ese nombre ya está en uso en el grupo. Entra con otro: serás una persona nueva, sin respuestas anteriores.'
   }
   if (e.codigo === 'intento_obsoleto') {
     return 'Esa acción corresponde a una versión anterior de la demo (se reinició desde entonces). No se aplicó; actualizamos la pantalla.'
