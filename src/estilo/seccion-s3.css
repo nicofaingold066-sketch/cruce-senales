@@ -275,7 +275,7 @@
   }
   .vista-s3 .form-compacto > fieldset:nth-of-type(2) {
     grid-column: 1;
-    grid-row: 3 / span 4;
+    grid-row: 3 / span 3;
   }
   .vista-s3 .form-compacto > fieldset:nth-of-type(3) {
     grid-column: 2;
@@ -285,17 +285,154 @@
     grid-column: 2;
     grid-row: 3;
   }
-  .vista-s3 .form-compacto > details.mas-opciones {
-    grid-column: 2;
-    grid-row: 4;
-  }
   .vista-s3 .form-compacto > .barra-accion {
     grid-column: 2;
-    grid-row: 5;
+    grid-row: 4;
     position: static;
     margin-top: 0;
   }
   .vista-s3 .form-compacto > .form-seccion {
     margin: 0 0 var(--entre-tarjetas);
   }
+}
+
+/* ------------------------------------------------------------------ pantalla 4 exacta (Nico y Juan, 03:05) */
+
+/* Qué hacen: cuatro chips y "Más…", que bajan de renglón (sin tira deslizable) */
+.vista-s3 .s3-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+  margin-bottom: var(--e-3);
+}
+.vista-s3 .s3-chips .chip-actividad {
+  padding: 8px 16px;
+}
+.vista-s3 .s3-titulo-plan {
+  margin: 0;
+}
+
+/* Filas plegables (A, B y el cierre): una línea con el valor y un ícono; al tocar, se abre lo que se edita */
+.vista-s3 .s3-fila {
+  border: 1px solid var(--linea);
+  border-radius: var(--r-m);
+  background: var(--hoja);
+}
+.vista-s3 .s3-fila + .s3-fila {
+  margin-top: var(--e-2);
+}
+.vista-s3 .s3-fila > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  min-height: 52px;
+  padding: var(--e-2) var(--e-4);
+  font-size: var(--t-cuerpo);
+}
+.vista-s3 .s3-fila > summary::-webkit-details-marker {
+  display: none;
+}
+.vista-s3 .s3-fila-texto {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.vista-s3 .s3-fila-texto strong {
+  font-weight: var(--p-pantalla);
+  margin-right: var(--e-1);
+}
+.vista-s3 .s3-fila-nota {
+  color: var(--tinta-2);
+  font-size: var(--t-nota);
+}
+.vista-s3 .s3-fila-valor {
+  flex: none;
+  font-weight: var(--p-boton);
+  font-variant-numeric: tabular-nums;
+}
+.vista-s3 .s3-fila-icono {
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--tinta-2);
+}
+.vista-s3 .s3-chevron {
+  transform: rotate(90deg);
+  transition: transform var(--dur-2) var(--curva);
+}
+.vista-s3 .s3-fila[open] .s3-chevron {
+  transform: rotate(-90deg);
+}
+.vista-s3 .s3-fila-cuerpo {
+  padding: 0 var(--e-4) var(--e-4);
+  border-top: 1px solid var(--linea);
+}
+.vista-s3 .s3-fila-cuerpo > :first-child {
+  margin-top: var(--e-3);
+}
+.vista-s3 .s3-gana {
+  margin-top: var(--e-3) !important;
+  display: block;
+}
+.vista-s3 .s3-gana .enlace {
+  min-height: 0;
+  font-size: var(--t-nota);
+  font-weight: var(--p-boton);
+  text-decoration: underline;
+}
+.vista-s3 .mas-opciones {
+  margin-top: var(--e-3);
+  padding-top: var(--e-3);
+  border-top: 1px solid var(--linea);
+}
+
+/* No puede faltar: avatares elegibles (el elegido, con anillo); el nombre va para el lector */
+.vista-s3 .s3-avatares {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+  margin-top: var(--e-2);
+}
+.vista-s3 .s3-avatar-opcion {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--toque);
+  height: var(--toque);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.vista-s3 .s3-avatar-opcion input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.vista-s3 .s3-avatar-opcion .avatar {
+  font-size: var(--t-nota);
+}
+.vista-s3 .s3-avatar-opcion.chip-activo .avatar {
+  box-shadow: 0 0 0 3px var(--hoja), 0 0 0 5px var(--tinta);
+}
+.vista-s3 .s3-avatar-opcion:focus-within .avatar {
+  outline: 2px solid var(--foco);
+  outline-offset: 3px;
+}
+
+/* El primario con su nota */
+.vista-s3 .s3-nota-final {
+  margin: var(--e-2) 0 0;
+  text-align: center;
+  font-size: var(--t-nota);
+  color: var(--tinta-2);
+}
+/* Leyendas ocultas (Quiénes, Cierre): la regla de las leyendas de sección les daba width 100% y estiraban la página. */
+.vista-s3 .form-seccion > legend.visualmente-oculto {
+  float: none;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
 }

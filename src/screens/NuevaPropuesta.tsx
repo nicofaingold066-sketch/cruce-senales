@@ -3,7 +3,7 @@ import { api } from '../lib/api'
 import { RONDA_HORAS } from '../lib/types'
 import type { ActividadClave, ApiError, Espacio, ReglaMotor, RondaHoras } from '../lib/types'
 import { useAccion } from '../lib/hooks'
-import { franjaTexto, momentoCorto, ZONA_VISIBLE } from '../lib/format'
+import { ZONA_VISIBLE } from '../lib/format'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { ATAJOS, atajosParaEspacio, ejemploPorSemilla, placeholderPlan } from '../lib/ejemplos'
 import type { Atajo } from '../lib/ejemplos'
@@ -135,7 +135,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const { soloLectura } = useShell()
   const [espacio, setEspacio] = useState<Espacio | null>(null)
   const [errorEspacio, setErrorEspacio] = useState<ApiError | null>(null)
-  const [paso, setPaso] = useState<'editar' | 'revisar'>('editar')
+  // Mockup validado (pantalla 4): sin paso de revisión; los atajos muestran cuatro y "Más…", y "Más opciones" se abre a mano.
+  const [todasLasActividades, setTodasLasActividades] = useState(false)
+  const [verMasOpciones, setVerMasOpciones] = useState(false)
   const [f, setF] = useState<Formulario | null>(null)
   const { ocupado, error, ejecutar, limpiarError } = useAccion()
   const [faltantes, setFaltantes] = useState(false)
@@ -167,10 +169,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     void cargar()
   }, [cargar])
 
-  // Cada paso del formulario empieza arriba, como una pantalla nueva.
   useEffect(() => {
     window.scrollTo(0, 0)
-  }, [paso])
+  }, [])
 
   // Precarga solo una vez que se conoce el espacio. En el espacio demo se usan los valores del caso.
   // En un grupo propio ya viene armado el próximo fin de semana a las 20:00 (crear es tocar dos veces).
@@ -283,13 +284,13 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const reglaEnviar: ReglaMotor | null = E15_DOS_PLANES && form.regla === 'mas_si' ? 'mas_si' : null
   const rondaEnviar: RondaHoras | null = E15_RONDA ? form.rondaHoras : null
 
-  function revisar() {
+  function enviar() {
     if (!completo) {
       setFaltantes(true)
       return
     }
     setFaltantes(false)
-    setPaso('revisar')
+    void crear(true)
   }
 
   async function crear(abrir: boolean) {
@@ -332,7 +333,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     if (!r) return
     if (!r.ok) {
       if (r.error.resultadoIncierto || r.error.codigo === 'intento_obsoleto') await cargar() // refresca el espacio
-      setPaso('editar') // vuelve al formulario con el campo marcado y todo lo elegido intacto
+      // queda en el formulario con el campo marcado y todo lo elegido intacto
       return
     }
     const propuestaId = r.data.resultado.propuesta_id
@@ -344,116 +345,115 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     irA(rutas.propuesta(espacioId, propuestaId))
   }
 
+  const actividadesVisibles = todasLasActividades ? actividades : actividades.slice(0, 4)
+  const masActividades = actividades.length > 4
+
   return (
     <div className="vista vista-s3">
       <section className="escena escena-compacta" aria-labelledby="nueva-titulo">
-        {/* Mockup validado (pantalla 4): una hoja del nivel Grupo, con ✕ para cerrar y el nombre del grupo bajo el título. */}
+        {/* Mockup validado (pantalla 4): hoja del nivel Grupo, con ✕, "Nuevo plan" y el nombre del grupo. */}
         <div className="s3-cabeza">
           <a className="s3-cerrar" href={rutas.espacio(espacioId)} aria-label={`Cerrar y volver a ${espacio.nombre}`}>
             <Icono n="cerrar" tam={20} />
           </a>
           <div className="s3-titulo">
-            <h1 id="nueva-titulo">Nueva propuesta</h1>
-            <span className="s3-grupo">
-              {espacio.nombre} · {paso === 'editar' ? 'paso 1 de 2' : 'paso 2 de 2: revisar'}
-            </span>
+            <h1 id="nueva-titulo">Nuevo plan</h1>
+            <span className="s3-grupo">{espacio.nombre}</span>
           </div>
           <span className="s3-cerrar-espacio" aria-hidden="true" />
-        </div>
-        <div className="pasos-form" aria-hidden="true">
-          <span className="hecho" />
-          <span className={paso === 'revisar' ? 'hecho' : ''} />
         </div>
       </section>
 
       <div className="hoja">
-        {paso === 'editar' ? (
-          <form
-            className="form-compacto"
-            onSubmit={(e) => {
-              e.preventDefault()
-              revisar()
-            }}
-            noValidate
-          >
-            {desdeAgente ? (
-              <Aviso tono="info" titulo="Borrador del agente">
-                Título y fechas vienen del agente. Revisa cupos, quién no puede faltar y cierre. El agente no crea ni confirma nada.
-              </Aviso>
-            ) : null}
-            {espacio.demo && !desdeAgente ? (
-              <p className="nota-caso">
-                Precargado con el caso «Los del finde».{' '}
+        <form
+          className="form-compacto"
+          onSubmit={(e) => {
+            e.preventDefault()
+            enviar()
+          }}
+          noValidate
+        >
+          {desdeAgente ? (
+            <Aviso tono="info" titulo="Borrador del agente">
+              Título y fechas vienen del agente. Revisa cupos, quién no puede faltar y cierre. El agente no crea ni confirma nada.
+            </Aviso>
+          ) : null}
+          {faltantes ? <Aviso tono="error">Completa el título y las dos fechas.</Aviso> : null}
+          {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} enfocar /> : null}
+
+          <fieldset className="form-seccion s3-bloque">
+            <legend>Qué hacen</legend>
+            <div className="s3-chips" role="group" aria-label="Atajos de actividad">
+              {actividadesVisibles.map((a) => (
                 <button
+                  key={a.titulo}
                   type="button"
-                  className="enlace"
-                  onClick={() => {
-                    const tomi = espacio.miembros.find((m) => m.nombre.toLowerCase() === 'tomi')
-                    setF({ ...CASO, imprescindibleId: tomi?.miembro_id ?? form.imprescindibleId })
-                  }}
+                  className={`chip-actividad ${form.titulo.trim() === a.titulo ? 'chip-activo' : ''}`}
+                  aria-pressed={form.titulo.trim() === a.titulo}
+                  onClick={() => elegirActividad(a)}
                 >
-                  Restablecer valores del caso
+                  {a.titulo}
                 </button>
-              </p>
-            ) : null}
-            {faltantes ? <Aviso tono="error">Completa el título y los dos momentos antes de revisar.</Aviso> : null}
-            {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} enfocar /> : null}
+              ))}
+              {masActividades && !todasLasActividades ? (
+                <button type="button" className="chip-actividad" onClick={() => setTodasLasActividades(true)}>
+                  Más…
+                </button>
+              ) : null}
+            </div>
+            <label className="campo s3-titulo-plan">
+              {/* El rótulo queda para lectores y guiones ("Propósito de la propuesta"); a la vista, solo el campo. */}
+              <span className="visualmente-oculto">Propósito de la propuesta</span>
+              <input
+                value={form.titulo}
+                onChange={(e) => poner('titulo', e.target.value)}
+                maxLength={80}
+                placeholder={placeholderPlan(ej, espacio.familia)}
+                aria-invalid={marcado === 'titulo' || (faltantes && form.titulo.trim() === '') ? true : undefined}
+              />
+            </label>
+          </fieldset>
 
-            <fieldset className="form-seccion">
-              <legend>Qué hacen</legend>
-              <div className="carrusel" role="group" aria-label="Atajos de actividad">
-                {actividades.map((a) => (
-                  <button
-                    key={a.titulo}
-                    type="button"
-                    className={`chip-actividad ${form.titulo.trim() === a.titulo ? 'chip-activo' : ''}`}
-                    aria-pressed={form.titulo.trim() === a.titulo}
-                    onClick={() => elegirActividad(a)}
-                  >
-                    <Icono n={a.icono} tam={18} />
-                    {a.titulo}
-                  </button>
-                ))}
-              </div>
-              <label className="campo">
-                <span>Propósito de la propuesta</span>
-                <input
-                  value={form.titulo}
-                  onChange={(e) => poner('titulo', e.target.value)}
-                  maxLength={80}
-                  placeholder={placeholderPlan(ej, espacio.familia)}
-                  aria-invalid={marcado === 'titulo' || (faltantes && form.titulo.trim() === '') ? true : undefined}
-                />
-              </label>
-            </fieldset>
-
-            <fieldset className={`form-seccion ${marcado === 'franjas' ? 'grupo-error' : ''}`}>
-              <legend>Cuándo · dos opciones</legend>
-              <p className="suave nota-seccion">
-                Cada uno dice en privado cuál le sirve. Si sirven las dos, gana{' '}
-                {reglaEnviar === 'mas_si' ? 'la que pueden más personas (lo cuenta el servidor).' : 'la que empieza antes.'}
-              </p>
-              {(['A', 'B'] as const).map((clave) => {
-                const dia = clave === 'A' ? form.aDia : form.bDia
-                const horaSel = clave === 'A' ? form.aHora : form.bHora
-                const inicio = clave === 'A' ? aInicio : bInicio
-                const fin = clave === 'A' ? aFin : bFin
-                return (
-                  <div key={clave} className="momento">
-                    <div className="momento-cabeza">
-                      <span className="franja-letra" aria-hidden="true">
-                        {clave}
-                      </span>
-                      <strong>Opción {clave}</strong>
-                      {inicio ? <span className="momento-resumen">{franjaTexto(inicio, fin)}</span> : null}
-                    </div>
+          <fieldset className={`form-seccion s3-bloque ${marcado === 'franjas' ? 'grupo-error' : ''}`}>
+            <legend>Cuándo · dos opciones</legend>
+            {(['A', 'B'] as const).map((clave) => {
+              const dia = clave === 'A' ? form.aDia : form.bDia
+              const horaSel = clave === 'A' ? form.aHora : form.bHora
+              const etiqueta = clave === 'A' ? form.aEtiqueta : form.bEtiqueta
+              return (
+                <details key={clave} className="s3-fila s3-momento">
+                  <summary>
+                    <span className="s3-fila-texto">
+                      <strong>{clave}</strong> {diaBreve(dia)}
+                      {E15_DOS_PLANES && etiqueta.trim() ? <span className="s3-fila-nota"> · {etiqueta.trim()}</span> : null}
+                    </span>
+                    <span className="s3-fila-valor">
+                      {horaSel} · {duracionTexto(form.duracion)}
+                    </span>
+                    <span className="s3-fila-icono" aria-hidden="true">
+                      <Icono n="borrador" tam={16} />
+                    </span>
+                    <span className="visualmente-oculto">Editar la opción {clave}</span>
+                  </summary>
+                  <div className="s3-fila-cuerpo">
                     <SelectorDia clave={clave} valor={dia} alElegir={(d) => poner(clave === 'A' ? 'aDia' : 'bDia', d)} />
                     <SelectorHora clave={clave} valor={horaSel} alElegir={(h) => poner(clave === 'A' ? 'aHora' : 'bHora', h)} />
+                    <div className="duracion" role="radiogroup" aria-label={`Duración aproximada de la opción ${clave}`}>
+                      <span className="duracion-etiqueta">Dura aprox.</span>
+                      <div className="opciones opciones-compactas">
+                        {duraciones.map((d) => (
+                          <label key={d} className={`opcion-radio ${form.duracion === d ? 'opcion-activa' : ''}`}>
+                            <input type="radio" name={`duracion-${clave}`} checked={form.duracion === d} onChange={() => poner('duracion', d)} />
+                            {duracionTexto(d)}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
                     {E15_DOS_PLANES ? (
                       <label className="campo campo-etiqueta-plan">
                         <span>Nombre de este plan (opcional)</span>
                         <input
-                          value={clave === 'A' ? form.aEtiqueta : form.bEtiqueta}
+                          value={etiqueta}
                           onChange={(e) => poner(clave === 'A' ? 'aEtiqueta' : 'bEtiqueta', e.target.value)}
                           maxLength={40}
                           placeholder={clave === 'A' ? 'Ej.: asado en lo de Tomi' : 'Ej.: picnic en el parque'}
@@ -461,175 +461,122 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                       </label>
                     ) : null}
                   </div>
-                )
-              })}
-              <div className="duracion" role="radiogroup" aria-label="Duración aproximada">
-                <span className="duracion-etiqueta">
-                  <Icono n="reloj" tam={16} /> Dura aprox.
-                </span>
-                <div className="opciones opciones-compactas">
-                  {duraciones.map((d) => (
-                    <label key={d} className={`opcion-radio ${form.duracion === d ? 'opcion-activa' : ''}`}>
-                      <input type="radio" name="duracion" checked={form.duracion === d} onChange={() => poner('duracion', d)} />
-                      {duracionTexto(d)}
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </fieldset>
+                </details>
+              )
+            })}
+            <p className="suave nota-seccion s3-gana">
+              <span>{reglaEnviar === 'mas_si' ? 'Gana la que pueden más.' : 'Gana la que empieza antes.'}</span>{' '}
+              {E15_RONDA || E15_DOS_PLANES ? (
+                <>
+                  <button type="button" className="enlace" aria-expanded={verMasOpciones} onClick={() => setVerMasOpciones((v) => !v)}>
+                    Más opciones
+                  </button>{' '}
+                  (ronda de opiniones, la que pueden más)
+                </>
+              ) : null}
+            </p>
+            {verMasOpciones ? <MasOpciones form={form} poner={poner} /> : null}
+          </fieldset>
 
-            <fieldset className={`form-seccion ${marcado === 'cupos' || marcado === 'imprescindible' ? 'grupo-error' : ''}`}>
-              <legend>Quiénes</legend>
-              <div className="cupos-fila">
-                <Contador id="cupo-minimo" etiqueta="Mínimo" valor={form.minimo} onCambio={(v) => poner('minimo', v)} />
-                <Contador id="cupo-maximo" etiqueta="Máximo" valor={form.maximo} onCambio={(v) => poner('maximo', v)} />
-              </div>
-              <p className="suave nota-seccion">El mínimo cuenta a quien no puede faltar.</p>
-              <div className="anfitrion-elegir" role="radiogroup" aria-label="Persona que no puede faltar">
-                <span className="duracion-etiqueta">
-                  <Icono n="anfitrion" tam={16} /> No puede faltar
-                </span>
-                <div className="carrusel">
-                  {espacio.miembros.map((m) => (
-                    <label key={m.miembro_id} className={`chip-persona ${form.imprescindibleId === m.miembro_id ? 'chip-activo' : ''}`}>
-                      <input
-                        type="radio"
-                        name="imprescindible"
-                        checked={form.imprescindibleId === m.miembro_id}
-                        onChange={() => poner('imprescindibleId', m.miembro_id)}
-                      />
-                      <Avatar nombre={m.nombre} simulado={m.simulado} tam={28} />
-                      <span>
-                        {m.nombre}
-                        {m.simulado ? <span className="visualmente-oculto"> (Simulación)</span> : null}
-                        {m.pendiente ? <span className="chip-nota"> (por entrar)</span> : null}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-                {/* Enmienda 9: `pendiente` = lo anotó el organizador y todavía no entró con el enlace. */}
-                {imprescindible?.pendiente ? (
-                  <p className="suave nota-seccion" role="note">
-                    {imprescindible.nombre} todavía no entró con el enlace. Si no entra y marca cuándo puede, no va a haber opción.
-                  </p>
-                ) : null}
-              </div>
-            </fieldset>
-
-            <fieldset className={`form-seccion ${marcado === 'plazo' ? 'grupo-error' : ''}`}>
-              <legend>Cierre para confirmar</legend>
-              <div className="opciones opciones-compactas" role="radiogroup" aria-label="Cierre de aceptación">
-                {(
-                  [
-                    ['dia_antes', 'El día antes, 20:00'],
-                    ['dos_dias', 'Dos días antes, 20:00'],
-                    ['otro', 'Elegir'],
-                  ] as const
-                ).map(([v, t]) => (
-                  <label key={v} className={`opcion-radio ${form.cierre === v ? 'opcion-activa' : ''}`}>
-                    <input type="radio" name="cierre" checked={form.cierre === v} onChange={() => poner('cierre', v)} />
-                    {t}
+          <fieldset className={`form-seccion s3-bloque ${marcado === 'cupos' || marcado === 'imprescindible' ? 'grupo-error' : ''}`}>
+            <legend className="visualmente-oculto">Quiénes</legend>
+            <div className="cupos-fila">
+              <Contador id="cupo-minimo" etiqueta="Mínimo" valor={form.minimo} onCambio={(v) => poner('minimo', v)} />
+              <Contador id="cupo-maximo" etiqueta="Máximo" valor={form.maximo} onCambio={(v) => poner('maximo', v)} />
+            </div>
+            <div className="anfitrion-elegir" role="radiogroup" aria-label="Persona que no puede faltar">
+              <span className="duracion-etiqueta">No puede faltar</span>
+              <div className="s3-avatares">
+                {espacio.miembros.map((m) => (
+                  <label
+                    key={m.miembro_id}
+                    className={`s3-avatar-opcion ${form.imprescindibleId === m.miembro_id ? 'chip-activo' : ''}`}
+                    title={m.nombre}
+                  >
+                    <input
+                      type="radio"
+                      name="imprescindible"
+                      checked={form.imprescindibleId === m.miembro_id}
+                      onChange={() => poner('imprescindibleId', m.miembro_id)}
+                    />
+                    <Avatar nombre={m.nombre} simulado={m.simulado} tam={40} />
+                    <span className="visualmente-oculto">
+                      {m.nombre}
+                      {m.simulado ? ' (Simulación)' : ''}
+                      {m.pendiente ? ' (por entrar)' : ''}
+                    </span>
                   </label>
                 ))}
               </div>
-              {form.cierre === 'otro' ? (
-                <label className="campo" style={{ marginTop: 10 }}>
-                  <span>Cierre de aceptación (hora de {ZONA_VISIBLE})</span>
-                  <input type="datetime-local" value={form.plazoOtro} onChange={(e) => poner('plazoOtro', e.target.value)} />
-                </label>
-              ) : null}
-              {plazo ? (
-                <p className="suave nota-seccion">
-                  <Icono n="cierre" tam={14} /> Cierra {momentoCorto(plazo)}. Hasta entonces se puede confirmar.
+              {/* Enmienda 9: `pendiente` = lo anotó el organizador y todavía no entró con el enlace. */}
+              {imprescindible?.pendiente ? (
+                <p className="suave nota-seccion" role="note">
+                  {imprescindible.nombre} todavía no entró con el enlace. Si no entra y marca cuándo puede, no va a haber opción.
                 </p>
               ) : null}
-            </fieldset>
-
-            {E15_RONDA || E15_DOS_PLANES ? <MasOpciones form={form} poner={poner} /> : null}
-
-            <div className="barra-accion">
-              <Boton type="submit" disabled={soloLectura}>
-                Revisar antes de crear
-              </Boton>
             </div>
-          </form>
-        ) : (
-          <div>
-            <div className="ticket">
-              <div className="ticket-cabeza">
-                <small>Propósito</small>
-                <strong>{form.titulo.trim()}</strong>
+          </fieldset>
+
+          <fieldset className={`form-seccion s3-bloque ${marcado === 'plazo' ? 'grupo-error' : ''}`}>
+            <legend className="visualmente-oculto">Cierre para confirmar</legend>
+            <details className="s3-fila s3-cierre" open={form.cierre === 'otro' || marcado === 'plazo' || undefined}>
+              <summary>
+                <span className="s3-fila-texto">Cierre para confirmar</span>
+                <span className="s3-fila-valor">{plazo ? cierreBreve(plazo) : '—'}</span>
+                <span className="s3-fila-icono s3-chevron" aria-hidden="true">
+                  <Icono n="chevron" tam={16} />
+                </span>
+              </summary>
+              <div className="s3-fila-cuerpo">
+                <div className="opciones opciones-compactas" role="radiogroup" aria-label="Cierre de aceptación">
+                  {(
+                    [
+                      ['dia_antes', 'El día antes, 20:00'],
+                      ['dos_dias', 'Dos días antes, 20:00'],
+                      ['otro', 'Elegir'],
+                    ] as const
+                  ).map(([v, t]) => (
+                    <label key={v} className={`opcion-radio ${form.cierre === v ? 'opcion-activa' : ''}`}>
+                      <input type="radio" name="cierre" checked={form.cierre === v} onChange={() => poner('cierre', v)} />
+                      {t}
+                    </label>
+                  ))}
+                </div>
+                {form.cierre === 'otro' ? (
+                  <label className="campo" style={{ marginTop: 10 }}>
+                    <span>Cierre de aceptación (hora de {ZONA_VISIBLE})</span>
+                    <input type="datetime-local" value={form.plazoOtro} onChange={(e) => poner('plazoOtro', e.target.value)} />
+                  </label>
+                ) : null}
               </div>
-              <ul className="resumen-s3">
-                <li>
-                  <Icono n="reloj" tam={18} />
-                  <span>
-                    <strong>A</strong> {etiquetaA ? `${etiquetaA}: ` : ''}
-                    {franjaTexto(aInicio, aFin)}
-                  </span>
-                </li>
-                <li>
-                  <Icono n="reloj" tam={18} />
-                  <span>
-                    <strong>B</strong> {etiquetaB ? `${etiquetaB}: ` : ''}
-                    {franjaTexto(bInicio, bFin)}
-                  </span>
-                </li>
-                <li>
-                  <Icono n="persona" tam={18} />
-                  <span>
-                    Mínimo <strong>{form.minimo}</strong>, máximo <strong>{form.maximo}</strong>. No puede faltar:{' '}
-                    <strong>{imprescindible?.nombre ?? '—'}</strong>
-                  </span>
-                </li>
-                <li>
-                  <Icono n="cierre" tam={18} />
-                  <span>Se confirma hasta el {momentoCorto(plazo)}</span>
-                </li>
-                {reglaEnviar === 'mas_si' ? (
-                  <li>
-                    <Icono n="check" tam={18} />
-                    <span>Si sirven las dos, gana la que pueden más personas</span>
-                  </li>
-                ) : null}
-                {rondaEnviar ? (
-                  <li>
-                    <Icono n="reloj" tam={18} />
-                    <span>Ronda de opiniones de {rondaEnviar} h después de publicar cada versión</span>
-                  </li>
-                ) : null}
-              </ul>
-            </div>
-            <p className="resumen-nota">Al abrir, cada persona marca en privado cuándo puede.</p>
-            {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} enfocar /> : null}
-            {/* Un solo primario (en la barra). El borrador queda como enlace: rincones f1 lo toca para el estado Borrador. */}
-            <div className="acciones-revisar">
-              <Boton variante="secundario" onClick={() => setPaso('editar')} disabled={ocupado || enCurso}>
-                Volver a editar
-              </Boton>
-              <button
-                type="button"
-                className="enlace"
-                aria-disabled={ocupado || enCurso || soloLectura || undefined}
-                aria-busy={ocupado || enCurso ? true : undefined}
-                onClick={() => {
-                  if (ocupado || enCurso || soloLectura) return
-                  void crear(false)
-                }}
-              >
-                {ocupado || enCurso ? 'Creando…' : 'Crear solo el borrador'}
-              </button>
-            </div>
-            <div className="barra-accion">
-              <Boton onClick={() => void crear(true)} ocupado={ocupado || enCurso} ocupadoTexto="Creando…" disabled={soloLectura}>
-                Crear y abrir al grupo
-              </Boton>
-            </div>
+            </details>
+          </fieldset>
+
+          <div className="barra-accion">
+            <Boton type="submit" ocupado={ocupado || enCurso} ocupadoTexto="Creando…" disabled={soloLectura}>
+              Crear y abrir al grupo
+            </Boton>
+            <p className="s3-nota-final">Cada uno marca en privado cuándo puede. Nadie queda confirmado.</p>
           </div>
-        )}
+        </form>
       </div>
     </div>
   )
+}
+
+/** "Sáb 31 oct" para la fila de una opción. */
+function diaBreve(dia: string): string {
+  if (!dia) return '—'
+  const p = partesDia(dia)
+  const d = p.dia.slice(0, 3)
+  return `${d.charAt(0).toLocaleUpperCase('es')}${d.slice(1)} ${p.num} ${p.mes}`
+}
+
+/** "Jue 29, 20:00" para la fila del cierre. */
+function cierreBreve(plazo: string): string {
+  const p = partesDia(plazo.slice(0, 10))
+  const d = p.dia.slice(0, 3)
+  return `${d.charAt(0).toLocaleUpperCase('es')}${d.slice(1)} ${p.num}, ${plazo.slice(11, 16)}`
 }
 
 /**
@@ -639,13 +586,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
 function MasOpciones({ form, poner }: { form: Formulario; poner: <K extends keyof Formulario>(k: K, v: Formulario[K]) => void }) {
   const cambiado = form.rondaHoras !== null || form.regla !== 'temprana'
   return (
-    <details className="form-seccion plegable mas-opciones" open={cambiado || undefined}>
-      <summary>
-        <span className="summary-texto">
-          <span>Más opciones</span>
-          <small className="suave">{E15_DOS_PLANES ? 'Opcional: tiempo para opinar y cómo se elige' : 'Opcional: tiempo para opinar'}</small>
-        </span>
-      </summary>
+    <div className="mas-opciones" data-cambiado={cambiado || undefined}>
       {E15_RONDA ? (
         <div className="mas-opciones-bloque">
           <div className="opciones opciones-compactas" role="radiogroup" aria-label="Ronda de opiniones">
@@ -683,7 +624,7 @@ function MasOpciones({ form, poner }: { form: Formulario; poner: <K extends keyo
           </p>
         </div>
       ) : null}
-    </details>
+    </div>
   )
 }
 
