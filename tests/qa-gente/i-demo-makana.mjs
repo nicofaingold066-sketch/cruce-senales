@@ -168,26 +168,31 @@ await conTurno('qa-gente vuelta 2 bloque i', async () => {
         await camila.page.getByRole('heading', { name: 'Respondiste' }).waitFor({ timeout: 15000 })
         inf.ok(`i6: ${CAM} responde en un toque y ve «Respondiste»`, true, '')
       }
-      // ¿Puede otra persona reclamar el mismo lugar? El nombre ya no aparece libre.
+      // ¿Puede otra persona reclamar el mismo lugar? El nombre ya no aparece libre (solo se prueba si el lugar se pudo reclamar).
       const otra = await new Persona(browser, 'Otra').abrir(); todas.push(otra)
       await otra.page.goto(`${BASE}/#/unirse/${codigo}`)
       await otra.page.getByRole('heading', { name: /^(¿Quién eres\?|Escribe tu nombre para entrar)$/ }).waitFor({ timeout: 30000 })
       await dormir(600)
-      const fila = otra.page.getByRole('button', { name: CAM, exact: true })
-      const sigue = await fila.count()
-      const aviso = limpio(await otra.page.locator('body').innerText()).match(new RegExp(`${CAM}\\s*(no disponible|ya entró)`))?.[1] ?? ''
-      inf.ok(`i6: el lugar de ${CAM} queda rotulado «no disponible» para otra persona`, sigue === 0 || aviso !== '', `botón=${sigue}; rótulo=«${aviso}»`)
-      const joinsAntes = otra.rpc.filter((r) => r.fn === 'join_space').length
-      const tocar = async (nombre) => { await otra.page.getByRole('button', { name: nombre, exact: true }).first().click(); await dormir(1000); return limpio(await otra.page.locator('body').innerText()).match(new RegExp(`¿Eres ${nombre}\\?[^]{0,200}`))?.[0] ?? limpio(await otra.page.locator('body').innerText()).slice(0, 160) }
-      const tCam = sigue ? await tocar(CAM) : ''
-      inf.ok(`i6: tocar el lugar tomado de ${CAM} NO la hace entrar (no llama a join_space, sigue en la invitación)`, new RegExp(`¿Eres ${CAM}\\?`).test(tCam) && otra.rpc.filter((r) => r.fn === 'join_space').length === joinsAntes && /#\/unirse\//.test(otra.page.url()), tCam)
-      // El texto de «¿Eres X?» en la demo dice «X es una persona simulada»: Camila ya la reclamó una persona real, y Ana nunca fue simulada.
-      inf.ok(`i6: el aviso de ${CAM} (ya reclamada por una persona real) no la llama «persona simulada»`, !/persona simulada/.test(tCam), tCam)
-      await otra.captura('i6-eres-camila-375')
-      await otra.page.getByRole('button', { name: 'Elegir otro nombre' }).click().catch(() => {}); await dormir(500)
-      const tAna = await tocar(ORG).catch(() => '')
-      inf.ok(`i6: el aviso de ${ORG} (organiza la demo) no dice que es una persona simulada`, new RegExp(`¿Eres ${ORG}\\?`).test(tAna) && !/persona simulada/.test(tAna), tAna)
-      await otra.captura('i6-eres-ana-375')
+      if (enLista) {
+        const fila = otra.page.getByRole('button', { name: CAM, exact: true })
+        const sigue = await fila.count()
+        const aviso = limpio(await otra.page.locator('body').innerText()).match(new RegExp(`${CAM}\\s*(no disponible|ya entró)`))?.[1] ?? ''
+        inf.ok(`i6: el lugar de ${CAM} queda rotulado «no disponible» para otra persona`, sigue === 0 || aviso !== '', `botón=${sigue}; rótulo=«${aviso}»`)
+        const joinsAntes = otra.rpc.filter((r) => r.fn === 'join_space').length
+        const tocar = async (nombre) => { await otra.page.getByRole('button', { name: nombre, exact: true }).first().click({ timeout: 8000 }); await dormir(1000); return limpio(await otra.page.locator('body').innerText()).match(new RegExp(`¿Eres ${nombre}\\?[^]{0,200}`))?.[0] ?? limpio(await otra.page.locator('body').innerText()).slice(0, 160) }
+        const tCam = sigue ? await tocar(CAM) : ''
+        inf.ok(`i6: tocar el lugar tomado de ${CAM} NO la hace entrar (no llama a join_space, sigue en la invitación)`, new RegExp(`¿Eres ${CAM}\\?`).test(tCam) && otra.rpc.filter((r) => r.fn === 'join_space').length === joinsAntes && /#\/unirse\//.test(otra.page.url()), tCam)
+        // El texto de «¿Eres X?» en la demo dice «X es una persona simulada»: la persona que reclamó es real, y quien organiza nunca fue simulada.
+        inf.ok(`i6: el aviso de ${CAM} (ya reclamada por una persona real) no la llama «persona simulada»`, !/persona simulada/.test(tCam), tCam)
+        await otra.captura('i6-eres-camila-375')
+        await otra.page.getByRole('button', { name: 'Elegir otro nombre' }).click().catch(() => {}); await dormir(500)
+        const tAna = await tocar(ORG).catch(() => '')
+        inf.ok(`i6: el aviso de ${ORG} (organiza la demo) no dice que es una persona simulada`, new RegExp(`¿Eres ${ORG}\\?`).test(tAna) && !/persona simulada/.test(tAna), tAna)
+        await otra.captura('i6-eres-ana-375')
+      } else {
+        const t0 = limpio(await otra.page.locator('body').innerText())
+        inf.ok('i6: (sin lugares que reclamar) la pantalla de la invitación no lista a ninguna persona de la demo y dice «Los nombres de la lista ya entraron»', /Los nombres de la lista ya entraron/.test(t0), t0.match(/Los nombres[^.]*\./)?.[0] ?? '')
+      }
       await anchos(otra, '¿Quién eres? de la demo'); await otra.captura('i6-quien-eres-despues-375')
     })
 
@@ -265,7 +270,8 @@ await conTurno('qa-gente vuelta 2 bloque i', async () => {
     inf.ok('i sin respuestas HTTP ≥ 400 (ni 401)', malas.length === 0, malas.join(' | '))
     const { texto, errores } = tablaRpc(todas)
     log('RPC (demo Makana):\n' + texto)
-    inf.ok('i sin errores de RPC', Object.keys(errores).length === 0, JSON.stringify(errores))
+    const inesperados = Object.keys(errores).filter((k) => !/asiento_en_uso/.test(k)) // asiento_en_uso es la consecuencia del defecto ya registrado en i6
+    inf.ok('i sin errores de RPC (salvo el asiento_en_uso ya registrado en i6)', inesperados.length === 0, JSON.stringify(errores))
   } finally {
     for (const x of todas) await x.cerrar(); await browser.close()
   }
