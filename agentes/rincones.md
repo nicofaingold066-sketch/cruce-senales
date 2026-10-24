@@ -4,6 +4,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/rincones` (copia `/Users/macair/cru
 Método: Playwright contra mi build, en un GRUPO NUEVO propio (el demo solo se mira, no se resetea). Veredictos: APROBADO / OBSERVADO / ROTO. Yo no arreglo nada: pido al dueño.
 
 ## Tocando ahora
+- [21:06] Corrida 4 (sobre `main` 3ace04e) en PAUSA automática desde las 21:01 por MIGRACION EN CURSO de backend (enmienda 13, 0042–0044); `f0` y `f1` ya corrieron sobre el build nuevo. Mientras: módulo de accesibilidad `tests/rincones/a11y.mjs` listo y autoprobado (`prueba-a11y/`), guion `f12` de la demo listo para correr apenas se libere la base.
 - [20:58] `tests/rincones/**` y `docs/rincones.md`. Encargo del coordinador (20:48): (1) corrida 4 en curso sobre `main`/`wip/fundamentos` = `3ace04e` para marcar qué OBSERVADO pasó a APROBADO; (2) sumo al inventario "Responder en un paso", calendario simulado, "Datos ficticios", invitación con modalidad (cuando llegue de friccion) y, con la enmienda 13, "Así no puedo, pero sigo", "Rearmar con lo nuevo" y la baja sin nombre; (3) accesibilidad a fondo en la demo (módulo `tests/rincones/a11y.mjs`: lector de pantalla, teclado, contraste sobre píxeles, 320 px, espaciado, anuncios); (4) resumen a las 08:00. Commit y push cada ≤30 min.
 
 ## Entregado
