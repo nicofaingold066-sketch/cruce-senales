@@ -8,7 +8,17 @@ Reglas: las causas van como «creemos que»; soledad **solo con su rango**, nunc
 
 ---
 
-## 1. El texto (90–120 segundos)
+## 0. Apertura antes del video (Nico, 20–30 segundos, pedido de Nico)
+
+- «Una pregunta antes de empezar. Levanten la mano: ¿quién tuvo problemas para juntarse con sus amigos?» *(levantás la tuya primero; pausa, mirás la sala)*
+- «Déjenla arriba si alguna vez alguien escribió en el grupo *che, ¿cuándo nos juntamos?*… y nunca pasó.»
+- «Bueno. No es que falten ganas ni amigos. Todos dicen *dale*, nadie dice *no puedo*, y el plan se queda en el chat.»
+- «A nosotros nos pasó el 8 de octubre: seis interesados, cero encuentros.»
+- «Les mostramos cómo lo resolvimos.» → **play al video**.
+
+Si la sala no levanta la mano: «Bueno, entonces son los únicos con amigos puntuales. Les cuento lo que nos pasa al resto.» Si el video ya abre con el 8 de octubre, se saca esa línea de acá.
+
+
 
 ### 0:00–0:25 · Por qué este problema (Nico)
 - «Lo que acaban de ver no es un problema de agenda.»
