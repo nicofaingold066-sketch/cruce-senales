@@ -9,7 +9,7 @@ Cada diapositiva tiene el mismo encabezado (logo CRUXE a la izquierda, número y
 | # | Bloque · minuto | En pantalla | Para decir (pistas) |
 |---|---|---|---|
 | 1 | Gancho · 0:00 | «Che, ¿cuándo nos juntamos?» | Manos arriba · déjenla arriba si nunca pasó · pausa 2 s |
-| 2 | Problema · 0:30 | Siete amigos: «Siempre la misma propuesta: pádel y comida» + lo que nadie dice (gratis, traslado simple, algo tranquilo) | El plan no le sirve a todos · nadie explica sus razones · 8 de octubre: 6 interesados, 0 encuentros |
+| 2 | Problema · 0:30 | Siete amigos: «Siempre la misma propuesta: pádel y comida» + lo que nadie dice (Carlos: algo gratis; Kai: un traslado simple; Charlie: algo más tranquilo) | El plan no le sirve a todos · nadie explica sus razones · 8 de octubre: 6 interesados, 0 encuentros |
 | 3 | Conflicto · 1:10 | «WhatsApp sirve para hablar del plan. No para cerrarlo.» Privado · Compromiso · Reparar | Con los dedos · «las que probamos» · el cierre |
 | 4 | Solución · 1:50 | «Que el encuentro ocurra.» 4 pasos | La frase lenta · un paso por dedo · «Juan, mostrémoslo» |
 | 5 | Demo en vivo · 2:10 | Pasos de la demo sin nombres (la demo en vivo es Makana) + 2 capturas de producción | Pausa antes de que alguien se baje; narrar con los nombres de la demo en pantalla (`docs/pitch/demo-en-vivo.md`, rama `pitch`) |
