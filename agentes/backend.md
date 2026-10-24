@@ -3,7 +3,6 @@
 Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:56 Santiago (reloj).
 
 ## Tocando ahora
-- [22:47] **MIGRACION EN CURSO** (0050: arreglos de la revisión de la E14). Nadie corre pruebas contra la base hasta que saque esta línea; unos 8 minutos con las pruebas.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -84,6 +83,7 @@ Ninguno.
 - coordinador: commit de los cambios en tests/backend (helpers.ts, privacidad-audiencia.test.ts, reinicio-demo.test.ts, enmienda2.test.ts nuevo).
 
 ## Entregado
+- [22:53] **0050 aplicada** (22:48, `2d6cbed`; archivo y pruebas `1af934d`; Implementación `ecd…` en `docs/contrato-enmienda-14.md`): arreglos de la revisión de la E14. (1) en `en_revision`, quien no organiza lee "La versión N ya no reúne lo necesario para juntarse." (organizador: la causa, como antes); (2) `cultura` como propósito vale como familia (sin +3, frase ni quórum); (3) en libre el agente social vuelve a mínimo `least(3, máximo)`. 12 de 16 archivos en serie, 78/78 + 4 omitidas. Base libre desde las 22:53.
 - [22:40] **E14 cerrada de mi lado.** 0049 aplicada 22:22 (`f653d0e`), pruebas `7b41b07`, Implementación en `docs/contrato-enmienda-14.md` (`03e19c2`, `8b639de`: fiesta queda como límite documentado). Suite completa en serie sin concurrencia (22:32–22:39): 93/94 + 4 omitidas; la única falla fue un `statement timeout` de `open_proposal` en E13.4 con la base cargada (la suite tardó 454 s, el doble de lo normal); E13 sola 6/6 en 19 s a las 22:39.
 - [22:12] **E14 0048 aplicada** (22:03; `wip/backend` `128a0c8` migración, `8594fe1` pruebas): familias, `espacios.proposito`, `propuestas.actividad`, catálogo con familia/personas y filas 15–17, `create_space(..., p_proposito)` y `create_proposal(..., p_actividad)` (firmas de 5 y 10, una por nombre), `fuera_de_proposito`, `actividad` en la vista y el resumen. Lista 41/0, `verificar_privilegios()` sin hallazgos. Suite serial completa: 89 + 5 re-basadas (básquet entra como candidata en E7/E10, preview con propósito en E9, 16 actividades) → verde; enmienda14 8/8 (las pruebas 3 a 6 esperan la 0049).
 - **0047 (E13, correcciones de la revisión adversarial)** (21:50): aplicada 21:48, commits `dea429b` (migración y pruebas) y `4803cfb` (Implementación). Pruebas en serie: enmienda13, privacidad-audiencia, aceptacion-reparacion, enmienda7, enmienda12: 27/27 + 1 omitida (21:48:47 a 21:49:57). 41/0, `verificar_privilegios` sin hallazgos.
