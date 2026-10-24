@@ -371,7 +371,10 @@ Deno.serve(async (req) => {
         const clave = Deno.env.get(proveedor.variableClave)
         if (!clave) throw new Error('modelo_no_disponible')
         const client = new Anthropic({ apiKey: clave, baseURL: proveedor.baseURL, timeout: plazo, maxRetries: 0 })
-        return client.messages.create(pedido, { signal })
+        const respuesta = await client.messages.create(pedido, { signal })
+        // Igual que el resto del agente: is_byok, proveedor y modelo al registro, en segundo plano y sin la clave.
+        registrarGeneracion(proveedor, clave, (respuesta as { id?: unknown }).id)
+        return respuesta
       },
     })
     return responder(await atenderSocial(entrada, { cliente: supabase, modelo, signal: req.signal }))

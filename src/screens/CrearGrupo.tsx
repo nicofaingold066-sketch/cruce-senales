@@ -40,7 +40,16 @@ export default function CrearGrupo() {
   // nombre escrito sin "Agregar" (se perdería en silencio). Se mira al tocar, no al dibujar.
   const [pregunta, setPregunta] = useState<{ sinLista: boolean; escrito: boolean } | null>(null)
   const zonaIntegrantes = useRef<HTMLDivElement>(null)
-  const escritoSinAgregar = () => (zonaIntegrantes.current?.querySelector('input')?.value.trim() ?? '') !== ''
+  // Solo cuenta un nombre que "Agregar" sumaría: no uno repetido, ni el propio, ni uno de más de 30 letras (esos
+  // CampoIntegrantes los rechaza y deja escritos; preguntar por ellos trabaría la creación sin salida).
+  const escritoSinAgregar = () => {
+    const texto = zonaIntegrantes.current?.querySelector('input')?.value ?? ''
+    const igual = (a: string, b: string) => a.trim().toLocaleLowerCase('es') === b.trim().toLocaleLowerCase('es')
+    return texto
+      .split(/[,;\n\r]+/)
+      .map((x) => x.replace(/\s+/g, ' ').trim())
+      .some((n) => n !== '' && n.length <= 30 && !igual(n, visible) && !integrantes.some((a) => igual(a, n)))
+  }
 
   function irALista() {
     setPregunta(null)
@@ -104,7 +113,8 @@ export default function CrearGrupo() {
               integrantes={integrantes}
               cambiar={(lista) => {
                 setIntegrantes(lista)
-                if (lista.length > 0) setPregunta(null)
+                // Con la lista cambiada, la pregunta abierta ya no vale: el próximo "Crear grupo" vuelve a mirar.
+                setPregunta(null)
               }}
               tuNombre={visible}
             />
