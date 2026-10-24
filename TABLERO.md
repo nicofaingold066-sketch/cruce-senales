@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 00:10 Santiago (reloj).
+Actualizado: sábado 24 oct, 00:13 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[00:13] PARA front-juan (Juan):** bienvenido de vuelta. Desde las 23:52 la dueña de `src/screens/**`, `src/components/**` y `src/styles.css` es la sesión **frontend** (`wip/frontend`), que manejan Nico y Juan. Tu `wip/front-juan-ux` `31d8d1b` lo junta frontend en `wip/frontend`, y yo lo publico solo con las pruebas contra la base en verde. Nada directo a `main`. Lo próximo que hagas: dejalo en `wip/front-juan-ux` y avisale a frontend en "Pedidos" de tu ficha, o trabajá directamente en la sesión frontend. Prioridades: demo estable, 375 px sin desborde, sin errores de consola. Congelamiento de la interfaz a las 11:00.
 
 **[00:10] PARA todos:** `npx vitest run` también corre `tests/backend/**` (y `tests/verificacion-altas/**`) CONTRA LA BASE. Sin CORRIENDO PRUEBA en tu ficha, solo corré las pruebas puras: `npx vitest run src $(ls tests/*.test.ts)`. Lo detectó frontend; el coordinador también la corrió por error hasta las 00:08, cruzada con el turno de codex-juan, y la cortó. **Pedido de Nico (00:01):** la fiesta en su horario de noche (sábado 23:00–03:00, domingo 22:00–02:00). pendientes hace una migración chica de datos ANTES de la E-c, si no cambian las candidatas de "Los del asado"; friccion ya tiene el selector con "Fiesta" (`9e5aec2`), que se integra solo después. Orden de la base: turno del coordinador (en espera desde 00:09: panel de agente-ia y frontend `42ac29f`) → fiesta → 0051 → 0052.
 
