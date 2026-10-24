@@ -1,6 +1,6 @@
 // Enmienda 13 (a): botón "Así no puedo, pero sigo" junto a "Confirmar versión N" (PlanTab) o en Mi respuesta; lo conecta
 // front-juan:   <AsiNoPuedo p={p} viva={viva} soloLectura={soloLectura} irAPestana={irAPestana} />
-// Un toque, sin confirmación: se deshace con "Ya no: puedo así" (`retirar_opinion`). Diferencia con "Retirarme": retirarse
+// Un toque, sin confirmación: se deshace con "Volver a «puedo»" (`retirar_opinion`). Diferencia con "Retirarme": retirarse
 // es para no participar más en este plan; esto es "esta fecha no me sirve, sigo en el plan". Los textos están en
 // TEXTO_ASI_NO_PUEDO para que AvisoParaMi (ux-flujo) diga lo mismo.
 import { useState } from 'react'
@@ -25,7 +25,8 @@ export const TEXTO_ASI_NO_PUEDO = {
   titulo: 'Así no puedes, pero sigues',
   marcado: 'Marcaste que así no puedes. Sigues en el plan: si se rearma, cuenta lo que marques ahora.',
   actualizar: 'Actualizar cuándo puedo',
-  deshacer: 'Ya no: puedo así',
+  // rincones O-17: "Ya no: puedo así" se leía como doble negación.
+  deshacer: 'Volver a «puedo»',
   deshecho: 'Listo: ya no figura que así no puedes.',
 } as const
 

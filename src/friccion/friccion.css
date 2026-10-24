@@ -189,3 +189,10 @@
 .rapida-interes .btn {
   width: 100%;
 }
+
+/* ¿Para qué es este grupo? (enmienda 14) */
+.proposito-sel {
+  width: 100%;
+  min-height: 48px;
+  font: inherit;
+}
