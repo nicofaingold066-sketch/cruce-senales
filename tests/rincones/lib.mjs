@@ -306,8 +306,16 @@ export async function rincon(page, id, rincon, { foco = false, anchos = ANCHOS, 
 export const nota = (id, texto) => { (veredictos[id] ??= { rincon: id, notas: [] }).notas.push(texto); log(`  nota ${id}: ${texto}`) }
 export const marcar = (id, v, texto) => { (veredictos[id] ??= { rincon: id, notas: [] }).manual = v; if (texto) nota(id, texto) }
 
+// Bundle del build contra el que corrió la fase (assets/index-XXXX.js): producción cambia a mitad de la noche y el resumen tiene
+// que decir con qué versión se aprobó cada rincón. Se lee del HTML de la base al guardar; si no se puede, queda null.
+async function bundleDe(base) {
+  try { const html = await (await fetch(`${base}/`, { signal: AbortSignal.timeout(5000) })).text(); return html.match(/assets\/index-[A-Za-z0-9_-]+\.js/)?.[0] ?? null } catch { return null }
+}
 export function guardar(nombre = 'hallazgos') {
-  writeFileSync(`${CARPETA}/${nombre}.json`, JSON.stringify({ hora: hora(), base: BASE, hallazgos, veredictos, errores }, null, 1))
+  const salida = { hora: hora(), base: BASE, bundle: null, hallazgos, veredictos, errores }
+  writeFileSync(`${CARPETA}/${nombre}.json`, JSON.stringify(salida, null, 1))
+  // El bundle se completa aparte para no volver asíncrona a guardar(); los guiones terminan después de este await implícito.
+  void bundleDe(BASE).then((b) => { salida.bundle = b; try { writeFileSync(`${CARPETA}/${nombre}.json`, JSON.stringify(salida, null, 1)) } catch {} })
   return `${CARPETA}/${nombre}.json`
 }
 export const boton = (p, texto) => p.getByRole('button', { name: texto, exact: true })
