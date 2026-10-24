@@ -1,6 +1,6 @@
 # De la investigación al producto (#102)
 
-Dueño: ux-flujo (rama `wip/ux`). Pedido de Nico: "no perder nada de lo que estudiamos y meterlo en la aplicación". Último barrido: viernes 23 oct 2026, 21:08. Próximos barridos: 23:00 y 07:00.
+Dueño: ux-flujo (rama `wip/ux`). Pedido de Nico: "no perder nada de lo que estudiamos y meterlo en la aplicación". Último barrido: viernes 23 oct 2026, 21:10. Próximos barridos: 23:00 y 07:00.
 
 Fuentes (todas en origin): `docs/flujo-usuario.md` (FU) y `docs/output-debate.md` (OD), de ux-flujo; `docs/usuarios-sinteticos.md` (SIN); `docs/rincones.md` (RIN); `docs/qa-noche.md` (QA); `docs/agente-barrido.md` (AB); `docs/apertura.md` (AP); `docs/catalogo-ampliado.md` (CA); `docs/preguntas-jurado.md` (PJ); `docs/psicologia-grupo.md` (PSI); `prompts/contexto-dia-pitch-reglas.md` (CDP) y `prompts/contexto-dia-login-agente-social.md` (CDL).
 
@@ -10,7 +10,7 @@ Impacto: **A** se cierra la juntada en la demo · **B** se entiende a la primera
 Estado: "HECHO" con commit; "sin conectar" = componente listo que espera a front-juan (Nico decidió esperar a Juan); "pedido" = línea enviada al dueño en su ficha o la de quien lo encontró; "decisión de Nico" = está en "Decisiones para Nico" de `agentes/ux-flujo.md` o de la ficha de quien la propuso.
 
 
-Resumen: 138 filas (A 23, B 43, C 22, D 34, E 16). 92 antes de las 11:00, 23 antes de las 12:00, 23 después. Con algo hecho: 44; componentes listos sin conectar: 15; con decisión de Nico de por medio: 16.
+Resumen: 138 filas (A 23, B 43, C 22, D 34, E 16). 92 antes de las 11:00, 23 antes de las 12:00, 23 después. Con algo hecho: 45; componentes listos sin conectar: 16; con decisión de Nico de por medio: 16.
 
 | # | Impacto | Hallazgo (fuente) | Cambio concreto en la app | Dueño | Tipo | Cuándo | Estado |
 |---|---|---|---|---|---|---|---|
@@ -75,7 +75,7 @@ Resumen: 138 filas (A 23, B 43, C 22, D 34, E 16). 92 antes de las 11:00, 23 ant
 | 59 | B · se entiende | Comentario de `Intro.tsx` dice que la animación sale en la invitación (CDL S1§6) | Corregir el comentario | front-juan | texto | antes de las 11:00, sin migración | sin pedido: solo un comentario de código, sin efecto en pantalla |
 | 60 | B · se entiende | "Empresa" quedó descartada; el motor la admite pero no debe verse (CDP S1§5, final 7) | Revisar que ninguna pantalla, texto ni ejemplo muestre Empresa | front-juan | texto | antes de las 11:00, sin migración | decidido: solo lo social; verificación pedida a front-juan 20:43 |
 | 61 | B · se entiende | "Elegido para que nadie viaje demasiado" cuando hay viaje (PSI §12 U5) | Línea en la tarjeta del borrador del agente | agente-ia | texto | antes de las 11:00, sin migración | pedido 20:45 (ux-flujo, reenviado de psico) |
-| 62 | B · se entiende | Ubicación: día, hora y lugar siempre visibles; cómo llegar sin datos de personas (PSI §12, D10) | Botón "Buscar el lugar en el mapa" (Google Maps con el título del plan, sin datos de personas) | front-juan | componente | antes de las 11:00, sin migración | DECIDIDO por Nico 21:06 (D10): sí; psico manda el pedido al dueño |
+| 62 | B · se entiende | Ubicación: día, hora y lugar siempre visibles; cómo llegar sin datos de personas (PSI §12, D10) | Botón "Buscar el lugar en el mapa" (Google Maps con el título del plan, sin datos de personas) | ux-flujo + front-juan | componente | antes de las 11:00, sin migración | DECIDIDO por Nico 21:06 (D10); componente `BuscarLugar` HECHO `2207353` (oculto en el demo; 36/36), sin conectar |
 | 63 | B · se entiende | El panel del agente abre con "Me gustaría" en rojo y "Marcá al menos una." antes de tocar nada (RIN O-15) | Mostrar el error solo después de intentar guardar; y en tuteo ("Marca al menos una") | agente-ia | texto | antes de las 11:00, sin migración | pedido de rincones |
 | 64 | B · se entiende | "Con condiciones 4" cuenta a quien dijo No/No (SIN H6) | `personas_que_pueden` (cuántos con al menos un Sí), solo al organizador | backend | enmienda | después de la demo | decidido por Nico 20:51: no por ahora |
 | 65 | B · se entiende | "Me interesa" solo se ofrece con algún Sí: no hay "quiero, pero otro día" (SIN situaciones) | Ver fila de opinión estructurada (OD §2) y "me interesa pero otro día" | Nico | decisión | después de la demo | propuesto |
