@@ -1,25 +1,27 @@
-# Codex · preferencias más ordenadas
+# Codex · preferencias y apariencia
 
-Pedido directo del usuario: «quiero que cambiemos en la parte de preferencias de cada uno, que sea mas ordenado visualmente y sea mas estetico». Alcance: presentación de las preferencias privadas, en rama aislada; sin publicar producción.
+Pedido directo del usuario: ordenar las preferencias, agregar modo Claro/Oscuro, quitar las esquinas violetas y usar el título elegido «GRU · Planes para el grupo». Después autorizó: «cuando teermines publica los cambios e integralos en la app».
 
 ## Tocando ahora
-- Integración/publicación hechas: `main` y `codex/preferencias-visuales` = `8fba205` (push atómico normal, desde main `27bcc6c`). GitHub confirma Vercel success para ese SHA; producción ya sirve el arranque de tema y `index-amv0LR_h.css`. Prueba final del build publicado en curso con Auth/RPC interceptadas.
-- Integración actualizada con `main` `27bcc6c`: conserva GRU publicado (`07f037c`) y vida (`27bcc6c`). Se añade `src/estilo/vida.css` al reclamo, únicamente su bloque oscuro para que respete el selector manual; no se altera su paleta ni animaciones.
-- Nuevo pedido directo del usuario: «cuando teermines publica los cambios e integralos en la app». Autoriza integración/publicación de preferencias y tema, con el título elegido y corrección del violeta. Se conservarán los avances de main al integrar; sin despliegues de backend.
-- Ampliación directa del usuario: selector claro/oscuro en preferencias, quitar esquinas violetas y título elegido «GRU · Planes para el grupo».
-- Nuevos `src/lib/tema.ts`, `src/components/PreferenciaTema.tsx`, `src/components/PreferenciaTema.css`; `index.html` y una importación en `src/main.tsx` para tema persistente desde el arranque.
-- `src/styles.css`, `src/estilo/seccion-s4.css`: solo transformar los selectores del modo oscuro; `src/estilo/seccion-s6.css`: neutralizar fondo externo de preferencias.
-- `src/screens/Perfil.tsx`: montar Apariencia. Excepción puntual del pedido nuevo: importación y montaje de Apariencia en `src/agente/AgentePanel.tsx` y tres rótulos del título en `src/screens/Espacio.tsx`. Esos dos archivos tienen trabajo de GRU en su otra copia: solo se tocan estos fragmentos en la rama aislada; no se modifica su checkout ni sus funciones. Al integrar, conservar «GRU · Planes para el grupo» y Apariencia junto con el personaje.
-- Rama `codex/preferencias-visuales`, copia `/Users/macair/cruse/cruce-preferencias`; pruebas locales con fixtures, sin base ni modelos.
-
-## Pedidos
-- Coordinador: entrega de preferencias lista para integrar en el circuito habitual: `codex/preferencias-visuales` `565d350`. Único archivo `src/estilo/seccion-s6.css`; no se editó AgentePanel.tsx, que está reclamado por GRU. No se publicó producción ni se solicita trabajo a otras conversaciones.
+Vacío. Implementación, integración, publicación y verificación terminadas. Copia propia `/Users/macair/cruse/cruce-preferencias`, rama `codex/preferencias-visuales`.
 
 ## Entregado
-Objetivo visual cumplido. Actividades en cuadrícula, selección con marca además de color, bloques suaves para presupuesto/energía/ambiente/lugar, viaje y permisos con espaciado uniforme, acciones separadas y resumen más cuidado. Estilos limitados a `#agente-preferencias`, cuadrícula por ancho del contenedor, modos claro/oscuro existentes, alto contraste con controles nativos. Sin JSX, lógica, contratos, dependencias ni archivos de configuración modificados.
+Objetivo cumplido: **`main` y `codex/preferencias-visuales` = `8fba205`**, publicación automática Git/Vercel confirmada con estado success del SHA. App: https://cruce-senales.vercel.app/#/perfil . Push atómico normal desde main `27bcc6c`, sin reescribir historia.
 
-Typecheck y build finales verdes con ejecutables originales restaurados; `git diff --check` correcto. Quince casos de navegador local verificados: 320/375/768/1280 en claro y oscuro; opciones abiertas/cerradas, validación vacía con foco, guardar/resumen/editar/cancelar, consentimiento independiente, solo lectura, teclado, movimiento reducido y alto contraste. Cero desbordes, objetivos visibles >=44 px, errores JS o solicitudes externas. La primera expectativa de duración exactamente 0 falló por la política global de 1e-06s; se ajustó a umbral de movimiento imperceptible y el caso pasó. Red y datos completamente ficticios; no certifica persistencia remota.
+Selector Apariencia en Perfil y Mis preferencias: Claro, Oscuro y Sistema, aplicado al instante a toda la app. Persistencia local con respaldo de sesión/memoria, sincronía entre pestañas y cambios del sistema solo en modo Sistema. Inicialización antes de React para evitar destello. Título elegido en cabecera y acceso del grupo. Fondo exterior del formulario neutro, sin degradado violeta.
 
-Vista previa interactiva: `http://127.0.0.1:4203/`. Arnés fuera del repo: `/tmp/cruxe-preferencias-preview/`. Capturas y salidas: `/Users/macair/.codex/visualizations/2026/10/24/01a16da8-de03-7fc0-ba16-59b52a264cc7/preferencias/`.
+Archivos finales respecto al main previo: `index.html`, `src/main.tsx`, nuevos `src/lib/tema.ts` y `src/components/PreferenciaTema.{tsx,css}`, montaje mínimo en `src/agente/AgentePanel.tsx` y `src/screens/Perfil.tsx`, rótulos en `src/screens/Espacio.tsx`, selectores oscuros en `src/styles.css`, `src/estilo/seccion-s4.css`, `src/estilo/vida.css`, y contenedor en `src/estilo/seccion-s6.css`. Sin dependencias, contratos, backend o migraciones modificados.
 
-Incidente local resuelto: el wrapper pnpm instaló automáticamente y movió once dependencias compartidas a `.ignored`. Se restauraron los once directorios originales y enlaces de binarios, se retiraron el lockfile/config generados y se repitió typecheck/build con Node directo, todo verde. Ningún cambio de dependencias en Git.
+Integración preserva todo el GRU publicado (`07f037c`), su formulario legible (`3cb0c07`), los ajustes de intro/ayuda y vida (`27bcc6c`). Los conflictos de importación y título se resolvieron con ambos imports y el título elegido por el usuario. El CSS inicial de cuadrícula `565d350` se simplificó al integrar: los controles usan `gru-preferencias.css` existente, sin indicadores duplicados. La única modificación a vida es su selector oscuro para respetar la elección manual; paleta y animaciones conservadas.
+
+Verificación final: typecheck/build/diff-check verdes y árbol limpio. Dieciséis escenarios locales de tema/arranque/almacenamiento/teclado/navegación, ocho tamaños-temas incluidos, pasaron; diez rechecks tras integrar GRU y vida, también. El navegador probó **el build real publicado a 375/1280/320 px**, con Claro y Oscuro forzados sobre el sistema opuesto, recargas, navegación Perfil → grupo → GRU → Perfil, Sistema reactivo, título y esquinas corregidas; cero desbordes o errores JS/assets. Tres Auth y 39 RPC completamente mockeadas, cero llamadas reales a base/modelos. No se certifica persistencia remota de gustos; el tema es local.
+
+Producción sirve `index-DHg1mK-A.js` y `index-amv0LR_h.css`, con el script de arranque de tema. Estado Vercel comprobado por GitHub para el SHA exacto (el conector Vercel no tiene acceso al equipo; no hizo falta cambiar permisos). Las discrepancias iniciales del arnés se corrigieron: ruta real `/private/tmp` de Vite, fieldset de Apariencia siempre visible, y equivalencia rgba/hex con alfa tras minificar; no eran defectos del producto.
+
+Evidencia y capturas: `/Users/macair/.codex/visualizations/2026/10/24/01a16da8-de03-7fc0-ba16-59b52a264cc7/preferencias/produccion/`. Reporte: `verificacion-produccion.json`. Arnés: `/tmp/cruxe-preferencias-preview/`. Vista local: http://127.0.0.1:4203/ .
+
+## Pedidos
+Ninguno. Publicación ya autorizada y completada. El coordinador puede incorporar el main publicado a su rama de integración habitual preservando este selector y el título elegido.
+
+## Incidente local anterior, resuelto
+El wrapper pnpm instaló automáticamente y movió once dependencias compartidas a `.ignored` en el primer corte. Se restauraron los once directorios originales y enlaces de binarios, se retiraron el lockfile/config generados y se repitió typecheck/build con Node directo, todo verde. Ningún cambio de dependencias en Git.
