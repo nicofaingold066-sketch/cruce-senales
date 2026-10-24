@@ -4,7 +4,7 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- [01:25] `wip/frontend-e15`: enciendo `E15_RONDA` (0052 aplicada 01:17) en `src/screens/NuevaPropuesta.tsx`. **Pido turno de base al final de la cola** (unos 5 min): UNA propuesta en mi demo con ronda de 2 h, para ver "Opiniones hasta …" y que rearmar no aparezca con la ronda abierta. Todavía NO uso la base: espero mi turno (después de front-juan, la tanda del coordinador y la 0053).
+- [01:43] `wip/frontend-e15` = `48bafdf`: E15 ENTERA encendida (ronda, dos planes con nombre, "Gana: la que pueden más", "¿cuál prefieres?"); tsc OK, vitest puro 90/90, build 0. Guion y build listos. **En cola para la base (2.º, después del ensayo de front-juan; aviso 01:44).** Todavía NO uso la base.
 
 ## Entregado
 - [01:34] `wip/frontend` = `44e6de6` (= `main`; todo lo mío publicado). `wip/frontend-e15` = `9bedbee`: `44e6de6` + E15 con `E15_RONDA` ENCENDIDA (`4e6634f`) y E-d apagada; tsc OK, vitest puro 90/90, build 0. Falta la prueba contra la base (espero turno: pendientes está con la 0053, MIGRACION EN CURSO 01:34). Decisión: el texto de Juan para "Esta versión no te incluye" con la disponibilidad completa ("Se armó sin ti. No tienes que hacer nada…") se queda; el de ux-flujo `0e13ea0` también es cierto, pero cambiarlo ahora no suma.
