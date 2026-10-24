@@ -5759,6 +5759,8 @@ li:has(> .plan-vivo) {
   padding: 0;
   margin-bottom: 8px;
   font-weight: 700;
+}
+
 /* ------------------------------------------------------------------ 320 px (rincones O-01 y O-14b) */
 @media (max-width: 359px) {
   /* O-01: marca + "Datos ficticios" + avatar + nombre no entran en 288 px y el nombre pisaba el chip. Queda el
