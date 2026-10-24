@@ -5,9 +5,18 @@ Pedido directo del usuario en Codex: «Sí, te autorizo a modificar la entrada. 
 Rama propia: `codex/intro-primera-visita`. Copia: `/Users/macair/cruse/cruce-intro`, desde `origin/main`.
 
 ## Tocando ahora
-- Pedido directo de Nico: «la x con los circulos de movimiento lo haria un poco mas grande, dependiendo el dispositivo». Continúa el pulido de la intro publicada.
-- Solo `src/components/Intro.css`: ampliar símbolo/círculos durante animación con escala por dispositivo, reservar espacio de escena y mantener marca final, controles y duración. Horizontal con altura baja usa aumento moderado.
-- Rama `codex/intro-primera-visita`, base `main` `9a15539`. Verificación visual local y de producción con Auth/RPC bloqueadas; sin backend ni otras hojas. Integración/publicación dentro del alcance ya autorizado si pasa.
+Vacío. X y círculos ampliados, adaptados por pantalla y publicados.
+
+## Intro más grande según dispositivo (publicado)
+Pedidos directos: «la x con los circulos de movimiento lo haria un poco mas grande, dependiendo el dispositivo» y «cuando termines agrega los cambios en la app asi se ve en produccion».
+
+Objetivo cumplido: sí. **`09a5595c8984ccaac101c17b51fedb0610f11ed9`**, rama `codex/intro-primera-visita`, publicada en **`origin/main`** por fast-forward desde `9a15539`. Solo **`src/components/Intro.css`** (8 líneas agregadas, 5 retiradas): símbolo/personas/onda +40% en vertical y computadora (escala3.5/pulso3.7), aumento moderado en horizontal de altura≤430 (2.8/2.95), escena reserva más espacio. Marca final, duración, controles y guía conservados.
+
+**No se avanzó `wip/fundamentos`**: tenía integración concurrente de QA/frontend (`7420e0d`) aún no presente en main; se preservó esa rama íntegra. El coordinador puede incorporar `09a5595` al integrar lo pendiente. No se integraron cambios ajenos ni se reescribió historial.
+
+Typecheck/build/diff-check verdes. Revisión responsive independiente y **13/13 comprobaciones locales**:320×568,375×812,430×932,768×1024,1280×800,1440×900,812×375,820×320 en700/1118/2400ms, sin recortes ni solapes; transición Ayuda→guía y movimiento reducido correctos. **5/5 en producción**, humo375/1280 en1118/2400ms: escala nueva medida, símbolo/círculos y marca/lema/Saltar completos. CeroJSerrors ni acciones reales; toda Auth/RPC interceptada.
+
+Vercel **success**: https://vercel.com/nicofaingold066-sketchs-projects/cruce-senales/5jbopVi9C9W6hB3jLaZc7qdAW3So. GET estándar https://cruce-senales.vercel.app/ HTTP200 sirve **`index-DpDYjV78.js` y `index-CvzS5c9P.css`**, nueva escala confirmada en CSS/computedstyles. Evidencia durable: `/Users/macair/.codex/visualizations/2026/10/24/01a16d9b-0e5a-7f83-ad7a-d94e81c53cb8/guia-cruxe/intro-grande/{local,produccion}/`; arnés `/tmp/cruxe-intro-grande/verificar.mjs`. GIF y comparativa en la carpeta `intro-grande/`. Sin cambios de backend, datos ni dependencias.
 
 ## Ayuda: repetir intro y guía (publicado)
 Pedido directo: «Dale, que desde Ayuda también se pueda volver a ver todo el recorrido, incluida la animación del inicio.» Continuó el alcance ya autorizado de implementación/publicación.
