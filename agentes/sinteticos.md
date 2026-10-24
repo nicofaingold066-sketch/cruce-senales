@@ -3,7 +3,6 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/sinteticos` (copia `/Users/macair/cruse/cruce-sinteticos`). Rutas: `tests/sinteticos/**`, `docs/usuarios-sinteticos.md`. Puerto de preview: 4186.
 
 ## Tocando ahora
-- CORRIENDO PRUEBA (03:06): seis-amigos contra https://cruce-senales.vercel.app (sinteticos)
 - [02:20] `tests/sinteticos/**` (guion nuevo `dos-planes.mjs` para la E15, sin correr: espero mi turno al final de la cola) y `docs/usuarios-sinteticos.md`.
 - [21:06] `tests/sinteticos/escena.mjs`, `psico-perfiles.mjs`, `asi-no-puedo.mjs` y `docs/usuarios-sinteticos.md`. Las dos corridas nuevas esperan a que backend saque MIGRACION EN CURSO (E13); arrancan solas.
 - [19:58] sigo en `tests/sinteticos/**` y `docs/usuarios-sinteticos.md`; esperando que backend saque MIGRACION EN CURSO para correr.
