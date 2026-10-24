@@ -3,9 +3,22 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md`, `docs/catalogo-ampliado.md`, `src/lib/ejemplos.ts` (nuevo).
 
 ## Tocando ahora
-- [02:12] Nada editándose. Sigo la demo «Los del finde» y el rediseño: cada rótulo que cambie lo corrijo en `docs/guion-demo.md`; a las 10:30 dejo una sola versión en `docs/preguntas-jurado.md`.
+(sesión archivada a las 03:15; el guion lo cierra el coordinador a las 10:30)
 
 ## Entregado
+- [03:15] **SESIÓN ARCHIVADA. Todo subido en `wip/apertura` `b7f2edd`** (`docs/apertura.md`, `docs/catalogo-ampliado.md`, `docs/guion-demo.md`, `docs/preguntas-jurado.md`, `src/lib/ejemplos.ts` y `tests/ejemplos.test.ts` 15/15). `docs/guion-demo.md` y `docs/preguntas-jurado.md` quedan en una sola versión vigente. Crons y vigías detenidos.
+  **QUÉ HAY QUE VERIFICAR EN EL ENSAYO (10:00–11:00) y en el «Estado verificado» de las 10:30** (tabla §8 de `docs/guion-demo.md`, columna «Estado 10:30» vacía):
+  1. Rótulos de §9 contra el build final: lo dicen friccion (S1/S5: «Entrar a CRUXE», «Te invitaron a», «Respondiste», «Listo»; se va «Toca para saltar»), frontend (S3: «Nuevo plan», sin «Revisar antes de crear»), ux-flujo (S4: sin cambios) y agente-ia (S6: «Cómo llegas (opcional)»). Si no se publica el rediseño, vale `demo-segura` (`22ae202`).
+  2. Punto 1 y 2 (viaje y tiempo del agente): medidos por agente-ia a las 01:13 (viaje llega, 4,0 s). Repetir con UNA llamada y «Simular sol».
+  3. Punto 3: baja sin nombre («Una persona se retiró») en pantalla.
+  4. Punto 4: Luna reclamable después de «Reiniciar demo» (la misma sesión: «Seguir como Luna»; una sesión nueva: «no disponible»). Guion de qa-noche `demo-reinicio-luna.mjs`.
+  5. Punto 5: plan B de un aparato en un demo fresco (guion de qa-noche `plan-b-un-aparato.mjs`).
+  6. Punto 6: teléfono físico (Parte A y B completas, con cronómetro). Segundos de §0 (la Parte A en 1:00; la B en 2:10), con las animaciones nuevas.
+  7. Punto 7: «Que el agente arme un plan»: 12,5 s medido en la v12; solo se usa en el pitch si el ensayo lo confirma (<30 s, pasos legibles).
+  8. Punto 8: rediseño publicado o no.
+  9. Parte A repetida con el `main` final (ux-flujo la corrió 9/9 el 22:49 sobre un build anterior).
+  10. Grabar el video de respaldo en el ensayo (§1 punto 10). Ensayar con cronómetro las respuestas incómodas de `docs/preguntas-jurado.md` (C1, C6, P2, S5b).
+  11. En `docs/preguntas-jurado.md`: confirmar con el build final S3 (ronda y dos planes en pantalla), S14 (selector de propósito) y S4 (los dos botones del agente); lo que no se vea se nombra como siguiente paso.
 - [02:12] Demo «Los del finde» (0054, `main` `22ae202` = etiqueta `demo-segura`): frontend ya había renombrado dentro de mis docs con su excepción; completé lo que faltaba y la frase de la Parte B (el nombre ya no promete una actividad; el asado lo propone el agente). `docs/guion-demo.md` suma «Build de referencia», la fila 8 de §8 (rediseño: si se publica antes de las 09:00 se releen los rótulos en el ensayo; si no, vale `demo-segura`) y el **§9 con ~110 rótulos de pantalla de los que depende el guion**, por pantalla, para que diseno y las secciones los busquen antes de cambiar un texto. Commit `258242e` en `wip/apertura` (= `main` `22ae202` + ese commit).
 - [01:53] Enmienda 15 en pantalla en producción (`main` `af79fcb`, 01:53; verificado en el código: «Más opciones» en Nueva propuesta con ronda de opiniones y nombre por plan, «Gana la que pueden más», «Si te sirven los dos, ¿cuál prefieres?», «Opiniones hasta …»). `docs/preguntas-jurado.md` S3 pasa a vigente con la enmienda 15 (opcional, plegada, el demo no la usa; totales solo al organizador y desde 2) y `docs/guion-demo.md` suma la frase lista «¿y si no se ponen de acuerdo entre dos planes?», commit `a7753a2`. No se muestra en la demo. Falta verla en el ensayo.
 - [00:45] `main` `3cca951` (00:44) revisado contra los rótulos del guion: siguen vigentes «Sí, soy X», «¿Eres X?», «Puedo los dos días», «Respuesta guardada», «Ver el plan», «Crear grupo», «Opciones del agente», «Usar esta opción», «Se baja: X», «Buscar alternativa», «Avisar al grupo»; nuevos: «Faltan por confirmar» (ya anotado), «Crear sin lista» / «Agregar nombres» (solo si la lista de nombres está vacía; el guion siempre carga los nombres) y el segundo botón del agente «Que el agente arme un plan» con «Lo que hizo el agente». El guion sigue usando «Que el agente proponga» (una llamada, probado) y agrega el punto 7 de verificación; commit `8b9d146`.
