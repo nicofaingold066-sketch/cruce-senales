@@ -16,6 +16,7 @@ Detalle y reglas: `prompts/equipo-noche.md`.
 | `docs/psicologia-grupo.md`, `docs/psicologia-fuentes.md` | psico (sesión nueva, Sonnet; solo investigación y diseño, sin código) | `wip/psico` |
 | `src/screens/**`, `src/components/**`, `src/styles.css` | front-juan (Juan) | `wip/front-juan` |
 | `src/agente/**`, `supabase/functions/agente/**`, `docs/agente*.md`, `docs/pitch*.md` | agente-ia | `wip/agente-ia` |
+| `src/agente/ConsentimientoInvitaciones.tsx` y las líneas del consentimiento E11 en `src/agente/api.ts` y `AgentePanel.tsx`, `tests/consentimiento-invitaciones.test.ts` | integracion-codex-juan (autorizado por Juan, 22:08) | `codex/e11-consentimiento-invitaciones` |
 | Lo demás de `src/` | nadie esta noche (pedir al coordinador) | — |
 Claude B, login y codex: sin rutas esta noche; si vuelven, piden tarea al coordinador.
 
