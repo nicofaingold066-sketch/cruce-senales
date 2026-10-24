@@ -7,6 +7,7 @@ import { Icono } from './components/Icono'
 import type { NombreIcono } from './components/Icono'
 import { usePerfil } from './lib/perfil'
 import { Marca } from './components/Marca'
+import { Entrada, useEntrada } from './components/Intro'
 import { Component, lazy, Suspense, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import Inicio from './screens/Inicio'
@@ -40,11 +41,13 @@ function usePrecargaPantallas(activa: boolean) {
 }
 
 export default function App() {
+  const entrada = useEntrada()
   const { sesion, reintentar } = useSesion()
   const incompatible = useContratoIncompatible()
   return (
     <ShellProvider soloLectura={incompatible}>
       <Marco sesion={sesion} reintentar={reintentar} incompatible={incompatible} />
+      {entrada.visible ? <Entrada alTerminar={entrada.cerrar} /> : null}
     </ShellProvider>
   )
 }
