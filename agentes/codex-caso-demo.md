@@ -1,7 +1,7 @@
 # Caso demo Makana — pedido directo de Nico, 24 oct 2026
 
 ## Tocando ahora
-Reapertura 09:45: usuario cree que la conexión ya está. Supabase sigue projects[] y get_project deniega permiso. SOLO adaptación LOCAL al main nuevo b287d40. Rutas propias: sustituir0057 NOaplicada por `supabase/migrations/20261024124500_demo_makana.sql`; `tests/backend/demo-makana.test.ts`; alinear catálogo43 en `tests/backend/{helpers,enmienda2.test,enmienda13.test}.ts`; guiones de evidencia y referencias en `docs/{demo-makana,caso-canonico}.md`. No tocar migración de actividad ya aplicada ni sus rutas. No tomar base: turno coordinador09:39 y prohibición de migraciones vigente.
+Vacío. Compatibilidad con main74b5cbe terminada y comprobada solo localmente. Sin procesos propios ni turno de base. Activación remota pendiente de acceso y circuito del coordinador.
 
 
 ## Decisiones
@@ -34,3 +34,10 @@ Reapertura 09:45: usuario cree que la conexión ya está. Supabase sigue project
 
 ## Hallazgo de compatibilidad al retomar
 - mainb287d40 trae actividad y leave_space, DBcatálogo42 sin Makana. La0057anterior42 no se debe aplicar; se prepara migración posterior aactividad con43/0 y wrappers que preservan actividad. Se repetirán fresh/upgrade y ensayo3perfiles enlocal. Conexiónhabilitada delplugin no implica acceso alproyecto.
+
+## Entrega V2 — reemplaza instrucciones de 0057
+- NO aplicar0057: no fue aplicada y se reemplazó por `20261024124500_demo_makana.sql`, DESPUÉS de actividad del grupo. Rama remota `codex/demo-makana`: bbb31ed (backendcompatible), cierre documentado en últimoHEAD.
+- Validado fresh58 yupgrade57actual→58:43/0, privacidad, actividad, propietarios/salidas/reingreso yreset aislado; SQLsin errores. Ensayo3contextosSQLreal110RPC/11fases UI PASS; mock4anchos103RPC PASS; typecheck/build PASS,89puras PASS y7HTTPomitidas (no contadas). Detectado y resuelto duplicado de mínimo trasmerge, conservando límites catálogo.
+- EvidenciaV2 durable en `/Users/macair/.codex/visualizations/2026/10/24/01a16dbb-c25b-7923-80be-5d5b64310a40/demo-makana/compatibilidad-actividad/`. Todos los bridge/Vite/browser cerrados.
+- Acceso revalidado por pedidoexpreso humano: pluginhabilitado y cuenta confirmada por usuario; conector solo muestra org `juanmorales10's projects`, list_projects vacío yget_projectCRUCE deniega. Refcontrastado con.env yJS PÚBLICOweb: `tjkfdnvzsikncjbskufm` correcto. Ninguna migración ni escritura remota.
+- PARA coordinador: nueva migracióncompatible lista enrama; el usuario quiere integración visible. Mantengo orden activaciónbaseautorizada→cliente→ensayoreal, respetando tu turno y el aviso «Nadie más aplica migraciones». No se pide a otro agente saltar acceso denegado.
