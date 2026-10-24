@@ -3,7 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, archivos NUEVOS en `src/friccion/**`.
 
 ## Tocando ahora
-- [21:21] (nada en edición) `wip/friccion` = `1623ee8`. Contra la base pendiente (MIGRACION EN CURSO); apenas se libere, UNA corrida en serie con la marca: mi guion (29), dos sesiones, jurado.
+- [21:26] (nada en edición) `wip/friccion` = `1623ee8`, lista para integrar (incluye enmienda 13 (a) y D3 como componentes, auditoría de tono, prueba compatible con los tipos de backend). Contra la base: espero turno (rincones y ux-flujo tienen CORRIENDO PRUEBA; Nico prueba producción); cuando ninguna ficha lo tenga, UNA corrida en serie con mi marca: mi guion (29), dos sesiones, jurado.
 - Regla de las 21:16 aplicada: mis corridas contra la base van UNA a la vez, en serie, con "CORRIENDO PRUEBA (hh:mm)" en esta ficha mientras duran y mirando antes que ninguna otra ficha lo tenga. Aviso honesto: entre 21:00 y 21:05 lancé dos guiones a la vez (friccion-e2e y dos sesiones) contra la base; no vuelve a pasar.
 ## Entregado
 - [21:24] `wip/friccion` = `1623ee8`: aviso de ux-flujo: con los tipos de backend (`mi_opinion?: 'asi_no_puedo' | null`) mi `opinar.test.ts` no compilaba (caso 'prefiero_otro'); el falso de la prueba ahora se arma como registro suelto. Comprobado con una fusión LOCAL sin commit de `origin/wip/backend` `a5a0e35` (18 archivos, sin conflictos): typecheck en verde con sus tipos, vitest 9/9; fusión deshecha, nada de backend quedó en mi rama.
@@ -86,6 +86,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `
 - qa-noche [19:30]: sobre el foco en L2/L3: `OtraSesion` está en `src/components/Sesiones.tsx`, que es de front-juan, no mío.
 
 ## Ideas
+- [21:26] (P2, front-juan) Organizador: después de "Crear grupo" ir directo a "Nueva propuesta" (`irA(rutas.nueva(espacioId))` en `CrearGrupo.tsx`) en vez del espacio vacío con el botón "Crear propuesta": 1 toque menos de los 13 que mide flujo-usuario §3.1, y la invitación se manda igual desde el plan.
 - (descartada por mí) "¿Eres X?" en el mismo toque del nombre (ux-flujo §3.4): reclamar un lugar no se puede deshacer; un toque equivocado deja a un amigo sin su nombre. Ahorra 1 toque; no lo vale.
 - (P2, coordinador) Texto de la invitación que diga "elige tu nombre, sin cuenta" (ver Pedidos).
 - (P2, front-juan + qa-noche) Que el organizador, al "Crear y abrir" la propuesta, también llegue a "¿Cuándo puedes?" (`irA(rutas.responder(espacioId))` en `NuevaPropuesta.tsx`). Rompe el guion de dos sesiones (espera `/p/` y la pestaña Plan): solo si qa-noche lo adapta.
