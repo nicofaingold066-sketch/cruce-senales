@@ -1,12 +1,20 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 00:15.
+Quien edita este archivo: solo esta sesión. Última actualización: 00:42.
 
 ## Tocando ahora
-- [00:12] `wip/agente-v13` preparada (sin desplegar). Espero el OK de Nico, vía coordinador, para desplegar los 8 archivos y hacer las tres pruebas con turno de base. Si a las 03:30 no está desplegada y probada, queda la v12.
+- [00:42] v13 (OK de Nico 00:24, tope de 3 llamadas 00:42): espero mi turno de base, que viene después de la tanda del coordinador. Rama `wip/agente-v13` `ae012dd`.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[00:42] Antes de desplegar la v13.**
+  - Referencia para volver atrás: función `agente` **v12**, publicada el 23 oct a las 23:59:35 (`list_edge_functions`, verify_jwt true), desde `4b1e368`; la función de `8fb2c16` es la misma.
+  - `ffc310d`/`ae012dd` traen todo `40ffb66` (`main`) más la v12: frente a `main`, la carpeta de la función solo difiere en `herramientas.ts`, `index.ts` (bucle) y las pruebas. El `index.ts` de `main` NO tiene el bucle y no se despliega.
+  - El `fd34264` del coordinador no está en ninguna rama remota, y `origin/wip/fundamentos` (`dcc3ab6`) no trae el circuito social.
+  - Cambio chico en `ae012dd`: la ruta social también registra `is_byok`, para anotarlo en cada llamada (180/180, arnés 25/25).
+  - **Reparto de las 3 llamadas que autorizó Nico:** (1) preparar en la ruta social, con el circuito humano completo después; (2) una segunda preparación para el borde "revocar antes de publicar"; (3) el modo de siempre.
+  - El modo herramientas NO se repite: una corrida son unas 3 llamadas al modelo (una por vuelta) y su código es idéntico al de la v12, que se probó real a las 23:59 (12,5 s).
+  - Todo lo demás va sin modelo: sondeo contra la v12 (servidor viejo) y la v13, consentimiento, preparar sin destinatarios, acceso ajeno y lecturas para la reconciliación del `create_space`.
 - **[00:15] `wip/agente-v13` `ffc310d`** (sigue SIN desplegar): sumé `codex/e11-circuito` 40ffb66 (d1a5b91: con `social`, `get_space` va con `req.signal` y 15 s). `index.ts` se mezcló solo. En `social-http.test.ts` hubo un conflicto en `montar`, que quedó con el módulo de herramientas y el `signal` de `pedir` juntos. Función 180/180, arnés 25/25, vitest puro 89/89, typecheck y build en verde.
 - **[00:12] `wip/agente-v13` `fc27df3` lista, SIN desplegar:** merge de `codex/e11-circuito` **8b970a9** (lo que pidió el coordinador; esa rama ya avanzó a 40ffb66, que no está incluido) sobre `wip/agente-ia` 1f85cbe. Un solo conflicto, en el tipo de `entrada` de `index.ts`: se suman `modo` y `social`. El merge trae también su cambio en `src/screens/PlanTab.tsx` (ruta de frontend, de su commit). Pruebas sin base: función 178/178 (incluye las de ellos y la del `git show`, que en el repo pasa), arnés 25/25, vitest puro 89/89, typecheck y build en verde.
 - [00:10] Fiesta de noche (pedido de Nico 00:01): el agente ya lee bien las franjas que cruzan la medianoche. El texto fijo dice "el sábado 31 de 23:00 a 03:00 o el domingo 1 de 22:00 a 02:00", y el panel (`franjaTexto`) agrega la fecha del final cuando cambia de día. Lo fija una prueba nueva en `1f85cbe` (86/86). No hace falta cambiar el agente.
