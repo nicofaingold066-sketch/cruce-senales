@@ -58,7 +58,7 @@ describe.skipIf(!aplicada)('enmienda 11: agente social', { timeout: 180_000 }, (
     const hoy = (await ok(O, 'server_info')).servidor_ahora.local.slice(0, 10)
     let s = masDias(hoy, 1)
     while (new Date(`${s}T00:00:00Z`).getUTCDay() !== 6) s = masDias(s, 1)
-    sabados = [s, masDias(s, 7), masDias(s, 14)]
+    sabados = [s, masDias(s, 7)] // un sábado de calendario solo deja dos válidos (dentro de 16 días)
   }, 60_000)
 
   it('permisos: sin sesión, ajeno y miembro común', async () => {
@@ -187,12 +187,6 @@ describe.skipIf(!aplicada)('enmienda 11: agente social', { timeout: 180_000 }, (
 
   it('política autónoma publica sin aprobación; si cambia durante la ejecución, vuelve a pedirla; sin destinatarios no publica', async () => {
     await recibir(U, true)
-    await ok(O, 'set_politica_agente_social', { p_espacio_id: demo.espacioId, p_modo: 'autonoma', p_intento_id: intento() })
-    const a = await hastaBorrador(sabados[2])
-    const pub = await publicar(a.id, a.hash)
-    expect(err(pub)).toBe('ok')
-    await ok(O, 'cancel_proposal', { p_propuesta_id: pub.propuesta.id })
-
     // Cambio de política durante la ejecución: empezó en "aprobación" y pasa a "autónoma" → pide aprobación.
     await ok(O, 'set_politica_agente_social', { p_espacio_id: demo.espacioId, p_modo: 'aprobacion', p_intento_id: intento() })
     const b = await hastaBorrador(sabados[1])
@@ -216,5 +210,14 @@ describe.skipIf(!aplicada)('enmienda 11: agente social', { timeout: 180_000 }, (
     expect(err(await aprobar(d.id, d.hash))).toBe('ok')
     await ok(O, 'add_simulated_member', { p_espacio_id: demo.espacioId, p_nombre_visible: 'Nuevo t' })
     expect(err(await publicar(d.id, d.hash))).toBe('opcion_desactualizada/borrador_cambiado')
+
+    // Política autónoma: publica sin aprobación. Va al final y en el mismo sábado (cerrar libera la oportunidad):
+    // un sábado de calendario solo deja dos sábados válidos (futuros y dentro de 16 días), y [0] ya se publicó.
+    await ok(O, 'cerrar_ejecucion_agente', { p_ejecucion_id: d.id, p_estado: 'fallida', p_motivo: 'reemplazada' })
+    await ok(O, 'set_politica_agente_social', { p_espacio_id: demo.espacioId, p_modo: 'autonoma', p_intento_id: intento() })
+    const a = await hastaBorrador(sabados[1])
+    const pub = await publicar(a.id, a.hash)
+    expect(err(pub)).toBe('ok')
+    await ok(O, 'cancel_proposal', { p_propuesta_id: pub.propuesta.id })
   })
 })
