@@ -7,7 +7,8 @@
 // El modelo nunca recibe datos de una persona: solo opciones ya validadas, el clima y totales del grupo.
 // Modelo: Fable 5.1 (prueba; antes Opus) y, si falla o no llega a tiempo, Haiku. Sin clave, con error de los dos, con una elección fuera
 // de la lista o pasados ~30 s: primera opción y texto fijo.
-// Nunca crea, invita ni confirma nada.
+// El modo anterior nunca crea, invita ni confirma. La ruta social aditiva prepara
+// un borrador inmutable; aprobar/publicar siguen siendo acciones humanas separadas.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import Anthropic from 'npm:@anthropic-ai/sdk@1.2.0'
 import {
@@ -313,16 +314,20 @@ Deno.serve(async (req) => {
     })
   }
 
-  let entrada: { espacio_id?: unknown; sabado?: unknown; clima_simulado?: unknown; modo?: unknown }
+  let entrada: { espacio_id?: unknown; sabado?: unknown; clima_simulado?: unknown; modo?: unknown; social?: unknown }
   try {
     entrada = await req.json()
   } catch {
     return errorEntrada('formato_invalido', 'Un dato tiene un formato inválido.')
   }
+  if (!entrada || typeof entrada !== 'object' || Array.isArray(entrada)) {
+    return errorEntrada('formato_invalido', 'Un dato tiene un formato inválido.')
+  }
   const espacioId = typeof entrada.espacio_id === 'string' ? entrada.espacio_id : ''
   const sabado = typeof entrada.sabado === 'string' ? entrada.sabado : ''
+  const social = entrada.social !== undefined
   if (!espacioId) return errorEntrada('campo_faltante', 'Falta completar un dato obligatorio.')
-  if (!esSabado(sabado)) return errorEntrada('fecha_invalida', 'La fecha debe ser un sábado futuro dentro de los próximos 16 días.')
+  if (!social && !esSabado(sabado)) return errorEntrada('fecha_invalida', 'La fecha debe ser un sábado futuro dentro de los próximos 16 días.')
 
   const url = Deno.env.get('SUPABASE_URL')
   const clavePublica = Deno.env.get('SUPABASE_ANON_KEY') ?? Deno.env.get('SUPABASE_PUBLISHABLE_KEY')
@@ -332,17 +337,44 @@ Deno.serve(async (req) => {
     global: { headers: { Authorization: autorizacion } },
     auth: { persistSession: false, autoRefreshToken: false },
   })
+  const atenderSocial = social ? (await import('./social-http.ts')).atenderSocial : null
+  if (atenderSocial && entrada.social && typeof entrada.social === 'object'
+    && 'accion' in entrada.social && entrada.social.accion === 'capacidad') {
+    return responder(await atenderSocial(entrada, { cliente: supabase, modelo: async () => null, signal: req.signal }))
+  }
 
   // Nombres visibles del espacio (no son privados): solo para rechazar un texto que nombre a alguien.
   // get_space, con el JWT de quien llama, también dice si el espacio es demo: el cliente no lo decide.
   let nombres: string[] = []
   let esDemo = false
-  const { data: espacio } = await supabase.rpc('get_space', { p_espacio_id: espacioId })
+  if (social && req.signal.aborted) return errorTemporal()
+  const peticionEspacio = supabase.rpc('get_space', { p_espacio_id: espacioId })
+  const { data: espacio } = await (social
+    ? peticionEspacio.abortSignal(AbortSignal.any([req.signal, AbortSignal.timeout(15000)]))
+    : peticionEspacio)
+  if (social && !espacio?.ok) return errorTemporal()
   if (espacio?.ok && espacio.espacio) {
     esDemo = espacio.espacio.demo === true
     if (Array.isArray(espacio.espacio.miembros)) {
       nombres = espacio.espacio.miembros.map((m: { nombre?: string }) => m.nombre ?? '').filter(Boolean)
     }
+  }
+
+  if (atenderSocial) {
+    const { crearModeloSocial } = await import('./modelo-social.ts')
+    const modelo = crearModeloSocial({
+      proveedor: elegirProveedor((n) => Deno.env.get(n)),
+      modo: Deno.env.get('AGENTE_SALIDA'), nombres, hastaMs: inicio + PLAZO_TOTAL_MS,
+      signal: req.signal,
+      permitir: () => limiteModelo.permitir(usuarioDe(autorizacion), Date.now()),
+      invocar: async (proveedor, pedido, signal, plazo) => {
+        const clave = Deno.env.get(proveedor.variableClave)
+        if (!clave) throw new Error('modelo_no_disponible')
+        const client = new Anthropic({ apiKey: clave, baseURL: proveedor.baseURL, timeout: plazo, maxRetries: 0 })
+        return client.messages.create(pedido, { signal })
+      },
+    })
+    return responder(await atenderSocial(entrada, { cliente: supabase, modelo, signal: req.signal }))
   }
 
   // Clima simulado solo en un espacio demo; en cualquier otro caso se ignora y va el clima real.
