@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../lib/api'
-import type { ActividadClave, ApiError, Espacio } from '../lib/types'
+import { RONDA_HORAS } from '../lib/types'
+import type { ActividadClave, ApiError, Espacio, ReglaMotor, RondaHoras } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto, momentoCorto, ZONA_VISIBLE } from '../lib/format'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
@@ -14,6 +15,11 @@ import { tomarBorradorAgente } from '../agente/api'
 // y una duración aproximada: la hora de fin se calcula sola. El contrato sigue recibiendo inicio y fin
 // ("YYYY-MM-DDTHH:MM", hora de Santiago, sin convertir zonas); el servidor valida todo.
 type Cierre = 'dia_antes' | 'dos_dias' | 'otro'
+
+// Enmienda 15: las pantallas quedan listas pero APAGADAS hasta el aviso de cada migración (antes, el servidor
+// rechaza los parámetros nuevos). E-c (ronda de opiniones) llega con la 0052; E-d (nombre por plan y "Gana") con la 0053.
+const E15_RONDA = true
+const E15_DOS_PLANES = true
 
 interface Formulario {
   titulo: string
@@ -31,7 +37,17 @@ interface Formulario {
   plazoOtro: string
   /** Enmienda 14: clave de la actividad del atajo elegido (null = sin actividad; vale en un grupo libre). */
   actividad: ActividadClave | null
+  /** Enmienda 15 (E-c): horas de la ronda de opiniones; null = sin ronda (como siempre). */
+  rondaHoras: RondaHoras | null
+  /** Enmienda 15 (E-d): cómo gana una opción si sirven las dos. */
+  regla: ReglaMotor
+  /** Enmienda 15 (E-d): nombre corto de cada plan (vacío = sin nombre). */
+  aEtiqueta: string
+  bEtiqueta: string
 }
+
+/** Lo que la enmienda 15 agrega al formulario, con los valores de siempre. */
+const SIN_E15 = { rondaHoras: null, regla: 'temprana', aEtiqueta: '', bEtiqueta: '' } as const satisfies Partial<Formulario>
 
 // Valores exactos del caso canónico (contrato, sección 5): A sáb 31 oct y B dom 1 nov, 14:00 a 17:00; cierre jue 29 oct 20:00.
 const CASO = {
@@ -47,6 +63,7 @@ const CASO = {
   plazoOtro: '',
   // El demo es un espacio libre: sin actividad, igual que siempre.
   actividad: null as ActividadClave | null,
+  ...SIN_E15,
 }
 
 const HORAS = ['12:00', '13:00', '14:00', '17:00', '19:00', '20:00', '21:00']
@@ -179,6 +196,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
           cierre: 'dia_antes',
           plazoOtro: '',
           actividad: null,
+          ...SIN_E15,
         }
     if (borrador) {
       const [a, b] = borrador.franjas
@@ -257,6 +275,11 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
 
   const imprescindible = espacio.miembros.find((m) => m.miembro_id === form.imprescindibleId)
   const marcado = campoDeError(error)
+  // Enmienda 15: lo que se manda. Sin la llave encendida, nada (el formulario queda como siempre).
+  const etiquetaA = E15_DOS_PLANES ? form.aEtiqueta.trim() : ''
+  const etiquetaB = E15_DOS_PLANES ? form.bEtiqueta.trim() : ''
+  const reglaEnviar: ReglaMotor | null = E15_DOS_PLANES && form.regla === 'mas_si' ? 'mas_si' : null
+  const rondaEnviar: RondaHoras | null = E15_RONDA ? form.rondaHoras : null
 
   function revisar() {
     if (!completo) {
@@ -290,14 +313,17 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
         espacioId,
         titulo: form.titulo.trim(),
         franjas: [
-          { inicio: aInicio, fin: aFin },
-          { inicio: bInicio, fin: bFin },
+          { inicio: aInicio, fin: aFin, ...(etiquetaA ? { etiqueta: etiquetaA } : {}) },
+          { inicio: bInicio, fin: bFin, ...(etiquetaB ? { etiqueta: etiquetaB } : {}) },
         ],
         minimo: Number(form.minimo),
         maximo: Number(form.maximo),
         imprescindibleId: form.imprescindibleId,
         plazo,
         actividad: form.actividad,
+        // Enmienda 15: solo se mandan si se apartan de lo de siempre (y con la llave de su migración encendida).
+        ...(reglaEnviar ? { regla: reglaEnviar } : {}),
+        ...(rondaEnviar ? { rondaHoras: rondaEnviar } : {}),
         intentoId,
       }),
     )
@@ -393,7 +419,10 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
 
             <fieldset className={`form-seccion ${marcado === 'franjas' ? 'grupo-error' : ''}`}>
               <legend>Cuándo · dos opciones</legend>
-              <p className="suave nota-seccion">El grupo dice en privado cuál le sirve. Si sirven las dos, gana la que empieza antes.</p>
+              <p className="suave nota-seccion">
+                El grupo dice en privado cuál le sirve. Si sirven las dos, gana{' '}
+                {reglaEnviar === 'mas_si' ? 'la que pueden más personas (lo cuenta el servidor).' : 'la que empieza antes.'}
+              </p>
               {(['A', 'B'] as const).map((clave) => {
                 const dia = clave === 'A' ? form.aDia : form.bDia
                 const horaSel = clave === 'A' ? form.aHora : form.bHora
@@ -408,6 +437,17 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                       <strong>Opción {clave}</strong>
                       {inicio ? <span className="momento-resumen">{franjaTexto(inicio, fin)}</span> : null}
                     </div>
+                    {E15_DOS_PLANES ? (
+                      <label className="campo campo-etiqueta-plan">
+                        <span>Nombre de este plan (opcional)</span>
+                        <input
+                          value={clave === 'A' ? form.aEtiqueta : form.bEtiqueta}
+                          onChange={(e) => poner(clave === 'A' ? 'aEtiqueta' : 'bEtiqueta', e.target.value)}
+                          maxLength={40}
+                          placeholder={clave === 'A' ? 'Ej.: asado en lo de Tomi' : 'Ej.: picnic en el parque'}
+                        />
+                      </label>
+                    ) : null}
                     <SelectorDia clave={clave} valor={dia} alElegir={(d) => poner(clave === 'A' ? 'aDia' : 'bDia', d)} />
                     <SelectorHora clave={clave} valor={horaSel} alElegir={(h) => poner(clave === 'A' ? 'aHora' : 'bHora', h)} />
                   </div>
@@ -495,6 +535,8 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
               ) : null}
             </fieldset>
 
+            {E15_RONDA || E15_DOS_PLANES ? <MasOpciones form={form} poner={poner} /> : null}
+
             <div className="barra-accion">
               <Boton type="submit" disabled={soloLectura}>
                 Revisar antes de crear
@@ -510,9 +552,27 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
               </div>
               <dl className="datos">
                 <dt>Franja A</dt>
-                <dd>{franjaTexto(aInicio, aFin)}</dd>
+                <dd>
+                  {etiquetaA ? <strong>{etiquetaA}: </strong> : null}
+                  {franjaTexto(aInicio, aFin)}
+                </dd>
                 <dt>Franja B</dt>
-                <dd>{franjaTexto(bInicio, bFin)}</dd>
+                <dd>
+                  {etiquetaB ? <strong>{etiquetaB}: </strong> : null}
+                  {franjaTexto(bInicio, bFin)}
+                </dd>
+                {reglaEnviar === 'mas_si' ? (
+                  <>
+                    <dt>Si sirven las dos</dt>
+                    <dd>Gana la que pueden más personas</dd>
+                  </>
+                ) : null}
+                {rondaEnviar ? (
+                  <>
+                    <dt>Ronda de opiniones</dt>
+                    <dd>{rondaEnviar} h después de publicar cada versión (nunca después del cierre)</dd>
+                  </>
+                ) : null}
                 <dt>Zona horaria</dt>
                 <dd>{ZONA_VISIBLE}</dd>
                 <dt>Cupos</dt>
@@ -546,6 +606,61 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
         )}
       </div>
     </div>
+  )
+}
+
+/**
+ * Enmienda 15, opcional y plegado: ronda de opiniones (E-c) y cómo gana una opción (E-d). Lo de siempre queda
+ * elegido por defecto ("Sin ronda", "La que empieza antes"). El servidor decide el cierre de la ronda y el ganador.
+ */
+function MasOpciones({ form, poner }: { form: Formulario; poner: <K extends keyof Formulario>(k: K, v: Formulario[K]) => void }) {
+  const cambiado = form.rondaHoras !== null || form.regla !== 'temprana'
+  return (
+    <details className="form-seccion plegable mas-opciones" open={cambiado || undefined}>
+      <summary>
+        <span className="summary-texto">
+          <span>Más opciones</span>
+          <small className="suave">{E15_DOS_PLANES ? 'Opcional: tiempo para opinar y cómo se elige' : 'Opcional: tiempo para opinar'}</small>
+        </span>
+      </summary>
+      {E15_RONDA ? (
+        <div className="mas-opciones-bloque">
+          <div className="opciones opciones-compactas" role="radiogroup" aria-label="Ronda de opiniones">
+            {([null, ...RONDA_HORAS] as (RondaHoras | null)[]).map((h) => (
+              <label key={h ?? 'sin'} className={`opcion-radio ${form.rondaHoras === h ? 'opcion-activa' : ''}`}>
+                <input type="radio" name="ronda" checked={form.rondaHoras === h} onChange={() => poner('rondaHoras', h)} />
+                {h === null ? 'Sin ronda' : `${h} h`}
+              </label>
+            ))}
+          </div>
+          <p className="suave nota-seccion">
+            Ronda de opiniones: cuando sale cada versión, el grupo tiene ese tiempo para decir «así no puedo, pero sigo»
+            antes de rearmar. Confirmar sigue abierto. Si no cabe antes del cierre, esa versión sale sin ronda.
+          </p>
+        </div>
+      ) : null}
+      {E15_DOS_PLANES ? (
+        <div className="mas-opciones-bloque">
+          <div className="opciones opciones-compactas" role="radiogroup" aria-label="Si sirven las dos, gana">
+            {(
+              [
+                ['temprana', 'La que empieza antes'],
+                ['mas_si', 'La que pueden más'],
+              ] as const
+            ).map(([v, t]) => (
+              <label key={v} className={`opcion-radio ${form.regla === v ? 'opcion-activa' : ''}`}>
+                <input type="radio" name="regla" checked={form.regla === v} onChange={() => poner('regla', v)} />
+                {t}
+              </label>
+            ))}
+          </div>
+          <p className="suave nota-seccion">
+            Si sirven las dos, ¿cuál gana? Con «La que pueden más», el servidor cuenta en privado cuántos pueden en cada una;
+            nadie ve quién eligió qué.
+          </p>
+        </div>
+      ) : null}
+    </details>
   )
 }
 

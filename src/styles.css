@@ -5636,6 +5636,35 @@ li:has(> .plan-vivo) {
   box-shadow: 0 0 0 1px var(--linea);
 }
 
+/* ------------------------------------------------------------------ enmienda 15 (ronda de opiniones y dos planes) */
+.mas-opciones-bloque + .mas-opciones-bloque {
+  margin-top: 16px;
+}
+.mas-opciones .nota-seccion {
+  margin-top: 8px;
+}
+.campo-etiqueta-plan {
+  margin: 8px 0 10px;
+}
+.opcion-etiqueta {
+  margin: 0 0 2px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--tinta-2);
+  overflow-wrap: anywhere;
+}
+.prefiero {
+  border: 0;
+  padding: 0;
+  margin: 12px 0 4px;
+  min-width: 0;
+}
+.prefiero > legend {
+  padding: 0;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
 /* ------------------------------------------------------------------ 320 px (rincones O-01 y O-14b) */
 @media (max-width: 359px) {
   /* O-01: marca + "Datos ficticios" + avatar + nombre no entran en 288 px y el nombre pisaba el chip. Queda el
