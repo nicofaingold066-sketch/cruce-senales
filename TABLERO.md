@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 20:54 Santiago (reloj).
+Actualizado: viernes 23 oct, 21:06 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[21:06] PARA todos:** Nico resolvió D5 a D10 de psico: TODO sí. D7 (estilo de la ocasión) → agente-ia, sin migración, según el pedido de psico. D10 (botón "Buscar el lugar en el mapa", Google Maps con el título del plan, sin datos de personas) → psico manda el pedido al dueño. D6 y D8 → apertura, en el guion y en las preguntas del jurado. D5 y D9 → después del evento; el coordinador los anota en el README.
 
 **[20:54] PARA todos:** PUBLICADO `main` `3ace04e`: todo lo de las 20:48 (fricción con invitación nueva y modalidad pendiente, componentes de flujo, ejemplos de apertura, pruebas de QA, sintéticos, rincones y psico, enmienda 11 en el repo y contrato de la 13). Producción: dos sesiones 23/23; local: jurado 4/4, red 10/10, recuperación 12/12. Nico aprobó la ENMIENDA 13 (`docs/contrato-enmienda-13.md`): backend con corte a la 01:00. **front-juan:** `7f2423e` (tu push a main de las 20:25) quedó incluido. Por favor, de acá en adelante entregá en `wip/front-juan` y anotalo en tu ficha; publica solo el coordinador, después de correr todas las pruebas.
 
@@ -288,7 +290,7 @@ Contrato v1 enmendado por `docs/contrato-enmienda-2.md`. Sofi elegible en la fra
 - **Crédito disponible: USD 200 en la API de Anthropic (dicho por Nico, relatado por la sesión de pitch; confirmar con Nico). Ese es el saldo, no el tope del agente: el límite por clave aún no está definido.** Mientras no lo defina Nico no se pide ni se crea ninguna clave y no se escribe código del agente. La clave irá solo como secreto de Supabase, puesta por Nico, nunca en el repo, el chat ni el cliente.
 
 ## Decisiones pendientes de Nico
-- **[21:02] Decisiones de psico D5 a D10** (detalle en `agentes/psico.md`): D5 revisar texto de privacidad y consentimiento después del evento; D6 pitch con "creemos que" y límites de la evidencia; D7 estilo de la ocasión (simple/normal/especial) sin migración; D8 sin notificaciones, recordatorio por WhatsApp declarado como límite; D9 tiempo propio y presupuesto "algo especial" como siguiente paso del README; D10 enlace a Google Maps con el título del plan. Psico recomienda SÍ a todas.
+- **[21:06] RESUELTAS por Nico (confirmado en la sesión del coordinador):** D7 sí (estilo de la ocasión, sin migración; agente-ia), D5 sí (después del evento), D6 sí (pitch con "creemos que" y límites), D8 sí (sin notificaciones; recordatorio por WhatsApp, declarado como límite), D9 sí (siguiente paso del README), D10 sí (enlace a Google Maps con el título del plan).
 - **[20:54] RESUELTAS por Nico (\"acepto lo recomendado\", 20:51):** D1 sí (va en la E13), D2 sí, D3 título, D4 privada después de la demo, E-a + E-b sí (E13), E-c y E-d después, H14 sí (E13), H6 no por ahora.
 - **[20:40] Decisiones de psico D1 a D4** (detalle en `agentes/psico.md`): D1 fila de catálogo "Asado en lugar neutro"; D2 género y pareja no se piden ni se infieren; D3 modalidad del grupo en el título; D4 oferta de casa pública o privada (después de la demo).
 - **[19:52] `personas_que_pueden` (sinteticos H6):** hoy `personas_con_condiciones` cuenta también a quien marcó No en todo. Propuesta: un conteo aparte de quienes pueden al menos una franja, que solo ve quien evalúa. Riesgo: en grupos chicos, deja deducir quién no puede.
