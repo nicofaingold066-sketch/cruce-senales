@@ -530,3 +530,121 @@
 #agente-preferencias > .bloque {
   margin: 0;
 }
+
+/* ---- Tarjeta de la propuesta de GRU (Nico, 11:40: «mucho texto, una ensalada»). Cabecera chica, título natural,
+   chips con fecha/viaje/clima, el mensaje como cita, UN primario; lo técnico plegado. Máximo 720 px en computadora. */
+.agente-tarjeta {
+  max-width: 720px;
+  margin-inline: auto;
+  border-width: 1px;
+  border-color: var(--linea);
+  border-radius: var(--r-l, 20px);
+  box-shadow: var(--sombra-flota, 0 8px 24px rgb(0 0 0 / 8%));
+}
+.agente-tarjeta-cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e-2);
+}
+.agente-borrador {
+  margin-left: auto;
+  font-size: var(--t-nota);
+  color: var(--tinta-2);
+}
+.agente-tarjeta-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e-2);
+}
+.agente-tarjeta-titulo .rotulo-sim {
+  font-size: var(--t-nota);
+}
+.agente-chips-datos {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+}
+.agente-chips-datos li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--relleno);
+  color: var(--tinta);
+  font-size: var(--t-nota);
+}
+.agente-cita-caja {
+  margin: 0;
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--r-m);
+  background: var(--relleno);
+}
+.agente-tarjeta .agente-cita {
+  padding: 0;
+  border: 0;
+  font-style: normal;
+  font-size: var(--t-cuerpo);
+  line-height: 1.5;
+}
+.agente-cita-caja figcaption {
+  margin-top: var(--e-2);
+}
+.agente-tarjeta-acciones {
+  display: grid;
+  gap: var(--e-2);
+}
+.agente-tarjeta-acciones .btn {
+  width: 100%;
+}
+.agente-tarjeta-acciones .agente-enlace {
+  justify-self: center;
+  min-height: var(--toque);
+}
+.agente-otras {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--e-2);
+}
+.agente-otra {
+  width: 100%;
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  min-height: var(--toque);
+  padding: var(--e-3);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-m);
+  background: var(--hoja);
+  color: var(--tinta);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.agente-otra-titulo {
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-rotulo, 650);
+}
+.agente-tarjeta .agente-borrador {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.agente-tarjeta .agente-chips-datos,
+.agente-tarjeta .agente-otras {
+  margin-left: 0;
+  padding-left: 0;
+}
+.agente-tarjeta .agente-otras,
+.agente-tarjeta .agente-otras > li,
+.agente-tarjeta .agente-chips-datos > li {
+  list-style: none;
+}

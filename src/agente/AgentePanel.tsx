@@ -6,7 +6,7 @@
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { api } from '../lib/api'
 import { useAccion } from '../lib/hooks'
-import { franjaTexto } from '../lib/format'
+import { fechaCorta, hora, sinHoraDeFin } from '../lib/format'
 import { irA, rutas } from '../lib/shell'
 import type { ApiError, ApiResult } from '../lib/types'
 import { Aviso, Boton, Card, Cargando, Chip, ErrorCaja, RotuloSimulacion } from '../components/ui'
@@ -506,8 +506,46 @@ function PerfilDelGrupo({ perfil }: { perfil: PerfilGrupo | null | undefined }) 
   )
 }
 
-function etiquetaOpcion(c: CandidataAgente): string {
-  return `${c.actividad_etiqueta} · ${c.lugar.nombre.replace(' (Simulación)', '')}`
+/** Título natural por actividad (Nico, 11:40): «Día de parque en Parque de la comuna», no «Parque en Parque de la comuna». */
+const TITULO_NATURAL: Record<string, (lugar: string) => string> = {
+  parque: (l) => `Día de parque en ${l}`,
+  cerro: (l) => `Día de montaña en ${l}`,
+  padel: (l) => `Pádel en ${l}`,
+  asado: (l) => `Asado en ${l}`,
+  cultura: (l) => `Tarde de museo en ${l}`,
+  cafe: (l) => `Café y brunch en ${l}`,
+  cena: (l) => `Cena en ${l}`,
+  bar: (l) => `Salida a ${l}`,
+  futbol: (l) => `Fútbol en ${l}`,
+  cine: (l) => `Cine en ${l}`,
+  tenis: (l) => `Tenis en ${l}`,
+  basquet: (l) => `Básquet en ${l}`,
+  fiesta: (l) => `Fiesta en ${l}`,
+  juegos_casa: (l) => `Noche de juegos en ${l}`,
+  peli_casa: (l) => `Noche de película en ${l}`,
+  juegos_salida: (l) => `Bowling y escape room en ${l}`,
+}
+
+export function tituloNatural(c: CandidataAgente): string {
+  const lugar = c.lugar.nombre.replace(' (Simulación)', '')
+  const f = c.actividad ? TITULO_NATURAL[c.actividad] : undefined
+  return f ? f(lugar) : `${c.actividad_etiqueta} en ${lugar}`
+}
+
+/** «Sáb 31 oct · 11:00–14:00», o «Sáb 31 oct · desde las 11:00» sin hora de fin. */
+function fechaChip(f: { inicio: string; fin: string }): string {
+  const d = fechaCorta(f.inicio)
+  const dia = d.charAt(0).toUpperCase() + d.slice(1)
+  return sinHoraDeFin(f.inicio, f.fin) ? `${dia} · desde las ${hora(f.inicio)}` : `${dia} · ${hora(f.inicio)}–${hora(f.fin)}`
+}
+
+/** El clima en una palabra para el chip; el detalle va en «Cómo lo armó». */
+function climaCorto(c: BorradorAgente['clima']): string | null {
+  const t = `${c.sabado} ${c.domingo} ${c.resumen}`.toLocaleLowerCase('es')
+  if (/sin lluvia|sol|despejad/.test(t)) return 'Sol'
+  if (/lluvia|chubasc|tormenta/.test(t)) return 'Lluvia'
+  if (/nublad/.test(t)) return 'Nublado'
+  return null
 }
 
 /**
@@ -515,7 +553,7 @@ function etiquetaOpcion(c: CandidataAgente): string {
  * título grande, fecha y viaje, el mensaje de la IA entre comillas con "Lo redactó la IA", un desplegable con lo que
  * hizo el agente y las otras opciones, el primario "Usar esta opción" y, chico, que el agente invite al grupo.
  */
-function BorradorTarjeta({
+export function BorradorTarjeta({
   espacioId,
   b,
   soloLectura,
@@ -544,15 +582,9 @@ function BorradorTarjeta({
   const canchas = enlacesCanchas(elegida.actividad, elegida.franjas[0])
   // Enmienda 10: el viaje de la opción que está mirando el organizador (null con menos de 4 personas con zona).
   const viaje = viajeDeOpcion(elegida, b)
-  const lugar = elegida.lugar.nombre.replace(' (Simulación)', '')
   const total = b.candidatas.length
   const otras = total - 1
   const nPasos = pasos?.length ?? 0
-  const partes = [
-    nPasos > 0 ? `Lo que hizo el agente (${nPasos} pasos)` : null,
-    otras > 0 ? (otras === 1 ? 'la otra opción' : `las otras ${otras} opciones`) : null,
-  ].filter((t): t is string => Boolean(t))
-  const desplegable = partes.length > 0 ? partes.join(' y ').replace(/^l/, 'L') : 'Por qué esta opción'
   // E5: "N opciones para N personas" dice a quiénes cuenta.
   const quienes = `${total > 1 ? `${total} opciones` : 'Opción'} para ${b.personas_consideradas} personas: cuenta a quienes cargaron preferencias y las habilitaron${
     personasGrupo && personasGrupo > b.personas_consideradas ? ` (${b.personas_consideradas} de ${personasGrupo} en el grupo)` : ''
@@ -569,31 +601,90 @@ function BorradorTarjeta({
     irA(rutas.nueva(espacioId))
   }
 
+  const [verOtras, setVerOtras] = useState(false)
+  const clima = climaCorto(b.clima)
+  const cargaron = personasGrupo && personasGrupo >= b.personas_consideradas ? `${b.personas_consideradas} de ${personasGrupo} cargaron sus gustos` : null
+
   return (
-    <div className="agente-resultado sd-aparecer sd-respira">
-      <p className="agente-sobretitulo">
-        {esLaDestacada ? 'Recomendado' : 'Elegido por ti'} · {total === 1 ? '1 opción' : `${total} opciones`}
-      </p>
-      {b.quorum ? <p className="suave agente-quorum">{textoQuorum(b.quorum)}</p> : null}
-      <p className="t-titulo agente-recomendada-nombre">
-        {elegida.actividad_etiqueta} en {lugar}
-        {elegida.lugar.simulado ? <> <RotuloSimulacion /></> : null}
-      </p>
-      <ul className="agente-franjas">
+    <div className="agente-resultado agente-tarjeta sd-aparecer sd-respira">
+      {/* Rediseño (Nico, 11:40: «mucho texto, una ensalada»): a la vista solo qué, cuándo, cuánto viaje, el mensaje y
+          una acción. Todo lo técnico va en «Cómo lo armó». */}
+      <div className="agente-tarjeta-cabeza">
+        <span className="agente-sobretitulo">Propuesta de GRU</span>
+        <Chip tono={esLaDestacada ? 'ok' : 'neutro'}>{esLaDestacada ? 'Recomendada' : 'Elegida por ti'}</Chip>
+        <span className="agente-borrador">Borrador</span>
+      </div>
+      <div className="agente-tarjeta-titulo">
+        <p className="t-titulo agente-recomendada-nombre">{tituloNatural(elegida)}</p>
+        {elegida.lugar.simulado ? <RotuloSimulacion /> : null}
+      </div>
+      <ul className="agente-chips-datos" aria-label="Cuándo y cómo">
         {elegida.franjas.map((f, i) => (
-          <li key={i}>{franjaTexto(f.inicio, f.fin)}</li>
+          <li key={i}>
+            <Icono n="calendario" tam={16} />
+            <span>{fechaChip(f)}</span>
+          </li>
         ))}
+        {viaje ? (
+          <li>
+            <Icono n="lugar" tam={16} />
+            <span>≤ {viaje.max_minutos} min para todos</span>
+          </li>
+        ) : null}
+        {clima ? (
+          <li>
+            <Icono n="clima" tam={16} />
+            <span>{clima}</span>
+          </li>
+        ) : null}
       </ul>
-      {viaje ? (
-        <p className="agente-viaje-linea">
-          <strong>Queda a menos de {viaje.max_minutos} minutos para todos{viaje.estimado ? ' (estimado)' : ''}.</strong>
-        </p>
+      <figure className="agente-cita-caja">
+        <blockquote className="agente-cita">“{mensaje}”</blockquote>
+        {deModelo ? <figcaption className="t-nota suave">Lo redactó la IA</figcaption> : null}
+      </figure>
+      {cargaron ? <p className="t-nota suave agente-cargaron">{cargaron}</p> : null}
+      <div className="agente-tarjeta-acciones">
+        <Boton onClick={usar} disabled={soloLectura}>
+          Usar esta opción
+        </Boton>
+        {invitar && !soloLectura ? (
+          invitar.disponible === false ? (
+            <p className="t-nota suave">Que GRU invite al grupo no está disponible ahora.</p>
+          ) : (
+            <button type="button" className="agente-enlace agente-enlace-chico" onClick={invitar.abrir} disabled={invitar.disponible === null}>
+              Que GRU invite al grupo (revisás antes)
+            </button>
+          )
+        ) : null}
+      </div>
+      {otras > 0 ? (
+        <Plegable
+          id="agente-otras"
+          titulo={otras === 1 ? 'Ver la otra opción' : `Ver las otras ${otras} opciones`}
+          resumen=""
+          abierto={verOtras}
+          onCambio={setVerOtras}
+        >
+          <ul className="agente-otras">
+            {b.candidatas
+              .filter((c) => c.id !== elegida.id)
+              .map((c) => (
+                <li key={c.id}>
+                  <button type="button" className="agente-otra" onClick={() => setSeleccion(c.id)}>
+                    <span className="agente-otra-titulo">{tituloNatural(c)}</span>
+                    <span className="t-nota suave">{c.franjas.map(fechaChip).join(' · ')}</span>
+                    {c.id === b.elegida_id ? (
+                      <Chip tono="ok">{b.eleccion_fuente === 'modelo' ? 'Recomendada por el agente' : 'Recomendada'}</Chip>
+                    ) : null}
+                  </button>
+                </li>
+              ))}
+          </ul>
+        </Plegable>
       ) : null}
-      <blockquote className="agente-cita">“{mensaje}”</blockquote>
-      <p className="suave">
-        {deModelo ? 'Lo redactó la IA, que solo vio opciones válidas, el clima y totales del grupo.' : 'Texto fijo, armado con reglas.'}
-      </p>
-      <Plegable id="agente-mas" titulo={desplegable} resumen="" abierto={verMas} onCambio={setVerMas}>
+      <Plegable id="agente-mas" titulo={nPasos > 0 ? `Cómo lo armó (${nPasos} pasos)` : 'Cómo lo armó'} resumen="" abierto={verMas} onCambio={setVerMas}>
+        <p className="suave">{deModelo ? 'Lo redactó la IA, que solo vio opciones válidas, el clima y totales del grupo.' : 'Texto fijo, armado con reglas.'}</p>
+        {b.quorum ? <p className="suave agente-quorum">{textoQuorum(b.quorum)}</p> : null}
         <p>
           <strong>Por qué: </strong>
           {explicacion}
@@ -623,26 +714,7 @@ function BorradorTarjeta({
             <PasosAgente pasos={pasos!} />
           </>
         ) : null}
-        <fieldset className="grupo agente-candidatas">
-          <legend>{quienes}</legend>
-          <div className="opciones">
-            {b.candidatas.map((c) => {
-              const id = `agente-opcion-${c.id}`
-              return (
-                <label key={c.id} htmlFor={id} className={`opcion-radio ${seleccion === c.id ? 'opcion-activa' : ''}`}>
-                  <input id={id} type="radio" name="agente-opcion" checked={seleccion === c.id} onChange={() => setSeleccion(c.id)} />
-                  {etiquetaOpcion(c)}
-                  {c.lugar.simulado ? <> <RotuloSimulacion /></> : null}
-                  {c.id === b.elegida_id ? (
-                    <span className="etiqueta etiqueta-destacada">
-                      {b.eleccion_fuente === 'modelo' ? 'Recomendada por el agente' : 'Recomendada'}
-                    </span>
-                  ) : null}
-                </label>
-              )
-            })}
-          </div>
-        </fieldset>
+        <p className="suave">{quienes}</p>
         <PerfilDelGrupo perfil={b.perfil_grupo} />
         {canchas.length > 0 ? (
           <div className="bloque agente-canchas">
@@ -661,22 +733,8 @@ function BorradorTarjeta({
             <small>Google Maps muestra lo que está cerca de quien toca el enlace: CRUXE no conoce la ubicación de nadie.</small>
           </div>
         ) : null}
+        {invitar?.disponible ? <p className="suave agente-estado-ok">Servicio disponible: puedes preparar el borrador social.</p> : null}
       </Plegable>
-      <Boton onClick={usar} disabled={soloLectura}>
-        Usar esta opción
-      </Boton>
-      {invitar && !soloLectura ? (
-        invitar.disponible === false ? (
-          <p className="suave">Que el agente invite al grupo no está disponible ahora.</p>
-        ) : (
-          <>
-            <button type="button" className="agente-enlace agente-enlace-chico" onClick={invitar.abrir} disabled={invitar.disponible === null}>
-              o que el agente invite al grupo por mí (revisás y aprobás antes)
-            </button>
-            {invitar.disponible ? <p className="suave agente-estado-ok">Servicio disponible: puedes preparar el borrador social.</p> : null}
-          </>
-        )
-      ) : null}
     </div>
   )
 }
