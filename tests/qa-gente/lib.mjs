@@ -181,7 +181,8 @@ export async function leerCodigo(per, urlEspacio) {
 export async function entrarPorEnlace(per, codigo, nombre, { timeout = 45000 } = {}) {
   const p = per.page
   await p.goto(`${BASE}/#/unirse/${codigo}`)
-  await p.getByRole('heading', { name: '¿Quién eres?' }).waitFor({ timeout })
+  // Con la lista agotada la pantalla cambia a «Escribe tu nombre para entrar» (sin lista).
+  await p.getByRole('heading', { name: /^(¿Quién eres\?|Escribe tu nombre para entrar)$/ }).waitFor({ timeout })
   const fila = p.getByRole('button', { name: nombre, exact: true })
   let via
   if (await fila.waitFor({ timeout: 6000 }).then(() => true, () => false)) {
@@ -225,3 +226,13 @@ export async function montar(browser, { grupo, organiza, nombres, minimo, maximo
   return { org, invitados, codigo, espacioId, urlPlan, urlEspacio }
 }
 export const textoMain = (p) => p.locator('main').first().innerText().catch(() => '')
+
+// Corre fn sobre los items con a lo sumo k a la vez; devuelve los resultados en orden (errores como {error}).
+export async function enLotes(items, k, fn) {
+  const res = new Array(items.length); let i = 0
+  await Promise.all(Array.from({ length: Math.min(k, items.length) }, async () => {
+    for (;;) { const j = i++; if (j >= items.length) return; try { res[j] = await fn(items[j], j) } catch (e) { res[j] = { error: String(e.message).split('\n')[0].slice(0, 200) } } }
+  }))
+  return res
+}
+export const NOMBRES = ['Abi','Beto','Cami','Dani','Eli','Fran','Gabi','Hugo','Ivan','Juli','Kari','Lalo','Mari','Nico','Omar','Pau','Quique','Rafa','Sofi','Tomi','Uri','Vale','Wen','Xime','Yago','Zoe','Ari','Bruno','Cleo','Dante','Emi','Fede']
