@@ -110,7 +110,7 @@ export function avisoParaMi(
       tono: 'info',
       // El mismo texto que la tarjeta de friccion (`TEXTO_ASI_NO_PUEDO`, src/friccion/AsiNoPuedo.tsx), para que la
       // persona lea lo mismo arriba del plan y en su respuesta.
-      titulo: 'Así no puedes, pero sigues',
+      titulo: 'Dijiste: así no puedo, pero sigo',
       texto: 'Marcaste que así no puedes. Sigues en el plan: si se rearma, cuenta lo que marques ahora.',
       irARespuesta: yo.puede.guardar_condiciones === true,
     }

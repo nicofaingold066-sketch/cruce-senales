@@ -431,7 +431,7 @@ describe('A4 · atomicidad entre operaciones (verificador independiente)', () =>
     }
   }, LARGO)
 
-  it('[adversarial] aceptar y retirarse el MISMO miembro a la vez: nunca queda retirado con aceptación vigente (6 rondas)', async () => {
+  it('[adversarial] aceptar y retirarse el MISMO miembro a la vez: nunca queda retirado con aceptación vigente y la baja es anónima (6 rondas)', async () => {
     const filas: A4R[] = []
     for (let i = 0; i < 6; i++) {
       const p = await a4Propuesta(T, motor, { minimo: 3, maximo: 4, publicar: true, sims: [SIMS[0], SIMS[1], SIMS[2]], titulo: 'ver-a4 mismo' })
@@ -443,12 +443,16 @@ describe('A4 · atomicidad entre operaciones (verificador independiente)', () =>
       ]).map((f) => f()))
       const rr = Object.fromEntries(rs) as Record<string, A4R>
       const fin = await estado(T, p.id)
-      const baja = fin.bajas.find((b: A4R) => b.miembro.miembro_id === motor.sims[SIMS[1]])
+      // Enmienda 13 (c): la baja es anónima (miembro_id null, habia_aceptado null) y la aceptación de quien se retiró no sale en el
+      // historial: se cuenta por tamaño, y se exige que ninguna respuesta compartida traiga su miembro_id ni su nombre.
+      const texto = JSON.stringify(fin)
       filas.push({
         i,
         acc: rr.acc?.ok ? 'ok' : rr.acc?.error?.detalle,
         ret: rr.ret?.ok ? 'ok' : rr.ret?.error?.detalle,
-        habiaAceptado: baja?.habia_aceptado,
+        bajas: fin.bajas.length,
+        bajaAnonima: fin.bajas.every((b: A4R) => (b.miembro?.miembro_id ?? null) === null && (b.habia_aceptado ?? null) === null),
+        fuga: [motor.sims[SIMS[1]], SIMS[1]].filter((x) => texto.includes(x)),
         sigueAceptado: fin.opcion.aceptaron.some((a: A4R) => a.miembro.miembro_id === motor.sims[SIMS[1]]),
         cadena: a4CadenaEventos(fin),
       })
@@ -458,8 +462,11 @@ describe('A4 · atomicidad entre operaciones (verificador independiente)', () =>
       expect(f.ret).toBe('ok')
       expect(f.sigueAceptado).toBe(false)
       expect(f.cadena).toEqual([])
-      if (f.acc === 'ok') expect(f.habiaAceptado).toBe(true)
-      else { expect(f.acc).toBe('retirado'); expect(f.habiaAceptado).toBe(false) }
+      expect(f.bajas, 'una sola baja, cuente o no la aceptación').toBe(1)
+      expect(f.bajaAnonima).toBe(true)
+      expect(f.fuga, 'ninguna respuesta compartida trae el miembro_id ni el nombre de quien se retiró').toEqual([])
+      // Si la aceptación llegó antes: ok; si llegó después del retiro: rechazada por `retirado`. Cualquier otro resultado es un fallo.
+      expect(['ok', 'retirado']).toContain(f.acc)
     }
   }, LARGO)
 

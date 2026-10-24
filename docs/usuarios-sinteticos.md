@@ -148,7 +148,7 @@ Fugas que se revisan en cada pantalla ajena: Ana + comida, Beto + pareja, «casa
 | Beto (pareja, «solo el grupo», 320 px) | Ve «solo el grupo» solo porque está escrito en el título («Asado del reencuentro · solo el grupo»); no hay frase de regla («Esta vez es solo el grupo.»); nadie le pregunta por pareja ni género; no hay «traer a alguien» (V7) | sin fuga y sin exposición; la regla queda como parte del nombre del plan |
 | Flor (se baja) | Ve «Gracias por avisar. No hace falta contar por qué.»; luego «Te retiraste de esta propuesta»; el editor de condiciones queda a la vista con «Guardar» apagado (H13) | ✔ texto de psico; H13 sigue |
 | Los demás ven la baja | «**Cambió el plan.** Una persona se retiró. Falta 1 para el mínimo. Si sale una versión nueva, las confirmaciones anteriores no cuentan: si esa te sirve, la confirmas.»; el historial dice «Una persona se retiró (versión 1)» **sin nombre** y la aceptación de Flor desaparece de la lista (E13 c y `1ba3185`); «2 confirmaciones en total · 1 baja» | ✔ **H14 resuelto** |
-| Quien mira la órbita | El nodo de Flor se queda gris «Sin confirmar» como el de Pili y Ana; pero el anillo naranja de «Confirmó» que tenía Flor desaparece entre una pantalla y la otra: quien mire en vivo puede ver **quién** cayó | límite de diseño de la órbita (es público quién confirmó), no un defecto de la baja; se anota para la pregunta del jurado |
+| Quien mira la órbita (DECIDIDO 22:27: se queda; límite declarado en la enmienda 13, apertura lo suma a la respuesta del jurado) | El nodo de Flor se queda gris «Sin confirmar» como el de Pili y Ana; pero el anillo naranja de «Confirmó» que tenía Flor desaparece entre una pantalla y la otra: quien mire en vivo puede ver **quién** cayó | límite de diseño de la órbita (es público quién confirmó), no un defecto de la baja; se anota para la pregunta del jurado |
 | Reparación | v2 empieza de cero («Si no llegan 3, nadie queda comprometido…»); «El plan cambió: versión 1 → versión 2 · Sábado 31 oct 20:00 → Sábado 31 oct 20:00» (H8 sigue) | |
 | Pili | «por entrar» hasta el final | ✔ |
 
@@ -160,7 +160,25 @@ Grupo nuevo «Los del cerro» (Vale, Joaco, Renata, Gonza, Pili), plan «Subida 
 
 Si la interfaz todavía no tiene los botones («Así no puedo, pero sigo» en Mi respuesta, «Rearmar con lo nuevo» para la organizadora), esos dos pasos se hacen por RPC con la sesión que esa persona ya tiene en su navegador (sin abrir otra) y quedan como hallazgo para front-juan. Si la RPC `opinar_version` no existe, el guion lo dice y sale sin fallar.
 
-**Resultado:** pendiente de que backend termine la migración (en curso a las 21:04).
+**Resultado (producción, 22:55–22:56; la primera vez, a las 22:45, el guion se cortó por un paso mío: el atajo «Paseo» ya no existe). La enmienda 13 anda de punta a punta:**
+
+| Paso | Qué pasó | |
+|---|---|---|
+| Gonza opina «así no puedo» sobre la v1 | `opinar_version` aceptada; Gonza **sigue en el plan, no figura como baja** y vuelve a poder editar su disponibilidad | ✔ |
+| Gonza cambia su sábado a «No puedo» | guardado (el editor ya no dice «tu disponibilidad no puede cambiar mientras esté vigente») | ✔ |
+| Gonza mira su Plan | «**Así no puedes, pero sigues** · Marcaste que así no puedes. Sigues en el plan: si se rearma, cuenta lo que marques ahora.» + «Actualizar cuándo puedo · Editar día por día en Mi respuesta · Volver a «puedo»» | ✔ |
+| Vale (que ya confirmó) intenta opinar | rechazado: «Ya confirmaste esta versión. Si no puedes ir, primero retírate.» (`no_autorizado/ya_acepto`) | ✔ |
+| Vale ve el total | «**Algunos no pueden así.** 2 personas marcaron que así no pueden. Puedes rearmar con lo nuevo: la versión 2 usa la disponibilidad actualizada y empieza sin confirmaciones…» + «Rearmar con lo nuevo» + «Se puede rearmar hasta la versión 3.»; próxima acción: «Algunos no pueden así: puedes rearmar con lo nuevo.» Sin nombres | ✔ |
+| Vale rearma (botón) | **versión 2 el domingo** («Sábado 31 oct 20:00 → Domingo 1 nov 20:00»), «Nadie confirmó todavía: empieza de cero», «Se confirma con 3 confirmaciones de esta versión, entre ellas la de Vale»; la v1 dice solo «Vale había confirmado»; **no hereda opiniones** | ✔ |
+| Renata mira plan e historial | Historial: «2 versiones publicadas · 1 confirmación en total · 0 bajas»; «Se publicó la versión 2 como alternativa; ninguna aceptación anterior cuenta»; **ninguna opinión ni nombre** | ✔ |
+| Gonza, Joaco y Vale confirman la v2 | «Grupo confirmado en la versión 2» · «Confirmaron 3 de 3: Gonza, Joaco, Vale. ¡Se juntan!» | ✔ |
+
+Hallazgos nuevos de esta corrida (pedidos en la ficha):
+- **H16 (media, front-juan):** en «Mi respuesta», Gonza lee «Estás en la versión vigente. Si esta fecha no te sirve, marca «Así no puedo, pero sigo»…» y «Si solo esta fecha no te sirve, usa "Así no puedo, pero sigo"», pero **el botón no está ahí**: vive en la pestaña Plan, junto a «Confirmar versión». Quien lee la instrucción en Mi respuesta no encuentra qué tocar; falta un enlace «Ir al plan» o el botón repetido.
+- **H17 (RESUELTO 22:58: apertura lo declaró en `docs/preguntas-jurado.md` S5b, `9e606e1`) (media, apertura / límite a declarar):** con **3 personas elegibles** y 2 opiniones, quien organiza (que es una de las tres y ya confirmó) sabe exactamente quiénes opinaron: «2 personas marcaron que así no pueden» + «yo confirmé» = los otros dos. El umbral «solo desde 2» protege el caso de 1 y no el de grupos de 3. No es un defecto a arreglar (cierre de funciones); sí una frase para la pregunta del jurado sobre privacidad: «en grupos chicos el total puede deducirse; nunca dice quién».
+- **H18 (baja, front-juan):** el título «Así no puedes, pero sigues» habla en segunda persona mientras el botón dice «Así no puedo, pero sigo»; leerlo como respuesta de uno mismo («Dijiste: así no puedo, pero sigo») sería más claro.
+
+**Verificado y sin hallazgo:** nadie ve quién opinó (ni Vale, ni Renata, ni el historial); la opinión no cuenta como baja; la v2 no hereda aceptaciones ni opiniones; el tope de 3 versiones está declarado.
 
 ## Revisión de código de lo entregado hoy (sin correr; 23 oct, 19:55)
 
@@ -283,6 +301,7 @@ Nuevo en esta corrida:
 |---|---|---|
 | 19:28 | build `95def89` (parcial: el guion se cortó al confirmar Gonza; corrió durante MIGRACION EN CURSO) | descartada |
 | 19:40 | build `95def89`, base libre | completa; hallazgos H1–H14 |
+| 23:06–23:11 | **PRODUCCIÓN** `main` `8f27c5b` (enmienda 14 completa, 0048–0050) | las tres corridas completas, sin errores del guion y sin fugas: **`asi-no-puedo` ahora con los BOTONES** («Así no puedo, pero sigo» y «Rearmar con lo nuevo», sin RPC de respaldo; las 23 comprobaciones en orden, v2 el domingo, nadie ve quién), `seis-amigos` (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2) y `psico-perfiles` (Vale 4 toques para crear el grupo, el resto 3). El plan en revisión dice «La versión 1 ya no reúne lo necesario para juntarse» (neutro) pero la «Próxima acción» del servidor todavía dice «…el plan ya no cumple el mínimo o la presencia del anfitrión». **H16 y H18 todavía no están en producción** (`73ab15e` de friccion y el enlace de front-juan no se publicaron); H17 ya está en `preguntas-jurado` |
 | 22:17–22:20 | **PRODUCCIÓN** (con el parche de pantallas y la enmienda 13) | `psico-perfiles` completo (Vale 4 toques para crear el grupo, Dani/Ana/Beto/Flor 3 toques cada uno) y `seis-amigos` completo (Joaco 3, Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2). Sin fugas. **H14 resuelto**: la baja sale como «Una persona se retiró» |
 | 20:41 y 20:43 | build integrado local (+ apertura `0e03b8a`), base recién liberada tras la 0041 | 20:41: Renata no recibió «Respuesta guardada» en 20 s y vio «No se pudo cargar la lista del grupo: El servidor tarda en responder» (un tiempo del servidor justo después de la migración). 20:43: repetida, completa y sin fallas (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6). Un solo caso: no lo trato como defecto, pero si vuelve a verse en producción va a backend |
 | 20:26 | **PRODUCCIÓN** https://cruce-senales.vercel.app (`main` `7f2423e`) | completa, sin fugas, mismos números que el build integrado: Joaco 3 toques (4,2 s), Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2. Solo 3 hallazgos automáticos (todos bajos: «asado», «hora de Santiago», «anfitrión») |
