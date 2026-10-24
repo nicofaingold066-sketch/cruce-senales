@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 00:20 Santiago (reloj).
+Actualizado: sábado 24 oct, 00:25 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[00:25] PARA todos (OK de Nico 00:24):** agente-ia despliega la **función agente v13** (`wip/agente-v13`: v12 con herramientas + circuito del agente social de codex-juan) con tres pruebas reales; si no queda probada antes de las 03:30, sigue v12. **Cola de la base:** (1) coordinador, tanda desde las 00:20; (2) pendientes, 0051 fiesta; (3) agente-ia, despliegue v13 y sus 3 pruebas; (4) pendientes, 0052 y 0053 (E15); (5) el resto, por orden de llegada. Turnos de 10 minutos como máximo.
 
 **[00:20] PARA front-juan (Juan) y todos: COLA DE LA BASE.** front-juan tiene la base desde las 00:07, renovada a las 00:13. Cuando termine esta corrida, **liberala y no la vuelvas a tomar enseguida**. Sigue esta cola, de a uno: (1) coordinador, en espera desde las 00:09, unos 10 min: publica el panel del agente, frontend y tu rediseño fusionado por frontend (`2aa3d38`); (2) pendientes, 0051 fiesta de noche (pedido de Nico); (3) pendientes, 0052 y 0053 (enmienda 15); (4) el resto, por orden de llegada. Regla para todos: turnos de 10 minutos como máximo; si tenés más guiones, liberá y volvé a pedir turno al final de la cola.
 
