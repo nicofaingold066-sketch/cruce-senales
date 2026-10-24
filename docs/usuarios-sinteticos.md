@@ -135,7 +135,24 @@ Grupo nuevo «Los del reencuentro», plan «Asado del reencuentro · solo el gru
 
 Fugas que se revisan en cada pantalla ajena: Ana + comida, Beto + pareja, «casa de Dani», y la baja de Flor con nombre.
 
-**Resultado:** pendiente. A las 21:04 la base estaba ocupada por la migración de la enmienda 13 (0042–0044); la corrida arranca sola cuando backend la libere.
+**Resultado (producción, 22:17–22:18, grupo «Los del reencuentro», sin errores del guion; capturas en `tests/sinteticos/capturas/2217/`):**
+
+| Persona / tema | Qué se vio | Lectura |
+|---|---|---|
+| Vale crea el grupo | **4 toques** (antes 8): la lista de 5 nombres se pega de una vez («Agregar» una sola vez); 7 s | friccion, ✔ |
+| Vale, la propuesta | Atajos nuevos (Pádel, Tenis, Cena, Cine, Cumple, Asado, Básquet, Bar, Bowling o escape room, Juegos de mesa, Película en casa, Café o brunch, Cerro, Picnic en el parque, Museo o feria, Fútbol, Juntada); «Si sirven las dos, gana la A.» sigue; sin ayuda «¿Dónde se juntan?» ni selector de «quién viene» (la modalidad solo va en el título que escribe ella) | A4/A5 de psico no conectados; la regla «solo el grupo» no llega al texto de la invitación de WhatsApp |
+| Vale, aviso personal | ✔ conectado (`AvisoParaMi`): «Primero marca tu disponibilidad… Eres quien no puede faltar: si se busca la opción antes de que respondas, no va a haber ninguna.»; «Si no llegan 3, nadie queda comprometido. Tu confirmación solo vale si llegan 3…»; «Se armó la juntada · Gracias por moverlo.» | ✔ psico §8.6/§8.9 |
+| Vale, recordar | ✔ conectado (`RecordarFaltan`): «Avisar al grupo · Recordar a quien falta · Copiar mensaje. El mensaje va a todo el grupo: no nombra a nadie ni dice cuántos faltan.» | ✔ responde la pregunta «¿cómo se enteran los que no abrieron?» con un mensaje listo, no un aviso automático |
+| Dani (casa) | «Imprescindible (anfitrión) Vale» y «Cupo del anfitrión» sigue en un plan de asado entre amigos: no hay «casa de X» en ninguna pantalla; no hay dónde ofrecer la casa (V6, después) | sin fuga; «anfitrión» ya no es solo un problema de fútbol: también lo ve Dani en un asado |
+| Ana (sin carne) | Las preferencias no tienen comida (V2 pendiente); el plan no dice «habrá opción sin carne» (A1 pendiente de agente-ia); ningún texto de la propuesta la delata ni nombra a nadie | sin fuga, y sin forma de decirlo: el hueco sigue |
+| Beto (pareja, «solo el grupo», 320 px) | Ve «solo el grupo» solo porque está escrito en el título («Asado del reencuentro · solo el grupo»); no hay frase de regla («Esta vez es solo el grupo.»); nadie le pregunta por pareja ni género; no hay «traer a alguien» (V7) | sin fuga y sin exposición; la regla queda como parte del nombre del plan |
+| Flor (se baja) | Ve «Gracias por avisar. No hace falta contar por qué.»; luego «Te retiraste de esta propuesta»; el editor de condiciones queda a la vista con «Guardar» apagado (H13) | ✔ texto de psico; H13 sigue |
+| Los demás ven la baja | «**Cambió el plan.** Una persona se retiró. Falta 1 para el mínimo. Si sale una versión nueva, las confirmaciones anteriores no cuentan: si esa te sirve, la confirmas.»; el historial dice «Una persona se retiró (versión 1)» **sin nombre** y la aceptación de Flor desaparece de la lista (E13 c y `1ba3185`); «2 confirmaciones en total · 1 baja» | ✔ **H14 resuelto** |
+| Quien mira la órbita | El nodo de Flor se queda gris «Sin confirmar» como el de Pili y Ana; pero el anillo naranja de «Confirmó» que tenía Flor desaparece entre una pantalla y la otra: quien mire en vivo puede ver **quién** cayó | límite de diseño de la órbita (es público quién confirmó), no un defecto de la baja; se anota para la pregunta del jurado |
+| Reparación | v2 empieza de cero («Si no llegan 3, nadie queda comprometido…»); «El plan cambió: versión 1 → versión 2 · Sábado 31 oct 20:00 → Sábado 31 oct 20:00» (H8 sigue) | |
+| Pili | «por entrar» hasta el final | ✔ |
+
+Fugas revisadas en cada pantalla ajena (Ana + comida, Beto + pareja, «casa de Dani», baja de Flor con nombre): **ninguna**. El revisor de género y pareja no encontró «novia/pareja/mujeres/chicos» en ninguna pantalla compartida.
 
 ## Enmienda 13, «Así no puedo, pero sigo»: guion `tests/sinteticos/asi-no-puedo.mjs`
 
