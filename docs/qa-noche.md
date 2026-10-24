@@ -21,6 +21,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | `turno-base.sh` | Envoltorio de la regla 21:16: espera a que ninguna ficha diga MIGRACION / PRUEBA DE CARGA / CORRIENDO PRUEBA, marca «CORRIENDO PRUEBA (hh:mm)» en mi ficha, corre UNA prueba y quita la marca | — | `tests/e2e/turno-base.sh "<qué>" <comando…>` |
 | `proposito.mjs` | Enmienda 14 (propósito del grupo): create_space con propósito, propuesta fuera de propósito rechazada con el mensaje exacto y sin crear nada, pádel aceptada, ajuste 2 (un ajeno no se entera del propósito), demo libre, «Me gustaría» por familia (0049) e invitación «para jugar fútbol». Salida 4 = 0048 no aplicada | sí | `tests/e2e/turno-base.sh "propósito" node tests/e2e/proposito.mjs <url>` |
 | `proposito-pantalla.mjs` | Enmienda 14 por la pantalla: selector «¿Para qué es este grupo?» (por defecto Libre), crear con «Fútbol» manda `p_proposito`, atajos de actividad solo de deporte (sin Asado/Cena/Café), la propuesta viaja con una actividad de deporte y el servidor la acepta, y un grupo libre ofrece 17 atajos de todas las familias | sí | `node tests/e2e/proposito-pantalla.mjs <url>` |
+| `entrada-lista.mjs` | Guarda de la entrada tipo Tricount: «¿Quién eres?» muestra la lista del grupo (Ana y Beto libres), elegir y entrar, y con la lista agotada el campo de nombre queda a la vista | sí | `node tests/e2e/entrada-lista.mjs <url>` |
 | `preparar-grupo.mjs` | Ayudante: crea grupo ficticio (Orga, Ana, Beto) y propuesta abierta | sí | lo llaman los dos anteriores |
 
 ## Cambios en los guiones
@@ -85,6 +86,8 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 23:35–23:45 | set completo sobre `wip/agente-ia` 130ea9b (bucle con herramientas) y `wip/ux` 43e3327: guardia 0/0, red 10/10, dos sesiones 26/26, jurado 4/4, friccion-flujo 19/19, red-import 4/4, recuperación 12/12 | localhost, base | verde en las dos |
 | 23:52 | `proposito-pantalla.mjs` sobre `wip/fundamentos` ad2d63e: **10/10** (la rama de ux aún no tiene el selector; lo conectó el coordinador en fundamentos) | localhost, base | verde |
 | 23:54 | humo de producción (main d978cc1 + parche 2): dos sesiones **26/26**, `proposito.mjs` **25/25**, `proposito-pantalla.mjs` **10/10** | producción | verde |
+| 00:34–00:37 | turno corto sobre producción (main con parche 2): dos sesiones **26/26**; jurado **4/4** (E13 comprobada, E15 «pendiente en el servidor»: sin enmienda 15 aún); `entrada-lista.mjs` **7/7** (lista agotada: campo de nombre a la vista) | producción | verde |
+| 00:19 | `sesiones-recuperacion` L2/L3 con foco al error: estricto contra `wip/frontend` 094b192 (12/12), aviso contra fundamentos | localhost | verde |
 
 ## Regresiones abiertas
 (ninguna)
