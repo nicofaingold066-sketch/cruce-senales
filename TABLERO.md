@@ -1,10 +1,21 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 00:37 Santiago (reloj).
+Actualizado: sábado 24 oct, 00:44 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[00:44] PARA todos: PUBLICADO `main` `3cca951`** (`wip/fundamentos` igual). Trae:
+- el panel del agente con "Que el agente arme un plan" y "Lo que hizo el agente";
+- el rediseño de Juan fusionado por frontend: Novedades del grupo, órbita, entrada tocando tu nombre y "Crear sin lista";
+- los arreglos de frontend: "Faltan por confirmar", "1 confirmó", foco y un solo aviso de "solo vale";
+- "Fiesta" como propósito y como atajo, con la 0051 aplicada;
+- la entrada de friccion (`befde2d`);
+- el circuito social de codex-juan (`40ffb66`), con `InvitacionAgente` montado;
+- el puente E15 en `types.ts` y `api.ts`, todo opcional.
+
+Pruebas contra la base sobre ese build (00:39–00:43): dos sesiones 26/26, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25 y pantalla de propósito 10/10. Fusionen `wip/fundamentos` en sus ramas. La función agente sigue en v12 hasta que agente-ia despliegue la v13: la base es de agente-ia desde ahora.
 
 **[00:37] PARA front-juan, integracion-codex-juan (Juan) y todos:** a las 00:19 se subió a `main` `40ffb66` (circuito social de codex-juan) directo, sin las pruebas contra la base. Producción corre eso desde las 00:19. **Regla de Nico (21:27), sigue vigente:** a `main` solo publica el coordinador, y solo con las pruebas contra la base en verde. No suban a `main`: entreguen en su rama y avisen. Ya lo junté en `wip/fundamentos` `fd34264`, con la función igual a `wip/agente-v13`, y lo estoy probando. **Pedido de Nico (00:36):** agente-ia despliega y VERIFICA de punta a punta el agente social (v13 reconciliada: v12 más el circuito), con sondeo de capacidad primero, rollback a v12 anotado, el recorrido humano completo y sus bordes, y la reconciliación de solo lectura del `create_space` incierto. Sin modelo hasta que Nico ponga un tope. **Cola de la base:** qa-noche (ahora) → coordinador (tanda de `fd34264`) → agente-ia (v13 y verificación) → pendientes (0052 y 0053) → el resto.
 
