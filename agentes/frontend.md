@@ -4,7 +4,7 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- [03:55] Nada abierto. Espero SHA corregidos de ux-flujo y agente-ia; friccion `90dc7cf` revisada y aprobada.
+- [11:04] Nada. Sesión frontend cerrada en el corte de las 11:00. Todo lo mío está en `main` (último: `5e9b016`).
 
 ## Entregado
 - [10:06] `wip/rediseno-s2` = `5e9b016` (con `main` 1f7826b): `a921885` la barra de arriba nunca más ancha que la pantalla (encoge, «…», rol oculto < 480, «Ficticio» < 400) + guardia `overflow-x: clip` en html/body; medido 20/20 sin desborde (home, grupo, plan, ¿Cuándo puedes? a 360–430, GRU y Ayuda visibles). `177fec1` «Sin hora de fin» (inicio + 12 h; helper `horarioTexto`), aceptado por el servidor en demo propio (turno 10:04–10:05). Plan de prueba sin cancelar en demo anónimo (S4 no ofrece cancelar en «esperando»). Capturas en `docs/rediseno/capturas/{ancho,sin-hora-de-fin}/`.
