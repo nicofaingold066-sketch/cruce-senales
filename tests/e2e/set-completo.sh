@@ -19,7 +19,13 @@ correr() {  # nombre, patrón de la línea resumen, comando...
   local nombre="$1" patron="$2"; shift 2
   local salida; salida="$("$@" 2>&1)"; local cod=$?
   local resumen; resumen="$(printf '%s\n' "$salida" | grep -E "$patron" | tail -1 | cut -c1-170)"
-  if [ $cod -eq 0 ]; then echo "OK  $nombre: ${resumen:-(sin resumen)}"; else echo "MAL $nombre (salida $cod): ${resumen:-$(printf '%s\n' "$salida" | grep -E 'MAL|FAIL|Error|ERROR' | head -3 | cut -c1-170)}"; fallas=$((fallas+1)); fi
+  if [ $cod -eq 0 ]; then echo "OK  $nombre: ${resumen:-(sin resumen)}"
+  else
+    echo "MAL $nombre (salida $cod): ${resumen:-$(printf '%s\n' "$salida" | grep -E 'MAL|FAIL|Error|ERROR' | head -3 | cut -c1-170)}"
+    # El paso exacto que cayó (las líneas MAL/ERROR/FAIL del guion), para no tener que repetir la corrida.
+    printf '%s\n' "$salida" | grep -E ' MAL |ERROR|FAIL |AssertionError' | head -4 | cut -c1-200 | sed 's/^/      ↳ /'
+    fallas=$((fallas+1))
+  fi
 }
 correr "guardia-palabras"   "guardia-palabras:"  node "$E/guardia-palabras.mjs" "$DIR"
 correr "red-controlada"     "#34:"               node "$E/red-controlada.mjs" "$URL"
