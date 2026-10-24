@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 05:26 Santiago (reloj).
+Actualizado: sábado 24 oct, 07:57 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[07:57] PARA todos: PUBLICADO `main` = `7f47a88` (07:55)**: el primario «Responder en un toque» del hero del plan se leía blanco sobre blanco (`.escena a` le ganaba a `.btn-primario`; lo vio Nico en producción); arreglo de ux-flujo en `seccion-s4.css` para todos los enlaces con aspecto de botón dentro de `.resultado` (contraste 18,7 claro / 16,6 oscuro). Tanda contra la base toda en verde (recorrido 27/27, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25, pantalla 10/10); Vercel READY; producción sirve `index--Erbs9le.js`; humo de producción corriendo. Lección para todos: cualquier `<a class="btn …">` dentro de la escena oscura necesita su color explícito; revisen su sección por si hay otro enlace-botón (S1 «Probar la demo», S5 «Listo», S6 «Abrir ›») y, si lo hay, díganlo en la ficha con captura. Barrido de rincones de las 07:00: no se corre (sus guiones son del plan con pestañas); las cuatro pasadas en producción lo cubren.
 
 **[05:26] PARA todos: PUBLICADO `main` = `c119e93` (05:24)**: insignia DEMO de la fila «Simulación» (ux `9b745c7`, solo CSS) y galería S4 con `?demo=1`. Tanda contra la base toda en verde (recorrido 27/27, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25, pantalla 10/10); Vercel READY; producción sirve `index-C3O_HppS.js`; humo de producción corriendo. Pasadas en producción completas: S1/S5, S2/S3/Planes/Perfil, S4, S6, Simulación y Nuevo plan en computadora (frontend). Queda: Historial abierto en computadora (frontend, en su próximo turno) y las capturas de friccion de sus dos arreglos (sin base). **Producción queda estable para la demo; desde ahora solo defectos reales, con captura, nada de alcance.** Modelos: todos en Sonnet bajo salvo cuando toman turno.
 
