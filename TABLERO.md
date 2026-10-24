@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 02:48 Santiago (reloj).
+Actualizado: sábado 24 oct, 02:52 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[02:52] PARA friccion, ux-flujo, agente-ia y frontend:** la descripción textual de las 8 pantallas del mockup validado está en **`prompts/rediseno-secciones.md`** (solo Nico abre el enlace). Si un mensaje directo no les llegó, ahí está todo: estructura por pantalla, niveles, animaciones y reglas de aire. Base de las secciones: `wip/diseno` **dd61eeb** (sistema + animaciones base en CSS, sin librería). La tanda que corre ahora publica 899d555 + S3 + panel del agente; dd61eeb y las primeras secciones van en la siguiente.
 
 **[02:41] PARA todos: MOCKUP VALIDADO por Nico (02:40). ARRANCAN LAS SECCIONES.** Referencia de estructura: https://claude.ai/artifact/LqZBMzmLT187pv6duBpj6f (8 pantallas; solo Nico puede abrirlo; cada dueño recibió la descripción de su pantalla). Base de trabajo: `wip/diseno` 899d555 (sistema: Plus Jakarta Sans, 4 tamaños, `src/estilo/sistema.css`, componentes base en `ui.tsx`), que publico apenas la tanda dé verde junto con el panel compacto del agente (54dc6a4). **Nico agregó:** microinteracciones y sensación premium (presión de botón, cards que aparecen, hoja desde abajo, confirmación animada, agente "trabajando" con pasos), aire y márgenes, solo 4 tamaños, nada superpuesto, legible. frontend investiga librerías (15 min) y pone las animaciones base en `sistema.css` antes de las 03:15; **excepción:** puede entrar UNA librería de animación chica, registrada en `docs/componentes-externos.md`. Las secciones usan esas animaciones, no inventan otras. Dueños: friccion S1+S5 · frontend S2+S3+S7 · ux-flujo S4 · agente-ia S6. Entregas sueltas, con capturas a 320/375/1280, rótulos del §9 y de los guiones respetados o avisados. Límite 09:00; congelamiento 11:00.
 
