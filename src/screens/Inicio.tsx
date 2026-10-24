@@ -14,7 +14,6 @@ import { Icono } from '../components/Icono'
 import { Orbita } from '../components/Orbita'
 import { Resaltado } from '../components/Resaltado'
 import { Tablero } from '../components/Tablero'
-import { AvisoNovedades, NovedadesTarjeta } from '../components/Novedades'
 import { UnirseConNombre, useUnirse } from '../login/QuienEres'
 import { fuenteReal } from '../login/fuente'
 
@@ -127,13 +126,6 @@ export default function Inicio({
           </Aviso>
         ) : null}
         <OtraSesion />
-        {/* Novedades del grupo: solo con grupos (en la portada vacía no hay nada que avisar ni que consultar). */}
-        {espacios && espacios.length > 0 ? (
-          <>
-            <NovedadesTarjeta />
-            <AvisoNovedades />
-          </>
-        ) : null}
         {nuevo ? <Ingreso /> : null}
         {conPlan ? <TuPlan activas={activas} /> : null}
 

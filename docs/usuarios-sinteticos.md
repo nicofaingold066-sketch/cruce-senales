@@ -310,10 +310,24 @@ Grupo nuevo «Los del fútbol» (Teo organiza; Lalo, Maca y Rufi; Rufi nunca abr
 | Propuesta de deporte (Pádel, distinto del propósito puntual) | creada y abierta ✔ |
 | «Me gustaría» (las preferencias) | Lalo, Maca y Teo ven solo **Pádel, Fútbol, Tenis, Básquet** ✔ (así «me interesa más pádel» queda dentro del tipo de plan, sin votación) |
 | Voseo | «Cómo te mueves», «Hasta cuánto viajas», «Marca al menos una»: ya en tuteo ✔ (H5 en lo del voseo) |
-| El agente con 3 personas reales y fútbol pidiendo 10 | **Sin leer todavía**: mi guion tomó «El agente está buscando opciones para el grupo» como respuesta y cerró antes de que terminara (una llamada gastada). Ya espera hasta que desaparezca «El agente está pensando…»; se repite en la próxima tanda |
+| El agente con 3 personas reales y fútbol pidiendo 10 | **Leído a las 00:27 (una segunda llamada):** ver la sección «El agente con quórum» abajo |
 
 - **H19 (baja, front-juan):** la invitación del botón del espacio no incluye «para jugar fútbol» aunque `textoInvitacion` ya acepta el propósito (`src/lib/compartir.ts`): `Espacio.tsx` lo llama solo con nombre y código. «¿Quién eres?» sí lo dice. Con el texto de la invitación en el chat de WhatsApp, quien lo recibe se entera de la regla pero no del propósito.
 - **H20 (baja, front-juan):** el espacio del organizador no recuerda para qué es el grupo ni la regla fuera del nombre: tras crearlo, la pantalla no dice «Este grupo es para jugar fútbol» (solo está el nombre con la marca). Nico pidió poder mostrarlo al jurado creando «Los del fútbol» en vivo; hoy el propósito se ve en «Nueva propuesta» (los atajos) y en «¿Quién eres?».
+
+## El agente con quórum (producción `d978cc1`, 00:27; `proposito-grupo.mjs`; captura `capturas/0026/`)
+
+Grupo «Los del fútbol · solo el grupo»: Teo, Lalo y Maca reales (con preferencias de deporte guardadas) y Rufi pendiente («por entrar»). Nico pidió que el agente no proponga fútbol a pocas personas sino algo parecido que sí alcance. **Pasó exactamente eso:**
+
+> «**Para Fútbol hacen falta al menos 10 personas; este grupo tiene 3 por ahora. Estas opciones se pueden armar con el grupo actual. Cuando se sumen más, vuelve a pedir una propuesta.**» — «Opción para 3 personas · Tenis · Canchas de tenis del club (SIMULACIÓN) · Recomendada por el agente». Mensaje para el grupo: «Hola equipo, propongo tenis en parejas en las canchas del club: sábado 31 de 09:30 a 11:30 o domingo 1 de 09:30 a 11:30. Para fútbol se necesita un grupo más grande, pero esto se arma con los que somos. Marquen si les interesa y carguen su disponibilidad.»
+
+Lo que se comprobó: solo deporte en las opciones ✔; sin nombres ni preferencias de nadie en el texto ✔ («Lo redactó la IA, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno»); «Usar esta opción» sigue sin crear nada («Primero revisas el plan, después lo apruebas y, en otro paso, publicas las invitaciones. Nadie queda confirmado.») ✔.
+
+Hallazgos de esta llamada (pedidos en la ficha):
+- **H21 (media, front-juan/pendientes):** «este grupo tiene 3 por ahora» contradice lo que ve el organizador arriba: «4 personas» (Rufi «por entrar» no cuenta como persona del quórum, por regla del servidor). Decir «3 que ya entraron» o «3 personas que ya están en el grupo».
+- **H22 (a verificar, agente-ia):** el clima de la propuesta dice «Sábado con lluvia, máxima 20°. Domingo con lluvia» y la única opción es **tenis al aire libre** (las canchas del club no están techadas). La explicación dice «plan activo pero relajado para la mañana» y no menciona la lluvia. En el demo se usa «Simular sol», así que no afecta la demo; en un grupo real propondría jugar tenis bajo la lluvia. Si el filtro de lluvia solo actúa con «Prefiero bajo techo», decirlo; si debía filtrar, es un defecto.
+- **H23 (baja, codex-juan/agente-ia):** al final de la opción aparece un bloque «**Flujo social no disponible** · No pudimos confirmar que el servidor admita este recorrido. No se enviará una preparación. Comprobar servicio · Preparar borrador social» (la función v13 todavía no está desplegada). Es un estado de error visible al jurado en la pantalla del agente: ocultarlo mientras no esté disponible o suavizar el texto.
+- **H19 y H20** siguen: la invitación de WhatsApp lleva la regla pero no «para jugar fútbol», y el espacio del organizador no repite el propósito.
 
 ## Qué mejoró con el parche 2 (producción `d978cc1`, 23:46–23:50)
 
@@ -335,6 +349,7 @@ Grupo nuevo «Los del fútbol» (Teo organiza; Lalo, Maca y Rufi; Rufi nunca abr
 |---|---|---|
 | 19:28 | build `95def89` (parcial: el guion se cortó al confirmar Gonza; corrió durante MIGRACION EN CURSO) | descartada |
 | 19:40 | build `95def89`, base libre | completa; hallazgos H1–H14 |
+| 00:26–00:27 | **PRODUCCIÓN** `d978cc1` | `proposito-grupo` otra vez, esta vez esperando al agente: el texto de quórum sale como pidió Nico (arriba); H21–H23 nuevos |
 | 23:45–23:50 | **PRODUCCIÓN** `main` `d978cc1` (parche 2 de pantallas + enmienda 14 visible) | cuatro guiones completos, sin errores del guion y sin fugas: `proposito-grupo` (nuevo), `seis-amigos` (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6), `asi-no-puedo` (22/22 verdaderas y las dos «falsas» son lo esperado: nadie ve nombres) y `psico-perfiles`. La llamada del agente en `proposito-grupo` se leyó antes de que terminara de pensar (mi guion): pendiente repetirla |
 | 23:06–23:11 | **PRODUCCIÓN** `main` `8f27c5b` (enmienda 14 completa, 0048–0050) | las tres corridas completas, sin errores del guion y sin fugas: **`asi-no-puedo` ahora con los BOTONES** («Así no puedo, pero sigo» y «Rearmar con lo nuevo», sin RPC de respaldo; las 23 comprobaciones en orden, v2 el domingo, nadie ve quién), `seis-amigos` (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2) y `psico-perfiles` (Vale 4 toques para crear el grupo, el resto 3). El plan en revisión dice «La versión 1 ya no reúne lo necesario para juntarse» (neutro) pero la «Próxima acción» del servidor todavía dice «…el plan ya no cumple el mínimo o la presencia del anfitrión». **H16 y H18 todavía no están en producción** (`73ab15e` de friccion y el enlace de front-juan no se publicaron); H17 ya está en `preguntas-jurado` |
 | 22:17–22:20 | **PRODUCCIÓN** (con el parche de pantallas y la enmienda 13) | `psico-perfiles` completo (Vale 4 toques para crear el grupo, Dani/Ana/Beto/Flor 3 toques cada uno) y `seis-amigos` completo (Joaco 3, Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2). Sin fugas. **H14 resuelto**: la baja sale como «Una persona se retiró» |
