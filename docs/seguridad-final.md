@@ -1,6 +1,6 @@
 # Seguridad de la base: informe final (mejora #81)
 
-Autor: backend. Proyecto Supabase `tjkfdnvzsikncjbskufm` (el único de CRUXE). **Estado final: viernes 23 oct 2026, 23:05 (hora de Santiago), con la última migración aplicada `0050_e14_arreglos_revision` (50 migraciones en total; las de esta noche son 0035 a 0050).** Las cifras de abajo son las finales; lo medido más temprano está al pie en "Historial del informe". Si después se aplica otra migración, este informe se vuelve a correr y se actualiza la fecha.
+Autor: backend. Proyecto Supabase `tjkfdnvzsikncjbskufm` (el único de CRUXE). **Estado final: sábado 24 oct 2026, 02:25 (hora de Santiago), con la última migración aplicada `0055_demo_simulados_reciben_invitaciones` (55 migraciones en total; las de la noche son 0035 a 0055). Repetido por pendientes después de 0051 a 0055: mismas cifras que el corte de las 23:05 (backend).** Las cifras de abajo son las finales; lo medido más temprano está al pie en "Historial del informe". Si después se aplica otra migración, este informe se vuelve a correr y se actualiza la fecha.
 
 ## Resumen
 | Control | Resultado | Cómo se midió |
@@ -15,11 +15,11 @@ Autor: backend. Proyecto Supabase `tjkfdnvzsikncjbskufm` (el único de CRUXE). *
 | Políticas RLS | 0 en todas (deny-all: solo se llega a los datos por las 41 funciones) | `pg_policy` |
 | `SELECT` de `anon` o `authenticated` en alguna tabla | ninguno | `has_table_privilege` |
 | `cruce.verificar_privilegios()` | **sin hallazgos** (no lanza excepción). Corre al final de cada migración del backend: si algo de lo de arriba fallara, la migración entera se revierte | `select cruce.verificar_privilegios()` |
-| Suite de pruebas contra la base real | `tests/backend` en serie y sin las pruebas de concurrencia: **93 de 94 y 4 omitidas** a las 22:32 (la única falla fue un `statement timeout` de `open_proposal` con la base cargada por otras corridas; esa prueba sola da 6/6). Tras la 0050, los 12 archivos que tocan las funciones cambiadas: **78/78 y 4 omitidas** (22:49 a 22:52) | `npx vitest run tests/backend --no-file-parallelism -t '^(?!.*concurrente).*$'` |
+| Suite de pruebas contra la base real | `tests/backend` en serie y sin las pruebas de concurrencia: **106 de 107 y 4 omitidas** a las 02:15–02:18 (19 archivos, con 0051 a 0055 aplicadas; la única falla fue de transporte: `save_my_conditions` sin sesión respondió con código vacío en vez de `42501`, y esa prueba sola da 5/5). Corte anterior (23:05): 93 de 94 | `npx vitest run tests/backend --no-file-parallelism` |
 
 Tablas (22, todas con RLS y sin privilegios del navegador): `aceptaciones`, `bajas`, `catalogo_agente`, `condiciones`, `ejecuciones_agente`, `elegibles`, `errores_internos`, `espacios`, `eventos`, `eventos_espacio`, `franjas`, `intentos`, `invitaciones_agente`, `miembros`, `opciones_agente`, `opiniones`, `participaciones`, `politicas_agente`, `preferencias`, `propuestas`, `tiempos_zona` y `versiones`. Sin políticas (`pg_policy` = 0), sin `SELECT` para `anon` ni `authenticated`, y el esquema `cruce` sin `USAGE` para el navegador.
 
-## Advisors de Supabase (seguridad), 23:01 (final)
+## Advisors de Supabase (seguridad), 02:20 (final, repetido tras la 0055; idéntico al de las 23:01)
 | Aviso | Nivel | Cuántos | Lectura |
 |---|---|---|---|
 | `rls_enabled_no_policy` (RLS activo sin políticas) | INFO | 22 | **Intencional.** Es el diseño deny-all: ninguna tabla se lee ni se escribe desde el cliente; todo pasa por funciones del servidor que deciden quién ve qué. |
@@ -37,12 +37,15 @@ No hay avisos de nivel ERROR.
 - Errores: el sobre de error lleva `codigo`, `detalle` y un mensaje fijo; nunca valores de otra persona. Los errores inesperados se guardan en `cruce.errores_internos` (solo función, `sqlstate` y contexto SQL, sin parámetros ni datos de personas) y al cliente le llega `fallo_temporal/reintentar`.
 - La tabla de tiempos entre comunas (`cruce.tiempos_zona`) y el catálogo de lugares son datos de contexto ficticios, sin personas, y tampoco se leen desde el cliente.
 
+- **Enmienda 15** (ronda con plazo, dos planes): `ronda {horas, cierra, abierta}` y la `etiqueta` de cada franja son públicas (son la agenda del plan, no dicen nada de nadie). `prefiero` viaja dentro de la disponibilidad pero la disponibilidad que devuelve el servidor sigue siendo `{A, B}`: solo la propia persona lo ve, en `condiciones.prefiero`. `planes_totales` (Sí y preferencias por plan) sale solo al organizador, sin contarlo, y cada número es `null` con menos de 2; en `get_proposal_state` y en `list_proposals` otra persona recibe `null` y ningún JSON contiene `prefiero` ajeno (`tests/backend/enmienda15.test.ts`, prueba 7).
+- **0055** (demo): en espacios `demo` los miembros simulados reciben invitaciones del agente; los pendientes y los espacios que no son demo no cambian. La invitación sigue sin ser interés ni asistencia.
+
 ## Claves y secretos
 - El navegador solo tiene la clave publicable (`VITE_SUPABASE_PUBLISHABLE_KEY`). Las pruebas de backend también usan solo esa clave y sesiones anónimas; nunca `service_role`.
 - Las migraciones se aplican desde el conector de Supabase del equipo, no con claves en el repo. `.env` está ignorado por git.
 
 ## Errores internos registrados (`cruce.errores_internos`)
-El último id es el 20 (18 filas hoy). **Ninguna nueva desde las 19:35: ninguna de las migraciones 0039 a 0050 produjo errores internos.** Las dos últimas:
+El último id es el 21 (19 filas). **Ninguna de las migraciones 0039 a 0055 produjo errores internos.** La única fila nueva desde las 19:35 es la 21 (23:57, antes de las migraciones de pendientes): `seed_demo_space`, `55P03` (lock_timeout de 5 s en `cruce.bloquear_usuario`), con la base cargada por corridas concurrentes; quien llamó recibió `fallo_temporal/reintentar` y repetir resuelve. Las dos anteriores:
 - id 20 (19:35): `save_my_preferences`, 23502 (not null). Causa: la validación nueva de la enmienda 10 dejaba pasar un objeto sin claves. Corregido en `0037_e10_validar_sin_claves` y cubierto por pruebas (enmienda 8, prueba 3; enmienda 10, prueba 0).
 - id 19 (17:06): `create_space`, 23514 (check) al insertar un integrante pendiente (enmienda 9). Causa: la restricción `miembros_real_con_sesion` no contemplaba a los pendientes. Corregido un minuto después en `0034_e9_pendiente_sin_sesion` y cubierto por `tests/backend/enmienda9.test.ts`.
 
@@ -92,3 +95,4 @@ select
 - 20:39: enmienda 11, agente social (0041): 40 funciones, 21 tablas, suite 84/84.
 - 21:00 a 21:48: enmienda 13 (0042 a 0047): 41 funciones (`opinar_version`), 22 tablas (`opiniones`).
 - 22:03 a 22:48: enmienda 14 (0048, 0049, 0050): ninguna función nueva ni firma duplicada (se cambiaron dos firmas con un parámetro opcional al final); `verificar_privilegios()` sin hallazgos al final de cada migración.
+- 00:27 a 02:14 (pendientes): 0051 (fiesta con domingo, solo datos), 0052 y 0053 (enmienda 15: `create_proposal` suma dos parámetros opcionales al final, una sola firma; sin RPC nuevas), 0054 (demo "Los del finde", solo nombre) y 0055 (simulados de la demo reciben invitaciones). Catálogo, RLS, advisors y `verificar_privilegios()` iguales al corte de las 23:05. Cada una con su reversa en `supabase/revertir/`.
