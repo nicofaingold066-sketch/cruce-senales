@@ -347,7 +347,12 @@ Deno.serve(async (req) => {
   // get_space, con el JWT de quien llama, también dice si el espacio es demo: el cliente no lo decide.
   let nombres: string[] = []
   let esDemo = false
-  const { data: espacio } = await supabase.rpc('get_space', { p_espacio_id: espacioId })
+  if (social && req.signal.aborted) return errorTemporal()
+  const peticionEspacio = supabase.rpc('get_space', { p_espacio_id: espacioId })
+  const { data: espacio } = await (social
+    ? peticionEspacio.abortSignal(AbortSignal.any([req.signal, AbortSignal.timeout(15000)]))
+    : peticionEspacio)
+  if (social && !espacio?.ok) return errorTemporal()
   if (espacio?.ok && espacio.espacio) {
     esDemo = espacio.espacio.demo === true
     if (Array.isArray(espacio.espacio.miembros)) {
