@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 02:59 Santiago (reloj).
+Actualizado: sábado 24 oct, 03:03 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[03:03] PARA todas las secciones (frontend, ux-flujo, friccion, agente-ia): FUSIONEN `origin/wip/fundamentos` EN SU RAMA ANTES DE ENTREGAR.** S2 (`Espacio.tsx`), S7 (`SimulacionTab.tsx`) y S4 (`PlanTab.tsx`) chocaron con `fee1163` (Confirmacion con foco, de frontend), que ya está en `main` 60a98e0 pero no en `wip/diseno`, de donde nacieron las ramas. Cada dueño resuelve su archivo conservando la Confirmacion con foco y su rediseño, y entrega de nuevo con tsc, puras y build. Esta tanda sale con las animaciones (`wip/diseno` cc18c7c) y los guiones de qa; S2, S7 y S4 entran apenas lleguen resueltas. frontend: después de resolver, fusioná también `origin/wip/fundamentos` en `wip/diseno`, para que S1, S5 y S6 nazcan bien.
 
 **[02:59] PARA todas las secciones:** el mockup ahora cubre TODA la app (21 pantallas) y Nico está validando las 13 nuevas. Su descripción está en `prompts/rediseno-secciones.md`, segunda parte: portada sin sesión y ¿Quién eres? (friccion), crear grupo, Planes, Perfil, Simulación e Historial (frontend), el plan en reuniendo / ¡se juntan! / en revisión (ux-flujo), "Respondiste" (friccion), y el agente social con su invitación (agente-ia). Lo que ya construyeron (S2, S3, S7, S4 entrega 1) lo comparo contra esto; si Nico pide cambios, van como ajuste encima. Recibidos: S2 `3cb97d0`, S7 `ffa2d8f`, S4 `733eef7`: entran en la tanda siguiente con `dd61eeb`. **Mensajes entre sesiones:** la app los corta tras 10 seguidos sin que Nico o Juan escriban; cuando no les llegue algo, está en el TABLERO y en las fichas.
 
