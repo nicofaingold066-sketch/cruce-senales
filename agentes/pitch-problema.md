@@ -3,7 +3,6 @@
 Quien edita este archivo: solo esta sesión. Última actualización: 02:26.
 
 ## Tocando ahora
-- **CORRIENDO PRUEBA (03:15)**: S6 Agente, capturas finales a 375/320/1280 con la función y las RPC sociales simuladas (cero modelo), demo propio. Unos 3 minutos.
 - (vacío desde las 02:26; marca sacada.) Siguiente: brief de S6 del rediseño (lo hace frontend).
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
