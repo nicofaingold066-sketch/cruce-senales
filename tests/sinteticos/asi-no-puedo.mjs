@@ -65,7 +65,7 @@ async function opinar(p, version) {
 try {
   log('— Vale crea «Los del cerro» y la propuesta (mínimo 3)')
   await reintento(() => E.crearGrupo(vale, { integrantes: ['Joaco', 'Renata', 'Gonza', 'Pili'], pegar: true }))
-  await E.crearPropuesta(vale, { actividad: 'Paseo', minimoMas: 1 })
+  await E.crearPropuesta(vale, { actividad: 'Cerro', minimoMas: 1 })
   await E.volverA(vale, E.datos.propuestaUrl, 'Mi respuesta')
   await E.guardarCondiciones(vale, 'Sí puedo', 'Sí puedo')
 
