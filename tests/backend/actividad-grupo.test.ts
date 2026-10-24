@@ -131,7 +131,8 @@ describe('actividad del grupo: ingresos, bajas de planes y salida real', { timeo
       expect(err(await rpc(A, fn, a)), fn).toBe('fuera_de_audiencia/no_miembro')
     }
     // Todas las demás entradas dirigidas a grupo/propuesta tampoco pueden devolver contenido ni mutar.
-    const globales = new Set(['server_info', 'create_space', 'join_space', 'preview_space_by_code', 'list_my_spaces', 'seed_demo_space', 'leave_space'])
+    // 0058: seed_demo_makana es global como seed_demo_space (no recibe grupo; crea el demo Makana del usuario).
+    const globales = new Set(['server_info', 'create_space', 'join_space', 'preview_space_by_code', 'list_my_spaces', 'seed_demo_space', 'seed_demo_makana', 'leave_space'])
     for (const [fn, entrada] of Object.entries(PERMITIDAS)) {
       if (globales.has(fn) || args[fn]) continue
       const a = entrada()
@@ -190,9 +191,10 @@ describe('actividad del grupo: ingresos, bajas de planes y salida real', { timeo
     expect(err(imprescindibleSalido)).toBe('entrada_incompleta/imprescindible_invalido')
   })
 
-  it('catálogo 42/0 y argumentos de salida; un intento no puede reutilizarse en otro grupo', async () => {
-    expect(TOTAL_PERMITIDAS).toBe(42)
-    expect(Object.keys(PERMITIDAS)).toHaveLength(42)
+  // 0058 (demo Makana) suma seed_demo_makana: el catálogo pasa de 42 a 43 (ver demo-makana.test.ts).
+  it('catálogo 43/0 y argumentos de salida; un intento no puede reutilizarse en otro grupo', async () => {
+    expect(TOTAL_PERMITIDAS).toBe(43)
+    expect(Object.keys(PERMITIDAS)).toHaveLength(43)
     expect((await rpcCrudo(clienteSinSesion(), 'leave_space', {
       p_espacio_id: '00000000-0000-4000-8000-000000000000', p_intento_id: intento(),
     })).error?.code).toBe('42501')

@@ -181,7 +181,7 @@ function Quienes({ p, total: total_ }: { p: EstadoPropuesta; total: number | nul
           {c.confirmados > c.minimo ? `${c.confirmados} confirmaron (mínimo ${c.minimo})` : `${cuentaConfirmados(c.confirmados, c.minimo)} confirmaron`}
           {c.faltan_para_minimo > 0 ? ` · faltan ${c.faltan_para_minimo}` : ''}
         </p>
-        {nombres.length > 0 ? <p className="visualmente-oculto">Confirmaron: {lista(nombres.map((m) => m.nombre))}.</p> : null}
+        {nombres.length > 0 ? <p className="resultado-nombres">Confirmaron: {lista(nombres.map((m) => m.nombre))}.</p> : null}
       </div>
     )
   }
@@ -206,6 +206,7 @@ function Quienes({ p, total: total_ }: { p: EstadoPropuesta; total: number | nul
           {siguen.length} {siguen.length === 1 ? 'sigue' : 'siguen'}
           {c.faltan_para_minimo > 0 ? ` · faltan ${c.faltan_para_minimo} para el mínimo` : ''}
         </p>
+        {siguen.length > 0 ? <p className="resultado-nombres">Siguen en esta versión: {lista(siguen.map((m) => m.nombre))}.</p> : null}
       </div>
     )
   }

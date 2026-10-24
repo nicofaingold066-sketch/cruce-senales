@@ -386,6 +386,7 @@ export const api = {
   leaveSpace: (espacioId: string, intentoId: string) =>
     llamar<SalirEspacioOk>('leave_space', { p_espacio_id: espacioId, p_intento_id: intentoId }, true),
   seedDemoSpace: () => llamar<SembrarDemoOk>('seed_demo_space', {}, true),
+  seedDemoMakana: () => llamar<SembrarDemoOk>('seed_demo_makana', {}, true),
   addSimulatedMember: (espacioId: string, nombreVisible: string) =>
     llamar<AgregarSimuladoOk>(
       'add_simulated_member',
