@@ -176,3 +176,212 @@ small,
   outline: 2px solid var(--foco);
   outline-offset: 2px;
 }
+
+/* ------------------------------------------------------------------ movimiento (pedido de Nico, 02:40)
+   Cinco movimientos, y solo estos; las secciones los usan con estas clases y no inventan otros (decisión 15: sin
+   librería). La hoja y las tarjetas se mueven con `top` y no con `transform`: un transform en el contenedor vuelve
+   relativa a la barra fija de abajo y la hace saltar. Con prefers-reduced-motion todo queda quieto. */
+
+:root {
+  --dur-1: 120ms; /* presión del dedo */
+  --dur-2: 220ms; /* aparecer */
+  --dur-3: 380ms; /* la hoja sube */
+  --curva: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes sd-aparecer {
+  from {
+    opacity: 0;
+    top: 8px;
+  }
+  to {
+    opacity: 1;
+    top: 0;
+  }
+}
+@keyframes sd-subir {
+  from {
+    opacity: 0;
+    top: 28px;
+  }
+  to {
+    opacity: 1;
+    top: 0;
+  }
+}
+@keyframes sd-pop {
+  0% {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes sd-pulso {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* 1. Presión: todo lo que se toca responde al dedo (sin tocar el color: eso lo decide cada variante). */
+.btn,
+.chip-tocable,
+.opcion-radio,
+.chip-dia,
+.chip-hora,
+.chip-persona,
+.chip-actividad,
+.pestana,
+.plan-vivo {
+  transition:
+    transform var(--dur-1) var(--curva),
+    background-color var(--dur-2) ease,
+    box-shadow var(--dur-2) ease,
+    opacity var(--dur-2) ease;
+}
+.btn:active,
+.chip-tocable:active,
+.opcion-radio:active,
+.chip-dia:active,
+.chip-hora:active,
+.chip-persona:active,
+.chip-actividad:active,
+.pestana:active,
+.plan-vivo:active {
+  transform: scale(0.97);
+}
+
+/* 2. Aparecer: las tarjetas y las filas entran al montarse, escalonadas (hasta ocho). `.sd-aparecer` para cualquier
+   otra pieza; `.sd-escalonado` escalona a sus hijos. Las que vuelven a dibujarse por el sondeo no se mueven (React
+   conserva el nodo). */
+.hoja .tarjeta,
+.lista-planes > li,
+.sd-aparecer,
+.sd-escalonado > * {
+  position: relative;
+  animation: sd-aparecer var(--dur-2) var(--curva) both;
+}
+.hoja .tarjeta:nth-child(2),
+.lista-planes > li:nth-child(2),
+.sd-escalonado > :nth-child(2) {
+  animation-delay: 40ms;
+}
+.hoja .tarjeta:nth-child(3),
+.lista-planes > li:nth-child(3),
+.sd-escalonado > :nth-child(3) {
+  animation-delay: 80ms;
+}
+.hoja .tarjeta:nth-child(4),
+.lista-planes > li:nth-child(4),
+.sd-escalonado > :nth-child(4) {
+  animation-delay: 120ms;
+}
+.hoja .tarjeta:nth-child(5),
+.lista-planes > li:nth-child(5),
+.sd-escalonado > :nth-child(5) {
+  animation-delay: 160ms;
+}
+.hoja .tarjeta:nth-child(6),
+.lista-planes > li:nth-child(6),
+.sd-escalonado > :nth-child(6) {
+  animation-delay: 200ms;
+}
+.hoja .tarjeta:nth-child(7),
+.lista-planes > li:nth-child(7),
+.sd-escalonado > :nth-child(7) {
+  animation-delay: 240ms;
+}
+.hoja .tarjeta:nth-child(8),
+.lista-planes > li:nth-child(8),
+.sd-escalonado > :nth-child(8) {
+  animation-delay: 280ms;
+}
+
+/* 3. La hoja sube desde abajo al abrir cada pantalla. */
+.hoja {
+  position: relative;
+  animation: sd-subir var(--dur-3) var(--curva) both;
+}
+
+/* 4. Confirmación: el resultado "pega". La sección lo pone en la tarjeta de «¡Se juntan!», en «Ya confirmaste» y en
+   «Respuesta guardada». Lleva transform: no ponerlo en un contenedor con una barra fija adentro. */
+.sd-exito {
+  animation: sd-pop 460ms var(--curva) both;
+}
+
+/* 5. Trabajando: pasos de una espera (el agente, una carga). El paso activo late, los hechos quedan marcados. */
+.sd-pasos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--e-2);
+}
+.sd-pasos > li {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-height: 24px;
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--tinta-2);
+}
+.sd-pasos > li::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--linea);
+}
+.sd-pasos > .sd-paso-activo {
+  color: var(--tinta);
+  font-weight: var(--p-boton);
+}
+.sd-pasos > .sd-paso-activo::before {
+  background: var(--brasa);
+  animation: sd-pulso 1s ease-in-out infinite;
+}
+.sd-pasos > .sd-paso-hecho::before {
+  background: var(--ok);
+}
+.sd-pulso {
+  animation: sd-pulso 1.2s ease-in-out infinite;
+}
+
+/* Aire: las secciones separan sus bloques con la escala, no con valores sueltos. */
+.sd-aire > * + * {
+  margin-top: var(--e-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .chip-tocable,
+  .opcion-radio,
+  .chip-dia,
+  .chip-hora,
+  .chip-persona,
+  .chip-actividad,
+  .pestana,
+  .plan-vivo {
+    transition: none;
+  }
+  .hoja,
+  .hoja .tarjeta,
+  .lista-planes > li,
+  .sd-aparecer,
+  .sd-escalonado > *,
+  .sd-exito,
+  .sd-pasos > .sd-paso-activo::before,
+  .sd-pulso {
+    animation: none;
+  }
+}

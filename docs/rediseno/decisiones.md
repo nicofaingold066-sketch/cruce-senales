@@ -19,6 +19,8 @@ Cada decisión: qué, por qué y qué pasa si no gusta. Las de la fase 1 las tom
 13. **La accesibilidad de la noche no se pierde:** `Confirmacion` y `useVolverFoco` viven en `src/components/Confirmacion.tsx` (no en `ui.tsx`) y usan `Aviso` con `ref` y `tabIndex`; la `Aviso` nueva conserva esas props. Las confirmaciones de «Entrar como otra persona» (Perfil) y «Olvidarla» (Sesiones) quedan para la sección S1 con el sistema nuevo.
 14. **Horario:** si el sistema no está publicado a las 03:15, las secciones arrancan igual sobre los tokens de `wip/diseno` (están en GitHub) y el coordinador publica todo junto. A las 09:00, la sección que no esté en verde queda como hoy (`main` tiene la etiqueta `demo-segura`).
 
+15. **Movimiento sin librería** (02:45, pedido de Nico de microinteracciones). Se miraron `@formkit/auto-animate` (2 KB, solo listas), `motion` (pesada) y `animejs` (17 KB). Las cinco piezas que pidió Nico (presión, aparecer, hoja desde abajo, confirmación, agente trabajando) salen con CSS puro en `sistema.css`, y una dependencia nueva a las 03:00 obligaría a `npm install` en las veinte copias de trabajo del equipo y rompería el build de quien no lo haga. Si después del evento se quiere más (listas que se reordenan), `auto-animate` es la candidata.
+
 ## Fase 2 (las agregan los dueños de sección)
 
 - (sección, hora) decisión · por qué · alternativa descartada
