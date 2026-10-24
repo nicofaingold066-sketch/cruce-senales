@@ -3,7 +3,7 @@ import { api } from '../lib/api'
 import type { EstadoPropuesta } from '../lib/types'
 import { useAhora, useMutacion } from '../lib/hooks'
 import { cuentaRegresiva, describirEvento, diaDe, franjaTexto, hora, momentoCorto, ZONA_VISIBLE } from '../lib/format'
-import { Avatar, Aviso, Boton, DiaTile, ErrorCaja, Nombre, Progreso } from '../components/ui'
+import { Avatar, Aviso, Boton, Confirmacion, DiaTile, ErrorCaja, Nombre, Progreso, useVolverFoco } from '../components/ui'
 import type { PestanaProps } from './tabs'
 import { Icono } from '../components/Icono'
 import { Confeti } from '../components/Confeti'
@@ -717,32 +717,33 @@ function BuscarOpcion({ p, viva, soloLectura, sinOpcion, secundaria }: VivaProps
 function Cancelar({ p, viva, soloLectura }: VivaProps) {
   const [confirmar, setConfirmar] = useState(false)
   const { ocupado, error, correr } = useMutacion(viva)
+  const { zona, volver } = useVolverFoco<HTMLElement>()
   async function hacer() {
     const r = await correr(`cancelar:${p.id}`, () => api.cancelProposal(p.id))
     if (r?.ok) setConfirmar(false)
   }
   return (
-    <section className={`tarjeta zona-peligro ${confirmar ? '' : 'zona-peligro-fila'}`} aria-labelledby="cancelar-titulo">
+    <section ref={zona} className={`tarjeta zona-peligro ${confirmar ? '' : 'zona-peligro-fila'}`} aria-labelledby="cancelar-titulo">
       <div className="zona-peligro-texto">
         <h2 id="cancelar-titulo">¿Ya no va?</h2>
         <p className="suave">Pasa a Cancelado y no se puede reabrir.</p>
       </div>
       {!confirmar ? (
-        <Boton variante="secundario" onClick={() => setConfirmar(true)} disabled={soloLectura}>
+        <Boton variante="secundario" onClick={() => setConfirmar(true)} disabled={soloLectura} data-abre-confirmacion>
           Cancelar propuesta
         </Boton>
       ) : (
-        <Aviso tono="aviso" titulo="¿Cancelar la propuesta?">
+        <Confirmacion titulo="¿Cancelar la propuesta?">
           La propuesta pasa a Cancelado y no se puede reabrir.
           <div className="fila-botones">
             <Boton variante="peligro" onClick={hacer} ocupado={ocupado} ocupadoTexto="Cancelando…">
               Sí, cancelar
             </Boton>
-            <Boton variante="secundario" onClick={() => setConfirmar(false)} disabled={ocupado}>
+            <Boton variante="secundario" onClick={() => volver(() => setConfirmar(false))} disabled={ocupado}>
               Volver
             </Boton>
           </div>
-        </Aviso>
+        </Confirmacion>
       )}
       {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import type { ApiError, Condiciones, EstadoPropuesta, Preferencia } from '../lib/types'
 import { useBorradorCondiciones, useMutacion } from '../lib/hooks'
-import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
+import { Aviso, Boton, Cargando, Confirmacion, ErrorCaja, useVolverFoco } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { vibrar } from '../lib/tacto'
 import { EditorCondiciones } from '../components/Condiciones'
@@ -329,35 +329,36 @@ function Retiro({ p, viva, soloLectura }: VivaProps) {
   const s = p.mi_situacion
   const [confirmar, setConfirmar] = useState(false)
   const { ocupado, error, correr } = useMutacion(viva)
+  const { zona, volver } = useVolverFoco<HTMLElement>()
   if (s.retirado || !s.puede.retirarme) return null
   async function hacer() {
     const r = await correr(`baja:${p.id}`, () => api.withdrawCommitment(p.id))
     if (r?.ok) setConfirmar(false)
   }
   return (
-    <section className="tarjeta zona-peligro">
+    <section ref={zona} className="tarjeta zona-peligro">
       <h2>No voy</h2>
       <p className="suave">
         Si ya no puedes, retirarte avisa al grupo. Es definitivo en esta propuesta: no podrás volver a participar en ella.
       </p>
       <AyudaRetiro p={p} />
       {!confirmar ? (
-        <Boton variante="secundario" onClick={() => setConfirmar(true)} disabled={soloLectura}>
+        <Boton variante="secundario" onClick={() => setConfirmar(true)} disabled={soloLectura} data-abre-confirmacion>
           Retirarme de esta propuesta
         </Boton>
       ) : (
-        <Aviso tono="aviso" titulo="¿Retirarte definitivamente?">
+        <Confirmacion titulo="¿Retirarte definitivamente?">
           Perderás tu interés y tu confirmación, y la baja queda registrada. Si el grupo queda por debajo del mínimo, el
           plan pasa a revisión.
           <div className="fila-botones">
             <Boton variante="peligro" onClick={hacer} ocupado={ocupado} ocupadoTexto="Registrando baja…">
               Sí, no voy
             </Boton>
-            <Boton variante="secundario" onClick={() => setConfirmar(false)} disabled={ocupado}>
+            <Boton variante="secundario" onClick={() => volver(() => setConfirmar(false))} disabled={ocupado}>
               Volver
             </Boton>
           </div>
-        </Aviso>
+        </Confirmacion>
       )}
       {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
