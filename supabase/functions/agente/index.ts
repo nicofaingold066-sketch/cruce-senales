@@ -5,7 +5,7 @@
 // opciones mirando el perfil del grupo entero y redacta por qué y un mensaje para invitar. Con
 // AI_GATEWAY_API_KEY va por el Vercel AI Gateway; sin ella y con ANTHROPIC_API_KEY, por la API directa.
 // El modelo nunca recibe datos de una persona: solo opciones ya validadas, el clima y totales del grupo.
-// Modelo: Opus y, si falla o no llega a tiempo, Haiku. Sin clave, con error de los dos, con una elección fuera
+// Modelo: Fable 5.1 (prueba; antes Opus) y, si falla o no llega a tiempo, Haiku. Sin clave, con error de los dos, con una elección fuera
 // de la lista o pasados ~30 s: primera opción y texto fijo.
 // Nunca crea, invita ni confirma nada.
 import { createClient } from 'npm:@supabase/supabase-js@2'
@@ -45,7 +45,7 @@ import {
   type ResultadoPlan,
 } from './logica.ts'
 
-// Opus tarda más que Haiku: hasta 20 s para el principal y lo que quede (unos 8 s) para el respaldo.
+// El principal tarda más que Haiku: hasta 20 s para el principal y lo que quede (unos 8 s) para el respaldo.
 const PLAZO_TOTAL_MS = 30000
 const PLAZO_PRINCIPAL_MS = 20000
 const PLAZO_RESPALDO_MS = 8000
@@ -182,7 +182,7 @@ async function coordinarConModelo(
   }
   const modo = modoSalida(Deno.env.get('AGENTE_SALIDA'))
   const entrada = entradaModelo(candidatas, perfil, clima, nombres, simulado, quorum)
-  // Principal (Opus) y, si falla o no llega a tiempo, una sola llamada al respaldo (Haiku). Después, la regla.
+  // Principal (Fable u Opus) y, si falla o no llega a tiempo, una sola llamada al respaldo (Haiku). Después, la regla.
   const intentos = [
     { modelo: proveedor.modelo, plazo: PLAZO_PRINCIPAL_MS },
     { modelo: proveedor.respaldo, plazo: PLAZO_RESPALDO_MS },

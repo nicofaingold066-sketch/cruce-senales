@@ -417,11 +417,14 @@ export function validarSalidaModelo(
 
 export const GATEWAY_URL = 'https://ai-gateway.vercel.sh'
 // Nombres en el Gateway: `creador/modelo`, con punto en la versión (página de modelos de Vercel).
-// Decisión de Nico (23 oct, 19:4x): Opus como principal y Haiku como respaldo si Opus falla o no llega a tiempo.
-export const MODELO_GATEWAY = 'anthropic/claude-opus-5.5'
+// Decisión de Nico (23 oct, 19:4x): Opus como principal y Haiku como respaldo si falla o no llega a tiempo.
+// Prueba de Fable 5.1 (23 oct, 23:1x, aprobada por Nico): principal Fable con el mismo respaldo, plazo y validaciones.
+// Fable piensa siempre (thinking adaptive explícito se acepta), admite effort y salida con esquema; rechaza un
+// tool_choice forzado, que acá no se usa. Si no conviene, se vuelve a 'anthropic/claude-opus-5.5'.
+export const MODELO_GATEWAY = 'anthropic/claude-fable-5.1'
 export const RESPALDO_GATEWAY = 'anthropic/claude-haiku-5.5'
 // Nombres en la API de Anthropic directa.
-export const MODELO_DIRECTO = 'claude-opus-5-5'
+export const MODELO_DIRECTO = 'claude-fable-5-1'
 export const RESPALDO_DIRECTO = 'claude-haiku-5-5'
 /**
  * Lo que se le deja escribir al modelo. El JSON (explicación de 240, mensaje de 320 y el id) ocupa unos
@@ -437,7 +440,7 @@ export interface Proveedor {
   variableClave: 'AI_GATEWAY_API_KEY' | 'ANTHROPIC_API_KEY'
   /** Solo el Gateway usa otra URL base; con la API directa queda la del SDK. */
   baseURL?: string
-  /** Principal (Opus). */
+  /** Principal (Fable 5.1 en la prueba; antes Opus). */
   modelo: string
   /** Una sola llamada a este si el principal falla o no llega a tiempo (Haiku). */
   respaldo: string
@@ -555,8 +558,8 @@ export function armarPedido(
   }
   return {
     ...base,
-    // Esfuerzo bajo para que Opus responda rápido. Vercel documenta `effort` junto con `thinking: adaptive`
-    // (Opus 5.5 piensa siempre; con la herramienta forzada no se manda, porque no se combinan).
+    // Esfuerzo bajo para que el principal responda rápido. Vercel documenta `effort` junto con `thinking: adaptive`
+    // (Opus 5.5 y Fable 5.1 piensan siempre; con la herramienta forzada no se manda, porque no se combinan).
     ...(proveedor.tipo === 'gateway' ? { thinking: { type: 'adaptive' as const } } : {}),
     output_config: {
       effort: 'low' as const,

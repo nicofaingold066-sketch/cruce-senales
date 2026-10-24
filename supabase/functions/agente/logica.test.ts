@@ -292,14 +292,14 @@ test('proveedor: con clave del Gateway usa el Gateway, aunque también haya clav
   const p = elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'k-gateway', ANTHROPIC_API_KEY: 'k-directa' }))
   assert.deepEqual(p, { tipo: 'gateway', variableClave: 'AI_GATEWAY_API_KEY', baseURL: GATEWAY_URL, modelo: MODELO_GATEWAY, respaldo: RESPALDO_GATEWAY })
   assert.equal(GATEWAY_URL, 'https://ai-gateway.vercel.sh')
-  assert.equal(MODELO_GATEWAY, 'anthropic/claude-opus-5.5')
+  assert.equal(MODELO_GATEWAY, 'anthropic/claude-fable-5.1')
   assert.equal(RESPALDO_GATEWAY, 'anthropic/claude-haiku-5.5')
 })
 
 test('proveedor: sin clave del Gateway y con la directa usa la API de Anthropic, sin URL propia', () => {
   const p = elegirProveedor(entorno({ ANTHROPIC_API_KEY: 'k-directa' }))
   assert.deepEqual(p, { tipo: 'anthropic', variableClave: 'ANTHROPIC_API_KEY', modelo: MODELO_DIRECTO, respaldo: RESPALDO_DIRECTO })
-  assert.equal(MODELO_DIRECTO, 'claude-opus-5-5')
+  assert.equal(MODELO_DIRECTO, 'claude-fable-5-1')
   assert.equal(RESPALDO_DIRECTO, 'claude-haiku-5-5')
   assert.equal(p?.baseURL, undefined)
 })
@@ -333,10 +333,10 @@ test('modoSalida: json por defecto; "herramienta" fuerza una herramienta', () =>
 const CANDIDATAS = [ASADO, { ...ASADO, id: 'lugar-sim-02' }]
 const ENTRADA = { clima: 'seco', candidatas: [] }
 
-test('pedido por el Gateway: Opus, pensamiento adaptativo con esfuerzo bajo (como documenta Vercel), esquema JSON y tope', () => {
+test('pedido por el Gateway: Fable, pensamiento adaptativo con esfuerzo bajo (como documenta Vercel), esquema JSON y tope', () => {
   const gw = elegirProveedor(entorno({ AI_GATEWAY_API_KEY: 'k' }))!
   const pedido = armarPedido(gw, 'json', CANDIDATAS, 'SISTEMA', ENTRADA) as Record<string, any>
-  assert.equal(pedido.model, 'anthropic/claude-opus-5.5')
+  assert.equal(pedido.model, 'anthropic/claude-fable-5.1')
   assert.equal(pedido.max_tokens, MAX_TOKENS_MODELO)
   assert.ok(pedido.max_tokens >= 1000 && pedido.max_tokens < 2048, 'tope con lugar para el pensamiento del modelo, por debajo del anterior')
   assert.deepEqual(pedido.thinking, { type: 'adaptive' })
@@ -350,10 +350,10 @@ test('pedido por el Gateway: Opus, pensamiento adaptativo con esfuerzo bajo (com
   assert.equal(pedido.messages.length, 1)
 })
 
-test('pedido por la API directa: Opus con effort bajo, sin thinking explícito', () => {
+test('pedido por la API directa: Fable con effort bajo, sin thinking explícito', () => {
   const directa = elegirProveedor(entorno({ ANTHROPIC_API_KEY: 'k' }))!
   const pedido = armarPedido(directa, 'json', CANDIDATAS, 'S', ENTRADA) as Record<string, any>
-  assert.equal(pedido.model, 'claude-opus-5-5')
+  assert.equal(pedido.model, 'claude-fable-5-1')
   assert.equal(pedido.thinking, undefined)
   assert.equal(pedido.output_config.effort, 'low')
   assert.equal(pedido.max_tokens, MAX_TOKENS_MODELO)
