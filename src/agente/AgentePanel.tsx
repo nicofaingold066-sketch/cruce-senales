@@ -598,6 +598,8 @@ function ProponerPlan({
   const [sabado, setSabado] = useState(SABADO_DEL_CASO)
   const [clima, setClima] = useState<ClimaElegido>('real')
   const [resultado, setResultado] = useState<ResultadoAgente | null>(null)
+  // Qué botón se tocó: "Que el agente proponga" (directo) o "Que el agente arme un plan" (con herramientas).
+  const [conHerramientas, setConHerramientas] = useState(false)
   const { ocupado, error, ejecutar, limpiarError } = useAccion()
 
   function cambiarSabado(v: string) {
@@ -631,7 +633,9 @@ function ProponerPlan({
   const anuncio = ocupado
     ? largo
       ? 'El agente sigue pensando: puede tardar hasta medio minuto.'
-      : 'El agente está buscando opciones para el grupo.'
+      : conHerramientas
+        ? 'El agente está mirando el clima y buscando planes para el grupo.'
+        : 'El agente está buscando opciones para el grupo.'
     : error?.codigo === 'entrada_incompleta' && error.detalle === 'pocas_preferencias'
       ? 'Faltan preferencias: el agente necesita las de al menos 2 personas.'
       : resultado?.tipo === 'borrador'
@@ -640,10 +644,11 @@ function ProponerPlan({
         ? 'Sin plan compatible.'
         : ''
 
-  async function proponer() {
+  async function proponer(herramientas = conHerramientas) {
     setResultado(null)
-    const r = await ejecutar(`agente:${espacioId}:${sabado}:${climaPedido ?? 'real'}`, () =>
-      agenteApi.proponer(espacioId, sabado, climaPedido),
+    setConHerramientas(herramientas)
+    const r = await ejecutar(`agente:${espacioId}:${sabado}:${climaPedido ?? 'real'}:${herramientas ? 'h' : 'd'}`, () =>
+      agenteApi.proponer(espacioId, sabado, climaPedido, herramientas),
     )
     if (r?.ok) setResultado(r.data)
   }
@@ -674,16 +679,39 @@ function ProponerPlan({
           <small>Solo en el espacio de demostración. Con sol o lluvia simulados, el pronóstico no es real.</small>
         </fieldset>
       ) : null}
-      <Boton onClick={() => void proponer()} ocupado={ocupado} ocupadoTexto="El agente está pensando…" disabled={soloLectura || !sabado}>
-        Que el agente proponga
-      </Boton>
+      <div className="agente-botones">
+        <Boton
+          onClick={() => void proponer(false)}
+          ocupado={ocupado && !conHerramientas}
+          ocupadoTexto="El agente está pensando…"
+          disabled={soloLectura || !sabado || (ocupado && conHerramientas)}
+        >
+          Que el agente proponga
+        </Boton>
+        <Boton
+          variante="secundario"
+          onClick={() => void proponer(true)}
+          ocupado={ocupado && conHerramientas}
+          ocupadoTexto="El agente está trabajando…"
+          disabled={soloLectura || !sabado || (ocupado && !conHerramientas)}
+        >
+          Que el agente arme un plan
+        </Boton>
+        <small>"Arme un plan": la IA decide qué mirar (clima, planes, canchas) y cada resultado pasa por las reglas del servidor.</small>
+      </div>
       {ocupado ? (
         <Cargando
-          texto={largo ? 'El agente sigue pensando: puede tardar hasta medio minuto…' : 'El agente está leyendo las preferencias del grupo y el clima…'}
+          texto={
+            largo
+              ? 'El agente sigue pensando: puede tardar hasta medio minuto…'
+              : conHerramientas
+                ? 'El agente está mirando el clima, buscando planes que le sirvan a todos y eligiendo…'
+                : 'El agente está leyendo las preferencias del grupo y el clima…'
+          }
         />
       ) : null}
       <div ref={refError}>
-        {error ? <ErrorAgente error={error} espacioId={espacioId} onReintentar={() => void proponer()} /> : null}
+        {error ? <ErrorAgente error={error} espacioId={espacioId} onReintentar={() => void proponer(conHerramientas)} /> : null}
       </div>
       <p className="suave" aria-live="polite">
         {anuncio}
@@ -697,7 +725,23 @@ function ProponerPlan({
               : 'Con las preferencias cargadas no hay un plan del catálogo que le sirva a todos. Por privacidad no se muestran los motivos.'}
         </Aviso>
       ) : null}
+      {resultado?.tipo === 'borrador' && resultado.pasos && resultado.pasos.length > 0 ? <PasosAgente pasos={resultado.pasos} /> : null}
       {resultado?.tipo === 'borrador' ? <BorradorTarjeta espacioId={espacioId} b={resultado} soloLectura={soloLectura} invitacion={invitacion} /> : null}
+    </div>
+  )
+}
+
+/** Lo que hizo el agente con herramientas: textos fijos del servidor, sin nombres. */
+function PasosAgente({ pasos }: { pasos: string[] }) {
+  return (
+    <div className="bloque agente-pasos">
+      <h3 className="agente-subtitulo">Lo que hizo el agente</h3>
+      <ol>
+        {pasos.map((p, i) => (
+          <li key={i}>{p}</li>
+        ))}
+      </ol>
+      <small>Cada búsqueda pasó por las reglas del servidor: la IA solo pudo elegir entre opciones que le sirven a todo el grupo.</small>
     </div>
   )
 }

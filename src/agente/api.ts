@@ -123,6 +123,9 @@ export interface BorradorAgente extends CandidataAgente {
   viaje?: Viaje | null
   /** Enmienda 14: no nulo solo si la actividad del propósito quedó afuera por quórum y hubo otras que sí entraron. */
   quorum?: Quorum | null
+  /** Con herramientas (pedido de Nico, 23 oct): los pasos que hizo el agente, con texto fijo del servidor. */
+  pasos?: string[]
+  modo_agente?: 'herramientas' | 'directo'
 }
 
 /**
@@ -264,6 +267,9 @@ function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
     eleccion_fuente: !sinFuncion && r.eleccion_fuente === 'modelo' ? 'modelo' : 'regla',
     modelo_usado: !fijo && typeof r.modelo_usado === 'string' ? r.modelo_usado : null,
     explicacion_fuente: !fijo && r.explicacion_fuente === 'modelo' ? 'modelo' : 'texto_fijo',
+    // Solo textos cortos y como mucho ocho: los escribe el servidor, pero el panel no confía en la forma.
+    pasos: !sinFuncion && Array.isArray(r.pasos) ? r.pasos.filter((p) => typeof p === 'string' && p.length <= 160).slice(0, 8) : [],
+    modo_agente: !sinFuncion && r.modo_agente === 'herramientas' ? 'herramientas' : 'directo',
   }
 }
 
@@ -404,10 +410,17 @@ export const agenteApi = {
    * Pide el borrador al agente. `climaSimulado` solo lo acepta la función en espacios demo (lo comprueba ella).
    * El respaldo sin función nunca simula clima: va como "desconocido".
    */
-  async proponer(espacioId: string, sabado: string, climaSimulado?: ClimaSimulado): Promise<ApiResult<ResultadoAgente>> {
+  /** Con `conHerramientas`, el agente decide qué mirar (clima, planes, canchas); si no llega, la función sigue como siempre. */
+  async proponer(
+    espacioId: string,
+    sabado: string,
+    climaSimulado?: ClimaSimulado,
+    conHerramientas = false,
+  ): Promise<ApiResult<ResultadoAgente>> {
     try {
       const body: Record<string, unknown> = { espacio_id: espacioId, sabado }
       if (climaSimulado) body.clima_simulado = climaSimulado
+      if (conHerramientas) body.modo = 'herramientas'
       const { data, error } = await supabase.functions.invoke('agente', { body, timeout: TIEMPO_FUNCION_MS })
       if (!error && data) {
         const r = leerSobre(data, (c) => {

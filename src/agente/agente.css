@@ -65,3 +65,21 @@
 .agente-viaje-linea {
   margin: 8px 0;
 }
+
+/* Dos botones del agente: "proponga" y "arme un plan" (con herramientas). */
+.agente-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.agente-botones > small {
+  flex-basis: 100%;
+  color: var(--tinta-2);
+}
+.agente-pasos ol {
+  margin: 0;
+  padding-left: 1.4em;
+  display: grid;
+  gap: 4px;
+}
