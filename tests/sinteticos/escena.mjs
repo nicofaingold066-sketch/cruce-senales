@@ -107,7 +107,7 @@ export function armarEscena({ base, salida, grupo, titulo, fugas = [] }) {
 
   // La organizadora entra a la portada, pone su nombre y crea el grupo con los nombres. `pegar`: toda la lista en un
   // solo «Agregar» (friccion, 20:5x); si no, un «Agregar» por nombre.
-  async function crearGrupo(org, { integrantes, pegar = false }) {
+  async function crearGrupo(org, { integrantes, pegar = false, quienViene = null, proposito = null }) {
     org.inicio()
     await org.page.goto(base)
     await org.page.getByRole('heading', { level: 1 }).first().waitFor({ timeout: 30000 })
@@ -130,6 +130,9 @@ export function armarEscena({ base, salida, grupo, titulo, fugas = [] }) {
         await org.tocarBoton('Agregar')
       }
     }
+    // «¿Quién viene?» (D3) y «¿Para qué es este grupo?» (enmienda 14): opcionales, un toque cada uno.
+    if (quienViene) { await org.page.getByText(quienViene, { exact: true }).first().click(); org.toques++ }
+    if (proposito) { await org.page.getByLabel('¿Para qué es este grupo?').selectOption({ label: proposito }); org.toques++ }
     await ver(org, 'crear-grupo-lleno')
     await org.tocarBoton('Crear grupo')
     await org.page.getByRole('heading', { name: grupo }).waitFor({ timeout: 30000 })
