@@ -551,7 +551,7 @@ export interface QuorumAgente {
  * que no se lea como reproche a quien armó un grupo chico.
  */
 export function textoQuorum(q: QuorumAgente): string {
-  return `Para ${q.etiqueta} hacen falta al menos ${q.personas_min} personas; este grupo tiene ${q.personas_posibles} por ahora. Estas opciones se pueden armar con el grupo actual. Cuando se sumen más, vuelve a pedir una propuesta.`
+  return `Para ${q.etiqueta} hacen falta al menos ${q.personas_min} personas; por ahora entraron ${q.personas_posibles} al grupo. Estas opciones se pueden armar con el grupo actual. Cuando se sumen más, vuelve a pedir una propuesta.`
 }
 
 /** Mensaje del error `entrada_incompleta/fuera_de_proposito` (lo manda el servidor en `error.mensaje`). */
