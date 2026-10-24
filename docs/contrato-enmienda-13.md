@@ -50,13 +50,13 @@ E-c (ronda con plazo), E-d (dos planes con etiqueta y regla "la que más Sí"), 
 - Baja sin nombre: para cualquier persona que no sea quien se retiró, `bajas[]` trae `miembro = {miembro_id: null, nombre: "Una persona", simulado: false}` y `habia_aceptado: null` (se mantienen `en` y `version`); en `historial[]`, los eventos `baja` y (0045) los eventos `aceptacion` de quien después se retiró llevan ese mismo `actor`. La propia persona ve todo con su nombre. Quien se retiró recibe `siguiente_accion.texto` "Gracias por avisar. No hace falta contar por qué." (mismo código).
 - `lugar-sim-14` "Parrilla del parque (Simulación)" en el catálogo, exactamente como la fila de apertura.
 
-### Decisiones de backend que el contrato no fijaba (a confirmar por el coordinador)
+### Decisiones de backend que el contrato no fijaba (confirmadas por el coordinador a las 21:44)
 1. `puede.opinar` (aditivo), para que la interfaz no calcule cuándo se puede opinar.
 2. Umbral de 2 en `puede.proponer_reparacion` (ver arriba).
 3. 0045: también las aceptaciones de quien se retiró salen sin nombre; si no, "Caro aceptó la versión 1" junto con "Una persona se bajó (versión 1)" decía quién se fue y que había confirmado.
 4. El tope de 3 versiones también aplica desde `en_revision` ("3 versiones por propuesta").
 
-### Límites que quedan (declarados)
+### Límites que quedan (declarados y aceptados por el coordinador)
 - Quien miró la propuesta antes de una baja y recuerda quién había confirmado o mostrado interés puede deducir quién se fue; el servidor no lo dice.
 - El panel de Simulación (organizador del demo) sigue mostrando el estado de cada simulado, incluido "se retiró": es la herramienta para manejar personas ficticias.
 - Con exactamente 1 "así no puedo", el organizador que intenta rearmar recibe éxito en vez de `estado_no_admite` (lo pide el contrato: "al menos un"); eso le dice que hay al menos una opinión, sin decir de quién.
