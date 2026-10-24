@@ -14,7 +14,7 @@ git apply --check /tmp/pantallas.patch && git apply /tmp/pantallas.patch
 npm run typecheck && npm run build
 ```
 
-Comprobado: `git apply --check` limpio sobre esa base recién fusionada (21:2x). Si alguna rama avanzó y un trozo no entra, cada cambio está explicado abajo con archivo, lugar y props para hacerlo a mano.
+Comprobado: `git apply --check` limpio sobre esa base recién fusionada (entre 21:20 y 21:21). Si alguna rama avanzó y un trozo no entra, cada cambio está explicado abajo con archivo, lugar y props para hacerlo a mano.
 
 ## 2. Qué conecta
 
@@ -42,11 +42,11 @@ Lo que NO toca: rótulos que buscan los guiones de `tests/e2e/` (la lista fija d
 
 | Prueba | Resultado | Hora |
 |---|---|---|
-| `git apply --check` sobre base recién fusionada | limpio | 21:2x |
-| `npm run typecheck` | verde | 21:2x |
-| `npx vite build` | verde | 21:2x |
+| `git apply --check` sobre base recién fusionada | limpio | entre 21:20 y 21:21 |
+| `npm run typecheck` | verde | entre 21:20 y 21:21 |
+| `npx vite build` | verde | entre 21:20 y 21:21 |
 | `node tests/e2e/red-controlada.mjs` (sin base) | **10/10** | 21:16 |
-| `node --test "src/componentes-nuevos/*.test.mjs"` | 34/34 | 21:2x |
+| `node --test "src/componentes-nuevos/*.test.mjs"` | 34/34 | entre 21:20 y 21:21 |
 | `recorrido-dos-sesiones.mjs` contra el build | PENDIENTE: backend con MIGRACION EN CURSO (enmienda 13) y regla de una corrida a la vez (21:16) | — |
 | `jurado-navegador.mjs` contra el build | PENDIENTE (misma razón) | — |
 | Capturas a 375 y 320 px de cada pantalla con las piezas | PENDIENTE (necesita la base) | — |
