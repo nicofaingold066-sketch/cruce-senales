@@ -340,7 +340,7 @@ Hallazgos de esta llamada (pedidos en la ficha):
 | **H5** voseo de las preguntas nuevas | **RESUELTO el voseo** («Marca al menos una»); sigue exigiendo marcar una actividad para guardar presupuesto/techo |
 | Baja en el historial | «Una persona se retiró.» también en la comparación v1 → v2 ✔ |
 | **H6** «Ya hay 4 personas con condiciones» (cuenta a quien dijo No/No) | sigue (decisión de Nico: después de la demo) |
-| **H8** «Sábado 31 oct 20:00 → Sábado 31 oct 20:00» | sigue |
+| **H8** «Sábado 31 oct 20:00 → Sábado 31 oct 20:00» | **RESUELTO en `44e6de6`**: «Misma fecha y hora; cambió quién puede ir.» |
 | **H10** «hora de Santiago (America/Santiago)», **H12** «1 confirmaron», **H13** editor visible tras «No voy» | siguen |
 
 ## Corridas
@@ -349,6 +349,7 @@ Hallazgos de esta llamada (pedidos en la ficha):
 |---|---|---|
 | 19:28 | build `95def89` (parcial: el guion se cortó al confirmar Gonza; corrió durante MIGRACION EN CURSO) | descartada |
 | 19:40 | build `95def89`, base libre | completa; hallazgos H1–H14 |
+| 01:42–01:43 | **PRODUCCIÓN** `44e6de6` (v13, «Novedades» fuera, CSS de 320 px, fricción y arreglos de Juan) | `seis-amigos` completo, sin errores del guion ni fugas: Joaco 3 toques (4,7 s, 320 px), Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2. **H8 resuelto**: la reparación dice «Misma fecha y hora; cambió quién puede ir.». Nuevos textos buenos: «Faltan por confirmar 3 personas», «6 personas (1 por entrar)» y la tarjeta «Invita a tu grupo · Por ahora entraron 5 · Faltan por entrar: Pili» (para quien nunca abre el enlace). Corrí antes de mi turno por un error de mi cola (empezó justo al liberarse la 0053): se terminó esa corrida de 1 minuto y no lancé más |
 | 00:26–00:27 | **PRODUCCIÓN** `d978cc1` | `proposito-grupo` otra vez, esta vez esperando al agente: el texto de quórum sale como pidió Nico (arriba); H21–H23 nuevos |
 | 23:45–23:50 | **PRODUCCIÓN** `main` `d978cc1` (parche 2 de pantallas + enmienda 14 visible) | cuatro guiones completos, sin errores del guion y sin fugas: `proposito-grupo` (nuevo), `seis-amigos` (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6), `asi-no-puedo` (22/22 verdaderas y las dos «falsas» son lo esperado: nadie ve nombres) y `psico-perfiles`. La llamada del agente en `proposito-grupo` se leyó antes de que terminara de pensar (mi guion): pendiente repetirla |
 | 23:06–23:11 | **PRODUCCIÓN** `main` `8f27c5b` (enmienda 14 completa, 0048–0050) | las tres corridas completas, sin errores del guion y sin fugas: **`asi-no-puedo` ahora con los BOTONES** («Así no puedo, pero sigo» y «Rearmar con lo nuevo», sin RPC de respaldo; las 23 comprobaciones en orden, v2 el domingo, nadie ve quién), `seis-amigos` (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2) y `psico-perfiles` (Vale 4 toques para crear el grupo, el resto 3). El plan en revisión dice «La versión 1 ya no reúne lo necesario para juntarse» (neutro) pero la «Próxima acción» del servidor todavía dice «…el plan ya no cumple el mínimo o la presencia del anfitrión». **H16 y H18 todavía no están en producción** (`73ab15e` de friccion y el enlace de front-juan no se publicaron); H17 ya está en `preguntas-jurado` |
