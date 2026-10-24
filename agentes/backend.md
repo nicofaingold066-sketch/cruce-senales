@@ -3,7 +3,7 @@
 Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:45 Santiago (reloj).
 
 ## Tocando ahora
-- [21:45] Base libre. Preparada SIN aplicar la `0047_e13_correcciones_revision.sql` (fugas que encontró la revisión adversarial); espero el OK del coordinador para aplicarla con MIGRACION EN CURSO.
+- [21:47] **MIGRACION EN CURSO** (0047, correcciones de la revisión adversarial de E13; aprobada por el coordinador). Nadie corre pruebas contra la base hasta que saque esta línea.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
