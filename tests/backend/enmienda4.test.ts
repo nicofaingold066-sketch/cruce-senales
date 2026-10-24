@@ -49,9 +49,10 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
     expect(p.preferencias).toBeNull()
     expect(p.actualizadas_en).toBeNull()
     expect(p.personas_con_preferencias).toBe(4) // semillas de Mati, Caro, Fede y Sofi
-    expect(p.opciones.actividades.slice(0, 5)).toEqual([ // E10 Parte B (0038): siguen las 8 nuevas
-      { clave: 'asado', etiqueta: 'Asado' }, { clave: 'padel', etiqueta: 'Pádel' }, { clave: 'futbol', etiqueta: 'Fútbol' },
-      { clave: 'parque', etiqueta: 'Parque' }, { clave: 'fiesta', etiqueta: 'Fiesta' },
+    expect(p.opciones.actividades.slice(0, 5)).toEqual([ // E10 Parte B (0038): siguen las 8 nuevas; E14 (0049): familia
+      { clave: 'asado', etiqueta: 'Asado', familia: 'comida' }, { clave: 'padel', etiqueta: 'Pádel', familia: 'deporte' },
+      { clave: 'futbol', etiqueta: 'Fútbol', familia: 'deporte' }, { clave: 'parque', etiqueta: 'Parque', familia: 'aire_libre' },
+      { clave: 'fiesta', etiqueta: 'Fiesta', familia: 'salida_noche' },
     ])
   })
 
@@ -136,9 +137,11 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
     expect(primera).toEqual({
       id: seco.lugar.id, actividad: seco.actividad, actividad_etiqueta: seco.actividad_etiqueta, lugar: seco.lugar,
       titulo: seco.titulo, franjas: seco.franjas, frases_grupo: seco.frases_grupo, viaje: seco.viaje, // E10: viaje en cada candidata
+      familia: 'comida', personas: { min: 4, max: 12 }, // E14 (0049)
     })
+    expect(seco.quorum).toBeNull() // E14: el demo es libre
     expect(seco.candidatas.find((c: Json) => c.id === 'lugar-sim-04').frases_grupo).toEqual(['presupuesto_todos', 'al_aire_libre_con_buen_tiempo']) // #54: sin ritmo_del_grupo
-    for (const c of seco.candidatas) expect(Object.keys(c).sort()).toEqual(['actividad', 'actividad_etiqueta', 'franjas', 'frases_grupo', 'id', 'lugar', 'titulo', 'viaje'])
+    for (const c of seco.candidatas) expect(Object.keys(c).sort()).toEqual(['actividad', 'actividad_etiqueta', 'familia', 'franjas', 'frases_grupo', 'id', 'lugar', 'personas', 'titulo', 'viaje'])
     expect(JSON.stringify(seco)).not.toMatch(/lugar-sim-02|evento-sim-01|puntaje/)
     // Mejora #28: Fiesta (1 persona) no sale en gustos. Enmienda 7 (E7.4): el perfil no cuenta a quien lo pide
     // (Tomi): 5 personas, Asado 4, Pádel 0 (solo Tomi); ambiente sin mayoría (Caro tranquilo, Fede fiesta);

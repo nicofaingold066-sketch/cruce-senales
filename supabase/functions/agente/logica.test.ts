@@ -6,7 +6,12 @@ import assert from 'node:assert/strict'
 import { Buffer } from 'node:buffer'
 import {
   armarPedido,
+  candidataSegura,
   candidatasDe,
+  familiaSegura,
+  personasSeguras,
+  quorumSeguro,
+  textoQuorum,
   crearLimiteModelo,
   elegirProveedor,
   familiaModelo,
@@ -508,4 +513,67 @@ test('familiaModelo: lo que la pantalla nombra', () => {
   assert.equal(familiaModelo('claude-haiku-5-5'), 'haiku')
   assert.equal(familiaModelo('anthropic/claude-sonnet-5.5'), 'sonnet')
   assert.equal(familiaModelo('otro/modelo'), 'otro')
+})
+
+// ---------------------------------------------------------------- enmienda 14: familia, personas y quórum
+
+test('quorumSeguro deja solo las cuatro claves del contrato y descarta formas raras', () => {
+  const q = { actividad: 'futbol', etiqueta: 'Fútbol', personas_min: 10, personas_posibles: 4, quien: 'Luna', miembros: ['Tomi'] }
+  assert.deepEqual(quorumSeguro(q), { actividad: 'futbol', etiqueta: 'Fútbol', personas_min: 10, personas_posibles: 4 })
+  assert.equal(quorumSeguro(null), null)
+  assert.equal(quorumSeguro({ actividad: 'Fútbol!', etiqueta: 'Fútbol', personas_min: 10, personas_posibles: 4 }), null)
+  assert.equal(quorumSeguro({ actividad: 'futbol', etiqueta: '', personas_min: 10, personas_posibles: 4 }), null)
+  assert.equal(quorumSeguro({ actividad: 'futbol', etiqueta: 'Fútbol', personas_min: '10', personas_posibles: 4 }), null)
+  assert.equal(quorumSeguro({ actividad: 'futbol', etiqueta: 'Fútbol', personas_min: 10, personas_posibles: 4.5 }), null)
+})
+
+test('textoQuorum habla del tamaño del grupo, nunca de asistencia, y pasa la validación de textos', () => {
+  const t = textoQuorum({ actividad: 'futbol', etiqueta: 'Fútbol', personas_min: 10, personas_posibles: 4 })
+  assert.equal(t, 'Para Fútbol hacen falta al menos 10 personas; este grupo tiene 4 por ahora.')
+  assert.doesNotMatch(t, /van \d|se sumaron|confirm/i)
+  assert.equal(textoValido(t, 240, NOMBRES), true)
+})
+
+test('textoValido rechaza hablar de asistencia ("se sumaron", "ya van")', () => {
+  assert.equal(textoValido('Ya van 4, falta poco para el fútbol.', 240, NOMBRES), false)
+  assert.equal(textoValido('Se sumaron 4 al grupo, así que va el tenis.', 240, NOMBRES), false)
+})
+
+test('personasSeguras y familiaSegura solo aceptan la forma del contrato', () => {
+  assert.deepEqual(personasSeguras({ min: 2, max: 4, extra: 'x' }), { min: 2, max: 4 })
+  assert.equal(personasSeguras({ min: 5, max: 4 }), null)
+  assert.equal(personasSeguras({ min: 0, max: 4 }), null)
+  assert.equal(personasSeguras('2-4'), null)
+  assert.equal(familiaSegura('deporte'), 'deporte')
+  assert.equal(familiaSegura('Deporte de Tomi'), null)
+})
+
+test('candidataSegura sanea viaje, familia y personas, y no agrega claves que no vinieron', () => {
+  const sinNada = candidataSegura(ASADO)
+  assert.equal('familia' in sinNada, false)
+  assert.equal('personas' in sinNada, false)
+  const c = candidataSegura({
+    ...ASADO,
+    viaje: { max_minutos: 25, estimado: true, zonas: ['nunoa'] } as never,
+    familia: 'comida',
+    personas: { min: 2, max: 20, quien: 'Tomi' } as never,
+  })
+  assert.deepEqual(c.viaje, { max_minutos: 25, estimado: true })
+  assert.equal(c.familia, 'comida')
+  assert.deepEqual(c.personas, { min: 2, max: 20 })
+})
+
+test('entradaModelo pasa el aviso de quórum como texto del grupo (o null) y nada por persona', () => {
+  const q = { actividad: 'futbol', etiqueta: 'Fútbol', personas_min: 10, personas_posibles: 4 }
+  const con = entradaModelo([ASADO], PERFIL_5, 'Sol', NOMBRES, false, q)
+  assert.equal(con.aviso_quorum, 'Para Fútbol hacen falta al menos 10 personas; este grupo tiene 4 por ahora.')
+  const sin = entradaModelo([ASADO], PERFIL_5, 'Sol', NOMBRES)
+  assert.equal(sin.aviso_quorum, null)
+  assert.doesNotMatch(JSON.stringify(con), /Tomi|Luna|Mati|Caro|Fede|Sofi|miembro/)
+})
+
+test('enmienda 14: la frase proposito_del_grupo tiene texto fijo y pasa la validación', () => {
+  const t = unirFrases(['proposito_del_grupo', 'presupuesto_todos'], false, { actividad: 'Fútbol' })
+  assert.equal(t, "Es lo que este grupo vino a hacer y le sirve al presupuesto de todos.")
+  assert.equal(textoValido(t, 240, NOMBRES), true)
 })
