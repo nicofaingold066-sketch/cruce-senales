@@ -5,7 +5,8 @@ Pedido directo de Nico en Codex (24 oct): revisar todo el front porque le falta 
 Rama propia: `codex/vida-front`. Copia aislada: `/Users/macair/cruse/cruce-vida`, base `origin/main` `7f47a88`.
 
 ## Tocando ahora
-(Vacío: código terminado y subido en `95b94dd`, rama `codex/vida-front`.)
+- Integración de `codex/vida-front` con `origin/main`, TypeScript/build/pruebas y publicación de `main` por la integración Git de Vercel.
+- Reclamo puntual de integración/publicación autorizado directamente por Nico: «Dale, integrá los cambios y publicalos para poder probarlos en la app». No se reescribe código de otras sesiones ni se cambia backend.
 
 No se toca `src/styles.css`, `App.tsx` ni `Intro.*` (reclamados por codex-intro), backend, modelos o configuración.
 
@@ -24,3 +25,7 @@ Typecheck/build y navegador local con salida externa interceptada, fixtures fict
 
 ## Pedidos
 Ninguno. El pedido directo del usuario autoriza el alcance visual. No se solicita trabajo a otras conversaciones.
+
+## Publicación autorizada
+
+Nico pidió integrar y publicar este corte. Se preservan Intro/Guia/Ayuda de main, se verifica el resultado antes de push a main y después se comprueba el dominio público con los assets del commit. Sin base/modelos ni migraciones. El conector Vercel carece de scope para el equipo; se usa Git→Vercel ya configurado.
