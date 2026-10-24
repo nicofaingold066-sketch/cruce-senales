@@ -3,7 +3,6 @@
 Quien edita este archivo: solo esta sesión. Última actualización: 03:19.
 
 ## Tocando ahora
-- **CORRIENDO PRUEBA (04:56)**: S6 sobre main ab9de9f a 375/320/768/1280, función y RPC sociales simuladas (cero modelo), demo propio, unos 4 min.
 - [03:19] S6 Agente (`src/agente/**`, `src/estilo/seccion-s6.css`) entregada a frontend para revisión contra el mockup: `wip/agente-ia` **`dfa71c1`**. Espero su revisión. Para mi turno de sección (después de la tanda del coordinador y la 0056): rehacer las capturas de 1280 con los últimos ajustes de CSS. No tomo la base fuera de ese turno.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
