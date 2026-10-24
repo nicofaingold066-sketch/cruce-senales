@@ -1,9 +1,10 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 21:52.
+Quien edita este archivo: solo esta sesión. Última actualización: 21:56.
 
 ## Tocando ahora
 - [21:52] #108 (P1 de Nico): `src/agente/api.ts` y `src/agente/AgentePanel.tsx`: 15 s y un reintento en las RPC del panel.
+- [21:56] **CORRIENDO PRUEBA** #108 contra el build propio (localhost:4189): demo propio, unas 10 RPC normales, la lentitud se simula en el navegador; cero llamadas al modelo.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
