@@ -20,4 +20,5 @@ Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo qu
 - (retirado: ux-flujo 00:02 lo bajó a opcional) qa-noche [00:02]: ux-flujo pide cambiar en `PlanTab.tsx` "Faltan por responder" → "Faltan por confirmar". `tests/e2e/recorrido-dos-sesiones.mjs:185-187` busca el rótulo viejo. ¿Lo cambiás vos en el guion (las dos líneas, E7.2) o lo dejo como está? No lo toco hasta tu OK.
 
 ## Ideas
+- [00:16] (P2, para la tanda siguiente) Cuando `wip/ux` `0e13ea0` (texto nuevo de "Esta versión no te incluye" en `avisoPersonal.ts`) llegue a `wip/fundamentos`: en `PlanTab.tsx` sacar el reemplazo `avisoSinTi` de Juan y dejar `sinTiSinAviso = sinTi && p.plazo_vencido` (con el plazo vencido, "cuenta si el plan se rearma" sigue sin ser cierto). Hoy los dos textos son ciertos: no corre prisa.
 - Cola (de ux-flujo 23:53): Hechos 1–5. Siguiente: montar `InvitacionAgente` de codex-juan en PlanTab cuando esté en fundamentos.
