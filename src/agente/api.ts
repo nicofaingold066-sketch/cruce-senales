@@ -235,7 +235,10 @@ function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
 // La función del servidor corta sola a los ~8 s; si igual tarda más, se usa el respaldo por RPC.
 // Con Opus la función puede tardar hasta unos 30 s (20 s Opus y, si falla, unos 8 s Haiku): el cliente espera un poco más.
 const TIEMPO_FUNCION_MS = 35000
-const TIEMPO_RPC_MS = 8000
+// #108 (incidente del 23 oct, 21:13): la base llegó a parones de ~7 s, al borde de su propio límite de 8 s.
+// El cliente espera 15 s y reintenta UNA vez si se agotó el tiempo o la base cortó la consulta (57014).
+const TIEMPO_RPC_MS = 15000
+export const AVISO_REINTENTO = 'La red o el servidor tardaron más de lo normal. Reintentando…'
 
 function tiempoAgotado(): { ok: false; error: ApiError } {
   return falloTemporal('tiempo_agotado', 'El servidor tardó demasiado en responder. Intenta de nuevo.')
@@ -244,7 +247,8 @@ function tiempoAgotado(): { ok: false; error: ApiError } {
 function esAborto(e: unknown): boolean {
   const nombre = (e as { name?: string } | null)?.name ?? ''
   const mensaje = (e as { message?: string } | null)?.message ?? ''
-  return nombre === 'AbortError' || nombre === 'TimeoutError' || /abort/i.test(mensaje)
+  // postgrest-js no rechaza: devuelve `message: "TimeoutError: signal timed out"` (Chrome) sin `name`.
+  return nombre === 'AbortError' || nombre === 'TimeoutError' || /abort|timeouterror|timed out/i.test(mensaje)
 }
 
 function incompatibleError(): { ok: false; error: ApiError } {
@@ -275,32 +279,56 @@ function leerSobre<T>(cuerpo: unknown, tomar: (c: Record<string, unknown>) => T)
   return { ok: false, error: { ...c.error, state_rev: null } }
 }
 
+/** Opciones de una llamada del panel: `alReintentar` avisa a la pantalla que se está reintentando. */
+export interface OpcionesLlamada {
+  alReintentar?: () => void
+}
+
+async function rpcUnaVez<T>(
+  fn: string,
+  args: Record<string, unknown>,
+  tomar: (c: Record<string, unknown>) => T,
+): Promise<{ r: ApiResult<T>; reintentar: boolean }> {
+  try {
+    const { data, error } = await supabase.rpc(fn as never, args as never).abortSignal(AbortSignal.timeout(TIEMPO_RPC_MS))
+    if (error) {
+      const codigo = (error as { code?: string }).code
+      if (codigo === 'PGRST202') {
+        return { r: falloTemporal('operacion_no_publicada', 'El agente todavía no está disponible en el servidor.'), reintentar: false }
+      }
+      // 57014: la base cortó la consulta por su propio límite de tiempo (no la atrapa el manejo de errores de la RPC).
+      if (codigo === '57014' || esAborto(error)) return { r: tiempoAgotado(), reintentar: true }
+      return { r: falloTemporal(), reintentar: false }
+    }
+    return { r: leerSobre(data, tomar), reintentar: false }
+  } catch (e) {
+    return esAborto(e) ? { r: tiempoAgotado(), reintentar: true } : { r: falloTemporal(), reintentar: false }
+  }
+}
+
+/**
+ * Una RPC del panel. Si se agota el tiempo o la base corta la consulta, reintenta UNA vez (las del panel son
+ * lecturas o, como save_my_preferences, idempotentes por contenido: repetirla no duplica nada).
+ */
 async function rpc<T>(
   fn: string,
   args: Record<string, unknown>,
   tomar: (c: Record<string, unknown>) => T,
   escritura = false,
+  opciones: OpcionesLlamada = {},
 ): Promise<ApiResult<T>> {
   if (escritura && contratoIncompatible()) return incompatibleError()
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {
     return { ok: false, error: { ...falloTemporal('sin_conexion', 'Sin conexión con el servidor. Reintenta cuando vuelva la conexión.').error, sinConexion: true } }
   }
-  try {
-    const { data, error } = await supabase.rpc(fn as never, args as never).abortSignal(AbortSignal.timeout(TIEMPO_RPC_MS))
-    if (error) {
-      if ((error as { code?: string }).code === 'PGRST202') {
-        return falloTemporal('operacion_no_publicada', 'El agente todavía no está disponible en el servidor.')
-      }
-      return esAborto(error) ? tiempoAgotado() : falloTemporal()
-    }
-    return leerSobre(data, tomar)
-  } catch (e) {
-    return esAborto(e) ? tiempoAgotado() : falloTemporal()
-  }
+  const primera = await rpcUnaVez(fn, args, tomar)
+  if (!primera.reintentar) return primera.r
+  opciones.alReintentar?.()
+  return (await rpcUnaVez(fn, args, tomar)).r
 }
 
 export const agenteApi = {
-  getMyPreferences: (espacioId: string) =>
+  getMyPreferences: (espacioId: string, opciones?: OpcionesLlamada) =>
     rpc<MisPreferencias>('get_my_preferences', { p_espacio_id: espacioId }, (c) => ({
       preferencias: (c.preferencias as Preferencias | null) ?? null,
       usar_en_agente: c.usar_en_agente !== false,
@@ -308,7 +336,7 @@ export const agenteApi = {
       actualizadas_en: (c.actualizadas_en as Momento | null) ?? null,
       opciones: (c.opciones as MisPreferencias['opciones']) ?? { actividades: [] },
       personas_con_preferencias: typeof c.personas_con_preferencias === 'number' ? c.personas_con_preferencias : 0,
-    })),
+    }), false, opciones),
 
   /** E11: no guarda preferencias ni confirma asistencia. Solo cambia el permiso propio. */
   setRecibirInvitaciones: (espacioId: string, recibir: boolean) =>
@@ -323,7 +351,7 @@ export const agenteApi = {
     ),
 
   // Enmienda 8: `usar_en_agente` viaja dentro de p_preferencias; si falta, el servidor lo toma como true.
-  saveMyPreferences: (espacioId: string, preferencias: Preferencias, usarEnAgente = true) =>
+  saveMyPreferences: (espacioId: string, preferencias: Preferencias, usarEnAgente = true, opciones?: OpcionesLlamada) =>
     rpc<{ repetido: boolean; usar_en_agente: boolean }>(
       'save_my_preferences',
       { p_espacio_id: espacioId, p_preferencias: { ...preferencias, usar_en_agente: usarEnAgente } },
@@ -332,6 +360,7 @@ export const agenteApi = {
         usar_en_agente: c.usar_en_agente !== false,
       }),
       true,
+      opciones,
     ),
 
   /** Pide el borrador al agente. Si la función del servidor no responde, usa la RPC directa sin clima. */

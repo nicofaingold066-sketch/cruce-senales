@@ -5,7 +5,8 @@
 // opciones mirando el perfil del grupo entero y redacta por qué y un mensaje para invitar. Con
 // AI_GATEWAY_API_KEY va por el Vercel AI Gateway; sin ella y con ANTHROPIC_API_KEY, por la API directa.
 // El modelo nunca recibe datos de una persona: solo opciones ya validadas, el clima y totales del grupo.
-// Sin clave, con error, con una elección fuera de la lista o pasados ~8 s: primera opción y texto fijo.
+// Modelo: Opus y, si falla o no llega a tiempo, Haiku. Sin clave, con error de los dos, con una elección fuera
+// de la lista o pasados ~30 s: primera opción y texto fijo.
 // Nunca crea, invita ni confirma nada.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import Anthropic from 'npm:@anthropic-ai/sdk@1.2.0'

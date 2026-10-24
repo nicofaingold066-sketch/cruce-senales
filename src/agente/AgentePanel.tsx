@@ -13,6 +13,7 @@ import { Aviso, Boton, Cargando, ErrorCaja, RotuloSimulacion } from '../componen
 import './agente.css'
 import { ConsentimientoInvitaciones } from './ConsentimientoInvitaciones'
 import {
+  AVISO_REINTENTO,
   agenteApi,
   guardarBorradorAgente,
   mensajeFijo,
@@ -148,12 +149,16 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   const [recibirInicial, setRecibirInicial] = useState<boolean | null>(null)
   const [guardadas, setGuardadas] = useState(false)
   const [aviso, setAviso] = useState<string | null>(null)
+  // #108: la primera llamada tardó demasiado y se está reintentando una vez.
+  const [reintentando, setReintentando] = useState(false)
   const { ocupado, error, ejecutar } = useAccion()
   const refError = useFocoEnError(error)
 
   const cargar = useCallback(async () => {
     setCargando(true)
-    const r = await agenteApi.getMyPreferences(espacioId)
+    setReintentando(false)
+    const r = await agenteApi.getMyPreferences(espacioId, { alReintentar: () => setReintentando(true) })
+    setReintentando(false)
     if (r.ok) {
       setActividades(r.data.opciones.actividades)
       if (r.data.preferencias) setBorrador(r.data.preferencias)
@@ -170,7 +175,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
     void cargar()
   }, [cargar])
 
-  if (cargando) return <Cargando texto="Cargando tus preferencias…" />
+  if (cargando) return <Cargando texto={reintentando ? AVISO_REINTENTO : 'Cargando tus preferencias…'} />
   if (errorCarga) return <ErrorCaja error={errorCarga} onReintentar={() => void cargar()} />
 
   const poner = <K extends keyof Preferencias>(k: K, v: Preferencias[K]) => {
@@ -195,7 +200,11 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   const sinActividades = borrador.me_gustaria.length === 0
 
   async function guardar() {
-    const r = await ejecutar(`preferencias:${espacioId}`, () => agenteApi.saveMyPreferences(espacioId, borrador, usar))
+    setReintentando(false)
+    const r = await ejecutar(`preferencias:${espacioId}`, () =>
+      agenteApi.saveMyPreferences(espacioId, borrador, usar, { alReintentar: () => setReintentando(true) }),
+    )
+    setReintentando(false)
     if (r?.ok) {
       setGuardadas(true)
       setUsarConfirmado(r.data.usar_en_agente)
@@ -260,9 +269,10 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
         {usarConfirmado !== null && usar !== usarConfirmado ? ' Cambio sin guardar: el permiso anterior sigue vigente.' : ''}
       </p>
       <div ref={refError}>{error ? <ErrorCaja error={error} onReintentar={() => void guardar()} /> : null}</div>
+      {ocupado && reintentando ? <Aviso tono="aviso">{AVISO_REINTENTO}</Aviso> : null}
       {aviso ? <Aviso tono={usarConfirmado !== null && usar !== usarConfirmado ? 'info' : 'ok'}>{aviso}</Aviso> : null}
       <p className="agente-sr" aria-live="polite">
-        {ocupado ? 'Guardando tus preferencias…' : aviso ?? ''}
+        {ocupado ? (reintentando ? AVISO_REINTENTO : 'Guardando tus preferencias…') : aviso ?? ''}
       </p>
       <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura || sinActividades}>
         {guardadas ? 'Actualizar mis preferencias' : 'Guardar mis preferencias'}
