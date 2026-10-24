@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../lib/api'
-import type { ApiError, Espacio } from '../lib/types'
+import type { ActividadClave, ApiError, Espacio } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto, momentoCorto, ZONA_VISIBLE } from '../lib/format'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
@@ -8,7 +8,7 @@ import { Avatar, Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import type { NombreIcono } from '../components/Icono'
 import { tomarBorradorAgente } from '../agente/api'
-import { ATAJOS, atajosParaGrupo, ejemploPorSemilla, placeholderPlan } from '../lib/ejemplos'
+import { ATAJOS, atajosParaEspacio, ejemploPorSemilla, placeholderPlan } from '../lib/ejemplos'
 
 // Una propuesta se arma con dos momentos posibles (A y B), cada uno un día y una hora de encuentro,
 // y una duración aproximada: la hora de fin se calcula sola. El contrato sigue recibiendo inicio y fin
@@ -29,6 +29,8 @@ interface Formulario {
   cierre: Cierre
   /** Solo con cierre "otro". */
   plazoOtro: string
+  /** Enmienda 14: clave de la actividad del atajo elegido (null = sin actividad; vale en un grupo libre). */
+  actividad: ActividadClave | null
 }
 
 // Valores exactos del caso canónico (contrato, sección 5): A sáb 31 oct y B dom 1 nov, 14:00 a 17:00; cierre jue 29 oct 20:00.
@@ -43,10 +45,12 @@ const CASO = {
   maximo: '6',
   cierre: 'dos_dias' as Cierre,
   plazoOtro: '',
+  // El demo es un espacio libre: sin actividad, igual que siempre.
+  actividad: null as ActividadClave | null,
 }
 
 // Atajos de actividad (apertura, `src/lib/ejemplos.ts`): el que nombra el grupo va primero; "Asado" ya no encabeza siempre.
-type Actividad = { titulo: string; icono: NombreIcono; min: number }
+type Actividad = { titulo: string; icono: NombreIcono; min: number; actividad: string | null }
 const HORAS = ['12:00', '13:00', '14:00', '17:00', '19:00', '20:00', '21:00']
 const DURACIONES = [60, 120, 180, 240]
 const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
@@ -104,6 +108,7 @@ function campoDeError(e: ApiError | null): Campo | null {
       return 'imprescindible'
     case 'campo_faltante':
     case 'formato_invalido':
+    case 'fuera_de_proposito': // enmienda 14: el mensaje del servidor (TEXTO_FUERA_DE_PROPOSITO) lo muestra ErrorCaja
       return 'titulo'
     default:
       return null
@@ -168,6 +173,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
           imprescindibleId: yoM?.miembro_id ?? '',
           cierre: 'dia_antes',
           plazoOtro: '',
+          actividad: null,
         }
     if (borrador) {
       const [a, b] = borrador.franjas
@@ -217,7 +223,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   }
   function elegirActividad(a: Actividad) {
     const esAtajo = form.titulo.trim() === '' || ATAJOS.some((x) => x.titulo === form.titulo.trim())
-    setF({ ...form, titulo: esAtajo ? a.titulo : form.titulo, duracion: a.min })
+    setF({ ...form, titulo: esAtajo ? a.titulo : form.titulo, duracion: a.min, actividad: (a.actividad as ActividadClave | null) ?? null })
     if (error) limpiarError()
   }
 
@@ -279,6 +285,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
         maximo: Number(form.maximo),
         imprescindibleId: form.imprescindibleId,
         plazo,
+        actividad: form.actividad,
         intentoId,
       }),
     )
@@ -323,7 +330,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
           >
             {desdeAgente ? (
               <Aviso tono="info" titulo="Borrador del agente">
-                Título y momentos vienen del borrador del agente. Revisa cupos, anfitrión y cierre: el agente no crea ni confirma nada.
+                Título y momentos vienen del borrador del agente. Revisa cupos, quién no puede faltar y cierre: el agente no crea ni confirma nada.
               </Aviso>
             ) : null}
             {espacio.demo && !desdeAgente ? (
@@ -347,7 +354,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
             <fieldset className="form-seccion">
               <legend>Qué hacen</legend>
               <div className="carrusel" role="group" aria-label="Atajos de actividad">
-                {atajosParaGrupo(espacio.nombre).map((a) => (
+                {atajosParaEspacio(espacio.nombre, espacio.familia).map((a) => (
                   <button
                     key={a.titulo}
                     type="button"
@@ -366,7 +373,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                   value={form.titulo}
                   onChange={(e) => poner('titulo', e.target.value)}
                   maxLength={80}
-                  placeholder={placeholderPlan(ejemploPorSemilla(espacio.nombre))}
+                  placeholder={placeholderPlan(ejemploPorSemilla(espacio.nombre), espacio.familia)}
                   aria-invalid={marcado === 'titulo' || (faltantes && form.titulo.trim() === '') ? true : undefined}
                 />
               </label>
@@ -416,7 +423,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                 <Contador id="cupo-maximo" etiqueta="Máximo" valor={form.maximo} onCambio={(v) => poner('maximo', v)} />
               </div>
               <p className="suave nota-seccion">El mínimo cuenta a quien es imprescindible.</p>
-              <div className="anfitrion-elegir" role="radiogroup" aria-label="Persona imprescindible (anfitrión)">
+              <div className="anfitrion-elegir" role="radiogroup" aria-label="Persona que no puede faltar">
                 <span className="duracion-etiqueta">
                   <Icono n="anfitrion" tam={16} /> No puede faltar
                 </span>
