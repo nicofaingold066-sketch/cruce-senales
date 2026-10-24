@@ -61,10 +61,39 @@ export function momentoCorto(m: Momento | string): string {
   return `${fechaCorta(l)}, ${hora(l)}`
 }
 
+/**
+ * "Sin hora de fin" (pedido de Nico, 24 oct): el contrato exige `fin`, así que Nuevo plan manda inicio + 12 h y
+ * cualquier franja de 8 h o más se lee como abierta. Nunca se muestra "hasta las 02:00".
+ */
+export const SIN_FIN_MINUTOS = 720
+export const UMBRAL_SIN_FIN = 480
+
+function minutosEntre(inicio: string, fin: string): number | null {
+  const a = partes(inicio)
+  const b = partes(fin)
+  if (!a || !b) return null
+  const t = (p: Partes) => Date.UTC(p.y, p.mo - 1, p.d, Number(p.hh), Number(p.mm))
+  return (t(b) - t(a)) / 60000
+}
+
+/** true si la franja es "sin hora de fin" (dura 8 h o más). */
+export function sinHoraDeFin(inicio: Momento | string, fin: Momento | string): boolean {
+  const m = minutosEntre(typeof inicio === 'string' ? inicio : inicio.local, typeof fin === 'string' ? fin : fin.local)
+  return m != null && m >= UMBRAL_SIN_FIN
+}
+
+/** El horario de una franja: "14:00 a 17:00", o "desde las 14:00 · sin hora de fin". Único lugar de esta regla. */
+export function horarioTexto(inicio: Momento | string, fin: Momento | string): string {
+  const i = typeof inicio === 'string' ? inicio : inicio.local
+  const f = typeof fin === 'string' ? fin : fin.local
+  return sinHoraDeFin(i, f) ? `desde las ${hora(i)} · sin hora de fin` : `${hora(i)} a ${hora(f)}`
+}
+
 /** "Sábado 31 oct 2026, 14:00 a 17:00" (franja completa). */
 export function franjaTexto(inicio: Momento | string, fin: Momento | string): string {
   const i = typeof inicio === 'string' ? inicio : inicio.local
   const f = typeof fin === 'string' ? fin : fin.local
+  if (sinHoraDeFin(i, f)) return `${fechaLarga(i)}, ${horarioTexto(i, f)}`
   const pi = partes(i)
   const pf = partes(f)
   if (pi && pf && pi.y === pf.y && pi.mo === pf.mo && pi.d === pf.d) {
