@@ -1,10 +1,10 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: viernes 23 oct, 20:12 (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: viernes 23 oct, 21:02 (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e` en curso) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
-Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 14 (3 ya corregidos en `wip/friccion`)** (ninguno impide completar el recorrido canónico), el resto APROBADO.
+Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 16 (friccion dice que O-02, O-06, O-08, O-12b y O-13 ya están en `main`; lo confirma la corrida 4)** (ninguno impide completar el recorrido canónico), el resto APROBADO.
 Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no de función):
 1. **O-01** Cabecera a 320 px: el avatar de la sesión tapa el chip "Datos ficticios" en TODAS las pantallas con nombre.
 2. **O-02** Entrada por enlace en un navegador que ya es miembro: "¿Quién eres?" lo muestra "no disponible" y dice "Ya no queda ningún nombre libre", sin "Seguir como X".
@@ -36,6 +36,7 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | O-12 | OBSERVADO (leve) | Avisos repetidos | (a) Sin red en un plan: banner global + banner "Sin conexión" del plan + error del botón (R161); (b) contrato incompatible: "Versión incompatible" arriba y "No se pudo completar · Versión incompatible" debajo (R170); (c) "Hoy paso" aparece deshabilitado sin explicación mientras no se marque "Me interesa" (R162) | `202610232002/R161-375.png`, `202610232004/R170-375.png` | front-juan (a, c) / friccion (b) |
 | O-13 | OBSERVADO (leve) | Falla al iniciar la sesión anónima | El texto dice "el inicio de sesión anónimo puede estar deshabilitado en el proyecto": lenguaje técnico para una persona que solo abrió el enlace (R173) | `202610232004/R173-375.png` | friccion |
 | O-14 | OBSERVADO | Demo, pestaña Simulación a **320 px** | (a) La pestaña "Simulación" se sale de la pantalla (262–360 de 320); (b) en cada persona simulada la etiqueta "SIMULACIÓN" queda tapada por la insignia "Sin versión publicada" ("SIMUL…") | `202610231946/R104-320.png` | front-juan |
+| O-16 | OBSERVADO (decisión) | Chip "Datos ficticios" del encabezado | Aparece en TODAS las pantallas, también en un grupo real con personas de verdad (`App.tsx:85`, fricción 19 de `docs/flujo-usuario.md`); un grupo real podría leerlo como "esto no vale". Y a 320 px lo pisa el avatar (O-01) | `202610231931/R25-320.png` | decisión para Nico (vía coordinador); el código es de friccion (`App.tsx`) y el estilo de front-juan |
 
 ## Inventario de rincones
 (Estado: A = APROBADO, O = OBSERVADO, R = ROTO, — = pendiente de recorrer.)
@@ -176,6 +177,15 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | R171 | 500 al abrir un espacio: "Falla temporal. Intenta de nuevo." + Reintentar (sana al reintentar) | auto | A |
 | R172 | Respuesta lenta: "Cargando el espacio…" con esqueleto | auto | A |
 | R173 | No se pudo iniciar la sesión anónima: Reintentar | ojo | O (O-13) |
+
+### Respuesta en un paso (#88) y chip Datos ficticios (`f11` 20:43 sobre `main` 7f2423e; se repite en la corrida 4 sobre 3ace04e)
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| R200 | Invitación con la lista de integrantes y una propuesta ya abierta | auto | A |
+| R201 | "¿Cuándo puedes?" en un paso: "Puedo los dos días", "Solo el sábado 31 oct", "Solo el domingo 1 nov", "No puedo ninguno", "Todavía no sé: ver el plan"; dice que es privado y que responder no es confirmar | ojo | A |
+| R202 | Tras tocar una opción: "Respuesta guardada", "¿Avisar al grupo que te interesa?" (opcional), "Ver el plan", "Cambiar mi respuesta", "Contar mis gustos y presupuesto" | ojo | A (320 y 375 bien) |
+| R203 | Calendario simulado "Tomar de mi calendario (Simulación)" en Responder (solo demo) | — | pendiente (`f12`) |
+| R230 | Chip "Datos ficticios" en el encabezado | ojo | O (O-01, O-16) |
 
 ## Pendiente de recorrer
 "Entrar como otra persona" confirmado, reclamar un lugar simulado libre del demo, "Hoy paso" ya marcado, plazo vencido (expirado), cierre elegido a mano con fecha pasada, y los cuatro anchos de cada rincón mirados a ojo (hoy `auto` en varios). Se repite lo afectado tras cada publicación en `main`.

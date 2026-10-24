@@ -274,6 +274,8 @@ export async function rinconA11y(page, id, rincon, { anchos = [320, 375, 1280], 
     if (w === 375) {
       const yml = await page.locator('body').ariaSnapshot().catch((e) => `(sin árbol: ${e})`)
       writeFileSync(`${CARPETA}/${id}-aria.yml`, yml)
+      await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {})
+      await page.screenshot({ path: `${CARPETA}/${id}-375.png`, fullPage: true }).catch(() => {})
     }
   }
   await page.setViewportSize(previo)
