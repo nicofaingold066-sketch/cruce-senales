@@ -1,144 +1,154 @@
-/* Participación pública: solo nombres y actos explícitos. Usa los tokens de ambos temas. */
+/* Una tarjeta neutra, con el mismo ritmo de nombres y metadatos que Actividad del grupo. */
 .participacion-publica {
   min-width: 0;
+  padding: var(--e-4);
   color: var(--tinta);
+  box-shadow: none;
 }
-.participacion-cabecera,
-.participacion-cabecera h2,
-.participacion-subtitulo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.participacion-cabecera {
-  justify-content: space-between;
-  flex-wrap: wrap;
+.participacion-publica > .participacion-cabecera {
+  display: grid;
+  justify-items: start;
+  gap: var(--e-1);
+  margin: 0 0 var(--e-4);
 }
 .participacion-cabecera h2 {
-  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
   min-width: 0;
+  margin: 0;
   font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
 }
 .participacion-cabecera h2 svg {
   flex: none;
+  color: var(--tinta-2);
 }
-.participacion-version,
-.participacion-conteo {
-  border: 1px solid var(--linea);
-  border-radius: 999px;
-  background: var(--relleno);
+.participacion-cabecera .participacion-version {
+  margin: 0;
   color: var(--tinta-2);
   font-size: var(--t-nota);
-  font-weight: 700;
-  padding: 3px 8px;
-  white-space: nowrap;
+  line-height: var(--lh-nota);
+  font-weight: var(--p-rotulo);
+  font-variant-numeric: tabular-nums;
 }
-.participacion-categoria + .participacion-categoria {
-  margin-top: 16px;
+.participacion-publica > .participacion-categoria {
+  margin-top: 0;
+}
+.participacion-publica > .participacion-categoria ~ .participacion-categoria {
+  margin-top: var(--e-4);
 }
 .participacion-subtitulo {
-  justify-content: space-between;
-  margin: 0 0 8px;
-  font-size: var(--t-cuerpo);
-  line-height: 1.4;
+  display: flex;
+  align-items: baseline;
+  gap: var(--e-2);
+  margin: 0 0 var(--e-2);
   color: var(--tinta);
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  font-weight: var(--p-boton);
 }
-.participacion-subtitulo > span:first-child {
+.participacion-subtitulo > span:last-child {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+.participacion-conteo {
+  flex: none;
+  min-width: 18px;
+  color: var(--tinta);
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+  font-weight: var(--p-pantalla);
+  font-variant-numeric: tabular-nums;
 }
 .participacion-personas {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--e-4);
+  row-gap: var(--e-3);
   list-style: none;
-  gap: 8px;
   margin: 0;
   padding: 0;
 }
 .participacion-persona {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: var(--e-2);
   min-width: 0;
-  padding: 10px;
-  border: 1px solid var(--linea);
-  border-radius: var(--r-s);
-  background: var(--relleno);
+  min-height: 44px;
+  padding: 2px 0;
+}
+.participacion-persona-larga {
+  grid-column: 1 / -1;
 }
 .participacion-persona .avatar {
   flex: none;
+  margin-top: 1px;
 }
 .participacion-persona-texto {
+  display: grid;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 3px;
+  gap: 2px;
 }
 .participacion-nombre {
   color: var(--tinta);
   font-size: var(--t-cuerpo);
-  line-height: 1.35;
-  font-weight: 700;
+  line-height: var(--lh-cuerpo);
+  font-weight: var(--p-boton);
   overflow-wrap: anywhere;
 }
 .participacion-tu {
   font-size: var(--t-nota);
-  font-weight: 500;
+  font-weight: var(--p-texto);
+}
+.participacion-estados {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px var(--e-2);
 }
 .participacion-estado {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--e-1);
   color: var(--tinta-2);
   font-size: var(--t-nota);
-  line-height: 1.4;
+  line-height: var(--lh-nota);
 }
 .participacion-estado svg {
   flex: none;
 }
-.participacion-persona-confirmo,
-.participacion-persona-entro {
-  border-color: var(--ok);
-  background: var(--ok-suave);
-}
 .participacion-persona-confirmo .participacion-estado,
 .participacion-persona-entro .participacion-estado {
   color: var(--ok);
-  font-weight: 700;
-}
-.participacion-persona-por_entrar {
-  border-style: dashed;
-  border-color: var(--revision);
-  background: var(--revision-suave);
+  font-weight: var(--p-boton);
 }
 .participacion-persona-por_entrar .participacion-estado {
   color: var(--revision);
-  font-weight: 700;
-}
-.participacion-persona-simulada {
-  border-style: dashed;
-  border-color: var(--sim);
-  background: var(--sim-suave);
+  font-weight: var(--p-boton);
 }
 .participacion-persona-simulada .participacion-estado,
 .participacion-simulacion {
   color: var(--sim-texto);
   font-size: var(--t-nota);
+  line-height: var(--lh-nota);
 }
 .participacion-nota,
 .participacion-vacio,
 .participacion-revision {
-  margin: 8px 0 0;
-  font-size: var(--t-nota);
-  line-height: 1.5;
+  margin: var(--e-2) 0 0;
   color: var(--tinta-2);
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
   overflow-wrap: anywhere;
 }
-.participacion-revision {
-  padding: 8px 10px;
-  border-left: 3px solid var(--revision);
-  background: var(--revision-suave);
+.participacion-publica > .participacion-nota {
+  margin-top: var(--e-4);
+  padding-top: var(--e-3);
+  border-top: 1px solid var(--linea);
+}
+.participacion-publica > .participacion-revision {
+  margin: 0 0 var(--e-3);
   color: var(--revision);
 }
 .resultado .resultado-nombres {
@@ -152,9 +162,34 @@
   .participacion-personas {
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   }
+  .participacion-persona-larga {
+    grid-column: auto;
+  }
 }
 @media (max-width: 359px) {
-  .participacion-persona {
-    flex-direction: column;
+  .participacion-personas {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--e-2);
+  }
+  .participacion-persona-texto {
+    flex: 1;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--e-2);
+    min-height: 28px;
+  }
+  .participacion-nombre {
+    font-size: var(--t-nota);
+  }
+  .participacion-estados {
+    justify-content: flex-end;
+    max-width: 112px;
+  }
+  .participacion-persona-larga .participacion-persona-texto {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .participacion-persona-larga .participacion-estados {
+    justify-content: flex-start;
+    max-width: none;
   }
 }
