@@ -1,14 +1,14 @@
 # Caso demo Makana — pedido directo de Nico, 24 oct 2026
 
 ## Tocando ahora
-Pulido móvil pedido por Nico: `src/participacion-publica/Participacion.tsx`, `src/participacion-publica/participacion.css`, `tests/e2e/participacion-visible-local.mjs`, `docs/participacion-publica.md`. Mismo alcance de participación pública ya trabajado; sin cambios de contrato/base, sin estilos globales ni GRU. Trabajo LOCAL en `codex/participacion-visible`; capturas para validación humana antes de subir/publicar.
+Pulido móvil pedido por Nico: `src/participacion-publica/Participacion.tsx`, `src/participacion-publica/participacion.css`, `tests/e2e/participacion-visible-local.mjs`, `docs/participacion-publica.md`. Mismo alcance de participación pública ya trabajado; sin cambios de contrato/base, sin estilos globales ni GRU. Trabajo en `codex/participacion-visible`; Nico acaba de autorizar subir/publicar al terminar («cuando termines subilo lo acepto»). QA y capturas primero; integración coordinada después.
 
 ## Decisiones
 - Nuevo caso «El plan que no deja a nadie afuera», siete adultos ficticios Ana/Bruno/Camila/Diego/Elena/Felipe/Gabriela.
 - Demo aislada e idempotente, sin alterar registros previos. Permisos separados apagados inicialmente; pendientes no cuentan como aceptaciones. Sin mínimo artificial de cuatro en parque.
 
 ## Pedidos
-- **PARA coordinador: DETENER integración/publicación de participación visible.** Nico acaba de indicar: «Prioriza la vista en móvil ... cuando la crees, mostranos cómo queda y después nosotros validamos si lo subimos o no». Esto REEMPLAZA mi pedido previo de integrar `638a677`. No fusionar ni publicar `origin/codex/participacion-visible` hasta validación humana explícita. Preparo un pulido móvil y capturas locales. No habrá push de código nuevo antes de esa validación. La rama existente queda en espera.
+- **PARA coordinador: PUBLICACIÓN DE PARTICIPACIÓN AUTORIZADA.** La instrucción humana más reciente es «cuando termines subilo lo acepto». Reemplaza la espera de validación anterior: al pasar QA móvil, publicar participación visible. Prepararé commit final en `codex/participacion-visible` sobre main actual 08aa6e2. Son cambios de frontend sin migración ni nuevas RPC; no ocupan la base. Integrar la rama final tras aviso de SHA y pruebas. Mantengo sin push a main mientras tu tanda esté en curso.
 - PARA coordinador, Makana: NO renumerar el contenido como0058 antes de actividad sin comprobar orden fresh. `20261024124500_demo_makana.sql` se ordenó DESPUÉS de actividad: captura sus wrappers y verifica43RPC (incluyeleave_space). Si corre antes, actividad borra camposdemo y falla catálogo. Tu nueva0057coherencia puede precederla; confirmar orden antes deaplicar. LaSQLMakana está en `origin/codex/demo-makana`8194e96; independiente de participación pública.
 
 
@@ -53,3 +53,6 @@ Pulido móvil pedido por Nico: `src/participacion-publica/Participacion.tsx`, `s
 
 ## Cambio de instrucción humana — móvil primero, revisión antes de publicar
 - La autorización previa de integrar participación queda en espera por la instrucción más reciente de Nico. Primero se presenta una vista móvil estética, coherente con CRUCE; luego Nico y Juan deciden si se sube. Esta instrucción manda sobre cualquier texto anterior de esta ficha.
+
+## Nueva autorización humana — publicación al terminar
+- Nico: «cuando termines subilo lo acepto». Levanta la espera anterior para el refinamiento de participación. Se completa QA móvil, se entrega SHA final y se publica por el flujo coordinado; sin tocar base ni migraciones. No se requiere otra confirmación del diseño.
