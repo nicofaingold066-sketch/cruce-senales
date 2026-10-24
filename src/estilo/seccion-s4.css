@@ -564,3 +564,28 @@ a.fila:hover {
 :where(:root[data-theme='dark']) .resultado a.btn-turno {
   color: #1b0b03;
 }
+
+/* 370–399 px (375): las cuatro etapas en una fila, como en el mockup. vida.css las partía en dos filas porque «Respuestas»
+   y «Opción» se tocaban; con menos relleno en el bloque y rótulos de 13 px entran sin tocarse. A 320 px no entran sin cortar
+   palabras: ahí siguen de a dos por fila. */
+@media (min-width: 370px) and (max-width: 399px) {
+  #root .resultado {
+    padding-left: var(--e-3);
+    padding-right: var(--e-3);
+  }
+  #root .resultado .barra-accion {
+    margin-left: calc(-1 * var(--e-3));
+    margin-right: calc(-1 * var(--e-3));
+  }
+  #root .resultado-pasos.pasos {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: var(--e-1);
+    row-gap: 0;
+  }
+  #root .resultado-pasos .paso-texto {
+    font-size: var(--t-nota);
+    letter-spacing: -0.01em;
+    overflow-wrap: normal;
+    white-space: nowrap;
+  }
+}
