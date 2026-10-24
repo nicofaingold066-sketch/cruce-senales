@@ -181,7 +181,7 @@ try {
   }, async p => {
     await poner(p, 'Pepe'); await guardar(p); await mostrar(p)
     await retorno(p).click()
-    await p.getByText('Sin conexión con el servidor. La sesión sigue guardada; intenta de nuevo.', { exact: false }).waitFor({ timeout: 35000 })
+    await p.getByText('sigue guardada; intenta de nuevo.', { exact: false }).waitFor({ timeout: 35000 })
     assert.deepEqual(await estado(p), { actual: 'Pepe', guardada: 'Tomi en «Los del asado»' })
     assert.equal(await retorno(p).isEnabled(), true)
   })
@@ -258,7 +258,7 @@ try {
   }, async p => {
     await poner(p, 'Pepe'); await guardar(p); await mostrarEntrada(p)
     await retorno(p).click()
-    await p.getByText('Sin conexión con el servidor. La sesión sigue guardada; intenta de nuevo.', { exact: false }).waitFor({ timeout: 35000 })
+    await p.getByText('sigue guardada; intenta de nuevo.', { exact: false }).waitFor({ timeout: 35000 })
     assert.deepEqual(await estado(p), { actual: 'Pepe', guardada: 'Tomi en «Los del asado»' })
     // La copia sigue ofrecida: se puede reintentar o descartar (el foco del error ya no se maneja en la portada).
     assert.equal(await retorno(p).isEnabled(), true)

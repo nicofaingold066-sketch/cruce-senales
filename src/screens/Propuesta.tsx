@@ -131,7 +131,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
   const conocido = (CODIGOS_SIGUIENTE as readonly string[]).includes(cod)
   const turno = cod === 'te_toca_aceptar' || (!conocido && p.mi_situacion.puede.aceptar)
   const yaAcepte = cod === 'ya_aceptaste' || (!conocido && !turno && p.mi_situacion.acepte_version && p.estado === 'esperando_compromisos')
-  const props = { p, viva, soloLectura, irAPestana: setPestana }
+  const props = { p, viva, soloLectura, irAPestana: setPestana, espacio }
 
   const escena = escenaDe(p, espacio)
 

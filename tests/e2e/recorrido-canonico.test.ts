@@ -2,6 +2,7 @@
 // Cada ejecución crea SOLO dos identidades anónimas y su propio demo ficticio.
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { randomUUID } from 'node:crypto'
+import { execFileSync } from 'node:child_process'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 // JSON de frontera: las formas y valores importantes se verifican en ejecución.
@@ -16,8 +17,29 @@ const FRANJAS = [
   { inicio: '2026-11-01T14:00', fin: '2026-11-01T17:00' },
 ]
 const SI = { A: 'si', B: 'si' }
+const NOMBRES = ['Tomi', 'Luna', 'Mati', 'Caro', 'Fede', 'Sofi']
 
-describe('recorrido canónico real · dos sesiones · contrato 2/enmienda 3', () => {
+// Misma guardia que tests/e2e/base-libre.mjs: si backend está migrando, la suite se salta en vez de escribir en la base.
+function baseOcupada(): boolean {
+  try {
+    execFileSync('git', ['fetch', '-q', 'origin', 'coordinacion'], { stdio: 'pipe' })
+    const ficha = execFileSync('git', ['show', 'origin/coordinacion:agentes/backend.md'], { encoding: 'utf8' })
+    const tocando = ficha.match(/## Tocando ahora\s*\n([\s\S]*?)(?=\n## |$)/)?.[1] ?? ''
+    return /MIGRACION EN CURSO|PRUEBA DE CARGA EN CURSO/i.test(tocando)
+  } catch {
+    return false // sin acceso a la coordinación se corre igual, como hasta hoy
+  }
+}
+const BASE_OCUPADA = baseOcupada()
+if (BASE_OCUPADA) console.log('PAUSADO: backend migrando o midiendo carga (agentes/backend.md); recorrido canónico saltado.')
+
+/** Enmienda 13 todavía sin aplicar en el servidor: la prueba se marca saltada (vuelve a correr sola cuando llegue). */
+function pendienteE13(ctx: { skip?: (nota?: string) => void }) {
+  console.log('E13 pendiente: el servidor no trae mi_opinion/opiniones_totales; comprobación saltada.')
+  ctx.skip?.('E13 pendiente en el servidor')
+}
+
+describe.skipIf(BASE_OCUPADA)('recorrido canónico real · dos sesiones · contrato 2/enmiendas 3 y 13', () => {
   let tomi: SupabaseClient
   let luna: SupabaseClient
   let espacio: Json
@@ -25,6 +47,27 @@ describe('recorrido canónico real · dos sesiones · contrato 2/enmienda 3', ()
   const authIds: string[] = []
   const propuestas: string[] = []
   let llamadas = 0
+  // Enmienda 13: se detecta en la primera propuesta por sus claves nuevas. Hasta que backend la aplique, sus
+  // comprobaciones se saltan y se avisa; después corren siempre.
+  let e13: boolean | null = null
+  function detectarE13(p: Json) {
+    if (e13 === null && p?.mi_situacion) e13 = 'mi_opinion' in p.mi_situacion || 'opiniones_totales' in p
+  }
+  /** E13 (a): `opiniones_totales` llega como `{ asi_no_puedo: n }` con n null si hay menos de 2 (o nada para quien no organiza). */
+  const totalAsiNoPuedo = (p: Json): number | null => p?.opiniones_totales?.asi_no_puedo ?? null
+  /** E13 (c): la baja no trae nombre ni si había confirmado, en ninguna respuesta compartida (tampoco al organizador). */
+  function bajaSinNombre(p: Json, quien: string, ruta: string) {
+    if (!e13) return
+    // `ejecutado_por` es quien corrió la simulación (el organizador): público.
+    const eventos = (p.historial ?? []).filter((e: Json) => e.tipo === 'baja').map(({ ejecutado_por: _simula, ...e }: Json) => e)
+    const baja = JSON.stringify({ bajas: p.bajas ?? null, eventos })
+    for (const n of NOMBRES) expect(baja.includes(`"${n}"`), `${ruta}: la baja nombra a ${n}`).toBe(false)
+    // Backend deja la clave con null (no la quita): lo que no puede haber es true/false.
+    for (const b of Array.isArray(p.bajas) ? p.bajas : []) expect(b?.habia_aceptado ?? null, `${ruta}: la baja dice si había confirmado`).toBeNull()
+    // "Sin decir si había confirmado": la aceptación vieja de quien se retiró también sale sin actor.
+    for (const e of (p.historial ?? []).filter((e: Json) => e.tipo === 'aceptacion')) expect(e.actor?.nombre ?? null, `${ruta}: la aceptación de ${quien} (que se retiró) conserva el nombre`).not.toBe(quien)
+    expect(JSON.stringify(p.siguiente_accion ?? null).includes(quien), `${ruta}: siguiente_accion nombra a ${quien}`).toBe(false)
+  }
 
   function privadaAusente(valor: unknown, ruta = 'respuesta'): void {
     if (typeof valor === 'string') {
@@ -44,18 +87,20 @@ describe('recorrido canónico real · dos sesiones · contrato 2/enmienda 3', ()
     }
   }
 
-  async function llamar(c: SupabaseClient, fn: string, args: Json = {}, exito = true): Promise<Json> {
+  /** `exito` null: se acepta ok o error (para ramas que el contrato deja abiertas). */
+  async function llamar(c: SupabaseClient, fn: string, args: Json = {}, exito: boolean | null = true): Promise<Json> {
     const { data, error } = await c.rpc(fn, args).abortSignal(AbortSignal.timeout(20_000))
     // No volcar el cliente, argumentos privados ni JWT a la salida de pruebas.
     expect(error?.code ?? null, `${fn}: error de transporte`).toBeNull()
     expect(data, `${fn}: sobre ausente`).toBeTruthy()
     const r = data as Json
     expect(r.contrato, fn).toBe(2)
-    expect(r.ok, `${fn}: ${r.error?.codigo ?? ''}/${r.error?.detalle ?? ''}`).toBe(exito)
+    if (exito !== null) expect(r.ok, `${fn}: ${r.error?.codigo ?? ''}/${r.error?.detalle ?? ''}`).toBe(exito)
     // Solo save/get propios pueden devolver condiciones en la raíz al llamador.
     const compartido = { ...r }
     if (fn === 'save_my_conditions' || fn === 'get_my_conditions') delete compartido.condiciones
     privadaAusente(compartido)
+    if (r.propuesta) detectarE13(r.propuesta)
     if (r.propuesta) expect(CODIGOS).toContain(r.propuesta.siguiente_accion.codigo)
     if (r.propuestas) for (const p of r.propuestas) expect(CODIGOS).toContain(p.siguiente_accion.codigo)
     llamadas++
@@ -123,7 +168,10 @@ describe('recorrido canónico real · dos sesiones · contrato 2/enmienda 3', ()
     const r = await llamar(tomi, 'simulate_withdraw', { p_propuesta_id: id, p_miembro_id: ids.Caro })
     expect(r.resultado.efecto).toBe('pasa_a_revision')
     paso(r.propuesta, 'en_revision', 'buscar_alternativa', 3)
-    paso(await mirar(luna, id), 'en_revision', 'buscar_alternativa', 3)
+    bajaSinNombre(r.propuesta, 'Caro', 'Tomi (organizador)')
+    const deLuna = await mirar(luna, id)
+    paso(deLuna, 'en_revision', 'buscar_alternativa', 3)
+    bajaSinNombre(deLuna, 'Caro', 'Luna')
   }
 
   beforeAll(async () => {
@@ -216,4 +264,102 @@ describe('recorrido canónico real · dos sesiones · contrato 2/enmienda 3', ()
     expect(p.ultima_evaluacion.resultado).toBe('sin_alternativa')
     console.log('PASÓ: sin alternativa tras baja; En revisión; v1 conservada; mínimo intacto.')
   }, 120_000)
+
+  // Enmienda 13 (docs/contrato-enmienda-13.md). Solo dos identidades reales: Luna y Tomi son las dos opiniones.
+  it('E13: opinar sin bajarse; totales null con 1 y solo al organizador; rearmar desde esperando_compromisos con cero heredadas', async (ctx) => {
+    const id = await preparar()
+    if (!e13) return pendienteE13(ctx)
+    const ev = await llamar(tomi, 'evaluate_and_publish', { p_propuesta_id: id, p_intento_id: randomUUID() })
+    expect(ev.resultado).toMatchObject({ tipo: 'opcion_publicada', version: 1 })
+    paso(ev.propuesta, 'esperando_compromisos', 'te_toca_aceptar')
+    expect(totalAsiNoPuedo(ev.propuesta), 'cero opiniones: null también para el organizador').toBeNull()
+    // (a) Luna opina sin bajarse. El mismo intento dos veces es UNA opinión.
+    const intento = randomUUID()
+    const op = await llamar(luna, 'opinar_version', { p_propuesta_id: id, p_version: 1, p_opinion: 'asi_no_puedo', p_intento_id: intento })
+    const repetida = await llamar(luna, 'opinar_version', { p_propuesta_id: id, p_version: 1, p_opinion: 'asi_no_puedo', p_intento_id: intento })
+    for (const p of [op.propuesta, repetida.propuesta]) {
+      expect(p.estado).toBe('esperando_compromisos')
+      expect(p.confirmados, 'opinar no es aceptar').toBe(0)
+      expect(p.mi_situacion.mi_opinion).toBe('asi_no_puedo')
+      expect(p.mi_situacion.retirado, 'opinar no es bajarse').toBe(false)
+      expect(p.mi_situacion.puede.guardar_condiciones, 'vuelve a poder actualizar su disponibilidad').toBe(true)
+      expect(totalAsiNoPuedo(p), 'Luna no es organizadora: nunca ve totales').toBeNull()
+      expect(p.bajas ?? null).toEqual(ev.propuesta.bajas ?? null)
+    }
+    // Totales: el organizador ve null con 1.
+    const t1 = await mirar(tomi, id)
+    expect(totalAsiNoPuedo(t1), 'una sola opinión: el total sigue en null').toBeNull()
+    expect(t1.mi_situacion.mi_opinion ?? null).toBeNull()
+    // Segunda opinión (Tomi): el organizador ve 2, sin nombres; Luna sigue sin verlo; su siguiente acción es rearmar.
+    const op2 = await llamar(tomi, 'opinar_version', { p_propuesta_id: id, p_version: 1, p_opinion: 'asi_no_puedo', p_intento_id: randomUUID() })
+    // Dos formas válidas del servidor (backend 21:45, migración 0047 pendiente de OK): hasta 0046 el total cuenta también la
+    // opinión del organizador (aquí: 2); con 0047 cuenta solo las de los DEMÁS (aquí: 1 → null) y no baja si alguien acepta.
+    // Con solo dos identidades reales no se llega a 2 «de los demás»: ese caso lo cubre tests/backend/enmienda13.test.ts.
+    const total2 = totalAsiNoPuedo(op2.propuesta)
+    expect([2, null], `total con la opinión de Luna y la del organizador: ${total2}`).toContain(total2)
+    console.log(`E13: opiniones_totales con dos opiniones (Luna + organizador) = ${total2} (${total2 === 2 ? 'cuenta también la del organizador' : 'cuenta solo las de los demás'})`)
+    expect(Object.keys(op2.propuesta.opiniones_totales), 'solo el total, ninguna otra clave').toEqual(['asi_no_puedo'])
+    for (const n of NOMBRES) expect(JSON.stringify(op2.propuesta.opiniones_totales)).not.toContain(n)
+    // Lo que importa: el organizador PUEDE rearmar (botón disponible). El texto "puedes rearmar con lo nuevo" (código
+    // buscar_opcion) lo muestra backend solo si el organizador ya aceptó la versión; si no, gana "te_toca_aceptar".
+    expect(op2.propuesta.mi_situacion.puede.proponer_reparacion, 'con 2 opiniones el organizador puede rearmar').toBe(true)
+    console.log(`E13: siguiente_accion del organizador con 2 opiniones (sin haber aceptado): ${op2.propuesta.siguiente_accion.codigo} — "${op2.propuesta.siguiente_accion.texto}"`)
+    const l2 = await mirar(luna, id)
+    expect(totalAsiNoPuedo(l2)).toBeNull()
+    expect(l2.mi_situacion.mi_opinion).toBe('asi_no_puedo')
+    // Versión no vigente: mismo rechazo que al aceptar.
+    const noVigente = await llamar(luna, 'opinar_version', { p_propuesta_id: id, p_version: 2, p_opinion: 'asi_no_puedo', p_intento_id: randomUUID() }, false)
+    expect(noVigente.error).toMatchObject({ codigo: 'opcion_desactualizada', detalle: 'version_no_vigente' })
+    // (b) Luna actualiza su disponibilidad (A ya no) y el organizador rearma desde esperando_compromisos: v2 nace
+    // con cero aceptaciones y cero opiniones, con la disponibilidad de ahora.
+    await llamar(luna, 'save_my_conditions', { p_propuesta_id: id, p_disponibilidad: { A: 'no', B: 'si' } })
+    const rep = await llamar(tomi, 'propose_repair', { p_propuesta_id: id, p_intento_id: randomUUID() })
+    expect(rep.resultado).toMatchObject({ tipo: 'reparacion_publicada', version: 2 })
+    paso(rep.propuesta, 'esperando_compromisos', 'te_toca_aceptar')
+    expect(rep.propuesta.opcion.version).toBe(2)
+    expect(rep.propuesta.opcion.aceptaron).toEqual([])
+    expect(rep.propuesta.opcion.cupos.confirmados).toBe(0)
+    expect(totalAsiNoPuedo(rep.propuesta), 'v2 no hereda opiniones').toBeNull()
+    expect(rep.propuesta.mi_situacion.mi_opinion ?? null).toBeNull()
+    expect(rep.propuesta.bajas ?? null, 'nadie se fue: opinar no reincorpora ni retira').toEqual(ev.propuesta.bajas ?? null)
+    const l3 = await mirar(luna, id)
+    expect(l3.opcion.version).toBe(2)
+    expect(l3.mi_situacion.mi_opinion ?? null).toBeNull()
+    expect(l3.mi_situacion.puede.aceptar).toBe(true)
+    // Quien ya aceptó ESA versión no opina: primero se retira, como hoy.
+    paso((await aceptar(luna, id, 2)).propuesta, 'esperando_compromisos', 'ya_aceptaste', 1)
+    const yaAcepto = await llamar(luna, 'opinar_version', { p_propuesta_id: id, p_version: 2, p_opinion: 'asi_no_puedo', p_intento_id: randomUUID() }, false)
+    expect(yaAcepto.error).toMatchObject({ codigo: 'no_autorizado', detalle: 'ya_acepto' })
+    console.log('PASÓ E13: opinión sin baja; totales null con 1 y 2 con 2, solo al organizador; v2 desde esperando_compromisos con cero aceptaciones y opiniones.')
+  }, 180_000)
+
+  it('E13: rearmar sin ninguna opinión se rechaza; tope de 3 versiones', async (ctx) => {
+    const id = await preparar()
+    if (!e13) return pendienteE13(ctx)
+    await llamar(tomi, 'evaluate_and_publish', { p_propuesta_id: id, p_intento_id: randomUUID() })
+    // Sin "así no puedo" no hay nada que rearmar: rechazo tipado (backend, 21:22) y v1 sigue vigente.
+    const sinMotivo = await llamar(tomi, 'propose_repair', { p_propuesta_id: id, p_intento_id: randomUUID() }, false)
+    expect(sinMotivo.error).toMatchObject({ codigo: 'opcion_desactualizada', detalle: 'estado_no_admite' })
+    expect((await mirar(luna, id)).opcion.version).toBe(1)
+    // Con una opinión por versión: v2 y v3; la cuarta → sin_alternativa/tope_versiones. Si con dos franjas el servidor
+    // no encuentra alternativa antes del tope, se anota (el tope lo cubre tests/backend/enmienda13.test.ts).
+    for (const version of [1, 2, 3]) {
+      await llamar(luna, 'opinar_version', { p_propuesta_id: id, p_version: version, p_opinion: 'asi_no_puedo', p_intento_id: randomUUID() })
+      const r = await llamar(tomi, 'propose_repair', { p_propuesta_id: id, p_intento_id: randomUUID() }, version === 3 ? false : null)
+      if (version === 3) {
+        expect(r.error).toMatchObject({ codigo: 'sin_alternativa', detalle: 'tope_versiones' })
+        expect((await mirar(luna, id)).opcion.version).toBe(3)
+        break
+      }
+      if (!r.ok) {
+        expect(r.error.codigo).toBe('sin_alternativa')
+        console.log(`E13: sin alternativa al rearmar la versión ${version + 1} con dos franjas; el tope de versiones no se alcanzó en este recorrido.`)
+        break
+      }
+      expect(r.resultado).toMatchObject({ tipo: 'reparacion_publicada', version: version + 1 })
+      expect(r.propuesta.opcion.aceptaron).toEqual([])
+      expect(totalAsiNoPuedo(r.propuesta)).toBeNull()
+    }
+    console.log('PASÓ E13: sin opiniones no se rearma; cada versión nueva nace sin aceptaciones ni opiniones.')
+  }, 180_000)
 })

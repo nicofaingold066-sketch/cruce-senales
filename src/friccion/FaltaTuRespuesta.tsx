@@ -15,13 +15,13 @@ export function FaltaTuRespuesta({ p, espacioId }: { p: EstadoPropuesta; espacio
   return (
     <section className="tarjeta entrada-principal falta-respuesta" aria-labelledby={`falta-${p.id}`}>
       <h2 id={`falta-${p.id}`}>
-        <Icono n="calendario" tam={20} /> Falta tu respuesta
+        <Icono n="calendario" tam={20} /> ¿Cuándo puedes?
       </h2>
       <p className="suave">
         {imprescindible
           ? 'Eres quien no puede faltar: si se busca la opción antes de que respondas, no va a haber ninguna.'
           : s.condiciones === 'incompletas'
-            ? 'Te falta marcar un día: así no entras en la búsqueda.'
+            ? 'Te queda algún día sin marcar; con la respuesta completa entras en la búsqueda.'
             : 'Marca cuándo puedes. Es privado: el grupo no ve qué elegiste.'}
       </p>
       <a className="btn btn-primario" href={rutas.responder(espacioId, p.id)}>

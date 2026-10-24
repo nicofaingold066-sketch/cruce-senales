@@ -7,6 +7,8 @@ import { Icono } from '../components/Icono'
 import { vibrar } from '../lib/tacto'
 import { EditorCondiciones } from '../components/Condiciones'
 import type { PestanaProps } from './tabs'
+import { AyudaRetiro } from '../componentes-nuevos/AyudaRetiro'
+import { TomarDeCalendario } from '../friccion/Calendario'
 
 const ESTADO_COND: Record<string, string> = {
   sin_cargar: 'Sin cargar',
@@ -14,7 +16,7 @@ const ESTADO_COND: Record<string, string> = {
   completas: 'Completas',
 }
 
-export default function RespuestaTab({ p, viva, soloLectura }: PestanaProps) {
+export default function RespuestaTab({ p, viva, soloLectura, espacio }: PestanaProps) {
   const s = p.mi_situacion
   return (
     <div>
@@ -33,7 +35,7 @@ export default function RespuestaTab({ p, viva, soloLectura }: PestanaProps) {
         </Aviso>
       ) : null}
       <Interes p={p} viva={viva} soloLectura={soloLectura} />
-      <MisCondiciones p={p} viva={viva} soloLectura={soloLectura} />
+      <MisCondiciones p={p} viva={viva} soloLectura={soloLectura} demo={espacio?.demo === true} />
       <Retiro p={p} viva={viva} soloLectura={soloLectura} />
     </div>
   )
@@ -89,7 +91,7 @@ function Interes({ p, viva, soloLectura }: VivaProps) {
   )
 }
 
-function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
+function MisCondiciones({ p, viva, soloLectura, demo }: VivaProps & { demo: boolean }) {
   const [cond, setCond] = useState<Condiciones | null>(null)
   const [errorCarga, setErrorCarga] = useState<ApiError | null>(null)
   const claves = p.franjas.map((f) => f.clave)
@@ -134,6 +136,15 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
       {errorCarga && cond === null ? <ErrorCaja error={errorCarga} onReintentar={cargar} /> : null}
       {cond !== null ? (
         <>
+          {/* #90 de friccion: agenda ficticia, solo en el espacio demo (en un grupo real confunde). */}
+          {demo ? (
+            <TomarDeCalendario
+              franjas={p.franjas}
+              semilla={p.mi_situacion.miembro_id}
+              onTomar={(d) => b.reemplazar(d)}
+              deshabilitado={!s.puede.guardar_condiciones || soloLectura}
+            />
+          ) : null}
           <EditorCondiciones
             franjas={p.franjas}
             valor={b.draft}
@@ -175,7 +186,8 @@ function razonSinGuardar(p: EstadoPropuesta): string {
   if (s.retirado) return 'Te retiraste de esta propuesta y ya no puedes participar en ella.'
   if (p.plazo_vencido) return 'El plazo de aceptación ya cerró.'
   if ((p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado') && s.elegible_en_version) {
-    return 'Formas parte de la versión vigente; tu disponibilidad no puede cambiar mientras esté vigente.'
+    // Enmienda 13 (0046): con la versión vigente, la salida es "Así no puedo, pero sigo" (no retirarse).
+    return 'Estás en la versión vigente. Si esta fecha no te sirve, marca «Así no puedo, pero sigo» y podrás cambiar cuándo puedes.'
   }
   return 'Ahora no puedes cambiar tus condiciones en esta propuesta.'
 }
@@ -195,6 +207,7 @@ function Retiro({ p, viva, soloLectura }: VivaProps) {
       <p className="suave">
         Si ya no puedes, retirarte avisa al grupo. Es definitivo en esta propuesta: no podrás volver a participar en ella.
       </p>
+      <AyudaRetiro p={p} />
       {!confirmar ? (
         <Boton variante="secundario" onClick={() => setConfirmar(true)} disabled={soloLectura}>
           Retirarme de esta propuesta

@@ -1,23 +1,64 @@
 // Compartir fuera de CRUXE: enlace de invitación, WhatsApp y archivo de calendario (.ics).
 // Todo se arma en el teléfono con datos públicos del plan; nunca lleva condiciones de nadie.
 import { rutas } from './shell'
+import { fraseProposito } from '../friccion/propositos'
 
 export function enlaceInvitacion(codigo: string): string {
   return `${window.location.origin}${window.location.pathname}${rutas.unirse(codigo)}`
 }
 
-/** Quién puede venir a un plan (psico §3.3 y §8.5). Es una regla del grupo, nunca un dato de una persona. */
+/**
+ * Quién puede venir a un plan (psico §3.3 y §8.5; D2 y D3 aprobadas por Nico): una regla del grupo para esta vez, nunca un
+ * dato de una persona. Sin migración: va como marca corta al final del nombre del grupo o del título del plan
+ * ("Los del pádel · con parejas"); de ahí sale la frase de la invitación.
+ */
 export type QuienViene = 'grupo' | 'parejas' | 'abierta'
+export const OPCIONES_QUIEN_VIENE: { v: QuienViene; texto: string }[] = [
+  { v: 'grupo', texto: 'Solo el grupo' },
+  { v: 'parejas', texto: 'Con parejas' },
+  { v: 'abierta', texto: 'Abierta: cada uno puede traer a alguien' },
+]
+export const MARCA_QUIEN_VIENE: Record<QuienViene, string> = { grupo: 'solo el grupo', parejas: 'con parejas', abierta: 'abierta' }
 export const FRASE_QUIEN_VIENE: Record<QuienViene, string> = {
   grupo: 'Esta vez es solo el grupo.',
   parejas: 'Pueden venir con pareja.',
   abierta: 'Cada uno puede traer a alguien. Cuenta para los cupos.',
 }
+const SEPARADOR_MARCA = ' · '
+const RE_MARCA = /\s·\s(solo el grupo|con parejas|abierta)\s*$/i
 
-export function textoInvitacion(espacio: string, codigo: string, quienViene?: QuienViene): string {
+/** La marca al final del nombre o título, si la tiene. */
+export function quienVieneDe(texto: string | null | undefined): QuienViene | null {
+  const m = RE_MARCA.exec(texto ?? '')
+  if (!m) return null
+  const k = m[1].toLocaleLowerCase('es')
+  return (Object.keys(MARCA_QUIEN_VIENE) as QuienViene[]).find((q) => MARCA_QUIEN_VIENE[q] === k) ?? null
+}
+
+/** El nombre o título sin la marca (para mostrarlo limpio donde la regla ya se dice aparte). */
+export function sinQuienViene(texto: string): string {
+  return texto.replace(RE_MARCA, '').trim()
+}
+
+/** Suma la marca (reemplaza una anterior). Si no cabe en el tope del servidor (60 para el nombre del grupo), la deja fuera. */
+export function conQuienViene(texto: string, q: QuienViene | null, max = 60): string {
+  const base = sinQuienViene(texto)
+  if (!q) return base
+  const con = `${base}${SEPARADOR_MARCA}${MARCA_QUIEN_VIENE[q]}`
+  return con.length <= max ? con : base
+}
+
+export function cabeQuienViene(texto: string, q: QuienViene | null, max = 60): boolean {
+  return q == null || conQuienViene(texto, q, max) !== sinQuienViene(texto)
+}
+
+export function textoInvitacion(espacio: string, codigo: string, quienViene?: QuienViene | null, proposito?: string | null): string {
   // Fricción: decir de entrada que no hay cuenta y qué hacer. "Me interesa" lo ve el grupo: no se promete que todo es privado.
-  const regla = quienViene ? ` ${FRASE_QUIEN_VIENE[quienViene]}` : ''
-  return `Súmate a «${espacio}» en CRUXE: toca el enlace, elige tu nombre y marca cuándo puedes.${regla} Sin cuenta ni contraseña; tus condiciones solo las ve la app: ${enlaceInvitacion(codigo)}`
+  const q = quienViene ?? quienVieneDe(espacio)
+  const regla = q ? ` ${FRASE_QUIEN_VIENE[q]}` : ''
+  // Enmienda 14: "para jugar fútbol" cuando el grupo tiene propósito; libre o sin dato, el texto de siempre.
+  const para = fraseProposito(proposito)
+  return `Súmate a «${sinQuienViene(espacio)}» en CRUXE${para ? ` ${para}` : ''}: toca el enlace, elige tu nombre y marca cuándo puedes.${regla} Sin cuenta ni contraseña; tus condiciones solo las ve la app: ${enlaceInvitacion(codigo)}`
 }
 
 /** Enlace universal de WhatsApp con el texto ya escrito; la persona elige a quién mandarlo. */

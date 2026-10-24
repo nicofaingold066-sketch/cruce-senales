@@ -80,6 +80,6 @@ describe('enmienda 12: avisos personales de siguiente acción', { timeout: 120_0
 
   it('la lista cerrada de códigos y el catálogo no cambian', async () => {
     expect(CODIGOS_SIGUIENTE).toHaveLength(12)
-    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40
+    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40; E13: 41
   })
 })
