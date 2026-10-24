@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 01:15.
+Quien edita este archivo: solo esta sesión. Última actualización: 01:24.
 
 ## Tocando ahora
-- [01:14] Nada contra la base. CORRIENDO PRUEBA terminado (01:14). Escribo el informe de la v13.
+- [01:24] En espera, al final de la cola (después de la 0052, la tanda del coordinador y la 0053): reproducir en producción "Comprobar servicio" sin cambio visible y los dos 401 que vio el coordinador a las 01:14. Unos 2 minutos, demo propio, cero modelo.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
