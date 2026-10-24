@@ -3,6 +3,7 @@
 Quien edita este archivo: solo esta sesión. Última actualización: 02:26.
 
 ## Tocando ahora
+- **CORRIENDO PRUEBA (02:44)**: S6 Agente, prueba visual a 375/320/1280 con la función simulada (cero modelo), demo propio. Unos 4 minutos.
 - (vacío desde las 02:26; marca sacada.) Siguiente: brief de S6 del rediseño (lo hace frontend).
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
