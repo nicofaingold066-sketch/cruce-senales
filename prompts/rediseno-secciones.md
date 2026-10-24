@@ -58,3 +58,44 @@ Descripción textual de https://claude.ai/artifact/LqZBMzmLT187pv6duBpj6f (solo 
 - Barra superior con CRUXE, las pestañas Grupos · Planes · Perfil, el chip y el avatar.
 - Dos columnas, sin scroll: a la izquierda (7/12) la línea de aviso y "Tus grupos"; a la derecha (5/12) la card "Nuevo grupo" con "Crear un grupo", la card "Unirme con un código" desplegada y la línea de la demo.
 - Todas las demás pantallas en computadora: dos columnas donde tenga sentido (por ejemplo, en el plan, el bloque de resultado a la izquierda y las filas a la derecha), y sin scroll si entra.
+
+# Las demás pantallas (agregadas 02:58, filas 3 y 4 del lienzo; Nico las está validando)
+
+## Pantalla 9 · Portada sin sesión (S1, friccion)
+CRUXE + chip arriba. Título "Del «nos juntamos» al encuentro que ocurre." y una línea. La órbita chica (no media pantalla). Card "Entrar": "Sin contraseña ni correo. Tu sesión queda en este teléfono.", campo "¿Cómo te llaman tus amigos?" y botón primario "Entrar". Debajo, dos filas: "Probar la demo «Los del finde»" (Serás Tomi…) y "Tengo un código de invitación", que se despliega ahí mismo (código, tu nombre, Unirme). "Cómo funciona" se va de la portada.
+
+## Pantalla 10 · ¿Quién eres? (S1, friccion)
+"Tomi te invitó a" + nombre del grupo grande + el plan en una línea. "¿Quién eres?" con "Toca tu nombre y entras. Sin contraseña." Lista de nombres como botones grandes con avatar; al final "No estoy en la lista" punteado, que abre "Tu nombre" + "Entrar". Si un nombre ya lo tomó otro teléfono, se pregunta "¿Eres X?". Siguiente pantalla: ¿Cuándo puedes?. Objetivo: 3 toques de enlace a "respondí".
+
+## Pantalla 11 · Crear un grupo (S2, frontend)
+Hoja a pantalla completa con X y título. "Nombre del grupo" con botón de ícono + campo. "Tu nombre en el grupo". "Quiénes son": lista con avatar (tú · organizas), cada fila con ×, y una fila de entrada "Nombre, o varios separados por comas" + "Agregar"; nota "Al abrir el enlace, cada uno toca su nombre y listo." Fila plegada "Opciones · ¿para qué es el grupo? · ¿quién viene?". Primario "Crear grupo" y debajo "Después, directo a armar el primer plan."
+
+## Pantalla 12 · Pestaña Planes (S2, frontend; `Planes.tsx`)
+"Tus planes" y la línea "Primero lo que te toca. Después, lo que espera a otros. Al final, lo pasado." Cards por plan con el estado en mayúsculas chicas (TE TOCA CONFIRMAR con borde brasa; REUNIENDO RESPUESTAS; SE JUNTARON · fecha, punteada), el nombre del grupo a la derecha, fecha y título grandes, y una línea de avance. Pestañas abajo con Planes activa.
+
+## Pantalla 13 · Perfil (frontend, `Perfil.tsx`)
+Avatar grande, nombre y "Así te ven tus amigos · Cambiar". Un bloque con tres filas que abren lo que ya existe: "Mis gustos y presupuesto" (resumen privado), "Cómo llego" (zona, movilidad, viaje), "Permisos del agente" (usa mis gustos / invitaciones). Nota: "Lo tuyo vive acá, una sola vez. Dentro de un grupo solo se ve como resumen." Segundo bloque: "Tu sesión" (guardada en este teléfono · código para seguir en otro) y "Privacidad" (tres líneas). Al final, chico, "Salir de este teléfono". Pestañas abajo con Perfil activa.
+
+## Pantalla 14 · Respondiste (S5, friccion)
+Check grande con animación corta, "Respondiste", lo que marcaste en una línea ("Puedes los dos días."), "Cuando haya un plan, lo ves acá. Solo tú ves lo que marcaste." Card del grupo con "reuniendo respuestas", barra "3 de 6 respondieron" y "Quien organiza busca la opción cuando haya suficientes respuestas." Filas: "Cambiar mi respuesta" y "Avisar que me interesa (opcional · lo ve el grupo)". Botón "Listo" al pie.
+
+## Pantalla 15 · El plan · reuniendo respuestas (S4, ux-flujo)
+Mismo bloque de resultado que la pantalla 5, con estado REUNIENDO RESPUESTAS (gris), título grande, las dos fechas, avatares de quienes respondieron (los que faltan punteados) y "4 de 6 respondieron", tira de pasos en el primero, línea "Con 4 respuestas ya se puede buscar una opción. Quien no respondió no entra en esta versión." y el primario de quien organiza: "Buscar opción compatible" con "Lo decide el servidor con lo que cada uno marcó en privado." Filas: "Recordar a quien falta (WhatsApp)", "Tu respuesta: … · Cambiar", "Ficha del plan", y chico "Cancelar la propuesta". Invitado: mismo bloque sin botón, "Faltan 2 por responder. Te avisamos cuando haya plan."
+
+## Pantalla 16 · El plan · ¡Se juntan! (S4, ux-flujo)
+Bloque con fondo brasa suave y borde brasa: "¡SE JUNTAN!", fecha enorme, "14:00 · Parrilla del parque", título, avatares llenos de quienes van y "Van 4: Tomi, Luna, Mati y Caro", tira de pasos completa con Encuentro marcado. El Confeti existente se dispara una vez acá. Botones: "Ver el lugar en el mapa" (secundario grande), "Avisar al grupo (WhatsApp)", "Agregar a mi calendario (simulación)", "Ficha del plan · Historial". Chico: "Ya no puedo ir · si te bajas, el plan pasa a revisión y los demás vuelven a confirmar".
+
+## Pantalla 17 · El plan · en revisión (S4, ux-flujo)
+Bloque con borde punteado: "EN REVISIÓN · UNA PERSONA SE RETIRÓ", la fecha vieja tachada en gris, "ya no llega al mínimo (4)", avatares de quienes siguen y un "?" punteado, "3 siguen · faltan 1 para el mínimo", tira de pasos, línea "Nadie ve quién se retiró. Si hay otra fecha que sirva, sale una versión nueva y todos vuelven a confirmar: nada se hereda." Primario de quien organiza: "Buscar alternativa", con "Si no hay alternativa: «Sin opción compatible», sin bajar el mínimo." Invitado: sin botón, "Una persona se retiró. Quien organiza busca alternativa."; cuando sale la v2: "Te toca confirmar la versión 2".
+
+## Pantalla 18 · Simulación (S7, frontend)
+Sello SIMULACIÓN arriba. Título y una línea. Primario "Cargar las respuestas de los 5 de una vez". Después UNA fila por persona simulada (avatar, nombre, estado en una línea "A: Sí · B: Sí · aceptó la v1") con UN botón según lo que corresponde ahora: "Aceptar v1" solo con versión publicada, "Se baja" solo si aceptó, "Editar" si no respondió. Sin tarjetas apiladas.
+
+## Pantalla 19 · Historial (S7, frontend)
+Agrupado por versión: "VERSIÓN 2 · VIGENTE", "VERSIÓN 1 · YA NO VALE", "ANTES". Cada evento: hora a la izquierda, punto (lleno si es una confirmación), texto corto. "Se publicó la versión 2: dom 1 nov, 14:00. Las confirmaciones empiezan de cero." "Una persona se retiró. El plan pasó a revisión." Nunca qué marcó cada uno ni quién se retiró. Los eventos simulados llevan "· simulación".
+
+## Pantalla 20 · Agente social: revisar y aprobar (S6, agente-ia)
+Hoja con X, "Revisar antes de invitar", "Paso 1 de 2 · el agente propone, tú decides". Bloque "BORRADOR DEL AGENTE": título grande y filas Cuándo / Cupos / No puede faltar / Cierre / Invita a (avatares + "5 que aceptan invitaciones") y el mensaje de la IA entre comillas con "Lo redactó la IA". Línea: "Esto es exactamente lo que se va a invitar. Nadie queda confirmado." Primario "Aprobar e invitar" (los dos pasos reales, aprobar y publicar, con un toque; si algo cambió en el medio, se avisa y se vuelve a revisar). Secundario "Descartar el borrador". Después: "Invitaciones enviadas a 5". "Comprobar servicio" y "Comprobar recibo" desaparecen como botones.
+
+## Pantalla 21 · Invitación del agente, vista por un invitado (S6 + S4)
+Arriba del bloque del plan, una línea punteada: "El agente de Tomi te invita. Tomi revisó y aprobó este plan. Lo redactó la IA; no es una confirmación." Debajo, el plan de siempre en estado reuniendo, con "Te toca decir cuándo puedes. Es privado." y el primario "Responder en un toque". Filas: "No me interesa este plan (solo lo sabe el servidor)" y "Ficha del plan". Nada nuevo que aprender.
