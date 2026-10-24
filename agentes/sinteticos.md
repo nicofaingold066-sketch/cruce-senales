@@ -3,7 +3,6 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/sinteticos` (copia `/Users/macair/cruse/cruce-sinteticos`). Rutas: `tests/sinteticos/**`, `docs/usuarios-sinteticos.md`. Puerto de preview: 4186.
 
 ## Tocando ahora
-- CORRIENDO PRUEBA (23:09): psico-perfiles contra https://cruce-senales.vercel.app (sinteticos)
 - [21:06] `tests/sinteticos/escena.mjs`, `psico-perfiles.mjs`, `asi-no-puedo.mjs` y `docs/usuarios-sinteticos.md`. Las dos corridas nuevas esperan a que backend saque MIGRACION EN CURSO (E13); arrancan solas.
 - [19:58] sigo en `tests/sinteticos/**` y `docs/usuarios-sinteticos.md`; esperando que backend saque MIGRACION EN CURSO para correr.
 - [19:32] `tests/sinteticos/**` y `docs/usuarios-sinteticos.md` (guion Playwright de 6 perfiles ficticios en un grupo nuevo, no el demo; hallazgos por gravedad).
