@@ -80,15 +80,16 @@ export function ConsentimientoInvitaciones({ espacioId, inicial, soloLectura }: 
       </p>
       {confirmado === null ? <Aviso tono="info">Las invitaciones aún no están disponibles en esta conexión. Puedes seguir guardando tus preferencias.</Aviso> : null}
       <div ref={refError} tabIndex={-1}>
-        {error ? <ErrorCaja error={error} onReintentar={() => void (confirmado === null ? comprobar() : guardar())} /> : null}
+        {/* Repetir la última operación: un fallo de lectura nunca autoriza guardar. */}
+        {error ? <ErrorCaja error={error} onReintentar={() => void (operacion === 'leer' ? comprobar() : guardar())} /> : null}
       </div>
       {aviso ? <Aviso tono={pendiente ? 'info' : 'ok'}>{aviso}</Aviso> : null}
       <p className="agente-sr" aria-live="polite">{ocupado ? operacion === 'guardar' ? 'Guardando el permiso de invitaciones…' : 'Consultando el permiso de invitaciones…' : ''}</p>
-      <Boton onClick={() => void guardar()} ocupado={ocupado && operacion === 'guardar'} ocupadoTexto="Guardando…" disabled={soloLectura || ocupado || confirmado === null || (!pendiente && !sinConfirmar && !error)}>
+      <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto={operacion === 'guardar' ? 'Guardando…' : 'Consultando…'} disabled={soloLectura || confirmado === null}>
         Guardar permiso de invitaciones
       </Boton>
-      {error || sinConfirmar || confirmado === null ? (
-        <Boton onClick={() => void comprobar()} ocupado={ocupado && operacion === 'leer'} ocupadoTexto="Comprobando…" disabled={soloLectura || ocupado}>Comprobar permiso de invitaciones</Boton>
+      {error || sinConfirmar || confirmado === null || operacion === 'leer' ? (
+        <Boton onClick={() => void comprobar()} ocupado={ocupado} ocupadoTexto={operacion === 'leer' ? 'Comprobando…' : 'Guardando…'} disabled={soloLectura}>Comprobar permiso de invitaciones</Boton>
       ) : null}
     </section>
   )
