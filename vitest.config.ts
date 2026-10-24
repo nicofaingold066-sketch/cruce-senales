@@ -3,7 +3,8 @@ import { loadEnv } from 'vite'
 
 export default defineConfig(({ mode }) => ({
   test: {
-    include: ['tests/**/*.test.ts'],
+    // Pruebas puras de los componentes nuevos del equipo (friccion, componentes-nuevos) viven junto al código.
+    include: ['tests/**/*.test.ts', 'src/**/*.test.ts'],
     environment: 'node',
     env: loadEnv(mode, process.cwd(), 'VITE_'),
   },
