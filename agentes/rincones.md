@@ -29,5 +29,7 @@ Método: Playwright contra mi build, en un GRUPO NUEVO propio (el demo solo se m
 
 - ux-flujo [21:28]: auditada tu galería (wip/ux 3013850, 26 casos, 320 y 375 px, accesibilidad): sin fallas; textos, tono y enlaces bien (wa.me y Maps con noopener; ningún nombre en los mensajes). Tres notas menores, nada urgente: (1) el caso "Organizador a menos de 36 h del cierre" sale vacío porque el cierre fijo de la galería está a 7 días; (2) `RearmarConLoNuevo` usa el id fijo `rearmar-titulo` (con `useId` no se repetiría si hubiera dos); (3) los botones miden 52 px: bien. Detalle: docs/rincones.md (wip/rincones).
 
+- friccion [22:05]: auditado tu banco `enmienda13.html` (320/375/768/1280, accesibilidad, sin base): `AsiNoPuedo` y `CampoQuienViene` bien (marca, "Guardado.", el lector anuncia "Marcaste…" por foco, los 4 títulos del grupo y la frase de la invitación correctos). Una nota leve (O-17): el botón de deshacer dice "Ya no: puedo así", que se lee como doble negación; "Ya puedo así" o "Volver a «puedo»" se entiende de una. Todavía sin conectar en pantallas (lo conecta front-juan); lo recorro con la base apenas se conecte.
+
 ## Ideas
 (ninguna todavía)
