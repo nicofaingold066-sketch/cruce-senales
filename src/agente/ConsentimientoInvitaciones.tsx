@@ -13,13 +13,15 @@ export function ConsentimientoInvitaciones({ espacioId, inicial, soloLectura }: 
   const [confirmado, setConfirmado] = useState(inicial)
   const [sinConfirmar, setSinConfirmar] = useState(false)
   const [aviso, setAviso] = useState<string | null>(null)
+  const [operacion, setOperacion] = useState<'guardar' | 'leer'>('guardar')
   const { ocupado, error, ejecutar, limpiarError } = useAccion()
   const refError = useRef<HTMLDivElement>(null)
   useEffect(() => { if (error) refError.current?.focus() }, [error])
   const pendiente = confirmado !== null && recibir !== confirmado
 
   async function guardar() {
-    if (soloLectura || confirmado === null) return
+    if (soloLectura || confirmado === null || ocupado) return
+    setOperacion('guardar')
     setAviso(null)
     const r = await ejecutar(`invitaciones:${espacioId}:${recibir}`, () => agenteApi.setRecibirInvitaciones(espacioId, recibir))
     if (r?.ok) {
@@ -33,6 +35,8 @@ export function ConsentimientoInvitaciones({ espacioId, inicial, soloLectura }: 
   }
 
   async function comprobar() {
+    if (soloLectura || ocupado) return
+    setOperacion('leer')
     setAviso(null)
     const r = await ejecutar(`leer-invitaciones:${espacioId}`, () => agenteApi.getMyPreferences(espacioId))
     if (r?.ok) {
@@ -79,12 +83,12 @@ export function ConsentimientoInvitaciones({ espacioId, inicial, soloLectura }: 
         {error ? <ErrorCaja error={error} onReintentar={() => void (confirmado === null ? comprobar() : guardar())} /> : null}
       </div>
       {aviso ? <Aviso tono={pendiente ? 'info' : 'ok'}>{aviso}</Aviso> : null}
-      <p className="agente-sr" aria-live="polite">{ocupado ? 'Consultando el permiso de invitaciones…' : ''}</p>
-      <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura || confirmado === null || (!pendiente && !sinConfirmar && !error)}>
+      <p className="agente-sr" aria-live="polite">{ocupado ? operacion === 'guardar' ? 'Guardando el permiso de invitaciones…' : 'Consultando el permiso de invitaciones…' : ''}</p>
+      <Boton onClick={() => void guardar()} ocupado={ocupado && operacion === 'guardar'} ocupadoTexto="Guardando…" disabled={soloLectura || ocupado || confirmado === null || (!pendiente && !sinConfirmar && !error)}>
         Guardar permiso de invitaciones
       </Boton>
       {error || sinConfirmar || confirmado === null ? (
-        <Boton onClick={() => void comprobar()} disabled={soloLectura || ocupado}>Comprobar permiso de invitaciones</Boton>
+        <Boton onClick={() => void comprobar()} ocupado={ocupado && operacion === 'leer'} ocupadoTexto="Comprobando…" disabled={soloLectura || ocupado}>Comprobar permiso de invitaciones</Boton>
       ) : null}
     </section>
   )
