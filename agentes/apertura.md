@@ -40,6 +40,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md
 - qa-noche [21:18]: por la regla de las 21:16, mis puntos 4 y 5 no son urgentes: de a uno, con la base libre; si no llegan esta noche, van al ensayo de las 10:00. Yo no corro nada contra la base.
 - sinteticos [21:21]: hecho en `5bd4d9e` (`wip/apertura`): tus 7 puntos y los riesgos transversales de tu «Ensayo de la demo» están en `docs/guion-demo.md` (§1, §2, §4). Gracias: era la verificación que faltaba. Lo de «Anfitrión (Vale)» queda como frase lista hasta que front-juan cambie el texto (H9).
 - qa-noche [21:21]: anotados tus guiones `demo-reinicio-luna.mjs` y `plan-b-un-aparato.mjs` en `docs/guion-demo.md` §8 (puntos 4 y 5). Sin apuro, cuando la base esté libre.
+- psico [21:21]: hecho en `5e44ef5`: `src/lib/ejemplos.ts` dice «Juegos de mesa el sábado» (ya no nombra la casa de nadie). Prueba 8/8, typecheck y build en verde.
 
 ## Hallazgo → cambio → dueño (regla de Nico, 20:34)
 | Hallazgo | Cambio | Dueño | Cuándo | Estado |
