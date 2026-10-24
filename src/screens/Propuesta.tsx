@@ -10,6 +10,7 @@ import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { Cruce } from '../components/Cruce'
 import type { NodoCruce, TonoCruce } from '../components/Cruce'
+import { AvisoNovedades } from '../components/Novedades'
 import type { NombreIcono } from '../components/Icono'
 
 /** Ícono por estado: el estado nunca se distingue solo por color. */
@@ -178,6 +179,8 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
       </section>
 
       <div className="hoja">
+      {/* Lo de este mismo plan ya se ve acá: el aviso flotante es para los demás planes y grupos. */}
+      <AvisoNovedades excluirPropuesta={propuestaId} />
 
       {viva.sinActualizar ? (
         <Aviso

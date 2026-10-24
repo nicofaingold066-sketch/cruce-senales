@@ -2,6 +2,7 @@
 // Se importan uno por uno para que el paquete solo lleve los que se usan.
 import {
   Beer,
+  Bell,
   Cake,
   CalendarClock,
   CalendarDays,
@@ -39,6 +40,7 @@ import {
   UsersRound,
   UtensilsCrossed,
   Volleyball,
+  X,
   Zap,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -83,6 +85,9 @@ const ICONOS = {
   paseo: Mountain,
   cierre: CalendarClock,
   anfitrion: Crown,
+  // Novedades del grupo (avisos dentro de CRUXE) y cerrar un aviso.
+  campana: Bell,
+  cerrar: X,
 } satisfies Record<string, LucideIcon>
 
 export type NombreIcono = keyof typeof ICONOS

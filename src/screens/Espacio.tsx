@@ -9,6 +9,7 @@ import { Avatar, AvatarPila, Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } 
 import { Icono } from '../components/Icono'
 import { PlanVivo } from '../components/PlanVivo'
 import { Tablero } from '../components/Tablero'
+import { AvisoNovedades } from '../components/Novedades'
 import { enlaceInvitacion, textoInvitacion, urlWhatsApp } from '../lib/compartir'
 // El panel del agente va en su propia parte del paquete (mejora #14): se descarga solo al abrir el bloque.
 const AgentePanel = lazy(() => import('../agente/AgentePanel').then((m) => ({ default: m.AgentePanel })))
@@ -171,6 +172,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
       </section>
 
       <div className="hoja">
+        <AvisoNovedades />
         {aviso ? (
           <Aviso tono="ok" accion={<button type="button" className="btn btn-secundario btn-chico" onClick={() => setAviso(null)}>Entendido</button>}>
             {aviso}
