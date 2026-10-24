@@ -167,10 +167,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const [enCurso, setEnCurso] = useState(false)
 
   const yo = espacio?.miembros.find((m) => m.es_yo) ?? null
-  // Atajos de actividad según el nombre del grupo (#92, apertura): «Los del pádel» ve Pádel primero; el demo
-  // («Los del finde») no nombra una actividad y sale en el orden general. El ejemplo del placeholder sale del id del
-  // grupo: no cambia al escribir.
-  const actividades = useMemo(() => atajosParaEspacio(espacio?.nombre ?? '', espacio?.familia), [espacio?.nombre, espacio?.familia])
+  // El caso Makana ofrece Parque primero; los demás grupos conservan el orden por nombre y familia.
+  // El ejemplo del placeholder sale del id del grupo y no cambia al escribir.
+  const actividades = useMemo(() => atajosParaEspacio(esDemoMakana(espacio) ? 'parque' : espacio?.nombre ?? '', espacio?.familia), [espacio?.nombre, espacio?.familia, espacio?.demo_caso])
   const ej = useMemo(() => ejemploPorSemilla(espacioId), [espacioId])
   useIdentidad(espacio?.nombre ?? null, yo?.nombre ?? null, espacio ? (espacio.mi_rol === 'organizador' ? 'organizador' : 'miembro') : null)
 

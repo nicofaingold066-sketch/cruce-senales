@@ -53,3 +53,13 @@ Usar la frase «el sistema tuvo en cuenta una restricción sin exponer a la pers
 La demo no acredita autonomía continua, reparación automática, una integración con Makana ni resultados comerciales. Makana es una hipótesis de piloto voluntario para evaluar aceptación de invitaciones, encuentros comprobados después, recuperación de planes y valoración voluntaria de la coordinación. El clima es opcional y se identifica como real, simulado o no disponible según la respuesta efectiva.
 
 Las [bases oficiales](https://hack.makana.cl/bases.html), versión 1.5 del 19 de octubre, fijan el cierre de entrega para el sábado 24 a las 13:00 de Santiago. Eso no establece el turno individual de exposición.
+
+## Comprobaciones de este cambio
+
+- PostgreSQL 18.6 local mediante PGlite 0.5.11: las 57 migraciones aplicaron y pasó el recorrido descrito en los pasos 6–9. Comprobados permisos 42/0, privacidad entre perfiles, opt-ins separados, idempotencia y aislamiento. La baja desde tres aceptaciones conserva dos y no fuerza una revisión. Reinicio, repetición de oportunidad social y rollback ante fallo controlado también comprobados. Una demo anterior sembrada antes de 0057 conserva exactamente su grupo, preferencias y plan al actualizar.
+- Navegador con Auth/RPC interceptados: app y componentes reales a 320, 375, 768 y 1280 px; propuesta del parque, payload, siete nombres, Gabriela pendiente y respuestas individuales. Sin red externa, errores ni desbordes; contraste del título de Nuevo plan ≥4,5:1. Este test no es una ejecución del backend desplegado.
+- Typecheck y build: correctos. Selección de pruebas puras: 89 aprobadas. Las seis pruebas HTTP de `demo-makana.test.ts` quedan omitidas fuera de un Supabase **local** habilitado expresamente; no se cuentan como aprobadas.
+- El primer intento de una regresión histórica de sesiones no tenía variables de entorno de prueba y fue interrumpido; el siguiente encontró su puerto fijo ocupado por otra sesión. No se alteró ese proceso ajeno. La prueba nueva usa un puerto libre y configuración ficticia aislada.
+- No se llamó a un modelo ni se consultó clima. El ciclo social local se probó por SQL sin inferencia y sin aceptar invitaciones automáticamente.
+
+**Activación pendiente:** el conector de esta sesión no tiene acceso al proyecto Supabase y Vercel deniega el equipo configurado. No se aplicó 0057 remotamente ni se publicó un cliente dependiente de ella. Entregar la rama al coordinador y completar el orden base → cliente → ensayo con la aprobación específica de producción exigida por el pedido. No marcar la demo en producción como lista basándose en estos resultados locales.

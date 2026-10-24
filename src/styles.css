@@ -271,7 +271,8 @@ svg {
   white-space: nowrap;
 }
 .barra-identidad {
-  flex: none;
+  flex: 0 1 auto;
+  min-width: 0;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -291,6 +292,7 @@ svg {
 .barra-rol {
   font-size: 0.72rem;
   color: var(--noche-suave);
+  overflow-wrap: anywhere;
 }
 .barra-identidad-texto {
   display: flex;
