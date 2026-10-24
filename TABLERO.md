@@ -3,6 +3,8 @@
 Actualizado: sábado 24 oct, 11:29 Santiago (reloj).
 
 
+- **[12:08] BASE SATURADA.** Desde las 11:52 Supabase responde con «statement timeout» y «Timed out acquiring connection from connection pool»; entrar anónimo tarda 9–15 s. No hay bloqueos ni consultas activas: es el cómputo Nano (plan Free) agotado tras la carga de la mañana. Hasta nuevo aviso nadie corre nada contra la base. Publicado `main` = 234daea (12:06, Vercel READY): tarjeta de GRU con más aire (solo CSS, frontend 4127cd0) sobre e1d7e19; pruebas puras 125/125, tsc y build en verde; sin tanda contra la base por la saturación.
+
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
 
