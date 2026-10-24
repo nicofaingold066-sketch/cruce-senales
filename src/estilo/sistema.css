@@ -256,7 +256,8 @@ small,
 .chip-actividad:active,
 .pestana:active,
 .plan-vivo:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
+  box-shadow: var(--sombra-flota);
 }
 
 /* 2. Aparecer: las tarjetas y las filas entran al montarse, escalonadas (hasta ocho). `.sd-aparecer` para cualquier
@@ -382,6 +383,139 @@ small,
   .sd-exito,
   .sd-pasos > .sd-paso-activo::before,
   .sd-pulso {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ más movimiento (pedido de Nico, 02:40) */
+
+@keyframes sd-respira {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  40% {
+    box-shadow: 0 0 0 6px var(--brasa-suave);
+  }
+}
+@keyframes sd-latido {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes sd-hoja-sube {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes sd-velo {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 6. El resultado del plan "respira" una vez cuando cambia de estado (la sección pone la clase con key={estado}). */
+.sd-respira {
+  animation: sd-respira 900ms ease-out 1;
+}
+/* 7. Confirmado: el botón o el chip "Confirmado ✓" late una vez; el Confeti que ya existe queda para «¡Se juntan!». */
+.sd-confirmado {
+  animation: sd-latido 360ms var(--curva) 1;
+}
+/* 8. Chips al seleccionarse: el activo late apenas (sin mover el layout). */
+.chip-activo,
+.opcion-activa,
+.chip.chip-activo {
+  animation: sd-latido 180ms var(--curva) 1;
+}
+/* 9. Hoja desde abajo (bottom sheet): para el «+» de Mi espacio y cualquier pregunta de dos opciones.
+   <div class="sd-velo"> detrás y <div class="sd-hoja-modal" role="dialog" aria-modal="true"> adelante. */
+.sd-velo {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(0, 0, 0, 0.45);
+  animation: sd-velo var(--dur-2) ease both;
+}
+.sd-hoja-modal {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 71;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: var(--e-4) var(--margen) max(var(--e-5), env(safe-area-inset-bottom));
+  border-radius: var(--r-l) var(--r-l) 0 0;
+  background: var(--hoja);
+  box-shadow: var(--sombra-hoja);
+  animation: sd-hoja-sube 240ms var(--curva) both;
+}
+@media (min-width: 960px) {
+  .sd-hoja-modal {
+    left: 50%;
+    right: auto;
+    width: 560px;
+    margin-left: -280px;
+  }
+}
+
+/* ------------------------------------------------------------------ niveles (Nico y Juan, 02:15: "no sabemos dónde estamos")
+   Mi espacio: fondo claro, sin escena oscura, título "Tus grupos". Grupo: escena oscura con el ícono del grupo.
+   Plan: la escena oscura con el nombre del grupo arriba (volver) y el resultado primero. */
+
+.icono-grupo {
+  --ig: 48px;
+  flex: none;
+  width: var(--ig);
+  height: var(--ig);
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--ig-c, var(--noche-3));
+  color: #fff;
+  font-size: var(--t-subtitulo);
+  font-weight: var(--p-pantalla);
+  letter-spacing: 0.02em;
+}
+.icono-grupo-chico {
+  --ig: 40px;
+  border-radius: 12px;
+  font-size: var(--t-cuerpo);
+}
+
+/* Aire (pedido 02:40): 20 px a los lados en el teléfono y 40 en la computadora; 12 entre tarjetas, 24 entre bloques. */
+:root {
+  --margen: 20px;
+  --entre-tarjetas: 12px;
+  --entre-bloques: 24px;
+}
+@media (min-width: 960px) {
+  :root {
+    --margen: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sd-respira,
+  .sd-confirmado,
+  .chip-activo,
+  .opcion-activa,
+  .chip.chip-activo,
+  .sd-velo,
+  .sd-hoja-modal {
     animation: none;
   }
 }
