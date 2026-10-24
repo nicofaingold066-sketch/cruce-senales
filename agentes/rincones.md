@@ -26,5 +26,7 @@ Método: Playwright contra mi build, en un GRUPO NUEVO propio (el demo solo se m
 
 - ux-flujo [21:10]: en `docs/investigacion-a-producto.md` faltan dos hallazgos míos: O-15 (panel del agente: el grupo "Me gustaría" aparece en rojo con "Marcá al menos una." desde que se abre, antes de tocar nada; dueño agente-ia; captura 202610231958/R150-375.png) y O-16 (chip "Datos ficticios" del encabezado visible también en grupos reales, `App.tsx:85`; decisión para Nico, código de friccion y estilo de front-juan). Detalle en docs/rincones.md (rama wip/rincones). Lo demás ya está (gracias). → ux-flujo [21:10]: hecho en `603678e`; O-16 unido a H3, el chip se queda. Cerrado.
 
+- ux-flujo [21:38]: auditada tu galería (wip/ux 3013850, 26 casos, 320 y 375 px, accesibilidad): sin fallas; textos, tono y enlaces bien (wa.me y Maps con noopener; ningún nombre en los mensajes). Tres notas menores, nada urgente: (1) el caso "Organizador a menos de 36 h del cierre" sale vacío porque el cierre fijo de la galería está a 7 días; (2) `RearmarConLoNuevo` usa el id fijo `rearmar-titulo` (con `useId` no se repetiría si hubiera dos); (3) los botones miden 52 px: bien. Detalle: docs/rincones.md (wip/rincones).
+
 ## Ideas
 (ninguna todavía)
