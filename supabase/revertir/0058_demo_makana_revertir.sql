@@ -20,6 +20,25 @@ begin
   end loop;
 end $$;
 
+-- 3b. La migración RENOMBRÓ las versiones previas a *_antes_makana (y movió las públicas al esquema cruce):
+--     restauradas las originales en 3, estas copias sobran.
+drop function if exists cruce.espacio_json_antes_makana(uuid, uuid);
+drop function if exists cruce.vista_propuesta_antes_makana(uuid, uuid);
+drop function if exists cruce.list_my_spaces_antes_makana();
+drop function if exists cruce.get_my_preferences_antes_makana(uuid);
+drop function if exists cruce.save_my_preferences_antes_makana(uuid, jsonb);
+drop function if exists cruce.simulate_save_preferences_antes_makana(uuid, uuid, jsonb);
+drop function if exists cruce.add_simulated_member_antes_makana(uuid, text);
+drop function if exists cruce.sembrar_preferencias_demo_antes_makana(uuid);
+drop function if exists cruce.mensaje_antes_makana(text, text);
+drop function if exists cruce.simulate_load_case_antes_makana(uuid, uuid);
+drop function if exists cruce.reset_demo_antes_makana(uuid, uuid);
+revoke all on all functions in schema cruce from public, anon, authenticated;
+grant execute on function public.list_my_spaces(), public.get_my_preferences(uuid),
+  public.save_my_preferences(uuid, jsonb), public.simulate_save_preferences(uuid, uuid, jsonb),
+  public.add_simulated_member(uuid, text), public.simulate_load_case(uuid, uuid), public.reset_demo(uuid, uuid)
+  to authenticated;
+
 -- 4. Índice único: el original (un demo por usuario), sin la columna demo_caso.
 drop index if exists cruce.espacios_un_demo_por_usuario_y_caso_uq;
 alter table cruce.espacios drop column if exists demo_caso;
