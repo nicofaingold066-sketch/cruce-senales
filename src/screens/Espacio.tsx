@@ -11,6 +11,7 @@ import { Icono } from '../components/Icono'
 import { PlanVivo } from '../components/PlanVivo'
 import { ActividadGrupo } from '../actividad-grupo/ActividadGrupo'
 import { SalirGrupo } from '../actividad-grupo/SalirGrupo'
+import { etiquetaPlan } from '../componentes-nuevos/plan/accion'
 import { textoInvitacion, urlWhatsApp } from '../lib/compartir'
 import '../estilo/seccion-s2.css'
 // El panel del agente va en su propia parte del paquete (mejora #14): se descarga solo al abrir el bloque.
@@ -340,7 +341,7 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
                 <li key={p.id}>
                   <a href={rutas.propuesta(espacioId, p.id)}>
                     <span>{p.titulo}</span>
-                    <span className="suave">{p.estado_etiqueta}</span>
+                    <span className="suave">{etiquetaPlan(p.estado, p.estado_etiqueta)}</span>
                   </a>
                 </li>
               ))}

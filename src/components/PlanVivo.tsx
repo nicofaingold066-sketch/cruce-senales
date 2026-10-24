@@ -1,3 +1,4 @@
+import { etiquetaPlan } from '../componentes-nuevos/plan/accion'
 import type { PropuestaResumen } from '../lib/types'
 import { CODIGOS_SIGUIENTE } from '../lib/types'
 import { rutas } from '../lib/shell'
@@ -26,7 +27,7 @@ export function PlanVivo({ p, espacioId, espacioNombre }: { p: PropuestaResumen;
     <a className={`plan-vivo plan-vivo-${p.estado} ${turno ? 'plan-vivo-turno' : ''}`} href={rutas.propuesta(espacioId, p.id)}>
       {espacioNombre ? <span className="pv-espacio">{espacioNombre}</span> : null}
       <span className="pv-arriba">
-        <InsigniaEstado estado={p.estado} etiqueta={p.estado_etiqueta} />
+        <InsigniaEstado estado={p.estado} etiqueta={etiquetaPlan(p.estado, p.estado_etiqueta)} />
         {conVersion ? <span className="etiqueta num">Versión {p.version}</span> : null}
       </span>
       {/* Mismo nombre de transición que el título de la pantalla del plan: el título "viaja" al abrirlo. */}

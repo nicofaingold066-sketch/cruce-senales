@@ -243,3 +243,55 @@ body:has(.gru-asistente[data-reserva='true']) main#contenido {
   .gru-asistente[data-animar='true'] { transition: none; }
   .gru-asistente-panel { animation: none; }
 }
+
+/* ---- Teléfono e iPad vertical (< 768 px), pedido de Nico vía coordinador (09:09): GRU queda anclado abajo a la
+   derecha, encima de la barra de pestañas o de la acción fija, y el contenido reserva ese alto al final para que
+   GRU nunca tape texto cuando se llega abajo. El cálculo de huecos (posición con transform) queda para computadora.
+   Solo el personaje recibe toques; el panel se abre hacia arriba. */
+@media (max-width: 767px) {
+  .gru-asistente {
+    top: auto;
+    left: auto;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    transform: none !important;
+    pointer-events: none;
+  }
+  .gru-asistente-boton,
+  .gru-asistente-panel {
+    pointer-events: auto;
+  }
+  body:has(.nav-inferior) .gru-asistente {
+    bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+  /* Nuevo plan lleva su primario fijo al pie: GRU sube por encima. (El del plan va dentro del bloque, no al pie.) */
+  body:has(.vista-s3) .gru-asistente {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+  /* Abajo el fondo es claro: el nombre va oscuro y legible. */
+  .gru-asistente[data-claro='true'] .gru-asistente-boton {
+    color: #2c2016;
+  }
+  .gru-asistente[data-claro='true'] .gru-asistente-nombre {
+    text-shadow: 0 1px 3px rgb(255 255 255 / 80%);
+  }
+  .gru-asistente .gru-asistente-panel,
+  .gru-asistente[data-izquierda='true'] .gru-asistente-panel {
+    top: auto;
+    bottom: calc(100% + 10px);
+    left: auto;
+    right: 0;
+    max-height: calc(100dvh - var(--barra-alto, 60px) - 180px - env(safe-area-inset-bottom));
+    transform-origin: bottom right;
+  }
+  /* Reserva al pie: lo último de cada pantalla queda por encima de GRU. */
+  main#contenido {
+    padding-bottom: 96px;
+  }
+  main#contenido.con-nav {
+    padding-bottom: calc(162px + env(safe-area-inset-bottom));
+  }
+  body:has(.gru-asistente[data-reserva='true']) main#contenido {
+    padding-top: 0;
+  }
+}
