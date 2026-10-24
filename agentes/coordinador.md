@@ -3,6 +3,7 @@
 Quien edita este archivo: solo el coordinador. Última actualización: 10:57 (hora real).
 
 ## Tocando ahora
+- CORRIENDO PRUEBA (01:52) agente social en el navegador, pedido de Nico: demo nueva, 2 llamadas al modelo (coordinador)
 - `docs/contrato*.md`, `AGENTS.md`, `CLAUDE.md`, `docs/tareas/**`, `docs/contexto-proyecto.md`
 - Rama `coordinacion` (tablero, mapa de dueños)
 
