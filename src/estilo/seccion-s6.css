@@ -1,4 +1,4 @@
-/* Estilos propios del panel del agente (sección S6 del rediseño). Tokens en src/estilo/sistema.css: cuatro tamaños
+/* Sección S6 Agente del rediseño (antes src/agente/agente.css; la importa src/agente/AgentePanel.tsx). Tokens en src/estilo/sistema.css: cuatro tamaños
    (--t-titulo, --t-subtitulo, --t-cuerpo, --t-nota), toques de --toque (44 px), espacios --e-1…--e-6.
    Lo demás viene de src/styles.css. */
 
@@ -130,7 +130,7 @@
 }
 /* Pasos del agente: los del sistema (sd-pasos), con el texto en cuerpo para que se lea el proceso. */
 .agente-pasos .sd-pasos > li,
-.agente-trabajando > li {
+.agente-trabajando .sd-pasos > li {
   font-size: var(--t-cuerpo);
   line-height: var(--lh-cuerpo);
 }
@@ -228,4 +228,43 @@
   margin-top: var(--e-3);
   padding-top: var(--e-2);
   border-top: 1px dashed var(--linea);
+}
+
+/* Mockup de Nico (pantalla 7): preferencias en una línea, la recomendada grande, "trabajando" con pasos. */
+.agente-linea {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.agente-prefs-linea > * + * {
+  margin-top: var(--e-2);
+}
+.agente-recomendada {
+  margin: var(--e-3) 0;
+  padding: var(--e-4);
+  border-radius: var(--r-m);
+  background: var(--relleno);
+}
+.agente-recomendada > * {
+  margin: 0;
+}
+.agente-recomendada > * + * {
+  margin-top: var(--e-2);
+}
+.agente-recomendada-nombre {
+  overflow-wrap: anywhere;
+}
+.agente-trabajando-titulo {
+  margin: 0 0 var(--e-2);
+  font-weight: var(--p-boton);
+}
+/* "Que el agente invite al grupo por mí": un enlace secundario, no una sección más. */
+#agente-avanzado,
+.agente-plegable-seccion:has(> [aria-controls='agente-avanzado']) {
+  border-top: 0;
+}
+.agente-plegable-boton[aria-controls='agente-avanzado'] .agente-plegable-titulo {
+  color: var(--info);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: var(--p-boton);
 }

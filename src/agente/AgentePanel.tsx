@@ -10,7 +10,7 @@ import { franjaTexto } from '../lib/format'
 import { irA, rutas } from '../lib/shell'
 import type { ApiError } from '../lib/types'
 import { Aviso, Boton, Card, Cargando, ErrorCaja, RotuloSimulacion } from '../components/ui'
-import './agente.css'
+import '../estilo/seccion-s6.css'
 import { ConsentimientoInvitaciones } from './ConsentimientoInvitaciones'
 import { AgenteSocial } from './AgenteSocial'
 import {
@@ -269,25 +269,17 @@ function MisPreferencias({ espacioId, soloLectura, primario }: { espacioId: stri
 
   if (!editando) {
     const gustos = actividades.filter((a) => borrador.me_gustaria.includes(a.clave)).map((a) => a.etiqueta)
-    const filas: [string, string][] = [
-      ['Me gustaría', gustos.length > 0 ? gustos.join(', ') : 'sin marcar'],
-      ['Presupuesto este finde', textoDe(PRESUPUESTO, borrador.presupuesto) ?? ''],
-      ['Ritmo y ambiente', [textoDe(ENERGIA, borrador.energia), textoDe(AMBIENTE, borrador.ambiente)].filter(Boolean).join(' · ')],
-      ['Lugar', textoDe(LUGAR, borrador.lugar) ?? ''],
-      ['Cómo llegas', resumenViaje],
-      ['Permisos', resumenPermisos],
-    ]
+    // Mockup de Nico (pantalla 7): las preferencias en una línea con "Editar". "Presupuesto este finde" queda en la
+    // línea porque lo buscan los guiones de sinteticos al abrir el panel.
+    const linea = [
+      gustos.length > 0 ? gustos.join(', ') : 'Sin actividades marcadas',
+      `Presupuesto este finde: ${(textoDe(PRESUPUESTO, borrador.presupuesto) ?? '').toLocaleLowerCase('es')}`,
+      viaje.length > 0 ? viaje.join(', ') : null,
+    ].filter(Boolean).join(' · ')
     return (
-      <div className="bloque">
-        {privacidad}
-        <dl className="agente-resumen">
-          {filas.map(([k, v]) => (
-            <div key={k}>
-              <dt>{k}</dt>
-              <dd>{v}</dd>
-            </div>
-          ))}
-        </dl>
+      <div className="bloque agente-prefs-linea">
+        <p className="agente-linea">{linea}</p>
+        <p className="suave">Solo las ves tú. Permisos: {resumenPermisos}.</p>
         {aviso ? <Aviso tono="ok">{aviso}</Aviso> : null}
         <p className="agente-sr" aria-live="polite">
           {aviso ?? ''}
@@ -516,6 +508,8 @@ function BorradorTarjeta({
   personasGrupo: number | null
 }) {
   const [seleccion, setSeleccion] = useState(b.elegida_id)
+  const [verOtras, setVerOtras] = useState(false)
+  const [verPasos, setVerPasos] = useState(false)
   const elegida = b.candidatas.find((c) => c.id === seleccion) ?? b.candidatas[0]
   const esLaDestacada = elegida.id === b.elegida_id
   const [titulo, setTitulo] = useState(elegida.titulo)
@@ -550,48 +544,30 @@ function BorradorTarjeta({
   return (
     <div className="bloque agente-resultado sd-aparecer">
       <h3 className="agente-resultado-titulo">Opciones del agente</h3>
-      <p className="suave">Ideas con las preferencias habilitadas. La disponibilidad y la confirmación se resuelven después, para una versión del plan.</p>
       {b.quorum ? <p className="suave agente-quorum">{textoQuorum(b.quorum)}</p> : null}
-      <fieldset className="grupo agente-candidatas">
-        <legend>
-          {b.candidatas.length > 1 ? `${b.candidatas.length} opciones` : 'Opción'} para {b.personas_consideradas} personas
-        </legend>
-        <p className="suave agente-quienes">{quienes}</p>
-        <div className="opciones">
-          {b.candidatas.map((c) => {
-            const id = `agente-opcion-${c.id}`
-            return (
-              <label key={c.id} htmlFor={id} className={`opcion-radio ${seleccion === c.id ? 'opcion-activa' : ''}`}>
-                <input id={id} type="radio" name="agente-opcion" checked={seleccion === c.id} onChange={() => setSeleccion(c.id)} />
-                {etiquetaOpcion(c)}
-                {c.lugar.simulado ? <> <RotuloSimulacion /></> : null}
-                {c.id === b.elegida_id ? (
-                  <span className="etiqueta etiqueta-destacada">
-                    {b.eleccion_fuente === 'modelo' ? 'Recomendada por el agente' : 'Recomendada'}
-                  </span>
-                ) : null}
-              </label>
-            )
-          })}
-        </div>
-      </fieldset>
-      <p className="agente-eleccion">
-        <span className="t-subtitulo">
-          {elegida.actividad_etiqueta} en {lugar}
-        </span>{' '}
-        {elegida.lugar.simulado ? <RotuloSimulacion /> : null}
-      </p>
-      <ul className="agente-franjas">
-        {elegida.franjas.map((f, i) => (
-          <li key={i}>{franjaTexto(f.inicio, f.fin)}</li>
-        ))}
-      </ul>
-      {viaje ? (
-        <p className="agente-viaje-linea">
-          <strong>Queda a menos de {viaje.max_minutos} minutos para todos{viaje.estimado ? ' (estimado)' : ''}.</strong>{' '}
-          Elegido para que nadie viaje demasiado.
+      {/* Mockup de Nico (pantalla 7): la recomendada, grande; las otras opciones y el proceso, plegados. */}
+      <div className="agente-recomendada">
+        <p className="agente-recomendada-sello">
+          <span className="etiqueta etiqueta-destacada">
+            {esLaDestacada ? (b.eleccion_fuente === 'modelo' ? 'Recomendada por el agente' : 'Recomendada') : 'Elegida por ti'}
+          </span>{' '}
+          {elegida.lugar.simulado ? <RotuloSimulacion /> : null}
         </p>
-      ) : null}
+        <p className="t-titulo agente-recomendada-nombre">
+          {elegida.actividad_etiqueta} en {lugar}
+        </p>
+        <ul className="agente-franjas">
+          {elegida.franjas.map((f, i) => (
+            <li key={i}>{franjaTexto(f.inicio, f.fin)}</li>
+          ))}
+        </ul>
+        {viaje ? (
+          <p className="agente-viaje-linea">
+            <strong>Queda a menos de {viaje.max_minutos} minutos para todos{viaje.estimado ? ' (estimado)' : ''}.</strong>{' '}
+            Elegido para que nadie viaje demasiado.
+          </p>
+        ) : null}
+      </div>
       {b.clima.fuente === 'simulacion' ? (
         <p className="suave">
           Clima de prueba <RotuloSimulacion />: {b.clima.resumen.replace('Simulación: ', '')} No es un pronóstico real.
@@ -615,8 +591,41 @@ function BorradorTarjeta({
         <strong>Por qué: </strong>
         {explicacion}
       </p>
-      {pasos && pasos.length > 0 ? <PasosAgente pasos={pasos} /> : null}
-      <PerfilDelGrupo perfil={b.perfil_grupo} />
+      <Plegable
+        id="agente-otras"
+        titulo={`${b.candidatas.length > 1 ? `${b.candidatas.length} opciones` : 'Opción'} para ${b.personas_consideradas} personas`}
+        resumen={b.candidatas.length > 1 ? 'Ver y elegir otra' : 'A quiénes cuenta'}
+        abierto={verOtras}
+        onCambio={setVerOtras}
+      >
+        <p className="suave agente-quienes">{quienes}</p>
+        <fieldset className="grupo agente-candidatas">
+          <legend className="agente-sr">Elige una opción</legend>
+          <div className="opciones">
+            {b.candidatas.map((c) => {
+              const id = `agente-opcion-${c.id}`
+              return (
+                <label key={c.id} htmlFor={id} className={`opcion-radio ${seleccion === c.id ? 'opcion-activa' : ''}`}>
+                  <input id={id} type="radio" name="agente-opcion" checked={seleccion === c.id} onChange={() => setSeleccion(c.id)} />
+                  {etiquetaOpcion(c)}
+                  {c.lugar.simulado ? <> <RotuloSimulacion /></> : null}
+                  {c.id === b.elegida_id ? (
+                    <span className="etiqueta etiqueta-destacada">
+                      {b.eleccion_fuente === 'modelo' ? 'Recomendada por el agente' : 'Recomendada'}
+                    </span>
+                  ) : null}
+                </label>
+              )
+            })}
+          </div>
+        </fieldset>
+        <PerfilDelGrupo perfil={b.perfil_grupo} />
+      </Plegable>
+      {pasos && pasos.length > 0 ? (
+        <Plegable id="agente-hizo" titulo="Lo que hizo el agente" resumen={`${pasos.length} pasos`} abierto={verPasos} onCambio={setVerPasos}>
+          <PasosAgente pasos={pasos} />
+        </Plegable>
+      ) : null}
       {canchas.length > 0 ? (
         <div className="bloque agente-canchas">
           <p>
@@ -855,19 +864,7 @@ function ProponerPlan({
         </Boton>
         <small>«Arme un plan»: la IA elige qué mirar (clima, planes, canchas); cada paso pasa por las reglas de CRUXE.</small>
       </div>
-      {/* "Trabajando" del sistema (sd-pasos): una sola frase viva mientras piensa (E6). Los pasos reales los manda el
-          servidor al terminar y se ven en "Lo que hizo el agente"; acá no se inventa un avance. */}
-      {ocupado ? (
-        <ul className="sd-pasos agente-trabajando">
-          <li className="sd-paso-activo">
-            {largo
-              ? 'El agente sigue pensando: puede tardar hasta medio minuto…'
-              : conHerramientas
-                ? 'El agente está mirando el clima, buscando planes que le sirvan a todos y eligiendo…'
-                : 'El agente está leyendo las preferencias del grupo y el clima…'}
-          </li>
-        </ul>
-      ) : null}
+      {ocupado ? <AgenteTrabajando largo={largo} /> : null}
       <div ref={refError}>
         {error ? <ErrorAgente error={error} espacioId={espacioId} onReintentar={() => void proponer(conHerramientas)} /> : null}
       </div>
@@ -897,8 +894,8 @@ function ProponerPlan({
       {resultado?.tipo === 'borrador' ? (
         <Plegable
           id="agente-avanzado"
-          titulo="Avanzado: invitaciones con aprobación"
-          resumen="Preparar, aprobar y publicar"
+          titulo="Que el agente invite al grupo por mí"
+          resumen="Con tu aprobación antes de publicar"
           abierto={verAvanzado}
           mantener
           onCambio={setVerAvanzado}
@@ -914,11 +911,45 @@ function ProponerPlan({
   )
 }
 
+/** Lo que hace el agente, en orden. Describe el trabajo; no marca nada como hecho: eso lo dice el servidor al terminar. */
+const PASOS_TRABAJO = [
+  'Lee las preferencias habilitadas del grupo',
+  'Mira el clima del fin de semana',
+  'Busca planes que le sirvan a todos',
+  'Elige una opción y explica por qué',
+]
+
+/**
+ * "El agente está trabajando" (pedido de Nico, 02:40): los cuatro pasos aparecen de a uno con el movimiento del
+ * sistema (sd-pasos). El último que apareció late (sd-paso-activo); los anteriores quedan sin marca de hecho, porque el
+ * cliente no sabe en qué va el servidor. Los pasos reales, como hechos, llegan en "Lo que hizo el agente".
+ */
+function AgenteTrabajando({ largo }: { largo: boolean }) {
+  const [visibles, setVisibles] = useState(1)
+  useEffect(() => {
+    if (visibles >= PASOS_TRABAJO.length) return
+    const t = setTimeout(() => setVisibles((v) => v + 1), 1400)
+    return () => clearTimeout(t)
+  }, [visibles])
+  return (
+    <div className="bloque agente-trabajando">
+      <p className="agente-trabajando-titulo">El agente está trabajando</p>
+      <ul className="sd-pasos">
+        {PASOS_TRABAJO.slice(0, visibles).map((p, i) => (
+          <li key={p} className={`sd-aparecer ${i === visibles - 1 ? 'sd-paso-activo' : ''}`}>
+            {p}
+          </li>
+        ))}
+      </ul>
+      {largo ? <p className="suave">El agente sigue pensando: puede tardar hasta medio minuto…</p> : null}
+    </div>
+  )
+}
+
 /** Lo que hizo el agente con herramientas: textos fijos del servidor, sin nombres. */
 function PasosAgente({ pasos }: { pasos: string[] }) {
   return (
     <div className="bloque agente-pasos">
-      <h3 className="agente-subtitulo">Lo que hizo el agente</h3>
       <ol className="sd-pasos sd-escalonado">
         {pasos.map((p, i) => (
           <li key={i} className="sd-paso-hecho">
