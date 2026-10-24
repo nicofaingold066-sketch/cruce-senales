@@ -57,6 +57,31 @@ Ideas para quienes puedan hacerlas, también en la ficha:
 - backend: una preferencia opcional «prefiero algo corto» (duración máxima), en la misma lista cerrada.
 - friccion / front-juan: mostrar la energía por defecto como «sin elegir» y no como «algo tranquilo».
 
+## Perfiles de psico (pedido del coordinador, 20:53): guion `tests/sinteticos/psico-perfiles.mjs`
+
+Grupo nuevo «Los del reencuentro», plan «Asado del reencuentro · solo el grupo» (la modalidad en el título, regla D3; hoy la escribe la organizadora a mano porque no hay selector). Mínimo 3. Fuente de los perfiles: `docs/psicologia-grupo.md` (§3.2, §3.4, §3.6, §3.8, §3.9, §8).
+
+| Persona | Perfil | Qué hace | Qué se comprueba en pantalla |
+|---|---|---|---|
+| **Vale** | la que siempre organiza | crea el grupo **pegando la lista de una vez** (friccion), arma el plan, responde, busca la opción, confirma, repara | toques totales de quien organiza frente a los de un invitado; si ve «Tú armas el plan…», «Gracias por moverlo», «Hoy conviene recordar», «Recordar a quien falta» (psico §8.6, §8.9; `AvisoParaMi`/`RecordarFaltan` de ux-flujo, que Juan conecta); si «Nueva propuesta» ofrece «¿Dónde se juntan?» (A5) y la modalidad (A4); si la invitación de WhatsApp repite «solo el grupo» |
+| **Dani** | se ofende si no van a su casa | entra, responde Sí/Sí, mira la ficha del plan, busca dónde ofrecer su casa | que ninguna pantalla compare casas ni diga «casa de Dani»; qué ve con «Anfitrión (Vale)» / «Imprescindible (anfitrión)» (elección pública de quien organiza, psico §3.2); que no haya forma de ofrecer la casa (V6, después) |
+| **Ana** | no come carne, en un asado | entra, responde Sí/Sí, busca dónde decirlo en «Mis preferencias», mira la ficha del plan | que no exista el campo (V2: pendiente); que el plan **no diga nada** que la delate ni «hay un vegetariano»; si dice «Habrá opción sin carne» (A1: pendiente de agente-ia); orden de «Me gustaría» (apertura `0e03b8a`) |
+| **Beto** (320 px) | va con pareja a una juntada «solo el grupo» | entra, responde Sí/Sí, mira el plan | que ninguna pantalla pregunte género ni pareja (revisor `psico-genero-pareja`); que «solo el grupo» se lea como regla de la ocasión y no quede solo en el título; que no haya «vengo con alguien» (V7, después) |
+| **Flor** | se baja por un mal momento | entra, responde Sí/Sí, confirma la versión 1 (el grupo llega a 3), se baja | qué le dice la app al bajarse («Gracias por avisar. No hace falta contar por qué.», psico §8.1 / E13 c); qué ven Vale, Dani, Ana y Beto: con nombre y «había confirmado» (H14, hoy) o «Una persona se retiró» (E13 c); historial |
+| **Pili** | nunca abre el enlace | nada | sigue «por entrar»; nunca cuenta |
+
+Fugas que se revisan en cada pantalla ajena: Ana + comida, Beto + pareja, «casa de Dani», y la baja de Flor con nombre.
+
+**Resultado:** pendiente. A las 21:04 la base estaba ocupada por la migración de la enmienda 13 (0042–0044); la corrida arranca sola cuando backend la libere.
+
+## Enmienda 13, «Así no puedo, pero sigo»: guion `tests/sinteticos/asi-no-puedo.mjs`
+
+Grupo nuevo «Los del cerro» (Vale, Joaco, Renata, Gonza, Pili), plan «Subida al cerro», mínimo 3. Versión 1 (sábado) con Vale, Joaco y Gonza; Vale confirma (1 de 3). Gonza dice «así no puedo, pero sigo», cambia su sábado a No (el domingo sigue Sí); Joaco hace lo mismo (con dos opiniones el total le llega a la organizadora); Vale prueba opinar habiendo aceptado (debe rechazarse: `ya_acepto`); Vale rearma con lo nuevo; versión 2 (domingo) con cero aceptaciones y cero opiniones heredadas; Renata y Joaco miran plan e historial: nadie ve quién opinó; Gonza confirma la versión 2 (no quedó como baja); el grupo se confirma.
+
+Si la interfaz todavía no tiene los botones («Así no puedo, pero sigo» en Mi respuesta, «Rearmar con lo nuevo» para la organizadora), esos dos pasos se hacen por RPC con la sesión que esa persona ya tiene en su navegador (sin abrir otra) y quedan como hallazgo para front-juan. Si la RPC `opinar_version` no existe, el guion lo dice y sale sin fallar.
+
+**Resultado:** pendiente de que backend termine la migración (en curso a las 21:04).
+
 ## Revisión de código de lo entregado hoy (sin correr; 23 oct, 19:55)
 
 Leído en las ramas `wip/friccion` (`efede20`…`cac56d8`), `wip/ux` (`ede33ca`) y `wip/agente-ia` (`d5d913e`), todavía sin integrar. Lo confirma o corrige la corrida con el build que las incluya.
