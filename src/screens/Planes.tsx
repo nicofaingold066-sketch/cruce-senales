@@ -85,8 +85,13 @@ export default function Planes() {
       </section>
 
       <div className="hoja">
-        <NovedadesTarjeta siempre />
-        <AvisoNovedades />
+        {/* Con grupos: sin ninguno no hay nada que avisar ni que consultar (igual que en Inicio). */}
+        {grupos != null && grupos > 0 ? (
+          <>
+            <NovedadesTarjeta siempre />
+            <AvisoNovedades />
+          </>
+        ) : null}
         {error && filas === null ? <ErrorCaja error={error} onReintentar={cargar} /> : null}
         {filas === null && !error ? <Cargando texto="Cargando tus planes…" esqueleto /> : null}
         {filas && filas.length === 0 ? (
