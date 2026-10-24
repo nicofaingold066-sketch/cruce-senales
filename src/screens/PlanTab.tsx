@@ -330,7 +330,8 @@ function OpcionVigente({
 function BloqueRevision({ p }: { p: EstadoPropuesta }) {
   return (
     <Aviso tono="aviso" titulo="Una baja dejó el plan sin cumplir">
-      {p.opcion ? `La versión ${p.opcion.version} ya no alcanza el mínimo o perdió al anfitrión. ` : ''}
+      {/* Enmienda 14, 0050: texto neutro; nombrar la causa ("perdió al anfitrión") junto a los conteos dejaba deducir quién se fue. */}
+      {p.opcion ? `La versión ${p.opcion.version} ya no reúne lo necesario para juntarse. ` : ''}
       Sus confirmaciones ya no bastan para confirmar el encuentro. El plan está <strong>En revisión</strong> hasta que se
       publique una alternativa y se reúnan de nuevo las confirmaciones necesarias.
     </Aviso>
@@ -421,12 +422,8 @@ function OpcionAnterior({ p }: { p: EstadoPropuesta }) {
     <section className="tarjeta opcion-anterior">
       <h2>Versión {o.version} (en revisión, no confirmada)</h2>
       <p>{franjaTexto(o.franja.inicio, o.franja.fin)}</p>
-      <p className="suave">
-        {o.cupos.confirmados > o.cupos.minimo
-          ? `Conserva ${o.cupos.confirmados} confirmaciones (mínimo ${o.cupos.minimo}).`
-          : `Conserva ${o.cupos.confirmados} confirmación(es) de ${o.cupos.minimo} necesarias.`}{' '}
-        No se transfiere a la próxima versión.
-      </p>
+      {/* Enmienda 14, 0050: en revisión no se compara con el mínimo; con el mínimo cumplido a la vista se deducía que se fue quien no podía faltar. */}
+      <p className="suave">Sus confirmaciones no pasan a la próxima versión.</p>
     </section>
   )
 }
