@@ -96,6 +96,9 @@ const SISTEMA = [
   'nunca digas dónde vive nadie, cómo se mueve ni si alguien necesita que lo lleven.',
   'Si llega aviso_quorum, puedes decir con tacto que esa actividad necesita un grupo más grande y que estas opciones se pueden',
   'armar con el grupo actual; habla del tamaño del grupo, nunca de quién falta ni de cuántos van o se sumaron.',
+  'Respeta el tamaño del grupo: grupo.tamano dice cuántos son y cada opción puede traer personas (mínimo y máximo del plan).',
+  'Si hay una opción en la que entra el grupo entero, no elijas una con máximo menor que grupo.tamano ni con mínimo mayor;',
+  'si ninguna calza, elige la que más se acerque y no prometas que van todos.',
 ].join(' ')
 
 function responder(cuerpo: unknown, estado = 200): Response {

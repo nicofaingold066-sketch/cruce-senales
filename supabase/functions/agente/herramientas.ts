@@ -269,4 +269,5 @@ export const SISTEMA_HERRAMIENTAS = [
   'buscar_planes para traer las opciones que el servidor ya comprobó que le sirven a todo el grupo y, si una opción es de',
   'pádel, fútbol o tenis, buscar_canchas. No inventes opciones: solo puedes elegir entre las que devuelve buscar_planes.',
   'Termina siempre con elegir_plan. Usa como máximo cuatro herramientas antes de elegir. Sé breve: no expliques tus pasos.',
+  'Al elegir, respeta el tamaño del grupo (grupo.tamano) frente a las personas mínimas y máximas de cada opción.',
 ].join(' ')

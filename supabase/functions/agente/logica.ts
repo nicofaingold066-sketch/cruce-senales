@@ -369,6 +369,9 @@ export function entradaModelo(
     aviso_quorum: quorum ? textoQuorum(quorum) : null,
     grupo: {
       personas: perfil?.personas ?? null,
+      // Auditoría M1: cuántos son en el grupo (la lista de miembros es pública en el espacio), para elegir un plan que
+      // calce con ese tamaño. `personas` de arriba son solo quienes cargaron y habilitaron preferencias.
+      tamano: nombres.length > 0 ? nombres.length : null,
       // Una actividad que eligió una sola persona no se menciona: se podría adivinar quién fue.
       gustos: p ? gustosVisibles(p).map((g) => `${g.actividad_etiqueta}: ${g.cuantos} de ${p.personas}`) : [],
       ritmo: p?.energia_mayoritaria ? ENERGIA_TEXTO[p.energia_mayoritaria] ?? null : null,
@@ -378,6 +381,8 @@ export function entradaModelo(
       id: c.id,
       // Enmienda 10: solo el viaje máximo estimado del grupo (minutos), nunca zonas, modos ni personas.
       viaje_max_minutos: viajeSeguro(c.viaje)?.max_minutos ?? null,
+      // Enmienda 14 / auditoría M1: mínimo y máximo de personas del plan (catálogo, público).
+      personas: personasSeguras(c.personas) ?? null,
       // El catálogo puede traer el nombre de un integrante ("Quincho de Tomi"): al modelo le llega sin nombre.
       plan: sinNombres(c.titulo, nombres),
       actividad: c.actividad_etiqueta,

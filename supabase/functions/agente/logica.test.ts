@@ -158,7 +158,8 @@ test('entradaModelo solo manda gustos que eligieron al menos 2 personas', () => 
 
 test('entradaModelo con 3 personas o menos manda solo la cantidad', () => {
   const e = entradaModelo([ASADO], { ...PERFIL_5, personas: 3 }, 'Sin pronóstico disponible.', NOMBRES)
-  assert.deepEqual(e.grupo, { personas: 3, gustos: [], ritmo: null, ambiente: null })
+  // `tamano` es la cantidad de miembros (pública en el espacio, auditoría M1), no un dato de preferencias.
+  assert.deepEqual(e.grupo, { personas: 3, tamano: NOMBRES.length, gustos: [], ritmo: null, ambiente: null })
 })
 
 test('perfilParaRespuesta filtra gustos de una persona y reduce los grupos chicos', () => {
@@ -606,4 +607,13 @@ test('M2: candidataSegura saca del catálogo el nombre de alguien que puede no e
   const otra = candidataSegura({ id: 'x', actividad_etiqueta: 'Picnic', titulo: 'Picnic en el parque', lugar: { id: 'x', nombre: 'Parque Bustamante (Simulación)', simulado: true }, franjas: [], frases_grupo: [] } as never)
   assert.equal(otra.titulo, 'Picnic en el parque')
   assert.equal(otra.lugar.nombre, 'Parque Bustamante (Simulación)')
+})
+
+test('M1: el modelo recibe el tamaño del grupo y las personas mínimas y máximas de cada opción', () => {
+  const padel = { ...ASADO, id: 'padel', actividad_etiqueta: 'Pádel', personas: { min: 2, max: 4 } }
+  const e = entradaModelo([padel], PERFIL_5, 'Sábado seco', NOMBRES) as Record<string, any>
+  assert.equal(e.grupo.tamano, NOMBRES.length)
+  assert.deepEqual(e.opciones[0].personas, { min: 2, max: 4 })
+  const sinNombres = entradaModelo([ASADO], PERFIL_5, 'Sábado seco', []) as Record<string, any>
+  assert.equal(sinNombres.grupo.tamano, null)
 })
