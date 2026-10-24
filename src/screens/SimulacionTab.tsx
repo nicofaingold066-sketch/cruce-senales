@@ -84,10 +84,10 @@ export default function SimulacionTab({ p, viva, soloLectura, espacio }: Pestana
             Personas simuladas
           </h2>
           <p className="t-nota sim-linea">Respondes y confirmas por ellas. Todo queda en el historial como simulación.</p>
-          {makana ? <p className="t-nota">Cada respuesta se carga por separado para una propuesta concreta. Pía sigue pendiente hasta que responda; nunca cuenta como confirmada.</p> : null}
+          {makana ? <p className="t-nota">Las respuestas del caso se cargan de una vez; Pía queda fuera. Pía sigue pendiente hasta que responda; nunca cuenta como confirmada.</p> : null}
 
           <div className="sim-atajos" role="group" aria-label="Atajos de simulación">
-            {!makana && p.mi_situacion.puede.simular ? (
+            {p.mi_situacion.puede.simular ? (
               <Boton
                 onClick={guardarTodos.ejecutar}
                 ocupado={guardarTodos.ocupado}
@@ -97,10 +97,10 @@ export default function SimulacionTab({ p, viva, soloLectura, espacio }: Pestana
               >
                 {delCaso === 1 ? 'Cargar la respuesta del caso' : `Cargar las respuestas de los ${delCaso} de una vez`}
               </Boton>
-            ) : !makana ? (
+            ) : (
               <p className="t-nota suave">{motivoSinAtajo(p)}</p>
-            ) : null}
-            {!makana && version != null && puedenAceptar.length > 1 ? (
+            )}
+            {version != null && puedenAceptar.length > 1 ? (
               // Atajo chico (no está en el mockup; lo usan los guiones de la demo con /^Aceptar versión N por /).
               // Con una sola persona no aparece: su fila ya dice «Aceptar v1».
               <Boton
