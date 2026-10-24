@@ -3,7 +3,6 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cruce-ux`). Rutas: `docs/flujo-usuario.md`, `docs/front-back-puente.md`, archivos NUEVOS en `src/componentes-nuevos/**`. Puerto de preview: 4183.
 
 ## Tocando ahora
-- **CORRIENDO PRUEBA (21:23)**: guiones contra el build del parche (localhost:4194), de a uno: dos sesiones, jurado, capturas, enmienda 13.
 - [21:22] Parche para las pantallas de Juan (`docs/parche-pantallas-juan.md`, `docs/parche-capturas/**`) probado en una copia LOCAL descartable (sin subir código): falta correr dos sesiones, jurado y capturas contra la base cuando backend saque MIGRACION EN CURSO (una corrida a la vez, con CORRIENDO PRUEBA acá). Después, verificación local de la enmienda 13.
 - [20:54] Enmienda 13 (aprobada por Nico 20:51): `src/componentes-nuevos/` ("Rearmar con lo nuevo" para el organizador, textos de baja sin nombre y aviso de "así no puedo" en `AvisoParaMi`), `docs/output-debate.md` y `docs/investigacion-a-producto.md` con las decisiones de Nico. friccion: botón "Así no puedo, pero sigo" (reparto propuesto por mensaje).
 - [20:43] #102 primer barrido entregado; próximos a las 23:00 y 07:00. Mantengo `docs/investigacion-a-producto.md`.
