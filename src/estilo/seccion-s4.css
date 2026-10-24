@@ -485,3 +485,40 @@ a.fila:hover {
 .plan-tab .historial-plegado[open] {
   padding-bottom: var(--e-4);
 }
+
+/* C5 (mockup, computadora): izquierda 7/12 el bloque de resultado con el primario adentro; derecha 5/12 las filas
+   plegadas y "Retirarme" chico. Márgenes de 40 px. iPad (T): la pantalla de móvil centrada en 640 px (arriba). */
+@media (min-width: 960px) {
+  .vista.vista-plan {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: var(--e-6);
+    align-items: stretch;
+  }
+  .vista-plan .escena.resultado-escena {
+    position: static;
+    min-height: calc(100dvh - var(--barra-alto));
+    padding: var(--e-5) var(--e-5) var(--e-5) var(--margen);
+  }
+  .vista-plan .hoja {
+    max-width: none;
+    width: 100%;
+    justify-self: stretch;
+    padding: calc(var(--e-5) + 44px + var(--e-3)) var(--margen) var(--e-6) 0;
+    background: transparent;
+  }
+  .resultado .barra-accion {
+    position: static;
+    margin-bottom: calc(-1 * var(--e-5));
+  }
+}
+
+/* El brillo de la escena (::before, -20 %) nunca ensancha la página. */
+.vista-plan {
+  overflow-x: clip;
+}
+.vista-plan .escena.resultado-escena {
+  overflow: hidden;
+}
+.vista-plan .escena.resultado-escena::before {
+  inset: auto 0 -40% 0;
+}
