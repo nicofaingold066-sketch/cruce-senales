@@ -6,7 +6,6 @@ import { rutas, useIdentidad } from '../lib/shell'
 import { Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { PlanVivo, esTurno } from '../components/PlanVivo'
-import { AvisoNovedades, NovedadesTarjeta } from '../components/Novedades'
 
 // Mis planes: todas las propuestas de tus grupos en un solo lugar, como la "Actividad" de una app de viajes.
 // Solo agrupa lo que devuelve el servidor (estado y siguiente_accion); no decide nada.
@@ -85,13 +84,6 @@ export default function Planes() {
       </section>
 
       <div className="hoja">
-        {/* Con grupos: sin ninguno no hay nada que avisar ni que consultar (igual que en Inicio). */}
-        {grupos != null && grupos > 0 ? (
-          <>
-            <NovedadesTarjeta siempre />
-            <AvisoNovedades />
-          </>
-        ) : null}
         {error && filas === null ? <ErrorCaja error={error} onReintentar={cargar} /> : null}
         {filas === null && !error ? <Cargando texto="Cargando tus planes…" esqueleto /> : null}
         {filas && filas.length === 0 ? (
