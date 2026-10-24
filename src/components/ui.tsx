@@ -247,3 +247,73 @@ export function DiaTile({ local }: { local: string }) {
     </span>
   )
 }
+
+// ---- Componentes base del rediseño (fase 1, docs/rediseno/sistema.md). Se suman a los de arriba; nada cambia de nombre. ----
+
+/** La unidad de contenido: una pregunta o un resultado por tarjeta. `titulo` va en --t-subtitulo; `accion` es secundaria. */
+export function Card({
+  titulo,
+  accion,
+  id,
+  className,
+  children,
+}: {
+  titulo?: string
+  accion?: ReactNode
+  id?: string
+  className?: string
+  children?: ReactNode
+}) {
+  const tituloId = titulo && id ? `${id}-titulo` : undefined
+  return (
+    <section id={id} className={`tarjeta ${className ?? ''}`} aria-labelledby={tituloId}>
+      {titulo || accion ? (
+        <div className="tarjeta-cabeza">
+          {titulo ? <h2 id={tituloId}>{titulo}</h2> : null}
+          {accion}
+        </div>
+      ) : null}
+      {children}
+    </section>
+  )
+}
+
+type TonoChip = 'neutro' | 'ok' | 'aviso' | 'info' | 'sim'
+
+/** Estado, rótulo o filtro en una palabra. Con `onClick` es un botón de 44 px con `aria-pressed`. */
+export function Chip({
+  tono = 'neutro',
+  activo,
+  onClick,
+  className,
+  children,
+}: {
+  tono?: TonoChip
+  activo?: boolean
+  onClick?: () => void
+  className?: string
+  children: ReactNode
+}) {
+  const clases = `chip chip-${tono} ${activo ? 'chip-activo' : ''} ${onClick ? 'chip-tocable' : ''} ${className ?? ''}`
+  if (onClick) {
+    return (
+      <button type="button" className={clases} aria-pressed={activo} onClick={onClick}>
+        {children}
+      </button>
+    )
+  }
+  return <span className={clases}>{children}</span>
+}
+
+/** Separa bloques dentro de una pantalla: título, nota opcional y una acción secundaria a la derecha. */
+export function EncabezadoSeccion({ titulo, nota, accion, id }: { titulo: string; nota?: string; accion?: ReactNode; id?: string }) {
+  return (
+    <div className="encabezado-seccion">
+      <div>
+        <h2 id={id}>{titulo}</h2>
+        {nota ? <p className="encabezado-nota">{nota}</p> : null}
+      </div>
+      {accion ? <div className="encabezado-accion">{accion}</div> : null}
+    </div>
+  )
+}
