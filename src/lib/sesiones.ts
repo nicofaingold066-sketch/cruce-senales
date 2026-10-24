@@ -10,7 +10,7 @@ const CLAVE = 'cruxe:sesion-guardada'
 
 export interface SesionGuardada {
   refresh_token: string
-  /** "Tomi en «Los del asado»": solo para mostrar en la portada. */
+  /** "Tomi en «Los del finde»": solo para mostrar en la portada. */
   etiqueta: string
   /** Nombre local (lib/perfil) de quien guardó la sesión: se restaura al volver y no queda a la vista de otra persona. */
   nombre?: string

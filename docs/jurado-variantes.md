@@ -6,7 +6,7 @@ Dueño: pitch-problema. Viernes 23 oct 2026.
 
 **Límites de esa evidencia (son de Codex, no míos):** se probó la aplicación local (servidor de desarrollo) contra la base real con la migración 0030, no la versión que publica Vercel; no se probó en teléfonos físicos, con lector de pantalla ni con el modelo de IA. El escáner de privacidad revisa que las respuestas compartidas no traigan disponibilidad, preferencias ni identificadores de usuario; no demuestra que nadie pueda inferir la causa a partir de lo que ve (los límites de inferencia siguen siendo los de la enmienda 7). El guion acepta una URL (`node tests/e2e/jurado-navegador.mjs <url>`), pero esa modalidad no se corrió todavía.
 
-Todas parten del caso canónico "Los del asado":
+Todas parten del caso canónico "Los del finde":
 - Franjas: A = sábado 31 oct, 14:00-17:00. B = domingo 1 nov, 14:00-17:00.
 - Disponibilidad: Tomi, Luna y Mati pueden A y B; Caro solo A; Fede y Sofi solo B.
 - Tomi es el imprescindible. Mínimo 4 contando a Tomi, máximo 6.

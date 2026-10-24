@@ -15,7 +15,7 @@ test('ida y vuelta de la marca para las tres reglas', () => {
 })
 
 test('sin marca: nada; una marca anterior se reemplaza; mayúsculas no importan', () => {
-  expect(quienVieneDe('Los del asado')).toBeNull()
+  expect(quienVieneDe('Los del finde')).toBeNull()
   expect(quienVieneDe('Puerta · abierta al público')).toBeNull()
   expect(conQuienViene('Los del pádel · con parejas', 'grupo')).toBe('Los del pádel · solo el grupo')
   expect(conQuienViene('Los del pádel · con parejas', null)).toBe('Los del pádel')
@@ -37,8 +37,8 @@ test('la invitación dice la regla cuando el nombre la trae, con el nombre limpi
   expect(t).toContain('Pueden venir con pareja.')
   expect(t).toContain('#/unirse/ABCD1234')
   expect(t).not.toContain('·')
-  const sin = textoInvitacion('Los del asado', 'ABCD1234')
-  expect(sin).toBe('Súmate a «Los del asado» en CRUXE: toca el enlace, elige tu nombre y marca cuándo puedes. Sin cuenta ni contraseña; tus condiciones solo las ve la app: https://ejemplo.test/#/unirse/ABCD1234')
+  const sin = textoInvitacion('Los del finde', 'ABCD1234')
+  expect(sin).toBe('Súmate a «Los del finde» en CRUXE: toca el enlace, elige tu nombre y marca cuándo puedes. Sin cuenta ni contraseña; tus condiciones solo las ve la app: https://ejemplo.test/#/unirse/ABCD1234')
   // El argumento explícito manda sobre la marca.
   expect(textoInvitacion('Los del pádel · con parejas', 'ABCD1234', 'grupo')).toContain('Esta vez es solo el grupo.')
 })

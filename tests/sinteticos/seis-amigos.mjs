@@ -1,4 +1,4 @@
-// Seis amigos ficticios usan CRUXE como lo haría gente real, en un GRUPO NUEVO (nunca el demo "Los del asado").
+// Seis amigos ficticios usan CRUXE como lo haría gente real, en un GRUPO NUEVO (nunca el demo "Los del finde").
 //
 //   node tests/sinteticos/seis-amigos.mjs [url]
 //

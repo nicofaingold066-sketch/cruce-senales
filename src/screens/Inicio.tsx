@@ -318,7 +318,7 @@ function CargarDemo({ deshabilitado, yaCargada }: { deshabilitado: boolean; yaCa
           <Icono n="play" />
         </span>
         <span className="acceso-texto">
-          <span className="acceso-titulo">{yaCargada ? 'Abrir la demo «Los del asado»' : 'Probar la demo «Los del asado»'}</span>
+          <span className="acceso-titulo">{yaCargada ? 'Abrir la demo «Los del finde»' : 'Probar la demo «Los del finde»'}</span>
           <span className="acceso-sub" id="demo-detalle" aria-hidden="true">
             Serás Tomi, quien organiza. Las otras cinco personas son simuladas (datos ficticios).
           </span>

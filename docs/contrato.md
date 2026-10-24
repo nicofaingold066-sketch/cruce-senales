@@ -1,4 +1,4 @@
-# Contrato backend-interfaz de CRUCE (caso "Los del asado")
+# Contrato backend-interfaz de CRUCE (caso "Los del finde")
 
 > **Aviso (23 oct): este contrato v1 queda ENMENDADO por `docs/contrato-enmienda-2.md` (correcciones A1-A5). Donde haya conflicto, manda la enmienda. El campo `contrato` de las respuestas pasa a 2.**
 
@@ -170,7 +170,7 @@ Identificadores usados en los ejemplos (ficticios):
 
 | Quién/qué | id |
 |---|---|
-| Espacio "Los del asado" | `5e000000-0000-4000-8000-000000000001` |
+| Espacio "Los del finde" | `5e000000-0000-4000-8000-000000000001` |
 | Tomi (organizador, real, dispositivo 1) | `6d000000-0000-4000-8000-000000000001` |
 | Luna (real, dispositivo 2, asiento reclamado) | `6d000000-0000-4000-8000-000000000002` |
 | Mati (simulado) | `6d000000-0000-4000-8000-000000000003` |
@@ -288,14 +288,14 @@ Momentos fijos del caso: franja A inicio `{"utc":"2026-10-31T17:00:00Z","local":
 - Respuesta: `{ ok, contrato, servidor_ahora, resultado: { espacio_id, miembro_id, reclamo_asiento_simulado: boolean, ya_era_miembro: boolean, repetido: boolean }, espacio: Espacio }`.
 - Errores: `sesion_invalida`, `entrada_incompleta` (`campo_faltante`, `formato_invalido`, `nombre_en_uso`), `fuera_de_audiencia / codigo_inexistente`, `fallo_temporal`.
 - Ejemplo (Luna, dispositivo 2): entrada `{"p_codigo":"kq7m2xpa","p_nombre_visible":"Luna"}` →
-  `{"ok":true,"contrato":1,"servidor_ahora":{...},"resultado":{"espacio_id":"5e000000-0000-4000-8000-000000000001","miembro_id":"6d000000-0000-4000-8000-000000000002","reclamo_asiento_simulado":true,"ya_era_miembro":false,"repetido":false},"espacio":{"id":"5e000000-0000-4000-8000-000000000001","nombre":"Los del asado","tipo":"amigos","demo":true,"codigo_invitacion":"KQ7M2XPA","creado_en":{...},"ultimo_reinicio":null,"mi_miembro_id":"6d000000-0000-4000-8000-000000000002","mi_rol":"miembro","miembros":[{"miembro_id":"6d000000-0000-4000-8000-000000000001","nombre":"Tomi","rol":"organizador","simulado":false,"es_yo":false},{"miembro_id":"6d000000-0000-4000-8000-000000000002","nombre":"Luna","rol":"miembro","simulado":false,"es_yo":true},{"miembro_id":"6d000000-0000-4000-8000-000000000003","nombre":"Mati","rol":"miembro","simulado":true,"es_yo":false},{"miembro_id":"6d000000-0000-4000-8000-000000000004","nombre":"Caro","rol":"miembro","simulado":true,"es_yo":false},{"miembro_id":"6d000000-0000-4000-8000-000000000005","nombre":"Fede","rol":"miembro","simulado":true,"es_yo":false},{"miembro_id":"6d000000-0000-4000-8000-000000000006","nombre":"Sofi","rol":"miembro","simulado":true,"es_yo":false}]}}`
+  `{"ok":true,"contrato":1,"servidor_ahora":{...},"resultado":{"espacio_id":"5e000000-0000-4000-8000-000000000001","miembro_id":"6d000000-0000-4000-8000-000000000002","reclamo_asiento_simulado":true,"ya_era_miembro":false,"repetido":false},"espacio":{"id":"5e000000-0000-4000-8000-000000000001","nombre":"Los del finde","tipo":"amigos","demo":true,"codigo_invitacion":"KQ7M2XPA","creado_en":{...},"ultimo_reinicio":null,"mi_miembro_id":"6d000000-0000-4000-8000-000000000002","mi_rol":"miembro","miembros":[{"miembro_id":"6d000000-0000-4000-8000-000000000001","nombre":"Tomi","rol":"organizador","simulado":false,"es_yo":false},{"miembro_id":"6d000000-0000-4000-8000-000000000002","nombre":"Luna","rol":"miembro","simulado":false,"es_yo":true},{"miembro_id":"6d000000-0000-4000-8000-000000000003","nombre":"Mati","rol":"miembro","simulado":true,"es_yo":false},{"miembro_id":"6d000000-0000-4000-8000-000000000004","nombre":"Caro","rol":"miembro","simulado":true,"es_yo":false},{"miembro_id":"6d000000-0000-4000-8000-000000000005","nombre":"Fede","rol":"miembro","simulado":true,"es_yo":false},{"miembro_id":"6d000000-0000-4000-8000-000000000006","nombre":"Sofi","rol":"miembro","simulado":true,"es_yo":false}]}}`
 - Ejemplo de error: entrada `{"p_codigo":"ZZZZZZZZ","p_nombre_visible":"Luna"}` → `{"ok":false,"contrato":1,"servidor_ahora":{...},"error":{"codigo":"fuera_de_audiencia","detalle":"codigo_inexistente","mensaje":"El código de invitación no existe.","reintentable":false},"state_rev":null}`
 
 ### 1.3 `list_my_spaces()`
 - Quién: cualquier sesión.
 - Respuesta: `{ ok, contrato, servidor_ahora, espacios: [ { id, nombre, tipo, demo, codigo_invitacion, mi_miembro_id, mi_rol, cantidad_miembros } ] }`, orden `creado_en` descendente. Lista vacía si no es miembro de ninguno.
 - Errores: `sesion_invalida`, `fallo_temporal`.
-- Ejemplo (Luna): entrada `{}` → `{"ok":true,"contrato":1,"servidor_ahora":{...},"espacios":[{"id":"5e000000-0000-4000-8000-000000000001","nombre":"Los del asado","tipo":"amigos","demo":true,"codigo_invitacion":"KQ7M2XPA","mi_miembro_id":"6d000000-0000-4000-8000-000000000002","mi_rol":"miembro","cantidad_miembros":6}]}`
+- Ejemplo (Luna): entrada `{}` → `{"ok":true,"contrato":1,"servidor_ahora":{...},"espacios":[{"id":"5e000000-0000-4000-8000-000000000001","nombre":"Los del finde","tipo":"amigos","demo":true,"codigo_invitacion":"KQ7M2XPA","mi_miembro_id":"6d000000-0000-4000-8000-000000000002","mi_rol":"miembro","cantidad_miembros":6}]}`
 
 ### 1.4 `get_space(p_espacio_id uuid)`
 - Quién: miembro del espacio.
@@ -306,7 +306,7 @@ Momentos fijos del caso: franja A inicio `{"utc":"2026-10-31T17:00:00Z","local":
 ### 1.5 `seed_demo_space()`
 - Quién: cualquier sesión. La usa el dispositivo que hará de Tomi.
 - Idempotencia: si el llamador ya es organizador de un espacio `demo=true`, lo devuelve sin cambios (`creado: false`, `repetido: true`).
-- Efectos (solo la primera vez): crea el espacio `nombre="Los del asado"`, `tipo="amigos"`, `demo=true`, con código único, y estos miembros en este orden: Tomi (`rol="organizador"`, `simulado=false`, ligado al llamador), Luna, Mati, Caro, Fede, Sofi (`rol="miembro"`, `simulado=true`, sin sesión). **No** crea la propuesta (la crea Tomi en vivo, paso 2 del recorrido) ni carga condiciones.
+- Efectos (solo la primera vez): crea el espacio `nombre="Los del finde"`, `tipo="amigos"`, `demo=true`, con código único, y estos miembros en este orden: Tomi (`rol="organizador"`, `simulado=false`, ligado al llamador), Luna, Mati, Caro, Fede, Sofi (`rol="miembro"`, `simulado=true`, sin sesión). **No** crea la propuesta (la crea Tomi en vivo, paso 2 del recorrido) ni carga condiciones.
 - Respuesta: `{ ok, contrato, servidor_ahora, resultado: { espacio_id, creado: boolean, repetido: boolean }, espacio: Espacio }`.
 - Errores: `sesion_invalida`, `fallo_temporal`.
 - Ejemplo (Tomi): entrada `{}` → `{"ok":true,"contrato":1,"servidor_ahora":{...},"resultado":{"espacio_id":"5e000000-0000-4000-8000-000000000001","creado":true,"repetido":false},"espacio":{...como en 1.2, con los 6 miembros, Luna con "simulado":true, "mi_rol":"organizador"}}`
@@ -660,7 +660,7 @@ Refresco: no hay Realtime en este corte. Con la pantalla de una propuesta visibl
 
 | Dato | Valor |
 |---|---|
-| Espacio | "Los del asado", tipo `amigos`, `demo=true` |
+| Espacio | "Los del finde", tipo `amigos`, `demo=true` |
 | Organizador del espacio | Tomi (la sesión que llama al seed) |
 | Miembros simulados | Luna, Mati, Caro, Fede, Sofi (en ese orden). Cualquiera puede reclamarse desde otro dispositivo uniéndose con el código y el mismo nombre. |
 

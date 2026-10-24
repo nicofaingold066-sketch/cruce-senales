@@ -251,8 +251,8 @@ async function variante(nombre, prueba) {
 log(`Jurado navegador: ${BASE}; 375 px; base ${execFileSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim()}`)
 try {
   await T.goto(BASE)
-  const seed = await accion(T, 'seed_demo_space', () => tocar(T, 'Probar la demo «Los del asado»'))
-  await T.getByRole('heading', { name: 'Los del asado', exact: true }).waitFor()
+  const seed = await accion(T, 'seed_demo_space', () => tocar(T, /^Probar la demo «Los del (asado|finde)»$/))
+  await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor()
   espacioUrl = T.url()
   const codigo = seed.espacio.codigo_invitacion
   await L.goto(`${BASE}/#/unirse/${codigo}`)
@@ -261,7 +261,7 @@ try {
   await unirse.getByLabel('Tu nombre en el espacio').fill('Luna')
   const unir = await accion(L, 'join_space', () => tocar(L, 'Unirme'))
   assert.equal(unir.resultado.reclamo_asiento_simulado, true)
-  await L.getByRole('heading', { name: 'Los del asado', exact: true }).waitFor()
+  await L.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor()
   comprobar(sesiones.size === 2, 'Dos identidades anónimas distintas')
   log('Demo propio creado por UI; Luna reclama su asiento. Se reutilizan las dos sesiones.')
 
