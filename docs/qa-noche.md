@@ -71,6 +71,8 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 21:22 | `sesiones-recuperacion` sobre friccion 8793df5: la primera corrida (en lote, en segundo plano) terminó con un error de Node sin salida del guion; repetida sola a las 21:24: 12/12 | Vite local | falla transitoria, no reproducida |
 | 21:22 | backend confirma: `propose_repair` desde `esperando_compromisos` sin ningún `asi_no_puedo` → `opcion_desactualizada/estado_no_admite`; la prueba E13 lo exige. Base libre desde las 21:22 (0042–0045 aplicadas) | — | — |
 | 21:26 | recorrido canónico (vitest) con E13 contra la base, en turno con marca CORRIENDO PRUEBA | base | corriendo |
+| 21:37 | recorrido canónico (vitest) con E13 contra la base, base 0042–0045 | base | 5/5. Dos primeros intentos fallaron por forma que yo supuse mal: `opiniones_totales` llega como `{ asi_no_puedo: n|null }`, no `null`; guion corregido |
+| 21:37 | hallazgo para backend (sin cambiar nada): con 2 opiniones, el organizador que NO aceptó esa versión ve `siguiente_accion = te_toca_aceptar` y no el texto «Algunos no pueden así: puedes rearmar con lo nuevo.» (0043 evalúa `puede.aceptar` antes). El botón sí está (`puede.proponer_reparacion = true`). El contrato dice que ese texto es del organizador «en ese caso» | base | consulta abierta, no regresión |
 
 ## Regresiones abiertas
 (ninguna)
