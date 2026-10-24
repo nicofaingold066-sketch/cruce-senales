@@ -158,6 +158,8 @@ function FilaGrupo({ e, plan }: { e: EspacioResumen; plan: PlanActivo | null }) 
 
 /** Pantalla 2: "Crear un grupo", "Unirme con un código" (se despliega ahí mismo) y, chico, la demo. En la hoja o a la vista. */
 function OpcionesNuevo({ soloLectura, yaDemo, abierto }: { soloLectura: boolean; yaDemo: boolean; abierto: boolean }) {
+  // La demo vive en la pantalla 9; en la hoja del "+" (pantalla 2) no va, y en la computadora (pantalla 8) sí, a la vista.
+  const conDemo = abierto
   return (
     <div className="s1-opciones">
       <a className="s1-opcion" href={rutas.crear()}>
@@ -186,9 +188,11 @@ function OpcionesNuevo({ soloLectura, yaDemo, abierto }: { soloLectura: boolean;
           <UnirsePortada deshabilitado={soloLectura} />
         </div>
       </details>
-      <div className="s1-demo">
-        <CargarDemo deshabilitado={soloLectura} yaCargada={yaDemo} chico />
-      </div>
+      {conDemo ? (
+        <div className="s1-demo">
+          <CargarDemo deshabilitado={soloLectura} yaCargada={yaDemo} chico />
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -273,9 +277,7 @@ function PortadaNueva({ soloLectura, invitacionInvalida }: { soloLectura: boolea
           {aviso ? <p role="status">{aviso}</p> : null}
         </form>
         <div className="s1-opciones">
-          <div className="s1-opcion s1-opcion-demo">
-            <CargarDemo deshabilitado={soloLectura} yaCargada={false} />
-          </div>
+          <CargarDemo deshabilitado={soloLectura} yaCargada={false} fila />
           <details className="s1-opcion s1-opcion-unirme">
             <summary>
               <span className="s1-opcion-icono" aria-hidden="true">
@@ -337,13 +339,30 @@ async function planesActivos(espacios: EspacioResumen[]): Promise<PlanActivo[]> 
 }
 
 /** La demo. `chico` (pantalla 2): una línea "o prueba sin crear nada · Probar la demo «Los del finde»". */
-function CargarDemo({ deshabilitado, yaCargada, chico }: { deshabilitado: boolean; yaCargada: boolean; chico?: boolean }) {
+function CargarDemo({ deshabilitado, yaCargada, chico, fila }: { deshabilitado: boolean; yaCargada: boolean; chico?: boolean; fila?: boolean }) {
   const { ocupado, error, ejecutar } = useAccion()
   async function hacer() {
     const r = await ejecutar('seed', () => api.seedDemoSpace())
     if (r?.ok) irA(rutas.espacio(r.data.resultado.espacio_id))
   }
   const texto = yaCargada ? 'Abrir la demo «Los del finde»' : 'Probar la demo «Los del finde»'
+  if (fila) {
+    // Pantalla 9: una FILA igual a la de "Tengo un código de invitación".
+    return (
+      <>
+        <button type="button" className="s1-opcion s1-opcion-fila" onClick={hacer} disabled={deshabilitado} aria-busy={ocupado || undefined} aria-labelledby="demo-fila-titulo" aria-describedby="demo-fila-nota">
+          <span className="s1-opcion-icono" aria-hidden="true">
+            <Icono n="rayo" />
+          </span>
+          <span className="s1-opcion-texto">
+            <span className="t-subtitulo" id="demo-fila-titulo">{ocupado ? 'Preparando la demo…' : texto}</span>
+            <span className="t-nota" id="demo-fila-nota">Serás Tomi, quien organiza; las otras cinco personas son simuladas. Datos ficticios.</span>
+          </span>
+        </button>
+        {error ? <ErrorCaja error={error} enfocar /> : null}
+      </>
+    )
+  }
   if (chico) {
     return (
       <>

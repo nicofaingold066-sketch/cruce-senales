@@ -81,6 +81,7 @@ function Marco({
           {identidad.espacio ? <span className="barra-espacio">{identidad.espacio}</span> : null}
           <span className="chip-ficticio">Datos ficticios</span>
         </div>
+        {conNav ? <PestanasBarra ruta={ruta} /> : null}
         <a className="barra-identidad" href={rutas.perfil()} aria-live="polite">
           {quien ? (
             <>
@@ -263,6 +264,22 @@ const SECCIONES: { nombre: 'inicio' | 'planes' | 'perfil'; texto: string; icono:
   { nombre: 'planes', texto: 'Planes', icono: 'calendario', href: rutas.planes() },
   { nombre: 'perfil', texto: 'Perfil', icono: 'persona', href: rutas.perfil() },
 ]
+
+/** Computadora (C1–C9): las mismas pestañas arriba, en la barra, con la activa subrayada. Solo se ven desde 960 px. */
+function PestanasBarra({ ruta }: { ruta: Ruta }) {
+  return (
+    <nav className="barra-pestanas" aria-label="Secciones">
+      {SECCIONES.map((s) => {
+        const activa = ruta.nombre === s.nombre
+        return (
+          <a key={s.nombre} href={s.href} className={activa ? 'barra-pestana-activa' : undefined} aria-current={activa ? 'page' : undefined}>
+            {s.texto}
+          </a>
+        )
+      })}
+    </nav>
+  )
+}
 
 /** Barra de secciones al alcance del pulgar (Inicio, Planes, Perfil). */
 function NavInferior({ ruta }: { ruta: Ruta }) {

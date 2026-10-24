@@ -40,6 +40,12 @@ export function RespuestasRapidas({
               aria-busy={ocupado || undefined}
             >
               {o.dia ? <DiaTile local={o.dia} /> : null}
+              {o.dias ? (
+                <span className="rapida-dos-fichas">
+                  <DiaTile local={o.dias[0]} />
+                  <DiaTile local={o.dias[1]} />
+                </span>
+              ) : null}
               <span className="rapida-texto">
                 <strong>{o.texto}</strong>
                 <span className="rapida-detalle">{o.detalle}</span>
