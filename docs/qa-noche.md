@@ -10,7 +10,7 @@ Dueña: sesión `qa-noche` (rama `wip/qa`). Las horas son del reloj de Santiago.
 | `red-controlada.mjs` | N1–N8, F1, F1b con red interceptada (10) | no | `node tests/e2e/red-controlada.mjs <url>` |
 | `sesiones-recuperacion.mjs` | S1–S9 y L1–L3 (12): sesión guardada, volver, identidad conservada; Auth ficticio | no | `node tests/e2e/sesiones-recuperacion.mjs` (levanta su propio Vite) |
 
-Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/backend.md` dice `MIGRACION EN CURSO` o `PRUEBA DE CARGA EN CURSO`; la guardia común está en `tests/e2e/base-libre.mjs`. Una falla 57014 o de tiempo se reintenta antes de concluir. Desde las 21:16 (aviso del coordinador: Nico probando producción; parones de ~7 s con pruebas en paralelo) toda corrida contra la base va de a UNA en todo el equipo, con la marca «CORRIENDO PRUEBA (hh:mm)» en la ficha: para eso está `turno-base.sh`.
+Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si CUALQUIER ficha de `agentes/` (backend, y desde las 23:52 pendientes) abre un ítem de «Tocando ahora» con `MIGRACION EN CURSO` o `PRUEBA DE CARGA EN CURSO` (con o sin `[hh:mm]` y `**`; una mención en prosa no frena). La guardia común está en `tests/e2e/base-libre.mjs` (01:24: antes miraba solo backend, aviso del coordinador 01:24). Una falla 57014 o de tiempo se reintenta antes de concluir. Desde las 21:16 (aviso del coordinador: Nico probando producción; parones de ~7 s con pruebas en paralelo) toda corrida contra la base va de a UNA en todo el equipo, con la marca «CORRIENDO PRUEBA (hh:mm)» en la ficha: para eso está `turno-base.sh`.
 | `toques-invitacion.mjs` | Toques del enlace de invitación a la primera respuesta, 375 px (de friccion) | sí | `node tests/e2e/toques-invitacion.mjs <url> <etiqueta>` |
 | `red-import-cortada.mjs` | #82: corte de red al importar una pantalla (reintento `?r=1`, barrera «Recargar», precarga) | sí (caso C) | `node tests/e2e/red-import-cortada.mjs <url>` |
 | `friccion-flujo.mjs` | #88, #90 (demo) y volver con el mismo enlace, de friccion (85 líneas) | sí | `node tests/e2e/friccion-flujo.mjs <url>` |
@@ -22,6 +22,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | `proposito.mjs` | Enmienda 14 (propósito del grupo): create_space con propósito, propuesta fuera de propósito rechazada con el mensaje exacto y sin crear nada, pádel aceptada, ajuste 2 (un ajeno no se entera del propósito), demo libre, «Me gustaría» por familia (0049) e invitación «para jugar fútbol». Salida 4 = 0048 no aplicada | sí | `tests/e2e/turno-base.sh "propósito" node tests/e2e/proposito.mjs <url>` |
 | `proposito-pantalla.mjs` | Enmienda 14 por la pantalla: selector «¿Para qué es este grupo?» (por defecto Libre), crear con «Fútbol» manda `p_proposito`, atajos de actividad solo de deporte (sin Asado/Cena/Café), la propuesta viaja con una actividad de deporte y el servidor la acepta, y un grupo libre ofrece 17 atajos de todas las familias | sí | `node tests/e2e/proposito-pantalla.mjs <url>` |
 | `entrada-lista.mjs` | Guarda de la entrada tipo Tricount: «¿Quién eres?» muestra la lista del grupo (Ana y Beto libres), elegir y entrar, y con la lista agotada el campo de nombre queda a la vista | sí | `node tests/e2e/entrada-lista.mjs <url>` |
+| `enmienda15-privacidad.test.ts` (vitest) | Enmienda 15 desde afuera, por RPC con dos sesiones: sin parámetros nuevos todo como hoy; con `mas_si` + ronda de 2 h, «prefiero» no sale en ninguna respuesta ajena (ni del organizador), `planes_totales` solo al organizador y sin números menores que 2 ni nombres, ronda abierta bloquea rearmar (`ronda_abierta`) y aceptar sigue; formas inválidas rechazadas sin crear nada | sí | `tests/e2e/turno-base.sh "E15" npx vitest run tests/e2e/enmienda15-privacidad.test.ts` |
 | `preparar-grupo.mjs` | Ayudante: crea grupo ficticio (Orga, Ana, Beto) y propuesta abierta | sí | lo llaman los dos anteriores |
 
 ## Cambios en los guiones
@@ -88,6 +89,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 23:54 | humo de producción (main d978cc1 + parche 2): dos sesiones **26/26**, `proposito.mjs` **25/25**, `proposito-pantalla.mjs` **10/10** | producción | verde |
 | 00:34–00:37 | turno corto sobre producción (main con parche 2): dos sesiones **26/26**; jurado **4/4** (E13 comprobada, E15 «pendiente en el servidor»: sin enmienda 15 aún); `entrada-lista.mjs` **7/7** (lista agotada: campo de nombre a la vista) | producción | verde |
 | 00:19 | `sesiones-recuperacion` L2/L3 con foco al error: estricto contra `wip/frontend` 094b192 (12/12), aviso contra fundamentos | localhost | verde |
+| 01:44 | `enmienda15-privacidad.test.ts` escrito (3 pruebas); tipos ok | — | sin correr: espero mi turno (puesto 5 de la cola del 01:44) |
 
 ## Regresiones abiertas
 (ninguna)

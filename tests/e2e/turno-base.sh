@@ -24,7 +24,8 @@ ocupada() {
     otro="${f#agentes/}"; otro="${otro%.md}"
     [ "$otro" = "$YO" ] && continue
     tocando="$(git -C "$COORD" show "origin/coordinacion:$f" 2>/dev/null | sed -n '/## Tocando ahora/,/^## /p')"
-    if [ "$otro" = backend ] && printf '%s' "$tocando" | grep -qE '^\s*-.*\*?\*?(MIGRACION EN CURSO|PRUEBA DE CARGA EN CURSO)\*?\*?'; then echo "$otro"; continue; fi
+    # Migración o medición de carga: en la ficha de CUALQUIERA (backend, y desde las 23:52 pendientes), cuando la frase abre el ítem.
+    if printf '%s' "$tocando" | grep -qiE '^[[:space:]]*-[[:space:]]*(\[[0-9]{2}:[0-9]{2}\][[:space:]]*)?(\*\*)?(MIGRACION|PRUEBA DE CARGA) EN CURSO'; then echo "$otro"; continue; fi
     if printf '%s' "$tocando" | grep -qE 'CORRIENDO PRUEBA \([0-9]{2}:[0-9]{2}'; then echo "$otro"; fi
   done
 }
