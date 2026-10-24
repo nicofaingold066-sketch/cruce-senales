@@ -6,7 +6,9 @@ import { api } from '../../lib/api'
 import { miOpinion, opinarReal, puedeOpinar } from '../opinar'
 import type { EstadoPropuesta, MiSituacion } from '../../lib/types'
 
-const situacion = (x: Partial<MiSituacion> & { mi_opinion?: unknown } = {}): MiSituacion =>
+// Se arma como registro suelto: así se puede probar también lo que el servidor NO manda hoy (por ejemplo, un valor de
+// mi_opinion que la enmienda dejó para después) sin pelear con los tipos del contrato.
+const situacion = (x: Record<string, unknown> = {}): MiSituacion =>
   ({
     miembro_id: 'm1',
     nombre: 'Ana',
@@ -19,8 +21,8 @@ const situacion = (x: Partial<MiSituacion> & { mi_opinion?: unknown } = {}): MiS
     acepte_version: false,
     puede: { abrir: false, marcar_interes: true, guardar_condiciones: false, evaluar: false, aceptar: true, retirarme: true, proponer_reparacion: false, cancelar: false, simular: false },
     ...x,
-  }) as MiSituacion
-const propuesta = (estado: EstadoPropuesta['estado'], x: Partial<MiSituacion> = {}, opcion: unknown = { version: 1 }) =>
+  }) as unknown as MiSituacion
+const propuesta = (estado: EstadoPropuesta['estado'], x: Record<string, unknown> = {}, opcion: unknown = { version: 1 }) =>
   ({ id: 'p1', estado, opcion, mi_situacion: situacion(x) }) as unknown as EstadoPropuesta
 
 test('mi_opinion: null mientras backend no lo mande; asi_no_puedo cuando viene; otro valor se ignora', () => {
