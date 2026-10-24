@@ -50,6 +50,15 @@ E-c (ronda con plazo), E-d (dos planes con etiqueta y regla "la que más Sí"), 
 - Baja sin nombre: para cualquier persona que no sea quien se retiró, `bajas[]` trae `miembro = {miembro_id: null, nombre: "Una persona", simulado: false}` y `habia_aceptado: null` (se mantienen `en` y `version`); en `historial[]`, los eventos `baja` y (0045) los eventos `aceptacion` de quien después se retiró llevan ese mismo `actor`. La propia persona ve todo con su nombre. Quien se retiró recibe `siguiente_accion.texto` "Gracias por avisar. No hace falta contar por qué." (mismo código).
 - `lugar-sim-14` "Parrilla del parque (Simulación)" en el catálogo, exactamente como la fila de apertura.
 
+### 0047: correcciones de la revisión adversarial (aplicada 21:48, aprobada por el coordinador)
+Una revisión solo de lectura (16 agentes: privacidad, motor, contrato, compatibilidad, con verificación escéptica) confirmó y se corrigió:
+1. El historial ya no dice si quien se retiró había confirmado: para los demás, sus aceptaciones no salen y su baja va sin `estado_previo`/`estado_nuevo`, `actor_tipo` ni `ejecutado_por`.
+2. `opiniones_totales` cuenta solo las opiniones de los demás (sin la del organizador, como E7.4), sobre la versión vigente, y no baja cuando alguien acepta (la aceptación es pública y con nombre). El servidor sigue exigiendo al menos una que valga (`cruce.opiniones_efectivas`).
+3. Con la versión 3 en `en_revision`: `puede.proponer_reparacion` false y `siguiente_accion` = `sin_alternativa` "Esta propuesta ya tuvo tres versiones. El organizador puede cancelarla."
+4. Si el imprescindible se retiró, los cupos no lo delatan a los demás (`reservado_imprescindible` true; nadie puede aceptar en `en_revision`).
+5. Un rearmado sin alternativa desde `esperando_compromisos` ya no marca la última evaluación como `sin_alternativa`.
+Pruebas después de 0047, en serie: enmienda13, privacidad-audiencia, aceptacion-reparacion, enmienda7 y enmienda12: 27/27 + 1 omitida (21:48:47 a 21:49:57).
+
 ### Decisiones de backend que el contrato no fijaba (confirmadas por el coordinador a las 21:44)
 1. `puede.opinar` (aditivo), para que la interfaz no calcule cuándo se puede opinar.
 2. Umbral de 2 en `puede.proponer_reparacion` (ver arriba).
