@@ -3,6 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, archivos NUEVOS en `src/friccion/**`.
 
 ## Tocando ahora
+- [21:18] Regla de las 21:16 aplicada: mis corridas contra la base van UNA a la vez, en serie, con "CORRIENDO PRUEBA (hh:mm)" en esta ficha mientras duran y mirando antes que ninguna otra ficha lo tenga. Aviso honesto: entre 21:00 y 21:05 lancé dos guiones a la vez (friccion-e2e y dos sesiones) contra la base; no vuelve a pasar.
 - [21:11] (nada en edición) `wip/friccion` = `2a7a62f` (= `72e60da` + merge de `wip/fundamentos`). Contra la base pendiente (MIGRACION EN CURSO de la enmienda 13); apenas se libere: mi guion (29 comprobaciones), dos sesiones y jurado.
 
 ## Entregado
