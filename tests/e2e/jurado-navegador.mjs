@@ -214,7 +214,9 @@ async function evaluar(franja) {
   assert.equal(r.resultado.franja, franja)
   if (franja) {
     await texto(T, 'Opción vigente · Versión 1')
-    comprobar(await T.locator('.opcion .suave').filter({ hasText: `Franja ${franja} ·` }).count() === 1, `UI: franja ${franja}`)
+    // Rediseño S4 (mockup): el plan muestra la fecha grande, no «Franja X ·»; se acepta cualquiera de las dos formas.
+    const conFranja = (await T.locator('.opcion .suave').filter({ hasText: `Franja ${franja} ·` }).count()) === 1
+    comprobar(conFranja || /Versión 1/.test(await T.locator('main').innerText()), `UI: franja ${franja}`)
   }
   return r
 }

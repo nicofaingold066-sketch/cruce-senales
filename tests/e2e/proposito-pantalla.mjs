@@ -106,6 +106,7 @@ try {
 } catch (e) {
   fallidas++
   paso(`ERROR: ${String(e?.message ?? e).split('\n')[0]}`)
+  try { paso(`grupos en pantalla: ${JSON.stringify(await T.locator('[role=group], fieldset').evaluateAll((els) => els.map((el) => `${el.tagName}:${el.getAttribute('aria-label') ?? el.querySelector('legend')?.textContent ?? ''}|${getComputedStyle(el).visibility}|${getComputedStyle(el).display}|${el.getBoundingClientRect().height}`)))}`) } catch { /* sin detalle */ }
   try { if (process.env.CRUXE_CAPTURAS) await T.screenshot({ path: `${process.env.CRUXE_CAPTURAS}/proposito-pantalla-error.png`, fullPage: true }) } catch { /* sin captura */ }
 } finally {
   if (propuestaCreada) { try { await T.evaluate(() => 0); await T.goto(`${BASE}/#/`) } catch { /* sigue */ } }

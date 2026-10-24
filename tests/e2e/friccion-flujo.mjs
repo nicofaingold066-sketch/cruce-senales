@@ -60,7 +60,7 @@ try {
   } else console.log(`[${hora()}] E15 pendiente en este build: sin «Prefiero «…»» tras responder`)
   // S5 exacto al mockup: la fila dice «Avisar que me interesa (opcional · lo ve el grupo)» y aclara que no es confirmar.
   ver('#88: "Me interesa" es opcional y aparte', (await A.p.getByRole('button', { name: /^(Me interesa|Avisar que me interesa)/ }).count()) === 1 && (await A.p.getByText(/Interés no es confirmación|no es confirmar|no es una confirmación|opcional/).count()) > 0)
-  await A.p.getByRole('link', { name: 'Ver el plan' }).click()
+  await A.p.getByRole('link', { name: /^(Ver el plan|Listo)$/ }).first().click() // S5: tras responder, el primario es «Listo»
   // Rediseño S4: sin pestaña «Mi respuesta»; el plan muestra la fila «Tu respuesta: … · Cambiar ›» con lo respondido.
   const filaRespuesta = A.p.locator('a.fila[href*="/responder/"]').first()
   const completas = await filaRespuesta.waitFor({ timeout: 15000 }).then(() => true, () => false)
