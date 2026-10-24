@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../lib/api'
 import type { TipoEspacio } from '../lib/types'
@@ -31,9 +31,31 @@ export default function CrearGrupo() {
   const tipo: TipoEspacio = 'amigos'
   const { ocupado, error, ejecutar } = useAccion()
   const faltan = nombre.trim() === '' || visible.trim() === ''
+  // Entrada como Tricount: con la lista del grupo, al abrir el enlace cada uno toca su nombre. Sin ella, cada uno tiene
+  // que escribirlo y no hay a quién elegir; por eso, con la lista vacía, "Crear grupo" pide confirmar una vez.
+  const [preguntarSinLista, setPreguntarSinLista] = useState(false)
+  const zonaIntegrantes = useRef<HTMLDivElement>(null)
+  // Un nombre escrito y no agregado (el campo de CampoIntegrantes) se pierde al crear: se avisa en la misma pregunta.
+  const escritoSinAgregar = () => (zonaIntegrantes.current?.querySelector('input')?.value.trim() ?? '') !== ''
 
-  async function hacer(e: FormEvent) {
+  function irALista() {
+    setPreguntarSinLista(false)
+    const campo = zonaIntegrantes.current?.querySelector('input')
+    campo?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    campo?.focus({ preventScroll: true })
+  }
+
+  function hacer(e: FormEvent) {
     e.preventDefault()
+    if (faltan) return
+    if (integrantes.length === 0) {
+      setPreguntarSinLista(true)
+      return
+    }
+    void crear()
+  }
+
+  async function crear() {
     if (faltan) return
     const r = await ejecutar(`crear:${nombre}:${tipo}:${visible}:${integrantes.join('|')}`, () =>
       api.createSpace(conQuienViene(nombre.trim(), quienViene), tipo, visible.trim(), integrantes),
@@ -54,8 +76,8 @@ export default function CrearGrupo() {
         <span className="escena-eyebrow">Nuevo grupo</span>
         <h1 id="crear-titulo">Crear un grupo</h1>
         <p className="escena-sub">
-          Un grupo es la gente con la que siempre dicen «nos juntamos». {ayudaGrupo(ej)} Lo creas, compartes el enlace y cada uno
-          entra desde su teléfono.
+          Un grupo es la gente con la que siempre dicen «nos juntamos». {ayudaGrupo(ej)} Anota a todos, comparte el enlace y cada
+          uno entra desde su teléfono tocando su nombre.
         </p>
       </section>
       <div className="hoja">
@@ -72,13 +94,44 @@ export default function CrearGrupo() {
               <small>Así te van a ver los demás en este grupo.</small>
             </label>
           </fieldset>
-          <CampoIntegrantes integrantes={integrantes} cambiar={setIntegrantes} tuNombre={visible} />
+          <div ref={zonaIntegrantes}>
+            <CampoIntegrantes
+              integrantes={integrantes}
+              cambiar={(lista) => {
+                setIntegrantes(lista)
+                if (lista.length > 0) setPreguntarSinLista(false)
+              }}
+              tuNombre={visible}
+            />
+          </div>
+          {/* Lo que va a ver cada uno al abrir el enlace: su nombre para tocar (enmienda 9, "¿Quién eres?"). */}
+          <p className="suave lista-resumen" aria-live="polite">
+            {integrantes.length > 0
+              ? `Al abrir el enlace, cada uno toca su nombre: ${[visible.trim() ? `${visible.trim()} (tú)` : 'tú', ...integrantes].join(', ')}.`
+              : 'Anota a los del grupo: al abrir el enlace, cada uno toca su nombre y listo. Puedes pegar la lista del chat.'}
+          </p>
           <CampoQuienViene valor={quienViene} cambiar={setQuienViene} nombre={nombre} />
           <Aviso tono="info">
             Vas a ser quien organiza: creas las propuestas y buscas la opción compatible. Las condiciones de cada persona son
             privadas, también para ti.
           </Aviso>
           {error ? <ErrorCaja error={error} enfocar /> : null}
+          {preguntarSinLista ? (
+            <Aviso tono="aviso" titulo="¿Crear sin la lista del grupo?">
+              {escritoSinAgregar()
+                ? 'Escribiste un nombre pero no lo agregaste: toca «Agregar» para que quede en la lista. '
+                : ''}
+              Sin la lista, al abrir el enlace nadie tiene un nombre para tocar: cada uno tiene que escribir el suyo.
+              <div className="fila-botones">
+                <Boton autoFocus onClick={irALista}>
+                  Agregar nombres
+                </Boton>
+                <Boton variante="secundario" onClick={() => void crear()} ocupado={ocupado} ocupadoTexto="Creando…" disabled={soloLectura}>
+                  Crear sin lista
+                </Boton>
+              </div>
+            </Aviso>
+          ) : null}
           <div className="barra-accion">
             <Boton type="submit" ocupado={ocupado} ocupadoTexto="Creando…" disabled={faltan || soloLectura}>
               Crear grupo

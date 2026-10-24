@@ -187,9 +187,17 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
               <h2 id="invitar-titulo">Invita a tu grupo</h2>
               <p className="suave">
                 {dentro <= 1 ? 'Por ahora estás solo' : `Por ahora entraron ${dentro}`} en «{espacio.nombre}».
-                {porEntrar.length > 0 ? ` Faltan por entrar: ${porEntrar.map((m) => m.nombre).join(', ')}.` : ''} Manda el
-                enlace: cada persona entra desde su teléfono con su nombre, sin crear cuenta.
+                {porEntrar.length > 0
+                  ? ` Faltan por entrar: ${porEntrar.map((m) => m.nombre).join(', ')}. Manda el enlace: cada uno toca su nombre y entra desde su teléfono, sin crear cuenta.`
+                  : ' Manda el enlace: cada persona entra desde su teléfono con su nombre, sin crear cuenta.'}
               </p>
+              {/* Grupo creado sin la lista: al abrir el enlace no hay nombre para tocar y cada uno escribe el suyo. Agregar
+                  integrantes después necesita una operación nueva del servidor (pedido a backend). */}
+              {esOrganizador && porEntrar.length === 0 && dentro <= 1 ? (
+                <p className="suave">
+                  Como el grupo se creó sin la lista, al abrir el enlace cada uno escribe su nombre en «No estoy en la lista».
+                </p>
+              ) : null}
               <a
                 className="btn btn-primario btn-chico"
                 href={urlWhatsApp(textoInvitacion(espacio.nombre, espacio.codigo_invitacion))}
