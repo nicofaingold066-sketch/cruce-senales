@@ -122,3 +122,25 @@ Mismos bloques, mismos botones y mismos rótulos que en móvil; cambia solo cóm
 - La pantalla de móvil, centrada en una columna de **640 px**; las filas cortas van de a dos por fila; la barra inferior queda, centrada en los 640 px.
 - Las hojas (nueva propuesta, crear grupo, "+") suben desde abajo con 640 px de ancho.
 - iPad apaisado (1024 px o más): como computadora.
+
+# Microinteracciones y sensación premium (Nico, 03:11: "en todas")
+
+Condición de entrega: ninguna sección se acepta sin esto. Se usan las animaciones base de `src/estilo/sistema.css` (`wip/diseno` cc18c7c: presión, aparición escalonada, hoja desde abajo, `.sd-respira`, `.sd-confirmado`, chips que laten, `.sd-pasos`); no se inventan otras. Duraciones 150–300 ms, curvas suaves, todo quieto con `prefers-reduced-motion`. Cada entrega lista qué aplicó.
+
+| Dónde | Qué se siente |
+|---|---|
+| Todos los botones y filas tocables | Presión al tocar (escala 0.98 + sombra que baja) y vuelta suave. |
+| Todas las listas de cards (grupos, planes, nombres, opciones) | Aparecen escalonadas, 40 ms entre cada una, con fade y 8 px desde abajo. |
+| Hojas desde abajo (el "+", nueva propuesta, crear grupo, revisar el borrador) | Suben en 240 ms con el velo atenuando el fondo; la X las baja. |
+| Chips de selección (qué hacen, clima, finde) | Laten una vez al seleccionarse y cambian de relleno con transición. |
+| Cambio de nivel (home → grupo → plan) | La cabecera del nivel nuevo aparece con fade; el "‹" vuelve con el mismo movimiento al revés. |
+| Bloque de resultado del plan | "Respira" una vez (escala 1 → 1.01 → 1) cuando cambia de estado o llega una versión nueva. |
+| Confirmar versión N | El botón pasa a "Confirmado ✓" con un pulso; el avatar propio se enciende (de punteado a lleno) con transición; la barra "N de M" avanza animada. |
+| ¡Se juntan! | El Confeti existente, una sola vez, al entrar en ese estado. |
+| Respondiste | El check grande se dibuja en 300 ms; el texto aparece después. |
+| Agente trabajando | Los cuatro pasos aparecen de a uno, cada 600 ms, con un punto que late en el paso actual; el resultado entra con fade y el bloque "respira". |
+| Avisos y errores | Entran con fade; nunca saltan la pantalla. "Reintentar" tiene presión. |
+| Tira de pasos (Respuestas · Opción · Confirmar · Encuentro) | El relleno del paso actual se completa animado al cambiar de etapa. |
+| Carga de datos | Esqueletos grises con brillo suave en lugar de "Cargando…", 1 ciclo por segundo. |
+
+Lo que NO: parallax, rebotes exagerados, gradientes que giran, fuentes que cambian de tamaño, nada que tarde más de 300 ms o que retrase la aparición de un rótulo que un guion busca.
