@@ -63,9 +63,9 @@ function Marco({
   const ruta = useRuta()
   const perfil = usePerfil()
   // Navegación inferior solo en las pantallas principales; en un plan o un formulario se oculta, como durante un viaje.
-  // En el ingreso (portada sin nombre) tampoco: la pantalla tiene una sola tarea.
+  // En el ingreso (pantalla 9, portada sin nombre ni grupos) tampoco: la oculta seccion-s1.css, que sabe cuándo se ve.
   const conNav =
-    sesion.fase === 'lista' && ((ruta.nombre === 'inicio' && perfil != null) || ruta.nombre === 'planes' || ruta.nombre === 'perfil')
+    sesion.fase === 'lista' && (ruta.nombre === 'inicio' || ruta.nombre === 'planes' || ruta.nombre === 'perfil')
   const quien = identidad.yo ?? perfil?.nombre ?? null
 
   return (

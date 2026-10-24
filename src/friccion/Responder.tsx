@@ -230,54 +230,6 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
               ) : null}
               {guardar.error ? <ErrorCaja error={guardar.error} enfocar /> : null}
             </section>
-
-            {/* Mockup (pantalla 6): lo opcional, chico y debajo, cada cosa diciendo quién la ve. */}
-            <section className="s5-opcional" aria-labelledby="s5-opcional-titulo">
-              <h2 id="s5-opcional-titulo" className="s5-opcional-titulo">
-                Opcional
-              </h2>
-              {s.puede.marcar_interes && !s.interesado ? (
-                <FilaInteres nota="(lo ve el grupo)" onTocar={() => void marcarInteres()} ocupado={interes.ocupado} deshabilitado={soloLectura} />
-              ) : null}
-              {s.interesado ? <p className="t-nota">Ya avisaste que te interesa (lo ve el grupo; no es confirmar).</p> : null}
-              {interesNota ? <p role="status">{interesNota}</p> : null}
-              {interes.error ? <ErrorCaja error={interes.error} enfocar /> : null}
-              <a
-                className="s5-fila-opcional s5-fila-enlace"
-                href={rutas.espacio(espacioId)}
-                onClick={() => {
-                  // El grupo abre "Mis preferencias" si encuentra esta marca.
-                  try {
-                    sessionStorage.setItem('cruxe:abrir-preferencias', '1')
-                  } catch {
-                    // Sin almacenamiento: se llega al grupo igual.
-                  }
-                }}
-              >
-                <span>
-                  Mis gustos y presupuesto <span className="t-nota">(privado)</span>
-                </span>
-                <Icono n="chevron" tam={18} />
-              </a>
-              {/* #90: la agenda es ficticia (simulación) y solo SUGIERE; responder sigue siendo tocar la opción. */}
-              {p.franjas.length > 0 ? (
-                <TomarDeCalendario
-                  fila
-                  franjas={p.franjas}
-                  semilla={s.miembro_id}
-                  deshabilitado={soloLectura || guardar.ocupado}
-                  textoUsar="Ver qué sugiere mi agenda"
-                  onTomar={(d) => {
-                    const o = opciones.find((x) => p.franjas.every((f) => x.disponibilidad[f.clave] === d[f.clave]))
-                    if (!o) return
-                    setSugerida(o.id)
-                    const b = document.getElementById(`rapida-${o.id}`)
-                    b?.scrollIntoView({ block: 'center', behavior: 'smooth' })
-                    b?.focus({ preventScroll: true })
-                  }}
-                />
-              ) : null}
-            </section>
           </>
         ) : (
           <>
@@ -352,6 +304,58 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
           </>
         )}
       </div>
+      {!elegida ? (
+        <>
+          {/* Pantalla 6: lo opcional, chico y debajo, cada cosa diciendo quién la ve. Fuera de la hoja para que en la
+              computadora (C6) quede a la izquierda, bajo el título; en el teléfono sigue la hoja. */}
+          <section className="s5-opcional s5-opcional-afuera" aria-labelledby="s5-opcional-titulo">
+            <h2 id="s5-opcional-titulo" className="s5-opcional-titulo">
+              Opcional
+            </h2>
+            {s.puede.marcar_interes && !s.interesado ? (
+              <FilaInteres nota="(lo ve el grupo)" onTocar={() => void marcarInteres()} ocupado={interes.ocupado} deshabilitado={soloLectura} />
+            ) : null}
+            {s.interesado ? <p className="t-nota">Ya avisaste que te interesa (lo ve el grupo; no es confirmar).</p> : null}
+            {interesNota ? <p role="status">{interesNota}</p> : null}
+            {interes.error ? <ErrorCaja error={interes.error} enfocar /> : null}
+            <a
+              className="s5-fila-opcional s5-fila-enlace"
+              href={rutas.espacio(espacioId)}
+              onClick={() => {
+                // El grupo abre "Mis preferencias" si encuentra esta marca.
+                try {
+                  sessionStorage.setItem('cruxe:abrir-preferencias', '1')
+                } catch {
+                  // Sin almacenamiento: se llega al grupo igual.
+                }
+              }}
+            >
+              <span>
+                Mis gustos y presupuesto <span className="t-nota">(privado)</span>
+              </span>
+              <Icono n="chevron" tam={18} />
+            </a>
+            {/* #90: la agenda es ficticia (simulación) y solo SUGIERE; responder sigue siendo tocar la opción. */}
+            {p.franjas.length > 0 ? (
+              <TomarDeCalendario
+                fila
+                franjas={p.franjas}
+                semilla={s.miembro_id}
+                deshabilitado={soloLectura || guardar.ocupado}
+                textoUsar="Ver qué sugiere mi agenda"
+                onTomar={(d) => {
+                  const o = opciones.find((x) => p.franjas.every((f) => x.disponibilidad[f.clave] === d[f.clave]))
+                  if (!o) return
+                  setSugerida(o.id)
+                  const b = document.getElementById(`rapida-${o.id}`)
+                  b?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+                  b?.focus({ preventScroll: true })
+                }}
+              />
+            ) : null}
+          </section>
+        </>
+      ) : null}
     </div>
   )
 }

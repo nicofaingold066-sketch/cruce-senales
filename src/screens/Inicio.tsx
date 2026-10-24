@@ -134,7 +134,9 @@ function TeToca({ plan }: { plan: PlanActivo }) {
 /** Fila del grupo (pantalla 1): "6 personas · sáb 31 oct, 14:00" con la opción vigente; si no hay, el estado; si no, "sin plan todavía". */
 function FilaGrupo({ e, plan }: { e: EspacioResumen; plan: PlanActivo | null }) {
   const personas = `${e.cantidad_miembros} ${e.cantidad_miembros === 1 ? 'persona' : 'personas'}`
-  const estado = plan ? (plan.fecha ?? plan.p.estado_etiqueta.toLocaleLowerCase('es')) : 'sin plan todavía'
+  // 0056: el servidor trae la fecha del plan destacado; hasta que se aplique, la del estado de la propuesta.
+  const fecha = e.fecha_local ? momentoCorto(e.fecha_local) : e.fecha_local === undefined ? (plan?.fecha ?? null) : null
+  const estado = fecha ?? (plan ? plan.p.estado_etiqueta.toLocaleLowerCase('es') : 'sin plan todavía')
   return (
     <li>
       <a className="fila s1-fila-grupo" href={rutas.espacio(e.id)}>
@@ -306,6 +308,7 @@ interface PlanActivo {
 const fechas = new Map<string, { rev: number; fecha: string | null }>()
 const CON_OPCION = new Set(['esperando_compromisos', 'grupo_confirmado'])
 async function fechaDe(p: PropuestaResumen): Promise<string | null> {
+  if (p.fecha_local !== undefined) return p.fecha_local ? momentoCorto(p.fecha_local) : null
   if (!CON_OPCION.has(p.estado)) return null
   const guardada = fechas.get(p.id)
   if (guardada && guardada.rev === p.state_rev) return guardada.fecha

@@ -7,7 +7,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import type { UnirseOk } from '../lib/api'
-import type { ApiError, ApiResult } from '../lib/types'
+import type { ApiError, ApiResult, PlanPorCodigo } from '../lib/types'
+import { momentoCorto } from '../lib/format'
 import { useAccion } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { entrarComoOtraPersona, leerGuardada } from '../lib/sesiones'
@@ -32,6 +33,9 @@ export interface VistaPorCodigo {
   /** `proposito` (enmienda 14): la clave que eligió quien creó el grupo; falta en respuestas anteriores a la enmienda. */
   espacio: { nombre: string; demo: boolean; proposito?: Proposito }
   miembros: MiembroPorReclamar[]
+  /** 0056 (opcionales hasta que se aplique): quién organiza y el plan destacado, para "Tomi te invitó a". */
+  organizador?: string | null
+  plan?: PlanPorCodigo | null
 }
 
 /** Las operaciones de la enmienda 9. */
@@ -254,9 +258,15 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
   return (
     <div className="vista s1 s1-quien">
       <section className="escena escena-invitacion" aria-labelledby="quien-titulo">
-        <span className="escena-eyebrow">{vista ? 'Te invitaron a' : 'Invitación a CRUXE'}</span>
+        <span className="escena-eyebrow">{vista ? (vista.organizador ? `${vista.organizador} te invitó a` : 'Te invitaron a') : 'Invitación a CRUXE'}</span>
         {/* El nombre del grupo va grande pero fuera de los títulos: los guiones esperan el título del grupo para saber que ya se entró. */}
         {vista ? <p className="s1-grupo-grande">{nombreEspacio}</p> : null}
+        {vista?.plan ? (
+          <p className="quien-espacio s1-plan-linea">
+            {vista.plan.titulo}
+            {vista.plan.fecha_local ? ` · ${momentoCorto(vista.plan.fecha_local)}` : ''}
+          </p>
+        ) : null}
         {reglaEspacio ? <p className="quien-espacio quien-regla">{FRASE_QUIEN_VIENE[reglaEspacio]}</p> : null}
         {vista && fraseProposito(vista.espacio.proposito) ? <p className="quien-espacio quien-regla">Este grupo es {fraseProposito(vista.espacio.proposito)}.</p> : null}
         <h1 id="quien-titulo" ref={titulo} tabIndex={-1}>

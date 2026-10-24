@@ -10,7 +10,7 @@ const conNombres = [fr('A', '2026-10-31', 'Asado en el parque'), fr('B', '2026-1
 
 test('dos días sin nombres: cuatro opciones, como hasta hoy', () => {
   const o = opcionesRapidas(dos)!
-  expect(o.map((x) => x.texto)).toEqual(['Puedo los dos días', 'Solo el sábado 31', 'Solo el domingo 1', 'No puedo ninguno'])
+  expect(o.map((x) => x.texto)).toEqual(['Puedo los dos días', 'Solo el sábado', 'Solo el domingo', 'No puedo ninguno'])
   expect(o[0].detalle).toBe('Sábado 31 oct y Domingo 1 nov, 14:00 a 17:00')
   expect(o[1].detalle).toBe('14:00 a 17:00 · el domingo queda como No')
   expect(o[1].disponibilidad).toEqual({ A: 'si', B: 'no' })
@@ -18,7 +18,7 @@ test('dos días sin nombres: cuatro opciones, como hasta hoy', () => {
 
 test('dos planes con nombre (H24): el nombre va en cada opción; los rótulos empiezan igual (los guiones los buscan)', () => {
   const o = opcionesRapidas(conNombres)!
-  expect(o.map((x) => x.texto)).toEqual(['Puedo los dos días', 'Solo el sábado 31 · Asado en el parque', 'Solo el domingo 1 · Cine y pizza', 'No puedo ninguno'])
+  expect(o.map((x) => x.texto)).toEqual(['Puedo los dos días', 'Solo el sábado · Asado en el parque', 'Solo el domingo · Cine y pizza', 'No puedo ninguno'])
   expect(o[0].detalle).toBe('Asado en el parque (sábado 31 oct) y Cine y pizza (domingo 1 nov)')
   expect(o[1].texto).toMatch(/^Solo el /)
   expect(o[0].texto).toMatch(/^Puedo los dos días/)
@@ -27,7 +27,12 @@ test('dos planes con nombre (H24): el nombre va en cada opción; los rótulos em
 
 test('etiqueta vacía o con espacios cuenta como sin nombre', () => {
   const o = opcionesRapidas([fr('A', '2026-10-31', '  '), fr('B', '2026-11-01', null)])!
-  expect(o[1].texto).toBe('Solo el sábado 31')
+  expect(o[1].texto).toBe('Solo el sábado')
+})
+
+test('dos días que caen el mismo día de la semana llevan el número', () => {
+  const o = opcionesRapidas([fr('A', '2026-10-31'), fr('B', '2026-11-07')])!
+  expect(o.map((x) => x.texto)).toEqual(['Puedo los dos días', 'Solo el sábado 31', 'Solo el sábado 7', 'No puedo ninguno'])
 })
 
 test('una franja y tres franjas', () => {
