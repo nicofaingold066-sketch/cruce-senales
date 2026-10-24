@@ -16,7 +16,7 @@ const JUEGOS = {
   viejo: { ORG: 'Ana', CAM: 'Camila', PIA: 'Gabriela', TODOS: ['Ana', 'Bruno', 'Camila', 'Diego', 'Elena', 'Felipe', 'Gabriela'] },
   nuevo: { ORG: 'Bastián', CAM: 'Carlos', PIA: 'Pía', TODOS: ['Bastián', 'Nacho', 'Carlos', 'Kai', 'Charlie', 'Joaco', 'Pía'] },
 }
-let ORG = 'Ana', CAM = 'Camila', PIA = 'Gabriela', TODOS = JUEGOS.viejo.TODOS, copyPortada = 'viejo'
+let ORG = 'Ana', CAM = 'Camila', PIA = 'Gabriela', TODOS = JUEGOS.viejo.TODOS, copyPortada = 'viejo', TOT = 7
 const esc = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const limpio = (t) => t.replace(/\s+/g, ' ').trim()
 async function paso(nombre, f) {
@@ -140,12 +140,27 @@ await conTurno('qa-gente vuelta 2 bloque i', async () => {
     // i6 · Camila entra por el enlace desde otro contexto y reclama su asiento
     const camila = await new Persona(browser, 'Invitada').abrir(); todas.push(camila)
     await paso(`i6 ${CAM} reclama su asiento`, async () => {
-      const via = await entrarPorEnlace(camila, codigo, CAM)
-      inf.ok(`i6: ${CAM} encuentra su nombre en «¿Quién eres?» (lista, no escrito)`, via === 'lista', `entró por: ${via}`)
+      // ¿Está el lugar libre? Desde 0060 los seis simulados traen gustos y `cruce.asiento_usado` los cuenta: puede que ya no se pueda reclamar.
+      await camila.page.goto(`${BASE}/#/unirse/${codigo}`)
+      await camila.page.getByRole('heading', { name: /^(¿Quién eres\?|Escribe tu nombre para entrar)$/ }).waitFor({ timeout: 45000 })
+      const enLista = await camila.page.getByRole('button', { name: CAM, exact: true }).waitFor({ timeout: 6000 }).then(() => true, () => false)
+      const cuerpo = limpio(await camila.page.locator('body').innerText())
+      inf.ok(`i6: ${CAM} (persona simulada de la demo) aparece en «¿Quién eres?» para reclamar su lugar`, enLista, enLista ? '' : `la lista no la ofrece: «${cuerpo.match(/(Escribe tu nombre|¿Quién eres\?)[^]{0,260}/)?.[0] ?? cuerpo.slice(0, 200)}»`)
+      if (!enLista) {
+        await camila.captura('i6-sin-lugar-para-reclamar-375')
+        // Se prueba lo que ofrece la pantalla: escribir el nombre de la persona simulada («reclamas su lugar»).
+        const no = camila.page.getByRole('button', { name: /No estoy en la lista/ }); if (await no.isVisible().catch(() => false)) await no.click()
+        await camila.page.getByLabel(/Tu nombre/).first().fill(CAM); await camila.page.getByRole('button', { name: /^(Unirme|Entrar)$/ }).first().click(); await dormir(2500)
+        const rech = limpio(await camila.page.locator('body').innerText()); const cod = camila.rpc.filter((r) => r.fn === 'join_space').map((r) => r.codigo || 'ok').join(',')
+        inf.ok(`i6: escribir «${CAM}» (nombre de una persona simulada) reclama su lugar, como promete la pantalla`, !/asiento_en_uso/.test(cod) && !/ya tiene actividad simulada/.test(rech), `join_space → ${cod || 'sin llamada'}; «${rech.match(/Ese asiento[^]{0,120}/)?.[0] ?? rech.slice(0, 160)}»`)
+        await camila.captura('i6-reclamo-escrito-rechazado-375')
+        CAM = 'Camila Qa'; TOT += 1 // para seguir con el resto del flujo entra como una persona nueva
+      }
+      await entrarPorEnlace(camila, codigo, CAM)
       await esperarDestino(camila)
       await dormir(800)
       const t = limpio(await camila.page.locator('body').innerText())
-      inf.ok(`i6: ${CAM} ve el aviso «Reclamaste el lugar de ${CAM}»`, new RegExp(`Reclamaste el lugar de ${CAM}|Entraste como ${CAM}`).test(t), t.match(/(Reclamaste|Entraste)[^.]{0,80}/)?.[0] ?? limpio(t).slice(0, 120))
+      inf.ok(`i6: ${CAM} ve el aviso «Reclamaste el lugar de ${CAM}»`, new RegExp(`Reclamaste el lugar de ${CAM}|Entraste como ${CAM}|Te uniste a`).test(t), t.match(/(Reclamaste|Entraste)[^.]{0,80}/)?.[0] ?? limpio(t).slice(0, 120))
       inf.ok(`i6: ${CAM} queda en «¿Cuándo puedes?» o en el grupo, sin error`, /¿Cuándo puedes\?|Integrantes del grupo/.test(t) && !/Falla temporal|undefined|NaN/.test(t), '')
       await anchos(camila, `${CAM} tras reclamar`); await camila.captura('i6-camila-reclama-375')
       if (await camila.page.getByRole('heading', { name: '¿Cuándo puedes?' }).isVisible().catch(() => false)) {
@@ -180,7 +195,7 @@ await conTurno('qa-gente vuelta 2 bloque i', async () => {
     await paso('i7 reflejo en el grupo', async () => {
       await p.goto(urlPlan); await p.reload(); await p.locator('.estado-hero-etiqueta').first().waitFor({ timeout: 30000 }); await dormir(1200)
       let t = limpio(await textoMain(p))
-      inf.ok('i7: el plan de quien organiza ahora dice «2 de 7 respondieron»', /2 de 7 respondieron/.test(t), t.match(/\d+ de \d+ respondieron/)?.[0] ?? 'sin conteo')
+      inf.ok(`i7: el plan de quien organiza ahora dice «2 de ${TOT} respondieron»`, new RegExp(`2 de ${TOT} respondieron`).test(t), t.match(/\d+ de \d+ respondieron/)?.[0] ?? 'sin conteo')
       inf.ok('i7: «Participación del plan» sigue visible y aclara que el interés no confirma', /Participación del plan/.test(t) && /no confirma/.test(t), '')
       await anchos(ana, 'plan tras Camila'); await ana.captura('i7-plan-tras-camila-375')
       await p.goto(`${BASE}/#/e/${espacioId}`); await p.reload(); await p.getByText('Actividad del grupo').first().waitFor({ timeout: 30000 }); await dormir(1200)
@@ -200,7 +215,7 @@ await conTurno('qa-gente vuelta 2 bloque i', async () => {
       await p.getByRole('button', { name: /^Confirmar versión 1/ }).waitFor({ timeout: 30000 }); await dormir(800)
       let t = limpio(await textoMain(p))
       inf.ok('i8: la versión 1 muestra «desde las 16:00 · sin hora de fin»', /desde las 16:00 · sin hora de fin/.test(t) && !/16:00 a 04:00/.test(t), t.match(/[^.]{0,50}sin hora de fin/)?.[0] ?? 'no aparece')
-      inf.ok('i8: «Participación del plan» pasa a «Versión 1 · 0 confirmaciones» y lista 7 «Sin confirmar esta versión»', /Versión 1 · 0 confirmaciones/.test(t) && /7\s*Sin confirmar esta versión/.test(t), t.match(/Participación del plan[^]{0,200}/)?.[0] ?? '')
+      inf.ok(`i8: «Participación del plan» pasa a «Versión 1 · 0 confirmaciones» y lista ${TOT} «Sin confirmar esta versión»`, /Versión 1 · 0 confirmaciones/.test(t) && new RegExp(`${TOT}\\s*Sin confirmar esta versión`).test(t), t.match(/Participación del plan[^]{0,200}/)?.[0] ?? '')
       await anchos(ana, 'versión publicada'); await ana.captura('i8-version-publicada-375')
       await p.getByRole('button', { name: /^Confirmar versión 1/ }).click(); await dormir(1800)
       t = limpio(await textoMain(p))

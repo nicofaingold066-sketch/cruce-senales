@@ -1,0 +1,21 @@
+[11:36:03 a. m.] turno tomado 11:35: qa-gente vuelta 2 bloque f
+[11:36:08 a. m.] PASS f1 (H7): quien llega por una invitación en su primera visita NO ve la intro → lista visible a los 1291 ms; desborde 0 px
+[11:36:08 a. m.] PASS f1: puede tocar su nombre de inmediato (< 3 s desde el enlace) → 1291 ms
+[11:36:09 a. m.] PASS f1: del enlace a ¿Cuándo puedes? sin intro → 2114 ms en total
+[11:36:11 a. m.] PASS f1: después de la invitación la intro ya no vuelve en la portada (queda marcada como vista)
+[11:36:11 a. m.] PASS f2: la primera visita a la portada muestra la intro → 480 ms hasta verla
+[11:36:13 a. m.] PASS f2: «Saltar intro» recibe el foco al abrir
+[11:36:15 a. m.] PASS f2: la intro termina sola y dura ≲ 4,5 s (2,6 s + salida) → 3553 ms desde abrir
+[11:36:15 a. m.] PASS f2: al terminar, la portada es usable (hay «Crear un grupo» o «Probar la demo») y sin desborde → desborde 0 px
+[11:36:16 a. m.] PASS f3: «Saltar intro» cierra en < 1 s → 339 ms
+[11:36:16 a. m.] PASS f3: el scroll de la página se restituye tras la intro → clip visible
+[11:36:17 a. m.] PASS f3: Escape cierra la intro
+[11:36:19 a. m.] PASS f4: a la segunda visita la intro no vuelve
+[11:36:20 a. m.] PASS f5: con «reducir movimiento» no hay intro
+[11:36:22 a. m.] PASS f6: la intro a 320 px no genera desborde → 0 px
+[11:36:26 a. m.] PASS f7: con el almacenamiento bloqueado la intro termina y se puede usar la portada → errores de consola nuevos: 0
+[11:36:46 a. m.] PASS f7: con el almacenamiento bloqueado, una invitación entra directo (sin intro)
+[11:36:46 a. m.] PASS sin errores de consola
+[11:36:49 a. m.] turno liberado
+f-intro: 17 PASS, 0 FAIL
+JSON {"guion":"f-intro","filas":[{"nombre":"f1 (H7): quien llega por una invitación en su primera visita NO ve la intro","cond":true,"detalle":"lista visible a los 1291 ms; desborde 0 px"},{"nombre":"f1: puede tocar su nombre de inmediato (< 3 s desde el enlace)","cond":true,"detalle":"1291 ms"},{"nombre":"f1: del enlace a ¿Cuándo puedes? sin intro","cond":true,"detalle":"2114 ms en total"},{"nombre":"f1: después de la invitación la intro ya no vuelve en la portada (queda marcada como vista)","cond":true,"detalle":""},{"nombre":"f2: la primera visita a la portada muestra la intro","cond":true,"detalle":"480 ms hasta verla"},{"nombre":"f2: «Saltar intro» recibe el foco al abrir","cond":true,"detalle":""},{"nombre":"f2: la intro termina sola y dura ≲ 4,5 s (2,6 s + salida)","cond":true,"detalle":"3553 ms desde abrir"},{"nombre":"f2: al terminar, la portada es usable (hay «Crear un grupo» o «Probar la demo») y sin desborde","cond":true,"detalle":"desborde 0 px"},{"nombre":"f3: «Saltar intro» cierra en < 1 s","cond":true,"detalle":"339 ms"},{"nombre":"f3: el scroll de la página se restituye tras la intro","cond":true,"detalle":"clip visible"},{"nombre":"f3: Escape cierra la intro","cond":true,"detalle":""},{"nombre":"f4: a la segunda visita la intro no vuelve","cond":true,"detalle":""},{"nombre":"f5: con «reducir movimiento» no hay intro","cond":true,"detalle":""},{"nombre":"f6: la intro a 320 px no genera desborde","cond":true,"detalle":"0 px"},{"nombre":"f7: con el almacenamiento bloqueado la intro termina y se puede usar la portada","cond":true,"detalle":"errores de consola nuevos: 0"},{"nombre":"f7: con el almacenamiento bloqueado, una invitación entra directo (sin intro)","cond":true,"detalle":""},{"nombre":"sin errores de consola","cond":true,"detalle":""}],"defectos":[]}

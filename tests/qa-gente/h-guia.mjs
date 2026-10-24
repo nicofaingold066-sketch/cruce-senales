@@ -3,7 +3,7 @@
 import { BASE, conTurno, lanzar, Informe, Persona, dormir, textoMain } from './lib.mjs'
 const inf = new Informe('h-guia'); const todas = []
 // Voseo rioplatense. OJO: el \b de JS no reconoce «í»/«á» como letra, por eso se usan límites con \p{L} (la vuelta 1 del guion no detectaba «Elegí», «Probá», «Tocá»).
-const VOSEO = /(?<!\p{L})(Elegí|Probá|Tocá|Agregá|Escribí|Poné|Vos|vos|decís|Mirá|Pedí|Sumá|Mandá|Seguí|Fijate|Dale|podés|querés|tenés|sos|vas a encontrar|Me vas a)(?!\p{L})/gu
+const VOSEO = /(?<!\p{L})(Elegí|Probá|Tocá|Agregá|Escribí|Poné|Vos|vos|decís|Mirá|Pedí|Sumá|Mandá|Seguí|Fijate|Avisá|Invitá|Compartí|Copiá|Abrí|Cerrá|Anotá|Esperá|Respondé|Confirmá|Marcá|Decí|volvés|tenés|podés|querés|sabés|hacés|ponés|elegís|marcás|tocás|confirmás|llegás|sos|vas a poder|vas a encontrar|Me vas a)(?!\p{L})/gu
 await conTurno('qa-gente (h) guía de tres pasos en la primera visita', async () => {
   const browser = await lanzar()
   try {

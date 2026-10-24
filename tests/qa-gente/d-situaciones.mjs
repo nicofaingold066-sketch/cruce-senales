@@ -191,6 +191,8 @@ await conTurno('qa-gente (d) situaciones: mismo nombre, enlace x3, compartido, d
       const esc = tito.rpc.filter((r) => r.fn === 'accept_version'); const t2 = await plano(tito.page)
       inf.ok('d8: con un 401 al confirmar, la app renueva, reintenta una sola vez y la confirmación queda una sola vez', esc.map((r) => r.status).join(',') === '401,200' && !/Falla temporal|JWT/i.test(t2), `accept_version: ${esc.map((r) => r.status).join(',')}; llamadas de auth: ${auth.join(' ') || 'ninguna'}`)
       await tito.captura('d8-tras-401'); await tito.ctx.unroute('**/rest/v1/rpc/accept_version')
+      // Las dos líneas «401 (Unauthorized)» de la consola de Tito las provoca este mismo escenario (401 simulado): no cuentan como error inesperado.
+      tito.errores = tito.errores.filter((e) => !/status of 401/.test(e))
     })
   } finally {
     const t = tablaRpc(todas); console.log('RPC:\n' + t.texto); console.log('Errores RPC: ' + JSON.stringify(t.errores))
