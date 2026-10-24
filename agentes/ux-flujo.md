@@ -3,6 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cruce-ux`). Rutas: `docs/flujo-usuario.md`, `docs/front-back-puente.md`, archivos NUEVOS en `src/componentes-nuevos/**`. Puerto de preview: 4183.
 
 ## Tocando ahora
+- **CORRIENDO PRUEBA (22:49)**: Parte A del guion de la demo (3 sesiones) contra PRODUCCIÓN, una vez.
 - [21:35] Nada en edición. Próximo: barrido #102 de las 23:00; recorrido en producción cuando Juan conecte.
 - [20:54] Enmienda 13 (aprobada por Nico 20:51): `src/componentes-nuevos/` ("Rearmar con lo nuevo" para el organizador, textos de baja sin nombre y aviso de "así no puedo" en `AvisoParaMi`), `docs/output-debate.md` y `docs/investigacion-a-producto.md` con las decisiones de Nico. friccion: botón "Así no puedo, pero sigo" (reparto propuesto por mensaje).
 - [20:43] #102 primer barrido entregado; próximos a las 23:00 y 07:00. Mantengo `docs/investigacion-a-producto.md`.
