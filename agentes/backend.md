@@ -4,6 +4,18 @@ Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "
 
 ## Tocando ahora
 
+## Estado final del backend (23 oct, 23:10; para el README)
+1. Base única: Supabase `tjkfdnvzsikncjbskufm`, 50 migraciones (0001 a 0050; esta noche 0035 a 0050), todo dato ficticio, sesiones anónimas, sin claves en el repo.
+2. Superficie: 41 funciones públicas (una firma por nombre), todas `SECURITY DEFINER` con `search_path=''`, 41 ejecutables por `authenticated`, 0 por `anon`; 22 tablas con RLS deny-all (0 políticas); `verificar_privilegios()` sin hallazgos al final de cada migración; advisors solo los esperados (INFO 22, WARN 41; contraseñas no aplica). Informe: `docs/seguridad-final.md`.
+3. Enmienda 10 (0035–0038): zona, movilidad, tiempo máximo y momento del día, con viaje estimado por opción (un solo número, solo con 4 o más personas) y catálogo ampliado a 14 lugares. Enmienda 12 (0039–0040): avisos personales y texto de condiciones incompletas.
+4. Enmienda 11 (0041): agente social: borrador visible con hash, aprobación del hash exacto, invitaciones personales con consentimiento aparte, políticas aprobación/autónoma; la IA solo explica.
+5. Enmienda 13 (0042–0047): "Así no puedo, pero sigo" (`opinar_version`), rearmar con lo nuevo (tope de 3 versiones), baja sin nombre para los demás, parrilla del parque; seis filtraciones de privacidad cerradas tras revisión independiente.
+6. Enmienda 14 (0048–0050): propósito del grupo (`p_proposito`), 6 familias de actividad y modo libre, `p_actividad` en las propuestas, "Me gustaría" dentro de la familia, agente con familia y quórum por tamaño del grupo (nunca por asistencia), 16 actividades y 17 lugares; la 0050 cerró tres arreglos de la revisión.
+7. Reglas que el servidor hace cumplir: interés no es confirmación; una confirmación = una versión; el servidor decide cupos, plazos y estado; condiciones y preferencias nunca en respuestas compartidas ni logs; reintentos idempotentes (`intento_id`).
+8. Pruebas: `tests/backend` contra la base real, en serie: 93/94 y 4 omitidas (22:32; la falla fue un timeout por carga y esa prueba sola da 6/6); tras la 0050, 78/78 en los 12 archivos que tocan lo cambiado. Más e2e de qa-noche (`proposito.mjs` 25/25).
+9. Límites declarados: quien miró antes de una baja puede deducir quién se fue; con el mínimo cumplido en revisión los números públicos aún lo permiten (el texto ya no); el servidor acepta `fiesta` como propósito (sin efecto); sin pruebas de ráfaga esta noche (producción compartida); contraseñas no aplica.
+10. Siguiente paso (después del evento): estilo de la ocasión, "dos formas de juntarse", propósito editable, `sin_alcohol`/`apto_peques_y_mascotas` como propiedades del lugar. Backend de guardia: sin más migraciones salvo defecto real pedido por el coordinador, y nada después de las 12:00.
+
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
 
