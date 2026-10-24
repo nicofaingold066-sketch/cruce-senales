@@ -68,6 +68,17 @@ const revisarE13 = (quien, p) => {
   }
   if (quien === 'Luna' && (p.opiniones_totales?.asi_no_puedo ?? null) !== null) fugasE13.push('Luna: ve opiniones_totales')
 }
+// Enmienda 15 (borrador): ver el comentario equivalente en jurado-navegador.mjs. Se activa sola con las claves nuevas.
+let e15 = null
+const fugasE15 = []
+const revisarE15 = (quien, p) => {
+  if (!p) return
+  if (e15 === null) e15 = 'ronda' in p || 'regla' in p || 'planes_totales' in p
+  if (!e15) return
+  if (quien === 'Luna' && (p.planes_totales ?? null) !== null) fugasE15.push('Luna: ve planes_totales')
+  if ((p.regla ?? 'temprana') === 'temprana' && p.ronda != null) fugasE15.push(`${quien}: ronda sin haberla pedido`)
+}
+const buscarPrefiero = (v) => JSON.stringify(v ?? null).includes('"prefiero"')
 for (const [n, p] of [['Tomi', T], ['Luna', L]]) {
   p.on('pageerror', (e) => errores.push(`${n}: ${e.message}`))
   p.on('console', (m) => { if (m.type() === 'error') errores.push(`${n} consola: ${m.text().slice(0, 160)}`) })
@@ -75,7 +86,12 @@ for (const [n, p] of [['Tomi', T], ['Luna', L]]) {
   p.on('response', (r) => { if (r.status() >= 400) respuestas.push(`${n} ${r.status()} ${r.request().method()} ${new URL(r.url()).pathname}`) })
   p.on('response', (r) => {
     if (!new URL(r.url()).pathname.startsWith('/rest/v1/rpc/')) return
-    r.json().then((j) => { if (j?.propuesta) revisarE13(n, j.propuesta); for (const q of j?.propuestas ?? []) revisarE13(n, q) }).catch(() => {})
+    const fn = new URL(r.url()).pathname.split('/').at(-1)
+    r.json().then((j) => {
+      if (j?.propuesta) { revisarE13(n, j.propuesta); revisarE15(n, j.propuesta) }
+      for (const q of j?.propuestas ?? []) { revisarE13(n, q); revisarE15(n, q) }
+      if (!['get_my_conditions', 'save_my_conditions', 'simulate_save_conditions'].includes(fn) && buscarPrefiero(j)) fugasE15.push(`${n}: ${fn} trae prefiero`)
+    }).catch(() => {})
   })
 }
 let nCaptura = 0
@@ -182,9 +198,11 @@ try {
   verificar('v1: Grupo confirmado en el teléfono de Luna', v1)
   // E7.2 con control positivo, con versión vigente: "Faltan por responder" lo ve Tomi y no Luna.
   await pestana(T, 'Plan')
-  const tomiVePendientes = await esperarTexto(T, 'Faltan por responder', 10000).then(() => true, () => false)
-  const lunaVePendientes = /Faltan por responder/.test(await L.locator('main').innerText())
-  verificar('E7.2: "Faltan por responder" lo ve Tomi y no Luna', tomiVePendientes && !lunaVePendientes, `Tomi ${tomiVePendientes ? 'sí' : 'no'}, Luna ${lunaVePendientes ? 'sí' : 'no'}`)
+  // El rótulo puede ser «Faltan por responder» (hoy) o «Faltan por confirmar» (ux-flujo, opcional): se aceptan los dos.
+  const RE_FALTAN = /Faltan por (?:responder|confirmar)/
+  const tomiVePendientes = await T.getByText(RE_FALTAN).first().waitFor({ timeout: 10000 }).then(() => true, () => false)
+  const lunaVePendientes = RE_FALTAN.test(await L.locator('main').innerText())
+  verificar('E7.2: «Faltan por responder/confirmar» lo ve Tomi y no Luna', tomiVePendientes && !lunaVePendientes, `Tomi ${tomiVePendientes ? 'sí' : 'no'}, Luna ${lunaVePendientes ? 'sí' : 'no'}`)
   await captura(L, 'luna-v1-confirmado')
 
   // 6. Baja de Caro → En revisión → v2 (domingo) desde cero.
@@ -274,6 +292,7 @@ try {
   await captura(T, 'error-tomi').catch(() => {}); await captura(L, 'error-luna').catch(() => {})
 } finally {
   if (e13) verificar('E13: ninguna respuesta compartida nombra a quien se retiró ni muestra totales a Luna', fugasE13.length === 0, fugasE13.slice(0, 3).join(' | '))
+  if (e15) verificar('E15: «prefiero» no aparece en ninguna respuesta compartida y Luna no ve planes_totales', fugasE15.length === 0, fugasE15.slice(0, 3).join(' | '))
   verificar('Sin errores de la app en consola', errores.length === 0, [...errores.slice(0, 3), ...respuestas.slice(0, 3)].join(' | '))
   await browser.close()
   console.log(`${fallidas === 0 ? 'RECORRIDO OK' : 'RECORRIDO CON FALLAS'}: ${aprobadas} aprobadas, ${fallidas} fallidas`)

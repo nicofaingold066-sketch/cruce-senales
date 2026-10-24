@@ -21,7 +21,7 @@ export function CampoIntegrantes({
   const campo = useRef<HTMLInputElement>(null)
 
   /** Agrega uno o varios nombres (una lista pegada o escrita con comas, punto y coma o saltos de línea). */
-  function agregarVarios(texto: string) {
+  function agregarVarios(texto: string, reenfocar = true) {
     const nombres = texto.split(/[,;\n\r]+/).map((x) => x.replace(/\s+/g, ' ').trim()).filter(Boolean)
     if (nombres.length === 0) return
     const igual = (a: string, b: string) => a.trim().toLocaleLowerCase('es') === b.toLocaleLowerCase('es')
@@ -44,7 +44,8 @@ export function CampoIntegrantes({
       setNuevo('')
     }
     setAviso([agregados.length ? `Agregaste a ${agregados.join(', ')}.` : null, ...avisos].filter(Boolean).join(' '))
-    campo.current?.focus()
+    // Al salir del campo no se le devuelve el foco: la persona ya tocó otra cosa ("Crear grupo", otro campo).
+    if (reenfocar) campo.current?.focus()
   }
 
   function agregar() {
@@ -60,6 +61,10 @@ export function CampoIntegrantes({
           ref={campo}
           value={nuevo}
           onChange={(e) => setNuevo(e.target.value)}
+          onBlur={() => {
+            // front-juan P1: el nombre escrito y no agregado se perdía si no se tocaba "Agregar".
+            if (nuevo.trim() !== '') agregarVarios(nuevo, false)
+          }}
           onPaste={(e) => {
             // Una lista pegada (por ejemplo, copiada del chat del grupo) se agrega entera; un nombre suelto se pega normal.
             const t = e.clipboardData.getData('text')
@@ -79,8 +84,8 @@ export function CampoIntegrantes({
           autoComplete="off"
         />
         <small>
-          Opcional. Escribe los nombres como les gusta que los llamen; puedes pegar varios separados por comas. Al abrir la
-          invitación, cada persona elige el suyo.
+          Escribe los nombres como les gusta que los llamen; puedes pegar varios separados por comas. Al abrir la invitación,
+          cada persona elige el suyo.
         </small>
       </label>
       <Boton variante="secundario" onClick={agregar} disabled={nuevo.trim() === ''}>

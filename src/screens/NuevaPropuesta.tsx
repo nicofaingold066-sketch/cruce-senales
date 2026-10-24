@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../lib/api'
 import type { ActividadClave, ApiError, Espacio } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto, momentoCorto, ZONA_VISIBLE } from '../lib/format'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
+import { ATAJOS, atajosParaEspacio, ejemploPorSemilla, placeholderPlan } from '../lib/ejemplos'
+import type { Atajo } from '../lib/ejemplos'
 import { Avatar, Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
-import type { NombreIcono } from '../components/Icono'
 import { tomarBorradorAgente } from '../agente/api'
-import { ATAJOS, atajosParaEspacio, ejemploPorSemilla, placeholderPlan } from '../lib/ejemplos'
 
 // Una propuesta se arma con dos momentos posibles (A y B), cada uno un día y una hora de encuentro,
 // y una duración aproximada: la hora de fin se calcula sola. El contrato sigue recibiendo inicio y fin
@@ -49,8 +49,6 @@ const CASO = {
   actividad: null as ActividadClave | null,
 }
 
-// Atajos de actividad (apertura, `src/lib/ejemplos.ts`): el que nombra el grupo va primero; "Asado" ya no encabeza siempre.
-type Actividad = { titulo: string; icono: NombreIcono; min: number; actividad: string | null }
 const HORAS = ['12:00', '13:00', '14:00', '17:00', '19:00', '20:00', '21:00']
 const DURACIONES = [60, 120, 180, 240]
 const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
@@ -125,10 +123,17 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const [faltantes, setFaltantes] = useState(false)
   const [abrirUltimo, setAbrirUltimo] = useState(true)
   const [desdeAgente, setDesdeAgente] = useState(false)
+  // Duración fuera de DURACIONES que trajo un atajo (Pádel 1 h 30 min, Cine 2 h 30 min) o la precarga (borrador del
+  // agente): queda como opción más aunque se elija otra, para poder volver a ella.
+  const [duracionExtra, setDuracionExtra] = useState<number | null>(null)
   const flujo = useRef(false)
   const [enCurso, setEnCurso] = useState(false)
 
   const yo = espacio?.miembros.find((m) => m.es_yo) ?? null
+  // Atajos de actividad según el nombre del grupo (#92, apertura): «Los del pádel» ve Pádel primero; el demo
+  // («Los del asado») sigue con Asado primero. El ejemplo del placeholder sale del id del grupo: no cambia al escribir.
+  const actividades = useMemo(() => atajosParaEspacio(espacio?.nombre ?? '', espacio?.familia), [espacio?.nombre, espacio?.familia])
+  const ej = useMemo(() => ejemploPorSemilla(espacioId), [espacioId])
   useIdentidad(espacio?.nombre ?? null, yo?.nombre ?? null, espacio ? (espacio.mi_rol === 'organizador' ? 'organizador' : 'miembro') : null)
 
   const cargar = useCallback(async () => {
@@ -178,7 +183,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     if (borrador) {
       const [a, b] = borrador.franjas
       const dur = Math.round((enUTC(a.fin.slice(0, 10), a.fin.slice(11, 16)).getTime() - enUTC(a.inicio.slice(0, 10), a.inicio.slice(11, 16)).getTime()) / 60000)
+      const duracion = dur > 0 ? dur : base.duracion
       setDesdeAgente(true)
+      if (!DURACIONES.includes(duracion)) setDuracionExtra(duracion)
       setF({
         ...base,
         titulo: borrador.titulo,
@@ -186,10 +193,11 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
         aHora: a.inicio.slice(11, 16),
         bDia: b.inicio.slice(0, 10),
         bHora: b.inicio.slice(11, 16),
-        duracion: dur > 0 ? dur : base.duracion,
+        duracion,
       })
       return
     }
+    if (!DURACIONES.includes(base.duracion)) setDuracionExtra(base.duracion)
     setF(base)
   }, [espacio, f])
 
@@ -221,9 +229,10 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     setF({ ...form, [k]: v })
     if (error) limpiarError()
   }
-  function elegirActividad(a: Actividad) {
+  function elegirActividad(a: Atajo) {
     const esAtajo = form.titulo.trim() === '' || ATAJOS.some((x) => x.titulo === form.titulo.trim())
     setF({ ...form, titulo: esAtajo ? a.titulo : form.titulo, duracion: a.min, actividad: (a.actividad as ActividadClave | null) ?? null })
+    if (!DURACIONES.includes(a.min)) setDuracionExtra(a.min)
     if (error) limpiarError()
   }
 
@@ -232,6 +241,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const aFin = aInicio ? sumarMinutos(form.aDia, form.aHora, form.duracion) : ''
   const bFin = bInicio ? sumarMinutos(form.bDia, form.bHora, form.duracion) : ''
   const plazo = plazoDe(form)
+  // Como la hora «propia» de SelectorHora: si un atajo (Pádel 1 h 30 min, Cine 2 h 30 min) o el borrador del agente
+  // trae una duración fuera de la lista, aparece como opción más, marcada, y se puede volver a ella (duracionExtra).
+  const duraciones = duracionExtra == null ? DURACIONES : [...DURACIONES, duracionExtra].sort((x, y) => x - y)
 
   const completo =
     form.titulo.trim() !== '' &&
@@ -354,7 +366,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
             <fieldset className="form-seccion">
               <legend>Qué hacen</legend>
               <div className="carrusel" role="group" aria-label="Atajos de actividad">
-                {atajosParaEspacio(espacio.nombre, espacio.familia).map((a) => (
+                {actividades.map((a) => (
                   <button
                     key={a.titulo}
                     type="button"
@@ -373,7 +385,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                   value={form.titulo}
                   onChange={(e) => poner('titulo', e.target.value)}
                   maxLength={80}
-                  placeholder={placeholderPlan(ejemploPorSemilla(espacio.nombre), espacio.familia)}
+                  placeholder={placeholderPlan(ej, espacio.familia)}
                   aria-invalid={marcado === 'titulo' || (faltantes && form.titulo.trim() === '') ? true : undefined}
                 />
               </label>
@@ -381,7 +393,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
 
             <fieldset className={`form-seccion ${marcado === 'franjas' ? 'grupo-error' : ''}`}>
               <legend>Cuándo · dos opciones</legend>
-              <p className="suave nota-seccion">El grupo dice en privado cuál le sirve. Si sirven las dos, gana la A.</p>
+              <p className="suave nota-seccion">El grupo dice en privado cuál le sirve. Si sirven las dos, gana la que empieza antes.</p>
               {(['A', 'B'] as const).map((clave) => {
                 const dia = clave === 'A' ? form.aDia : form.bDia
                 const horaSel = clave === 'A' ? form.aHora : form.bHora
@@ -406,7 +418,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                   <Icono n="reloj" tam={16} /> Dura aprox.
                 </span>
                 <div className="opciones opciones-compactas">
-                  {DURACIONES.map((d) => (
+                  {duraciones.map((d) => (
                     <label key={d} className={`opcion-radio ${form.duracion === d ? 'opcion-activa' : ''}`}>
                       <input type="radio" name="duracion" checked={form.duracion === d} onChange={() => poner('duracion', d)} />
                       {duracionTexto(d)}
@@ -440,10 +452,17 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                       <span>
                         {m.nombre}
                         {m.simulado ? <span className="visualmente-oculto"> (Simulación)</span> : null}
+                        {m.pendiente ? <span className="chip-nota"> (por entrar)</span> : null}
                       </span>
                     </label>
                   ))}
                 </div>
+                {/* Enmienda 9: `pendiente` = lo anotó el organizador y todavía no entró con el enlace. */}
+                {imprescindible?.pendiente ? (
+                  <p className="suave nota-seccion" role="note">
+                    {imprescindible.nombre} todavía no entró con el enlace. Si no entra y marca cuándo puede, no va a haber opción.
+                  </p>
+                ) : null}
               </div>
             </fieldset>
 
@@ -507,7 +526,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
               </dl>
             </div>
             <p className="suave" style={{ marginTop: 12 }}>
-              "Abrir" permite que cada persona marque su interés y cargue sus condiciones. Marcar interés no suma confirmados.
+              "Abrir" permite que cada persona marque en privado cuándo puede. "Me interesa" es opcional y no suma confirmados.
             </p>
             {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} enfocar /> : null}
             <div className="fila-botones">

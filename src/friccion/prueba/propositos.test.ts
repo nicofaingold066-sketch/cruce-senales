@@ -25,16 +25,17 @@ test('familiaDeProposito: libre, familia, actividad; "cultura" vale como familia
   expect(esProposito('peli_casa')).toBe(true)
 })
 
-test('el selector: "Libre" primero, cada familia con "Cualquier …" y sus actividades; sin fiesta (E14, 8) ni "cultura" repetida; valores únicos y válidos', () => {
+test('el selector: "Libre" primero, cada familia con "Cualquier …" y sus actividades; con fiesta (pedido de Nico, 00:01) y sin "cultura" repetida; valores únicos y válidos', () => {
   const { libre, grupos } = opcionesProposito()
   expect(libre.valor).toBe('libre')
   expect(grupos.map((g) => g.familia)).toEqual(['deporte', 'comida', 'salida_noche', 'cultura', 'aire_libre', 'en_casa'])
   const todos = grupos.flatMap((g) => g.opciones.map((o) => o.valor))
-  expect(todos).not.toContain('fiesta')
+  expect(todos).toContain('fiesta')
+  expect(todos).toHaveLength(6 + 15) // 6 "Cualquier …" + las 16 actividades menos "cultura" (ya es la familia)
   expect(new Set(todos).size).toBe(todos.length)
   for (const v of todos) expect(esProposito(v)).toBe(true)
   const noche = grupos.find((g) => g.familia === 'salida_noche')!
-  expect(noche.opciones.map((o) => o.valor)).toEqual(['salida_noche', 'bar', 'juegos_salida'])
+  expect(noche.opciones.map((o) => o.valor)).toEqual(['salida_noche', 'fiesta', 'bar', 'juegos_salida'])
   expect(grupos.find((g) => g.familia === 'cultura')!.opciones.map((o) => o.valor)).toEqual(['cultura', 'cine'])
   for (const g of grupos) expect(g.opciones[0].etiqueta).toMatch(/^Cualquier /)
 })

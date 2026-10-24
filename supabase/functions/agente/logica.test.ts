@@ -6,6 +6,7 @@ import assert from 'node:assert/strict'
 import { Buffer } from 'node:buffer'
 import {
   armarPedido,
+  franjaCorta,
   datosGeneracion,
   tipoDeIdGeneracion,
   candidataSegura,
@@ -590,4 +591,10 @@ test('enmienda 14: la frase proposito_del_grupo tiene texto fijo y pasa la valid
   const t = unirFrases(['proposito_del_grupo', 'presupuesto_todos'], false, { actividad: 'Fútbol' })
   assert.equal(t, "Es lo que este grupo vino a hacer y le sirve al presupuesto de todos.")
   assert.equal(textoValido(t, 240, NOMBRES), true)
+})
+
+test('fiesta de noche (pedido de Nico, 00:01): una franja que cruza la medianoche se lee bien en el texto fijo', () => {
+  assert.equal(franjaCorta({ inicio: '2026-10-31T23:00', fin: '2026-11-01T03:00' }), 'sábado 31 de 23:00 a 03:00')
+  const m = mensajeFijo({ ...ASADO, titulo: 'Fiesta en el bar', franjas: [{ inicio: '2026-10-31T23:00', fin: '2026-11-01T03:00' }, { inicio: '2026-11-01T22:00', fin: '2026-11-02T02:00' }] })
+  assert.match(m, /el sábado 31 de 23:00 a 03:00 o el domingo 1 de 22:00 a 02:00/)
 })

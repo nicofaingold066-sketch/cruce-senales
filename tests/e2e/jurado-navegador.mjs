@@ -91,6 +91,34 @@ function sinE13(p, nombre) {
   if (total !== null && (typeof total !== 'number' || total < 2)) privados.push(`E13 ${nombre}: opiniones_totales con menos de 2 o forma rara`)
   for (const n of NOMBRES_DEMO) if (JSON.stringify(p.opiniones_totales ?? null).includes(n)) privados.push(`E13 ${nombre}: opiniones_totales nombra a ${n}`)
 }
+// Enmienda 15 (borrador de pendientes, 00:00): ronda de opiniones con plazo (`ronda`) y dos planes con «la que más Sí» (`regla`,
+// `planes_totales`, `prefiero` dentro de la disponibilidad privada). Se activa sola cuando el servidor trae `ronda`/`regla`/
+// `planes_totales`; hasta entonces no cuenta. Sin pedir ronda ni regla, todo queda como hoy: ronda null, regla temprana,
+// planes_totales null. `prefiero` es privado: no aparece en NINGUNA respuesta compartida (solo en get_my_conditions /
+// save_my_conditions / simulate_save_conditions de quien lo guardó). `planes_totales` solo lo ve el organizador y con cada
+// número en null si es menor que 2.
+let e15 = null
+const PROPIAS_E15 = ['get_my_conditions', 'save_my_conditions', 'simulate_save_conditions']
+function sinPrefiero(v, ruta) {
+  if (Array.isArray(v)) return v.forEach((x, i) => sinPrefiero(x, `${ruta}[${i}]`))
+  if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) { if (k === 'prefiero') privados.push(`E15 ${ruta}.prefiero`); sinPrefiero(x, `${ruta}.${k}`) }
+}
+function sinE15(p, nombre) {
+  if (e15 === null) e15 = 'ronda' in p || 'regla' in p || 'planes_totales' in p
+  if (!e15) return
+  const t = p.planes_totales ?? null
+  if (t !== null) {
+    if (!nombre.startsWith('Tomi')) privados.push(`E15 ${nombre}: ve planes_totales`)
+    for (const plan of ['A', 'B']) for (const k of ['si', 'prefieren']) {
+      const n = t?.[plan]?.[k] ?? null
+      if (n !== null && (typeof n !== 'number' || n < 2)) privados.push(`E15 ${nombre}: planes_totales.${plan}.${k} con menos de 2`)
+    }
+    for (const n of NOMBRES_DEMO) if (JSON.stringify(t).includes(n)) privados.push(`E15 ${nombre}: planes_totales nombra a ${n}`)
+  }
+  // Compatibilidad: una propuesta sin ronda ni regla pedidas queda como hoy.
+  if ((p.regla ?? 'temprana') === 'temprana' && p.ronda != null) privados.push(`E15 ${nombre}: ronda sin haberla pedido`)
+  if ((p.regla ?? 'temprana') === 'temprana' && t !== null) privados.push(`E15 ${nombre}: planes_totales con regla temprana`)
+}
 async function observar(p, nombre) {
   p.setDefaultTimeout(15000)
   p.on('pageerror', e => jsErrores.push(`${nombre}: ${e.name}`))
@@ -114,8 +142,9 @@ async function observar(p, nombre) {
       rpcObservadas++
       if (r.contrato !== 2) privados.push('respuesta sin contrato 2')
       if (!PROPIAS.includes(u.pathname.split('/').at(-1))) sinE10(r, u.pathname.split('/').at(-1))
+      if (!PROPIAS_E15.includes(u.pathname.split('/').at(-1))) sinPrefiero(r, u.pathname.split('/').at(-1))
       if (r.propuesta) {
-        sinPrivados(r.propuesta); sinE13(r.propuesta, nombre)
+        sinPrivados(r.propuesta); sinE13(r.propuesta, nombre); sinE15(r.propuesta, nombre)
         if (nombre === 'Luna') {
           if (r.propuesta.personas_con_condiciones !== null) privados.push('Luna: conteo de condiciones')
           if (r.propuesta.opcion && r.propuesta.opcion.cupos.pendientes !== null) privados.push('Luna: pendientes')
@@ -342,7 +371,7 @@ try {
   assert.deepEqual(erroresRPC.sort(), ['propose_repair:sin_alternativa/sin_alternativa', 'simulate_accept:cupo_completo/reservado_imprescindible'].sort(), 'Solo los dos rechazos esperados')
   assert.equal(modelos, 0, 'Ninguna llamada a funciones/modelos')
   assert.equal(sesiones.size, 2, 'Sin identidades extra')
-  log(`RPC observadas: ${rpcObservadas}; privacidad de sobres compartidos sin hallazgos; 2 rechazos esperados; 0 llamadas al modelo. Enmienda 13: ${e13 ? 'detectada y comprobada (baja sin nombre, totales solo al organizador)' : 'pendiente en el servidor'}.`)
+  log(`RPC observadas: ${rpcObservadas}; privacidad de sobres compartidos sin hallazgos; 2 rechazos esperados; 0 llamadas al modelo. Enmienda 13: ${e13 ? 'detectada y comprobada (baja sin nombre, totales solo al organizador)' : 'pendiente en el servidor'}. Enmienda 15: ${e15 ? 'detectada y comprobada (prefiero privado, planes_totales solo al organizador)' : 'pendiente en el servidor'}.`)
 } catch (e) {
   if (!fallidas) { fallidas++; log(`FAIL preparación/cierre: ${String(e.message).split('\n')[0]}`) }
   await foto(L, 'fallo-preparacion-Luna').catch(() => {})
