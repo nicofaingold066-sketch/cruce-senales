@@ -3,6 +3,7 @@
 Quien edita este archivo: solo el coordinador. Última actualización: 10:57 (hora real).
 
 ## Tocando ahora
+- CORRIENDO PRUEBA (10:26) tanda: dos sesiones, jurado, red, recuperación, fricción, propósito (coordinador)
 - `docs/contrato*.md`, `AGENTS.md`, `CLAUDE.md`, `docs/tareas/**`, `docs/contexto-proyecto.md`
 - Rama `coordinacion` (tablero, mapa de dueños)
 
