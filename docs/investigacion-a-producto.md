@@ -1,6 +1,6 @@
 # De la investigación al producto (#102)
 
-Dueño: ux-flujo (rama `wip/ux`). Pedido de Nico: "no perder nada de lo que estudiamos y meterlo en la aplicación". Último barrido: viernes 23 oct 2026, 21:00. Próximos barridos: 23:00 y 07:00.
+Dueño: ux-flujo (rama `wip/ux`). Pedido de Nico: "no perder nada de lo que estudiamos y meterlo en la aplicación". Último barrido: viernes 23 oct 2026, 21:03. Próximos barridos: 23:00 y 07:00.
 
 Fuentes (todas en origin): `docs/flujo-usuario.md` (FU) y `docs/output-debate.md` (OD), de ux-flujo; `docs/usuarios-sinteticos.md` (SIN); `docs/rincones.md` (RIN); `docs/qa-noche.md` (QA); `docs/agente-barrido.md` (AB); `docs/apertura.md` (AP); `docs/catalogo-ampliado.md` (CA); `docs/preguntas-jurado.md` (PJ); `docs/psicologia-grupo.md` (PSI); `prompts/contexto-dia-pitch-reglas.md` (CDP) y `prompts/contexto-dia-login-agente-social.md` (CDL).
 
@@ -10,7 +10,7 @@ Impacto: **A** se cierra la juntada en la demo · **B** se entiende a la primera
 Estado: "HECHO" con commit; "sin conectar" = componente listo que espera a front-juan (Nico decidió esperar a Juan); "pedido" = línea enviada al dueño en su ficha o la de quien lo encontró; "decisión de Nico" = está en "Decisiones para Nico" de `agentes/ux-flujo.md` o de la ficha de quien la propuso.
 
 
-Resumen: 133 filas (A 23, B 41, C 21, D 33, E 15). 89 antes de las 11:00, 22 antes de las 12:00, 22 después. Con algo hecho: 43; componentes listos sin conectar: 14; con decisión de Nico de por medio: 16.
+Resumen: 133 filas (A 23, B 41, C 21, D 33, E 15). 89 antes de las 11:00, 22 antes de las 12:00, 22 después. Con algo hecho: 44; componentes listos sin conectar: 15; con decisión de Nico de por medio: 16.
 
 | # | Impacto | Hallazgo (fuente) | Cambio concreto en la app | Dueño | Tipo | Cuándo | Estado |
 |---|---|---|---|---|---|---|---|
@@ -23,7 +23,7 @@ Resumen: 133 filas (A 23, B 41, C 21, D 33, E 15). 89 antes de las 11:00, 22 ant
 | 7 | A · se cierra la juntada | Nadie avisa por WhatsApp cuando sale la opción o se repara (FU §3.3.6; OD §1; PJ S3) | `RecordarFaltan motivo="version_nueva"/"reparacion"` en `PlanTab.tsx` (texto dice qué hacer si no puedes) | ux-flujo + front-juan | componente | antes de las 11:00, sin migración | HECHO `8e2432d`/`d065138`, sin conectar: Nico decidió esperar a Juan |
 | 8 | A · se cierra la juntada | El mensaje de cierre no trae enlace: quien no confirmó no puede sumarse (OD §1; PJ S3) | `RecordarFaltan motivo="confirmado"` con cupos libres y sin nombres, junto a o en lugar de `PlanTab.tsx:608` | ux-flujo + front-juan | componente | antes de las 11:00, sin migración | HECHO `8e2432d`, sin conectar |
 | 9 | A · se cierra la juntada | El organizador no tiene cómo recordar a quien no responde (SIN situaciones; #89) | `RecordarFaltan motivo="faltan"` ("sin apuro… si ya respondiste, no hace falta nada") | ux-flujo + front-juan | componente | antes de las 11:00, sin migración | HECHO `7347913`/`d065138`, sin conectar |
-| 10 | A · se cierra la juntada | Para decir "esta fecha no" solo existe retirarse para siempre (OD §1) | Texto junto a "Retirarme": "Si solo esta fecha no te sirve, no confirmes. Retirarte es para no participar más en este plan." | front-juan | texto | antes de las 11:00, sin migración | pedido 20:33 |
+| 10 | A · se cierra la juntada | Para decir "esta fecha no" solo existe retirarse para siempre (OD §1) | Texto junto a "Retirarme" según el momento (`AyudaRetiro`): antes de la opción, marcar "No puedo"; con la versión publicada, "Así no puedo, pero sigo" (E13) o "no confirmes"; a quien ya confirmó, sin pedir motivo | ux-flujo + front-juan | componente | antes de las 11:00, sin migración | HECHO `66ad5af` (`AyudaRetiro`, 32/32), sin conectar; reemplaza el pedido de texto de las 20:33 |
 | 11 | A · se cierra la juntada | "No puede faltar" ofrece a quien todavía no entró; si nunca entra, nunca hay opción (FU §3.3.8; RIN O-10) | Rotular "(por entrar)" en el chip de `NuevaPropuesta.tsx:430` y avisar | front-juan | componente | antes de las 11:00, sin migración | pedido 19:30 (ux-flujo) y 20:06 (rincones) |
 | 12 | A · se cierra la juntada | El invitado que vuelve aterriza en el espacio; arriba ve el código y "Nueva propuesta" (FU §3.3.4; SIN H2) | En `Espacio.tsx`, para quien no organiza: tarjeta del plan antes del código; ocultar Compartir/Copiar/WhatsApp | front-juan | componente | antes de las 11:00, sin migración | pedido 19:30 (ux-flujo) y P2 (sinteticos) |
 | 13 | A · se cierra la juntada | Quien llega con la versión ya publicada cae al espacio sin explicación (SIN revisión friccion) | Aviso con el texto del servidor; si te toca confirmar, directo al plan | friccion | componente | antes de las 11:00, sin migración | HECHO `83ab0d6` (friccion), en producción: el aviso trae el texto del servidor y, si te toca confirmar, va directo al plan |
