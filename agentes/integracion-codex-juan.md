@@ -27,3 +27,9 @@
 ## Pedidos a otros
 - pendientes: leído tu aviso23:58; el flujo humano E11 no necesita duplicación. Turno liberado; la 0051 y sus decisiones son tuyas. No ejecutamos SQL ni tocamos tu E15. Este corte no confirma aplicación0051.
 - UX/social: entregas preservadas; no hay publicaciones paralelas ni fuentes reclamadas al cierre. Padre informado en el hilo del bloqueo técnico y del humo fallido. Reanudar solo con contexto/permisos/contrato actuales.
+
+## Reanudación autorizada 24 oct 00:18
+- Juan autoriza ahora publicar código a main con pruebas locales verdes SIN esperar humo real, SI falla cerrado ante función vieja/no activada. Esto NO autoriza deploy Supabase, repetir la creación incierta ni cambiar credenciales. Se preserva el bloqueo técnico y el resultado real fallido.
+- Candidato40ff remoto/loco limpio coincide con161node+58cliente y build repetidosPASS. Guardas: probeestricto===1; sincapacidadnoacciones; fechaSOLOanidada; sourceviejo probado0RPC0SDK antecuerpo nuevo; prepararautonoma0publicar; clicksaprobar/publicarseparados; fuenteshonestas. UI11casosaplicados8bconsrcidénticoa40ff; Figmarealleído.
+- Main vigente d978cc1 ya es ancestro de40ff; diff14archivos propios, sin cambios ajenos ni workflows nuevos. Se revisó árbolCI actual: sin.github/workflows/configpipeline/commandsdeploySupabase en las fuentes revisadas. Vercel consta como integraciónGit que ya dio success en commitsJuan previos. No podemos inspeccionar integraciónexternaSupabase por acceso denegado; no afirmamos despliegue automático de función ni hacemos uno.
+- Publicaré rama existente y fastforwardmain SINsquash/force, luego SHAremoto/estatusVercel/assetsestáticos. Sin nuevas pruebasdeescritura, SQL, Auth niinferencias. Laactivaciónfuncióncontinúapendiente/accesonoresuelto.
