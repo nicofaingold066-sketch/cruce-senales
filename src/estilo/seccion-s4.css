@@ -522,3 +522,17 @@ a.fila:hover {
 .vista-plan .escena.resultado-escena::before {
   inset: auto 0 -40% 0;
 }
+
+/* Defectos de la pasada en producción (05:00): el rótulo «demo» no se estira y los botones de ¡Se juntan! no tocan la fila de abajo. */
+.fila .rotulo-sim {
+  display: inline-block;
+  margin-left: var(--e-2);
+  width: auto;
+}
+.filas-botones + .filas,
+.filas-botones + details {
+  margin-top: var(--e-3);
+}
+.filas-plan .filas-botones {
+  margin-bottom: var(--e-3);
+}
