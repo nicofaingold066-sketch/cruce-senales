@@ -5,7 +5,10 @@ Pedido directo de Nico en Codex (24 oct): integrar el personaje aprobado, llamad
 Rama propia `codex/gru-vivo`, copia aislada `/Users/macair/cruse/cruce-gru`, base `origin/main` `7f47a88`.
 
 ## Tocando ahora
-Nada. GRU y la ampliación visual del formulario entregados en rama propia. Sin corridas contra base ni procesos de QA activos.
+- Publicación autorizada directamente por Nico: «publicá esta versión con GRU y el formulario nuevo así lo probamos en la app».
+- Integrar la rama aprobada con el main vigente, verificar TypeScript/build y publicar por Git a producción; sin cambios de backend, migraciones ni modelos. Esta autorización nueva incluye la publicación por encima de la restricción anterior de no publicar desde esta sesión.
+- Verificación de la app publicada con datos ficticios y Auth/RPC/modelos interceptados. Cero pruebas contra la base.
+- Vercel MCP corresponde a otra cuenta/equipo (sin proyecto cruce); se utiliza el despliegue Git existente del repo y se verifican URL/recursos reales de producción.
 
 ## Verificación
 Typecheck, build y navegador local con fixtures ficticios y red externa interceptada. Comprobar navegación, estados de éxito/error/sin opción, teclado, movimiento reducido, móvil 320/375 y escritorio 1280. Cero consultas pagas o escrituras en la base.
