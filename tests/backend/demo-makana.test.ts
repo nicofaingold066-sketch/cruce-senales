@@ -1,9 +1,9 @@
-// 0057: integración con Supabase LOCAL exclusivamente. Nunca sondea ni crea sesiones remotas.
+// 20261024124500: integración con Supabase LOCAL exclusivamente. Nunca sondea ni crea sesiones remotas.
 // RUN_LOCAL_DEMO_MAKANA_TESTS=1 VITE_SUPABASE_URL=http://127.0.0.1:54321 ... vitest run tests/backend/demo-makana.test.ts
 // Requiere las migraciones ya aplicadas por el operador autorizado. No usa modelo ni clima real.
 import { describe, expect, it } from 'vitest'
 import {
-  clienteSinSesion, crearPropuesta, err, intento, nuevaSesion, ok, rpc, rpcCrudo,
+  clienteSinSesion, crearPropuesta, err, intento, nuevaSesion, ok, PERMITIDAS, rpc, rpcCrudo, TOTAL_PERMITIDAS,
   type Json, type Sesion,
 } from './helpers'
 
@@ -67,7 +67,7 @@ async function crearParque(s: Sesion, esp: string, imprescindible: string, titul
 }
 
 // Sin opt-in explícito + URL loopback este archivo no hace NINGUNA llamada, ni siquiera un chequeo de RPC.
-describe.skipIf(!localAutorizado)('0057: demo Makana aislada (solo Supabase local autorizado)', { timeout: 180_000 }, () => {
+describe.skipIf(!localAutorizado)('20261024124500: demo Makana aislada (solo Supabase local autorizado)', { timeout: 180_000 }, () => {
   it('una sola semilla por caso bajo concurrencia, sin sustituir la demo legacy del mismo usuario', async () => {
     const a = await nuevaSesion()
     const legacy = (await ok(a, 'seed_demo_space')).espacio
@@ -204,7 +204,47 @@ describe.skipIf(!localAutorizado)('0057: demo Makana aislada (solo Supabase loca
     expect(err(await rpc(ana, 'publicar_borrador_agente', { p_ejecucion_id: ej, p_borrador_hash: g.borrador.hash, p_intento_id: intento() }))).not.toBe('ok')
   })
 
-  it('la RPC nueva no es ejecutable por anon', async () => {
+  it('preserva actividad, salida privada y propiedad del asiento al reiniciar y reingresar', async () => {
+    const { ana, camila, felipe, espacio, ids } = await tresPerfiles()
+    await ok(camila, 'save_my_preferences', { p_espacio_id: espacio.id, p_preferencias: { ...PREF_CAMILA, usar_en_agente: true } })
+    await ok(camila, 'set_recibir_invitaciones_agente', { p_espacio_id: espacio.id, p_recibir: true })
+    const antes = (await ok(ana, 'get_space', { p_espacio_id: espacio.id })).espacio
+    expect(antes.actividad).toEqual(expect.arrayContaining([
+      expect.objectContaining({ tipo: 'miembro_unido', miembro: expect.objectContaining({ nombre: 'Camila' }) }),
+      expect.objectContaining({ tipo: 'miembro_unido', miembro: expect.objectContaining({ nombre: 'Felipe' }) }),
+    ]))
+    await ok(camila, 'leave_space', { p_espacio_id: espacio.id, p_intento_id: intento() })
+    expect(err(await rpc(camila, 'get_space', { p_espacio_id: espacio.id }))).toBe('fuera_de_audiencia/no_miembro')
+    expect(err(await rpc(camila, 'get_my_preferences', { p_espacio_id: espacio.id }))).toBe('fuera_de_audiencia/no_miembro')
+    expect((await ok(camila, 'list_my_spaces')).espacios).toEqual([])
+    let deAna = (await ok(ana, 'get_space', { p_espacio_id: espacio.id })).espacio
+    expect(deAna.miembros.map((m: Json) => m.nombre)).not.toContain('Camila')
+    expect(deAna.actividad).toEqual(expect.arrayContaining([
+      expect.objectContaining({ tipo: 'miembro_salio', miembro: expect.objectContaining({ nombre: 'Camila' }) }),
+    ]))
+    expect(JSON.stringify(deAna)).not.toMatch(/ojala_gratis|presupuesto|usuario_original_id|salio_en/)
+    await ok(ana, 'reset_demo', { p_espacio_id: espacio.id, p_intento_id: intento() })
+    deAna = (await ok(ana, 'get_space', { p_espacio_id: espacio.id })).espacio
+    expect(deAna.miembros.map((m: Json) => m.nombre)).not.toContain('Camila')
+    expect(deAna.actividad).toEqual(expect.arrayContaining([
+      expect.objectContaining({ tipo: 'miembro_salio', miembro: expect.objectContaining({ nombre: 'Camila' }) }),
+    ]))
+    const preview = await ok(felipe, 'preview_space_by_code', { p_codigo: espacio.codigo_invitacion })
+    expect(preview.miembros.map((m: Json) => m.nombre)).not.toContain('Camila')
+    const ajeno = await nuevaSesion()
+    expect(err(await rpc(ajeno, 'join_space', { p_codigo: espacio.codigo_invitacion, p_nombre_visible: '', p_miembro_id: ids.Camila })))
+      .toBe('no_autorizado/miembro_ya_reclamado')
+    const reingreso = await ok(camila, 'join_space', { p_codigo: espacio.codigo_invitacion, p_nombre_visible: '', p_miembro_id: ids.Camila })
+    expect(reingreso.resultado).toMatchObject({ miembro_id: ids.Camila, reingreso: true })
+    expect(await gustos(camila, espacio.id)).toMatchObject({ preferencias: PREF_CAMILA, usar_en_agente: false, recibir_invitaciones_agente: false })
+    const lista = (await ok(ana, 'list_my_spaces')).espacios
+    expect(lista.find((e: Json) => e.id === espacio.id)).toMatchObject({ cantidad_miembros: 7, demo_caso: 'makana' })
+  })
+
+  it('catálogo 43/0: incluye salida del grupo y la RPC nueva no es ejecutable por anon', async () => {
+    expect(TOTAL_PERMITIDAS).toBe(43)
+    expect(Object.keys(PERMITIDAS)).toHaveLength(43)
+    expect(PERMITIDAS.leave_space).toBeTypeOf('function')
     expect((await rpcCrudo(clienteSinSesion(), 'seed_demo_makana')).error?.code).toBe('42501')
   })
 })

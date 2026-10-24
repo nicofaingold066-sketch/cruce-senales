@@ -1,9 +1,10 @@
--- CRUXE · 0057 · Caso de demostración Makana, aditivo y aislado.
+-- CRUXE · 20261024124500 · Caso de demostración Makana, aditivo y aislado.
 -- Conserva cada demo legacy, sus seis personajes y sus permisos. Un mismo usuario puede abrir
 -- una demo por variante. No crea cuentas Auth, invitaciones externas ni datos personales.
--- Migración preparada sin aplicar: CLI Supabase ausente en el entorno; por instrucción directa
--- se conserva el patrón secuencial de cuatro dígitos existente. Requiere revisión y entorno autorizado.
--- RPC nueva: seed_demo_makana() (42 authenticated / 0 anon). El resto conserva firmas y contrato 2.
+-- Sustituye el borrador 0057 que nunca se aplicó en el proyecto remoto. Se ordena DESPUÉS de
+-- 20261024115616_actividad_grupo, ya aplicada. CLI ausente: archivo preparado por instrucción
+-- directa del usuario/coordinador; requiere revisión y entorno autorizado antes de activarse.
+-- RPC nueva: seed_demo_makana() (43 authenticated / 0 anon). El resto conserva firmas y contrato 2.
 -- Reiniciar Makana conserva sesiones, preferencias y permisos de asientos reclamados; solo restablece
 -- los perfiles todavía simulados y borra planes/recibos de ESTE espacio. No inventa disponibilidades.
 
@@ -97,29 +98,30 @@ exception when others then
 end
 $$;
 
--- Envoltorios privados conservan los cuerpos legacy en vez de duplicar su motor o sus validadores.
-alter function cruce.espacio_json(uuid, uuid) rename to espacio_json_0056;
+-- Los wrappers capturan los cuerpos VIGENTES tras actividad_grupo. Preservan movimientos,
+-- pertenencia activa, salidas y reingreso con usuario_original_id/salio_en; no duplican el motor.
+alter function cruce.espacio_json(uuid, uuid) rename to espacio_json_antes_makana;
 create or replace function cruce.espacio_json(p_espacio uuid, p_uid uuid) returns jsonb
 language sql stable set search_path = '' as $$
-  select cruce.espacio_json_0056(p_espacio, p_uid)
+  select cruce.espacio_json_antes_makana(p_espacio, p_uid)
     || jsonb_build_object('demo_caso', case when e.demo then e.demo_caso else null end)
   from cruce.espacios e where e.id = p_espacio
 $$;
 
-alter function cruce.vista_propuesta(uuid, uuid) rename to vista_propuesta_0056;
+alter function cruce.vista_propuesta(uuid, uuid) rename to vista_propuesta_antes_makana;
 create or replace function cruce.vista_propuesta(p_prop uuid, p_yo uuid) returns jsonb
 language sql stable set search_path = '' as $$
-  select cruce.vista_propuesta_0056(p_prop, p_yo)
+  select cruce.vista_propuesta_antes_makana(p_prop, p_yo)
     || jsonb_build_object('demo_caso', case when e.demo then e.demo_caso else null end)
   from cruce.propuestas p join cruce.espacios e on e.id = p.espacio_id where p.id = p_prop
 $$;
 
 alter function public.list_my_spaces() set schema cruce;
-alter function cruce.list_my_spaces() rename to list_my_spaces_0056;
+alter function cruce.list_my_spaces() rename to list_my_spaces_antes_makana;
 create or replace function public.list_my_spaces() returns jsonb
 language plpgsql security definer set search_path = '' as $$
 declare
-  r jsonb := cruce.list_my_spaces_0056();
+  r jsonb := cruce.list_my_spaces_antes_makana();
 begin
   if not coalesce((r ->> 'ok')::boolean, false) then return r; end if;
   return jsonb_set(r, '{espacios}', (
@@ -132,11 +134,11 @@ $$;
 
 -- El default histórico true permanece solo en legacy. Makana requiere autorización afirmativa.
 alter function public.get_my_preferences(uuid) set schema cruce;
-alter function cruce.get_my_preferences(uuid) rename to get_my_preferences_0056;
+alter function cruce.get_my_preferences(uuid) rename to get_my_preferences_antes_makana;
 create or replace function public.get_my_preferences(p_espacio_id uuid) returns jsonb
 language plpgsql security definer set search_path = '' as $$
 declare
-  r jsonb := cruce.get_my_preferences_0056(p_espacio_id);
+  r jsonb := cruce.get_my_preferences_antes_makana(p_espacio_id);
 begin
   if coalesce((r ->> 'ok')::boolean, false) and r -> 'preferencias' = 'null'::jsonb
      and exists (select 1 from cruce.espacios e where e.id = p_espacio_id and e.demo and e.demo_caso = 'makana') then
@@ -147,7 +149,7 @@ end
 $$;
 
 alter function public.save_my_preferences(uuid, jsonb) set schema cruce;
-alter function cruce.save_my_preferences(uuid, jsonb) rename to save_my_preferences_0056;
+alter function cruce.save_my_preferences(uuid, jsonb) rename to save_my_preferences_antes_makana;
 create or replace function public.save_my_preferences(p_espacio_id uuid, p_preferencias jsonb) returns jsonb
 language plpgsql security definer set search_path = '' set lock_timeout = '5s' as $$
 begin
@@ -155,16 +157,16 @@ begin
      and exists (select 1 from cruce.espacios e where e.id = p_espacio_id and e.demo and e.demo_caso = 'makana') then
     p_preferencias := p_preferencias || jsonb_build_object('usar_en_agente', false);
   end if;
-  return cruce.save_my_preferences_0056(p_espacio_id, p_preferencias);
+  return cruce.save_my_preferences_antes_makana(p_espacio_id, p_preferencias);
 end
 $$;
 
 alter function public.simulate_save_preferences(uuid, uuid, jsonb) set schema cruce;
-alter function cruce.simulate_save_preferences(uuid, uuid, jsonb) rename to simulate_save_preferences_0056;
+alter function cruce.simulate_save_preferences(uuid, uuid, jsonb) rename to simulate_save_preferences_antes_makana;
 create or replace function public.simulate_save_preferences(p_espacio_id uuid, p_miembro_id uuid, p_preferencias jsonb) returns jsonb
 language plpgsql security definer set search_path = '' set lock_timeout = '5s' as $$
 declare
-  r jsonb := cruce.simulate_save_preferences_0056(p_espacio_id, p_miembro_id, p_preferencias);
+  r jsonb := cruce.simulate_save_preferences_antes_makana(p_espacio_id, p_miembro_id, p_preferencias);
 begin
   -- La función original ya validó sesión, organizador, espacio demo y destinatario simulado.
   -- Nunca interpreta la edición del organizador como consentimiento de otra persona.
@@ -177,11 +179,11 @@ end
 $$;
 
 alter function public.add_simulated_member(uuid, text) set schema cruce;
-alter function cruce.add_simulated_member(uuid, text) rename to add_simulated_member_0056;
+alter function cruce.add_simulated_member(uuid, text) rename to add_simulated_member_antes_makana;
 create or replace function public.add_simulated_member(p_espacio_id uuid, p_nombre_visible text) returns jsonb
 language plpgsql security definer set search_path = '' set lock_timeout = '5s' as $$
 declare
-  r jsonb := cruce.add_simulated_member_0056(p_espacio_id, p_nombre_visible);
+  r jsonb := cruce.add_simulated_member_antes_makana(p_espacio_id, p_nombre_visible);
 begin
   if coalesce((r ->> 'ok')::boolean, false)
      and exists (select 1 from cruce.espacios e where e.id = p_espacio_id and e.demo and e.demo_caso = 'makana') then
@@ -192,7 +194,7 @@ begin
 end
 $$;
 
-alter function cruce.sembrar_preferencias_demo(uuid) rename to sembrar_preferencias_demo_0056;
+alter function cruce.sembrar_preferencias_demo(uuid) rename to sembrar_preferencias_demo_antes_makana;
 create or replace function cruce.sembrar_preferencias_demo(p_esp uuid) returns void
 language plpgsql volatile set search_path = '' as $$
 begin
@@ -200,21 +202,21 @@ begin
     delete from cruce.preferencias pr using cruce.miembros m
     where pr.miembro_id = m.id and m.espacio_id = p_esp and m.simulado;
   else
-    perform cruce.sembrar_preferencias_demo_0056(p_esp);
+    perform cruce.sembrar_preferencias_demo_antes_makana(p_esp);
   end if;
 end
 $$;
 
-alter function cruce.mensaje(text, text) rename to mensaje_0056;
+alter function cruce.mensaje(text, text) rename to mensaje_antes_makana;
 create or replace function cruce.mensaje(p_codigo text, p_detalle text) returns text
 language sql immutable set search_path = '' as $$
   select case when p_codigo = 'no_autorizado' and p_detalle = 'caso_no_disponible'
     then 'Este caso no tiene respuestas precargadas. Cada persona responde a la propuesta concreta.'
-    else cruce.mensaje_0056(p_codigo, p_detalle) end
+    else cruce.mensaje_antes_makana(p_codigo, p_detalle) end
 $$;
 
 alter function public.simulate_load_case(uuid, uuid) set schema cruce;
-alter function cruce.simulate_load_case(uuid, uuid) rename to simulate_load_case_0056;
+alter function cruce.simulate_load_case(uuid, uuid) rename to simulate_load_case_antes_makana;
 create or replace function public.simulate_load_case(p_propuesta_id uuid, p_intento_id uuid) returns jsonb
 language plpgsql security definer set search_path = '' set lock_timeout = '5s' as $$
 declare
@@ -233,12 +235,12 @@ begin
       return cruce.err('no_autorizado', 'caso_no_disponible', v_rev);
     end if;
   end if;
-  return cruce.simulate_load_case_0056(p_propuesta_id, p_intento_id);
+  return cruce.simulate_load_case_antes_makana(p_propuesta_id, p_intento_id);
 end
 $$;
 
 alter function public.reset_demo(uuid, uuid) set schema cruce;
-alter function cruce.reset_demo(uuid, uuid) rename to reset_demo_0056;
+alter function cruce.reset_demo(uuid, uuid) rename to reset_demo_antes_makana;
 create or replace function public.reset_demo(p_espacio_id uuid, p_intento_id uuid) returns jsonb
 language plpgsql security definer set search_path = '' set lock_timeout = '5s' as $$
 declare
@@ -262,7 +264,7 @@ begin
   if yo.rol <> 'organizador' then return cruce.err('no_autorizado', 'no_es_organizador_espacio', null); end if;
   if not e.demo then return cruce.err('no_autorizado', 'espacio_no_demo', null); end if;
   if e.demo_caso <> 'makana' then
-    return cruce.reset_demo_0056(p_espacio_id, p_intento_id);
+    return cruce.reset_demo_antes_makana(p_espacio_id, p_intento_id);
   end if;
   if e.demo_caso = 'makana' then
     perform 1 from cruce.miembros m where m.espacio_id = e.id and (m.user_id = v_uid or m.simulado) order by m.id for update;
@@ -274,7 +276,7 @@ begin
   end if;
   -- Reutiliza generación, tombstones, límites del espacio, evento e idempotencia existentes.
   -- sembrar_preferencias_demo hace dispatch por variante y conserva a los asientos reclamados.
-  r := cruce.reset_demo_0056(p_espacio_id, p_intento_id);
+  r := cruce.reset_demo_antes_makana(p_espacio_id, p_intento_id);
   -- Un fallo del cuerpo legacy también debe revertir la limpieza de recibos de este wrapper.
   if not coalesce((r ->> 'ok')::boolean, false) then
     raise sqlstate 'P5701' using message = 'reset_demo_no_completado';
@@ -307,12 +309,12 @@ declare
     'set_politica_agente_social', 'iniciar_ejecucion_agente', 'guardar_borrador_agente',
     'aprobar_borrador_agente', 'publicar_borrador_agente', 'cerrar_ejecucion_agente',
     -- E13
-    'opinar_version'];
+    'opinar_version', 'leave_space'];
   v text;
 begin
   if (select count(*) from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace
-      where n.nspname = 'public') <> 42 then
-    raise exception 'A5: public no tiene exactamente 42 funciones';
+      where n.nspname = 'public') <> 43 then
+    raise exception 'A5: public no tiene exactamente 43 funciones';
   end if;
   if exists (select 1 from pg_catalog.pg_proc p where p.proname = 'agente_insumos') then
     raise exception 'A5: agente_insumos no debe existir (enmienda 4, decisión 1)';
@@ -399,3 +401,4 @@ grant execute on function public.list_my_spaces(), public.get_my_preferences(uui
   to authenticated;
 revoke all on all functions in schema cruce from public, anon, authenticated;
 select cruce.verificar_privilegios();
+notify pgrst, 'reload schema';
