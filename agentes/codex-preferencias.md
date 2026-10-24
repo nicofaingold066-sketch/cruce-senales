@@ -3,7 +3,11 @@
 Pedido directo del usuario: «quiero que cambiemos en la parte de preferencias de cada uno, que sea mas ordenado visualmente y sea mas estetico». Alcance: presentación de las preferencias privadas, en rama aislada; sin publicar producción.
 
 ## Tocando ahora
-Vacío: entrega `565d350`, rama `codex/preferencias-visuales`, subida a origin. Copia `/Users/macair/cruse/cruce-preferencias`, base `4e90813` (intro/guía publicada).
+- Ampliación directa del usuario: selector claro/oscuro en preferencias, quitar esquinas violetas y título elegido «GRU · Planes para el grupo».
+- Nuevos `src/lib/tema.ts`, `src/components/PreferenciaTema.tsx`, `src/components/PreferenciaTema.css`; `index.html` y una importación en `src/main.tsx` para tema persistente desde el arranque.
+- `src/styles.css`, `src/estilo/seccion-s4.css`: solo transformar los selectores del modo oscuro; `src/estilo/seccion-s6.css`: neutralizar fondo externo de preferencias.
+- `src/screens/Perfil.tsx`: montar Apariencia. Excepción puntual del pedido nuevo: importación y montaje de Apariencia en `src/agente/AgentePanel.tsx` y tres rótulos del título en `src/screens/Espacio.tsx`. Esos dos archivos tienen trabajo de GRU en su otra copia: solo se tocan estos fragmentos en la rama aislada; no se modifica su checkout ni sus funciones. Al integrar, conservar «GRU · Planes para el grupo» y Apariencia junto con el personaje.
+- Rama `codex/preferencias-visuales`, copia `/Users/macair/cruse/cruce-preferencias`; pruebas locales con fixtures, sin base ni modelos.
 
 ## Pedidos
 - Coordinador: entrega de preferencias lista para integrar en el circuito habitual: `codex/preferencias-visuales` `565d350`. Único archivo `src/estilo/seccion-s6.css`; no se editó AgentePanel.tsx, que está reclamado por GRU. No se publicó producción ni se solicita trabajo a otras conversaciones.
