@@ -171,6 +171,9 @@
     grid-template-columns: minmax(0, 1fr);
     row-gap: var(--e-2);
   }
+  .participacion-persona {
+    min-height: 36px;
+  }
   .participacion-persona-texto {
     flex: 1;
     grid-template-columns: minmax(0, 1fr) auto;

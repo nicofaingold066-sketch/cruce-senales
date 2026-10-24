@@ -96,7 +96,9 @@ try {
   report.assets = requestedBase ? 'GET reales únicamente del origen elegido; Auth/RPC interceptados' : 'Vite loopback'
   const isSyntheticAPI = url => (url.origin === MOCK || requestedBase !== null) && (url.pathname.startsWith('/auth/v1/') || url.pathname.startsWith('/rest/v1/rpc/'))
   browser = await pw.chromium.launch({ headless: true, executablePath: process.env.CRUXE_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' })
-  const configs = [375, 320, 390, 430, 1280].flatMap(width => ['light', 'dark'].map(theme => ({ width, theme, full: width === 375 && theme === 'light' })))
+  const widths = process.env.CRUCE_QA_WIDTHS ? process.env.CRUCE_QA_WIDTHS.split(',').map(Number) : [375, 320, 390, 430, 1280]
+  assert.ok(widths.length && widths.every(width => [320, 375, 390, 430, 1280].includes(width)), 'Anchos de QA admitidos: 320,375,390,430,1280')
+  const configs = widths.flatMap(width => ['light', 'dark'].map(theme => ({ width, theme, full: width === 375 && theme === 'light' })))
   for (const config of configs) {
     const label = `${config.width}-${config.theme}`
     const result = { ...config, checks: [], rpc: [], blocked: [], errors: [], screenshots: [], captures: [], fontRequests: [], overflow: [] }
