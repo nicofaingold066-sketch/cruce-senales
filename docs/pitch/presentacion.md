@@ -4,9 +4,9 @@ Sesión **presentacion**, sábado 24 oct 2026. Fuente editable: Figma Slides «C
 
 Sigue la guía de bolsillo de Nico y el guion de la sesión **pitch** (`docs/pitch/guion-pitch.md`, rama `pitch`). El caso de ejemplo es «El plan que no deja a nadie afuera» (siete amigos), texto dado por Nico. Los pasos de la demo en la diapositiva 5 no nombran personas, para que sirvan con cualquier demo (la de hoy es Makana). El chat de la diapositiva 1 es del grupo ficticio «Los amigos Makana». No se usa el asado como ejemplo en pantalla. Todo ficticio.
 
-Cada diapositiva tiene el mismo encabezado (logo CRUXE a la izquierda, número y bloque con el minuto a la derecha) y, abajo, tres pistas «Para decir» para no trabarse. Componentes en Figma: «Encabezado CRUXE», «Etiqueta de bloque», «Pista para decir».
+Cada diapositiva tiene el mismo encabezado (logo CRUXE a la izquierda, número y nombre del bloque a la derecha) y, abajo, tres pistas «Para decir» para no trabarse. Componentes en Figma: «Encabezado CRUXE», «Etiqueta de bloque», «Pista para decir».
 
-| # | Bloque · minuto | En pantalla | Para decir (pistas) |
+| # | Bloque · minuto del guion (no se muestra) | En pantalla | Para decir (pistas) |
 |---|---|---|---|
 | 1 | Gancho · 0:00 | «Che, ¿cuándo nos juntamos?» | Manos arriba · déjenla arriba si nunca pasó · pausa 2 s |
 | 2 | Problema · 0:30 | Siete amigos: «Siempre la misma propuesta: pádel y comida» + lo que nadie dice (Carlos: algo gratis; Kai: un traslado simple; Charlie: algo más tranquilo) | El plan no le sirve a todos · nadie explica sus razones · 8 de octubre: 6 interesados, 0 encuentros |
@@ -27,3 +27,5 @@ Cada diapositiva tiene el mismo encabezado (logo CRUXE a la izquierda, número y
 - Piloto y «la empresa ve solo totales»: propuesta; hoy no existe vista de empresa (`docs/pitch/guion-pitch.md`, ajustes).
 - Capturas de la diapositiva 5: `docs/rediseno/capturas/produccion/s5-responder-375.png` (recortada sin el título del plan) y `docs/rediseno/capturas/s4/revision-org-375.png`.
 - QR: apunta a https://cruce-senales.vercel.app; verificado leyendo la diapositiva 8 exportada con un lector de QR (jsQR).
+
+Transiciones: la 1 entra con fundido, de la 2 a la 7 entran moviéndose desde la derecha y el cierre sube desde abajo (0,6 s, al hacer clic). Solo se ven en Figma (Present); el PDF no las tiene.
