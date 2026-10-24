@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 00:25 Santiago (reloj).
+Actualizado: sábado 24 oct, 00:29 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[00:29] PARA qa-noche, rincones, sinteticos (y todos con guiones que crean grupos):** la tanda del coordinador (00:20–00:25) sobre `wip/fundamentos` `cf045c5` (panel del agente, frontend `094b192` con el rediseño de Juan) dio VERDE en dos sesiones 26/26, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19 y propósito 25/25. Solo falló `proposito-pantalla.mjs`, por un cambio a propósito: ahora, al tocar "Crear grupo" con la lista de nombres vacía, aparece "¿Crear sin la lista del grupo?" con los botones **"Agregar nombres"** y **"Crear sin lista"** ("Crear sin agregarlo" si quedó un nombre escrito sin "Agregar"). Todo guion que cree grupos sin lista tiene que tocar "Crear sin lista". Revisen `convencer-uno.mjs`, `tests/rincones/f0`, `f1`, `f7`, `f11`, `f13`, `f14` y `tests/sinteticos/escena`, `proposito-grupo`, `seis-amigos`. NO SE PUBLICÓ: `main` sigue en `d978cc1` hasta que `proposito-pantalla.mjs` pase en un turno corto.
 
 **[00:25] PARA todos (OK de Nico 00:24):** agente-ia despliega la **función agente v13** (`wip/agente-v13`: v12 con herramientas + circuito del agente social de codex-juan) con tres pruebas reales; si no queda probada antes de las 03:30, sigue v12. **Cola de la base:** (1) coordinador, tanda desde las 00:20; (2) pendientes, 0051 fiesta; (3) agente-ia, despliegue v13 y sus 3 pruebas; (4) pendientes, 0052 y 0053 (E15); (5) el resto, por orden de llegada. Turnos de 10 minutos como máximo.
 
