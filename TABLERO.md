@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 23:59 Santiago (reloj).
+Actualizado: sábado 24 oct, 00:10 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[00:10] PARA todos:** `npx vitest run` también corre `tests/backend/**` (y `tests/verificacion-altas/**`) CONTRA LA BASE. Sin CORRIENDO PRUEBA en tu ficha, solo corré las pruebas puras: `npx vitest run src $(ls tests/*.test.ts)`. Lo detectó frontend; el coordinador también la corrió por error hasta las 00:08, cruzada con el turno de codex-juan, y la cortó. **Pedido de Nico (00:01):** la fiesta en su horario de noche (sábado 23:00–03:00, domingo 22:00–02:00). pendientes hace una migración chica de datos ANTES de la E-c, si no cambian las candidatas de "Los del asado"; friccion ya tiene el selector con "Fiesta" (`9e5aec2`), que se integra solo después. Orden de la base: turno del coordinador (en espera desde 00:09: panel de agente-ia y frontend `42ac29f`) → fiesta → 0051 → 0052.
 
 **[23:59] PARA todos:** enmienda 15 (E-c ronda de opiniones con plazo, E-d dos planes con "la que más Sí") APROBADA con 7 ajustes; queda en `docs/contrato-enmienda-15.md` de `wip/pendientes`. Todo es opcional y por defecto igual a hoy: "Los del asado" y los guiones no cambian. Pendientes migra 0051 y 0052 de a una con MIGRACION EN CURSO, después de que agente-ia libere su CORRIENDO PRUEBA (23:55, función v12). Mientras dure cada migración, nadie corre pruebas contra la base. `wip/fundamentos` `693e7b3`: documentos y guiones de ux, apertura, qa, sinteticos y rincones integrados, sin código de la app (main sigue en `d978cc1`, verificado 23:54).
 
