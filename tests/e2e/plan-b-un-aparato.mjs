@@ -8,6 +8,7 @@
 // la versión 2 desde cero y los segundos totales de máquina. Datos ficticios: un demo propio por corrida. No borra nada.
 import { createRequire } from 'node:module'
 import { baseLibre } from './base-libre.mjs'
+import { irA } from './nav.mjs'
 baseLibre()
 const require = createRequire(import.meta.url)
 let pw
@@ -33,7 +34,7 @@ T.on('console', (m) => { if (m.type() === 'error') errores.push(m.text().slice(0
 const boton = (texto) => T.getByRole('button', { name: texto, exact: true })
 const tocar = async (texto) => { const b = boton(texto); await b.scrollIntoViewIfNeeded(); await b.click() }
 const esperarTexto = (texto, ms = 20000) => T.getByText(texto, { exact: false }).first().waitFor({ timeout: ms })
-const pestana = async (nombre) => { await T.getByRole('tab', { name: nombre }).click(); await T.waitForTimeout(500) }
+const pestana = (nombre) => irA(T, nombre)
 const siPuedo = (franja) => T.locator('fieldset', { hasText: `Franja ${franja}` }).getByText('Sí puedo', { exact: true }).click()
 // La pantalla no es autoridad: cada clic se lee junto con el sobre de la RPC que dispara.
 async function accion(fn, clic) {
@@ -60,8 +61,9 @@ try {
     luna ? `simulado ${luna.simulado}${'reclamable' in luna ? `, reclamable ${luna.reclamable}` : ''}` : 'Luna no está en el espacio')
 
   // 2. Propuesta del caso, creada y abierta; Tomi responde Sí/Sí.
-  await T.getByRole('link', { name: 'Crear propuesta' }).click()
-  await tocar('Revisar antes de crear')
+  await T.getByRole('link', { name: /^(Crear propuesta|\+? ?Nuevo plan)$/ }).first().click()
+  // El mockup (S3) deja un solo primario («Crear y abrir al grupo»): el paso «Revisar antes de crear» es opcional.
+  { const revisar = T.getByRole('button', { name: 'Revisar antes de crear', exact: true }); if (await revisar.isVisible().catch(() => false)) await revisar.click() }
   const creada = await accion('create_proposal', () => tocar('Crear y abrir al grupo'))
   await T.waitForURL(/\/p\//, { timeout: 20000 })
   verificar('Propuesta creada y abierta al grupo', creada.ok === true && await esperarTexto('Reuniendo interés').then(() => true, () => false))

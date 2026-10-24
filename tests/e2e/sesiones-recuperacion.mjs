@@ -271,7 +271,7 @@ try {
     assert.equal(await retorno(p).count(), 0)
     // Entradas que quedan: demo, unirse con código y nombre (ingreso). «Crear un grupo» solo aparece con nombre guardado.
     await p.getByRole('button', { name: /^Probar la demo «Los del (asado|finde)»$/ }).waitFor()
-    // Rediseño S1 (pantalla 9): el formulario de unirse vive en la fila desplegable «Tengo un código de invitación».
+    // Rediseño S1 (friccion 0b5e4d1, pantalla 9): el formulario de unirse vive en la fila desplegable «Tengo un código de invitación».
     const filaCodigo = p.getByText('Tengo un código de invitación', { exact: true })
     if (await filaCodigo.count()) await filaCodigo.first().click()
     assert.equal(await p.getByRole('button', { name: 'Unirme', exact: true }).count(), 1)
