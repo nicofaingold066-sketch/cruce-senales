@@ -151,6 +151,9 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   const [aviso, setAviso] = useState<string | null>(null)
   // #108: la primera llamada tardó demasiado y se está reintentando una vez.
   const [reintentando, setReintentando] = useState(false)
+  // Rincones O-15: "Me gustaría" se marca en rojo recién al intentar guardar sin ninguna actividad.
+  const [intentoSinActividad, setIntentoSinActividad] = useState(false)
+  const refGustos = useRef<HTMLFieldSetElement>(null)
   const { ocupado, error, ejecutar } = useAccion()
   const refError = useFocoEnError(error)
 
@@ -199,6 +202,11 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   const sinActividades = borrador.me_gustaria.length === 0
 
   async function guardar() {
+    if (sinActividades) {
+      setIntentoSinActividad(true)
+      refGustos.current?.querySelector('input')?.focus()
+      return
+    }
     setReintentando(false)
     const r = await ejecutar(`preferencias:${espacioId}`, () =>
       agenteApi.saveMyPreferences(espacioId, borrador, usar, { alReintentar: () => setReintentando(true) }),
@@ -222,7 +230,12 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
       <Opciones nombre="pref-energia" titulo="Energía" opciones={ENERGIA} valor={borrador.energia} onCambio={(v) => poner('energia', v)} deshabilitado={soloLectura || ocupado} />
       <Opciones nombre="pref-ambiente" titulo="Ambiente" opciones={AMBIENTE} valor={borrador.ambiente} onCambio={(v) => poner('ambiente', v)} deshabilitado={soloLectura || ocupado} />
       <Opciones nombre="pref-lugar" titulo="Lugar" opciones={LUGAR} valor={borrador.lugar} onCambio={(v) => poner('lugar', v)} deshabilitado={soloLectura || ocupado} />
-      <fieldset className={`grupo ${sinActividades ? 'grupo-error' : ''}`} disabled={soloLectura || ocupado}>
+      <fieldset
+        ref={refGustos}
+        className={`grupo ${sinActividades && intentoSinActividad ? 'grupo-error' : ''}`}
+        disabled={soloLectura || ocupado}
+        aria-describedby={sinActividades ? 'pref-gusta-ayuda' : undefined}
+      >
         <legend>Me gustaría</legend>
         <div className="opciones">
           {actividades.map((a) => {
@@ -236,14 +249,18 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
             )
           })}
         </div>
-        {sinActividades ? <small>Marcá al menos una.</small> : null}
+        {sinActividades ? (
+          <small id="pref-gusta-ayuda" role={intentoSinActividad ? 'alert' : undefined}>
+            Marca al menos una actividad para guardar.
+          </small>
+        ) : null}
       </fieldset>
       <div className="bloque agente-viaje">
         <h3 className="agente-subtitulo">Para elegir un lugar a mano (opcional)</h3>
-        <p className="suave">Solo lo usa el servidor para elegir un lugar que te quede a mano. Nadie del grupo ve tu zona ni cómo te movés.</p>
+        <p className="suave">Solo lo usa el servidor para elegir un lugar que te quede a mano. Nadie del grupo ve tu zona ni cómo te mueves.</p>
         <Opciones nombre="pref-zona" titulo="Tu zona" opciones={ZONA} valor={borrador.zona ?? ''} onCambio={(v) => ponerOpcional('zona', v)} deshabilitado={soloLectura || ocupado} />
-        <Opciones nombre="pref-movilidad" titulo="Cómo te movés" opciones={MOVILIDAD} valor={borrador.movilidad ?? ''} onCambio={(v) => ponerOpcional('movilidad', v)} deshabilitado={soloLectura || ocupado} />
-        <Opciones nombre="pref-tiempo" titulo="Hasta cuánto viajás" opciones={TIEMPO} valor={borrador.tiempo_max ?? ''} onCambio={(v) => ponerOpcional('tiempo_max', v)} deshabilitado={soloLectura || ocupado} />
+        <Opciones nombre="pref-movilidad" titulo="Cómo te mueves" opciones={MOVILIDAD} valor={borrador.movilidad ?? ''} onCambio={(v) => ponerOpcional('movilidad', v)} deshabilitado={soloLectura || ocupado} />
+        <Opciones nombre="pref-tiempo" titulo="Hasta cuánto viajas" opciones={TIEMPO} valor={borrador.tiempo_max ?? ''} onCambio={(v) => ponerOpcional('tiempo_max', v)} deshabilitado={soloLectura || ocupado} />
         <Opciones nombre="pref-momento" titulo="Momento del día" opciones={MOMENTO} valor={borrador.momento ?? ''} onCambio={(v) => ponerOpcional('momento', v)} deshabilitado={soloLectura || ocupado} />
       </div>
       <label htmlFor="pref-usar" className="agente-casilla">
@@ -273,7 +290,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
       <p className="agente-sr" aria-live="polite">
         {ocupado ? (reintentando ? AVISO_REINTENTO : 'Guardando tus preferencias…') : aviso ?? ''}
       </p>
-      <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura || sinActividades}>
+      <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura}>
         {guardadas ? 'Actualizar mis preferencias' : 'Guardar mis preferencias'}
       </Boton>
     </div>
@@ -430,7 +447,8 @@ function BorradorTarjeta({
       </ul>
       {viaje ? (
         <p className="agente-viaje-linea">
-          <strong>Queda a menos de {viaje.max_minutos} minutos para todos{viaje.estimado ? ' (estimado)' : ''}.</strong>
+          <strong>Queda a menos de {viaje.max_minutos} minutos para todos{viaje.estimado ? ' (estimado)' : ''}.</strong>{' '}
+          Elegido para que nadie viaje demasiado.
         </p>
       ) : null}
       {canchas.length > 0 ? (
@@ -457,7 +475,16 @@ function BorradorTarjeta({
       ) : (
         <p className="suave">
           Clima: {b.clima.resumen}
-          {b.clima.fuente === 'open-meteo' ? ' (pronóstico de Open-Meteo)' : ''}
+          {b.clima.fuente === 'open-meteo' ? (
+            <>
+              {' '}
+              (pronóstico de{' '}
+              <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">
+                Open-Meteo
+              </a>
+              )
+            </>
+          ) : null}
         </p>
       )}
       <p>
@@ -484,7 +511,7 @@ function BorradorTarjeta({
           ? `Lo redactó la IA${quien ? ` (${quien})` : ''}, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.`
           : 'Texto fijo. Las opciones las armó el servidor con reglas fijas a partir de las preferencias habilitadas.'}
       </p>
-      <p className="suave">El mínimo, el máximo, la persona imprescindible y el cierre los completás vos en el paso siguiente.</p>
+      <p className="suave">El mínimo, el máximo, la persona imprescindible y el cierre los completas tú en el paso siguiente.</p>
       <Boton onClick={usar} disabled={soloLectura || !tituloValido}>
         Usar esta opción
       </Boton>
@@ -540,7 +567,7 @@ function ErrorAgente({ error, espacioId, onReintentar }: { error: ApiError; espa
           </div>
         }
       >
-        {error.mensaje} No se creó nada; podés reintentar o crear la propuesta a mano.
+        {error.mensaje} No se creó nada; puedes reintentar o crear la propuesta a mano.
       </Aviso>
     )
   }
@@ -699,7 +726,7 @@ class BarreraAgente extends Component<{ children: ReactNode }, { fallo: boolean 
               </button>
             }
           >
-            El resto del espacio funciona igual: podés crear la propuesta a mano.
+            El resto del espacio funciona igual: puedes crear la propuesta a mano.
           </Aviso>
         </div>
       )
