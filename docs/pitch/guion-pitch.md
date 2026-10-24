@@ -12,7 +12,7 @@ Reglas que no se rompen en escena (`docs/guion-demo.md`, «Reglas que no se romp
 
 ## A. Versión de 5 minutos (la del escenario)
 
-Sigue las **8 diapositivas del deck** de la sesión «Presentación para el jurado» (Figma «CRUXE — Pitch Makana», copia en `docs/pitch/presentacion.pdf` de la rama `presentacion`, `a145a58`; la diapositiva 5 no nombra personas: los nombres los dice Nico sobre la demo en vivo), con sus títulos y minutos: 0:00, 0:30, 1:10, 1:50, 2:10, 3:50, 4:10, 4:40. **Caso en pantalla y en la demo: «El plan que no deja a nadie afuera»** (texto de Nico; siete compañeros; publicado en producción a las 11:03). El 8 de octubre se cuenta como «un plan del grupo»: el hecho real fue un asado, no se nombra y no se dice que fue otra cosa. Cifras que se dicen igual que en el deck: 8 de octubre, 6 interesados / 0 encuentros, 36 h, 30 personas a la vez, 152 verificaciones, ~1 000 commits.
+Sigue las **8 diapositivas del deck** de la sesión «Presentación para el jurado» (Figma «CRUXE — Pitch Makana», copia en `docs/pitch/presentacion.pdf` de la rama `presentacion`, `a145a58`; la diapositiva 5 no nombra personas: los nombres los dice Nico sobre la demo en vivo), con sus títulos y minutos: 0:00, 0:30, 1:10, 1:50, 2:10, 3:50, 4:10, 4:40. **Caso en pantalla y en la demo: «El plan que no deja a nadie afuera»** (texto de Nico; **contado como siete amigos**, pedido de Nico 11:1x; publicado en producción a las 11:03). La portada de la app dice «los otros seis compañeros son ficticios»: no se lee en voz alta. El 8 de octubre se cuenta como «un plan del grupo»: el hecho real fue un asado, no se nombra y no se dice que fue otra cosa. Cifras que se dicen igual que en el deck: 8 de octubre, 6 interesados / 0 encuentros, 36 h, 30 personas a la vez, 152 verificaciones, ~1 000 commits.
 
 ### 0:00–0:30 · Gancho · diapositiva 1 «Che, ¿cuándo nos juntamos?»
 - «Levanten la mano los que tienen un grupo de WhatsApp de amigos.» *(levantás la tuya)*
@@ -22,7 +22,7 @@ Sigue las **8 diapositivas del deck** de la sesión «Presentación para el jura
 - «Les cuento cómo se ve eso.»
 
 ### 0:30–1:10 · Problema · diapositiva 2 «Siempre la misma propuesta: pádel y comida»
-- «Siete compañeros. Siempre la misma propuesta: pádel y comida.»
+- «Siete amigos. Siempre la misma propuesta: pádel y comida.»
 - «Hay ganas de juntarse. Pero ese plan no le sirve a todos.»
 - «Camila prefiere algo gratis. Diego necesita un traslado simple. Elena, algo tranquilo.»
 - «Y nadie lo dice delante del grupo. Simplemente… no van.»

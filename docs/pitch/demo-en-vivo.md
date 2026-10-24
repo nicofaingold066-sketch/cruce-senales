@@ -70,7 +70,7 @@ En Makana **no hay** «Cargar condiciones del caso» ni «aceptar por todos»: c
 
 | Min | Juan toca (como Ana) | Se ve | Nico dice |
 |---|---|---|---|
-| 0:00 | Mostrar el grupo | Siete personas, «Actividad del grupo», el plan del parque «Reuniendo respuestas» | «Ana propone un plan que le sirve a todos: un parque, gratis, sábado o domingo a la tarde.» |
+| 0:00 | Mostrar el grupo | Siete personas (Nico las presenta como «siete amigos»; la app dice «compañeros» en la portada, no se lee), «Actividad del grupo», el plan del parque «Reuniendo respuestas» | «Ana propone un plan que le sirve a todos: un parque, gratis, sábado o domingo a la tarde.» |
 | 0:15 | «Simulación (demo)» → «Editar interés y condiciones de Felipe» → sábado sí, domingo no → «Guardar condiciones de Felipe» | Fila de Felipe con su respuesta (solo la ve quien simula) | «Felipe dice en privado que solo puede el sábado.» |
 | 0:30 ✂ | Igual con Camila: sábado no, domingo sí → «Guardar condiciones de Camila» | — | «Camila, solo el domingo. Nadie del grupo ve esto.» |
 | 0:45 | Plan → «Buscar opción compatible» | Versión 1: sábado 31, 16:00 | «El servidor propone una sola opción: el sábado. Gabriela no respondió: no cuenta.» |
