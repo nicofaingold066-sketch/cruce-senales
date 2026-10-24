@@ -1,6 +1,9 @@
 # Integración Codex — Juan Morales
 
 ## Tocando ahora
+- Siguienteunidad solicitada porJuan: root toma `supabase/functions/agente/social-http.ts`, `social-http.test.ts`, engancheaditivo `index.ts`, y luego SOLOmontajes en `src/agente/AgentePanel.tsx` y `src/screens/PlanTab.tsx`. Rama codex/e11-handler sobre8f27c5b, preservaE14; sin SQL, nuevoendpoint, credenciales, llamadasmodelo ni deploymanual.
+- UX especializada recibe SOLO nuevos `src/agente/AgenteSocial.tsx`, `src/agente/socialApi.ts`, `src/agente/InvitacionAgente.tsx` y `tests/agente-social-cliente.test.ts`, rama aislada codex/e11-flujo-humano. Preparación/recibo, aprobación y publicación por clicks separados y RPCexistentes; invitación personalvisible. Sin aceptación porpersonas, controlesautonomía ni reparaciónnueva. Noedita montajes/index/api.ts existente ni publicaamain.
+- Se inspeccionó main vs agente-ia:indexidéntico, ficha22:45sinfuentesenedición; front-juan sinfuentesenedición. Siaparece nuevaentrega se reconcilia antesdeintegrar. Juanretiródependenciaorganizativa; se conserva coordinacióntécnicay pruebasDBseriales.
 - QA UX0fff376:11/11 PASS, pero foco desde ErrorCaja/Reintentar cae aBODY al desmontar botón. Retomo SOLO src/agente/ConsentimientoInvitaciones.tsx en codex/e11-consentimiento-reintento para mover foco al botón estable de la operación antes del retry; sin ui.tsx genérico ni publicaciónmain hasta QA focalfinal.
 - SOLO nuevos `supabase/functions/agente/puerto-social.ts` y `supabase/functions/agente/puerto-social.test.ts`, rama `codex/e11-puerto-rpc` desde main d2a2b20. Adaptador de los6puertos E11 al cliente RPC autenticado existente. Sin SDK nuevo, JWT, HTTP, UI, modelo ni activación del handler; sin DB durante turno coordinador22:59.
 - Consentimiento `0fff376` intacto mientras UX valida el snapshot. Al quedar QA verde, entregar al coordinador para su turno DB/publicación; no duplicar su integración E14 vigente.
