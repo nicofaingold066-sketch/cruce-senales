@@ -47,9 +47,9 @@ function entrarAlEspacio(r: UnirseOk['resultado'], espacio: string, nombre: stri
   const extra = sesionGuardada ? ` ${sesionGuardada}` : ''
   if (r.reclamo_asiento_simulado) {
     // Mismo texto que la portada (los guiones lo buscan).
-    dejarAviso(`Reclamaste el lugar de ${nombre}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.${extra}`)
+    dejarAviso(`Reclamaste el lugar de ${nombre}. Desde ahora respondes tú desde este teléfono; cuándo puedes y tus condiciones no las ve nadie del grupo.${extra}`)
   } else if (porLista) {
-    dejarAviso(`Entraste como ${nombre}. Este teléfono queda como ${nombre}: lo que marques después es privado.${extra}`)
+    dejarAviso(`Entraste como ${nombre}. Este teléfono queda como ${nombre}: cuándo puedes y tus condiciones no las ve nadie del grupo.${extra}`)
   } else if (sesionGuardada) {
     dejarAviso(`Entraste como ${nombre}.${extra}`)
   } else {
@@ -280,7 +280,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
           <section className="tarjeta entrada-opcion entrada-principal" aria-labelledby="quien-confirmar">
             <h2 id="quien-confirmar">¿Eres {elegido.nombre}?</h2>
             <p className="suave">
-              Este teléfono queda como {elegido.nombre} en «{nombreEspacio}». Lo que marques después es privado.
+              Este teléfono queda como {elegido.nombre} en «{nombreEspacio}». Cuándo puedes y tus condiciones no las ve nadie del grupo.
             </p>
             <div className="entrada-botones">
               <Boton
@@ -328,7 +328,8 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
                   </button>
                   {m.libre ? null : (
                     <span id={`ya-${m.miembro_id}`} className="suave quien-tomado">
-                      no disponible
+                      {/* En la demo las personas simuladas no "entraron": ahí sigue "no disponible" (psico, tono). */}
+                      {vista.espacio.demo ? 'no disponible' : 'ya entró'}
                     </span>
                   )}
                 </li>
@@ -356,7 +357,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
           </span>
           <div>
             <strong>Sin contraseña ni correo</strong>
-            <p>Tu sesión queda guardada en este teléfono. Lo que marques sobre cuándo puedes lo ve solo el servidor.</p>
+            <p>Tu sesión queda guardada en este teléfono. Cuándo puedes es privado: nadie del grupo lo ve.</p>
           </div>
         </div>
         <QueGuarda />

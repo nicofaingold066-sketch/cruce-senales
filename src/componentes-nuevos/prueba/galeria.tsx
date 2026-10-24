@@ -30,7 +30,7 @@ const yo = (extra: Partial<Yo> = {}): Yo => ({
 })
 const org = (extra: Partial<Yo> = {}) => yo({ miembro_id: 'm-vale', nombre: 'Vale', es_organizador: true, es_organizador_espacio: true, ...extra })
 const cupos = (extra: Record<string, unknown>) => ({ cupos: extra }) as unknown as DatosAvisoParaMi['opcion']
-const ahora = { utc: '2026-10-29T08:00:00Z', local: '2026-10-29T05:00:00' }
+const ahora = { utc: '2026-10-30T08:00:00Z', local: '2026-10-30T05:00:00' }
 const plazo = { utc: '2026-10-30T23:00:00Z', local: '2026-10-30T20:00:00' }
 
 const vivaFalsa = { aplicarResultado: () => {}, refrescar: async () => {} } as unknown as PropuestaViva

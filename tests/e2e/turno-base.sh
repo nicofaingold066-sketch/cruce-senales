@@ -18,11 +18,14 @@ hora() { TZ=America/Santiago date +%H:%M; }
 ocupada() {
   # Imprime quién ocupa la base (vacío si está libre). Lee la rama remota, no la copia de trabajo.
   git -C "$COORD" fetch -q origin coordinacion 2>/dev/null || { echo "sin-red"; return; }
+  # Solo marcas reales: la migración/carga en la ficha de backend, y "CORRIENDO PRUEBA (hh:mm)" con hora en cualquier otra
+  # (las fichas también mencionan las frases en prosa al explicar la regla: eso no ocupa la base).
   for f in $(git -C "$COORD" ls-tree --name-only origin/coordinacion agentes/); do
     otro="${f#agentes/}"; otro="${otro%.md}"
     [ "$otro" = "$YO" ] && continue
-    if git -C "$COORD" show "origin/coordinacion:$f" 2>/dev/null | sed -n '/## Tocando ahora/,/^## /p' \
-         | grep -qiE 'MIGRACION EN CURSO|PRUEBA DE CARGA EN CURSO|CORRIENDO PRUEBA'; then echo "$otro"; fi
+    tocando="$(git -C "$COORD" show "origin/coordinacion:$f" 2>/dev/null | sed -n '/## Tocando ahora/,/^## /p')"
+    if [ "$otro" = backend ] && printf '%s' "$tocando" | grep -qE '^\s*-.*\*?\*?(MIGRACION EN CURSO|PRUEBA DE CARGA EN CURSO)\*?\*?'; then echo "$otro"; continue; fi
+    if printf '%s' "$tocando" | grep -qE 'CORRIENDO PRUEBA \([0-9]{2}:[0-9]{2}'; then echo "$otro"; fi
   done
 }
 

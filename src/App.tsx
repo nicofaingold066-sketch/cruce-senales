@@ -98,7 +98,7 @@ function Marco({
           ) : (
             <>
               <Icono n="persona" tam={26} />
-              <span className="visualmente-oculto">Sesión anónima{identidad.espacio ? '' : ': aún sin nombre en un espacio'}. Ver tu perfil</span>
+              <span className="visualmente-oculto">Sesión anónima{identidad.espacio ? '' : ': todavía sin nombre en ningún espacio'}. Ver tu perfil</span>
             </>
           )}
         </a>
@@ -206,8 +206,8 @@ class BarreraPantalla extends Component<{ children: ReactNode }, { error: unknow
           }
         >
           {carga
-            ? 'Se cortó la conexión mientras se bajaba una parte de la aplicación. Recarga para intentarlo de nuevo; lo que guardaste ya está en el servidor.'
-            : 'Recarga la aplicación. Lo que guardaste ya está en el servidor.'}
+            ? 'Se cortó la conexión mientras se bajaba una parte de la aplicación. Recarga para intentarlo de nuevo; lo que ya guardaste no se pierde.'
+            : 'Recarga la aplicación. Lo que ya guardaste no se pierde.'}
         </Aviso>
         <a className="btn btn-secundario" href={rutas.inicio()}>
           Ir a tus espacios

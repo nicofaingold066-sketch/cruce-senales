@@ -18,11 +18,14 @@ export function miOpinion(s: MiSituacion): MiOpinion {
 }
 
 /**
- * Cuándo se ofrece "Así no puedo, pero sigo": elegible en la versión vigente, sin haberla aceptado, sin retirarse,
- * mientras se esperan compromisos. El servidor decide igual (`opinar_version`); esto solo evita un botón que va a fallar.
+ * Cuándo se ofrece "Así no puedo, pero sigo". Manda `mi_situacion.puede.opinar`, que decide el servidor (backend lo manda
+ * desde la enmienda 13). Si todavía no viene (respuesta vieja), la misma regla calculada acá: elegible en la versión
+ * vigente, sin haberla aceptado, sin retirarse, mientras se esperan compromisos.
  */
 export function puedeOpinar(p: EstadoPropuesta): boolean {
   const s = p.mi_situacion
+  const delServidor = (s.puede as typeof s.puede & { opinar?: unknown }).opinar
+  if (typeof delServidor === 'boolean') return delServidor
   return p.estado === 'esperando_compromisos' && p.opcion != null && s.elegible_en_version === true && !s.acepte_version && !s.retirado
 }
 
