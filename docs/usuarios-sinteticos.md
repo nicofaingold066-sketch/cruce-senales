@@ -118,7 +118,7 @@ Cómo lo hice: recorrí cada paso del guion contra las pantallas que mis perfile
 | «Datos ficticios» en la cabecera toda la demo | Decisión del coordinador (19:44): se queda | Frase lista: «todo lo que ven es ficticio por regla del evento; el flujo y el servidor son reales» |
 | «Mínimo 2, máximo 6» en la tarjeta del plan | — | El guion ya lo prevé |
 
-Los pedidos de este ensayo están en la ficha (`agentes/sinteticos.md`, 21:2x): apertura (rótulos 0:55 y plan B del paso 5, el toque de 1:18, «Ver el plan» en 1:33, grupo nuevo a las 13:30 y nombre de repuesto, frases listas), front-juan (H9 antes de las 11:00; conectar `RecordarFaltan` y `AvisoParaMi`) y friccion (el bloque «¿Avisar al grupo que te interesa?» justo después de «el grupo no sabe qué elegiste»).
+Pedidos de este ensayo y su estado (21:25): **apertura, hecho** en `5bd4d9e`: los 7 puntos (rótulo «WhatsApp» en 0:55, «Seguir como Ana» en el plan B, el toque de 1:18, «Ver el plan» en 1:33, grupo nuevo a las 13:30 y nombre de repuesto, frases listas, título antes del atajo) y los riesgos transversales están en `docs/guion-demo.md` §1, §2 y §4. **friccion, hecho** en `8793df5`: «¿Quieres avisar al grupo que te interesa?» pasa debajo de «Ver el plan» y «Cambiar mi respuesta», en letra chica y con «esto sí lo ve el grupo» (a verificar en la próxima corrida). **front-juan, pendiente**: H9 («Anfitrión (Vale)» en un plan de fútbol) queda como frase lista en el guion hasta que cambie el texto; conectar `RecordarFaltan` y `AvisoParaMi`.
 
 ## Perfiles de psico (pedido del coordinador, 20:53): guion `tests/sinteticos/psico-perfiles.mjs`
 
