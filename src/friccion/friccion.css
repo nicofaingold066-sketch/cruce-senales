@@ -175,3 +175,17 @@
   text-align: left;
   white-space: normal;
 }
+
+/* "¿Quieres avisar al grupo que te interesa?" (después de las acciones; sinteticos) */
+.rapida-interes {
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--linea);
+}
+.rapida-interes p {
+  margin: 0 0 8px;
+  font-size: 0.88rem;
+}
+.rapida-interes .btn {
+  width: 100%;
+}
