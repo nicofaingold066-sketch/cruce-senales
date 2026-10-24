@@ -5,7 +5,8 @@
 
 alter table cruce.miembros add column usuario_original_id uuid;
 alter table cruce.miembros add column salio_en timestamptz;
-update cruce.miembros set usuario_original_id = user_id where user_id is not null;
+-- No actualizar filas históricas: existen CHECK NOT VALID de normalización de nombres.
+-- El dueño se materializa al insertar o en la primera mutación autorizada de cada asiento.
 alter table cruce.miembros drop constraint miembros_real_con_sesion;
 alter table cruce.miembros add constraint miembros_real_con_sesion
   check (simulado or pendiente or user_id is not null or salio_en is not null);
@@ -13,7 +14,7 @@ alter table cruce.miembros add constraint miembros_salida_coherente
   check (salio_en is null or (user_id is null and usuario_original_id is not null
                               and not simulado and not pendiente and rol = 'miembro'));
 alter table cruce.miembros add constraint miembros_sesion_propietaria
-  check (user_id is null or (usuario_original_id is not null and usuario_original_id = user_id));
+  check (user_id is null or usuario_original_id is null or usuario_original_id = user_id);
 create unique index miembros_espacio_propietario_uq
   on cruce.miembros (espacio_id, usuario_original_id) where usuario_original_id is not null;
 
@@ -29,8 +30,13 @@ create index bajas_propuesta_en_idx on cruce.bajas (propuesta_id, en desc, id de
 create or replace function cruce.trg_propietario_miembro() returns trigger
 language plpgsql set search_path = '' as $$
 begin
-  if new.user_id is not null and new.usuario_original_id is null then
-    new.usuario_original_id := new.user_id;
+  if new.usuario_original_id is null then
+    if tg_op = 'UPDATE' then
+      -- Al salir NEW.user_id ya es null: el dueño de un asiento antiguo está en OLD.
+      new.usuario_original_id := coalesce(old.user_id, new.user_id);
+    else
+      new.usuario_original_id := new.user_id;
+    end if;
   end if;
   return new;
 end
@@ -1191,3 +1197,4 @@ revoke all on function public.leave_space(uuid, uuid) from public, anon, authent
 grant execute on function public.leave_space(uuid, uuid) to authenticated;
 revoke all on all functions in schema cruce from public, anon, authenticated;
 select cruce.verificar_privilegios();
+notify pgrst, 'reload schema';
