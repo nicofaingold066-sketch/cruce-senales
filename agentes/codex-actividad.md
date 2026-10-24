@@ -10,7 +10,7 @@ Nico aprobó la variante «A la vista» y pidió implementarla dentro del grupo,
 - `src/screens/Espacio.tsx`: importación/montaje de Actividad debajo de integrantes; salida del grupo con confirmación. Conservar cambios de títulos GRU de codex-preferencias y cualquier trabajo de otras ramas.
 - `src/lib/types.ts`, `src/lib/api.ts`: extensión aditiva de actividad y salida del grupo; sin cambiar la anonimización anterior del detalle de planes.
 - Una migración nueva hacia adelante en `supabase/migrations/`, nuevas pruebas `tests/backend/actividad-grupo.test.ts` y ajuste mínimo de lista permitida en `tests/backend/helpers.ts` y expectativas 41→42 en `tests/backend/enmienda2.test.ts` / `tests/backend/enmienda13.test.ts`: actividad compartida con whitelist, eventos de ingreso/salida, revocación de membresía y retiro atómico de planes. Backend y pendientes están archivados; el pedido humano actual autoriza esta implementación aislada.
-- `src/friccion/QueGuarda.tsx`: corregir solo la promesa antigua de baja anónima para reflejar la nueva función expresamente pedida.
+- `src/friccion/QueGuarda.tsx`, `src/screens/Perfil.tsx` (solo texto de privacidad) y `src/componentes-nuevos/plan/Resultado.tsx` (solo frase de retirada): corregir las promesas antiguas de anonimato para que coincidan con la actividad nominal aprobada. Sin cambiar lógica, temas ni estados de esos componentes.
 - `docs/actividad-grupo.md`: alcance, contrato y verificación.
 - No se edita el checkout de otros agentes. No se aplica una migración mientras haya otro turno de DB/migración reclamado.
 
