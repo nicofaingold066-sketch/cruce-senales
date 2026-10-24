@@ -4,9 +4,11 @@
 // Los botones llaman a la base real: no tocarlos. Lo que se ve es la pantalla real con datos declarados, nada calculado.
 import { createRoot } from 'react-dom/client'
 import '../../styles.css'
+import '../../estilo/seccion-s4.css'
 import type { PropuestaViva } from '../../lib/hooks'
 import type { EstadoPropuesta } from '../../lib/types'
 import PlanTab from '../../screens/PlanTab'
+import { Resultado } from '../plan/Resultado'
 import { CASOS_S4, SERVIDOR_AHORA, espacioDe } from './estados-s4'
 import type { CasoS4 } from './estados-s4'
 
@@ -39,7 +41,19 @@ function Caso({ c, solo }: { c: CasoS4; solo: boolean }) {
           </p>
         </section>
         <div className="hoja">
-          <PlanTab p={c.p} viva={vivaDe(c.p)} soloLectura={false} irAPestana={() => {}} espacio={espacio} />
+          <Resultado p={c.p} viva={vivaDe(c.p)} soloLectura={false} espacio={espacio} activa="plan" irAPestana={() => {}} />
+          <div className="pestanas">
+            <div className="pestanas-carril" role="tablist" aria-label="Secciones de la propuesta">
+              {['Plan', 'Mi respuesta', 'Historial', ...(c.p.mi_situacion.es_organizador_espacio && c.demo ? ['Simulación'] : [])].map((t, i) => (
+                <button key={t} type="button" role="tab" aria-selected={i === 0} className={`pestana ${i === 0 ? 'pestana-activa' : ''}`}>
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="panel-pestana" role="tabpanel">
+            <PlanTab p={c.p} viva={vivaDe(c.p)} soloLectura={false} irAPestana={() => {}} espacio={espacio} />
+          </div>
         </div>
       </div>
     </section>

@@ -2,26 +2,14 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import type { CSSProperties } from 'react'
 import { api } from '../lib/api'
 import type { Espacio, EstadoPropuesta } from '../lib/types'
-import { CODIGOS_SIGUIENTE } from '../lib/types'
-import { diaDe, fechaCorta, hora } from '../lib/format'
 import { usePropuestaViva } from '../lib/hooks'
 import { dejarAviso, irA, rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { Cruce } from '../components/Cruce'
 import type { NodoCruce, TonoCruce } from '../components/Cruce'
-import type { NombreIcono } from '../components/Icono'
-
-/** Ícono por estado: el estado nunca se distingue solo por color. */
-const ICONO_ESTADO: Record<string, NombreIcono> = {
-  borrador: 'borrador',
-  reuniendo_interes: 'grupo',
-  esperando_compromisos: 'esperando',
-  grupo_confirmado: 'confirmado',
-  en_revision: 'alerta',
-  expirado: 'cerrado',
-  cancelado: 'cerrado',
-}
+import { Resultado } from '../componentes-nuevos/plan/Resultado'
+import '../estilo/seccion-s4.css'
 import type { Pestana } from './tabs'
 import PlanTab from './PlanTab'
 import RespuestaTab from './RespuestaTab'
@@ -146,16 +134,11 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
     ...(conSimulacion ? [{ id: 'simulacion' as Pestana, texto: 'Simulación' }] : []),
   ]
   const activa = pestanas.some((t) => t.id === pestana) ? pestana : 'plan'
-  // Misma condición con que PlanTab muestra la comparación "versión anterior → vigente".
+  // Misma condición con que «Cómo se armó» muestra la comparación "versión anterior → vigente".
   const muestraComparacion =
     (p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado') &&
     p.ultima_evaluacion?.resultado === 'reparacion_publicada' &&
     p.ultima_evaluacion.version === p.opcion?.version
-  // Enmienda 3: el código decide el acento. Solo si llega un código desconocido se usan los booleanos del servidor.
-  const cod = p.siguiente_accion.codigo
-  const conocido = (CODIGOS_SIGUIENTE as readonly string[]).includes(cod)
-  const turno = cod === 'te_toca_aceptar' || (!conocido && p.mi_situacion.puede.aceptar)
-  const yaAcepte = cod === 'ya_aceptaste' || (!conocido && !turno && p.mi_situacion.acepte_version && p.estado === 'esperando_compromisos')
   function irAPestana(t: Pestana) {
     if (t !== activa) enfocarPestana.current = t
     setPestana(t)
@@ -173,7 +156,6 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
         <h1 id="propuesta-titulo" style={{ viewTransitionName: `plan-${p.id}` }}>
           {p.titulo}
         </h1>
-        <Cuando p={p} />
         <Cruce nodos={escena.nodos} valor={escena.valor} etiqueta={escena.etiqueta} fraccion={escena.fraccion} tono={escena.tono} confirmado={p.estado === 'grupo_confirmado'} />
       </section>
 
@@ -221,41 +203,8 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
         </Aviso>
       ) : null}
 
-      <header className="propuesta-cabecera">
-        <div
-          key={`${p.estado}-${cod}`}
-          className={`estado-hero estado-hero-${p.estado} ${turno ? 'estado-hero-turno' : ''}`}
-          data-codigo={cod}
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          <div className="estado-hero-fila">
-            <span className="estado-hero-icono" aria-hidden="true">
-              <Icono n={ICONO_ESTADO[p.estado] ?? 'esperando'} tam={20} />
-            </span>
-            <strong className="estado-hero-etiqueta">{p.estado_etiqueta}</strong>
-            {p.opcion ? (
-              <span className="estado-hero-version">
-                <span aria-hidden="true">v{p.opcion.version}</span>
-                <span className="visualmente-oculto">Versión {p.opcion.version}</span>
-              </span>
-            ) : null}
-          </div>
-          {turno && cod !== 'te_toca_aceptar' ? <span className="pastilla pastilla-turno">Tu turno: confirma la versión {p.opcion?.version}</span> : null}
-          {yaAcepte && cod !== 'ya_aceptaste' ? <span className="pastilla pastilla-ok">Ya confirmaste la versión {p.opcion?.version}</span> : null}
-          <p className="estado-hero-siguiente">
-            <span className="visualmente-oculto">Próxima acción: </span>
-            {p.siguiente_accion.texto}
-          </p>
-          <Pasos p={p} />
-          {turno && activa !== 'plan' ? (
-            <button type="button" className="btn btn-turno btn-chico ir-confirmar" onClick={() => irAPestana('plan')}>
-              Ir a confirmar
-            </button>
-          ) : null}
-        </div>
-      </header>
+      {/* El resultado y la única acción, arriba de las pestañas (S4): se ve desde cualquier pestaña. */}
+      <Resultado p={p} viva={viva} soloLectura={soloLectura} espacio={espacio} activa={activa} irAPestana={irAPestana} />
 
       <div className="pestanas">
         <div className="pestanas-carril" role="tablist" aria-label="Secciones de la propuesta" ref={carril}>
@@ -291,28 +240,6 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
 }
 
 // ------------------------------------------------------------------ escena
-
-/** Cuándo: la franja de la versión vigente o, sin versión, las dos candidatas. Solo datos del servidor. */
-function Cuando({ p }: { p: EstadoPropuesta }) {
-  const o = p.opcion
-  if (o) {
-    return (
-      <p className="escena-cuando">
-        <span className="escena-cuando-dia">{diaDe(o.franja.inicio.local)}</span>
-        <span className="escena-cuando-hora">
-          {hora(o.franja.inicio.local)} a {hora(o.franja.fin.local)} · franja {o.franja.clave}
-        </span>
-      </p>
-    )
-  }
-  return (
-    <p className="escena-cuando">
-      <span className="escena-cuando-hora">
-        {p.franjas.map((f) => `${fechaCorta(f.inicio.local)} ${hora(f.inicio.local)}`).join('  o  ')}
-      </span>
-    </p>
-  )
-}
 
 /**
  * Lo que dibuja el cruce. Personas del espacio con lo que el servidor dice de cada una en esta propuesta:
@@ -372,31 +299,4 @@ function escenaDe(
     default:
       return { nodos, valor: '—', etiqueta: p.estado_etiqueta.toLocaleLowerCase('es'), fraccion: 0, tono: 'neutro' }
   }
-}
-
-// La primera etapa es responder cuándo se puede (lo que usa el motor); "Me interesa" es opcional.
-const PASOS = ['Respuestas', 'Opción', 'Confirmar', 'Encuentro'] as const
-
-/** Seguimiento tipo pedido en curso. Es solo una lectura del estado que devuelve el servidor. */
-function Pasos({ p }: { p: EstadoPropuesta }) {
-  const actual: Record<string, number> = {
-    borrador: 0,
-    reuniendo_interes: 0,
-    en_revision: 1,
-    esperando_compromisos: 2,
-    // El grupo confirmado espera el encuentro: no se marca como hecho algo que todavía no pasó (caso canónico).
-    grupo_confirmado: 3,
-  }
-  const i = actual[p.estado]
-  if (i === undefined) return null
-  return (
-    <ol className="pasos" aria-label="Etapas del plan">
-      {PASOS.map((t, n) => (
-        <li key={t} className={`paso ${n < i ? 'paso-hecho' : ''} ${n === i ? 'paso-actual' : ''}`} aria-current={n === i ? 'step' : undefined}>
-          <span className="paso-barra" aria-hidden="true" />
-          <span className="paso-texto">{t}</span>
-        </li>
-      ))}
-    </ol>
-  )
 }

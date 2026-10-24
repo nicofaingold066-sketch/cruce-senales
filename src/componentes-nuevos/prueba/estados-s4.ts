@@ -221,7 +221,7 @@ export const CASOS_S4: CasoS4[] = [
   },
   {
     id: 'esperando-org-confirmo-rearmar',
-    titulo: 'Versión 1, organizadora que ya confirmó: 2 «así no puedo», ronda abierta, faltan 3',
+    titulo: 'Versión 1, organizadora que ya confirmó: 2 «así no puedo», ronda cerrada, faltan 3',
     yo: VALE,
     p: base(VALE, {
       estado: 'esperando_compromisos', estado_etiqueta: 'Esperando compromisos', state_rev: 9, confirmados: 1,
@@ -229,7 +229,7 @@ export const CASOS_S4: CasoS4[] = [
       ultima_evaluacion: { resultado: 'opcion_publicada', version: 1, en: mom('2026-10-29T12:00:00') },
       personas_con_condiciones: 4,
       opiniones_totales: { asi_no_puedo: 2 },
-      ronda: { horas: 12, cierra: mom('2026-10-30T00:00:00'), abierta: true },
+      ronda: { horas: 2, cierra: mom('2026-10-29T14:00:00'), abierta: false },
       interesados: { cantidad: 2, miembros: [VALE, BETO] },
       historial: [CREADA, ABIERTA, V1, acepto(VALE, '2026-10-29T12:10:00', 1, 7)],
       siguiente_accion: { codigo: 'ya_aceptaste', texto: 'Ya confirmaste la versión 1. Algunos no pueden así: puedes rearmar con lo nuevo.' },
