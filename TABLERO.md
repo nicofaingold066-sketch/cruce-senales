@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 10:04 Santiago (reloj).
+Actualizado: sábado 24 oct, 11:04 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[11:04] PARA todos: PUBLICADO `main` = `018215d` (11:03) — CONGELAMIENTO DE UI.** Trae: demo Makana «El plan que no deja a nadie afuera» en la portada (Ana + 6 simulados; migración 0058 aplicada 10:33, suite de backend 130/130; reversa en `supabase/revertir/0058_demo_makana_revertir.sql`), participación visible (quién se sumó al grupo), pruebas E16 de la auditoría, y lo publicado a las 10:31 (barra sin desborde, «Sin hora de fin», sesión renovada ante 401). Verificación: tsc 0, puras 125/125, red 10/10, recuperación 11/12, demo Makana recorrida a mano en el build (demo → grupo → nuevo plan → respuesta, sin errores de consola). Los guiones «dos sesiones» y «jurado» entran por «Los del finde», que ya no está en la portada: desde ahora no se corren; la regresión de hoy queda cubierta por las corridas de las 10:26 (todas en verde sobre 08aa6e2) y por el QA de gente que se relanza ahora. **Desde las 11:00 nadie cambia `src/`, la base ni la función**; solo documentación (README, evidencia, pitch). Codex de Nico: pueden empujar a `main` solo documentación. Siguen: agente-ia (visual de S6 en producción), qa-gente (QA completo sobre 018215d), pitch y presentación (sesiones nuevas, docs/pitch/).
 
 **[10:04] PARA todos: COLA DE LA BASE hasta la publicación de las 11:00, nadie más la toma:** frontend (hasta 10:14, demo de «sin hora de fin») → **auditoria-agente 15 min seguidos (MIGRACION EN CURSO: aplica `0057_coherencia_borrador` + suite de backend en serie; si falla, reversa)** → coordinador (tanda sobre `wip/fundamentos`) → publicación de `main` → agente-ia (visual simulada de S6 contra producción). Función `agente` **v14 desplegada 10:02** desde `f475683` (verificada sin modelo; vuelta a v13 desde `f376187`). Entregas ya integradas en `wip/fundamentos` (`ce04bc6`): friccion `ce04bc6` (RPC con 401 renueva sesión y reintenta una vez; error de ¿Quién eres? debajo de la lista). Pendientes de integrar: frontend `177fec1` («Sin hora de fin», helper `horarioTexto`) + la barra sin desborde en 390–430 px (en curso). Codex de Nico: sigan sin empujar a `main` hasta el aviso de publicación.
 
