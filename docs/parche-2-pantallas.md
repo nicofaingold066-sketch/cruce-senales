@@ -1,11 +1,11 @@
 # Parche 2 para las pantallas: propósito, "no puede faltar" y "Ir al plan"
 
 Dueño del documento: ux-flujo (rama `wip/ux`). Pedido del coordinador (23:03). Escrito: viernes 23 oct 2026, 23:23.
-Solo conexiones y textos, sin funciones nuevas. **No está subido a ninguna rama de código**: lo aplica el coordinador si Nico lo autoriza. Archivo: `docs/parche-capturas/parche2-pantallas.patch` (4 archivos de `src/screens/`, 44 líneas agregadas y 24 quitadas).
+Solo conexiones y textos, sin funciones nuevas. **No está subido a ninguna rama de código**: lo aplica el coordinador si Nico lo autoriza. Archivo: `docs/parche-capturas/parche2-pantallas.patch` (4 archivos de `src/screens/`, 45 líneas agregadas y 25 quitadas).
 
 ## 1. Cómo aplicarlo
 
-Base: `main` `8f27c5b` (ya trae `api.ts` con `p_proposito` y `p_actividad`, `types.ts` con `TEXTO_FUERA_DE_PROPOSITO`, `ejemplos.ts` con `atajosParaEspacio` y `src/friccion/Proposito.tsx`; el parche no necesita nada más).
+Base: `main` `8f27c5b` **más `wip/apertura`** (por `placeholderPlan` con familia, `6546d88`; ya trae `api.ts` con `p_proposito` y `p_actividad`, `types.ts` con `TEXTO_FUERA_DE_PROPOSITO`, `ejemplos.ts` con `atajosParaEspacio` y `src/friccion/Proposito.tsx`; el parche no necesita nada más).
 
 ```bash
 git show origin/wip/ux:docs/parche-capturas/parche2-pantallas.patch > /tmp/parche2.patch
@@ -13,14 +13,14 @@ git apply --check /tmp/parche2.patch && git apply /tmp/parche2.patch
 npm run typecheck && npm run build
 ```
 
-Comprobado: `git apply --check` limpio sobre `main` `8f27c5b` (entre 23:17 y 23:23).
+Comprobado: `git apply --check` limpio sobre `main` `8f27c5b` + `wip/apertura` (entre 23:17 y 23:23).
 
 ## 2. Qué cambia
 
 | Archivo | Cambio |
 |---|---|
 | `CrearGrupo.tsx` | `CampoProposito` de friccion debajo de "¿Quién viene?"; estado `proposito` ("libre" por defecto); `api.createSpace(…, integrantes, proposito)` y el propósito entra en la huella de reintento. Con "libre" no se manda nada al servidor. Es el mismo cambio que el parche de friccion (`parche-crear-grupo-proposito.patch`), con una diferencia: `deshabilitado={soloLectura}` |
-| `NuevaPropuesta.tsx` | Los atajos salen de `atajosParaEspacio(espacio.nombre, espacio.familia)` (en un grupo de fútbol, solo deporte); el atajo elegido guarda su `actividad`, que viaja como `actividad` en `createProposal` (el espacio demo es libre: `null`); si el servidor responde `fuera_de_proposito`, `ErrorCaja` muestra el mensaje del servidor (`TEXTO_FUERA_DE_PROPOSITO`) y se marca el campo del título; "Revisa cupos, quién no puede faltar y cierre" |
+| `NuevaPropuesta.tsx` | El texto gris del título usa la familia del grupo (`placeholderPlan(ejemplo, espacio.familia)`: en un grupo de fútbol ya no dice "Caminata por el cerro"; apertura `6546d88`). Los atajos salen de `atajosParaEspacio(espacio.nombre, espacio.familia)` (en un grupo de fútbol, solo deporte); el atajo elegido guarda su `actividad`, que viaja como `actividad` en `createProposal` (el espacio demo es libre: `null`); si el servidor responde `fuera_de_proposito`, `ErrorCaja` muestra el mensaje del servidor (`TEXTO_FUERA_DE_PROPOSITO`) y se marca el campo del título; "Revisa cupos, quién no puede faltar y cierre" |
 | `PlanTab.tsx` | H9: "anfitrión" → "no puede faltar" en la ficha, en el cupo reservado y en las aceptaciones (frases de psico §16); "Bajas registradas" → "Cambios en el grupo" con "Una persona se retiró (versión N)." sin nombre ni "había confirmado" y cierre "Quien se retira no vuelve a entrar en este plan." **No toca `CambioDeVersion`** (el coordinador la tiene sin commitear) |
 | `RespuestaTab.tsx` | H16: con la versión vigente y la persona elegible, bajo la frase que manda a "Así no puedo, pero sigo", un botón "Ir al plan" (usa `irAPestana('plan')`); no sale si se retiró ni si el plazo cerró |
 
@@ -47,7 +47,7 @@ Lo que NO probé en pantalla: el rechazo de una actividad fuera del propósito (
 
 ## 4. Notas
 
-- En "Nueva propuesta" de un grupo de fútbol el ejemplo del título sigue siendo "Caminata por el cerro el sábado" (viene de `placeholderPlan` de apertura, que no filtra por familia). Es solo el texto gris; sugiero que apertura lo filtre por la familia del espacio después de la demo.
+- El texto gris del título ya sigue la familia del grupo (23:25, pedido del coordinador; apertura `6546d88`). Esa línea se verificó con typecheck y build, sin repetir las corridas contra la base (decisión del coordinador: es solo texto gris).
 - Las capturas están en `docs/parche-capturas/p2-*.jpg`: `01`/`02` Crear grupo con propósito, `05`/`06` Nueva propuesta en el grupo de fútbol, `13`-`14` plan con "Cambios en el grupo".
 
 ## 5. El parche completo
@@ -95,7 +95,7 @@ index 520ba71..35f3f41 100644
              Vas a ser quien organiza: creas las propuestas y buscas la opción compatible. Las condiciones de cada persona son
              privadas, también para ti.
 diff --git a/src/screens/NuevaPropuesta.tsx b/src/screens/NuevaPropuesta.tsx
-index 839b712..dc8a075 100644
+index 839b712..4b7b7f1 100644
 --- a/src/screens/NuevaPropuesta.tsx
 +++ b/src/screens/NuevaPropuesta.tsx
 @@ -1,6 +1,6 @@
@@ -189,6 +189,15 @@ index 839b712..dc8a075 100644
                    <button
                      key={a.titulo}
                      type="button"
+@@ -366,7 +373,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
+                   value={form.titulo}
+                   onChange={(e) => poner('titulo', e.target.value)}
+                   maxLength={80}
+-                  placeholder={placeholderPlan(ejemploPorSemilla(espacio.nombre))}
++                  placeholder={placeholderPlan(ejemploPorSemilla(espacio.nombre), espacio.familia)}
+                   aria-invalid={marcado === 'titulo' || (faltantes && form.titulo.trim() === '') ? true : undefined}
+                 />
+               </label>
 @@ -416,7 +423,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                  <Contador id="cupo-maximo" etiqueta="Máximo" valor={form.maximo} onCambio={(v) => poner('maximo', v)} />
                </div>
