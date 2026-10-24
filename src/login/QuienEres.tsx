@@ -358,14 +358,15 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
                             {vista.espacio.demo ? 'no disponible' : 'ya entró'}
                           </span>
                         )}
-                        {esta && errorLista && errorLista.detalle !== 'miembro_ya_reclamado' ? <ErrorCaja error={errorLista} enfocar /> : null}
-                        {esta && yaLista ? <AvisoYaMiembro ya={yaLista} unirse={u.unirse} cerrar={() => u.setYaMiembro(null)} /> : null}
                       </>
                     )}
                   </li>
                 )
               })}
             </ul>
+            {/* El error y el aviso de navegador compartido van DEBAJO de la lista, a todo el ancho: la fila queda intacta. */}
+            {errorLista && errorLista.detalle !== 'miembro_ya_reclamado' ? <ErrorCaja error={errorLista} enfocar /> : null}
+            {yaLista ? <AvisoYaMiembro ya={yaLista} unirse={u.unirse} cerrar={() => u.setYaMiembro(null)} /> : null}
             <button
               type="button"
               className="btn btn-secundario entrada-enlace s1-no-estoy"
