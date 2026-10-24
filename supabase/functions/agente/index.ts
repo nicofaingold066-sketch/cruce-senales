@@ -25,6 +25,7 @@ import {
   entradaModelo,
   esSabado,
   leerPronostico,
+  MAX_TOKENS_MODELO,
   mensajeFijo,
   modoSalida,
   perfilParaRespuesta,
@@ -44,12 +45,26 @@ import {
   type Quorum,
   type ResultadoPlan,
 } from './logica.ts'
+import {
+  bucleHerramientas,
+  HERRAMIENTAS,
+  PLAZO_HERRAMIENTAS_MS,
+  SISTEMA_HERRAMIENTAS,
+  type Herramientas,
+  type LlamarModelo,
+  type ResultadoBusqueda,
+} from './herramientas.ts'
 
 // El principal tarda más que Haiku: hasta 20 s para el principal y lo que quede (unos 8 s) para el respaldo.
 const PLAZO_TOTAL_MS = 30000
 const PLAZO_PRINCIPAL_MS = 20000
 const PLAZO_RESPALDO_MS = 8000
 const PLAZO_CLIMA_MS = 3000
+// Con herramientas: el bucle tiene hasta 25 s; si no llega, el camino de siempre usa solo Haiku hasta los 32 s
+// (la pantalla espera 35 s).
+const PLAZO_TOTAL_HERRAMIENTAS_MS = 32000
+// Canchas reales por actividad: los mismos sitios que arma el panel en src/agente/canchas.ts.
+const SITIOS_CANCHAS = ['Google Maps', 'EasyCancha', 'ATC']
 // Una llamada al modelo por persona cada 10 s y un tope por minuto, en la memoria de esta instancia (mejor esfuerzo).
 const limiteModelo = crearLimiteModelo()
 // Centro de Santiago: el clima es del lugar del encuentro, nunca de la ubicación de una persona.
@@ -168,6 +183,8 @@ async function coordinarConModelo(
   simulado: boolean,
   usuario: string,
   quorum: Quorum | null = null,
+  // Después de un bucle con herramientas que no llegó: el límite ya se contó y va directo al respaldo (Haiku).
+  despuesDelBucle = false,
 ): Promise<{ eleccion: Candidata; explicacion: string; mensaje: string; modelo: string } | null> {
   const proveedor = elegirProveedor((n) => Deno.env.get(n))
   const restante = () => hastaMs - Date.now()
@@ -176,7 +193,7 @@ async function coordinarConModelo(
   if (!clave) return null
   // Costo: pasado el límite, el agente responde igual, con la regla y el texto fijo (no es un error).
   // Cuenta una vez por pedido de la persona, aunque se use el respaldo.
-  if (!limiteModelo.permitir(usuario, Date.now())) {
+  if (!despuesDelBucle && !limiteModelo.permitir(usuario, Date.now())) {
     console.info('agente: límite de llamadas al modelo; va la regla', proveedor.tipo)
     return null
   }
@@ -184,13 +201,14 @@ async function coordinarConModelo(
   const entrada = entradaModelo(candidatas, perfil, clima, nombres, simulado, quorum)
   // Principal (Fable u Opus) y, si falla o no llega a tiempo, una sola llamada al respaldo (Haiku). Después, la regla.
   const intentos = [
-    { modelo: proveedor.modelo, plazo: PLAZO_PRINCIPAL_MS },
+    ...(despuesDelBucle ? [] : [{ modelo: proveedor.modelo, plazo: PLAZO_PRINCIPAL_MS }]),
     { modelo: proveedor.respaldo, plazo: PLAZO_RESPALDO_MS },
   ]
   for (const [i, intento] of intentos.entries()) {
     // El respaldo necesita tiempo para responder; al principal le deja el suyo.
-    const quedan = restante() - (i === 0 ? Math.min(PLAZO_RESPALDO_MS, 6000) : 0)
-    const plazo = Math.min(intento.plazo, i === 0 ? Math.max(quedan, 0) : restante())
+    const principal = i === 0 && !despuesDelBucle
+    const quedan = restante() - (principal ? Math.min(PLAZO_RESPALDO_MS, 6000) : 0)
+    const plazo = Math.min(intento.plazo, principal ? Math.max(quedan, 0) : restante())
     if (plazo < 1500) continue
     const familia = familiaModelo(intento.modelo)
     const client = new Anthropic({ apiKey: clave, baseURL: proveedor.baseURL, timeout: plazo, maxRetries: 0 })
@@ -223,6 +241,57 @@ async function coordinarConModelo(
   return null
 }
 
+/**
+ * El agente con herramientas: el modelo decide qué mirar (clima, planes, canchas) y elige; cada resultado sale del
+ * servidor. Devuelve null si no hay modelo, si el límite dice que no o si el bucle no llega: sigue el camino de siempre.
+ */
+async function conHerramientas(
+  herramientas: Herramientas,
+  entradaInicial: unknown,
+  nombres: string[],
+  hastaMs: number,
+  usuario: string,
+): Promise<{ resultado: Awaited<ReturnType<typeof bucleHerramientas>>; contado: boolean; modelo: string } | null> {
+  const proveedor = elegirProveedor((n) => Deno.env.get(n))
+  const clave = proveedor ? Deno.env.get(proveedor.variableClave) : undefined
+  if (!proveedor || !clave) return null
+  if (!limiteModelo.permitir(usuario, Date.now())) {
+    console.info('agente: límite de llamadas al modelo; va la regla', proveedor.tipo)
+    return null
+  }
+  const familia = familiaModelo(proveedor.modelo)
+  const llamar: LlamarModelo = async (mensajes, plazoMs) => {
+    const plazo = Math.min(plazoMs, PLAZO_PRINCIPAL_MS)
+    const client = new Anthropic({ apiKey: clave, baseURL: proveedor.baseURL, timeout: plazo, maxRetries: 0 })
+    try {
+      return await client.messages.create(
+        {
+          model: proveedor.modelo,
+          max_tokens: MAX_TOKENS_MODELO,
+          system: `${SISTEMA} ${SISTEMA_HERRAMIENTAS}`,
+          messages: mensajes,
+          tools: HERRAMIENTAS,
+          // Sin tool_choice forzado (Opus 5.5 y Fable 5.1 lo rechazan): el modelo decide qué herramienta usar.
+          ...(proveedor.tipo === 'gateway' ? { thinking: { type: 'adaptive' as const } } : {}),
+          output_config: { effort: 'low' as const },
+        } as never,
+        { signal: AbortSignal.timeout(plazo) },
+      ) as never
+    } catch (e) {
+      const estado = e instanceof Error && typeof (e as { status?: unknown }).status === 'number' ? (e as { status: number }).status : 0
+      console.error('agente: el modelo no respondió (herramientas)', proveedor.tipo, familia, e instanceof Error ? e.constructor.name : 'desconocido', estado)
+      throw e
+    }
+  }
+  const resultado = await bucleHerramientas({ llamar, herramientas, entradaInicial, nombres, hastaMs })
+  if (!resultado) {
+    console.info('agente: el bucle con herramientas no llegó; va el camino de siempre', proveedor.tipo, familia)
+    return { resultado: null, contado: true, modelo: familia }
+  }
+  registrarGeneracion(proveedor, clave, resultado.idRespuesta)
+  return { resultado, contado: true, modelo: familia }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   if (req.method !== 'POST') return errorEntrada('formato_invalido', 'Un dato tiene un formato inválido.')
@@ -238,7 +307,7 @@ Deno.serve(async (req) => {
     })
   }
 
-  let entrada: { espacio_id?: unknown; sabado?: unknown; clima_simulado?: unknown }
+  let entrada: { espacio_id?: unknown; sabado?: unknown; clima_simulado?: unknown; modo?: unknown }
   try {
     entrada = await req.json()
   } catch {
@@ -271,13 +340,64 @@ Deno.serve(async (req) => {
   }
 
   // Clima simulado solo en un espacio demo; en cualquier otro caso se ignora y va el clima real.
+  // El clima y la búsqueda se piden una sola vez por pedido: los usan las herramientas y el camino de siempre.
   const simuladoPedido = climaPedido(esDemo, entrada.clima_simulado)
-  const clima = simuladoPedido ? climaSimulado(simuladoPedido) : await traerClima(sabado)
-  const { data: plan, error: errorPlan } = await supabase.rpc('proponer_plan_borrador', {
-    p_espacio_id: espacioId,
-    p_sabado: sabado,
-    p_clima: { sabado: clima.sabado.estado, domingo: clima.domingo.estado },
-  })
+  let climaPendiente: Promise<Clima> | null = null
+  const climaDe = () => (climaPendiente ??= simuladoPedido ? Promise.resolve(climaSimulado(simuladoPedido)) : traerClima(sabado))
+  let planPendiente: Promise<{ data: any; error: unknown }> | null = null
+  const planDe = () =>
+    (planPendiente ??= climaDe().then(async (c) => {
+      const { data, error } = await supabase.rpc('proponer_plan_borrador', {
+        p_espacio_id: espacioId,
+        p_sabado: sabado,
+        p_clima: { sabado: c.sabado.estado, domingo: c.domingo.estado },
+      })
+      return { data, error }
+    }))
+
+  // Pedido de Nico (23 oct, 23:17): con modo "herramientas", el modelo decide qué mirar y cada resultado sale del servidor.
+  let despuesDelBucle = false
+  let pasos: string[] | null = null
+  if (entrada.modo === 'herramientas') {
+    const herramientas: Herramientas = {
+      verClima: async (dia) => {
+        const c = await climaDe()
+        return { estado: c[dia].estado, maxima: c[dia].maxima, simulado: c.fuente === 'simulacion' }
+      },
+      buscarPlanes: async (): Promise<ResultadoBusqueda> => {
+        const [c, { data, error }] = await Promise.all([climaDe(), planDe()])
+        if (error || !data || typeof data !== 'object' || !data.ok) return { tipo: 'error' }
+        if (data.resultado?.tipo !== 'borrador') return { tipo: 'sin_plan', motivo: typeof data.resultado?.motivo === 'string' ? data.resultado.motivo : null }
+        const b = data.resultado as ResultadoPlan
+        const cs = candidatasDe(b).map(candidataSegura)
+        return {
+          tipo: 'borrador',
+          candidatas: cs,
+          paraModelo: entradaModelo(cs, b.perfil_grupo ?? null, resumenClima(c), nombres, c.fuente === 'simulacion', quorumSeguro(b.quorum)),
+        }
+      },
+      buscarCanchas: (actividad) => (['padel', 'futbol', 'tenis'].includes(actividad) ? SITIOS_CANCHAS : []),
+    }
+    const entradaInicial = { pedido: `Arma el mejor plan para el grupo para el fin de semana del sábado ${sabado}.` }
+    const hecho = await conHerramientas(herramientas, entradaInicial, nombres, inicio + PLAZO_HERRAMIENTAS_MS, usuarioDe(autorizacion))
+    if (hecho?.resultado) {
+      const { data: plan } = await planDe()
+      const c = await climaDe()
+      return responder(
+        armarBorrador(plan, hecho.resultado.candidatas, hecho.resultado.eleccion, c, {
+          explicacion: hecho.resultado.explicacion,
+          mensaje: hecho.resultado.mensaje,
+          modelo: hecho.modelo,
+          pasos: hecho.resultado.pasos,
+        }),
+      )
+    }
+    despuesDelBucle = Boolean(hecho?.contado)
+    pasos = []
+  }
+
+  const clima = await climaDe()
+  const { data: plan, error: errorPlan } = await planDe()
   if (errorPlan || !plan || typeof plan !== 'object') return errorTemporal()
   // Errores de negocio (rol, pertenencia, pocas preferencias...) y "sin plan compatible" pasan tal cual.
   if (!plan.ok || plan.resultado?.tipo !== 'borrador') return responder(plan)
@@ -296,16 +416,37 @@ Deno.serve(async (req) => {
     perfil,
     resumen,
     nombres,
-    inicio + PLAZO_TOTAL_MS,
+    inicio + (despuesDelBucle ? PLAZO_TOTAL_HERRAMIENTAS_MS : PLAZO_TOTAL_MS),
     simulado,
     usuarioDe(autorizacion),
     quorum,
+    despuesDelBucle,
   )
-  const elegida = delModelo?.eleccion ?? candidatas[0]
+  return responder(
+    armarBorrador(plan, candidatas, delModelo?.eleccion ?? candidatas[0], clima, delModelo
+      ? { explicacion: delModelo.explicacion, mensaje: delModelo.mensaje, modelo: delModelo.modelo, pasos }
+      : { pasos }),
+  )
+})
 
-  // Los campos de primer nivel describen la opción destacada; `candidatas` trae todas para que el
-  // organizador vea y decida cuál usar. Nada se crea ni se invita desde acá.
-  return responder({
+/**
+ * La respuesta de un borrador. Los campos de primer nivel describen la opción destacada; `candidatas` trae todas
+ * para que el organizador vea y decida cuál usar. Nada se crea ni se invita desde acá.
+ */
+// deno-lint-ignore no-explicit-any
+function armarBorrador(
+  plan: any,
+  candidatas: Candidata[],
+  elegida: Candidata,
+  clima: Clima,
+  delModelo: { explicacion?: string; mensaje?: string; modelo?: string; pasos?: string[] | null },
+) {
+  const base = plan.resultado as ResultadoPlan
+  const perfil = base.perfil_grupo ?? null
+  const resumen = resumenClima(clima)
+  const simulado = clima.fuente === 'simulacion'
+  const deModelo = typeof delModelo.explicacion === 'string' && typeof delModelo.mensaje === 'string'
+  return {
     ...plan,
     resultado: {
       tipo: 'borrador',
@@ -326,15 +467,17 @@ Deno.serve(async (req) => {
       // Enmienda 14: familia y personas de la destacada (si el servidor las manda) y el quórum (null si no aplica).
       ...(elegida.familia !== undefined ? { familia: elegida.familia } : {}),
       ...(elegida.personas !== undefined ? { personas: elegida.personas } : {}),
-      quorum,
+      quorum: quorumSeguro(base.quorum),
       explicacion:
-        delModelo?.explicacion ??
+        delModelo.explicacion ??
         unirFrases(elegida.frases_grupo, simulado, { perfil: perfilParaRespuesta(perfil), actividad: elegida.actividad_etiqueta }),
-      mensaje_al_grupo: delModelo?.mensaje ?? mensajeFijo(elegida),
-      eleccion_fuente: delModelo ? 'modelo' : 'regla',
-      // Qué modelo escribió: "opus", "haiku" (respaldo) u otro; null con la regla y el texto fijo.
-      modelo_usado: delModelo?.modelo ?? null,
-      explicacion_fuente: delModelo ? 'modelo' : 'texto_fijo',
+      mensaje_al_grupo: delModelo.mensaje ?? mensajeFijo(elegida),
+      eleccion_fuente: deModelo ? 'modelo' : 'regla',
+      // Qué modelo escribió: "fable", "opus", "haiku" (respaldo) u otro; null con la regla y el texto fijo.
+      modelo_usado: deModelo ? (delModelo.modelo ?? null) : null,
+      explicacion_fuente: deModelo ? 'modelo' : 'texto_fijo',
+      // Con herramientas: los pasos que hizo el agente (texto fijo del servidor). Si el bucle no llegó, lista vacía.
+      ...(delModelo.pasos ? { pasos: delModelo.pasos, modo_agente: delModelo.pasos.length > 0 ? 'herramientas' : 'directo' } : {}),
     },
-  })
-})
+  }
+}
