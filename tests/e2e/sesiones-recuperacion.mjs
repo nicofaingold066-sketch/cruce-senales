@@ -102,6 +102,15 @@ async function caso(nombre, mock, prueba) {
 }
 const poner = async (p, nombre) => assert.equal((await p.evaluate(s => window.sesionesQA.poner(s), sesion(nombre))).ok, true)
 const estado = p => p.evaluate(() => window.sesionesQA.estado())
+// La etiqueta de la copia guardada la arma el banco (sesiones-recuperacion.jsx) con el nombre de la demo de ESA copia de trabajo:
+// se acepta «Los del asado» (ramas anteriores al 24 oct 01:56) y «Los del finde». Lo que se prueba no cambia: la identidad
+// actual y que la copia de Tomi siga guardada.
+const GUARDADA = /^Tomi en «Los del (asado|finde)»$/
+async function estadoEs(p, actual, guardada) {
+  const e = await estado(p)
+  assert.equal(e.actual, actual)
+  assert.match(e.guardada ?? '', guardada, 'Debe quedar la copia guardada de Tomi')
+}
 const guardar = p => p.evaluate(() => window.sesionesQA.guardarFicticia('qa-ficticio-Tomi-guardado'))
 const cambiar = p => p.evaluate(() => window.sesionesQA.cambiar())
 const mostrar = p => p.evaluate(() => window.sesionesQA.mostrarInicio())
@@ -140,7 +149,7 @@ try {
   }, async p => {
     await poner(p, 'Tomi')
     assert.equal((await cambiar(p)).ok, true)
-    assert.deepEqual(await estado(p), { actual: 'Pepe', guardada: 'Tomi en «Los del finde»' })
+    await estadoEs(p, 'Pepe', GUARDADA)
     assert.equal(await p.evaluate(() => window.sesionesQA.tokenGuardadoEs('qa-ficticio-Tomi-rotado')), true)
     await mostrar(p)
     await Promise.all([p.waitForEvent('domcontentloaded'), retorno(p).click()])
@@ -154,7 +163,7 @@ try {
   }, async (p, ops) => {
     await poner(p, 'Pepe'); await guardar(p)
     assert.equal((await cambiar(p)).ok, true)
-    assert.deepEqual(await estado(p), { actual: 'Caro', guardada: 'Tomi en «Los del finde»' })
+    await estadoEs(p, 'Caro', GUARDADA)
     assert.equal(await p.evaluate(() => window.sesionesQA.tokenGuardadoEs('qa-ficticio-Tomi-guardado')), true)
     assert.equal(ops.filter(x => x === 'token').length, 0)
   })
@@ -195,7 +204,7 @@ try {
     await poner(p, 'Pepe'); await guardar(p); await mostrar(p)
     await retorno(p).click()
     await p.getByText('sigue guardada; intenta de nuevo.', { exact: false }).waitFor({ timeout: 35000 })
-    assert.deepEqual(await estado(p), { actual: 'Pepe', guardada: 'Tomi en «Los del finde»' })
+    await estadoEs(p, 'Pepe', GUARDADA)
     assert.equal(await retorno(p).isEnabled(), true)
   })
 
@@ -218,7 +227,7 @@ try {
     await poner(p, 'Pepe'); await guardar(p); await mostrar(p)
     await p.getByRole('button', { name: 'Olvidarla', exact: true }).click()
     await p.getByRole('button', { name: 'Cancelar', exact: true }).click()
-    assert.deepEqual(await estado(p), { actual: 'Pepe', guardada: 'Tomi en «Los del finde»' })
+    await estadoEs(p, 'Pepe', GUARDADA)
     await p.getByRole('button', { name: 'Olvidarla', exact: true }).click()
     await p.getByRole('button', { name: 'Sí, olvidarla', exact: true }).click()
     assert.deepEqual(await estado(p), { actual: 'Pepe', guardada: null })
@@ -231,7 +240,7 @@ try {
   }, async (p, ops) => {
     await poner(p, 'Pepe'); await guardar(p)
     assert.equal((await cambiar(p)).ok, false)
-    assert.deepEqual(await estado(p), { actual: 'Pepe', guardada: 'Tomi en «Los del finde»' })
+    await estadoEs(p, 'Pepe', GUARDADA)
     assert.equal(ops.includes('token'), false)
   })
 
@@ -273,7 +282,7 @@ try {
     await poner(p, 'Pepe'); await guardar(p); await mostrarEntrada(p)
     await retorno(p).click()
     await p.getByText('sigue guardada; intenta de nuevo.', { exact: false }).waitFor({ timeout: 35000 })
-    assert.deepEqual(await estado(p), { actual: 'Pepe', guardada: 'Tomi en «Los del finde»' })
+    await estadoEs(p, 'Pepe', GUARDADA)
     // La copia sigue ofrecida: se puede reintentar o descartar (el foco del error ya no se maneja en la portada).
     await revisarFoco(p, 'sigue guardada; intenta de nuevo.')
     assert.equal(await retorno(p).isEnabled(), true)
