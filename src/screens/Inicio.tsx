@@ -1,34 +1,32 @@
+// Portada "Mi espacio" (S1 Ingreso, mockup validado por Nico 02:40, pantallas 1 y 2; la edita friccion por excepción del
+// encargo). Arriba, solo si el servidor dice que te toca algo, UNA línea que lleva al plan; después "Tus grupos" con filas
+// grandes; y un "+" flotante "Nuevo grupo" que abre una hoja desde abajo con "Crear un grupo", "Unirme con un código"
+// (desplegable) y la demo. Sin grupos (primera vez) o en la computadora, esas opciones se ven sin abrir nada.
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { FormEvent } from 'react'
+import type { FormEvent, ReactNode } from 'react'
 import { api } from '../lib/api'
-import type { ApiError, EspacioResumen, PropuestaResumen, TipoEspacio } from '../lib/types'
+import type { ApiError, EspacioResumen, PropuestaResumen } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
 import { irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { OtraSesion } from '../components/Sesiones'
 import { guardarPerfil, usePerfil } from '../lib/perfil'
 import { vibrar } from '../lib/tacto'
-import { Aviso, Boton, Cargando, ErrorCaja, colorAvatar, iniciales } from '../components/ui'
-import { PlanVivo, esTurno } from '../components/PlanVivo'
-import { Marca } from '../components/Marca'
-import { Icono } from '../components/Icono'
+import { Aviso, Boton, Cargando, Chip, ErrorCaja, colorAvatar, iniciales } from '../components/ui'
 import { Orbita } from '../components/Orbita'
 import { Resaltado } from '../components/Resaltado'
-import { Tablero } from '../components/Tablero'
+import { esTurno } from '../components/PlanVivo'
+import { Icono } from '../components/Icono'
 import { UnirseConNombre, useUnirse } from '../login/QuienEres'
 import { fuenteReal } from '../login/fuente'
+import '../estilo/seccion-s1.css'
 
-const TIPO: Record<TipoEspacio, string> = { amigos: 'Amigos', empresa: 'Empresa' }
-
-export default function Inicio({
-  codigoInvitacion,
-  invitacionInvalida,
-}: { codigoInvitacion?: string; invitacionInvalida?: boolean } = {}) {
+export default function Inicio({ invitacionInvalida }: { invitacionInvalida?: boolean } = {}) {
   useIdentidad(null, null, null)
   const { soloLectura } = useShell()
   const [espacios, setEspacios] = useState<EspacioResumen[] | null>(null)
   const [error, setError] = useState<ApiError | null>(null)
-
   const [activas, setActivas] = useState<PlanActivo[]>([])
+  const [hoja, setHoja] = useState(false)
   const secuencia = useRef(0)
 
   const cargar = useCallback(async () => {
@@ -48,208 +46,296 @@ export default function Inicio({
   useEffect(() => {
     void cargar()
   }, [cargar])
-  // Mejora #30: con espacios, el plan activo se mantiene al día (mismo ritmo que la lista del espacio).
+  // Mejora #30: con grupos, lo que me toca se mantiene al día (mismo ritmo que la lista del grupo).
   useSondeo(cargar, 10000, (espacios?.length ?? 0) > 0)
-  const conPlan = activas.length > 0
-  const perfil = usePerfil()
-  // Primera vez en este navegador: sin nombre guardado y sin grupos. Se muestra el ingreso.
-  const nuevo = !perfil && espacios !== null && espacios.length === 0
 
-  if (codigoInvitacion) {
-    return (
-      <div className="vista">
-        <section className="escena escena-invitacion" aria-labelledby="invitacion-titulo">
-          <span className="escena-eyebrow">Invitación a CRUXE</span>
-          <h1 id="invitacion-titulo">
-            Te invitaron a <Resaltado tipo="circulo">un plan</Resaltado>
-          </h1>
-          <p className="escena-sub">
-            Súmate al grupo con tu nombre. Después marcas en privado cuándo puedes y confirmas el plan que salga.
-          </p>
-          <div className="invitar">
-            <div className="invitar-codigo">
-              <span>Código de la invitación</span>
-              <Tablero codigo={codigoInvitacion} como="span" />
-            </div>
-          </div>
-          <div className="solo-ancho">
-            <Orbita compacta />
-          </div>
-        </section>
-        <div className="hoja">
-          <UnirsePortada deshabilitado={soloLectura} codigoInicial={codigoInvitacion} />
-          <div className="privado" role="note">
-            <span className="privado-icono" aria-hidden="true">
-              <Icono n="candado" tam={20} />
-            </span>
-            <div>
-              <strong>Sin contraseña ni correo</strong>
-              <p>Tu sesión queda guardada en este teléfono. Cuándo puedes es privado: nadie del grupo lo ve.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
+  const conGrupos = (espacios?.length ?? 0) > 0
+  const turno = activas.find((x) => esTurno(x.p)) ?? null
+  const planDe = (id: string) => activas.find((x) => x.espacio.id === id)?.p ?? null
+  const yaDemo = espacios?.some((e) => e.demo && e.mi_rol === 'organizador') ?? false
+
+  const perfil = usePerfil()
+  // Pantalla 9 (mockup): primera vez en este teléfono, sin nombre y sin grupos.
+  if (!perfil && espacios !== null && espacios.length === 0) {
+    return <PortadaNueva soloLectura={soloLectura} invitacionInvalida={invitacionInvalida} />
   }
 
   return (
-    <div className="vista">
-      {nuevo || (espacios === null && !perfil) ? (
-        <section className="escena escena-portada" aria-labelledby="portada-titulo">
-          <Marca grande />
-          <h1 id="portada-titulo" className="portada-lema">
-            Del «nos juntamos» al{' '}
-            <em className="sin-corte">
-              <Resaltado>encuentro que ocurre</Resaltado>.
-            </em>
-          </h1>
-          <p className="portada-sub">
-            Cada uno dice en privado cuándo puede. CRUXE propone <strong>un solo plan</strong> y cada uno lo confirma.
-          </p>
-          <Orbita compacta={nuevo} />
-        </section>
-      ) : (
-        <section className="escena escena-portada" aria-labelledby="portada-titulo">
-          <span className="escena-eyebrow">CRUXE</span>
-          <h1 id="portada-titulo" className="portada-lema">
-            {perfil ? `Hola, ${perfil.nombre}.` : 'Hola.'} <em>¿Qué plan armamos?</em>
-          </h1>
-          <p className="portada-sub">Del «nos juntamos» al encuentro que ocurre.</p>
-          <Orbita compacta />
-        </section>
-      )}
-
-      <div className="hoja">
+    <div className="vista s1 s1-portada">
+      <div className="hoja s1-hoja">
         {invitacionInvalida ? (
           <Aviso tono="aviso" titulo="Ese enlace de invitación no es válido">
-            Puede haberse copiado mal. Pide uno nuevo o escribe el código a mano en "Unirme con un código", más abajo.
+            Pide uno nuevo o escribe el código en «Unirme con un código».
           </Aviso>
         ) : null}
         <OtraSesion />
-        {nuevo ? <Ingreso /> : null}
-        {conPlan ? <TuPlan activas={activas} /> : null}
+        {turno ? <TeToca plan={turno} /> : null}
 
-        {nuevo ? <div className="separador">o prueba sin crear nada</div> : null}
-        <div className="accesos">
-          {/* Con un plan activo, lo principal es el plan: sin acceso grande que cree otra demo por error. */}
-          {conPlan ? null : (
-            <CargarDemo deshabilitado={soloLectura} yaCargada={espacios?.some((e) => e.demo && e.mi_rol === 'organizador') ?? false} />
-          )}
-          {nuevo ? null : (
-            <a className="acceso" href={rutas.crear()}>
-              <span className="acceso-icono" aria-hidden="true">
-                <Icono n="grupo" />
-              </span>
-              <span className="acceso-texto">
-                <span className="acceso-titulo">Crear un grupo</span>
-                <span className="acceso-sub" aria-hidden="true">
-                  Para tus amigos de verdad: invitas con un enlace
-                </span>
-              </span>
-            </a>
-          )}
-          <button type="button" className="acceso" onClick={irAUnirse}>
-            <span className="acceso-icono" aria-hidden="true">
-              <Icono n="llave" />
-            </span>
-            <span className="acceso-texto">
-              <span className="acceso-titulo">Tengo un código de invitación</span>
-              <span className="acceso-sub" aria-hidden="true">
-                Súmate al plan de tu grupo
-              </span>
-            </span>
-          </button>
+        <div className={`s1-cuerpo ${conGrupos ? 's1-con-grupos' : 's1-sin-grupos'}`}>
+          <section className="s1-columna-grupos" aria-labelledby="mis-espacios">
+            <h1 id="mis-espacios" className="s1-titulo">
+              Tus grupos
+            </h1>
+            {espacios === null && !error ? <Cargando texto="Buscando tus grupos…" /> : null}
+            {error && espacios === null ? <ErrorCaja error={error} onReintentar={cargar} /> : null}
+            {error && espacios !== null ? <ErrorCaja error={error} onReintentar={cargar} titulo="No se pudo actualizar" /> : null}
+            {espacios && espacios.length > 0 ? (
+              <ul className="filas s1-grupos">
+                {espacios.map((e) => (
+                  <FilaGrupo key={e.id} e={e} plan={planDe(e.id)} />
+                ))}
+              </ul>
+            ) : null}
+            {espacios && espacios.length === 0 ? (
+              <p className="t-cuerpo s1-vacio">Todavía no estás en ningún grupo. Crea uno o únete con el código que te mandaron.</p>
+            ) : null}
+          </section>
+
+          {/* En la computadora, o sin grupos todavía, las opciones de "Nuevo grupo" se ven sin abrir la hoja. */}
+          <aside className="s1-columna-nuevo" aria-label="Nuevo grupo">
+            <OpcionesNuevo soloLectura={soloLectura} yaDemo={yaDemo} conNombre={!conGrupos} />
+          </aside>
         </div>
+      </div>
 
-        {espacios === null && !error ? <Cargando texto="Buscando tus espacios…" /> : null}
-        {error && espacios === null ? <ErrorCaja error={error} onReintentar={cargar} /> : null}
-        {error && espacios !== null ? <ErrorCaja error={error} onReintentar={cargar} titulo="No se pudo actualizar" /> : null}
+      {conGrupos ? (
+        <>
+          <button type="button" className="btn btn-primario s1-mas" onClick={() => setHoja(true)} aria-haspopup="dialog">
+            <Icono n="mas" tam={22} /> Nuevo grupo
+          </button>
+          {hoja ? (
+            <HojaNuevo cerrar={() => setHoja(false)}>
+              <OpcionesNuevo soloLectura={soloLectura} yaDemo={yaDemo} conNombre={false} />
+            </HojaNuevo>
+          ) : null}
+        </>
+      ) : null}
+    </div>
+  )
+}
 
-        {espacios && espacios.length > 0 ? (
-          <section aria-labelledby="mis-espacios">
-            <div className="seccion-titulo">
-              <h2 id="mis-espacios">Tus grupos</h2>
-            </div>
-            <ul className="filas">
-              {espacios.map((e) => (
-                <li key={e.id}>
-                  <a className="fila" href={rutas.espacio(e.id)}>
-                    <span className="fila-icono" style={{ background: colorAvatar(e.nombre), color: '#fff', fontWeight: 800 }} aria-hidden="true">
-                      {iniciales(e.nombre)}
-                    </span>
-                    <span className="fila-texto">
-                      <span className="fila-titulo">{e.nombre}</span>
-                      <span className="fila-meta">
-                        {TIPO[e.tipo]} · {e.cantidad_miembros} personas · Tú: {e.mi_rol === 'organizador' ? 'organizador' : 'miembro'}
-                        {e.demo ? ' · Demo' : ''}
-                      </span>
-                    </span>
-                    <span className="visualmente-oculto">Abrir espacio</span>
-                    <span className="fila-chevron" aria-hidden="true">
-                      <Icono n="chevron" />
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
+/** La línea de "te toca": la única cosa arriba, y solo cuando el servidor lo dice. Lleva al plan (2 toques con confirmar). */
+function TeToca({ plan }: { plan: PlanActivo }) {
+  return (
+    <a className="s1-te-toca" href={rutas.propuesta(plan.espacio.id, plan.p.id)}>
+      <Icono n="rayo" tam={18} />
+      <span>
+        <strong>{plan.p.siguiente_accion.codigo === 'te_toca_aceptar' ? 'Te toca confirmar' : 'Te toca'}</strong> · {plan.espacio.nombre}
+      </span>
+      <Icono n="chevron" tam={18} />
+    </a>
+  )
+}
 
-        <UnirsePortada deshabilitado={soloLectura} />
+function FilaGrupo({ e, plan }: { e: EspacioResumen; plan: PropuestaResumen | null }) {
+  const personas = `${e.cantidad_miembros} ${e.cantidad_miembros === 1 ? 'persona' : 'personas'}`
+  return (
+    <li>
+      <a className="fila s1-fila-grupo" href={rutas.espacio(e.id)}>
+        <span className="fila-icono s1-grupo-icono" style={{ background: colorAvatar(e.nombre), color: '#fff' }} aria-hidden="true">
+          {iniciales(e.nombre)}
+        </span>
+        <span className="fila-texto">
+          <span className="fila-titulo">{e.nombre}</span>
+          <span className="fila-meta t-nota">
+            {personas} · {plan ? `${plan.titulo}, ${plan.estado_etiqueta.toLocaleLowerCase('es')}` : 'sin plan todavía'}
+          </span>
+        </span>
+        {e.demo ? <Chip tono="sim">Demo</Chip> : null}
+        <span className="visualmente-oculto">Abrir grupo</span>
+        <span className="fila-chevron" aria-hidden="true">
+          <Icono n="chevron" />
+        </span>
+      </a>
+    </li>
+  )
+}
 
-        {conPlan ? null : (
-          <section aria-labelledby="como-titulo">
-            <div className="seccion-titulo">
-              <h2 id="como-titulo">Cómo funciona</h2>
-            </div>
-            <ol className="como tarjeta">
-              <li>
-                <span className="como-num" aria-hidden="true">1</span>
-                <p>
-                  <strong>Cada uno</strong> marca en privado cuándo puede.
-                </p>
-              </li>
-              <li>
-                <span className="como-num" aria-hidden="true">2</span>
-                <p>
-                  <strong>El servidor</strong> propone una sola opción compatible.
-                </p>
-              </li>
-              <li>
-                <span className="como-num" aria-hidden="true">3</span>
-                <p>
-                  <strong>Confirmas</strong> esa versión. Si alguien se baja, se repara y se vuelve a confirmar.
-                </p>
-              </li>
-            </ol>
-          </section>
-        )}
+/** "Crear un grupo", "Unirme con un código" (desplegable) y la demo: en la hoja del "+" o a la vista. */
+function OpcionesNuevo({ soloLectura, yaDemo, conNombre }: { soloLectura: boolean; yaDemo: boolean; conNombre: boolean }) {
+  return (
+    <div className="s1-opciones">
+      <a className="s1-opcion" href={rutas.crear()}>
+        <span className="s1-opcion-icono" aria-hidden="true">
+          <Icono n="grupo" />
+        </span>
+        <span className="s1-opcion-texto">
+          <span className="t-subtitulo">Crear un grupo</span>
+          <span className="t-nota">Pones el nombre y a tus amigos. Después armas el plan.</span>
+        </span>
+        <span className="fila-chevron" aria-hidden="true">
+          <Icono n="chevron" />
+        </span>
+      </a>
+      {/* Primera vez: el nombre (opcional) va antes del código; los guiones llenan el primer cuadro de texto de la portada. */}
+      {conNombre ? <TuNombre /> : null}
+      {/* Primera vez (sin grupos), abierto: es lo que vino a hacer quien llega con un código. En la hoja, plegado. */}
+      <details className="s1-opcion s1-opcion-unirme" open={conNombre || undefined}>
+        <summary>
+          <span className="s1-opcion-icono" aria-hidden="true">
+            <Icono n="llave" />
+          </span>
+          <span className="s1-opcion-texto">
+            <span className="t-subtitulo">Unirme con un código</span>
+            <span className="t-nota">Te lo mandó quien organiza.</span>
+          </span>
+        </summary>
+        <div className="s1-opcion-cuerpo">
+          <UnirsePortada deshabilitado={soloLectura} />
+        </div>
+      </details>
+      <div className="s1-demo">
+        <p className="t-nota s1-nota">o prueba sin crear nada</p>
+        <CargarDemo deshabilitado={soloLectura} yaCargada={yaDemo} sinDetalle />
       </div>
     </div>
   )
 }
 
-/** Ingreso: no hay cuenta ni contraseña (sesión anónima, contrato 0.1). Solo el nombre, guardado en este teléfono. */
-function Ingreso() {
+/** La hoja del "+": un <dialog> nativo (foco atrapado y Escape) que sube desde abajo (.sd-hoja-modal, del sistema). */
+function HojaNuevo({ cerrar, children }: { cerrar: () => void; children: ReactNode }) {
+  const ref = useRef<HTMLDialogElement>(null)
+  useEffect(() => {
+    const d = ref.current
+    if (d && !d.open) d.showModal()
+    return () => d?.close()
+  }, [])
+  return (
+    <dialog
+      ref={ref}
+      className="s1-hoja-modal sd-hoja-modal"
+      aria-labelledby="hoja-nuevo-titulo"
+      onClose={cerrar}
+      onClick={(e) => {
+        // Tocar fuera de la hoja (el fondo) la cierra.
+        if (e.target === e.currentTarget) cerrar()
+      }}
+    >
+      <div className="s1-hoja-cabeza">
+        <h2 id="hoja-nuevo-titulo">Nuevo grupo</h2>
+        <button type="button" className="btn btn-secundario s1-cerrar" onClick={cerrar} aria-label="Cerrar">
+          <span className="s1-x" aria-hidden="true">
+            <Icono n="mas" tam={20} />
+          </span>
+        </button>
+      </div>
+      {children}
+    </dialog>
+  )
+}
+
+/**
+ * Pantalla 9: primera vez, sin nombre y sin grupos. Título, la órbita chica, "Entrar a CRUXE" con el nombre (primario) y
+ * dos filas: la demo y "Tengo un código de invitación", que se despliega ahí mismo. Al entrar con el nombre se ve "Tus
+ * grupos" vacío con "Crear un grupo" a la vista.
+ */
+function PortadaNueva({ soloLectura, invitacionInvalida }: { soloLectura: boolean; invitacionInvalida?: boolean }) {
   const [nombre, setNombre] = useState('')
   const [aviso, setAviso] = useState<string | null>(null)
   function entrar(e: FormEvent) {
     e.preventDefault()
     if (!nombre.trim()) return
     vibrar(10)
-    if (!guardarPerfil(nombre)) setAviso('Este navegador no deja guardar datos: vas a escribir tu nombre al unirte a cada grupo.')
+    if (!guardarPerfil(nombre)) setAviso('Este navegador no deja guardar datos: escribirás tu nombre al crear o unirte.')
   }
   return (
-    <form className="tarjeta ingreso" onSubmit={entrar} noValidate aria-labelledby="ingreso-titulo">
-      <h2 id="ingreso-titulo">Entrar a CRUXE</h2>
-      <p className="suave">Sin contraseña ni correo: tu sesión queda guardada en este teléfono.</p>
-      <label className="campo">
-        <span>¿Cómo te llaman tus amigos?</span>
-        <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={30} autoComplete="nickname" placeholder="Tu nombre" />
-      </label>
-      <Boton type="submit" className="btn-bloque" disabled={!nombre.trim()}>
-        Entrar
-      </Boton>
+    <div className="vista s1 s1-nueva">
+      <section className="escena escena-portada" aria-labelledby="portada-titulo">
+        <h1 id="portada-titulo" className="portada-lema">
+          Del «nos juntamos» al{' '}
+          <em className="sin-corte">
+            <Resaltado>encuentro que ocurre</Resaltado>.
+          </em>
+        </h1>
+        <p className="portada-sub">Cada uno dice en privado cuándo puede. Sale un solo plan y cada uno lo confirma.</p>
+        <div className="s1-orbita-chica">
+          <Orbita compacta />
+        </div>
+      </section>
+      <div className="hoja">
+        {invitacionInvalida ? (
+          <Aviso tono="aviso" titulo="Ese enlace de invitación no es válido">
+            Pide uno nuevo o escribe el código en «Tengo un código de invitación».
+          </Aviso>
+        ) : null}
+        <OtraSesion />
+        <form className="tarjeta s1-entrar" onSubmit={entrar} noValidate aria-labelledby="ingreso-titulo">
+          <h2 id="ingreso-titulo">Entrar a CRUXE</h2>
+          <p className="t-nota s1-nota">Sin contraseña ni correo. Tu sesión queda en este teléfono.</p>
+          <label className="campo">
+            <span>¿Cómo te llaman tus amigos?</span>
+            <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={30} autoComplete="nickname" placeholder="Tu nombre" />
+          </label>
+          <Boton type="submit" className="s1-btn" disabled={!nombre.trim()}>
+            Entrar
+          </Boton>
+          {aviso ? <p role="status">{aviso}</p> : null}
+        </form>
+        <div className="s1-opciones">
+          <div className="s1-opcion s1-opcion-demo">
+            <CargarDemo deshabilitado={soloLectura} yaCargada={false} />
+          </div>
+          <details className="s1-opcion s1-opcion-unirme">
+            <summary>
+              <span className="s1-opcion-icono" aria-hidden="true">
+                <Icono n="llave" />
+              </span>
+              <span className="s1-opcion-texto">
+                <span className="t-subtitulo">Tengo un código de invitación</span>
+                <span className="t-nota">Te lo mandó quien organiza.</span>
+              </span>
+            </summary>
+            <div className="s1-opcion-cuerpo">
+              <UnirsePortada deshabilitado={soloLectura} />
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** Tu nombre, opcional: queda en este teléfono y se completa solo al crear un grupo o al unirte. */
+function TuNombre() {
+  const perfil = usePerfil()
+  const [nombre, setNombre] = useState('')
+  const [editando, setEditando] = useState(false)
+  const [aviso, setAviso] = useState<string | null>(null)
+  function entrar(e: FormEvent) {
+    e.preventDefault()
+    if (!nombre.trim()) return
+    vibrar(10)
+    if (guardarPerfil(nombre)) {
+      setEditando(false)
+      setNombre('')
+      setAviso(null)
+    } else setAviso('Este navegador no deja guardar datos: escribirás tu nombre al crear o unirte.')
+  }
+  if (perfil && !editando) {
+    return (
+      <p className="t-nota s1-nombre-listo">
+        En este teléfono: <strong>{perfil.nombre}</strong>.{' '}
+        <button type="button" className="enlace" onClick={() => setEditando(true)}>
+          Cambiar
+        </button>
+      </p>
+    )
+  }
+  return (
+    <form className="s1-nombre" onSubmit={entrar} noValidate aria-labelledby="ingreso-titulo">
+      <h2 id="ingreso-titulo" className="t-cuerpo">
+        Entrar a CRUXE
+      </h2>
+      <div className="s1-nombre-fila">
+        <label className="campo">
+          <span>¿Cómo te llaman tus amigos?</span>
+          <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={30} autoComplete="nickname" placeholder="Tu nombre" />
+        </label>
+        <Boton type="submit" variante="secundario" disabled={!nombre.trim()}>
+          Entrar
+        </Boton>
+      </div>
+      <p className="t-nota s1-nota">Opcional: queda en este teléfono y se completa solo al crear o unirte.</p>
       {aviso ? <p role="status">{aviso}</p> : null}
     </form>
   )
@@ -262,7 +348,7 @@ interface PlanActivo {
 
 const ESTADOS_ACTIVOS = new Set(['borrador', 'reuniendo_interes', 'esperando_compromisos', 'grupo_confirmado', 'en_revision'])
 
-/** Propuestas vigentes de mis espacios (hasta 4 espacios). El orden y "Te toca" salen del servidor. */
+/** Propuestas vigentes de mis grupos (hasta 4 grupos). El orden y "Te toca" salen del servidor. */
 async function planesActivos(espacios: EspacioResumen[]): Promise<PlanActivo[]> {
   const listas = await Promise.all(
     espacios.slice(0, 4).map(async (e) => {
@@ -271,76 +357,32 @@ async function planesActivos(espacios: EspacioResumen[]): Promise<PlanActivo[]> 
     }),
   )
   const turno = (x: PlanActivo) => esTurno(x.p)
-  return listas
-    .flat()
-    .sort((a, b) => Number(turno(b)) - Number(turno(a)))
-    .slice(0, 3)
+  return listas.flat().sort((a, b) => Number(turno(b)) - Number(turno(a)))
 }
 
-/** Mejora #30: el plan activo arriba de todo, para llegar en un toque (por ejemplo, desde el segundo teléfono). */
-function TuPlan({ activas }: { activas: PlanActivo[] }) {
-  return (
-    <section className="tu-plan" aria-labelledby="tu-plan-titulo">
-      <div className="seccion-titulo" style={{ marginTop: 4 }}>
-        <h2 id="tu-plan-titulo">{activas.length === 1 ? 'Tu plan' : 'Tus planes'}</h2>
-        <a className="enlace" href={rutas.planes()}>
-          Ver todos
-        </a>
-      </div>
-      <ul className="lista-planes">
-        {activas.map(({ espacio, p }) => (
-          <li key={p.id}>
-            <PlanVivo p={p} espacioId={espacio.id} espacioNombre={espacio.nombre} />
-          </li>
-        ))}
-      </ul>
-    </section>
-  )
-}
-
-function CargarDemo({ deshabilitado, yaCargada }: { deshabilitado: boolean; yaCargada: boolean }) {
+function CargarDemo({ deshabilitado, yaCargada, sinDetalle }: { deshabilitado: boolean; yaCargada: boolean; sinDetalle?: boolean }) {
   const { ocupado, error, ejecutar } = useAccion()
   async function hacer() {
     const r = await ejecutar('seed', () => api.seedDemoSpace())
     if (r?.ok) irA(rutas.espacio(r.data.resultado.espacio_id))
   }
   return (
-    <div className="portada-demo">
-      <Boton
-        className="acceso acceso-principal"
-        onClick={hacer}
-        ocupado={ocupado}
-        ocupadoTexto="Preparando la demo…"
-        disabled={deshabilitado}
-        aria-describedby="demo-detalle"
-      >
-        <span className="acceso-icono" aria-hidden="true">
-          <Icono n="play" />
-        </span>
-        <span className="acceso-texto">
-          <span className="acceso-titulo">{yaCargada ? 'Abrir la demo «Los del finde»' : 'Probar la demo «Los del finde»'}</span>
-          <span className="acceso-sub" id="demo-detalle" aria-hidden="true">
-            Serás Tomi, quien organiza. Las otras cinco personas son simuladas (datos ficticios).
-          </span>
-        </span>
+    <>
+      <Boton variante="secundario" className="s1-btn" onClick={hacer} ocupado={ocupado} ocupadoTexto="Preparando la demo…" disabled={deshabilitado} aria-describedby="demo-detalle">
+        {yaCargada ? 'Abrir la demo «Los del finde»' : 'Probar la demo «Los del finde»'}
       </Boton>
+      <p className={`t-nota s1-nota ${sinDetalle ? 'visualmente-oculto' : ''}`} id="demo-detalle">
+        Serás Tomi, quien organiza; las otras cinco personas son simuladas. Datos ficticios.
+      </p>
       {error ? <ErrorCaja error={error} enfocar /> : null}
-    </div>
+    </>
   )
 }
 
-/** Lleva al formulario de unirse sin tocar la ruta (la navegación usa el hash). */
-function irAUnirse() {
-  const form = document.getElementById('unirse')
-  form?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  form?.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true })
-}
-
-/** Un solo formulario de unión (friccion, fila 43 de la tabla #102): el de "¿Quién eres?", que reclama al integrante
- * anotado o lleva a la lista del grupo según el código. Mismos rótulos ("Código de invitación", "Tu nombre en el
- * espacio", "Unirme") y mismo aviso de navegador compartido (#47). */
-function UnirsePortada({ deshabilitado, codigoInicial = '' }: { deshabilitado: boolean; codigoInicial?: string }) {
+/** Un solo formulario de unión (el de "¿Quién eres?"): mismos rótulos ("Código de invitación", "Tu nombre en el espacio",
+ * "Unirme"), reclama al integrante anotado o lleva a la lista del grupo según el código, y el aviso de navegador compartido. */
+function UnirsePortada({ deshabilitado }: { deshabilitado: boolean }) {
   const u = useUnirse(fuenteReal)
   const campoNombre = useRef<HTMLInputElement>(null)
-  return <UnirseConNombre codigoInicial={codigoInicial} u={u} campoNombre={campoNombre} deshabilitado={deshabilitado} vista={null} />
+  return <UnirseConNombre codigoInicial="" u={u} campoNombre={campoNombre} deshabilitado={deshabilitado} vista={null} compacto />
 }

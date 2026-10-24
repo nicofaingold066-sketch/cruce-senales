@@ -1,0 +1,223 @@
+/* S5 Mi respuesta (friccion, rediseño de la noche): "¿Cuándo puedes?" y la pestaña "Mi respuesta". Solo tokens de
+   sistema.css. Las reglas base de .rapida-* viven en src/friccion/friccion.css; acá van los tamaños y lo propio de la
+   sección, todo bajo .s5. */
+
+.s5 .escena h1 {
+  font-size: var(--t-titulo);
+  line-height: var(--lh-titulo);
+  font-weight: var(--p-pantalla);
+}
+.s5 .escena-sub {
+  font-size: var(--t-cuerpo);
+  line-height: var(--lh-cuerpo);
+}
+.s5 .escena-eyebrow {
+  font-size: var(--t-nota);
+}
+.s5 h2 {
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+}
+.s5 .t-nota,
+.s5 .suave,
+.s5 small,
+.s5 .privado p,
+.s5 .privado strong,
+.s5 .rapida-detalle,
+.s5 .rapida-nota,
+.s5 .aviso-linea,
+.s5 .nota-seccion,
+.s5 .campo > span,
+.s5 legend .franja-cond-texto {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+.s5 .rapida-texto strong,
+.s5 .btn,
+.s5 .opcion-radio {
+  font-size: var(--t-cuerpo);
+}
+.s5 .rapida-texto strong {
+  font-weight: var(--p-boton);
+}
+.s5 .btn.rapida-opcion {
+  min-height: 64px;
+  padding: var(--e-3) var(--e-4);
+}
+.s5 .rapida-opciones {
+  gap: var(--e-2);
+  margin: 0 0 var(--e-3);
+}
+.s5 .btn.rapida-elegida {
+  outline: 2px solid var(--tinta);
+  outline-offset: 2px;
+}
+.s5-nota {
+  margin: 0 0 var(--e-3);
+  color: var(--tinta-2);
+}
+.s5-card {
+  margin: 0 0 var(--e-4);
+}
+.s5-card .tarjeta-cabeza {
+  align-items: center;
+  gap: var(--e-2);
+  margin-bottom: var(--e-2);
+}
+
+/* El editor por franja, plegado como "Ajustar día por día". El resumen es un control de 44 px. */
+.s5-detalle {
+  margin: var(--e-3) 0 0;
+  border-top: 1px solid var(--linea);
+  padding-top: var(--e-2);
+}
+.s5-detalle > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-3);
+  min-height: var(--toque);
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-boton);
+}
+.s5-detalle > summary::-webkit-details-marker {
+  display: none;
+}
+.s5-detalle > summary::after {
+  content: '';
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translate(-2px, -2px);
+  opacity: 0.6;
+}
+.s5-detalle[open] > summary::after {
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+.s5-detalle-cuerpo {
+  margin-top: var(--e-3);
+}
+
+/* Interés: opcional, público, en una línea con dos botones chicos. */
+.s5-interes {
+  margin: 0 0 var(--e-4);
+  padding: var(--e-4);
+  border: 1.5px dashed var(--linea);
+  border-radius: var(--r-m);
+}
+.s5-interes-titulo {
+  margin: 0 0 var(--e-1);
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-titulo);
+}
+.s5-interes-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+}
+.s5-interes-botones .btn {
+  margin: 0;
+  min-height: var(--toque);
+}
+.s5 .zona-peligro {
+  margin-top: var(--e-5);
+}
+
+/* ---- Mockup validado (pantallas 6 y 14) ---- */
+.s5 .btn.rapida-ninguna {
+  min-height: var(--toque);
+  border: 1.5px dashed var(--linea);
+  background: transparent;
+}
+.s5-todavia {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque);
+  font-size: var(--t-nota);
+}
+.s5-opcional {
+  margin: var(--e-5) 0 0;
+}
+.s5 .s5-opcional-titulo {
+  margin: 0 0 var(--e-2);
+  font-size: var(--t-nota);
+  font-weight: var(--p-rotulo);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-2);
+}
+.s5-fila-opcional {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-3);
+  min-height: 56px;
+  padding: var(--e-2) var(--e-4);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-m);
+  background: var(--hoja);
+  color: var(--tinta);
+  font-size: var(--t-cuerpo);
+  text-decoration: none;
+  margin: 0 0 var(--e-2);
+}
+.s5-fila-opcional > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.s5-fila-opcional .btn {
+  flex: none;
+  margin: 0;
+  min-height: var(--toque);
+}
+.s5-fila-boton {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.s5-opcional .calendario-sim {
+  margin: 0;
+}
+.s5-check {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: var(--e-2) 0 var(--e-2);
+  border-radius: 50%;
+  background: var(--ok);
+  color: #fff;
+}
+.s5-respondiste,
+.s5-grupo {
+  margin: 0 0 var(--e-3);
+}
+.s5-respondiste p {
+  margin: 0;
+}
+.s5-barra {
+  height: 8px;
+  margin: var(--e-2) 0 var(--e-1);
+  border-radius: 999px;
+  background: var(--relleno);
+  overflow: hidden;
+}
+.s5-barra > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--tinta);
+}
+.s5-filas {
+  margin: 0 0 var(--e-4);
+}
+.s5 .btn.s5-listo {
+  width: 100%;
+  min-height: 52px;
+  margin: 0 0 var(--e-4);
+}

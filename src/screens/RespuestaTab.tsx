@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import type { ApiError, Condiciones, EstadoPropuesta, Preferencia } from '../lib/types'
 import { useBorradorCondiciones, useMutacion } from '../lib/hooks'
-import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
+import { Aviso, Boton, Card, Cargando, Chip, ErrorCaja } from '../components/ui'
 import { Confirmacion, useVolverFoco } from '../components/Confirmacion'
 import { Icono } from '../components/Icono'
 import { vibrar } from '../lib/tacto'
@@ -10,6 +10,10 @@ import { EditorCondiciones } from '../components/Condiciones'
 import type { PestanaProps } from './tabs'
 import { AyudaRetiro } from '../componentes-nuevos/AyudaRetiro'
 import { TomarDeCalendario } from '../friccion/Calendario'
+import { RespuestasRapidas } from '../friccion/RespuestasRapidas'
+import { nombreDelPlan, opcionesRapidas } from '../friccion/respuestas'
+import type { Opcion } from '../friccion/respuestas'
+import '../estilo/seccion-s5.css'
 
 // Enmienda 15 (E-d): "¿cuál prefieres?" queda APAGADO hasta el aviso de la 0053 (antes el servidor responde
 // `disponibilidad_invalida` si llega `prefiero`).
@@ -24,22 +28,14 @@ const ESTADO_COND: Record<string, string> = {
 export default function RespuestaTab({ p, viva, soloLectura, espacio, irAPestana }: PestanaProps) {
   const s = p.mi_situacion
   return (
-    <div>
-      <div className="privado privado-linea" role="note">
-        <span className="privado-icono" aria-hidden="true">
-          <Icono n="candado" tam={16} />
-        </span>
-        <div>
-          <strong>Tus condiciones no se muestran al grupo</strong>
-          <p>Solo el servidor las ve para armar la opción. Nadie ve cuáles son; solo quien organiza ve cuántas personas respondieron.</p>
-        </div>
-      </div>
+    <div className="s5 s5-tab">
       {s.retirado ? (
         <Aviso tono="aviso" titulo="Te retiraste de esta propuesta">
           Ya no puedes participar en ella.
         </Aviso>
       ) : null}
-      {/* Primero lo que usa el motor (las condiciones); "Me interesa" es opcional y va después. */}
+      {/* Rediseño S5: primero la respuesta (lo que usa el motor), con las respuestas de un toque arriba y el editor por
+          franja plegado; "Me interesa" es opcional y público, va después; retirarse, al final. */}
       <MisCondiciones p={p} viva={viva} soloLectura={soloLectura} demo={espacio?.demo === true} irAPestana={irAPestana} />
       <Interes p={p} viva={viva} soloLectura={soloLectura} />
       <Retiro p={p} viva={viva} soloLectura={soloLectura} />
@@ -62,25 +58,12 @@ function Interes({ p, viva, soloLectura }: VivaProps) {
     }
   }
   return (
-    <section className="tarjeta">
-      <div className="tarjeta-cabeza">
-        <h2>¿Avisar que te interesa?</h2>
-        {/* Etiqueta neutra: el verde es de "confirmó" y el interés no lo es. */}
-        <span className="etiqueta">
-          {s.interesado ? (
-            <>
-              <span className="visualmente-oculto">Estado: </span>Me interesa
-            </>
-          ) : (
-            'Opcional'
-          )}
-        </span>
-      </div>
-      <p className="suave">
-        La opción se arma con tus condiciones, no con esto. Si quieres, avisa que te interesa: el grupo verá tu nombre.
-        Interés no es confirmación: no suma confirmados. Tampoco el silencio.
-      </p>
-      <div className="interes-botones">
+    <section className="s5-interes" aria-labelledby={`mi-${p.id}-interes-titulo`}>
+      <h2 id={`mi-${p.id}-interes-titulo`} className="s5-interes-titulo">
+        ¿Avisar que te interesa?
+      </h2>
+      <p className="t-nota s5-nota">Lo ve el grupo: tu nombre entre los interesados. No es una confirmación.</p>
+      <div className="s5-interes-botones">
         <Boton
           variante="secundario"
           onClick={() => void marcar(true)}
@@ -91,19 +74,11 @@ function Interes({ p, viva, soloLectura }: VivaProps) {
           {s.interesado ? <Icono n="check" tam={18} /> : null}
           Me interesa
         </Boton>
-        {/* Solo quita el nombre de la lista de interesados: no es una baja ni cambia tus condiciones. */}
-        {s.interesado ? (
-          <Boton
-            variante="secundario"
-            onClick={() => void marcar(false)}
-            ocupado={ocupado}
-            disabled={!s.puede.marcar_interes || soloLectura}
-          >
-            Quitar mi interés
-          </Boton>
-        ) : null}
+        <Boton variante="secundario" onClick={() => void marcar(false)} ocupado={ocupado} disabled={!s.puede.marcar_interes || !s.interesado || soloLectura}>
+          Hoy paso
+        </Boton>
       </div>
-      {!s.puede.marcar_interes ? <p className="suave">Ahora no puedes cambiar tu interés en esta propuesta.</p> : null}
+      {!s.puede.marcar_interes ? <p className="t-nota s5-nota">Ahora no puedes cambiar tu interés en esta propuesta.</p> : null}
       {nota ? <p role="status">{nota}</p> : null}
       {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
@@ -139,6 +114,37 @@ function MisCondiciones({
   const ofrecerPrefiero = E15_PREFIERO && p.regla === 'mas_si' && claves.length === 2 && claves.every((c) => b.draft[c] === 'si')
   const prefieroEnviar = ofrecerPrefiero ? prefiero : null
   const sucio = b.sucio || (ofrecerPrefiero && prefiero !== (cond?.prefiero ?? null))
+
+  // Rediseño S5: las respuestas de un toque son el primer nivel también acá; el editor por franja queda plegado como
+  // "Ajustar día por día" y se abre solo mientras no hay una respuesta completa (los guiones lo llenan en ese estado).
+  const rapidas = opcionesRapidas(p.franjas)
+  const [abierto, setAbierto] = useState(s.condiciones !== 'completas')
+  const elegidaId =
+    cond && rapidas
+      ? (rapidas.find((o) => claves.every((c) => (cond.disponibilidad[c] ?? 'pendiente') === (o.disponibilidad[c] ?? 'pendiente')))?.id ?? null)
+      : null
+  async function guardarRapida(o: Opcion) {
+    setGuardado(false)
+    setNotaInteres(null)
+    const r = await correr(`cond-rapida:${p.id}:${o.id}`, () => api.saveMyConditions(p.id, o.disponibilidad))
+    if (r?.ok) {
+      vibrar(10)
+      setCond(r.data.condiciones)
+      setGuardado(true)
+      setAbierto(false)
+    }
+  }
+  // Enmienda 15 (E-d): con "los dos" guardados y la regla "la que pueden más", cuál prefiero, sin abrir el editor.
+  const ofrecerPrefieroArriba =
+    E15_PREFIERO && p.regla === 'mas_si' && cond != null && claves.length === 2 && claves.every((c) => cond.disponibilidad[c] === 'si') && !sucio
+  async function preferirArriba(q: Preferencia) {
+    if (!cond) return
+    const r = await correr(`prefiero:${p.id}:${q}`, () => api.saveMyConditions(p.id, cond.disponibilidad, q))
+    if (r?.ok) {
+      vibrar(10)
+      setCond(r.data.condiciones)
+    }
+  }
 
   const cargar = useCallback(async () => {
     const r = await api.getMyConditions(p.id)
@@ -180,20 +186,69 @@ function MisCondiciones({
     }
   }
 
+  const tonoEstado = s.condiciones === 'completas' ? 'ok' : s.condiciones === 'incompletas' ? 'aviso' : 'neutro'
   return (
-    <section className="tarjeta">
-      <div className="tarjeta-cabeza">
-        <h2>Tus condiciones</h2>
-        <span className={`etiqueta ${s.condiciones === 'completas' ? 'etiqueta-ok' : s.condiciones === 'incompletas' ? 'etiqueta-pendiente' : ''}`}>
+    <Card
+      titulo="¿Cuándo puedes?"
+      id={`mi-${p.id}-cond`}
+      className="s5-card"
+      accion={
+        <Chip tono={tonoEstado}>
           <span className="visualmente-oculto">Estado de tus condiciones: </span>
           {ESTADO_COND[s.condiciones]}
-        </span>
-      </div>
+        </Chip>
+      }
+    >
+      <p className="t-nota s5-nota">Privado: nadie del grupo ve cuándo puedes; quien organiza ve solo cuántos respondieron.</p>
       {cond === null && !errorCarga ? <Cargando texto="Cargando tus condiciones…" /> : null}
       {errorCarga && cond === null ? <ErrorCaja error={errorCarga} onReintentar={cargar} /> : null}
       {cond !== null ? (
         <>
-          {/* #90 de friccion: agenda ficticia, solo en el espacio demo (en un grupo real confunde). */}
+          {rapidas ? (
+            <RespuestasRapidas
+              franjas={p.franjas}
+              onElegir={(o) => void guardarRapida(o)}
+              ocupado={ocupado}
+              deshabilitado={!s.puede.guardar_condiciones || soloLectura}
+              elegida={elegidaId}
+            />
+          ) : null}
+          {!s.puede.guardar_condiciones ? <p className="aviso-linea">{razonSinGuardar(p)}</p> : null}
+          {/* H16 (sinteticos): la frase manda a un botón que está en el Plan; se ofrece el camino en un toque. */}
+          {!s.puede.guardar_condiciones && !s.retirado && !p.plazo_vencido && s.elegible_en_version === true ? (
+            <button type="button" className="btn btn-secundario" onClick={() => irAPestana('plan')}>
+              Ir al plan
+            </button>
+          ) : null}
+          {guardado && !sucio ? <p role="status">Guardado. Solo tú ves estas condiciones.</p> : null}
+          {ofrecerPrefieroArriba ? (
+            <div className="rapida-prefiero">
+              <p className="t-nota s5-nota">
+                {cond.prefiero
+                  ? `Prefieres «${nombreDelPlan(p.franjas, cond.prefiero)}». Es privado y solo desempata si puedes en los dos.`
+                  : 'Si puedes en los dos, ¿cuál prefieres? Es privado y solo desempata; puedes dejarlo sin responder.'}
+              </p>
+              {!cond.prefiero ? (
+                <div className="rapida-prefiero-botones">
+                  {(['A', 'B'] as Preferencia[]).map((q) => (
+                    <Boton
+                      key={q}
+                      variante="secundario"
+                      onClick={() => void preferirArriba(q)}
+                      ocupado={ocupado}
+                      ocupadoTexto="Guardando…"
+                      disabled={!s.puede.guardar_condiciones || soloLectura}
+                    >
+                      Prefiero «{nombreDelPlan(p.franjas, q)}»
+                    </Boton>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+          <details className="s5-detalle" open={abierto} onToggle={(e) => setAbierto(e.currentTarget.open)}>
+            <summary>Ajustar día por día</summary>
+            <div className="s5-detalle-cuerpo">
           {demo ? (
             <TomarDeCalendario
               franjas={p.franjas}
@@ -246,13 +301,6 @@ function MisCondiciones({
           ) : (
             <p className="suave nota-seccion">"Pendiente" = aún no lo sabes (tus condiciones quedan incompletas).</p>
           )}
-          {!s.puede.guardar_condiciones ? <p className="aviso-linea">{razonSinGuardar(p)}</p> : null}
-          {/* H16 (sinteticos): la frase manda a un botón que está en el Plan; se ofrece el camino en un toque. */}
-          {!s.puede.guardar_condiciones && !s.retirado && !p.plazo_vencido && s.elegible_en_version === true ? (
-            <button type="button" className="btn btn-secundario" onClick={() => irAPestana('plan')}>
-              Ir al plan
-            </button>
-          ) : null}
           <div className={`fila-botones ${sucio ? 'barra-accion' : ''}`}>
             {/* Dentro de la barra fija, encima del botón: se ve justo cuando se decide (a 375 px la barra tapa lo de arriba).
                 En una sola línea para que la barra no crezca; la explicación va para lectores de pantalla y en la tarjeta
@@ -275,7 +323,9 @@ function MisCondiciones({
                 </span>
               </label>
             ) : null}
+            {/* Rediseño S5: el primario de esta pantalla es la respuesta de un toque; guardar día por día es secundario. */}
             <Boton
+              variante="secundario"
               onClick={guardar}
               ocupado={ocupado}
               ocupadoTexto="Guardando…"
@@ -297,8 +347,9 @@ function MisCondiciones({
               </Boton>
             ) : null}
           </div>
-          {sucio ? <p className="suave">Tienes cambios sin guardar.</p> : null}
-          {guardado && !sucio ? <p role="status">Guardado. Solo tú ves estas condiciones.</p> : null}
+              {sucio ? <p className="suave">Tienes cambios sin guardar.</p> : null}
+            </div>
+          </details>
           {notaInteres ? <p role="status">{notaInteres}</p> : null}
         </>
       ) : null}
@@ -311,7 +362,7 @@ function MisCondiciones({
           enfocar
         />
       ) : null}
-    </section>
+    </Card>
   )
 }
 
