@@ -1,7 +1,7 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: sábado 24 oct, 01:40 (build = `main` 44e6de6) (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: sábado 24 oct, 01:36 (build = `main` 44e6de6) (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
 Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 16**, de los cuales **2 ya APROBADOS** en `main` 3ace04e (O-06 y O-08, corrida 4 `f0` 20:55) y 3 por confirmar en la misma corrida (O-02, O-12b, O-13) (ninguno impide completar el recorrido canónico), el resto APROBADO.
@@ -22,7 +22,7 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 ## Observaciones (O-xx) y a quién se piden
 | Id | Veredicto | Dónde | Paso exacto | Captura | Dueño |
 |---|---|---|---|---|---|
-| O-01 | **APROBADO 01:40** (era OBSERVADO; verificado en build local de `main` 44e6de6, cabecera medida sin tocar la base: a 320 px el nombre se oculta, queda solo el avatar y el chip "Datos ficticios" entero; a 375 px con un nombre muy largo se corta con "…" y queda pegado al chip, leve) | Cabecera, todas las pantallas con sesión nombrada, **320 px** | Entrar con un nombre y abrir cualquier pantalla a 320 px: el avatar ("RO") se superpone 26 px sobre "Datos ficticios" y lo corta | `202610231931/R25-320.png` | front-juan |
+| O-01 | **APROBADO 01:35** (era OBSERVADO; verificado en build local de `main` 44e6de6, cabecera medida sin tocar la base: a 320 px el nombre se oculta, queda solo el avatar y el chip "Datos ficticios" entero; a 375 px con un nombre muy largo se corta con "…" y queda pegado al chip, leve) | Cabecera, todas las pantallas con sesión nombrada, **320 px** | Entrar con un nombre y abrir cualquier pantalla a 320 px: el avatar ("RO") se superpone 26 px sobre "Datos ficticios" y lo corta | `202610231931/R25-320.png` | front-juan |
 | O-02 | OBSERVADO | `#/unirse/<código>` en un navegador que ya es miembro | Entrar como Dani por el enlace; volver a abrir el mismo enlace: lista con todos "no disponible", "Ya no queda ningún nombre libre en la lista"; no hay "Seguir como Dani" | `202610231950/R123-375.png` | friccion — **CORREGIDO en `wip/friccion` (20:03, verificado con un miembro que entró por formulario: "Seguir como Mica"); pendiente de integrar a `main`** |
 | O-03 | OBSERVADO | Foco con teclado, portada con plan y tarjetas al pie (375) | Tab hasta "Tengo un código de invitación" o la tarjeta del plan: el foco queda bajo `.nav-inferior` (falta `scroll-padding-bottom`) | `202610231944/R80-375.png` | front-juan |
 | O-04 | OBSERVADO | Portada con nombre | "Tengo un código de invitación" (tarjeta) y "Unirme con un código" (formulario) aparecen a la vez, repetidos | `202610231944/R80-375.png` | front-juan |
