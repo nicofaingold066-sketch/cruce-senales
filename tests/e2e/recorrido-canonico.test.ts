@@ -295,8 +295,10 @@ describe.skipIf(BASE_OCUPADA)('recorrido canónico real · dos sesiones · contr
     expect(op2.propuesta.opiniones_totales).toEqual({ asi_no_puedo: 2 })
     expect(Object.keys(op2.propuesta.opiniones_totales), 'solo el total, ninguna otra clave').toEqual(['asi_no_puedo'])
     for (const n of NOMBRES) expect(JSON.stringify(op2.propuesta.opiniones_totales)).not.toContain(n)
-    expect(op2.propuesta.siguiente_accion.codigo).toBe('buscar_opcion')
-    expect(op2.propuesta.siguiente_accion.texto).toMatch(/rearmar/i)
+    // Lo que importa: el organizador PUEDE rearmar (botón disponible). El texto "puedes rearmar con lo nuevo" (código
+    // buscar_opcion) lo muestra backend solo si el organizador ya aceptó la versión; si no, gana "te_toca_aceptar".
+    expect(op2.propuesta.mi_situacion.puede.proponer_reparacion, 'con 2 opiniones el organizador puede rearmar').toBe(true)
+    console.log(`E13: siguiente_accion del organizador con 2 opiniones (sin haber aceptado): ${op2.propuesta.siguiente_accion.codigo} — "${op2.propuesta.siguiente_accion.texto}"`)
     const l2 = await mirar(luna, id)
     expect(totalAsiNoPuedo(l2)).toBeNull()
     expect(l2.mi_situacion.mi_opinion).toBe('asi_no_puedo')
