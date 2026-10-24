@@ -9,19 +9,10 @@ const yo = (extra = {}) => ({
   condiciones: 'sin_cargar', retirado: false, elegible_en_version: null, acepte_version: false, puede: {}, ...extra,
 })
 
-test('imprescindible sin condiciones en reuniendo interés: primero su disponibilidad', () => {
-  for (const condiciones of ['sin_cargar', 'incompletas']) {
-    const a = avisoParaMi({ estado: 'reuniendo_interes', imprescindible: vale, mi_situacion: yo({ condiciones }) })
-    assert.equal(a?.clave, 'primero_tu_disponibilidad')
-    assert.equal(a?.irARespuesta, true)
+test('imprescindible sin condiciones en reuniendo interés: nada (lo cubren el servidor y FaltaTuRespuesta)', () => {
+  for (const condiciones of ['sin_cargar', 'incompletas', 'completas']) {
+    assert.equal(avisoParaMi({ estado: 'reuniendo_interes', imprescindible: vale, mi_situacion: yo({ condiciones }) }), null)
   }
-})
-
-test('imprescindible con condiciones completas: sin aviso', () => {
-  assert.equal(avisoParaMi({ estado: 'reuniendo_interes', imprescindible: vale, mi_situacion: yo({ condiciones: 'completas' }) }), null)
-})
-
-test('otra persona sin condiciones no recibe el aviso del imprescindible', () => {
   const ana = yo({ miembro_id: 'm-ana', nombre: 'Ana', es_organizador: false })
   assert.equal(avisoParaMi({ estado: 'reuniendo_interes', imprescindible: vale, mi_situacion: ana }), null)
 })

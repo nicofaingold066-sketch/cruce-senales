@@ -1,6 +1,5 @@
 // Aviso personal arriba de la propuesta (ux-flujo, recorrido real #98). Lógica pura, sin React.
 // Cubre dudas vistas en pantalla y los textos de psico (docs/psicologia-grupo.md §8.1, §8.6):
-// - El organizador que no puede faltar busca opción antes de responder y recibe "Sin opción compatible".
 // - Quien no es elegible en la versión ve "Grupo confirmado" y "4 se juntan" sin enterarse de que es sin él/ella.
 // - Quien se baja: "Gracias por avisar. No hace falta contar por qué." (lo que daña es mentir sobre el motivo, F1).
 // - Plan en revisión: sin nombre ni motivo de quien se bajó; al organizador, dos salidas y ninguna culpa.
@@ -29,7 +28,6 @@ export interface ContextoAviso {
 
 export interface AvisoParaMi {
   clave:
-    | 'primero_tu_disponibilidad'
     | 'version_sin_ti'
     | 'te_retiraste'
     | 'cambio_el_plan'
@@ -45,7 +43,7 @@ export interface AvisoParaMi {
 }
 
 export function avisoParaMi(
-  { estado, imprescindible, mi_situacion: yo, opcion, minimo }: DatosAvisoParaMi,
+  { estado, mi_situacion: yo, opcion, minimo }: DatosAvisoParaMi,
   { plazoTexto, horasAlCierre }: ContextoAviso = {},
 ): AvisoParaMi | null {
   if (yo.retirado) {
@@ -76,15 +74,8 @@ export function avisoParaMi(
           irARespuesta: false,
         }
   }
-  if (estado === 'reuniendo_interes' && imprescindible.miembro_id === yo.miembro_id && yo.condiciones !== 'completas') {
-    return {
-      clave: 'primero_tu_disponibilidad',
-      tono: 'aviso',
-      titulo: 'Primero marca tu disponibilidad',
-      texto: 'Eres quien no puede faltar: sin tu respuesta no hay opción posible.',
-      irARespuesta: true,
-    }
-  }
+  // "Primero marca tu disponibilidad" (imprescindible sin condiciones en `reuniendo_interes`) ya no va acá: lo dicen la
+  // próxima acción del servidor (enmienda 12 (a)) y `FaltaTuRespuesta` de friccion, con el acceso a responder en un toque.
   if ((estado === 'esperando_compromisos' || estado === 'grupo_confirmado') && yo.elegible_en_version === false) {
     // Los elegibles se fijan al publicar la versión (0002_utilidades.sql:262; accept_version los revisa en
     // 0005_api_motor.sql:135): completar ahora no te suma a ESTA versión, solo cuenta si el plan se rearma.

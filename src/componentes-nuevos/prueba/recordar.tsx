@@ -34,7 +34,6 @@ function Banco() {
   return (
     <div className="vista">
       <div className="hoja">
-        <AvisoParaMi p={{ estado: 'reuniendo_interes', imprescindible: vale, mi_situacion: yo({}) }} irARespuesta={() => {}} />
         <AvisoParaMi
           p={{ estado: 'grupo_confirmado', imprescindible: vale, mi_situacion: yo({ miembro_id: 'm-coni', condiciones: 'completas', elegible_en_version: false }) }}
         />
