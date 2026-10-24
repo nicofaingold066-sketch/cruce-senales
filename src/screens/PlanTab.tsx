@@ -11,11 +11,13 @@ import { Resaltado } from '../components/Resaltado'
 import { descargarCalendario, urlWhatsApp } from '../lib/compartir'
 import { vibrar } from '../lib/tacto'
 import { AvisoParaMi } from '../componentes-nuevos/AvisoParaMi'
+import { avisoParaMi } from '../componentes-nuevos/avisoPersonal'
 import { BuscarLugar } from '../componentes-nuevos/BuscarLugar'
 import { RearmarConLoNuevo } from '../componentes-nuevos/RearmarConLoNuevo'
 import { RecordarFaltan } from '../componentes-nuevos/RecordarFaltan'
 import { AsiNoPuedo } from '../friccion/AsiNoPuedo'
 import { FaltaTuRespuesta } from '../friccion/FaltaTuRespuesta'
+import { InvitacionAgente } from '../agente/InvitacionAgente'
 
 export default function PlanTab({ p, viva, soloLectura, irAPestana, espacio }: PestanaProps) {
   const codigo = espacio?.codigo_invitacion ?? null
@@ -30,13 +32,34 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana, espacio }: P
     (p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado') &&
     p.ultima_evaluacion?.resultado === 'reparacion_publicada' &&
     p.ultima_evaluacion.version === p.opcion?.version
+  // "Esta versión no te incluye" con la disponibilidad completa diría "con lo que marcaste, esta fecha no te queda", un
+  // motivo que puede ser falso: la elegibilidad es una foto al publicar (0002_utilidades.sql:262) y se pudo completar con
+  // "Sí" después (7930e66). En ese caso el aviso va igual arriba, con un texto cierto y sin motivo (avisoSinTi). Con el
+  // plazo vencido, "si la completas, cuenta si el plan se rearma" ya no es cierto: lo dice solo razonNoAceptar.
+  // Pedido a ux-flujo: el texto de avisoPersonal.ts para este caso; cuando cambie, este reemplazo sobra.
+  const sinTi = avisoParaMi(p)?.clave === 'version_sin_ti'
+  const sinTiSinAviso = sinTi && (p.mi_situacion.condiciones === 'completas' || p.plazo_vencido)
+  const avisoSinTi = sinTi && p.mi_situacion.condiciones === 'completas' && !p.plazo_vencido
+  // El énfasis sigue al servidor: "Buscar opción compatible" es la acción principal solo cuando su próxima acción es
+  // `buscar_opcion` (ya respondieron al menos el mínimo) o para volver a buscar después de "Sin opción". Un toque temprano
+  // deja "Sin opción compatible" a la vista de todo el grupo (D-3 de la revisión UX).
+  const buscarSecundario = p.estado === 'reuniendo_interes' && p.siguiente_accion.codigo !== 'buscar_opcion' && !sinOpcion
 
   return (
     <div>
-      <AvisoParaMi p={p} servidorAhora={viva.servidorAhora} irARespuesta={() => irAPestana('respuesta')} />
+      {sinTiSinAviso ? null : (
+        <AvisoParaMi p={p} servidorAhora={viva.servidorAhora} irARespuesta={() => irAPestana('respuesta')} />
+      )}
+      {avisoSinTi ? (
+        <Aviso tono="info" titulo="Esta versión no te incluye">
+          Se armó sin ti. No tienes que hacer nada: si el plan se rearma, cuenta lo que marcaste.
+        </Aviso>
+      ) : null}
+      <InvitacionAgente situacion={p.mi_situacion} onResponder={() => irAPestana('respuesta')} />
 
       {p.estado === 'cancelado' || p.estado === 'expirado' ? (
-        <Aviso tono="aviso" titulo={p.estado_etiqueta}>
+        // O-09 (rincones): "Cancelado"/"Expirado" ya está en el encabezado del plan; el aviso no lo repite.
+        <Aviso tono="aviso">
           {p.siguiente_accion.texto}
         </Aviso>
       ) : null}
@@ -64,7 +87,9 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana, espacio }: P
       {/* Enmienda 13 (b): solo para quien organiza, con 2 o más "así no puedo"; se oculta solo si no corresponde. */}
       {p.estado === 'esperando_compromisos' && organiza ? <RearmarConLoNuevo p={p} viva={viva} soloLectura={soloLectura} /> : null}
 
-      {p.estado === 'esperando_compromisos' && organiza && codigo && p.opcion ? (
+      {/* Solo si el servidor dice que queda lugar para otros: con el último cupo reservado al anfitrión, "si vas,
+          confírmala" invitaría a todo el grupo a algo que el servidor rechaza. */}
+      {p.estado === 'esperando_compromisos' && organiza && codigo && p.opcion && p.opcion.cupos.libres_para_otros > 0 ? (
         <section className="tarjeta" aria-labelledby="avisar-version">
           <h2 id="avisar-version">Avisar al grupo</h2>
           <RecordarFaltan
@@ -94,7 +119,7 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana, espacio }: P
       ) : null}
 
       {p.estado === 'reuniendo_interes' ? (
-        <BuscarOpcion p={p} viva={viva} soloLectura={soloLectura} sinOpcion={sinOpcion} />
+        <BuscarOpcion p={p} viva={viva} soloLectura={soloLectura} sinOpcion={sinOpcion} secundaria={buscarSecundario} />
       ) : null}
 
       {p.bajas.length > 0 ? <Bajas p={p} /> : null}
@@ -171,8 +196,14 @@ function razonNoAceptar(p: EstadoPropuesta): string {
   const v = p.opcion?.version
   if (s.retirado) return 'Te retiraste de esta propuesta y ya no puedes participar en ella.'
   if (s.acepte_version) return `Ya confirmaste la versión ${v}. Tu confirmación vale solo para esa versión.`
+  if (s.elegible_en_version === false) {
+    // Va antes del plazo: un grupo confirmado no vence, pero `plazo_vencido` sí, y solo con "El plazo cerró" no se
+    // entera de que la versión es sin ella. Con el plazo vencido AvisoParaMi no se dibuja (sinTiSinAviso): esta es la
+    // única línea, sin dar motivo ni prometer un rearme que ya no puede pasar (7930e66).
+    if (p.plazo_vencido) return 'Esta versión se armó sin ti y el plazo de aceptación ya cerró.'
+    return 'No formas parte de las personas que pueden aceptar esta versión.'
+  }
   if (p.plazo_vencido) return 'El plazo de aceptación ya cerró.'
-  if (s.elegible_en_version === false) return 'No formas parte de las personas que pueden aceptar esta versión.'
   if (s.motivo_aceptar === 'cupo_reservado') {
     return 'El último cupo está reservado para quien no puede faltar. Si se libera otro, podrás confirmar.'
   }
@@ -197,6 +228,8 @@ function OpcionVigente({
   const confirmado = p.estado === 'grupo_confirmado'
   const sobreMinimo = o.cupos.confirmados > o.cupos.minimo
   const cuenta = cuentaConfirmados(o.cupos.confirmados, o.cupos.minimo)
+  // #79 (sinteticos, ux-flujo): si arriba ya está "Tu confirmación solo vale si llegan N", no se apila otra nota bajo el botón.
+  const avisoArriba = avisoParaMi(p)?.clave === 'solo_vale_si_llegan'
 
   async function aceptar() {
     // Siempre se envía la versión que la persona está viendo, nunca una calculada.
@@ -229,7 +262,7 @@ function OpcionVigente({
         />
         <div className="progreso-leyenda" aria-hidden="true">
           <span>
-            <strong>{o.cupos.confirmados}</strong> confirmaron
+            <strong>{o.cupos.confirmados}</strong> {o.cupos.confirmados === 1 ? 'confirmó' : 'confirmaron'}
           </span>
           <span>
             mín. {o.cupos.minimo} · máx. {o.cupos.maximo} · {o.cupos.disponibles} {o.cupos.disponibles === 1 ? 'libre' : 'libres'}
@@ -259,7 +292,7 @@ function OpcionVigente({
         {/* Enmienda 7 (E7.2): solo el organizador recibe este conteo; con null no se muestra. */}
         {o.cupos.pendientes != null ? (
           <div className="cifra">
-            <dt>Faltan por responder</dt>
+            <dt>Faltan por confirmar</dt>
             <dd>
               <strong>{o.cupos.pendientes}</strong>
               <span className="visualmente-oculto"> {o.cupos.pendientes === 1 ? 'persona' : 'personas'}</span>
@@ -307,7 +340,7 @@ function OpcionVigente({
             <p role="status" className="suave">
               Enviando tu confirmación. Todavía no está confirmada hasta que el servidor responda.
             </p>
-          ) : (
+          ) : avisoArriba ? null : (
             <p className="suave">
               Tu confirmación vale solo para la versión {o.version}. Si el plan cambia, tendrás que confirmar de nuevo.
             </p>
@@ -320,7 +353,10 @@ function OpcionVigente({
         </p>
       )}
       <AsiNoPuedo p={p} viva={viva} soloLectura={soloLectura} irAPestana={irAPestana} />
-      {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} enfocar /> : null}
+      {/* Si el servidor ya muestra la confirmación hecha, la duda de "pudo haberse registrado o no" quedó resuelta (E-1). */}
+      {error && error.codigo !== 'sin_alternativa' && !(error.resultadoIncierto && p.mi_situacion.acepte_version) ? (
+        <ErrorCaja error={error} enfocar />
+      ) : null}
     </section>
   )
 }
@@ -362,7 +398,14 @@ function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
       </h2>
       {ant ? (
         <p className="cv-resumen">
-          {diaDe(ant.inicio.local)} {hora(ant.inicio.local)} → <strong>{diaDe(o.franja.inicio.local)} {hora(o.franja.inicio.local)}</strong>
+          {/* H8 (sinteticos): con la misma franja, "sáb 20:00 → sáb 20:00" parecía un error; lo que cambió es quién puede ir. */}
+          {ant.inicio.local === o.franja.inicio.local && ant.fin.local === o.franja.fin.local ? (
+            <>Misma fecha y hora; cambió quién puede ir.</>
+          ) : (
+            <>
+              {diaDe(ant.inicio.local)} {hora(ant.inicio.local)} → <strong>{diaDe(o.franja.inicio.local)} {hora(o.franja.inicio.local)}</strong>
+            </>
+          )}
         </p>
       ) : null}
       <div className="cv-grilla">
@@ -448,8 +491,11 @@ function AlternativaOrganizador({ p, viva, soloLectura, sinAlternativa }: VivaPr
           </Boton>
           <p className="suave">La nueva versión empieza con cero aceptaciones.</p>
         </div>
-      ) : (
-        <p className="suave">El organizador ({p.organizador.nombre}) debe buscar una alternativa. Mientras tanto puedes actualizar tus condiciones en "Mi respuesta".</p>
+      ) : p.mi_situacion.retirado ? null : ( // E-7: a quien se retiró no se le pide nada (ya lo dice AvisoParaMi arriba).
+        <p className="suave">
+          El organizador ({p.organizador.nombre}) debe buscar una alternativa.
+          {p.mi_situacion.puede.guardar_condiciones ? ' Mientras tanto puedes actualizar tus condiciones en "Mi respuesta".' : ''}
+        </p>
       )}
       {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} enfocar /> : null}
     </section>
@@ -501,29 +547,31 @@ function HistorialResumido({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: 
 
 // ------------------------------------------------------------------ fase de interés y evaluación
 
+// El motor arma la opción con las respuestas (condiciones completas), no con el interés: la tarjeta pone primero
+// lo que cuenta y deja "Me interesa" como lo que es, una señal opcional que ve el grupo.
 function ReuniendoInteres({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: PestanaProps['irAPestana'] }) {
   return (
     <section className="tarjeta">
-      <h2>Interés del grupo</h2>
-      <div className="stats">
-        <div className="stat">
-          <span className="stat-etiqueta">Con interés</span>
-          <span className="stat-valor">{p.interesados.cantidad}</span>
-        </div>
-        <div className="stat">
-          <span className="stat-etiqueta">Confirmados</span>
-          <span className="stat-valor">{p.confirmados}</span>
-        </div>
-        {p.personas_con_condiciones != null ? (
+      <h2>Respuestas del grupo</h2>
+      {/* Las cifras, solo para quien organiza (E7.2): respuestas frente al mínimo. "Con interés" no va como cifra:
+          al lado del mínimo se leía como avance hacia él, y el motor no lo usa (los nombres siguen abajo). */}
+      {p.personas_con_condiciones != null ? (
+        <div className="stats">
           <div className="stat">
             <span className="stat-etiqueta">Con condiciones</span>
             <span className="stat-valor">{p.personas_con_condiciones}</span>
           </div>
-        ) : null}
-      </div>
+          <div className="stat">
+            <span className="stat-etiqueta">Mínimo</span>
+            <span className="stat-valor">{p.minimo}</span>
+          </div>
+        </div>
+      ) : null}
       <p className="suave">
-        Marcar "Me interesa" no es una confirmación.
-        {p.personas_con_condiciones != null ? ' Las condiciones de cada persona son privadas: solo se cuentan.' : ''}
+        {p.personas_con_condiciones != null
+          ? 'La opción sale de lo que cada persona marca en privado, Sí o No en cada franja: aquí solo se cuenta quién respondió.'
+          : `La opción sale de lo que cada uno marca en privado, Sí o No en cada franja. Hacen falta al menos ${p.minimo} que puedan en el mismo horario.`}{' '}
+        "Me interesa" es opcional: lo ve el grupo y no es una confirmación.
       </p>
       {p.interesados.miembros.length > 0 ? (
         <ul className="chips-personas" aria-label="Marcaron Me interesa">
@@ -556,7 +604,7 @@ function AbrirPropuesta({ p, viva, soloLectura }: VivaProps) {
   return (
     <section className="tarjeta">
       <h2>Borrador</h2>
-      <p>Nadie más puede marcar interés ni cargar condiciones hasta que la propuesta se abra.</p>
+      <p>Nadie más puede responder cuándo puede hasta que la propuesta se abra.</p>
       {p.mi_situacion.puede.abrir ? (
         <div className="barra-accion">
           <Boton onClick={() => void correr(`abrir:${p.id}`, () => api.openProposal(p.id))} ocupado={ocupado} ocupadoTexto="Abriendo…" disabled={soloLectura}>
@@ -571,7 +619,7 @@ function AbrirPropuesta({ p, viva, soloLectura }: VivaProps) {
   )
 }
 
-function BuscarOpcion({ p, viva, soloLectura, sinOpcion }: VivaProps & { sinOpcion: boolean }) {
+function BuscarOpcion({ p, viva, soloLectura, sinOpcion, secundaria }: VivaProps & { sinOpcion: boolean; secundaria: boolean }) {
   const { ocupado, error, correr } = useMutacion(viva)
   if (!p.mi_situacion.puede.evaluar && !sinOpcion) return null
   async function evaluar() {
@@ -592,8 +640,22 @@ function BuscarOpcion({ p, viva, soloLectura, sinOpcion }: VivaProps & { sinOpci
         </p>
       )}
       {p.mi_situacion.puede.evaluar ? (
+        <p className="suave">
+          {secundaria && p.personas_con_condiciones != null && p.personas_con_condiciones < p.minimo
+            ? `Con menos de ${p.minimo} personas que respondieron no puede salir una opción: conviene esperar. `
+            : ''}
+          Quien todavía no respondió no entra en la versión que se publique; contaría solo si el plan se rearma.
+        </p>
+      ) : null}
+      {p.mi_situacion.puede.evaluar ? (
         <div className="barra-accion">
-          <Boton onClick={evaluar} ocupado={ocupado} ocupadoTexto="Buscando…" disabled={soloLectura}>
+          <Boton
+            variante={secundaria ? 'secundario' : 'primario'}
+            onClick={evaluar}
+            ocupado={ocupado}
+            ocupadoTexto="Buscando…"
+            disabled={soloLectura}
+          >
             {error?.reintentable ? 'Reintentar búsqueda' : sinOpcion ? 'Volver a buscar opción' : 'Buscar opción compatible'}
           </Boton>
         </div>

@@ -17,7 +17,10 @@ import type {
   Proposito,
   PanelSimulacion,
   PreferenciasPropias,
+  Preferencia,
   PropuestaResumen,
+  ReglaMotor,
+  RondaHoras,
   TipoEspacio,
 } from './types'
 
@@ -291,6 +294,8 @@ export interface FranjaEntrada {
   /** HoraLocal "YYYY-MM-DDTHH:MM" en America/Santiago, sin desfase. */
   inicio: string
   fin: string
+  /** Enmienda 15 (E-d, 0053): nombre corto del plan (hasta 40 caracteres); se manda solo si viene. */
+  etiqueta?: string
 }
 
 export interface CrearPropuestaParams {
@@ -304,6 +309,10 @@ export interface CrearPropuestaParams {
   intentoId: string
   /** Enmienda 14: actividad del catálogo (se manda solo si viene). En un grupo con propósito, de su familia. */
   actividad?: ActividadClave | null
+  /** Enmienda 15: regla del motor ('mas_si' recién con la 0053); se manda solo si viene. */
+  regla?: ReglaMotor
+  /** Enmienda 15 (E-c): ronda de opiniones de 2, 12 o 24 h al publicar cada versión; se manda solo si viene. */
+  rondaHoras?: RondaHoras
 }
 
 // ---- Operaciones ----
@@ -362,6 +371,8 @@ export const api = {
         p_zona_horaria: 'America/Santiago',
         p_intento_id: p.intentoId,
         ...(p.actividad ? { p_actividad: p.actividad } : {}),
+        ...(p.regla ? { p_regla: p.regla } : {}),
+        ...(p.rondaHoras ? { p_ronda_horas: p.rondaHoras } : {}),
       },
       true,
     ),
@@ -377,10 +388,12 @@ export const api = {
     ),
   markInterest: (propuestaId: string, interesado: boolean) =>
     llamar<InteresOk>('mark_interest', { p_propuesta_id: propuestaId, p_interesado: interesado }, true),
-  saveMyConditions: (propuestaId: string, disponibilidad: Disponibilidad) =>
+  // Enmienda 15 (E-d, 0053): `prefiero` opcional va dentro de p_disponibilidad; se manda solo si viene. Antes de
+  // la 0053 el servidor lo rechaza (disponibilidad_invalida): no mandarlo hasta el aviso.
+  saveMyConditions: (propuestaId: string, disponibilidad: Disponibilidad, prefiero?: Preferencia | null) =>
     llamar<GuardarCondicionesOk>(
       'save_my_conditions',
-      { p_propuesta_id: propuestaId, p_disponibilidad: disponibilidad },
+      { p_propuesta_id: propuestaId, p_disponibilidad: prefiero ? { ...disponibilidad, prefiero } : disponibilidad },
       true,
     ),
   getMyConditions: (propuestaId: string) =>
@@ -409,10 +422,11 @@ export const api = {
       { p_propuesta_id: propuestaId, p_miembro_id: miembroId, p_interesado: interesado },
       true,
     ),
-  simulateSaveConditions: (propuestaId: string, miembroId: string, disponibilidad: Disponibilidad) =>
+  simulateSaveConditions: (propuestaId: string, miembroId: string, disponibilidad: Disponibilidad, prefiero?: Preferencia | null) =>
     llamar<GuardarCondicionesOk>(
       'simulate_save_conditions',
-      { p_propuesta_id: propuestaId, p_miembro_id: miembroId, p_disponibilidad: disponibilidad },
+      { p_propuesta_id: propuestaId, p_miembro_id: miembroId,
+        p_disponibilidad: prefiero ? { ...disponibilidad, prefiero } : disponibilidad },
       true,
     ),
   simulateAccept: (propuestaId: string, miembroId: string, version: number, intentoId: string) =>

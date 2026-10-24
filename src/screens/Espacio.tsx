@@ -9,13 +9,25 @@ import { Avatar, AvatarPila, Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } 
 import { Icono } from '../components/Icono'
 import { PlanVivo } from '../components/PlanVivo'
 import { Tablero } from '../components/Tablero'
+import { AvisoNovedades } from '../components/Novedades'
 import { enlaceInvitacion, textoInvitacion, urlWhatsApp } from '../lib/compartir'
 // El panel del agente va en su propia parte del paquete (mejora #14): se descarga solo al abrir el bloque.
 const AgentePanel = lazy(() => import('../agente/AgentePanel').then((m) => ({ default: m.AgentePanel })))
 
 export default function Espacio({ espacioId }: { espacioId: string }) {
   const { soloLectura } = useShell()
-  const [agenteAbierto, setAgenteAbierto] = useState(false)
+  // "Contar mis gustos y presupuesto" (Responder, de friccion) deja esta marca para abrir "Mis preferencias".
+  const [desdeResponder] = useState(() => {
+    try {
+      const marca = sessionStorage.getItem('cruxe:abrir-preferencias') === '1'
+      sessionStorage.removeItem('cruxe:abrir-preferencias')
+      return marca
+    } catch {
+      return false
+    }
+  })
+  const [agenteAbierto, setAgenteAbierto] = useState(desdeResponder)
+  const agenteRef = useRef<HTMLDetailsElement>(null)
   const [espacio, setEspacio] = useState<EspacioT | null>(null)
   const [propuestas, setPropuestas] = useState<PropuestaResumen[] | null>(null)
   const [errorEspacio, setErrorEspacio] = useState<ApiError | null>(null)
@@ -24,6 +36,12 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
 
   const yo = espacio?.miembros.find((m) => m.es_yo) ?? null
   useIdentidad(espacio?.nombre ?? null, yo?.nombre ?? null, espacio ? (espacio.mi_rol === 'organizador' ? 'organizador' : 'miembro') : null)
+
+  // B-5: llegando desde "Contar mis gustos y presupuesto", "Mis preferencias" queda abierto y a la vista.
+  const conEspacio = espacio != null
+  useEffect(() => {
+    if (desdeResponder && conEspacio) agenteRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+  }, [desdeResponder, conEspacio])
 
   // U1 (revisión de Codex): las cargas se solapan (sondeo, volver a la pestaña, refresco tras reiniciar).
   // Se aplica solo la respuesta más nueva de cada carga, una lista pedida en otra generación del espacio
@@ -123,6 +141,10 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
   const esOrganizador = espacio.mi_rol === 'organizador'
 
   const yoEnEspacio = espacio.miembros.find((m) => m.es_yo)
+  // Enmienda 9: get_space incluye a quienes el organizador anotó y todavía no entraron (`pendiente`).
+  const porEntrar = espacio.miembros.filter((m) => m.pendiente)
+  const dentro = espacio.miembros.length - porEntrar.length
+  const organizador = espacio.miembros.find((m) => m.rol === 'organizador')
 
   return (
     <div className="vista">
@@ -136,6 +158,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
           <AvatarPila personas={espacio.miembros} max={6} />
           <span className="suave">
             {espacio.miembros.length} {espacio.miembros.length === 1 ? 'persona' : 'personas'}
+            {porEntrar.length > 0 ? ` (${porEntrar.length} por entrar)` : ''}
             {yoEnEspacio ? ` · tú: ${esOrganizador ? 'organizador' : 'miembro'}` : ''}
           </span>
         </div>
@@ -149,13 +172,15 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
       </section>
 
       <div className="hoja">
+        <AvisoNovedades />
         {aviso ? (
           <Aviso tono="ok" accion={<button type="button" className="btn btn-secundario btn-chico" onClick={() => setAviso(null)}>Entendido</button>}>
             {aviso}
           </Aviso>
         ) : null}
 
-        {!espacio.demo && espacio.miembros.length < 3 ? (
+        {/* Se cuenta solo a quien ya entró: los anotados "por entrar" son justamente a quienes falta invitar (C-8). */}
+        {!espacio.demo && (dentro < 3 || porEntrar.length > 0) ? (
           <section className="tarjeta invitar-grupo" aria-labelledby="invitar-titulo">
             <span className="agente-icono" aria-hidden="true">
               <Icono n="invitar" tam={22} />
@@ -163,9 +188,18 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
             <div>
               <h2 id="invitar-titulo">Invita a tu grupo</h2>
               <p className="suave">
-                {espacio.miembros.length === 1 ? 'Por ahora estás solo' : `Por ahora son ${espacio.miembros.length}`} en «{espacio.nombre}».
-                Manda el enlace: cada persona entra desde su teléfono con su nombre, sin crear cuenta.
+                {dentro <= 1 ? 'Por ahora estás solo' : `Por ahora entraron ${dentro}`} en «{espacio.nombre}».
+                {porEntrar.length > 0
+                  ? ` Faltan por entrar: ${porEntrar.map((m) => m.nombre).join(', ')}. Manda el enlace: cada uno toca su nombre y entra desde su teléfono, sin crear cuenta.`
+                  : ' Manda el enlace: cada persona entra desde su teléfono con su nombre, sin crear cuenta.'}
               </p>
+              {/* Grupo creado sin la lista: al abrir el enlace no hay nombre para tocar y cada uno escribe el suyo. Agregar
+                  integrantes después necesita una operación nueva del servidor (pedido a backend). */}
+              {esOrganizador && porEntrar.length === 0 && dentro <= 1 ? (
+                <p className="suave">
+                  Como el grupo se creó sin la lista, al abrir el enlace cada uno escribe su nombre en «No estoy en la lista».
+                </p>
+              ) : null}
               <a
                 className="btn btn-primario btn-chico"
                 href={urlWhatsApp(textoInvitacion(espacio.nombre, espacio.codigo_invitacion))}
@@ -189,15 +223,28 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
           ) : null}
           {propuestas === null && !errorLista ? <Cargando texto="Cargando propuestas…" esqueleto /> : null}
           {propuestas && propuestas.length === 0 ? (
-            <Vacio
-              titulo="Todavía no hay propuestas"
-              texto="Crea la primera: eliges las franjas, los cupos y la persona imprescindible."
-              accion={
-                <a className="btn btn-primario" href={rutas.nueva(espacioId)} aria-disabled={soloLectura}>
-                  <Icono n="mas" tam={20} /> Crear propuesta
-                </a>
-              }
-            />
+            esOrganizador ? (
+              <Vacio
+                titulo="Todavía no hay propuestas"
+                texto="Crea la primera: eliges las franjas, los cupos y la persona imprescindible."
+                accion={
+                  <a className="btn btn-primario" href={rutas.nueva(espacioId)} aria-disabled={soloLectura}>
+                    <Icono n="mas" tam={20} /> Crear propuesta
+                  </a>
+                }
+              />
+            ) : (
+              // Quien entra por la invitación antes de que exista un plan no tiene nada que responder todavía (C-3).
+              <Vacio
+                titulo="Todavía no hay propuestas"
+                texto={`${organizador ? organizador.nombre : 'Quien organiza'} todavía no armó el plan. Cuando lo haga, abre de nuevo el mismo enlace: te lleva directo a marcar cuándo puedes.`}
+                accion={
+                  <a className="btn btn-secundario" href={rutas.nueva(espacioId)} aria-disabled={soloLectura}>
+                    <Icono n="mas" tam={20} /> Proponer algo yo
+                  </a>
+                }
+              />
+            )
           ) : null}
           {propuestas && propuestas.length > 0 ? (
             <>
@@ -239,7 +286,13 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
         </section>
 
         {/* Agente del círculo (enmienda 4): plegado para no estorbar el recorrido de la demo. */}
-        <details className="tarjeta plegable agente-plegable" onToggle={(e) => setAgenteAbierto(e.currentTarget.open)}>
+        <details
+          ref={agenteRef}
+          id="mis-preferencias"
+          className="tarjeta plegable agente-plegable"
+          open={agenteAbierto}
+          onToggle={(e) => setAgenteAbierto(e.currentTarget.open)}
+        >
           <summary>
             <span className="agente-icono" aria-hidden="true">
               <Icono n="chispa" tam={22} />
@@ -274,14 +327,15 @@ function CopiarCodigo({ codigo, espacioNombre }: { codigo: string; espacioNombre
     const t = window.setTimeout(() => setCopiado(null), 1800)
     return () => window.clearTimeout(t)
   }, [copiado])
+  // Compartir y Copiar mandan el mismo texto que WhatsApp: el nombre del grupo, qué hacer y el enlace (C-9).
+  const texto = textoInvitacion(espacioNombre, codigo)
   async function compartir() {
-    const url = enlaceInvitacion(codigo)
     try {
       if (navigator.share) {
-        await navigator.share({ title: 'CRUXE', text: 'Súmate al plan en CRUXE', url })
+        await navigator.share({ title: 'CRUXE', text: texto })
         return
       }
-      await navigator.clipboard.writeText(url)
+      await navigator.clipboard.writeText(enlaceInvitacion(codigo))
       setCopiado('enlace')
     } catch {
       // Cancelar el menú de compartir no es un error para la persona.
@@ -289,7 +343,7 @@ function CopiarCodigo({ codigo, espacioNombre }: { codigo: string; espacioNombre
   }
   async function copiar() {
     try {
-      await navigator.clipboard.writeText(codigo)
+      await navigator.clipboard.writeText(texto)
       setCopiado('si')
     } catch {
       setCopiado('no')
@@ -306,7 +360,7 @@ function CopiarCodigo({ codigo, espacioNombre }: { codigo: string; espacioNombre
           type="button"
           className={`btn btn-claro btn-chico ${copiado === 'si' ? 'btn-hecho' : ''}`}
           onClick={copiar}
-          aria-label={copiado === 'si' ? 'Código copiado' : 'Copiar código'}
+          aria-label={copiado === 'si' ? 'Invitación copiada' : 'Copiar invitación'}
         >
           {copiado === 'si' ? (
             <>
@@ -328,7 +382,7 @@ function CopiarCodigo({ codigo, espacioNombre }: { codigo: string; espacioNombre
           <Icono n="whatsapp" tam={18} /> WhatsApp
         </a>
       </div>
-      {copiado === 'si' ? <span role="status">Copiado.</span> : null}
+      {copiado === 'si' ? <span role="status">Invitación copiada: pégala en el chat del grupo.</span> : null}
       {copiado === 'no' ? <span role="status">No se pudo copiar; selecciónalo a mano.</span> : null}
       {copiado === 'enlace' ? <span role="status">Enlace copiado: ábrelo en otro teléfono.</span> : null}
     </>

@@ -2,6 +2,7 @@
 // Datos ficticios: crea con preparar-grupo.mjs grupos nuevos (Orga + Ana y Beto). No borra nada.
 import { execFileSync } from 'node:child_process'
 import { createRequire } from 'node:module'
+import { fileURLToPath } from 'node:url'
 import { baseLibre } from './base-libre.mjs'
 baseLibre()
 const require = createRequire(import.meta.url)
@@ -9,7 +10,7 @@ let pw
 try { pw = require('playwright') } catch {
   pw = require(process.env.CRUXE_PLAYWRIGHT_DIR || '/Users/macair/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright')
 }
-const DIR = new URL('.', import.meta.url).pathname
+const DIR = fileURLToPath(new URL('.', import.meta.url))
 const BASE = (process.argv[2] || 'http://localhost:4185').replace(/\/+$/, '')
 const preparar = (env = {}) => JSON.parse(execFileSync('node', [`${DIR}preparar-grupo.mjs`], { encoding: 'utf8', env: { ...process.env, ...env } }))
 const browser = await pw.chromium.launch({ headless: true, executablePath: process.env.CRUXE_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' })
