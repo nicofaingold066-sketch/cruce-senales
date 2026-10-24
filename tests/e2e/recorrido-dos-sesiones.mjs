@@ -276,11 +276,11 @@ try {
   verificar('Navegador compartido: avisa en vez de entrar como Tomi',
     await T.getByText(/Este navegador ya está en este espacio como Tomi|Ya estás en este grupo como Tomi/).first().waitFor({ timeout: 20000 }).then(() => true, () => false))
   await captura(T, 'compartido-aviso')
-  { const otra = boton(T, 'Entrar como otra persona'); if (await otra.isVisible().catch(() => false)) await otra.click() }
+  { const otra = boton(T, 'Entrar como otra persona'); if (await otra.waitFor({ timeout: 10000 }).then(() => true, () => false)) await otra.click() }
   // Mejora #47 (arreglo 5204837): la sesión de Tomi no se revoca; queda guardada para volver a ella.
   verificar('Confirmación: la sesión de Tomi queda guardada en este navegador',
     await T.getByText(/queda guardada en este navegador|entra con una sesión nueva|Seguir como Tomi/).first().waitFor({ timeout: 10000 }).then(() => true, () => false))
-  { const si = boton(T, 'Sí, entrar como Pepe'); if (await si.waitFor({ timeout: 3000 }).then(() => true, () => false)) await si.click() }
+  { const si = boton(T, 'Sí, entrar como Pepe'); if (await si.waitFor({ timeout: 10000 }).then(() => true, () => false)) await si.click() }
   // S5: con un plan abierto, Pepe cae en ¿Cuándo puedes?; el grupo se mira con su URL (la sesión ya es la de Pepe).
   await T.locator('h1').filter({ hasText: /¿Cuándo puedes\?|Los del (asado|finde)/ }).first().waitFor({ timeout: 20000 })
   if ((await T.getByRole('heading', { name: '¿Cuándo puedes?' }).count()) > 0) await T.goto(urlEspacio)

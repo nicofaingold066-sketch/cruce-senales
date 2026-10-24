@@ -27,6 +27,11 @@ const clic = async (p, el, espera) => {
 export async function irA(p, nombre, { espera = 500, timeout = 15000 } = {}) {
   const exacto = new RegExp(`^${esc(nombre)}`, 'i')
   const fin = Date.now() + timeout
+  if (nombre !== 'Simulación' && nombre !== 'Plan') {
+    // Desde la Simulación abierta, las filas del plan no se ven: primero se vuelve al plan.
+    const volver = await primeroVisible([p.getByRole('button', { name: /^‹? ?Volver al plan$/ })])
+    if (volver) await clic(p, volver, espera)
+  }
   if (nombre === 'Plan') {
     // Volver al plan desde ¿Cuándo puedes? o desde la Simulación; en el plan mismo no hay nada que tocar.
     const volver = await primeroVisible([
@@ -56,11 +61,6 @@ export async function irA(p, nombre, { espera = 500, timeout = 15000 } = {}) {
     }
     const resumenes = await p.locator('summary').allInnerTexts().catch(() => [])
     throw new Error(`irA: no encuentro «Historial» (ni plegado ni como pestaña) en ${p.url()}; resúmenes: ${JSON.stringify(resumenes)}`)
-  }
-  if (nombre !== 'Simulación' && nombre !== 'Plan') {
-    // Desde la Simulación abierta, las filas del plan no se ven: primero se vuelve al plan.
-    const volver = await primeroVisible([p.getByRole('button', { name: /^‹? ?Volver al plan$/ })])
-    if (volver) await clic(p, volver, espera)
   }
   if (nombre === 'Simulación') {
     // Ya abierta (la fila desaparece mientras se ve la Simulación): no hay nada que tocar.
