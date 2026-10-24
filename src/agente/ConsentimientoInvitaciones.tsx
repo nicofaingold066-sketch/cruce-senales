@@ -21,9 +21,11 @@ export function ConsentimientoInvitaciones({ espacioId, inicial, soloLectura }: 
 
   async function guardar() {
     if (soloLectura || confirmado === null || ocupado) return
-    setOperacion('guardar')
     setAviso(null)
-    const r = await ejecutar(`invitaciones:${espacioId}:${recibir}`, () => agenteApi.setRecibirInvitaciones(espacioId, recibir))
+    const r = await ejecutar(`invitaciones:${espacioId}:${recibir}`, () => {
+      setOperacion('guardar')
+      return agenteApi.setRecibirInvitaciones(espacioId, recibir)
+    })
     if (r?.ok) {
       const eco = r.data.recibir_invitaciones_agente
       setConfirmado(eco)
@@ -36,9 +38,11 @@ export function ConsentimientoInvitaciones({ espacioId, inicial, soloLectura }: 
 
   async function comprobar() {
     if (soloLectura || ocupado) return
-    setOperacion('leer')
     setAviso(null)
-    const r = await ejecutar(`leer-invitaciones:${espacioId}`, () => agenteApi.getMyPreferences(espacioId))
+    const r = await ejecutar(`leer-invitaciones:${espacioId}`, () => {
+      setOperacion('leer')
+      return agenteApi.getMyPreferences(espacioId)
+    })
     if (r?.ok) {
       const valor = r.data.recibir_invitaciones_agente
       setConfirmado(valor)
