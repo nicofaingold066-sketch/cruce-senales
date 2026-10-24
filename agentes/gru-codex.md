@@ -5,9 +5,7 @@ Pedido directo de Nico en Codex (24 oct): integrar el personaje aprobado, llamad
 Rama propia `codex/gru-vivo`, copia aislada `/Users/macair/cruse/cruce-gru`, base `origin/main` `7f47a88`.
 
 ## Tocando ahora
-- Ampliación directa de Nico: formulario de la pestaña GRU más legible y estético acorde a la app.
-- `src/agente/AgentePanel.tsx`: solo presentación de preferencias (markup, íconos y clases); conservar estado, validaciones, permisos y llamadas.
-- Nuevo `src/agente/gru-preferencias.css`: estilo acotado al formulario y resumen de preferencias, adaptable y accesible.
+Nada. GRU y la ampliación visual del formulario entregados en rama propia. Sin corridas contra base ni procesos de QA activos.
 
 ## Verificación
 Typecheck, build y navegador local con fixtures ficticios y red externa interceptada. Comprobar navegación, estados de éxito/error/sin opción, teclado, movimiento reducido, móvil 320/375 y escritorio 1280. Cero consultas pagas o escrituras en la base.
@@ -24,6 +22,11 @@ Validación observada: TypeScript, build Vite y diff --check pasan. QA local con
 Límite: continuidad solo en memoria (una recarga descarta borrador). Defecto ajeno detectado en el encabezado existente a 375: `.barra-rol` organizador desborda 8 px con Ayuda. Verificado removiendo GRU del DOM: scrollWidth 383→383; evidencia `overflow-diagnostic.json`. No se modificó el encabezado ajeno.
 
 Intento de PR draft hacia wip/fundamentos rechazado por conector GitHub: HTTP403 Resource not accessible by integration. Ningún PR fue creado. Rama remota sí subida y disponible para integrar; no main ni despliegue desde esta sesión.
+
+## Ampliación del formulario (pedido directo de Nico)
+Entregada sobre la misma rama: `src/agente/AgentePanel.tsx` (solo presentación de MisPreferencias/Opciones) y nuevo `src/agente/gru-preferencias.css`. Secciones con títulos/íconos, privacidad explícita, tarjetas de selección con controles nativos visibles, distribución adaptable, extras plegables y resumen en chips. Cancelar corregido localmente para contraste: 6,91:1 claro / 9,48:1 oscuro. No cambió estado, API, validación ni permisos.
+
+QA final: TypeScript/build/diffcheck pasan. Flujo de preferencias con transporte completamente ficticio: preferencias vacías, guardar sin actividad y foco, selección, payload exacto con opcionales/permisos, espera de respuesta sin fingir guardado, confirmación del servidor/resumen, editar/cancelar e invitaciones por RPC independiente. Cero llamadas reales/errores JS. Capturas 320/375/1280, claro y oscuro; formulario sin desbordes nuevos. Evidencia en la misma carpeta: `prefs-final-375-light-viewport.png`, `prefs-final-1280-light-viewport.png`, `prefs-final-375-dark-viewport.png`, `prefs-visual-final.json` y scripts/reportes prefs.
 
 ## Pedidos
 Coordinador: integrar `codex/gru-vivo` `bb701b2` y publicar mediante el flujo habitual. Frontend/intro: revisar el desborde preexistente del rol en encabezado375 con Ayuda. Rutas App/main/Intro/Guia/vida excluidas del diff de GRU.
