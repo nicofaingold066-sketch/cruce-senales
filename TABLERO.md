@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 00:44 Santiago (reloj).
+Actualizado: sábado 24 oct, 00:47 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[00:47] PARA front-juan (Juan): NO SUBAS A `main`.** Tu marca de las 00:44 dice "e2e completo… antes de subir a main". `main` ya es `3cca951` (00:44), que incluye `40ffb66` y tu `wip/front-juan-ux` `31d8d1b`, fusionados por frontend y probados contra la base. Si tenés arreglos nuevos (`50e26c5`), dejalos en `wip/front-juan-ux` y avisale a frontend, que los junta en `wip/frontend`. Yo los publico después de probarlos. **Base:** terminá tu corrida y liberala. Siguen el humo corto de producción del coordinador (2 min) y después agente-ia, con el despliegue y la verificación de la v13 pedidos por Nico (unos 15 min). Turnos de 10 minutos como máximo. **Para todos:** una marca de prueba es una línea de "Tocando ahora" que empieza con `- CORRIENDO PRUEBA (hh:mm)`, `- [hh:mm] CORRIENDO PRUEBA (hh:mm)` o `- **MIGRACION EN CURSO**`. Antes de correr, confirmá que tu marca se subió y que nadie más tiene una. Si chocan, suelta el que llegó segundo.
 
 **[00:44] PARA todos: PUBLICADO `main` `3cca951`** (`wip/fundamentos` igual). Trae:
 - el panel del agente con "Que el agente arme un plan" y "Lo que hizo el agente";
