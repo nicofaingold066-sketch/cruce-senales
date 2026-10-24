@@ -8,6 +8,7 @@ import { Avatar, Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import type { NombreIcono } from '../components/Icono'
 import { tomarBorradorAgente } from '../agente/api'
+import { ATAJOS, atajosParaGrupo, ejemploPorSemilla, placeholderPlan } from '../lib/ejemplos'
 
 // Una propuesta se arma con dos momentos posibles (A y B), cada uno un día y una hora de encuentro,
 // y una duración aproximada: la hora de fin se calcula sola. El contrato sigue recibiendo inicio y fin
@@ -44,15 +45,8 @@ const CASO = {
   plazoOtro: '',
 }
 
-const ACTIVIDADES: { titulo: string; icono: NombreIcono; min: number }[] = [
-  { titulo: 'Asado', icono: 'asado', min: 180 },
-  { titulo: 'Fútbol', icono: 'futbol', min: 60 },
-  { titulo: 'Cena', icono: 'cena', min: 120 },
-  { titulo: 'Juntada', icono: 'juntada', min: 120 },
-  { titulo: 'Cine', icono: 'cine', min: 150 },
-  { titulo: 'Cumple', icono: 'cumple', min: 180 },
-  { titulo: 'Paseo', icono: 'paseo', min: 180 },
-]
+// Atajos de actividad (apertura, `src/lib/ejemplos.ts`): el que nombra el grupo va primero; "Asado" ya no encabeza siempre.
+type Actividad = { titulo: string; icono: NombreIcono; min: number }
 const HORAS = ['12:00', '13:00', '14:00', '17:00', '19:00', '20:00', '21:00']
 const DURACIONES = [60, 120, 180, 240]
 const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
@@ -221,8 +215,8 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     setF({ ...form, [k]: v })
     if (error) limpiarError()
   }
-  function elegirActividad(a: (typeof ACTIVIDADES)[number]) {
-    const esAtajo = form.titulo.trim() === '' || ACTIVIDADES.some((x) => x.titulo === form.titulo.trim())
+  function elegirActividad(a: Actividad) {
+    const esAtajo = form.titulo.trim() === '' || ATAJOS.some((x) => x.titulo === form.titulo.trim())
     setF({ ...form, titulo: esAtajo ? a.titulo : form.titulo, duracion: a.min })
     if (error) limpiarError()
   }
@@ -353,7 +347,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
             <fieldset className="form-seccion">
               <legend>Qué hacen</legend>
               <div className="carrusel" role="group" aria-label="Atajos de actividad">
-                {ACTIVIDADES.map((a) => (
+                {atajosParaGrupo(espacio.nombre).map((a) => (
                   <button
                     key={a.titulo}
                     type="button"
@@ -372,7 +366,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                   value={form.titulo}
                   onChange={(e) => poner('titulo', e.target.value)}
                   maxLength={80}
-                  placeholder="Ej.: Asado en casa de Tomi"
+                  placeholder={placeholderPlan(ejemploPorSemilla(espacio.nombre))}
                   aria-invalid={marcado === 'titulo' || (faltantes && form.titulo.trim() === '') ? true : undefined}
                 />
               </label>
