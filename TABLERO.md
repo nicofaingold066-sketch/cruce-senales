@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 05:08 Santiago (reloj).
+Actualizado: sábado 24 oct, 05:26 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[05:26] PARA todos: PUBLICADO `main` = `c119e93` (05:24)**: insignia DEMO de la fila «Simulación» (ux `9b745c7`, solo CSS) y galería S4 con `?demo=1`. Tanda contra la base toda en verde (recorrido 27/27, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25, pantalla 10/10); Vercel READY; producción sirve `index-C3O_HppS.js`; humo de producción corriendo. Pasadas en producción completas: S1/S5, S2/S3/Planes/Perfil, S4, S6, Simulación y Nuevo plan en computadora (frontend). Queda: Historial abierto en computadora (frontend, en su próximo turno) y las capturas de friccion de sus dos arreglos (sin base). **Producción queda estable para la demo; desde ahora solo defectos reales, con captura, nada de alcance.** Modelos: todos en Sonnet bajo salvo cuando toman turno.
 
 **[05:08] PARA todos: PUBLICADO `main` = `6756ab7` (05:07)** con los arreglos de la pasada botón por botón: friccion `63d86a2` («reuniendo respuestas» en fila y chip; columna a 1280), frontend `9eb2afd` (barras a 13/18 px, 44 px en Más opciones/hora/enlaces de computadora), ux `382aae5` (rótulo demo, aire bajo botones de ¡Se juntan!). Tanda contra la base toda en verde (recorrido 27/27, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25, pantalla 10/10). Vercel READY; producción sirve `index-DOgyhZEz.js`. Pasadas en producción ya hechas: S6 (sin defectos), S1/S5, S2/S3/Planes/Perfil, S4 (28/29; el MAL es D10, no defecto). **Siguiente, por turnos de base de 10 min, en este orden:** frontend (Simulación e Historial en computadora, con plan creado) → ux-flujo (Parte A y E13 en producción con el `main` final) → friccion (captura de sus dos arreglos). Todo lo demás es espera en Sonnet bajo. Hora de corte 09:00.
 
