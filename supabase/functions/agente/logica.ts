@@ -92,8 +92,17 @@ export function textoQuorum(q: Quorum): string {
 }
 
 /** Candidata saneada: el viaje solo con minutos; familia y personas solo con la forma del contrato. */
+/**
+ * Nombres de personas que trae el catálogo de lugares de la demo (auditoría M2: "Asado en casa de Tomi", "Quincho de
+ * Tomi"). El catálogo es de la base, cerrada esta noche; acá se neutralizan para que ningún grupo vea el nombre de
+ * alguien que no está: "Asado en casa", "Quincho (Simulación)". Si el catálogo suma otro, va en esta lista.
+ */
+export const NOMBRES_DEL_CATALOGO = ['Tomi']
+
 export function candidataSegura(c: Candidata): Candidata {
   const n: Candidata = { ...c }
+  if (typeof c.titulo === 'string') n.titulo = sinNombres(c.titulo, NOMBRES_DEL_CATALOGO)
+  if (c.lugar && typeof c.lugar.nombre === 'string') n.lugar = { ...c.lugar, nombre: sinNombres(c.lugar.nombre, NOMBRES_DEL_CATALOGO) }
   if (c.viaje !== undefined) n.viaje = viajeSeguro(c.viaje)
   if (c.familia !== undefined) n.familia = familiaSegura(c.familia)
   if (c.personas !== undefined) n.personas = personasSeguras(c.personas)

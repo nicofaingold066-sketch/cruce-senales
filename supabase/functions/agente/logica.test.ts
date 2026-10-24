@@ -598,3 +598,12 @@ test('fiesta de noche (pedido de Nico, 00:01): una franja que cruza la medianoch
   const m = mensajeFijo({ ...ASADO, titulo: 'Fiesta en el bar', franjas: [{ inicio: '2026-10-31T23:00', fin: '2026-11-01T03:00' }, { inicio: '2026-11-01T22:00', fin: '2026-11-02T02:00' }] })
   assert.match(m, /el sábado 31 de 23:00 a 03:00 o el domingo 1 de 22:00 a 02:00/)
 })
+
+test('M2: candidataSegura saca del catálogo el nombre de alguien que puede no estar en el grupo', () => {
+  const c = candidataSegura({ id: 'lugar-sim-01', actividad_etiqueta: 'Asado', titulo: 'Asado en casa de Tomi', lugar: { id: 'lugar-sim-01', nombre: 'Quincho de Tomi (Simulación)', simulado: true }, franjas: [], frases_grupo: [] } as never)
+  assert.equal(c.titulo, 'Asado en casa')
+  assert.equal(c.lugar.nombre, 'Quincho (Simulación)')
+  const otra = candidataSegura({ id: 'x', actividad_etiqueta: 'Picnic', titulo: 'Picnic en el parque', lugar: { id: 'x', nombre: 'Parque Bustamante (Simulación)', simulado: true }, franjas: [], frases_grupo: [] } as never)
+  assert.equal(otra.titulo, 'Picnic en el parque')
+  assert.equal(otra.lugar.nombre, 'Parque Bustamante (Simulación)')
+})
