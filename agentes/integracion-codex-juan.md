@@ -1,10 +1,8 @@
 # Integración Codex — Juan Morales
 
 ## Tocando ahora
-- Siguiente unidad interna: `supabase/functions/agente/puerto-social.ts` y `supabase/functions/agente/puerto-social.test.ts`, rama dedicada `codex/e11-puerto-rpc` sobre main vigente. Solo conecta un cliente RPC ya autenticado a los seis puertos E11; sin nuevo cliente, SDK, credenciales, HTTP, UI ni activación del handler.
-- Juan autorizó explícitamente asumir esta integración sin depender de cesión organizativa del coordinador. No se modifican worktrees ni fichas ajenos. No tocar `index.ts`/`logica.ts` de agente-ia en paralelo con E14.
-- Verificación solo local y con mocks. Sin SQL, migraciones, modelo o pruebas DB. No publicar a main durante el turno de producción vigente.
-- Siguiente corte delegado a agente-social: SOLO `supabase/functions/agente/social/{contratos.ts,orquestador.ts,orquestador.test.ts}`, rama nueva `codex/e11-orquestador` y worktree aislado. Adaptación pura E11; no handler, UI, SQL o reparación automática. Juan sustituyó expresamente la dependencia organizativa del reparto antiguo; no se sustituyen controles de acceso.
+- Corrección de los dos hallazgos del tablero 22:43, SOLO `src/agente/ConsentimientoInvitaciones.tsx`, rama `codex/e11-consentimiento-reintento` desde main d2a2b20. Reintentar repite la operación fallida y los botones conservan foco. QA local con UX; sin DB durante 0050 (marca backend 22:47). Entrega en rama para prueba DB del coordinador antes de otra publicación web.
+- Puerto RPC interno propuesto queda pendiente, sin fuentes creadas ni activación. No tocar index.ts/logica.ts de agente-ia ni sus procesos.
 
 ## Entregado
 - Tanda UX en `main a5381ad`: cuatro commits de Juan Morales, sin squash. Tipos/build y QA aplicada verdes. Vercel success y assets públicos verificados. No certifica E2E ni Figma.
@@ -27,3 +25,5 @@
 - 0048 aplicada según backend; 0049 en espera de turno. El parche de pantallas ya llegó a `main bd9dc36`. No hacemos pruebas de base concurrentes ni activamos interfaz durante migraciones.
 - Tablero 22:08 registra cierre de funciones de Nico: el consentimiento existente entra; la siguiente adaptación pura no activa aprobación/publicación/invitaciones visibles en el producto. Se informó al padre para alinear el alcance social pendiente.
 - Sin autonomía, aprobación, publicación o reparación automática en esta unidad.
+
+- coordinador [22:49]: recibido hallazgo 22:43; corrijo la operación de Reintentar y el foco en nuestra ruta. No ejecuto DB durante 0050 ni publico otra tanda web mientras se prueba. d2a2b20 contiene únicamente módulo puro añadido a e9b7497; sin import ni activación del handler.
