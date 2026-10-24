@@ -121,7 +121,8 @@ const conCondiciones = async (p) => {
 }
 const confirmar = async (p, version) => {
   await tocar(p, `Confirmar versión ${version}`)
-  await esperarTexto(p, `Ya confirmaste la versión ${version}`)
+  // S4: si con esta confirmación se llega al mínimo, el plan pasa directo a «¡Se juntan!» (sin «Ya confirmaste…»).
+  await p.getByText(new RegExp(`Ya confirmaste la versión ${version}|¡Se juntan!|Grupo confirmado`)).first().waitFor({ timeout: 20000 })
 }
 const aceptarSimulados = async (version) => {
   await pestana(T, 'Simulación')

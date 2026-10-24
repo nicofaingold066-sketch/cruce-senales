@@ -232,7 +232,11 @@ async function cancelar() {
   const actual = propuestas.at(-1)
   if (!actual || actual.cancelada) return
   await T.goto(actual.url); await tab(T, 'Plan')
-  await T.getByRole('button', { name: /^Cancelar (la )?propuesta$/ }).first().click()
+  // S4 (mockup): «Cancelar la propuesta» solo existe reuniendo respuestas o en revisión; con el grupo confirmado no hay
+  // botón y la propuesta queda en el demo propio de esta corrida (no estorba a la siguiente variante).
+  const cancelarBtn = T.getByRole('button', { name: /^Cancelar (la )?propuesta$/ }).first()
+  if (!(await cancelarBtn.waitFor({ timeout: 6000 }).then(() => true, () => false))) { log('Sin «Cancelar la propuesta» en este estado: queda sin cancelar (S4).'); actual.cancelada = 'sin-boton'; return }
+  await cancelarBtn.click()
   await accion(T, 'cancel_proposal', () => tocar(T, 'Sí, cancelar'))
   await estado(T, 'Cancelado'); actual.cancelada = true
 }
