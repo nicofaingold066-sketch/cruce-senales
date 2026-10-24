@@ -10,6 +10,7 @@ import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { Cruce } from '../components/Cruce'
 import type { NodoCruce, TonoCruce } from '../components/Cruce'
+import { AvisoNovedades } from '../components/Novedades'
 import type { NombreIcono } from '../components/Icono'
 
 /** Ícono por estado: el estado nunca se distingue solo por color. */
@@ -58,15 +59,40 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
   const [avisoPrevio, setAvisoPrevio] = useState<string | null>(() => tomarAviso())
   const versionPrevia = useRef<number | null>(null)
 
+  // El espacio (nombre, demo y el código de invitación de "Recordar a quien falta") llega con un get_space aparte. Si
+  // falla, se vuelve a pedir con cada refresco de la propuesta (sondeo de 3 s) mientras siga sin llegar; con el
+  // espacio cargado no se pide más. Un pedido en vuelo no se repite ni se descarta por el refresco siguiente.
+  const montado = useRef(true)
+  const pidiendoEspacio = useRef(false)
   useEffect(() => {
-    let vivo = true
-    void api.getSpace(espacioId).then((r) => {
-      if (vivo && r.ok) setEspacio(r.data.espacio)
-    })
+    montado.current = true
     return () => {
-      vivo = false
+      montado.current = false
     }
-  }, [espacioId])
+  }, [])
+  const refrescoPropuesta = viva.recibidoEn
+  useEffect(() => {
+    if (espacio || pidiendoEspacio.current) return
+    pidiendoEspacio.current = true
+    void api
+      .getSpace(espacioId)
+      .then((r) => {
+        if (montado.current && r.ok) setEspacio(r.data.espacio)
+      })
+      .finally(() => {
+        pidiendoEspacio.current = false
+      })
+  }, [espacioId, espacio, refrescoPropuesta])
+
+  // Un botón dentro del panel ("Ir a Mi respuesta", "Ver historial completo") cambia de pestaña y se va con el panel:
+  // el foco pasa a la pestaña nueva. Cuando cambia el propio tablist, la pestaña ya tiene el foco y no se toca.
+  const enfocarPestana = useRef<Pestana | null>(null)
+  useEffect(() => {
+    const t = enfocarPestana.current
+    if (t == null) return
+    enfocarPestana.current = null
+    document.getElementById(`tab-${t}`)?.focus()
+  }, [pestana])
 
   const nombreYo = p?.mi_situacion.nombre ?? espacio?.miembros.find((m) => m.es_yo)?.nombre ?? null
   const rol = p ? (p.mi_situacion.es_organizador_espacio ? 'organizador' : 'miembro') : null
@@ -131,7 +157,11 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
   const conocido = (CODIGOS_SIGUIENTE as readonly string[]).includes(cod)
   const turno = cod === 'te_toca_aceptar' || (!conocido && p.mi_situacion.puede.aceptar)
   const yaAcepte = cod === 'ya_aceptaste' || (!conocido && !turno && p.mi_situacion.acepte_version && p.estado === 'esperando_compromisos')
-  const props = { p, viva, soloLectura, irAPestana: setPestana, espacio }
+  function irAPestana(t: Pestana) {
+    if (t !== activa) enfocarPestana.current = t
+    setPestana(t)
+  }
+  const props = { p, viva, soloLectura, irAPestana, espacio }
 
   const escena = escenaDe(p, espacio)
 
@@ -149,6 +179,8 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
       </section>
 
       <div className="hoja">
+      {/* Lo de este mismo plan ya se ve acá: el aviso flotante es para los demás planes y grupos. */}
+      <AvisoNovedades excluirPropuesta={propuestaId} />
 
       {viva.sinActualizar ? (
         <Aviso
@@ -221,7 +253,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
           </p>
           <Pasos p={p} />
           {turno && activa !== 'plan' ? (
-            <button type="button" className="btn btn-turno btn-chico ir-confirmar" onClick={() => setPestana('plan')}>
+            <button type="button" className="btn btn-turno btn-chico ir-confirmar" onClick={() => irAPestana('plan')}>
               Ir a confirmar
             </button>
           ) : null}
@@ -250,6 +282,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
       </div>
 
       <div id={`panel-${activa}`} className="panel-pestana" role="tabpanel" aria-labelledby={`tab-${activa}`} key={activa}>
+        {/* PlanTab toma el código de invitación de `espacio` ("Recordar a quien falta" / "Avisar al grupo"). */}
         {activa === 'plan' ? <PlanTab {...props} /> : null}
         {activa === 'respuesta' ? <RespuestaTab {...props} /> : null}
         {activa === 'historial' ? <HistorialTab {...props} /> : null}
@@ -325,16 +358,17 @@ function escenaDe(
     case 'en_revision':
       return { nodos, valor: `v${p.opcion?.version ?? ''}`, etiqueta: 'en revisión', fraccion: c ? c.confirmados / c.minimo : 0, tono: 'revision' }
     case 'reuniendo_interes': {
-      // #35 (ux-flujo, privacidad): a quien organiza, cuántos respondieron (`personas_con_condiciones`, solo le llega a
-      // esa persona, E7.2). Un "Sí" no se vuelve interés público: los demás siguen viendo "con interés".
-      const respondieron = p.personas_con_condiciones
-      return {
-        nodos,
-        valor: String(respondieron ?? p.interesados.cantidad),
-        etiqueta: p.ultima_evaluacion?.resultado === 'sin_opcion' ? 'sin opción' : respondieron != null ? 'respondieron' : 'con interés',
-        fraccion: 0,
-        tono: p.ultima_evaluacion?.resultado === 'sin_opcion' ? 'neutro' : 'info',
-      }
+      // El motor arma la opción con las respuestas (condiciones completas), no con "Me interesa": el centro no
+      // cuenta interés. El organizador ve cuántos respondieron (E7.2: el servidor solo se lo da a él); los demás,
+      // si ya respondieron ellos mismos.
+      if (p.ultima_evaluacion?.resultado === 'sin_opcion') return { nodos, valor: '—', etiqueta: 'sin opción', fraccion: 0, tono: 'neutro' }
+      const n = p.personas_con_condiciones
+      const s = p.mi_situacion
+      if (n != null) return { nodos, valor: String(n), etiqueta: n === 1 ? 'respondió' : 'respondieron', fraccion: 0, tono: 'info' }
+      if (s.retirado) return { nodos, valor: '—', etiqueta: 'te retiraste', fraccion: 0, tono: 'neutro' }
+      return s.condiciones === 'completas'
+        ? { nodos, valor: '✓', etiqueta: 'respondiste', fraccion: 0, tono: 'info' }
+        : { nodos, valor: '—', etiqueta: s.condiciones === 'incompletas' ? 'respuesta incompleta' : 'falta tu respuesta', fraccion: 0, tono: 'info' }
     }
     case 'borrador':
       return { nodos, valor: '—', etiqueta: 'borrador', fraccion: 0, tono: 'neutro' }
@@ -343,7 +377,8 @@ function escenaDe(
   }
 }
 
-const PASOS = ['Interés', 'Opción', 'Confirmar', 'Encuentro'] as const
+// La primera etapa es responder cuándo se puede (lo que usa el motor); "Me interesa" es opcional.
+const PASOS = ['Respuestas', 'Opción', 'Confirmar', 'Encuentro'] as const
 
 /** Seguimiento tipo pedido en curso. Es solo una lectura del estado que devuelve el servidor. */
 function Pasos({ p }: { p: EstadoPropuesta }) {
