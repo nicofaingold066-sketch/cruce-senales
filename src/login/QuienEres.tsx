@@ -16,6 +16,7 @@ import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { marcarConEspacios } from './estado'
 import { QueGuarda } from '../friccion/QueGuarda'
+import { FRASE_QUIEN_VIENE, quienVieneDe, sinQuienViene } from '../lib/compartir'
 import './login.css'
 
 export interface MiembroPorReclamar {
@@ -51,7 +52,7 @@ function entrarAlEspacio(r: UnirseOk['resultado'], espacio: string, nombre: stri
   } else if (sesionGuardada) {
     dejarAviso(`Entraste como ${nombre}.${extra}`)
   } else {
-    dejarAviso(`Te uniste a «${espacio}» como ${nombre}. Cuando haya un plan, marca si te interesa y carga en privado cuándo puedes.`)
+    dejarAviso(`Te uniste a «${sinQuienViene(espacio)}» como ${nombre}. Cuando haya un plan, marca si te interesa y carga en privado cuándo puedes.`)
   }
   // #88: quien eligió su nombre de la lista va directo a responder la propuesta abierta (un toque). Si no hay una sola
   // propuesta por responder, esa pantalla lo deja en el espacio. Por el formulario se sigue entrando al espacio.
@@ -184,6 +185,9 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
   const [errorVista, setErrorVista] = useState<ApiError | null>(null)
   const [elegido, setElegido] = useState<MiembroPorReclamar | null>(null)
   const [yaEstoy, setYaEstoy] = useState<{ espacioId: string; miembroId: string } | null>(null)
+  // D3: la regla de quién viene va como marca al final del nombre; acá se muestra limpio y la regla aparte.
+  const nombreEspacio = vista ? sinQuienViene(vista.espacio.nombre) : ''
+  const reglaEspacio = vista ? quienVieneDe(vista.espacio.nombre) : null
   const u = useUnirse(fuente)
   const titulo = useRef<HTMLHeadingElement>(null)
   const campoNombre = useRef<HTMLInputElement>(null)
@@ -243,7 +247,8 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
           {vista ? '¿Quién eres?' : codigoMalo ? 'Esta invitación no existe' : 'Te invitaron a un plan'}
         </h1>
         {/* El nombre del espacio va fuera de los títulos: los guiones esperan el título del espacio para saber que ya se entró. */}
-        {vista ? <p className="quien-espacio">en «{vista.espacio.nombre}»</p> : null}
+        {vista ? <p className="quien-espacio">en «{nombreEspacio}»</p> : null}
+        {reglaEspacio ? <p className="quien-espacio quien-regla">{FRASE_QUIEN_VIENE[reglaEspacio]}</p> : null}
         <p className="escena-sub">
           {codigoMalo
             ? 'Revisa que el enlace esté completo o pide uno nuevo a quien organiza. También puedes escribir el código abajo.'
@@ -273,7 +278,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
           <section className="tarjeta entrada-opcion entrada-principal" aria-labelledby="quien-confirmar">
             <h2 id="quien-confirmar">¿Eres {elegido.nombre}?</h2>
             <p className="suave">
-              Este teléfono queda como {elegido.nombre} en «{vista.espacio.nombre}». Lo que marques después es privado.
+              Este teléfono queda como {elegido.nombre} en «{nombreEspacio}». Lo que marques después es privado.
             </p>
             <div className="entrada-botones">
               <Boton
