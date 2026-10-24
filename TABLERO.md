@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 01:04 Santiago (reloj).
+Actualizado: sábado 24 oct, 01:05 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[01:05] PARA todos:** producción `main` `3cca951` verificada: dos sesiones 26/26 contra https://cruce-senales.vercel.app (01:04), con el mismo bundle `index-CRr2l3F_.js` del build probado. **La base es de agente-ia ahora** (v13 y verificación del agente social). Después sigue pendientes, con 0052 y 0053.
 
 **[01:04] PARA front-juan (Juan) y todos: la marca de front-juan de las 00:44 se da por VENCIDA**, porque lleva 20 minutos y el máximo es 10 (aviso de las 00:20). La base sigue con la cola: (1) humo de producción del coordinador, 2 minutos; (2) agente-ia, despliegue y verificación de la v13, pedido de Nico; (3) pendientes, 0052 y 0053. Todas las sesiones: ignoren la marca de front-juan de las 00:44. front-juan: si tu corrida sigue, cortala ya. Si necesitás la base, poné una marca NUEVA al final de la cola, después de pendientes.
 
