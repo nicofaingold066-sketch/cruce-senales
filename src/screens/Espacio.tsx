@@ -5,7 +5,7 @@ import type { ApiError, Espacio as EspacioT, PropuestaResumen } from '../lib/typ
 import { useAccion, useSondeo } from '../lib/hooks'
 import { rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { momentoCorto } from '../lib/format'
-import { Avatar, AvatarPila, Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
+import { Avatar, AvatarPila, Aviso, Boton, Cargando, ErrorCaja, IconoGrupo, Nombre, Vacio } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { PlanVivo } from '../components/PlanVivo'
 import { Tablero } from '../components/Tablero'
@@ -153,7 +153,10 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
           <Icono n="atras" tam={20} /> Tus espacios
         </a>
         <span className="escena-eyebrow">{espacio.demo ? 'Espacio demo · datos ficticios' : 'Tu grupo'}</span>
-        <h1 id="espacio-titulo">{espacio.nombre}</h1>
+        <div className="grupo-cabeza">
+          <IconoGrupo nombre={espacio.nombre} />
+          <h1 id="espacio-titulo">{espacio.nombre}</h1>
+        </div>
         <div className="espacio-cabeza">
           <AvatarPila personas={espacio.miembros} max={6} />
           <span className="suave">
@@ -161,13 +164,6 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
             {porEntrar.length > 0 ? ` (${porEntrar.length} por entrar)` : ''}
             {yoEnEspacio ? ` · tú: ${esOrganizador ? 'organizador' : 'miembro'}` : ''}
           </span>
-        </div>
-        <div className="invitar">
-          <div className="invitar-codigo">
-            <span>Código de invitación</span>
-            <Tablero codigo={espacio.codigo_invitacion} />
-          </div>
-          <CopiarCodigo codigo={espacio.codigo_invitacion} espacioNombre={espacio.nombre} />
         </div>
       </section>
 
@@ -178,43 +174,38 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
           </Aviso>
         ) : null}
 
-        {/* Se cuenta solo a quien ya entró: los anotados "por entrar" son justamente a quienes falta invitar (C-8). */}
-        {!espacio.demo && (dentro < 3 || porEntrar.length > 0) ? (
-          <section className="tarjeta invitar-grupo" aria-labelledby="invitar-titulo">
-            <span className="agente-icono" aria-hidden="true">
-              <Icono n="invitar" tam={22} />
-            </span>
-            <div>
-              <h2 id="invitar-titulo">Invita a tu grupo</h2>
-              <p className="suave">
-                {dentro <= 1 ? 'Por ahora estás solo' : `Por ahora entraron ${dentro}`} en «{espacio.nombre}».
-                {porEntrar.length > 0
-                  ? ` Faltan: ${porEntrar.map((m) => m.nombre).join(', ')}. Cada uno toca su nombre en el enlace, sin cuenta.`
-                  : ' Cada uno entra con el enlace y su nombre, sin cuenta.'}
-              </p>
-              {/* Grupo creado sin la lista: al abrir el enlace no hay nombre para tocar y cada uno escribe el suyo. Agregar
-                  integrantes después necesita una operación nueva del servidor (pedido a backend). */}
-              {esOrganizador && porEntrar.length === 0 && dentro <= 1 ? (
-                <p className="suave">
-                  Como el grupo se creó sin la lista, al abrir el enlace cada uno escribe su nombre en «No estoy en la lista».
-                </p>
-              ) : null}
-              <a
-                className="btn btn-secundario btn-chico"
-                href={urlWhatsApp(textoInvitacion(espacio.nombre, espacio.codigo_invitacion))}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Icono n="whatsapp" tam={18} /> Mandar invitación por WhatsApp
-              </a>
+        {/* Invitar (mockup validado, pantalla 3): el código y las tres formas de mandarlo, en una tarjeta. Los "por entrar" se
+            cuentan aparte: son justamente a quienes falta invitar (C-8). */}
+        <section className="tarjeta invitar-tarjeta" aria-labelledby="invitar-titulo">
+          <div className="tarjeta-cabeza">
+            <h2 id="invitar-titulo">Invita a tu grupo</h2>
+          </div>
+          <div className="invitar">
+            <div className="invitar-codigo">
+              <span>Código de invitación</span>
+              <Tablero codigo={espacio.codigo_invitacion} />
             </div>
-          </section>
-        ) : null}
+            <CopiarCodigo codigo={espacio.codigo_invitacion} espacioNombre={espacio.nombre} />
+          </div>
+          {!espacio.demo && porEntrar.length > 0 ? (
+            <p className="suave invitar-nota">
+              Faltan: {porEntrar.map((m) => m.nombre).join(', ')}. Cada uno toca su nombre en el enlace, sin cuenta.
+            </p>
+          ) : null}
+          {/* Grupo creado sin la lista: al abrir el enlace no hay nombre para tocar y cada uno escribe el suyo. */}
+          {!espacio.demo && esOrganizador && porEntrar.length === 0 && dentro <= 1 ? (
+            <p className="suave invitar-nota">Sin la lista, cada uno escribe su nombre en «No estoy en la lista».</p>
+          ) : null}
+        </section>
 
         <section aria-labelledby="propuestas-titulo">
           <div className="seccion-titulo" style={{ marginTop: 4 }}>
-            <h2 id="propuestas-titulo">Propuestas</h2>
-            {propuestas && propuestas.length > 0 ? <span className="etiqueta num">{propuestas.length}</span> : null}
+            <h2 id="propuestas-titulo">Planes</h2>
+            {propuestas && propuestas.length > 0 ? (
+              <a className="btn btn-secundario btn-chico" href={rutas.nueva(espacioId)}>
+                <Icono n="mas" tam={18} /> Nueva propuesta
+              </a>
+            ) : null}
           </div>
           {errorLista && propuestas === null ? <ErrorCaja error={errorLista} onReintentar={cargarLista} /> : null}
           {errorLista && propuestas !== null ? (
@@ -254,11 +245,6 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
                   </li>
                 ))}
               </ul>
-              <div className="barra-accion">
-                <a className="btn btn-primario" href={rutas.nueva(espacioId)}>
-                  <Icono n="mas" tam={20} /> Nueva propuesta
-                </a>
-              </div>
             </>
           ) : null}
         </section>

@@ -116,3 +116,49 @@
   font-weight: var(--p-rotulo);
   letter-spacing: 0.02em;
 }
+
+/* ---- nivel Grupo (mockup validado, pantalla 3): ícono del grupo junto al nombre */
+.vista-s2 .grupo-cabeza {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  min-width: 0;
+}
+.vista-s2 .grupo-cabeza h1 {
+  margin: 0;
+  min-width: 0;
+}
+
+/* ---- tarjeta de invitación en la hoja (antes en la escena) */
+.vista-s2 .invitar-tarjeta .invitar {
+  margin-top: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+.vista-s2 .invitar-tarjeta .invitar-codigo > span {
+  color: var(--tinta-2);
+}
+.vista-s2 .invitar-tarjeta .tablero {
+  color: var(--tinta);
+}
+.vista-s2 .invitar-nota {
+  margin: var(--e-3) 0 0;
+}
+.vista-s2 .seccion-titulo {
+  justify-content: space-between;
+  margin-top: var(--entre-bloques);
+}
+/* En la tarjeta clara, los tres botones del código usan el secundario del sistema (eran claros para la escena oscura). */
+.vista-s2 .invitar-tarjeta .invitar-botones .btn,
+.vista-s2 .invitar-tarjeta .invitar-botones .btn-blanco,
+.vista-s2 .invitar-tarjeta .invitar-botones .btn-claro {
+  background: var(--btn-2);
+  color: var(--btn-2-texto);
+  border: 0;
+  box-shadow: none;
+}
+.vista-s2 .invitar-tarjeta .invitar-botones .btn-hecho {
+  background: var(--ok-suave);
+  color: var(--ok);
+}
