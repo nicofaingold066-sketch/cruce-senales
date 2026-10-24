@@ -26,6 +26,14 @@ nota('R23', `Crear grupo con nombre del grupo vacío: deshabilitado=${await boto
 const grupo = `Rincones ${hora().slice(0, 5)}`
 await o.getByLabel('Nombre del grupo').fill(grupo)
 await o.getByLabel('Tu nombre en el grupo').fill('Rincon Org')
+// Entrada como Tricount: sin lista (o con un nombre escrito sin «Agregar») "Crear grupo" pregunta una vez.
+await corto('R23b', async () => {
+  await boton(o, 'Crear grupo').click(); await o.waitForTimeout(600)
+  nota('R23b', 'pregunta al crear sin lista: ' + ((await o.getByText('¿Crear sin la lista del grupo?').count()) > 0))
+  await rincon(o, 'R23b', 'Crear grupo sin la lista: pregunta "¿Crear sin la lista del grupo?" (Agregar nombres / Crear sin lista)', { foco: true })
+  await o.getByRole('button', { name: 'Agregar nombres' }).click(); await o.waitForTimeout(500)
+  nota('R23b', 'tras "Agregar nombres" el foco queda en: ' + await o.evaluate(() => document.activeElement?.tagName + ' ' + (document.activeElement?.closest('label')?.innerText || '').slice(0, 40)))
+})
 const agregar = async (n) => { await o.getByLabel('Agregar a alguien del grupo').fill(n); await boton(o, 'Agregar').click(); await o.waitForTimeout(150) }
 await agregar('Ana'); await agregar('Beto'); await agregar('Caro')
 await agregar('Ana'); nota('R24', 'duplicado "Ana": lista = ' + (await o.locator('.quien-integrantes li').allInnerTexts()).join('|').replace(/\n/g, ' '))
@@ -33,6 +41,7 @@ await agregar('Rincon Org'); nota('R24', 'integrante igual al organizador: lista
 await rincon(o, 'R24', 'Crear grupo con 3 integrantes anotados, duplicado y nombre propio probados', { foco: false })
 // quitar el del organizador si quedó
 if (await o.getByRole('button', { name: 'Quitar a Rincon Org' }).count()) await o.getByRole('button', { name: 'Quitar a Rincon Org' }).click()
+await o.getByLabel('Agregar a alguien del grupo').fill('')
 await boton(o, 'Crear grupo').click()
 await o.waitForURL(/#\/e\//, { timeout: 30000 }); await T(3000)
 const espacioUrl = o.url(); const espacioId = espacioUrl.split('/e/')[1].split('/')[0]
