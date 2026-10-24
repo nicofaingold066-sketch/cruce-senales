@@ -48,7 +48,7 @@ export default function App() {
   const incompatible = useContratoIncompatible()
   return (
     <ShellProvider soloLectura={incompatible}>
-      <Marco sesion={sesion} reintentar={reintentar} incompatible={incompatible} alAbrirAyuda={guia.abrir} />
+      <Marco sesion={sesion} reintentar={reintentar} incompatible={incompatible} alAbrirAyuda={() => { entrada.abrir(); guia.abrir() }} />
       {entrada.visible ? <Entrada alTerminar={entrada.cerrar} /> : null}
       {!entrada.visible && guia.visible ? <Guia alCerrar={guia.cerrar} /> : null}
     </ShellProvider>
@@ -90,7 +90,7 @@ function Marco({
           <span className="chip-ficticio">Datos ficticios</span>
         </div>
         {conNav ? <PestanasBarra ruta={ruta} /> : null}
-        <button type="button" className="cruxe-ayuda" onClick={alAbrirAyuda} aria-label="Ayuda: ver guía de CRUXE" aria-haspopup="dialog">
+        <button type="button" className="cruxe-ayuda" onClick={alAbrirAyuda} aria-label="Ayuda: volver a ver el recorrido completo de CRUXE" aria-haspopup="dialog">
           <span aria-hidden="true">?</span><span className="cruxe-ayuda__texto">Ayuda</span>
         </button>
         <a className="barra-identidad" href={rutas.perfil()} aria-live="polite">
