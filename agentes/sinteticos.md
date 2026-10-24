@@ -3,15 +3,18 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/sinteticos` (copia `/Users/macair/cruse/cruce-sinteticos`). Rutas: `tests/sinteticos/**`, `docs/usuarios-sinteticos.md`. Puerto de preview: 4186.
 
 ## Tocando ahora
+- [21:06] `tests/sinteticos/escena.mjs`, `psico-perfiles.mjs`, `asi-no-puedo.mjs` y `docs/usuarios-sinteticos.md`. Las dos corridas nuevas esperan a que backend saque MIGRACION EN CURSO (E13); arrancan solas.
 - [19:58] sigo en `tests/sinteticos/**` y `docs/usuarios-sinteticos.md`; esperando que backend saque MIGRACION EN CURSO para correr.
 - [19:32] `tests/sinteticos/**` y `docs/usuarios-sinteticos.md` (guion Playwright de 6 perfiles ficticios en un grupo nuevo, no el demo; hallazgos por gravedad).
 
 ## Entregado
+- [21:06] `wip/sinteticos`: perfiles de psico (Vale organiza y pega la lista, Dani casa, Ana sin carne, Beto pareja en «solo el grupo» a 320 px, Flor mal momento, Pili silencio) y guion de la enmienda 13 (opina → cambia disponibilidad → rearmar → v2 sin herencias → nadie ve quién; por botón si existe, si no por RPC con la sesión del propio navegador; si `opinar_version` no existe, lo dice y sale). Sin correr todavía: base ocupada.
 - [20:10] corrida del build integrado local (fundamentos+friccion+ux+agente-ia+front-juan): Joaco 3 toques, Renata 3, Gonza 4, Bruno 6; H1/H4 arreglados en parte; sin fugas. `docs/usuarios-sinteticos.md`, rama wip/sinteticos.
 - [19:47] `wip/sinteticos` 6 amigos: guion + perfiles + situaciones + revisión de código + hallazgos H1–H14 de la corrida de las 19:40 (build 95def89, base libre): completa, sin fugas de privacidad. Ver `docs/usuarios-sinteticos.md`.
 - [19:31] Primer guion en `tests/sinteticos/` (aún sin commitear). AVISO HONESTO: corrí UNA vez a las 19:28 contra la base con un grupo nuevo ("Los de la facu") sin haber visto que backend había puesto MIGRACION EN CURSO a las 19:26; no toqué el demo ni borré nada. Desde ahora el guion se frena solo si la ficha de backend lo dice (`guardia.mjs`). No corro hasta que backend saque la marca.
 
 ## Pedidos a otros
+- psico [21:06]: P-A armado en `psico-perfiles.mjs`: (a) Ana y (b) Beto con revisión de fugas en cada pantalla ajena, (c) revisor de género/pareja en todas las pantallas. La comparación «texto IDÉNTICO haya o no respondido» queda para cuando exista algo que responder (A1 / V2): hoy el texto es idéntico porque nadie puede decirlo.
 - ux-flujo [20:38] (para `docs/investigacion-a-producto.md`): mis hallazgos y su destino, uno por uno (detalle y capturas en `docs/usuarios-sinteticos.md`, rama wip/sinteticos): H1 Bruno fuera sin saber → HECHO (enmienda 12 + `b8e19ae`; falta ocultar "No formas parte…", front-juan, antes de las 11:00). H2 invitado ve lo que no necesita → HECHO por #88 (3 toques); falta "Mi respuesta" con franjas primero (front-juan, P2). H3 "Datos ficticios" → decidido, se queda. H4 nota "Luna" → HECHO. H5 "Marcá al menos una" bloquea guardar presupuesto/techo + voseo → agente-ia, antes de las 11:00. H6 "N con condiciones" cuenta a quien dijo No/No → decisión de Nico (backend propone `personas_que_pueden`). H7 interés separado de la respuesta → ver abajo. H8 "Sábado → Sábado" → front-juan, antes de las 11:00. H9–H13 textos → front-juan, P3. H14 baja pública con nombre → decisión de Nico. H15 zona solo Santiago → agente-ia, P3.
 - front-juan [20:38] (H7, P2): el grupo ve "2 con interés" aunque 3 respondieron que pueden (Sí puedo no suma interés; solo el botón "Me interesa"). Que el contador diga "N respondieron" a quien organiza, o que responder un Sí cuente como interés (decide ux-flujo/Nico: toca el significado de interés).
 - apertura [20:38] (H11, P3): ejemplos que no sean asado en el título del grupo ("Ej.: Los del asado") y en el orden de "Me gustaría" (Asado primero); rotarlos.
