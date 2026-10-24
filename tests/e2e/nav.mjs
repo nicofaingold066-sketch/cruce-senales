@@ -39,16 +39,23 @@ export async function irA(p, nombre, { espera = 500, timeout = 15000 } = {}) {
   }
   if (nombre === 'Historial') {
     while (Date.now() < fin) {
+      // Historial abierto como sección (h2) en algunos estados: nada que tocar.
+      const h2 = p.getByRole('heading', { name: /^Historial$/ }).first()
+      if (await h2.count() && await h2.isVisible().catch(() => false)) return
       const det = p.locator('details', { has: p.locator('summary', { hasText: /Historial/ }) }).first()
       if (await det.count() && await det.isVisible().catch(() => false)) {
         if (!(await det.evaluate((d) => d.open))) await clic(p, det.locator('summary').first(), espera) // el propio summary, no los anidados
+        // «Ficha del plan · Historial» lleva adentro un «Historial» plegado: también se abre.
+        const interno = det.locator('details', { has: p.locator('summary', { hasText: /^\s*Historial\s*$/ }) }).first()
+        if (await interno.count() && !(await interno.evaluate((d) => d.open))) await clic(p, interno.locator('summary').first(), espera)
         return
       }
       const tab = p.getByRole('tab', { name: exacto }).first()
       if (await tab.count() && await tab.isVisible().catch(() => false)) { await clic(p, tab, espera); return }
       await p.waitForTimeout(250)
     }
-    throw new Error(`irA: no encuentro «Historial» (ni plegado ni como pestaña) en ${p.url()}`)
+    const resumenes = await p.locator('summary').allInnerTexts().catch(() => [])
+    throw new Error(`irA: no encuentro «Historial» (ni plegado ni como pestaña) en ${p.url()}; resúmenes: ${JSON.stringify(resumenes)}`)
   }
   if (nombre !== 'Simulación' && nombre !== 'Plan') {
     // Desde la Simulación abierta, las filas del plan no se ven: primero se vuelve al plan.

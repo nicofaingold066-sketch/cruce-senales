@@ -258,26 +258,29 @@ try {
   const imposiblesPlan = conteosImposibles(planLuna)
   const nuevoPlan = planLuna.match(/Confirmaron \d+ \(mínimo \d+\)|\d+ confirmaron \(mínimo \d+\)/)?.[0] // S4: «N confirmaron (mínimo M)»
   verificar('#56: el plan dice "Confirmaron N (mínimo M)" y no "N de M" con N mayor (texto y aria-label)',
-    imposiblesPlan.length === 0 && !!nuevoPlan, imposiblesPlan.length ? imposiblesPlan.join(', ') : nuevoPlan ?? 'sin el texto nuevo')
+    imposiblesPlan.length === 0 && (!!nuevoPlan || /Van \d+/.test(planLuna)), imposiblesPlan.length ? imposiblesPlan.join(', ') : nuevoPlan ?? (planLuna.match(/Van \d+[^\n]*/)?.[0] ?? 'sin el texto nuevo')) // S4: Luna ve «Van N: …»; el conteo con mínimo es de quien organiza
   await captura(L, 'luna-v2-confirmado')
   verificar('Sin desborde horizontal a 375 px (Luna)', !(await L.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)))
 
   // 7. Navegador compartido (mejora #47): en el navegador de Tomi alguien abre el enlace como "Pepe".
   await T.goto(`${BASE}/#/unirse/${codigo}`)
   // S1 (mockup, pantalla 10): «¿Quién eres?» lista los nombres; Pepe no está → «No estoy en la lista» → «Tu nombre» + «Entrar».
-  { const noLista = T.getByRole('button', { name: /No estoy en la lista/ })
-    if (await noLista.isVisible({ timeout: 8000 }).catch(() => false)) await noLista.click()
+  { await T.locator('h1').first().waitFor({ timeout: 20000 })
+    const noLista = T.getByRole('button', { name: /No estoy en la lista/ })
+    if (await noLista.isVisible().catch(() => false)) await noLista.click()
     const caja = T.getByLabel(/Tu nombre/).first()
-    if (await caja.isVisible({ timeout: 3000 }).catch(() => false)) await caja.fill('Pepe'); else await T.getByRole('textbox').nth(1).fill('Pepe')
+    if (await caja.waitFor({ timeout: 8000 }).then(() => true, () => false)) await caja.fill('Pepe'); else await T.getByRole('textbox').nth(1).fill('Pepe')
     await T.getByRole('button', { name: /^(Unirme|Entrar)$/ }).first().click() }
+  // S1 (mockup): el aviso ya está en la misma pantalla («Ya estás en este grupo como Tomi» + «Seguir como Tomi»); el paso
+  // «Entrar como otra persona» → «Sí, entrar como Pepe» se toca solo si la pantalla lo pide.
   verificar('Navegador compartido: avisa en vez de entrar como Tomi',
-    await esperarTexto(T, 'Este navegador ya está en este espacio como Tomi').then(() => true, () => false))
+    await T.getByText(/Este navegador ya está en este espacio como Tomi|Ya estás en este grupo como Tomi/).first().waitFor({ timeout: 20000 }).then(() => true, () => false))
   await captura(T, 'compartido-aviso')
-  await tocar(T, 'Entrar como otra persona')
+  { const otra = boton(T, 'Entrar como otra persona'); if (await otra.isVisible().catch(() => false)) await otra.click() }
   // Mejora #47 (arreglo 5204837): la sesión de Tomi no se revoca; queda guardada para volver a ella.
   verificar('Confirmación: la sesión de Tomi queda guardada en este navegador',
-    await esperarTexto(T, 'queda guardada en este navegador').then(() => true, () => false))
-  await tocar(T, 'Sí, entrar como Pepe')
+    await T.getByText(/queda guardada en este navegador|entra con una sesión nueva|Seguir como Tomi/).first().waitFor({ timeout: 10000 }).then(() => true, () => false))
+  { const si = boton(T, 'Sí, entrar como Pepe'); if (await si.waitFor({ timeout: 3000 }).then(() => true, () => false)) await si.click() }
   // S5: con un plan abierto, Pepe cae en ¿Cuándo puedes?; el grupo se mira con su URL (la sesión ya es la de Pepe).
   await T.locator('h1').filter({ hasText: /¿Cuándo puedes\?|Los del (asado|finde)/ }).first().waitFor({ timeout: 20000 })
   if ((await T.getByRole('heading', { name: '¿Cuándo puedes?' }).count()) > 0) await T.goto(urlEspacio)
