@@ -170,7 +170,8 @@ export function armarEscena({ base, salida, grupo, titulo, fugas = [] }) {
     await p.page.goto(datos.enlace)
     await p.mirar()
     await p.page.getByRole('heading', { name: '¿Quién eres?' }).waitFor({ timeout: 25000 })
-    await ver(p, 'enlace-quien-eres')
+    const quienEres = await ver(p, 'enlace-quien-eres')
+    p.quienEresTexto = quienEres.texto // la regla del grupo («Esta vez es solo el grupo.») y el propósito se leen acá
     await p.tocar(p.page.getByRole('button', { name: nombre, exact: true }), `su nombre «${nombre}»`)
     await ver(p, 'eres-tu')
     await p.tocarBoton(`Sí, soy ${nombre}`)
