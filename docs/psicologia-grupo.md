@@ -23,6 +23,17 @@ Marcas, como en `docs/problema.md` y `docs/apertura.md`:
 12. **Ubicación** (§12): día, hora y duración siempre visibles; «buscar el lugar en el mapa» con un enlace al LUGAR, nunca a las personas; el tiempo de cada uno lo calcula su propio teléfono; alarma en el calendario; nunca la comuna ni la ubicación de otro.
 13. **Nivel de gasto sin clase social** (§13): no se pide ni se infiere (es dato sensible, la comuna es un mal proxy y delata). La intención —que un plan no quede mal— se cubre con un **estilo de la ocasión** elegido por quien organiza (simple · normal · especial), dos formas con distinto estilo y, después, un presupuesto privado que también empuje hacia arriba. El plan nunca supera el tope del que menos quiere gastar.
 
+> **Estado al viernes 23 oct, 20:54 (reloj).** Nico aceptó lo recomendado a las 20:51:
+> - **D1:** sí. La fila «Parrilla del parque (Simulación)» entra en la enmienda 13 (d).
+> - **D2:** sí. El género y la pareja de una persona no se piden ni se infieren; la composición es una regla del grupo.
+> - **D3:** la modalidad («solo el grupo / con parejas / abierta») va en el título.
+> - **D4:** la oferta de casa es privada, y queda para después de la demo.
+>
+> - **D7:** sí (21:00, en esta sesión). El estilo de la ocasión (simple · normal · especial) entra sin migración (§13).
+> - **D5, D6, D8, D9, D10:** sí (21:06, vía coordinador). D10: el botón «Buscar el lugar en el mapa» va a front-juan (§12 U2). D6 y D8: a apertura, para el guion y las preguntas del jurado (§14). D5 y D9: después del evento, al README (§15, §12 U6, §13 E3).
+>
+> La enmienda 13 (`docs/contrato-enmienda-13.md`, corte a la 01:00) suma además «Así no puedo, pero sigo» (opinar sin bajarse), «Rearmar con lo nuevo» y la baja sin nombre («Una persona se retiró»), con el texto de psico para quien se retira. Textos de esas pantallas: §8.10. No queda ninguna decisión pendiente de psico (ficha `agentes/psico.md`).
+
 ## 0b. El cierre: por qué los planes de grupo no se cierran (eje del documento)
 Pedido de Nico (20:28): *«Somos seres sociales y a todos nos gusta estar con gente, pero el máximo problema es terminar de coordinar una juntada.»* Es el mismo problema de `docs/problema.md` §3, visto desde la psicología. Todo lo demás de este documento (casa, comida, parejas, plata, distancia) importa **porque cada una de esas tensiones es una razón para no cerrar**.
 
@@ -37,7 +48,7 @@ Lectura honesta: casi toda la evidencia viene de **otras situaciones** (emergenc
 | **4** | **Parálisis por exceso de opciones.** | La idea popular **no se sostiene sola**: el metaanálisis de 50 experimentos da un efecto promedio casi nulo [F30, A]. Lo que sí se observa en agendas de grupo es otra cosa: en encuestas abiertas (Doodle) la gente aprueba los horarios muy populares o muy impopulares y se ve evidencia de razonamiento estratégico según lo que ya votaron los demás [F34, A, CSCW, 340.000 encuestas de EE.UU.]. | **Una** opción por versión; las dos franjas (A/B) son lo máximo que se pide. | "Dos formas de juntarse" (§7) es **para quien organiza**, nunca para el grupo, para no reabrir la negociación. **No** justificarla como "evitar la sobrecarga". |
 | **5** | **Esperar a ver quién va** (nadie quiere ir primero). | Modelo de umbrales: cada persona se suma cuando ya se sumó una cantidad de otras; quien tiene umbral cero arranca, y el resultado depende de **cómo se distribuyen** los umbrales, no del promedio [F35, A, teórico]. [ANALOGÍA]. El mínimo de un plan es parecido a un **contrato de aseguramiento**: se compromete solo si se llega a la cantidad necesaria, y si no, se devuelve todo [F36, A, economía]. Ese diseño es lo que quita el miedo a ir primero. | **El mínimo ya funciona así**: "Grupo confirmado" solo con N confirmaciones; si no llegan, no hay plan. La barra muestra "3 de 4 necesarias". | **Decirlo.** Hoy la pantalla dice "Ya confirmaste… vale solo para esa versión", pero **no dice** que *"tu confirmación solo vale si llegan 4; si no, nadie queda comprometido"*. Esa frase le quita el riesgo de ser el primero. Es solo texto (§8.9). |
 | **6** | **Sin plazo, todo se posterga.** | Las personas aceptan voluntariamente plazos costosos y les sirven, aunque los impuestos desde afuera funcionan mejor que los propios [F37, A, 2002]; **una réplica de 2026 reportó que cambiar los plazos tuvo un efecto despreciable en uno de los estudios** [F37]: la evidencia está disputada. Se mantiene como [HIPÓTESIS]. | El **servidor** pone el plazo y rechaza lo que llega fuera de plazo. | La pantalla debe decir **qué pasa si no se llega** ("si el jueves a las 20:00 no están las 4 confirmaciones, el plan no se arma y nadie queda comprometido"). Aclarar el final reduce el miedo. |
-| **7** | **La baja de último momento.** | Cancelar duele menos de lo que se teme si es sincero y con aviso [F1]. La víspera aumenta las ganas de evitar [F5]. | Reparación a versión 2, sin aceptaciones heredadas; "No voy" sin motivo. | Texto (§8.1) y, después, la "otra forma" como versión 2 (§7). |
+| **7** | **La baja de último momento.** | Cancelar duele menos de lo que se teme si es sincero y con aviso [F1]. La víspera aumenta las ganas de evitar [F5]. | Reparación a versión 2, sin aceptaciones heredadas; "No voy" sin motivo. | **Aprobado en la enmienda 13** (a aplicar antes de la 01:00): «Así no puedo, pero sigo» deja decir que *esta* versión no sirve **sin retirarse** (la «voz» en lugar de la «salida» [F42]); «Rearmar con lo nuevo» arma la versión siguiente con la disponibilidad actualizada, con tope de 3 versiones; la baja se muestra sin nombre. Textos en §8.10. Después: la "otra forma" como versión 2 (§7). |
 
 ### Lo que CRUXE no resuelve
 - **El cierre humano sigue necesitando a alguien que toque "enviar".** La app baja el costo, no lo elimina (causa 2).
@@ -54,6 +65,7 @@ Lectura honesta: casi toda la evidencia viene de **otras situaciones** (emergenc
 | Plazo del servidor | 6 |
 | Aviso personal "falta tu respuesta" | 1, 2 |
 | Reparación a versión 2 sin aceptaciones heredadas | 7 |
+| «Así no puedo, pero sigo» y «Rearmar con lo nuevo» (enmienda 13) | 3, 7 |
 | Texto de recordatorio armado por la app | 2 |
 
 ## 1. Principios de diseño (salen de todo lo que sigue)
@@ -134,7 +146,7 @@ Ver §5. En una línea: **no se pide ni se infiere el género.** Lo que la evide
 ### 3.9 El que nunca puede / cancelar
 - **Se sabe.** Con más de 1.100 encuestados: el 80 % dijo que cancelar no afectaría la amistad pero que se enojaría si supiera que el motivo era mentira; casi el 60 % quería aviso con tiempo y un medio rápido; solo el 10 % esperaba una disculpa; más de la mitad puso entre las peores excusas haber elegido un plan mejor [F1, A/B, EE.UU.]. **No hay datos de cancelaciones en Chile** (`problema.md`).
 - **Riesgo.** Quien sufre de plata, de ánimo o de ganas **inventa una excusa** si la app se la pide. Quien siempre dice "no puedo" queda marcado en el grupo.
-- **La app.** [HOY] **ya cumple lo central**: "No voy" sin motivo, "Hoy paso" que quita el interés sin anunciarlo, "No puedo ninguno" sin explicación. Lo que falta: (a) separar **"no puedo" de "no quiero"** como señales distintas (`docs/usuarios-sinteticos.md` ya lo marca como hueco: "avísenme la próxima"); (b) nunca mostrar frecuencia ni historial de bajas por persona; (c) texto de salida sin culpa (§8).
+- **La app.** [HOY] **ya cumple lo central**: "No voy" sin motivo, "Hoy paso" que quita el interés sin anunciarlo, "No puedo ninguno" sin explicación. Lo que falta: (a) separar **"esta fecha no" de "no voy"**. **Aprobado en la enmienda 13 (a):** «Así no puedo, pero sigo» (`opinar_version`) deja decir que la versión no sirve sin retirarse, y el organizador ve solo el total con 2 o más. Es la idea clásica de dar **voz** para que no quede solo la **salida** [F42, concepto]. Sigue faltando «avísenme la próxima» (`docs/usuarios-sinteticos.md`); (b) nunca mostrar frecuencia ni historial de bajas por persona; (c) texto de salida sin culpa (§8).
 
 ### 3.10 Plata
 - **Se sabe.** La tensión por plata entre amigos se menciona en encuestas comerciales y comentarios de prensa [F29, **C**]; **no encontré un estudio revisado**. Lo más cercano: la ansiedad de contribuir de F7. En Chile, la Ley 21.719 clasifica la "situación socioeconómica" entre los datos sensibles [F27, fuente secundaria; entra en plena vigencia el 1 dic 2026].
@@ -188,6 +200,8 @@ Quién la pone: **Persona** (privada), **Organizador** (decisión del grupo, pú
 5. **Límite que hay que decir** (ya está en `agente-ia.md` §2 y en el pitch): el plan elegido también informa. Si el plan sale sin alcohol, alguien puede sospechar. No se promete ausencia total de inferencia en grupos chicos.
 
 ## 5. Composición del grupo (hombres, mujeres, parejas) con cuidado
+> **Estado:** aprobado por Nico a las 20:51 (D2 y D3). Es regla de producto y va en el título, sin migración.
+
 **Propuesta.** CRUXE **no pide, no infiere y no usa el género** de nadie para armar un plan. La composición se trata como **una decisión explícita del grupo al crear la juntada**:
 
 | Opción de la juntada | Qué significa | Qué cubre del pedido de Nico |
@@ -233,7 +247,7 @@ Hay tres situaciones distintas y cada una pide algo distinto:
 1. **Hablar del plan, no de la casa ni de la persona.** "Esta vez toca un lugar neutro" y no "como nadie quiere recibir…".
 2. **Sin porque.** F1: si no se pide motivo, nadie lo inventa.
 3. **Futuro sin deuda.** "La próxima puede ser en una casa", no "ya que no fue en la de X".
-4. **Positivo: ofrecer es regalo.** Si la oferta es pública ("Fede ofreció su casa"), el valor está en quien da; la persona que no ofreció no aparece. *Trade-off de V6:* una oferta **privada** cuida a quien no puede recibir, pero hace que el motor sepa de casas; una oferta **pública** es simple, pero la ausencia de oferta se nota. Dejamos las dos descritas porque la elección es de producto (**decisión D4**).
+4. **Positivo: ofrecer es regalo.** Si la oferta es pública ("Fede ofreció su casa"), el valor está en quien da; la persona que no ofreció no aparece. *Trade-off de V6:* una oferta **privada** cuida a quien no puede recibir, pero hace que el motor sepa de casas; una oferta **pública** es simple, pero la ausencia de oferta se nota. Dejamos las dos descritas porque la elección es de producto (**decisión D4**). **Nico eligió privada, después de la demo (20:51).**
 5. **El texto lo dice CRUXE, no una persona.** Si lo dice la app, nadie queda como "el que sacó la casa".
 
 ## 7. "No ser absolutista": dos planes parecidos con distinto concepto
@@ -270,6 +284,11 @@ Estructura fija de texto (la redacta la IA con estos límites, §8.7):
 ### Qué se descarta y por qué
 - **Que el grupo vote entre las dos.** Reintroduce la negociación en el chat que CRUXE evita y expone a quien pierde. Además hay más pasos antes de que alguien se comprometa. No recomendado para el sábado. Un "sondeo liviano" con totales solo desde 4 personas es una idea para después.
 - **Publicar dos versiones a la vez.** Rompe "una opción por versión". No.
+- **Si después de la demo se construye «dos planes» para el grupo** (E-d de ux-flujo, `docs/output-debate.md` §2.4: cada persona responde Sí/No por plan en privado y gana el que más «Sí» junta), cuatro resguardos:
+  1. **Nunca publicar el marcador** («4 a 2»), tampoco al organizador, cuando uno de los dos planes es la casa de alguien. Se publica solo el plan que quedó.
+  2. **El nombre de una casa solo aparece si su dueño la ofreció** (D4: oferta privada).
+  3. **El plan que no quedó se presenta como futuro, no como derrota**: «Esta vez toca la parrilla del parque. La otra forma queda para la próxima.»
+  4. **El empate no se anuncia**: se resuelve con la regla fija (la más temprana) y no se dice que hubo empate.
 - **Ofrecer cuatro.** Sin fundamento: el metaanálisis de sobrecarga de opciones da efecto promedio casi cero [F30]. Dos es una decisión de diseño nuestra [HIPÓTESIS]: da una salida real sin reabrir la negociación. Lo mediría `sinteticos` si hubiera tiempo (pregunta: ¿quien organiza elige distinto con dos conceptos que con tres puntajes?).
 
 ### Qué hace falta
@@ -277,8 +296,8 @@ Estructura fija de texto (la redacta la IA con estos límites, §8.7):
   - **En casa:** `asado`, `juegos_casa`.
   - **Afuera / neutro:** `cena`, `bar`, `cine`, `cultura`, `juegos_salida`, `cafe`, `parque`, `padel`, `futbol`, `cerro`, `fiesta`.
   - **Ritmo (tranquilo / con movimiento):** no se mapea a mano: sale del campo `energia` que ya tiene cada fila del catálogo (`algo_tranquilo` / `con_todo`).
-- **Un hueco que hay que decir:** el catálogo tiene **un solo asado**, "Quincho de Tomi (Simulación)", que es de casa. Para que "asado en casa" y "parrilla en un lugar neutro" compitan, hace falta **una fila nueva** de asado en lugar neutro. Es una fila de datos, **no una función**: ver §9 B1.
-- Si el servidor devuelve tres candidatas del mismo concepto (por puntaje), hoy no hay segunda forma que mostrar. La garantía de que haya al menos una de cada concepto cuando existan es una regla de `proponer_plan_borrador` (migración de función): §9 B2.
+- **El hueco del catálogo, resuelto en la enmienda 13 (d):** había **un solo asado**, "Quincho de Tomi (Simulación)", que es de casa. Nico aprobó (20:51) la fila `lugar-sim-14` «Parrilla del parque (Simulación)»: asado, Providencia, barato, techado, algo tranquilo, ambiente tranquilo, 14:00–17:00. La aplica backend antes de la 01:00. Tiene los mismos atributos que el quincho salvo el nombre y la zona, así que las dos compiten de verdad y **las desempata el viaje** (E10). Con eso, «asado en casa» y «parrilla en un lugar neutro» pueden salir juntas entre las candidatas.
+- Si el servidor devuelve tres candidatas del mismo concepto (por puntaje), hoy no hay segunda forma que mostrar. La garantía de que haya al menos una de cada concepto cuando existan es una regla de `proponer_plan_borrador` (migración de función): §9 B2. **Queda para después de la demo**: la enmienda 13 no trae `tipo_lugar`.
 
 ## 8. Textos sugeridos
 Tono rioplatense neutro, cálido y sin culpas. **La app habla de «tú»** (`rincones` y `sinteticos` ya marcaron el voseo como incoherencia), así que los textos van en «tú». Si el equipo decide voseo, se cambia en bloque. Cada texto dice **quién lo ve** y **dónde viviría** (el dueño de la ruta decide si lo aplica).
@@ -357,9 +376,24 @@ Tono rioplatense neutro, cálido y sin culpas. **La app habla de «tú»** (`rin
 | **Quien va a confirmar** (junto al botón) | «Tu confirmación solo vale si llegan 4. Si no llegan, nadie queda comprometido.» | Lo central de la causa 5 (§0b). Es la frase que más falta hoy. |
 | **Todos** (cuenta atrás) | «Se cierra el jueves a las 20:00. Si para entonces no están las 4 confirmaciones, el plan no se arma y no pasa nada.» | Dice el final con claridad (causa 6). |
 | **Quien falta, en su pantalla** | «Falta tu respuesta.» | El aviso por nombre propio (causa 1). |
-| **El grupo, en el recordatorio** | «Te lo recuerda CRUXE: faltan 2 respuestas y se cierra mañana a las 20:00.» | Sin nombres. |
-| **Quien organiza, solo en la app** | «Hoy conviene recordar: faltan 2 y se cierra mañana a las 20:00.» | No envía nada (causa 2). |
+| **El grupo, en el recordatorio** | «Recordatorio para «X»: faltan respuestas y se cierra mañana a las 20:00. Si ya respondiste, no hace falta nada.» | Sin nombres. **Corregido en la auditoría (§16.4):** antes decía «Te lo recuerda CRUXE», que hace creer que la app manda recordatorios. El número solo con 2 o más. |
+| **Quien organiza, solo en la app** | «Hoy conviene recordar: faltan 2 y se cierra mañana a las 20:00.» | No envía nada (causa 2). El número solo con 2 o más; con 1, «aún faltan confirmaciones» (§16.4). |
 | **Recordatorio de la víspera** | «Mañana a las 14:00 en [lugar]. Calcula tu viaje con unos 15 minutos de margen. Si no puedes ir, avisa: no hace falta contar por qué.» | Une U4 y §8.1. |
+
+### 8.10 «Así no puedo, pero sigo», rearmar y baja sin nombre (enmienda 13)
+Los rótulos los fija la enmienda 13 y las pantallas son de front-juan. Si alguno cambia, **avisar antes a qa-noche**, porque los guiones de prueba buscan rótulos.
+| Quién ve | Texto | Notas |
+|---|---|---|
+| **Quien responde** (botón junto a confirmar) | «Así no puedo, pero sigo» | Rótulo de la enmienda 13. |
+| **Quien responde** (ayuda bajo el botón) | «Si esta fecha no te sirve pero quieres ir, márcalo: sigues en el plan y puedes cambiar cuándo puedes. Nadie ve que fuiste tú.» | El organizador ve solo el total, y solo con 2 o más. |
+| **Quien lo marcó** | «Anotado. Sigues en el plan. Cambia cuándo puedes: si se rearma, lo vas a ver acá.» | No promete avisos (la app no los manda). |
+| **Quien responde** (junto a «Retirarme») | «Si solo esta fecha no te sirve, usa "Así no puedo, pero sigo". Retirarte es para no participar más en este plan.» | Actualiza el pedido de ux-flujo (`output-debate.md` §3.1). |
+| **Quien organiza** (con 2 o más) | «Algunos no pueden así: puedes rearmar con lo nuevo.» | Texto de la enmienda 13. |
+| **Quien organiza** (con 0 o 1) | El texto de siempre. | Con 1, mostrar algo delataría a esa persona. |
+| **El grupo** (versión nueva) | «Hay una versión nueva con lo que cambió. Las confirmaciones anteriores no cuentan; si te sirve, confirma de nuevo.» | §8.4. |
+| **Quien organiza** (tope de 3 versiones) | «Ya van tres versiones. Pueden quedarse con esta o probar otro día con un plan nuevo.» | Sin culpa, sin «no se pusieron de acuerdo». |
+| **El grupo** (baja) | «Una persona se retiró.» | Enmienda 13 (c): sin nombre, sin motivo, sin decir si había confirmado. |
+| **Quien se retira** | «Gracias por avisar. No hace falta contar por qué.» | §8.1, tomado por la enmienda 13. |
 
 ## 9. Priorización
 ### A. Antes de la entrega del sábado 13:00, **sin migración** (textos, agente, interfaz)
@@ -383,7 +417,9 @@ Todo lo de abajo depende de que backend tenga tiempo; después de las 12:00 no h
 | **B3** | **Clave `comida`** en `p_preferencias` (V2). | Variable guardada, para filtros futuros. Hoy no tiene efecto sin catálogo con propiedades de comida. | Medio, bajo valor hoy |
 | **B4** | **Columna `modalidad` en la propuesta** (V1) y que `get_proposal_state` la devuelva. | Que sea un campo y no un texto en el título. Cambia `create_proposal` (firma) → choca con la lista permitida 31/0. | Alto riesgo |
 
-**Mi recomendación:** pedir **solo B1** (y B2 si backend lo ve chico). B3 y B4 no valen el riesgo antes del sábado; mientras tanto A1 y A4 cubren lo esencial con texto.
+**Resuelto por Nico (20:51):** B1 sí (enmienda 13 d, `lugar-sim-14`), B2 después de la demo, B3 no por ahora, B4 no (D3: va en el título).
+
+**Mi recomendación original:** pedir **solo B1** (y B2 si backend lo ve chico). B3 y B4 no valen el riesgo antes del sábado; mientras tanto A1 y A4 cubren lo esencial con texto.
 
 ### C. Para después de la entrega (anotar como «siguiente paso» en el README)
 | # | Qué |
@@ -406,7 +442,7 @@ Todo lo de abajo depende de que backend tenga tiempo; después de las 12:00 no h
 | E2 | «Hoy conviene recordar: faltan N y se cierra mañana» visible solo para quien organiza, sin enviar nada; y «Te lo recuerda CRUXE» en el texto del recordatorio | ux-flujo | **Antes** | Bajo |
 | E3 | `.ics` con `VALARM` (-1 día y -2 h); margen de 15 minutos en el recordatorio (§12 U3, U4) | friccion (`compartir.ts`) | **Antes** | Bajo |
 | E4 | Botón «Buscar el lugar en el mapa» (solo el lugar; oculto o «(ejemplo)» si es simulación) y línea fija de día, hora y duración (§12 U1, U2) | front-juan | **Antes** | Bajo |
-| E5 | **Estilo** simple · normal · especial: selector para quien organiza, parámetro en la función `agente`, tabla fija actividad → nivel, frase fija; dos formas por estilo (§13) | agente-ia | **Antes** | Medio |
+| E5 | **Estilo** simple · normal · especial: selector para quien organiza, parámetro en la función `agente`, tabla fija actividad → nivel, frase fija; dos formas por estilo (§13) | agente-ia | **Antes** (D7 aprobada) | Medio |
 | E6 | Tiempo estimado propio por persona (§12 U6) | backend | **Después** (enmienda) | Medio |
 | E7 | Presupuesto con `algo_especial` (V11) | backend | **Después** (enmienda) | Medio |
 
@@ -469,6 +505,8 @@ Pedido de Nico (20:28): *«que la gente esté ubicada en tiempo y espacio»*. Re
 - **ux-flujo**: línea U5 en la ficha del borrador cuando hay `viaje`.
 
 ## 13. Nivel de gasto y estilo, sin clase social
+> **Estado:** D7 aprobada por Nico (viernes 23, 21:00, en la sesión psico): el estilo de la ocasión entra **sin migración**, con las reglas de abajo (el tope del que menos quiere gastar manda; la clase social no se pide ni se infiere). Lo construye agente-ia en sus rutas; pedido en `agentes/psico.md`.
+
 Pedido de Nico (20:28): que un plan no quede mal, por ejemplo proponer algo muy barato a un grupo que prefiere otra cosa. **Con una condición que él mismo fijó: no preguntar ni inferir la clase social.** Este apartado explica por qué y cómo se cubre la intención sin ese dato.
 
 ### 13.1 Por qué NO se usa la clase social
@@ -507,3 +545,219 @@ Hoy el presupuesto tiene **un solo sentido**: baja el tope. Valores: «ojalá gr
 1. **Costo visible desde el principio**: el plan ya declara «costo cero» o «aporte fijo conocido por persona» (`caso-canonico.md`). Mantenerlo y mostrarlo arriba (U1): nadie descubre el costo en la puerta.
 2. **«Cada uno lleva algo»** como modalidad (§3.1).
 3. **Un plan «simple» siempre disponible como segunda forma**, aunque el estilo pedido sea «especial».
+
+## 14. Lámina de 30 segundos: «CRUXE entiende la dinámica de un grupo» (para `docs/guion-demo.md` y `docs/preguntas-jurado.md`)
+Pedido del coordinador (21:02). Versión para leer en voz alta; unas 90 palabras, 30–35 segundos. Dueño de los documentos del pitch: apertura (`guion-demo.md`, `preguntas-jurado.md`) y agente-ia (`pitch*.md`). Cada línea dice de dónde sale, para que quien la lea pueda verificarla contra el «Estado verificado para el pitch».
+
+> 1. Un grupo no discute el plan: discute lo que el plan dice de cada uno.
+> 2. En CRUXE cada uno dice en privado cuándo puede y qué necesita. Nadie del grupo lo ve.
+> 3. El servidor propone una sola opción, a menos de N minutos para todos, sin decir quién vive dónde.
+> 4. Cada uno confirma esa versión exacta. El silencio no es un sí.
+> 5. Si alguien se baja, no tiene que decir por qué, y el plan se rearma desde cero.
+> 6. Del enlace a responder: cuatro toques, sin cuenta ni contraseña.
+> 7. Lo que falta, y hoy no está: dos formas de juntarse y que la casa rote sola.
+
+| Línea | De dónde sale | Cuidado |
+|---|---|---|
+| 1 | Este documento, §0 | Es la tesis, no un dato. |
+| 2 | Condiciones y preferencias privadas (contrato; E4, E8, E10) | «Nadie del grupo lo ve» vale para condiciones y preferencias; «me interesa» y las confirmaciones sí se ven. Si hay tiempo, decir «cuándo puede y qué necesita». |
+| 3 | Una opción por versión; E10 «Queda a menos de N minutos para todos (estimado)», publicado (`main` `3ace04e`) | Decir la N real de la demo (sale solo con 4 o más personas con zona; los simulados del demo la tienen). Es estimado. |
+| 4 | Confirmación por versión; «interés no es confirmación» | — |
+| 5 | «No voy» sin motivo; reparación a versión 2 sin aceptaciones heredadas | «Sin nombre» solo cuando la enmienda 13 esté en producción; mientras tanto, «no tiene que decir por qué» es lo cierto. |
+| 6 | Fricción #88, publicado (`main` `fae49fa`): «4 toques del enlace a responder» | Confirmar la cuenta con la última corrida de sinteticos (`docs/usuarios-sinteticos.md`). |
+| 7 | §7 y §6 de este documento | Si agente-ia construye «dos formas» esta noche, cambiar a «la casa rote sola y el grupo elija entre dos planes». No prometer fechas. |
+
+Si hay que recortar, sacar la línea 6. Si preguntan «¿y la IA?»: «El servidor elige con reglas fijas; la IA solo explica y redacta la invitación. Nunca ve a una persona.» Si preguntan por género o clase social: «No los pedimos ni los inferimos. En un grupo de cinco, delatan.»
+
+## 15. Borrador: «¿Qué guarda CRUXE de mí?» (D5, rotulado para después del evento)
+Pedido del coordinador (21:02), para que no se pierda. Es el texto de una pantalla o un enlace bajo la portada (la fila 55 de `docs/investigacion-a-producto.md` ya lo tiene como pendiente de friccion). **No es asesoría legal** y no afirma cumplimiento de la Ley 21.719 (vigente desde el 1 dic 2026): dice qué hace la app. Lo marcado **[a confirmar]** lo tiene que revisar backend antes de publicarlo. Tono: «tú», frases cortas.
+
+> ### ¿Qué guarda CRUXE de mí?
+>
+> **Lo que guardamos**
+> - Una sesión anónima: ni correo, ni teléfono, ni contraseña. Y el nombre que elegiste al entrar.
+> - El grupo al que entraste y los planes de ese grupo.
+> - Para cada plan: cuándo puedes (sí, no o pendiente por cada horario), si marcaste «me interesa», qué versión confirmaste y si te retiraste.
+> - Si usaste el agente: tus preferencias, todas opcionales (presupuesto, ritmo, ambiente, bajo techo, qué te gustaría, tu comuna, cómo te mueves, cuánto viajas, momento del día), y si dejaste que el agente las use o que te invite.
+> - Si opinaste sobre una versión («así no puedo, pero sigo»).
+>
+> **Quién ve qué**
+> - **Solo tú y el servidor:** cuándo puedes, tus preferencias y tus opiniones. Nadie del grupo las ve, ni quien organiza.
+> - **El grupo:** tu nombre, si marcaste «me interesa» y qué versión confirmaste.
+> - **Quien organiza:** además, totales sin nombres («2 personas no pueden así»), y solo cuando son 2 o más.
+> - **La inteligencia artificial:** nunca te ve. Recibe opciones ya elegidas por el servidor, el clima y totales del grupo. No recibe nombres, preferencias de nadie, comunas ni cómo se mueve cada uno.
+>
+> **Lo que no guardamos**
+> - Tu ubicación. Solo la comuna que elegiste, si la elegiste, y nunca una dirección.
+> - Tu dieta, tu salud, tu ánimo, tu pareja, tu género ni cuánto ganas. No se preguntan.
+> - Tus conversaciones: CRUXE no lee WhatsApp.
+> - Tus condiciones en registros de errores ni en mensajes compartidos.
+>
+> **Por qué tratamos el presupuesto y la comida con más cuidado**
+> Cuánto puedes gastar y qué puedes comer dicen cosas de ti que no tienen por qué saberse en un grupo. La ley chilena de datos personales trata la situación económica y la salud como datos sensibles. Por eso el presupuesto nunca sale del servidor ni aparece en totales, y la comida se pregunta por esta juntada y no como una etiqueta tuya: el plan dice «habrá opción sin carne» para todos, sin decir quién lo pidió.
+>
+> **Cómo se borra**
+> - Si cierras el navegador o borras sus datos, pierdes el acceso a esa sesión: para volver, necesitas el enlace del grupo y elegir tu nombre de nuevo. **[a confirmar: qué pasa con el asiento anterior]**
+> - Hoy no hay un botón para borrar tus datos del servidor. Está en la lista de lo que sigue. Mientras tanto, lo que guardamos queda ligado a una sesión anónima sin correo ni teléfono. **[a confirmar con backend: retención y vía de borrado]**
+> - El grupo de prueba «Los del asado» se reinicia en cada demo; nada de lo que se carga ahí es real.
+>
+> **Límite honesto**
+> El plan elegido también dice algo. Si sale un plan gratis, el grupo puede pensar que alguien lo pidió. No prometemos que nadie pueda adivinar nada en un grupo chico; prometemos que la app no lo dice.
+
+**Qué falta para publicarlo (después del evento):** confirmar con backend la retención y la vía de borrado; decidir si «retirarme» borra tus respuestas de ese plan o solo las desactiva; revisar el consentimiento al guardar preferencias (hoy es implícito al guardar) frente a la Ley 21.719; y poner el enlace en la portada (friccion, fila 55).
+
+## 16. Auditoría de tono de los textos visibles de la app
+Pedido del coordinador (21:02). Hecha a las 21:17 del viernes 23 sobre el código integrado en `wip/fundamentos` (lo que está en producción o a punto de publicarse). **Es lectura de código, no de pantalla**; lo que vive en `wip/ux`, `wip/friccion` o `wip/front-juan` sin integrar puede diferir. Cinco lectores en paralelo, un lote de carpetas cada uno, con el mismo criterio de nueve puntos; yo verifiqué los siete hallazgos altos contra el código con `grep` antes de escribir esto. Los pedidos a cada dueño, con archivo, línea y texto exacto, están en `agentes/psico.md`.
+
+**Criterios:** C1 culpa · C2 expone · C3 asume asado o anfitrión en texto genérico · C4 orden o jerga de sistema · C5 rompe §8 · C6 voseo · C7 promete de más · C8 confunde · C9 humor con blanco.
+
+**Cobertura:** unos 930 textos revisados en `src/screens`, `src/components`, `src/login`, `src/friccion`, `src/componentes-nuevos`, `src/agente`, `src/App.tsx`, `src/lib/shell.tsx`, `src/lib/compartir.ts` y los textos fijos de `supabase/functions/agente`. **69 hallazgos: 7 altos, 19 medios, 43 bajos.** Ningún C9 (humor con blanco) en toda la app. Sin hallazgos en `compartir.ts` (los textos de WhatsApp y calendario ya son los de §8), `Integrantes.tsx`, `Calendario.tsx`, `Planes.tsx`, `Propuesta.tsx` y los componentes gráficos.
+
+### 16.1 Lo que hay que arreglar primero (7 altos): todos son la misma falla
+Cinco de los siete **nombran a quien se retiró** o dicen que «había confirmado» en textos que ve todo el grupo; la enmienda 13 (c), aprobada a las 20:51, pide «Una persona se retiró» sin nombre ni motivo. El historial viaja en capturas al chat. Los otros dos **prometen que todo lo que marques es privado** justo antes de la pantalla donde «me interesa» y la confirmación los ve el grupo.
+
+| # | archivo:línea | texto actual | texto propuesto | dueño |
+|---|---|---|---|---|
+| A1 | `src/lib/format.ts:112` (lo muestra `HistorialTab.tsx:96`) | «{nombre} se bajó (versión N)»; y en la línea 99, sin actor, `quien = 'El sistema'`: con la enmienda 13 se leería **«El sistema se bajó»** | «Una persona se retiró (versión N)» / «Una persona se retiró», sin `quien` | **coordinador** (`src/lib/format.ts` no tiene dueño esta noche) |
+| A2 | `src/screens/PlanTab.tsx:325, 334` | «{Nombre} se bajó» · «{Nombre} había confirmado» en la columna «Versión N · ya no vale» | Listar solo a quienes «había confirmado»; una línea aparte: «Una persona se retiró.» | front-juan |
+| A3 | `src/screens/PlanTab.tsx:417-432` | «Bajas registradas» · «{Nombre} se bajó (versión N) · había confirmado» · «Quien se baja no vuelve a ser elegible…» | «Cambios en el grupo» · «Una persona se retiró (versión N).» · «Quien se retira no vuelve a entrar en este plan.» | front-juan |
+| A4 | `src/components/Cruce.tsx:69, 168-170` (datos de `Propuesta.tsx:297, 306`) | Disco con el nombre de quien se retiró, tachado en rojo; descripción accesible «{Nombre}: se bajó» | Sin tachado sobre un nombre: el disco pasa a «sin confirmar» y la leyenda suma «1 se retiró»; la descripción cierra con «; una persona se retiró» | front-juan |
+| A5 | `src/screens/PlanTab.tsx:282` | «La versión N ya no alcanza el mínimo o perdió al anfitrión.» | «La versión N ya no reúne lo necesario para juntarse.» (el rol es público y único: decir «perdió al anfitrión» es nombrarlo) | front-juan |
+| A6 | `src/login/QuienEres.tsx:275` | «Lo que marques después es privado.» | «Cuándo puedes y tus condiciones no las ve nadie del grupo.» | friccion |
+| A7 | `src/login/QuienEres.tsx:49` | «…lo que marques después es privado.» (aviso que se muestra en la propia pantalla de Responder) | «…cuándo puedes y tus condiciones no las ve nadie del grupo.» | friccion |
+
+### 16.2 Medios (19), por dueño
+- **front-juan (7):** «El organizador ({nombre}) **debe** buscar una alternativa» (`PlanTab.tsx:407`, una persona con nombre bajo obligación delante del grupo); «retirarte avisa al grupo» y mezcla «esta fecha no» con retirarse (`RespuestaTab.tsx:196`; lo cubre `AyudaRetiro` de ux-flujo); «anfitrión» en cuatro textos genéricos de la ficha del plan (`PlanTab.tsx:84, 134, 202-205, 224`) y «Pendiente» en ámbar sobre una persona con nombre; «No pudimos confirmar el resultado» justo después de «Confirmar versión N» (`ui.tsx:176`); «actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación» (`Inicio.tsx:368`).
+- **agente-ia (6):** «Ningún plan… queda dentro del tiempo de viaje de todos. Por privacidad no se dice para quién» (`AgentePanel.tsx:638`: da el motivo y presupone un quién); «le sirve al presupuesto de todos» en el «Por qué» (`api.ts:103` = `logica.ts:80`: palabra de plata); «el agente las usa para elegir el plan» (`:204`, el agente propone, no elige); «Buscar y **reservar** en EasyCancha» y «**Ver turnos** en ATC» (`canchas.ts:35, 44`: solo son enlaces); voseo y «podés reintentar» sin botón (`:516`).
+- **friccion (3):** «no disponible» junto a un nombre se lee como estado de la persona (`QuienEres.tsx:323`); la nota de «reclamar el lugar de Luna» aparece con códigos de grupos reales (`Entrar.tsx:283`); «actúas con tu propia sesión…» (`Entrar.tsx:252`, `QuienEres.tsx:47`; la primera frase la busca un guion e2e y no se toca).
+- **ux-flujo (2):** «Faltan 1» más la lista pública de quién confirmó deja deducir quién falta (`avisoPersonal.ts:104`: número solo con 2 o más); «Te lo recuerda CRUXE… si todavía no respondiste» (`recordar.ts:33`: la app no manda recordatorios y «todavía no respondiste» reprocha; **era un texto mío**, §16.4).
+
+### 16.3 Bajos (43): cinco patrones, no 43 problemas
+| Patrón | Cuántos | Dónde | Qué se propone |
+|---|---|---|---|
+| **«El servidor» como interlocutor visible** («lo ve solo el servidor», «el servidor decide», «pide al servidor», «horas del servidor») | 12 | Inicio, Perfil, NuevaPropuesta, HistorialTab, PlanTab, RespuestaTab, Responder, QuienEres, App | «CRUXE» o, mejor, lo que le importa a la persona: «nadie del grupo lo ve», «la hora que vale es la de CRUXE» |
+| **Voseo** en una app de «tú» | 10 | todo `AgentePanel.tsx` (ya lo habían marcado rincones y sinteticos) | «marca», «te mueves», «viajas», «eliges tú», «completas tú», «pídele», «crea», «puedes» |
+| **«Anfitrión» como rol en textos genéricos** (y una corona como ícono) | 7 | NuevaPropuesta (aria-label, aviso del agente, placeholder «Asado en casa de Tomi»), PlanTab, Icono | «quien no puede faltar»; ícono persona o candado; placeholder «Juntada del sábado» fuera de la demo |
+| **Tono de expediente o de sistema** («la baja queda registrada», «Registrando baja», «elegible», «en una sola operación», «Versión incompatible», «dato obligatorio», «debe ser un sábado futuro») | 8 | RespuestaTab, PlanTab, SimulacionTab, api.ts, index.ts | Frases de persona: «Dejas de estar en este plan», «Un momento…», «Hay una versión nueva de CRUXE: recarga la página», «Elige un sábado de las próximas dos semanas» |
+| **Reproche suave o puerta cerrada** («Aún no completaste», «así no entras», «Falta tu respuesta», «Una baja dejó el plan sin cumplir», «Te retiraste… ya no puedes participar», «Perderás») | 6 | PlanTab, RespuestaTab, FaltaTuRespuesta, avisoPersonal | Invitar sin señalar la falta; tras retirarse, «Gracias por avisar. No hace falta contar por qué.» |
+
+### 16.4 Lo que la auditoría corrige de este mismo documento
+- **«Te lo recuerda CRUXE»** (§8.9, mi propuesta de las 20:46) hace creer al grupo que la app manda recordatorios, cuando los manda una persona (D8). Corregido en §8.9: «Recordatorio para «X»: faltan respuestas y se cierra mañana a las 20:00. Si ya respondiste, no hace falta nada.»
+- **«Faltan 2»**: el número de pendientes solo se muestra con 2 o más; con 1, «aún faltan confirmaciones». Es la misma regla de celdas chicas que rige para los totales [F28]. Aplicado en §8.9.
+
+### 16.5 Qué no se toca y a quién avisar
+- Rótulos de los guiones e2e (`prompts/equipo-noche.md`): ninguno aparece en los hallazgos. La primera frase «Reclamaste el lugar de {n}.» la busca `tests/e2e/recorrido-dos-sesiones.mjs:123`: se mantiene y se cambia solo lo que sigue.
+- Antes de cambiar «Bajas registradas», «se bajó», «había confirmado», «Imprescindible (anfitrión)», «Te retiraste de esta propuesta», «Una baja dejó el plan sin cumplir», «Falta tu respuesta» o «no disponible», los dueños avisan a qa-noche (ya está pedido).
+- **Límite:** no verifiqué en pantalla; cuando Juan conecte las piezas, reviso los textos en el navegador (pedido del coordinador).
+
+### 16.6 Tablas completas por lote (archivo:línea · texto actual · texto propuesto · criterio · dueño · prioridad)
+
+#### Lote 1: `src/screens` (CrearGrupo, Espacio, HistorialTab, Inicio, NuevaPropuesta, Perfil) · dueño front-juan
+| archivo:línea | texto actual | texto propuesto | criterio y por qué | dueño | prioridad |
+|---|---|---|---|---|---|
+| HistorialTab.tsx:96 (texto en src/lib/format.ts:112, `describirEvento`) | «{nombre} se bajó (versión N)» / «{nombre} se bajó» | «Una persona se retiró (versión N)» / «Una persona se retiró» | C2: el historial compartido nombra a la persona junto a su baja; la enmienda 13 (c) pide «Una persona se retiró» sin nombre. Si el servidor ya omite el actor, hoy se leería «El sistema se bajó» | front-juan · avisar a qa-noche (rótulo «Una persona se retiró») | alta |
+| Inicio.tsx:368 | «Reclamaste el lugar de {nombre}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la…» | «Ahora {nombre} eres tú. Lo que marques desde aquí es tuyo y privado; la simulación ya no actúa por ti.» | C4: jerga visible («sesión», «visibles para la simulación») y deja la duda de si tus condiciones las veía alguien | front-juan | media |
+| Inicio.tsx:214 | «El servidor propone una sola opción compatible.» | «CRUXE propone una sola opción compatible.» | C4: «el servidor» en el «Cómo funciona»; la portada ya dice «CRUXE propone» | front-juan | baja |
+| NuevaPropuesta.tsx:473 | «Cierra {momento} (hora de Santiago). El servidor decide si se cumplió.» | «Cierra {momento} (hora de Santiago). La hora que vale es la de CRUXE, no la de cada teléfono.» | C4: «el servidor decide» es jerga de sistema para quien arma el plan | front-juan | baja |
+| Inicio.tsx:86 | «Tu sesión queda guardada en este teléfono. Lo que marques sobre cuándo puedes lo ve solo el servidor.» | «Tu sesión queda guardada en este teléfono. Lo que marques sobre cuándo puedes queda en privado: nadie del grupo lo ve.» | C4: «lo ve solo el servidor» suena técnico; lo que importa es que nadie del grupo lo ve | front-juan | baja |
+| Perfil.tsx:98 | «Tus condiciones (cuándo puedes) las ve solo el servidor. Solo quien organiza ve cuántas personas respondieron, nunca…» | «Tus condiciones (cuándo puedes) quedan en privado: nadie del grupo las ve. Quien organiza ve cuántas personas respondieron, nunca qué respondió cada una.» | C4: mismo «servidor» en la tarjeta de privacidad | front-juan | baja |
+| HistorialTab.tsx:68 | «Lo que pasó, en orden. Horas del servidor, en hora de Santiago. Lo hecho por personas simuladas dice Simulación y quién…» | «Lo que pasó, en orden, en hora de Santiago. Lo hecho por personas simuladas dice Simulación y quién lo ejecutó.» | C4: «horas del servidor» es detalle técnico que no aporta a la persona | front-juan | baja |
+| NuevaPropuesta.tsx:332 | «Título y momentos vienen del borrador del agente. Revisa cupos, anfitrión y cierre: el agente no crea ni confirma nada.» | «Título y momentos vienen del borrador del agente. Revisa los cupos, quién no puede faltar y el cierre: el agente no crea ni confirma nada.» | C3/C5: «anfitrión» como rol en un aviso que vale para cualquier grupo; el campo se llama «No puede faltar» | front-juan | baja |
+| NuevaPropuesta.tsx:425 | aria-label «Persona imprescindible (anfitrión)» | «Persona que no puede faltar» | C3/C5: «anfitrión» en el formulario genérico; no toda juntada tiene casa ni quien recibe | front-juan | baja |
+| NuevaPropuesta.tsx:375 | placeholder «Ej.: Asado en casa de Tomi» | «Ej.: Juntada del sábado» | C3: en un grupo propio (no demo) el ejemplo asume asado y «casa de» una persona ajena al grupo; en la demo el título ya viene precargado | front-juan | baja |
+
+Archivos leídos: src/screens/CrearGrupo.tsx, src/screens/Espacio.tsx, src/screens/HistorialTab.tsx, src/screens/Inicio.tsx, src/screens/NuevaPropuesta.tsx, src/screens/Perfil.tsx (más src/lib/format.ts `describirEvento`, src/lib/compartir.ts `textoInvitacion`).
+Textos revisados aprox.: 220
+Sin hallazgos en: CrearGrupo.tsx, Espacio.tsx.
+
+#### Lote 2: `src/login`, `src/App.tsx`, `src/lib/shell.tsx`, `src/lib/compartir.ts` · dueño friccion
+| archivo:línea | texto actual | texto propuesto | criterio y por qué | dueño | prioridad |
+|---|---|---|---|---|---|
+| src/login/QuienEres.tsx:275 | «Este teléfono queda como {nombre} en «{espacio}». Lo que marques después es privado.» | «Este teléfono queda como {nombre} en «{espacio}». Cuándo puedes y tus condiciones no las ve nadie del grupo.» | C7: promete que TODO lo que marques es privado justo antes de pasar a Responder, donde «me interesa» y la confirmación los ve el grupo. | friccion | alta |
+| src/login/QuienEres.tsx:49 | «Entraste como {nombre}. Este teléfono queda como {nombre}: lo que marques después es privado.» | «Entraste como {nombre}. Este teléfono queda como {nombre}; cuándo puedes y tus condiciones no las ve nadie del grupo.» | C7: misma promesa, y este aviso se muestra en la propia pantalla de Responder (tomarAviso), al lado del «me interesa» público. | friccion | alta |
+| src/login/QuienEres.tsx:323 | «no disponible» (junto a cada nombre tomado de la lista; el lector lo anuncia por aria-describedby) | «ya entró» | C8/C2: al lado de un nombre se lee como estado de la persona («Luna no puede»), cuando solo significa que ese nombre ya fue tomado. | friccion | media |
+| src/login/Entrar.tsx:283 | «Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.» | «Solo en la demo «Los del asado»: si escribes el nombre de una persona simulada (por ejemplo "Luna"), tomas su lugar.» | C8: en #/entrar aparece con cualquier código, también de un grupo real (QuienEres.tsx:422 la esconde fuera de la demo porque «confunde»); «reclamar» en Chile suena a quejarse. | friccion | media |
+| src/login/Entrar.tsx:252 | «Reclamaste el lugar de {n}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la…» | «Reclamaste el lugar de {n}. Desde ahora respondes tú desde este teléfono; cuándo puedes y tus condiciones no las ve nadie del grupo.» | C4: «la simulación» como algo que «ve» condiciones y «actúas con tu propia sesión» es jerga de sistema; sugiere que las condiciones eran visibles para alguien. Mismo texto en QuienEres.tsx:47 y, fuera del lote, Inicio.tsx:368. | friccion (la 1.ª frase la busca tests/e2e/recorrido-dos-sesiones.mjs:123: no se toca) | media |
+| src/login/QuienEres.tsx:351 | «Tu sesión queda guardada en este teléfono. Lo que marques sobre cuándo puedes lo ve solo el servidor.» | «Tu sesión queda guardada en este teléfono. Cuándo puedes y tus condiciones no las ve nadie del grupo.» | C4: «el servidor» es jerga visible en la nota de privacidad; lo que importa a la persona es que nadie del grupo lo ve. | friccion | baja |
+| src/App.tsx:209-210 | «Recarga para intentarlo de nuevo; lo que guardaste ya está en el servidor.» (y l. 210 «Recarga la aplicación. Lo que guardaste ya está en el servidor.») | «Recarga para intentarlo de nuevo; lo que ya guardaste no se pierde.» (y «Recarga la aplicación. Lo que ya guardaste no se pierde.») | C4: «el servidor» en un aviso de error; basta decir que no se pierde. | friccion | baja |
+| src/App.tsx:101 | «Sesión anónima: aún sin nombre en un espacio. Ver tu perfil» (texto solo para lector de pantalla) | «Todavía sin nombre en ningún espacio. Ver tu perfil» | C4: «Sesión anónima» es jerga para quien usa lector de pantalla y no dice qué significa. | friccion | baja |
+
+Archivos leídos: src/App.tsx, src/lib/shell.tsx, src/lib/compartir.ts, src/login/Entrar.tsx, src/login/QuienEres.tsx, src/login/Integrantes.tsx, src/login/estado.ts, src/login/fuente.ts, src/login/login.css.
+Textos revisados aprox.: 110
+Sin hallazgos en: src/lib/compartir.ts, src/lib/shell.tsx, src/login/Integrantes.tsx, src/login/estado.ts, src/login/fuente.ts, src/login/login.css.
+
+#### Lote 3: `src/screens` (PlanTab, Planes, Propuesta, RespuestaTab, SimulacionTab) y `src/components` · dueño front-juan
+| archivo:línea | texto actual | texto propuesto | criterio y por qué | dueño | prioridad |
+|---|---|---|---|---|---|
+| PlanTab.tsx:325, 334 | «{Nombre} se bajó» · «{Nombre} había confirmado» (columna «Versión N · ya no vale») | Listar solo a quienes siguen («{Nombre} había confirmado»); a quien se retiró no nombrarlo: una línea aparte «Una persona se retiró.» | C2: nombra a la persona junto a la baja y dice que había confirmado; la enmienda 13(c) lo prohíbe en todo texto compartido | front-juan | alta |
+| PlanTab.tsx:417-432 | «Bajas registradas» · «{Nombre} se bajó (versión N) · había confirmado» · «Quien se baja no vuelve a ser elegible en esta propuesta.» | Título «Cambios en el grupo»; una línea por baja: «Una persona se retiró (versión N).» sin nombre ni «había confirmado»; cierre: «Quien se retira no vuelve a entrar en este plan.» | C2: lista pública con nombre, versión y si había confirmado (enmienda 13(c)); «registradas» y «elegible» suenan a expediente (C4) | front-juan | alta |
+| Cruce.tsx:69, 168-170 (lo alimenta Propuesta.tsx:297, 306) | «{Nombre}: se bajó» (descripción accesible) y tachado rojo sobre el disco con el nombre de quien se retiró | En la descripción no nombrar a quien se retiró; cerrar con «; una persona se retiró». Sin tachado sobre un nombre: el disco pasa a «sin confirmar» y la leyenda suma «1 se retiró» | C2: la escena viaja en capturas al chat del grupo y muestra a una persona con nombre y tachada; enmienda 13(c) | front-juan | alta |
+| PlanTab.tsx:282 | «La versión N ya no alcanza el mínimo o perdió al anfitrión.» | «La versión N ya no reúne lo necesario para juntarse.» | C2/C3: «perdió al anfitrión» equivale a nombrar a quien se retiró (el rol es público y único); además asume anfitrión en un texto genérico | front-juan | alta |
+| PlanTab.tsx:407 | «El organizador ({nombre}) debe buscar una alternativa. Mientras tanto puedes actualizar tus condiciones en "Mi respuesta".» | «Quien organiza ({nombre}) puede buscar otra opción. Mientras tanto, puedes actualizar cuándo puedes en "Mi respuesta".» | C1/C4: «debe» pone a una persona con nombre bajo una obligación delante de todo el grupo | front-juan | media |
+| RespuestaTab.tsx:196 | «Si ya no puedes, retirarte avisa al grupo. Es definitivo en esta propuesta: no podrás volver a participar en ella.» | «Retirarte es para no participar más en este plan, y es definitivo. Si solo esta fecha no te sirve, usa «Así no puedo, pero sigo».» | C8/C7: mezcla «no puedo esta fecha» con retirarse del plan; «avisa al grupo» suena a una notificación que CRUXE no envía | front-juan | media |
+| PlanTab.tsx:84 | «Imprescindible (anfitrión)» | «No puede faltar» | C3/C5: rótulo genérico de la ficha asume anfitrión y casa para cualquier juntada; la pantalla de creación ya dice «No puede faltar» | front-juan | media |
+| PlanTab.tsx:202-205 | «Anfitrión ({nombre})» · «Pendiente» | «No puede faltar ({nombre})» · «Sin confirmar» | C3: anfitrión en texto genérico; «Pendiente» en ámbar sobre una persona con nombre se lee como apuro (C1) | front-juan | media |
+| PlanTab.tsx:134 | «El último cupo está reservado para el anfitrión. Podrás confirmar si se libera un cupo para otros.» | «El último cupo está reservado para quien no puede faltar. Si se libera otro, podrás confirmar.» | C3: anfitrión en texto genérico (vale para un plan en lugar neutro) | front-juan | media |
+| PlanTab.tsx:224 | «Cupo del anfitrión reservado hasta que {nombre} confirme. Cupos libres para el resto: N.» | «Cupo reservado para {nombre} (no puede faltar) hasta que confirme. Libres para el resto: N.» | C3: anfitrión en texto genérico | front-juan | media |
+| ui.tsx:176 | «No pudimos confirmar el resultado» | «No sabemos si llegó» | C8: justo después de pulsar «Confirmar versión N», «confirmar» se lee como la confirmación del plan y no como el resultado del envío | front-juan | media |
+| PlanTab.tsx:222 (Icono.tsx:85) | Ícono «anfitrion» = corona (Crown) junto a «Cupo del anfitrión» | Usar «persona» o «candado»; sin corona | C5: la corona trata al anfitrión como rol de orgullo (psico §3.1, principio P1) | front-juan | baja |
+| PlanTab.tsx:506 | «Aún no completaste tus condiciones.» | «Cuando puedas, marca cuándo te sirve. Es privado y lo cambias después si hace falta.» | C1: «aún no…» en tono de reproche; la presión es justo la causa 1 del no-cierre | front-juan | baja |
+| RespuestaTab.tsx:31-33, 175; PlanTab.tsx:129 | «Te retiraste de esta propuesta» · «Ya no puedes participar en ella.» / «Te retiraste de esta propuesta y ya no puedes participar en ella.» | «Te retiraste de este plan.» · «Gracias por avisar. No hace falta contar por qué.» (junto al botón: «Te retiraste de este plan; por eso no puedes confirmar esta versión.») | C1: tras bajarse, la persona solo recibe una puerta cerrada; psico §8.1 y la enmienda 13 piden agradecer el aviso | front-juan | baja |
+| RespuestaTab.tsx:204-207 | «Perderás tu interés y tu confirmación, y la baja queda registrada. Si el grupo queda por debajo del mínimo…» · «Registrando baja…» | «Dejas de estar en este plan: se quitan tu interés y tu confirmación. Si el grupo queda por debajo del mínimo, el plan pasa a revisión. No hace falta contar por qué.» · «Un momento…» | C4/C1: «la baja queda registrada» y «Registrando baja» suenan a expediente; «Perderás» castiga | front-juan | baja |
+| PlanTab.tsx:119 | «Faltan {c} (solo informativo; lo decide el servidor)» · «El servidor confirmará el cierre en la próxima actualización.» | «Faltan {c} para el cierre.» · «El cierre está por confirmarse.» | C4: jerga del servidor en pantalla | front-juan | baja |
+| PlanTab.tsx:258 | «Enviando tu confirmación. Todavía no está confirmada hasta que el servidor responda.» | «Enviando tu confirmación… Queda confirmada cuando CRUXE la registre.» | C4: «el servidor» visible como interlocutor | front-juan | baja |
+| PlanTab.tsx:550 | «Cuando haya suficientes condiciones cargadas, el organizador pide al servidor una opción compatible.» | «Cuando haya suficientes respuestas, quien organiza busca una opción que le sirva al grupo.» | C4: «pide al servidor» | front-juan | baja |
+| Perfil.tsx:98; RespuestaTab.tsx:27 | «Tus condiciones (cuándo puedes) las ve solo el servidor.» / «Solo el servidor las ve para armar la opción.» | «Tus condiciones (cuándo puedes) las usa solo CRUXE para armar la opción; ninguna persona las ve.» | C4: «el servidor» como quien «ve» | front-juan | baja |
+| PlanTab.tsx:262 | «Tu confirmación vale solo para la versión N. Si el plan cambia, tendrás que confirmar de nuevo.» | «Tu confirmación vale solo para la versión N y solo si llegan las N necesarias; si no llegan, nadie queda comprometido. Si el plan cambia, confirma de nuevo si te sirve.» | C4: «tendrás que» ordena; falta decir que nadie va primero (psico §8.9) | front-juan | baja |
+| PlanTab.tsx:281 | «Una baja dejó el plan sin cumplir» | «Cambió el plan: faltan confirmaciones» | C1: el titular del grupo le pone culpable («una baja») a lo que pasó | front-juan | baja |
+| PlanTab.tsx:394 | «…Por privacidad no se muestran los motivos. No se baja el mínimo ni se finge una reparación. Si las personas actualizan…» | «Con lo que cada persona marcó hoy no hay otra fecha posible. No se muestran motivos y el mínimo no cambia. Si alguien actualiza cuándo puede, se vuelve a buscar; quien organiza también puede cancelar.» | C4: «se finge una reparación» es el sistema hablando de sí mismo | front-juan | baja |
+| SimulacionTab.tsx:131 | «En una sola operación: cargadas las condiciones de X, Y.» | «Listo: cargadas las condiciones de X, Y.» | C4: jerga del contrato (panel de simulación) | front-juan | baja |
+
+Archivos leídos: src/screens/Perfil.tsx, PlanTab.tsx, Planes.tsx, Propuesta.tsx, RespuestaTab.tsx, SimulacionTab.tsx; src/components/Condiciones.tsx, Confeti.tsx, Cruce.tsx, Icono.tsx, Intro.tsx, Marca.tsx, Orbita.tsx, PlanVivo.tsx, Resaltado.tsx, Sesiones.tsx, Tablero.tsx.
+Textos revisados aprox.: 340
+Sin hallazgos en: Planes.tsx, Propuesta.tsx, Condiciones.tsx, Confeti.tsx, Intro.tsx, Marca.tsx, Orbita.tsx, PlanVivo.tsx, Resaltado.tsx, Sesiones.tsx, Tablero.tsx (sin voseo ni humor con blanco en el lote).
+
+#### Lote 4: `src/agente` y textos fijos de `supabase/functions/agente` · dueño agente-ia
+| archivo:línea | texto actual | texto propuesto | criterio y por qué | dueño | prioridad |
+|---|---|---|---|---|---|
+| src/agente/AgentePanel.tsx:638 | «Ningún plan del catálogo queda dentro del tiempo de viaje de todos. Por privacidad no se dice para quién.» | «Con lo que cargó el grupo, ninguna opción del catálogo les queda bien a todos. Puedes crear la propuesta a mano.» | C5: le dice al organizador el motivo (tiempo de viaje) y presupone «un quién»; en un grupo chico invita a adivinar quién vive lejos. | agente-ia | media |
+| src/agente/api.ts:103 (= supabase/functions/agente/logica.ts:80) | «le sirve al presupuesto de todos» | «le queda bien a todo el grupo» | C2: palabra de plata («presupuesto») en el «Por qué» que ve el organizador; dice que la plata fue criterio. | agente-ia | media |
+| src/agente/AgentePanel.tsx:204 | «Solo las ves tú. El agente las usa para elegir el plan, pero al grupo le llega solo la propuesta, nunca lo que pusiste.» | «Solo las ves tú. El agente las usa para proponer opciones; al grupo le llega solo la propuesta, nunca lo que pusiste.» | C8: «elegir el plan» sugiere que el agente decide; choca con «Propone, pero no decide por nadie» (línea 732). | agente-ia | media |
+| src/agente/canchas.ts:35 | «Buscar y reservar en EasyCancha (Santiago)» | «Buscar canchas en EasyCancha (Santiago)» | C7: «reservar» suena a paso del flujo; solo es un enlace a un buscador externo. | agente-ia | media |
+| src/agente/canchas.ts:44 | «Ver turnos en ATC (Mendoza)» | «Buscar canchas en ATC (Mendoza)» | C7: «Ver turnos» da por hecho que hay turnos; Mendoza para un grupo de Santiago puede confundir. | agente-ia | media |
+| src/agente/AgentePanel.tsx:516 | «{error.mensaje} No se creó nada; podés reintentar o crear la propuesta a mano.» | «No se creó nada. Puedes intentar de nuevo o crear la propuesta a mano.» (sin botón Reintentar: «No se creó nada. Puedes crear la propuesta a mano.») | C6 + C8: voseo; con «contrato_incompatible» no hay botón de reintentar pero el texto dice que se puede. | agente-ia | media |
+| src/agente/AgentePanel.tsx:224 | «Marcá al menos una.» | «Marca al menos una.» | C6: voseo. | agente-ia | baja |
+| src/agente/AgentePanel.tsx:228 | «Solo lo usa el servidor para elegir un lugar que te quede a mano. Nadie del grupo ve tu zona ni cómo te movés.» | «Solo se usa para elegir un lugar que te quede a mano. Nadie del grupo ve tu zona ni cómo te mueves.» | C6: voseo («te movés»). | agente-ia | baja |
+| src/agente/AgentePanel.tsx:230 | «Cómo te movés» | «Cómo te mueves» | C6: voseo. | agente-ia | baja |
+| src/agente/AgentePanel.tsx:231 | «Hasta cuánto viajás» | «Hasta cuánto viajas» | C6: voseo. | agente-ia | baja |
+| src/agente/AgentePanel.tsx:283 | «No se pudo copiar: seleccioná el texto.» | «No se pudo copiar: selecciona el texto.» | C6: voseo. | agente-ia | baja |
+| src/agente/AgentePanel.tsx:364 | «Todas le sirven al grupo según lo que cargó cada uno. Elegís vos: todavía nadie está invitado ni confirmado.» | «Todas le sirven al grupo según lo que cargó cada uno. Eliges tú: todavía nadie está invitado ni confirmado.» | C6: voseo («Elegís vos»). | agente-ia | baja |
+| src/agente/AgentePanel.tsx:460 | «El mínimo, el máximo, la persona imprescindible y el cierre los completás vos en el paso siguiente.» | «El mínimo, el máximo, la persona imprescindible y el cierre los completas tú en el paso siguiente.» | C6: voseo. | agente-ia | baja |
+| src/agente/AgentePanel.tsx:495 | «El agente necesita las preferencias de al menos 2 personas. Pedile al grupo que las cargue, o creá la propuesta a mano.» | «El agente necesita las preferencias de al menos 2 personas. Pídele al grupo que las cargue, o crea la propuesta a mano.» | C6: voseo. | agente-ia | baja |
+| src/agente/AgentePanel.tsx:673 | «El resto del espacio funciona igual: podés crear la propuesta a mano.» | «El resto del espacio funciona igual: puedes crear la propuesta a mano.» | C6: voseo. | agente-ia | baja |
+| src/agente/AgentePanel.tsx:457 | «Lo redactó la IA (Claude Haiku, de respaldo), que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que…» | «Lo redactó la IA, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.» (si la demo quiere mostrar el modelo: «la IA (Claude)») | C4: nombre de modelo y «de respaldo» son detalle interno visible. | agente-ia | baja |
+| src/agente/AgentePanel.tsx:458 | «Texto fijo. Las opciones las armó el servidor con reglas fijas a partir de las preferencias de todos.» | «Texto automático: las opciones las armó el servidor con reglas fijas a partir de las preferencias de todos.» | C4: «Texto fijo.» como frase suelta es jerga interna. | agente-ia | baja |
+| src/agente/api.ts:254 | «Versión incompatible: recarga la aplicación.» | «Hay una versión nueva de CRUXE: recarga la página.» | C4: suena a sistema. | agente-ia | baja |
+| supabase/functions/agente/index.ts:198 | «Falta completar un dato obligatorio.» | «Faltó un dato para seguir. Recarga la página e intenta de nuevo.» | C4: «obligatorio» y tono de sistema (si es texto del contrato, pedirlo al coordinador). | agente-ia | baja |
+| supabase/functions/agente/index.ts:199 | «La fecha debe ser un sábado futuro dentro de los próximos 16 días.» | «Elige un sábado de las próximas dos semanas.» | C4: «debe ser» es orden; además la función solo comprueba que sea sábado, no que sea futuro ni dentro de 16 días. | agente-ia | baja |
+
+Archivos leídos: src/agente/AgentePanel.tsx, api.ts, canchas.ts, agente.css; supabase/functions/agente/logica.ts (FRASES, textoFrase, unirFrases, resumenClima, mensajeFijo), index.ts (errorEntrada, errorTemporal, sesion_invalida).
+Textos revisados aprox.: 170
+Sin hallazgos en: agente.css; logica.ts resumenClima, unirFrases, mensajeFijo (salvo la frase de presupuesto); index.ts «Falla temporal…» y «No hay una sesión válida…»; rótulos de prueba sin problema; sin C1, C3 ni C9.
+PROHIBIDAS contiene caro/lujo/lujoso/costoso/precio: caro: no (solo «caro para», a propósito para no chocar con el nombre Caro) · lujo: no · lujoso: no · costoso: no · precio: no.
+
+#### Lote 5: `src/friccion` y `src/componentes-nuevos` · dueños friccion y ux-flujo
+| archivo:línea | texto actual | texto propuesto | criterio y por qué | dueño | prioridad |
+|---|---|---|---|---|---|
+| src/componentes-nuevos/avisoPersonal.ts:104 | «Faltan {pendientes} por confirmar y se cierra {plazo}. CRUXE no manda avisos solo: el recordatorio lo mandas tú.» | «Aún faltan confirmaciones y se cierra {plazo}. CRUXE no manda avisos por su cuenta: el recordatorio lo mandas tú.» (mostrar el número solo cuando es ≥ 2) | C2: con «Faltan 1» más la lista pública de quién confirmó, quien organiza puede deducir quién puede ir y no confirmó; coherente con la regla de 2 o más. | ux-flujo | media |
+| src/componentes-nuevos/recordar.ts:33 | «Te lo recuerda CRUXE: para «{plan}», si todavía no respondiste, sin apuro: toca, elige tu nombre y marca cuándo…» | «Recordatorio para «{plan}»: si aún no marcaste cuándo puedes, sin apuro: toca, elige tu nombre y marca (es privado). Si ya lo hiciste, no hace falta nada: {enlace}» | C7 (y roce C1): «Te lo recuerda CRUXE» hace creer al grupo que la app manda recordatorios (contradice «el recordatorio lo mandas tú»); «todavía no respondiste» es el patrón de reproche. Texto originalmente propuesto por psico §8.9: corregido. | ux-flujo | media |
+| src/componentes-nuevos/avisoPersonal.ts:69 | «Si sale una versión nueva, las confirmaciones anteriores no cuentan: confírmala de nuevo si te sirve.» | «Si sale una versión nueva, las confirmaciones anteriores no cuentan: si esa te sirve, la confirmas.» | C8: lo ven también quienes nunca confirmaron; «de nuevo» presupone una confirmación que no existió. | ux-flujo | baja |
+| src/componentes-nuevos/avisoPersonal.ts:89-91 | «Esta versión es sin ti» · «Tu disponibilidad quedó incompleta, así que no entraste en esta versión. Si la completas…» | «Esta versión no te incluye» · «Se armó sin tu disponibilidad completa. Si la completas, cuenta si el plan se rearma.» | C1: «así que no entraste» carga la consecuencia como reproche y «es sin ti» suena a exclusión. | ux-flujo | baja |
+| src/friccion/FaltaTuRespuesta.tsx:18 | «Falta tu respuesta» | «¿Cuándo puedes?» | C1: el título señala la falta antes de invitar. | friccion | baja |
+| src/friccion/FaltaTuRespuesta.tsx:24 | «Te falta marcar un día: así no entras en la búsqueda.» | «Te queda algún día sin marcar; con la respuesta completa entras en la búsqueda.» | C1: consecuencia en negativo; «un día» puede no ser cierto si faltan varios. | friccion | baja |
+| src/friccion/Responder.tsx:201 | «Toca una opción y listo. Solo el servidor ve lo que respondes; el grupo no sabe qué elegiste.» | «Toca una opción y listo. Es privado: el grupo no sabe qué elegiste.» | C4: «el servidor» es jerga visible. | friccion | baja |
+| src/friccion/Responder.tsx:250 | «Marcar lo que dice mi agenda» | «Ver qué sugiere mi agenda» | C7: el botón promete marcar, pero solo resalta una opción y después pide tocarla. | friccion | baja |
+
+Archivos leídos: src/componentes-nuevos/AvisoParaMi.tsx, RecordarFaltan.tsx, avisoPersonal.ts, recordar.ts; src/friccion/Calendario.tsx, FaltaTuRespuesta.tsx, Responder.tsx, friccion.css, importar.ts, porCodigo.ts.
+Textos revisados aprox.: 90
+Sin hallazgos en: AvisoParaMi.tsx, RecordarFaltan.tsx, Calendario.tsx (las actividades ficticias no parecen datos de salud), friccion.css, importar.ts, porCodigo.ts.
