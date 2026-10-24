@@ -67,6 +67,10 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 21:12 | `wip/friccion` fc66c0b (E13 (a) «Así no puedo, pero sigo» y D3 «¿Quién viene?»): typecheck, build, red 10/10, sesiones-recuperación 12/12, guardia-palabras 0/0 (61 archivos). El selector «¿Quién viene?» es regla del grupo (Sin definir / Solo el grupo / Con parejas / Abierta), sin datos de personas: cumple D2 | localhost, sin base | verde; recorrido, jurado y friccion-flujo esperan la base |
 | 21:12 | `wip/ux` 603678e: typecheck, build, red 10/10, guardia-palabras 0/0 | localhost, sin base | verde; recorrido y jurado esperan la base |
 | 21:19 | guiones nuevos para apertura (`plan-b-un-aparato`, `demo-reinicio-luna`) y `turno-base.sh` | — | solo sintaxis; corren de a uno contra producción cuando la base se libere (migración E13 desde 20:59) |
+| 21:22 | set sin base: `wip/friccion` 8793df5 (auditoría de tono), `wip/ux` 3013850, `wip/apertura` 5e44ef5: typecheck, build, red 10/10 y guardia-palabras 0/0 en las tres | localhost | verde |
+| 21:22 | `sesiones-recuperacion` sobre friccion 8793df5: la primera corrida (en lote, en segundo plano) terminó con un error de Node sin salida del guion; repetida sola a las 21:24: 12/12 | Vite local | falla transitoria, no reproducida |
+| 21:22 | backend confirma: `propose_repair` desde `esperando_compromisos` sin ningún `asi_no_puedo` → `opcion_desactualizada/estado_no_admite`; la prueba E13 lo exige. Base libre desde las 21:22 (0042–0045 aplicadas) | — | — |
+| 21:26 | recorrido canónico (vitest) con E13 contra la base, en turno con marca CORRIENDO PRUEBA | base | corriendo |
 
 ## Regresiones abiertas
 (ninguna)
