@@ -369,7 +369,10 @@ function OpcionVigente({
           </button>
         </div>
       ) : null}
-      {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} enfocar /> : null}
+      {/* Si el servidor ya muestra la confirmación hecha, la duda de "pudo haberse registrado o no" quedó resuelta (E-1). */}
+      {error && error.codigo !== 'sin_alternativa' && !(error.resultadoIncierto && p.mi_situacion.acepte_version) ? (
+        <ErrorCaja error={error} enfocar />
+      ) : null}
 
       {/* #89 (ux-flujo): el organizador avisa al grupo de la versión publicada; el mensaje no nombra a nadie ni cuenta.
           Solo si el servidor dice que queda lugar para otros: con el último cupo reservado al anfitrión, "si vas,
@@ -515,8 +518,13 @@ function AlternativaOrganizador({ p, viva, soloLectura, sinAlternativa }: VivaPr
           </Boton>
           <p className="suave">La nueva versión empieza con cero aceptaciones.</p>
         </div>
+      ) : p.mi_situacion.retirado ? (
+        <p className="suave">Te bajaste de este plan: el grupo sigue sin ti y no tienes que hacer nada más.</p>
       ) : (
-        <p className="suave">El organizador ({p.organizador.nombre}) debe buscar una alternativa. Mientras tanto puedes actualizar tus condiciones en "Mi respuesta".</p>
+        <p className="suave">
+          El organizador ({p.organizador.nombre}) debe buscar una alternativa.
+          {p.mi_situacion.puede.guardar_condiciones ? ' Mientras tanto puedes actualizar tus condiciones en "Mi respuesta".' : ''}
+        </p>
       )}
       {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} enfocar /> : null}
     </section>
