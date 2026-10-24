@@ -389,7 +389,12 @@ function BorradorTarjeta({
   const mensaje = esLaDestacada ? b.mensaje_al_grupo : mensajeFijo(elegida)
   const deModelo = esLaDestacada && b.explicacion_fuente === 'modelo'
   // Qué modelo escribió (Opus, o Haiku si Opus no respondió a tiempo).
-  const quien = b.modelo_usado === 'opus' ? 'Claude Opus' : b.modelo_usado === 'haiku' ? 'Claude Haiku, de respaldo' : b.modelo_usado === 'sonnet' ? 'Claude Sonnet' : null
+  const quien =
+    b.modelo_usado === 'fable' ? 'Claude Fable'
+      : b.modelo_usado === 'opus' ? 'Claude Opus'
+        : b.modelo_usado === 'haiku' ? 'Claude Haiku, de respaldo'
+          : b.modelo_usado === 'sonnet' ? 'Claude Sonnet'
+            : null
   const canchas = enlacesCanchas(elegida.actividad, elegida.franjas[0])
   // Enmienda 10: el viaje de la opción que está mirando el organizador (null con menos de 4 personas con zona).
   const viaje = viajeDeOpcion(elegida, b)

@@ -6,6 +6,8 @@ import assert from 'node:assert/strict'
 import { Buffer } from 'node:buffer'
 import {
   armarPedido,
+  datosGeneracion,
+  tipoDeIdGeneracion,
   candidataSegura,
   candidatasDe,
   familiaSegura,
@@ -513,6 +515,18 @@ test('familiaModelo: lo que la pantalla nombra', () => {
   assert.equal(familiaModelo('claude-haiku-5-5'), 'haiku')
   assert.equal(familiaModelo('anthropic/claude-sonnet-5.5'), 'sonnet')
   assert.equal(familiaModelo('otro/modelo'), 'otro')
+  assert.equal(familiaModelo('anthropic/claude-fable-5.1'), 'fable')
+  assert.equal(familiaModelo('claude-fable-5-1'), 'fable')
+})
+
+test('BYOK: el tipo de id y de la generación solo pasan is_byok, proveedor y modelo', () => {
+  assert.equal(tipoDeIdGeneracion('gen_01ARZ3NDEKTSV4RRFFQ69G5FAV'), 'gen')
+  assert.equal(tipoDeIdGeneracion('msg_123'), 'msg')
+  assert.equal(tipoDeIdGeneracion('x'), 'otro')
+  assert.equal(tipoDeIdGeneracion(undefined), null)
+  const d = datosGeneracion({ data: { id: 'gen_1', is_byok: true, provider_name: 'anthropic', model: 'anthropic/claude-fable-5.1', total_cost: 0.1, tokens_prompt: 900 } })
+  assert.deepEqual(d, { is_byok: true, proveedor: 'anthropic', modelo: 'anthropic/claude-fable-5.1' })
+  assert.deepEqual(datosGeneracion({ error: 'no' }), { is_byok: null, proveedor: null, modelo: null })
 })
 
 // ---------------------------------------------------------------- enmienda 14: familia, personas y quórum

@@ -17,7 +17,10 @@ import {
   climaPedido,
   climaSimulado,
   crearLimiteModelo,
+  datosGeneracion,
   elegirProveedor,
+  ESPERA_GENERACION_MS,
+  GATEWAY_URL,
   familiaModelo,
   entradaModelo,
   esSabado,
@@ -29,6 +32,7 @@ import {
   resumenClima,
   sumarDia,
   textoDeRespuesta,
+  tipoDeIdGeneracion,
   unirFrases,
   usuarioDe,
   validarSalidaModelo,
@@ -36,6 +40,7 @@ import {
   type Candidata,
   type Clima,
   type PerfilGrupo,
+  type Proveedor,
   type Quorum,
   type ResultadoPlan,
 } from './logica.ts'
@@ -117,6 +122,43 @@ async function traerClima(sabado: string): Promise<Clima> {
   }
 }
 
+/**
+ * Después de responder al usuario, pregunta al Gateway si la generación salió por la clave propia (BYOK). Al registro
+ * van solo el tipo de id, `is_byok`, el proveedor y el modelo. Si algo falla, solo queda un aviso: no afecta la respuesta.
+ */
+function registrarGeneracion(proveedor: Proveedor, clave: string, id: unknown): void {
+  if (proveedor.tipo !== 'gateway') return
+  const tipo = tipoDeIdGeneracion(id)
+  if (tipo === null) return
+  console.info('agente: id de la respuesta del Gateway', tipo)
+  const runtime = (globalThis as { EdgeRuntime?: { waitUntil?: (p: Promise<unknown>) => void } }).EdgeRuntime
+  if (tipo !== 'gen' || typeof runtime?.waitUntil !== 'function') return
+  runtime.waitUntil(
+    (async () => {
+      // Los datos de uso llegan unos segundos después: dos intentos.
+      for (let intento = 0; intento < 2; intento++) {
+        await new Promise((r) => setTimeout(r, ESPERA_GENERACION_MS))
+        try {
+          const r = await fetch(`${GATEWAY_URL}/v1/generation?id=${encodeURIComponent(String(id))}`, {
+            headers: { Authorization: `Bearer ${clave}` },
+            signal: AbortSignal.timeout(5000),
+          })
+          if (r.status === 404 && intento === 0) continue
+          if (!r.ok) {
+            console.info('agente: no se pudo leer la generación del Gateway', r.status)
+            return
+          }
+          console.info('agente: generación del Gateway', JSON.stringify(datosGeneracion(await r.json())))
+          return
+        } catch (e) {
+          console.info('agente: no se pudo leer la generación del Gateway', e instanceof Error ? e.constructor.name : 'desconocido')
+          return
+        }
+      }
+    })(),
+  )
+}
+
 async function coordinarConModelo(
   candidatas: Candidata[],
   perfil: PerfilGrupo | null,
@@ -166,7 +208,10 @@ async function coordinarConModelo(
       }
       // La elección tiene que ser una de las opciones que el servidor ya validó, y los textos, válidos.
       const valida = validarSalidaModelo(texto, candidatas, nombres)
-      if (valida) return { ...valida, modelo: familia }
+      if (valida) {
+        registrarGeneracion(proveedor, clave, (respuesta as { id?: unknown }).id)
+        return { ...valida, modelo: familia }
+      }
       console.error('agente: salida del modelo rechazada por la validación', proveedor.tipo, familia)
     } catch (e) {
       // Solo el proveedor, el modelo, el tipo de error y el código HTTP: nunca el contenido, la clave ni datos del grupo.

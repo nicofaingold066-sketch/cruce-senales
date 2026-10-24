@@ -443,10 +443,32 @@ export interface Proveedor {
   respaldo: string
 }
 
-/** Lo que la pantalla dice que se usó: "opus", "haiku", "sonnet" u "otro". */
-export function familiaModelo(modelo: string): 'opus' | 'haiku' | 'sonnet' | 'otro' {
+/** Lo que la pantalla dice que se usó: "fable", "opus", "haiku", "sonnet" u "otro". */
+export function familiaModelo(modelo: string): 'fable' | 'opus' | 'haiku' | 'sonnet' | 'otro' {
   const m = modelo.toLowerCase()
+  if (m.includes('fable')) return 'fable'
   return m.includes('opus') ? 'opus' : m.includes('haiku') ? 'haiku' : m.includes('sonnet') ? 'sonnet' : 'otro'
+}
+
+// ---------------------------------------------------------------------------------------------
+// ¿Salió por la clave propia (BYOK)? El Gateway guarda cada generación y GET /v1/generation?id=gen_… devuelve
+// `is_byok` (documentación de Vercel, "Look up a generation"). La función lo consulta en segundo plano, con la
+// misma clave y del lado del servidor, y al registro van solo estos tres datos: nunca la clave ni el contenido.
+// ---------------------------------------------------------------------------------------------
+
+export const ESPERA_GENERACION_MS = 4000
+
+/** De qué tipo es el id que devolvió el Gateway: "gen" sirve para consultar la generación; null si no vino. */
+export function tipoDeIdGeneracion(id: unknown): 'gen' | 'msg' | 'otro' | null {
+  if (typeof id !== 'string' || id.length === 0) return null
+  return id.startsWith('gen_') ? 'gen' : id.startsWith('msg_') ? 'msg' : 'otro'
+}
+
+/** Solo lo que dice por dónde salió la llamada; cualquier otro campo (costos, tokens, ids) se descarta. */
+export function datosGeneracion(j: unknown): { is_byok: boolean | null; proveedor: string | null; modelo: string | null } {
+  const d = (j as { data?: Record<string, unknown> } | null)?.data ?? {}
+  const corto = (v: unknown) => (typeof v === 'string' && v.length <= 80 ? v : null)
+  return { is_byok: typeof d.is_byok === 'boolean' ? d.is_byok : null, proveedor: corto(d.provider_name), modelo: corto(d.model) }
 }
 
 export type ModoSalida = 'json' | 'herramienta'
