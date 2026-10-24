@@ -41,7 +41,7 @@ export async function irA(p, nombre, { espera = 500, timeout = 15000 } = {}) {
     while (Date.now() < fin) {
       const det = p.locator('details', { has: p.locator('summary', { hasText: /Historial/ }) }).first()
       if (await det.count() && await det.isVisible().catch(() => false)) {
-        if (!(await det.evaluate((d) => d.open))) await clic(p, det.locator('summary'), espera)
+        if (!(await det.evaluate((d) => d.open))) await clic(p, det.locator('summary').first(), espera) // el propio summary, no los anidados
         return
       }
       const tab = p.getByRole('tab', { name: exacto }).first()

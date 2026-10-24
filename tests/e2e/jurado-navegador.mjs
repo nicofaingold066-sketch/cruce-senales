@@ -302,6 +302,8 @@ try {
     comprobar(r.resultado.tipo === 'sin_opcion' && r.propuesta.minimo === 4 && r.propuesta.opcion === null, 'Sin opción, reglas intactas')
     await texto(T, 'Sin opción compatible'); await texto(L, 'Sin opción compatible')
     await estado(T, 'Reuniendo interés'); await estado(L, 'Reuniendo interés')
+    // S4: el mínimo vive en «Ficha del plan» (plegada): se abre antes de leer.
+    await L.locator('details', { has: L.locator('summary', { hasText: /Ficha del plan/ }) }).evaluateAll((ds) => ds.forEach((d) => { d.open = true }))
     comprobar(/[Mm]ínimo:? 4|mínimo \(4\)|\(mínimo 4\)/.test(await L.locator('main').innerText()), 'UI: mínimo no se reduce')
     comprobar(!/Tomi.{0,30}(?:no puede|no está disponible)/i.test(await L.locator('main').innerText()), 'UI: no revela motivo privado')
     await foto(L, 'V2a-sin-opcion')
