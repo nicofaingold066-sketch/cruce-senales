@@ -36,7 +36,7 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | O-12 | OBSERVADO (leve) | Avisos repetidos | (a) Sin red en un plan: banner global + banner "Sin conexión" del plan + error del botón (R161); (b) contrato incompatible: "Versión incompatible" arriba y "No se pudo completar · Versión incompatible" debajo (R170); (c) "Hoy paso" aparece deshabilitado sin explicación mientras no se marque "Me interesa" (R162) | `202610232002/R161-375.png`, `202610232004/R170-375.png` | front-juan (a, c) / friccion (b) |
 | O-13 | OBSERVADO (leve) | Falla al iniciar la sesión anónima | El texto dice "el inicio de sesión anónimo puede estar deshabilitado en el proyecto": lenguaje técnico para una persona que solo abrió el enlace (R173) | `202610232004/R173-375.png` | friccion |
 | O-14 | OBSERVADO | Demo, pestaña Simulación a **320 px** | (a) La pestaña "Simulación" se sale de la pantalla (262–360 de 320); (b) en cada persona simulada la etiqueta "SIMULACIÓN" queda tapada por la insignia "Sin versión publicada" ("SIMUL…") | `202610231946/R104-320.png` | front-juan |
-| O-16 | OBSERVADO (decisión) | Chip "Datos ficticios" del encabezado | Aparece en TODAS las pantallas, también en un grupo real con personas de verdad (`App.tsx:85`, fricción 19 de `docs/flujo-usuario.md`); un grupo real podría leerlo como "esto no vale". Y a 320 px lo pisa el avatar (O-01) | `202610231931/R25-320.png` | decisión para Nico (vía coordinador); el código es de friccion (`App.tsx`) y el estilo de front-juan |
+| O-16 | OBSERVADO (decisión) | Chip "Datos ficticios" del encabezado | Aparece en TODAS las pantallas, también en un grupo real con personas de verdad (`App.tsx:85`, fricción 19 de `docs/flujo-usuario.md`); un grupo real podría leerlo como "esto no vale". Y a 320 px lo pisa el avatar (O-01) | `202610231931/R25-320.png` | **Decidido (21:10, ux-flujo `603678e`, tabla #102 H3): el chip se queda.** Cerrado como aceptado; lo único que sigue abierto es O-01 (a 320 px lo pisa el avatar) |
 
 ## Accesibilidad a fondo (método, `tests/rincones/a11y.mjs`; se aplica a la demo en `f12`)
 Rincones de la demo en el orden del jurado, en 320, 375 y 1280 px. Por rincón:
@@ -196,7 +196,7 @@ Autoprueba del módulo: `node tests/rincones/prueba-a11y/correr.mjs` (página lo
 | R201 | "¿Cuándo puedes?" en un paso: "Puedo los dos días", "Solo el sábado 31 oct", "Solo el domingo 1 nov", "No puedo ninguno", "Todavía no sé: ver el plan"; dice que es privado y que responder no es confirmar | ojo | A |
 | R202 | Tras tocar una opción: "Respuesta guardada", "¿Avisar al grupo que te interesa?" (opcional), "Ver el plan", "Cambiar mi respuesta", "Contar mis gustos y presupuesto" | ojo | A (320 y 375 bien) |
 | R203 | Calendario simulado "Tomar de mi calendario (Simulación)" en Responder (solo demo) | — | pendiente (`f12`) |
-| R230 | Chip "Datos ficticios" en el encabezado | ojo | O (O-01, O-16) |
+| R230 | Chip "Datos ficticios" en el encabezado | ojo | A como producto (O-16 decidido: se queda); O-01 sigue a 320 px |
 
 ### Por llegar: enmienda 13, modalidad de la invitación y "¿Qué guarda CRUXE de mí?" (filas reservadas; se recorren cuando estén en `main`)
 | Id | Rincón | Rev. | Estado |
