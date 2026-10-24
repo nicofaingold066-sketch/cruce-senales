@@ -34,6 +34,7 @@ Comprobado: `git apply --check` limpio sobre esa base recién fusionada (entre 2
 | `atajosParaGrupo` y `placeholderPlan` (apertura) | `NuevaPropuesta.tsx`: se borra `ACTIVIDADES`; el carrusel usa `atajosParaGrupo(espacio.nombre)`; placeholder del título | — | "Los del pádel" ve Pádel primero; "Asado" ya no encabeza siempre |
 | `CampoQuienViene` + `conQuienViene` (friccion, D3) y `placeholderGrupo` (apertura) | `CrearGrupo.tsx`, debajo de `CampoIntegrantes`; `createSpace(conQuienViene(nombre, quienViene), …)` | `valor`, `cambiar`, `nombre` | "¿Quién viene?" (solo el grupo / con parejas / abierta) como marca en el nombre, sin migración |
 | `QueGuarda` (friccion) | `Perfil.tsx`, al final | — | Plegable "¿Qué guarda CRUXE de mí?" |
+| Texto de "Mi respuesta" con la versión vigente (coordinador 21:30, enmienda 13 / 0046) | `RespuestaTab.tsx`, `razonSinGuardar` | — | "Estás en la versión vigente. Si esta fecha no te sirve, marca «Así no puedo, pero sigo» y podrás cambiar cuándo puedes." (sin ese texto decía que la disponibilidad no podía cambiar) |
 | `UnirseConNombre` + `useUnirse` (friccion, fila 43) | `Inicio.tsx`: `UnirsePortada` reemplaza al formulario viejo `UnirsePorCodigo` (se borra) | `codigoInicial`, `deshabilitado` | Un solo formulario de unión: mismos rótulos ("Código de invitación", "Tu nombre en el espacio", "Unirme"), reclama al integrante anotado o lleva a "¿Quién eres?" |
 
 Lo que NO toca: rótulos que buscan los guiones de `tests/e2e/` (la lista fija de `prompts/equipo-noche.md`), `src/login/**`, `src/friccion/**`, `src/agente/**`, `src/lib/**`.
@@ -55,6 +56,8 @@ Lo que NO toca: rótulos que buscan los guiones de `tests/e2e/` (la lista fija d
 Base de la prueba: `wip/fundamentos` + `wip/friccion` (`1623ee8`, que arregla un typecheck que rompían los tipos nuevos de backend) + `wip/apertura` + `wip/ux` + `wip/backend` (`4022f62`). Typecheck completo verde con todo eso junto.
 
 Forma de la enmienda 13 (c) que el parche tiene en cuenta (leída en la migración `0043` de backend): las bajas de otras personas llegan como `miembro: { miembro_id: null, nombre: "Una persona" }` y `habia_aceptado: null`, y el evento de baja del historial con ese mismo actor. `Propuesta.tsx` y `PlanTab.tsx` no se rompen con esa forma (no hace falta tocarlos por eso).
+
+Agregado a las 21:36: el texto de `RespuestaTab.tsx` del aviso del coordinador de las 21:30 (solo un texto; typecheck verde; las pruebas de arriba no lo cubren).
 
 ## 4. Notas para Juan
 
@@ -584,7 +587,7 @@ index 04183a5..2ea6802 100644
    const escena = escenaDe(p, espacio)
  
 diff --git a/src/screens/RespuestaTab.tsx b/src/screens/RespuestaTab.tsx
-index 5ae01e7..3c88ee4 100644
+index 5ae01e7..3d6d69e 100644
 --- a/src/screens/RespuestaTab.tsx
 +++ b/src/screens/RespuestaTab.tsx
 @@ -7,6 +7,8 @@ import { Icono } from '../components/Icono'
@@ -639,7 +642,17 @@ index 5ae01e7..3c88ee4 100644
            <EditorCondiciones
              franjas={p.franjas}
              valor={b.draft}
-@@ -195,6 +206,7 @@ function Retiro({ p, viva, soloLectura }: VivaProps) {
+@@ -175,7 +186,8 @@ function razonSinGuardar(p: EstadoPropuesta): string {
+   if (s.retirado) return 'Te retiraste de esta propuesta y ya no puedes participar en ella.'
+   if (p.plazo_vencido) return 'El plazo de aceptación ya cerró.'
+   if ((p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado') && s.elegible_en_version) {
+-    return 'Formas parte de la versión vigente; tu disponibilidad no puede cambiar mientras esté vigente.'
++    // Enmienda 13 (0046): con la versión vigente, la salida es "Así no puedo, pero sigo" (no retirarse).
++    return 'Estás en la versión vigente. Si esta fecha no te sirve, marca «Así no puedo, pero sigo» y podrás cambiar cuándo puedes.'
+   }
+   return 'Ahora no puedes cambiar tus condiciones en esta propuesta.'
+ }
+@@ -195,6 +207,7 @@ function Retiro({ p, viva, soloLectura }: VivaProps) {
        <p className="suave">
          Si ya no puedes, retirarte avisa al grupo. Es definitivo en esta propuesta: no podrás volver a participar en ella.
        </p>

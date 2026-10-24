@@ -516,7 +516,7 @@ index 04183a5..2ea6802 100644
    const escena = escenaDe(p, espacio)
  
 diff --git a/src/screens/RespuestaTab.tsx b/src/screens/RespuestaTab.tsx
-index 5ae01e7..3c88ee4 100644
+index 5ae01e7..3d6d69e 100644
 --- a/src/screens/RespuestaTab.tsx
 +++ b/src/screens/RespuestaTab.tsx
 @@ -7,6 +7,8 @@ import { Icono } from '../components/Icono'
@@ -571,7 +571,17 @@ index 5ae01e7..3c88ee4 100644
            <EditorCondiciones
              franjas={p.franjas}
              valor={b.draft}
-@@ -195,6 +206,7 @@ function Retiro({ p, viva, soloLectura }: VivaProps) {
+@@ -175,7 +186,8 @@ function razonSinGuardar(p: EstadoPropuesta): string {
+   if (s.retirado) return 'Te retiraste de esta propuesta y ya no puedes participar en ella.'
+   if (p.plazo_vencido) return 'El plazo de aceptación ya cerró.'
+   if ((p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado') && s.elegible_en_version) {
+-    return 'Formas parte de la versión vigente; tu disponibilidad no puede cambiar mientras esté vigente.'
++    // Enmienda 13 (0046): con la versión vigente, la salida es "Así no puedo, pero sigo" (no retirarse).
++    return 'Estás en la versión vigente. Si esta fecha no te sirve, marca «Así no puedo, pero sigo» y podrás cambiar cuándo puedes.'
+   }
+   return 'Ahora no puedes cambiar tus condiciones en esta propuesta.'
+ }
+@@ -195,6 +207,7 @@ function Retiro({ p, viva, soloLectura }: VivaProps) {
        <p className="suave">
          Si ya no puedes, retirarte avisa al grupo. Es definitivo en esta propuesta: no podrás volver a participar en ella.
        </p>
