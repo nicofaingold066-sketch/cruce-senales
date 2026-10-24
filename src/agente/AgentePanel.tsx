@@ -9,7 +9,7 @@ import { useAccion } from '../lib/hooks'
 import { franjaTexto } from '../lib/format'
 import { irA, rutas } from '../lib/shell'
 import type { ApiError } from '../lib/types'
-import { Aviso, Boton, Cargando, ErrorCaja, RotuloSimulacion } from '../components/ui'
+import { Aviso, Boton, Card, Cargando, ErrorCaja, RotuloSimulacion } from '../components/ui'
 import './agente.css'
 import { ConsentimientoInvitaciones } from './ConsentimientoInvitaciones'
 import { AgenteSocial } from './AgenteSocial'
@@ -141,7 +141,7 @@ function Opciones<T extends string>({
   )
 }
 
-function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLectura?: boolean }) {
+function MisPreferencias({ espacioId, soloLectura, primario }: { espacioId: string; soloLectura?: boolean; primario?: boolean }) {
   const [cargando, setCargando] = useState(true)
   const [errorCarga, setErrorCarga] = useState<ApiError | null>(null)
   const [actividades, setActividades] = useState<ActividadOpcion[]>([])
@@ -263,7 +263,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   const resumenPermisos = `${usar ? 'el agente puede usarlas' : 'el agente no las usa'} · invitaciones ${recibirInicial === true ? 'activadas' : recibirInicial === false ? 'desactivadas' : 'sin dato'}`
   const privacidad = (
     <p className="suave">
-      Solo las ves tú. Con tu permiso guardado, el agente puede usarlas para sugerir un plan. Al grupo le llega solo la propuesta, nunca lo que pusiste.
+      Solo las ves tú: el agente las usa con tu permiso y al grupo le llega la propuesta, nunca lo que pusiste.
     </p>
   )
 
@@ -333,7 +333,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
       <Opciones nombre="pref-ambiente" titulo="Ambiente" opciones={AMBIENTE} valor={borrador.ambiente} onCambio={(v) => poner('ambiente', v)} deshabilitado={soloLectura || ocupado} />
       <Opciones nombre="pref-lugar" titulo="Lugar" opciones={LUGAR} valor={borrador.lugar} onCambio={(v) => poner('lugar', v)} deshabilitado={soloLectura || ocupado} />
       <Plegable id="pref-sec-viaje" titulo="Cómo llegas (opcional)" resumen={resumenViaje} abierto={verViaje} onCambio={setVerViaje}>
-        <p className="suave">Solo lo usa el servidor para elegir un lugar que te quede a mano. Nadie del grupo ve tu zona ni cómo te mueves.</p>
+        <p className="suave">Sirve para elegir un lugar que te quede a mano. Nadie del grupo ve tu zona ni cómo te mueves.</p>
         <Opciones nombre="pref-zona" titulo="Tu zona" opciones={ZONA} valor={borrador.zona ?? ''} onCambio={(v) => ponerOpcional('zona', v)} deshabilitado={soloLectura || ocupado} />
         <Opciones nombre="pref-movilidad" titulo="Cómo te mueves" opciones={MOVILIDAD} valor={borrador.movilidad ?? ''} onCambio={(v) => ponerOpcional('movilidad', v)} deshabilitado={soloLectura || ocupado} />
         <Opciones nombre="pref-tiempo" titulo="Hasta cuánto viajas" opciones={TIEMPO} valor={borrador.tiempo_max ?? ''} onCambio={(v) => ponerOpcional('tiempo_max', v)} deshabilitado={soloLectura || ocupado} />
@@ -364,7 +364,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
         />
         <span>
           Que el agente use mis preferencias
-          <small id="pref-usar-ayuda">El cambio se aplica cuando guardas y el servidor lo confirma. Tus preferencias siguen siendo privadas.</small>
+          <small id="pref-usar-ayuda">Se aplica al guardar. Tus preferencias siguen siendo privadas.</small>
         </span>
       </label>
       <p role="status">
@@ -381,7 +381,8 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
         {ocupado ? (reintentando ? AVISO_REINTENTO : 'Guardando tus preferencias…') : aviso ?? ''}
       </p>
       <div className="fila-botones">
-        <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura}>
+        {/* Un solo primario por pantalla: para quien organiza, el primario es el del agente. */}
+        <Boton variante={primario ? 'primario' : 'secundario'} onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura}>
           {guardadas ? 'Actualizar mis preferencias' : 'Guardar mis preferencias'}
         </Boton>
         {guardadas ? (
@@ -495,16 +496,24 @@ function etiquetaOpcion(c: CandidataAgente): string {
   return `${c.actividad_etiqueta} · ${c.lugar.nombre.replace(' (Simulación)', '')}`
 }
 
+/**
+ * El resultado del agente (rediseño S6): primero la opción elegida y sus datos, después cómo se llegó ("Por qué" y
+ * "Lo que hizo el agente"), después el mensaje y una sola acción primaria, "Usar esta opción".
+ */
 function BorradorTarjeta({
   espacioId,
   b,
   soloLectura,
   invitacion,
+  pasos,
+  personasGrupo,
 }: {
   espacioId: string
   b: BorradorAgente
   soloLectura?: boolean
   invitacion: string | null
+  pasos?: string[]
+  personasGrupo: number | null
 }) {
   const [seleccion, setSeleccion] = useState(b.elegida_id)
   const elegida = b.candidatas.find((c) => c.id === seleccion) ?? b.candidatas[0]
@@ -521,6 +530,11 @@ function BorradorTarjeta({
   const canchas = enlacesCanchas(elegida.actividad, elegida.franjas[0])
   // Enmienda 10: el viaje de la opción que está mirando el organizador (null con menos de 4 personas con zona).
   const viaje = viajeDeOpcion(elegida, b)
+  const lugar = elegida.lugar.nombre.replace(' (Simulación)', '')
+  // E5 (recorrido de Nico): "N opciones para N personas" dice a quiénes cuenta.
+  const quienes = `Cuenta a quienes cargaron preferencias y las habilitaron${
+    personasGrupo && personasGrupo > b.personas_consideradas ? ` (${b.personas_consideradas} de ${personasGrupo} en el grupo)` : ''
+  }.`
 
   function usar() {
     // Enmienda 14: la actividad y sus personas, para precargar actividad, mínimo y máximo en Nueva propuesta.
@@ -534,15 +548,15 @@ function BorradorTarjeta({
   }
 
   return (
-    <div className="bloque">
-      <Aviso tono="info" titulo="Opciones del agente">
-        Son ideas según las preferencias habilitadas. La disponibilidad y la confirmación se resuelven después, para una versión del plan.
-      </Aviso>
+    <div className="bloque agente-resultado">
+      <h3 className="agente-resultado-titulo">Opciones del agente</h3>
+      <p className="suave">Ideas con las preferencias habilitadas. La disponibilidad y la confirmación se resuelven después, para una versión del plan.</p>
       {b.quorum ? <p className="suave agente-quorum">{textoQuorum(b.quorum)}</p> : null}
       <fieldset className="grupo agente-candidatas">
         <legend>
           {b.candidatas.length > 1 ? `${b.candidatas.length} opciones` : 'Opción'} para {b.personas_consideradas} personas
         </legend>
+        <p className="suave agente-quienes">{quienes}</p>
         <div className="opciones">
           {b.candidatas.map((c) => {
             const id = `agente-opcion-${c.id}`
@@ -561,20 +575,15 @@ function BorradorTarjeta({
           })}
         </div>
       </fieldset>
-      <PerfilDelGrupo perfil={b.perfil_grupo} />
-      <label className={`campo ${tituloValido ? '' : 'campo-error'}`}>
-        <span>Título</span>
-        <input value={titulo} maxLength={80} onChange={(e) => setTitulo(e.target.value)} disabled={soloLectura} />
-      </label>
-      <p>
-        <strong>{elegida.actividad_etiqueta}</strong> en {elegida.lugar.nombre.replace(' (Simulación)', '')}{' '}
+      <p className="agente-eleccion">
+        <span className="t-subtitulo">
+          {elegida.actividad_etiqueta} en {lugar}
+        </span>{' '}
         {elegida.lugar.simulado ? <RotuloSimulacion /> : null}
       </p>
-      <ul>
+      <ul className="agente-franjas">
         {elegida.franjas.map((f, i) => (
-          <li key={i}>
-            Franja {i === 0 ? 'A' : 'B'}: {franjaTexto(f.inicio, f.fin)}
-          </li>
+          <li key={i}>{franjaTexto(f.inicio, f.fin)}</li>
         ))}
       </ul>
       {viaje ? (
@@ -582,23 +591,6 @@ function BorradorTarjeta({
           <strong>Queda a menos de {viaje.max_minutos} minutos para todos{viaje.estimado ? ' (estimado)' : ''}.</strong>{' '}
           Elegido para que nadie viaje demasiado.
         </p>
-      ) : null}
-      {canchas.length > 0 ? (
-        <div className="bloque agente-canchas">
-          <p>
-            <strong>Posibles canchas reales: </strong>
-            {elegida.lugar.simulado ? 'el club de esta opción es de simulación, pero estos enlaces son reales. ' : ''}
-            La disponibilidad se ve en cada sitio: CRUXE no reserva ni confirma nada.
-          </p>
-          <div className="fila-botones agente-compartir">
-            {canchas.map((e) => (
-              <a key={e.clave} className="btn btn-secundario btn-chico" href={e.url} target="_blank" rel="noopener noreferrer">
-                {e.texto}
-              </a>
-            ))}
-          </div>
-          <small>Google Maps muestra lo que está cerca de quien toca el enlace: CRUXE no conoce la ubicación de nadie.</small>
-        </div>
       ) : null}
       {b.clima.fuente === 'simulacion' ? (
         <p className="suave">
@@ -623,6 +615,29 @@ function BorradorTarjeta({
         <strong>Por qué: </strong>
         {explicacion}
       </p>
+      {pasos && pasos.length > 0 ? <PasosAgente pasos={pasos} /> : null}
+      <PerfilDelGrupo perfil={b.perfil_grupo} />
+      {canchas.length > 0 ? (
+        <div className="bloque agente-canchas">
+          <p>
+            <strong>Canchas reales cerca: </strong>
+            {elegida.lugar.simulado ? 'el club de esta opción es de simulación; ' : ''}
+            la disponibilidad se ve en cada sitio. CRUXE no reserva ni confirma.
+          </p>
+          <div className="fila-botones agente-compartir">
+            {canchas.map((e) => (
+              <a key={e.clave} className="btn btn-secundario btn-chico" href={e.url} target="_blank" rel="noopener noreferrer">
+                {e.texto}
+              </a>
+            ))}
+          </div>
+          <small>Google Maps muestra lo que está cerca de quien toca el enlace: CRUXE no conoce la ubicación de nadie.</small>
+        </div>
+      ) : null}
+      <label className={`campo ${tituloValido ? '' : 'campo-error'}`}>
+        <span>Título</span>
+        <input value={titulo} maxLength={80} onChange={(e) => setTitulo(e.target.value)} disabled={soloLectura} />
+      </label>
       <div className="bloque">
         <p>
           <strong>Mensaje para el grupo: </strong>
@@ -631,7 +646,7 @@ function BorradorTarjeta({
         <div className="fila-botones agente-compartir">
           <CopiarMensaje key={mensaje} texto={mensaje} />
           {soloLectura ? null : (
-            <a className="btn btn-primario btn-chico" href={enlaceWhatsApp(mensaje, invitacion)} target="_blank" rel="noopener noreferrer">
+            <a className="btn btn-secundario btn-chico" href={enlaceWhatsApp(mensaje, invitacion)} target="_blank" rel="noopener noreferrer">
               Compartir por WhatsApp
             </a>
           )}
@@ -641,9 +656,9 @@ function BorradorTarjeta({
       <p className="suave">
         {deModelo
           ? 'Lo redactó la IA, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.'
-          : 'Texto fijo. Las opciones las armó el servidor con reglas fijas a partir de las preferencias habilitadas.'}
+          : 'Texto fijo. Las opciones salieron de reglas fijas sobre las preferencias habilitadas.'}
       </p>
-      <p className="suave">El mínimo, el máximo, la persona imprescindible y el cierre los completas tú en el paso siguiente.</p>
+      <p className="suave">Cupos, persona imprescindible y cierre: los completas en el paso siguiente.</p>
       <Boton onClick={usar} disabled={soloLectura || !tituloValido}>
         Usar esta opción
       </Boton>
@@ -678,7 +693,7 @@ function ErrorAgente({ error, espacioId, onReintentar }: { error: ApiError; espa
   if (error.codigo === 'entrada_incompleta' && error.detalle === 'pocas_preferencias') {
     return (
       <Aviso tono="aviso" titulo="Faltan preferencias" accion={<PropuestaAMano espacioId={espacioId} />}>
-        El agente necesita las preferencias de al menos 2 personas. Pedile al grupo que las cargue, o creá la propuesta a mano.
+        El agente necesita las preferencias de al menos 2 personas. Pide al grupo que las cargue, o crea la propuesta a mano.
       </Aviso>
     )
   }
@@ -719,13 +734,17 @@ function ProponerPlan({
   soloLectura,
   demo,
   invitacion,
+  personasGrupo,
 }: {
   espacioId: string
   soloLectura?: boolean
   demo?: boolean
   invitacion: string | null
+  personasGrupo: number | null
 }) {
   const [sabado, setSabado] = useState(SABADO_DEL_CASO)
+  // Rediseño S6 (E3): después de la respuesta hay un solo camino; lo social va aparte, plegado como "Avanzado".
+  const [verAvanzado, setVerAvanzado] = useState(false)
   const [clima, setClima] = useState<ClimaElegido>('real')
   const [resultado, setResultado] = useState<ResultadoAgente | null>(null)
   // Qué botón se tocó: "Que el agente proponga" (directo) o "Que el agente arme un plan" (con herramientas).
@@ -832,7 +851,7 @@ function ProponerPlan({
         >
           Que el agente arme un plan
         </Boton>
-        <small>"Arme un plan": la IA decide qué mirar (clima, planes, canchas) y cada resultado pasa por las reglas del servidor.</small>
+        <small>«Arme un plan»: la IA elige qué mirar (clima, planes, canchas); cada paso pasa por las reglas de CRUXE.</small>
       </div>
       {ocupado ? (
         <Cargando
@@ -848,7 +867,8 @@ function ProponerPlan({
       <div ref={refError}>
         {error ? <ErrorAgente error={error} espacioId={espacioId} onReintentar={() => void proponer(conHerramientas)} /> : null}
       </div>
-      <p className="suave" aria-live="polite">
+      {/* E6: en pantalla, una sola frase mientras piensa (la de Cargando); esta región es para lectores de pantalla. */}
+      <p className="agente-sr" aria-live="polite">
         {anuncio}
       </p>
       {resultado?.tipo === 'sin_plan_compatible' ? (
@@ -860,13 +880,32 @@ function ProponerPlan({
               : 'Con las preferencias cargadas no hay un plan del catálogo que le sirva a todos. Por privacidad no se muestran los motivos.'}
         </Aviso>
       ) : null}
-      {resultado?.tipo === 'borrador' && resultado.pasos && resultado.pasos.length > 0 ? <PasosAgente pasos={resultado.pasos} /> : null}
-      {resultado?.tipo === 'borrador' ? <BorradorTarjeta espacioId={espacioId} b={resultado} soloLectura={soloLectura} invitacion={invitacion} /> : null}
-      {resultado?.tipo === 'borrador' && climaSocial ? (
-        <AgenteSocial espacioId={espacioId} sabado={sabado} soloLectura={soloLectura}
-          clima={climaSocial} />
+      {resultado?.tipo === 'borrador' ? (
+        <BorradorTarjeta
+          espacioId={espacioId}
+          b={resultado}
+          soloLectura={soloLectura}
+          invitacion={invitacion}
+          pasos={resultado.pasos}
+          personasGrupo={personasGrupo}
+        />
       ) : null}
-      {resultado?.tipo === 'borrador' && !climaSocial ? <Aviso>No recibimos un dato de clima válido para preparar las invitaciones. Vuelve a pedir el borrador.</Aviso> : null}
+      {resultado?.tipo === 'borrador' ? (
+        <Plegable
+          id="agente-avanzado"
+          titulo="Avanzado: invitaciones con aprobación"
+          resumen="Preparar, aprobar y publicar"
+          abierto={verAvanzado}
+          mantener
+          onCambio={setVerAvanzado}
+        >
+          {climaSocial ? (
+            <AgenteSocial espacioId={espacioId} sabado={sabado} soloLectura={soloLectura} clima={climaSocial} />
+          ) : (
+            <Aviso>No recibimos un dato de clima válido para preparar las invitaciones. Vuelve a pedir el borrador.</Aviso>
+          )}
+        </Plegable>
+      ) : null}
     </div>
   )
 }
@@ -881,7 +920,7 @@ function PasosAgente({ pasos }: { pasos: string[] }) {
           <li key={i}>{p}</li>
         ))}
       </ol>
-      <small>Cada búsqueda pasó por las reglas del servidor: la IA solo pudo elegir entre opciones que le sirven a todo el grupo.</small>
+      <small>Cada paso pasó por las reglas de CRUXE: la IA solo eligió entre opciones que le sirven a todo el grupo.</small>
     </div>
   )
 }
@@ -948,12 +987,15 @@ function PanelAgente({
 }) {
   // Enlace de invitación del espacio, para sumarlo al mensaje de WhatsApp. Si no se puede leer, va sin enlace.
   const [invitacion, setInvitacion] = useState<string | null>(null)
+  // Cuántas personas hay en el grupo, para decir a quiénes cuenta "N opciones para N personas" (E5).
+  const [personasGrupo, setPersonasGrupo] = useState<number | null>(null)
   useEffect(() => {
     if (!esOrganizador) return
     let vivo = true
     void api.getSpace(espacioId).then((r) => {
       if (vivo && r.ok) {
         setInvitacion(`${window.location.origin}${window.location.pathname}${rutas.unirse(r.data.espacio.codigo_invitacion)}`)
+        setPersonasGrupo(r.data.espacio.miembros.length)
       }
     })
     return () => {
@@ -965,18 +1007,14 @@ function PanelAgente({
     <>
       {/* Pedido de Nico (01:50): primero lo que se usa en la demo; las preferencias, debajo y resumidas. */}
       {esOrganizador ? (
-        <section className="tarjeta agente-panel">
-          <h2>Agente del círculo</h2>
-          <p className="suave">
-            Usa las preferencias habilitadas, el clima y un catálogo de lugares (de Simulación) para sugerir ideas. Nadie queda confirmado.
-          </p>
-          <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} invitacion={invitacion} />
-        </section>
+        <Card id="agente-idea" titulo="Una idea de plan" className="agente-panel">
+          <p className="suave">Con las preferencias habilitadas y el clima, el agente sugiere un plan. Nadie queda confirmado.</p>
+          <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} invitacion={invitacion} personasGrupo={personasGrupo} />
+        </Card>
       ) : null}
-      <section className="tarjeta agente-panel">
-        <h2>Mis preferencias</h2>
-        <MisPreferencias espacioId={espacioId} soloLectura={soloLectura} />
-      </section>
+      <Card id="agente-preferencias" titulo="Mis preferencias" className="agente-panel">
+        <MisPreferencias espacioId={espacioId} soloLectura={soloLectura} primario={!esOrganizador} />
+      </Card>
     </>
   )
 }

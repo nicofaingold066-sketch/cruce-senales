@@ -122,20 +122,21 @@ function FlujoSocial({ espacioId, sabado, clima, soloLectura = false }: AgenteSo
   const etiquetaClima = (c: ClimaSocial['sabado']) => c === 'seco' ? 'sin lluvia' : c === 'lluvia' ? 'lluvia' : 'sin dato'
   const snapshot = pendiente?.solicitud.social
 
+  // Rediseño S6 (E2, E3): esta sección vive plegada como "Avanzado" dentro del resultado del agente. Ningún botón es
+  // primario (el primario de la pantalla es "Usar esta opción"); "Comprobar servicio" queda al pie, fuera del camino
+  // normal, y el estado ok se dice con texto.
   return (
-    <section ref={seccion} className="tarjeta agente-panel" aria-label="Preparar y publicar con aprobación humana">
-      <h3>Del borrador a una propuesta</h3>
-      <p className="suave">Primero revisas el plan, después lo apruebas y, en otro paso, publicas las invitaciones. Nadie queda confirmado.</p>
-      {capacidad === null ? <Cargando texto="Comprobando si el flujo social está disponible…" /> : null}
-      {capacidad === false ? <Aviso tono="aviso" titulo="Flujo social no disponible">No pudimos confirmar que el servidor admita este recorrido. No se enviará una preparación.</Aviso> : null}
-      <Boton variante="secundario" data-social-operacion="capacidad" ocupado={ocupado('capacidad')} ocupadoTexto="Comprobando…"
-        disabled={soloLectura || capacidad === null || ocupadoOtro('capacidad')} onClick={() => void correr('capacidad')}>Comprobar servicio</Boton>
-      {almacenamiento === 'error' ? <Aviso tono="error" titulo="No podemos conservar la solicitud" accion={<Boton variante="secundario" onClick={recuperarLocal}>Comprobar almacenamiento</Boton>}>No se enviaron acciones nuevas. Para recuperar una solicitud previa necesitamos el almacenamiento de esta pestaña.</Aviso> : null}
+    <section ref={seccion} className="agente-social" aria-label="Preparar y publicar con aprobación humana">
+      <p className="suave">Preparas un borrador, lo apruebas y, en otro paso, publicas las invitaciones. Nadie queda confirmado.</p>
+      {capacidad === null ? <Cargando texto="Comprobando el servicio…" /> : null}
+      {capacidad === true ? <p className="suave agente-estado-ok" role="status">Servicio disponible: puedes preparar el borrador social.</p> : null}
+      {capacidad === false ? <Aviso tono="aviso" titulo="Flujo social no disponible">No pudimos confirmar que CRUXE admita este recorrido. No se enviará una preparación.</Aviso> : null}
+      {almacenamiento === 'error' ? <Aviso tono="error" titulo="No podemos conservar la solicitud" accion={<Boton variante="secundario" onClick={recuperarLocal}>Comprobar almacenamiento</Boton>}>No se enviaron acciones nuevas. Para recuperar una solicitud previa hace falta el almacenamiento de esta pestaña.</Aviso> : null}
       {soloLectura ? <Aviso>Vista de solo lectura. No puedes preparar, aprobar ni publicar desde aquí.</Aviso> : null}
-      {snapshot ? <p className="suave">Solicitud guardada para {snapshot.sabado}. Clima del borrador: sábado {etiquetaClima(snapshot.clima.sabado)}, domingo {etiquetaClima(snapshot.clima.domingo)}. Comprobar conserva estos datos.</p> : null}
+      {snapshot ? <p className="suave">Solicitud guardada para el {snapshot.sabado}: clima del borrador sábado {etiquetaClima(snapshot.clima.sabado)}, domingo {etiquetaClima(snapshot.clima.domingo)}.</p> : null}
       {incierto ? <Aviso tono="aviso" titulo="Resultado pendiente de comprobar">La acción pudo haberse registrado. Conservamos la solicitud y sus identificadores; comprueba el recibo o reintenta la misma acción.</Aviso> : null}
       <div className="fila-botones">
-        <Boton data-social-operacion="preparar" variante={recibo ? 'secundario' : 'primario'} ocupado={ocupado('preparar')}
+        <Boton data-social-operacion="preparar" variante="secundario" ocupado={ocupado('preparar')}
           ocupadoTexto={pendiente ? 'Comprobando recibo…' : 'Preparando…'} disabled={bloqueado || ocupadoOtro('preparar')}
           onClick={() => void correr('preparar')}>{pendiente ? 'Comprobar recibo' : 'Preparar borrador social'}</Boton>
       </div>
@@ -143,29 +144,31 @@ function FlujoSocial({ espacioId, sabado, clima, soloLectura = false }: AgenteSo
       {borrador ? <div className="bloque">
         <h4>{borrador.plan.titulo}</h4>
         <p>{borrador.plan.lugar.nombre} {borrador.plan.lugar.simulado ? <RotuloSimulacion /> : null}</p>
-        <p className="suave">Horarios propuestos · America/Santiago</p>
         <ul>{borrador.plan.franjas.map((f, i) => <li key={i}>{franjaTexto(f.inicio, f.fin)}</li>)}</ul>
         <p>Cupos: mínimo {borrador.plan.minimo}, máximo {borrador.plan.maximo}. Imprescindible: {borrador.plan.imprescindible.nombre}.</p>
-        <p>Confirmar hasta: {momentoCorto(borrador.plan.plazo)} · America/Santiago.</p>
-        <p>{borrador.plan.invitados} invitaciones previstas. Cada persona debe indicar su disponibilidad y aceptar la versión vigente.</p>
-        <p className="suave">Elección: {recibo?.eleccionFuente === 'modelo' ? 'modelo' : recibo?.eleccionFuente === 'regla' ? 'regla' : 'fuente no informada'}.
-          {' '}{recibo?.explicacionFuente === 'modelo' ? 'Texto del modelo.' : recibo?.explicacionFuente === 'texto_fijo' ? 'Texto fijo.' : 'Texto guardado; fuente no informada.'}</p>
+        <p>Confirmar hasta: {momentoCorto(borrador.plan.plazo)}.</p>
+        <p>{borrador.plan.invitados} invitaciones previstas. Cada persona indica su disponibilidad y acepta la versión vigente.</p>
+        <p className="suave">{recibo?.explicacionFuente === 'modelo' ? 'Lo redactó la IA.' : recibo?.explicacionFuente === 'texto_fijo' ? 'Texto fijo.' : 'Texto guardado.'}</p>
         {recibo?.texto ? <blockquote>{recibo.texto}</blockquote> : null}
-        {!propio ? <Aviso>El servidor devolvió una ejecución ya existente de otra solicitud. Aquí puedes consultar su recibo, sin aprobarla ni publicarla.</Aviso> : null}
+        {!propio ? <Aviso>Esta ejecución es de otra solicitud. Puedes consultar su recibo, sin aprobarla ni publicarla.</Aviso> : null}
         {!publicada ? <>
-          <Aviso tono={aprobado ? 'ok' : 'info'} titulo={aprobado ? 'Aprobación registrada' : 'Pendiente de aprobación'}>{aprobado ? 'Este borrador tiene aprobación del servidor. Publicarlo requiere el siguiente botón y no confirma asistencia.' : 'Aprobar autoriza este borrador exacto; todavía no envía invitaciones ni confirma asistencia.'}</Aviso>
+          <Aviso tono={aprobado ? 'ok' : 'info'} titulo={aprobado ? 'Aprobación registrada' : 'Pendiente de aprobación'}>{aprobado ? 'Publicar es el paso siguiente y no confirma asistencia.' : 'Aprobar autoriza este borrador exacto; todavía no envía invitaciones ni confirma asistencia.'}</Aviso>
           <div className="fila-botones">
             <Boton variante="secundario" data-social-operacion="aprobar" ocupado={ocupado('aprobar')} ocupadoTexto="Registrando aprobación…"
               disabled={bloqueado || !propio || ocupadoOtro('aprobar')} onClick={() => void correr('aprobar')}>{aprobado ? 'Comprobar aprobación' : 'Aprobar este borrador'}</Boton>
-            <Boton data-social-operacion="publicar" ocupado={ocupado('publicar')} ocupadoTexto="Publicando invitaciones…"
+            <Boton variante="secundario" data-social-operacion="publicar" ocupado={ocupado('publicar')} ocupadoTexto="Publicando invitaciones…"
               disabled={bloqueado || !propio || !aprobado || ocupadoOtro('publicar')} onClick={() => void correr('publicar')}>Publicar invitaciones</Boton>
           </div>
         </> : null}
       </div> : null}
-      {publicada ? <Aviso tono="ok" titulo="Propuesta publicada" accion={<a data-social-propuesta className="btn btn-primario" href={rutas.propuesta(espacioId, publicada.propuestaId)}>Ver propuesta y responder</a>}>
-        {publicada.invitados === null ? 'El servidor confirmó la publicación.' : `${publicada.invitados} invitaciones registradas.`} Publicar no suma personas confirmadas. La propuesta muestra la versión, los cupos y las acciones para responder o darse de baja.
+      {publicada ? <Aviso tono="ok" titulo="Propuesta publicada" accion={<a data-social-propuesta className="btn btn-secundario" href={rutas.propuesta(espacioId, publicada.propuestaId)}>Ver propuesta y responder</a>}>
+        {publicada.invitados === null ? 'CRUXE confirmó la publicación.' : `${publicada.invitados} invitaciones registradas.`} Publicar no suma personas confirmadas.
       </Aviso> : null}
       {accion.error ? <ErrorCaja error={accion.error} onReintentar={accion.ocupado || soloLectura ? undefined : reintentar} enfocar /> : null}
+      <div className="fila-botones agente-diagnostico">
+        <Boton variante="secundario" className="btn-chico" data-social-operacion="capacidad" ocupado={ocupado('capacidad')} ocupadoTexto="Comprobando…"
+          disabled={soloLectura || capacidad === null || ocupadoOtro('capacidad')} onClick={() => void correr('capacidad')}>Comprobar servicio</Boton>
+      </div>
     </section>
   )
 }

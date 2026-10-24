@@ -1,4 +1,6 @@
-/* Estilos propios del panel del agente. Lo demás viene de src/styles.css. */
+/* Estilos propios del panel del agente (sección S6 del rediseño). Tokens en src/estilo/sistema.css: cuatro tamaños
+   (--t-titulo, --t-subtitulo, --t-cuerpo, --t-nota), toques de --toque (44 px), espacios --e-1…--e-6.
+   Lo demás viene de src/styles.css. */
 
 /* Un fieldset toma por defecto el ancho mínimo de su contenido y se sale de la tarjeta en el teléfono. */
 .agente-candidatas {
@@ -11,17 +13,42 @@
   flex-wrap: wrap;
   width: 100%;
 }
+.agente-candidatas .agente-quienes {
+  margin: 0 0 var(--e-2);
+}
 
 /* Copiar y Compartir por WhatsApp, separados y tocables en el teléfono. */
 .agente-compartir {
-  gap: 8px;
+  gap: var(--e-2);
   align-items: center;
 }
 
-/* Toques de al menos 44 px en el teléfono, también en los botones chicos del panel (mejora #35). */
+/* Botones chicos del panel: 44 px de toque y uno de los cuatro tamaños (mejora #35, sistema). */
 .agente-panel .btn-chico {
-  min-height: 44px;
-  padding: 8px 14px;
+  min-height: var(--toque);
+  padding: var(--e-2) 14px;
+  font-size: var(--t-cuerpo);
+}
+
+/* Rótulos y etiquetas dentro del panel: nunca por debajo de --t-nota. */
+.agente-panel .rotulo-sim,
+.agente-panel .etiqueta,
+.agente-panel .campo > span,
+.agente-panel small {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+.agente-panel .campo input,
+.agente-panel .opcion-radio,
+.agente-panel .btn {
+  font-size: var(--t-cuerpo);
+}
+.agente-panel .grupo > legend,
+.agente-panel h3,
+.agente-panel h4 {
+  font-size: var(--t-cuerpo);
+  line-height: var(--lh-cuerpo);
+  font-weight: var(--p-titulo);
 }
 
 /* Solo para lectores de pantalla: anuncia cambios sin repetir texto en la pantalla. */
@@ -42,7 +69,7 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  min-height: 44px;
+  min-height: var(--toque);
   padding: 6px 0;
   cursor: pointer;
 }
@@ -54,23 +81,37 @@
 }
 .agente-casilla small {
   display: block;
-  line-height: 1.4;
 }
 
-/* Enmienda 10: preguntas de viaje (opcionales) y la línea del viaje máximo en el borrador. */
+/* Subtítulos dentro de una tarjeta: tamaño cuerpo, peso de título. */
 .agente-subtitulo {
-  margin: 0 0 4px;
-  font-size: 1rem;
+  margin: 0 0 var(--e-1);
 }
 .agente-viaje-linea {
-  margin: 8px 0;
+  margin: var(--e-2) 0;
 }
 
-/* Dos botones del agente: "proponga" y "arme un plan" (con herramientas). */
+/* El resultado del agente: el título del bloque en --t-subtitulo y la opción elegida como dato importante. */
+.agente-panel .agente-resultado-titulo {
+  margin: 0;
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+  font-weight: var(--p-titulo);
+}
+.agente-eleccion {
+  margin: var(--e-3) 0 var(--e-1);
+  overflow-wrap: anywhere;
+}
+.agente-franjas {
+  margin: 0 0 var(--e-2);
+  padding-left: 1.2em;
+}
+
+/* Dos botones del agente: "proponga" (primario) y "arme un plan" (secundario). */
 .agente-botones {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--e-2);
   align-items: center;
 }
 .agente-botones > small {
@@ -82,34 +123,34 @@
   margin: 0;
   padding-left: 1.4em;
   display: grid;
-  gap: 4px;
+  gap: var(--e-1);
 }
 
-/* Pedido de Nico (01:50): menos scroll. Chips más compactos (siguen con 44 px de alto para tocar). */
+/* Chips de preferencias: compactos (pedido de Nico, 01:50), con 44 px de toque. */
 .agente-panel .opciones {
   gap: 6px;
 }
 .agente-panel .opcion-radio {
-  min-height: 44px;
-  padding: 8px 12px;
-  font-size: 0.92rem;
+  min-height: var(--toque);
+  padding: var(--e-2) var(--e-3);
 }
 .agente-panel .grupo {
-  margin-bottom: 12px;
+  margin-bottom: var(--e-3);
 }
+
 /* Resumen de "Mis preferencias". */
 .agente-resumen {
   display: grid;
   gap: 6px;
-  margin: 0 0 12px;
+  margin: 0 0 var(--e-3);
 }
 .agente-resumen > div {
   display: grid;
   grid-template-columns: minmax(0, 9.5em) minmax(0, 1fr);
-  gap: 8px;
+  gap: var(--e-2);
 }
 .agente-resumen dt {
-  font-weight: 700;
+  font-weight: var(--p-boton);
 }
 .agente-resumen dd {
   margin: 0;
@@ -121,23 +162,25 @@
     gap: 0;
   }
 }
-/* Secciones que se abren a pedido. */
+
+/* Secciones que se abren a pedido ("Cómo llegas", "Permisos", "Avanzado"). */
 .agente-plegable-seccion {
   border-top: 1px solid var(--linea);
-  margin: 4px 0 8px;
+  margin: var(--e-1) 0 var(--e-2);
 }
 .agente-plegable-boton {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 10px;
+  gap: var(--e-1) 10px;
   width: 100%;
-  min-height: 48px;
+  min-height: var(--toque);
   padding: 10px 0;
   background: none;
   border: 0;
   text-align: left;
   font: inherit;
+  font-size: var(--t-cuerpo);
   color: inherit;
   cursor: pointer;
 }
@@ -146,17 +189,31 @@
   outline-offset: 2px;
 }
 .agente-plegable-titulo {
-  font-weight: 750;
+  font-weight: var(--p-titulo);
 }
 .agente-plegable-resumen {
   flex: 1 1 12em;
   color: var(--tinta-2);
-  font-size: 0.92rem;
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
   overflow-wrap: anywhere;
 }
 .agente-plegable-flecha {
   margin-left: auto;
 }
 .agente-plegable-cuerpo {
-  padding-bottom: 8px;
+  padding-bottom: var(--e-2);
+}
+
+/* Lo social ("Avanzado"): sin tarjeta propia dentro de la tarjeta; el estado ok con texto. */
+.agente-social > * + * {
+  margin-top: 10px;
+}
+.agente-estado-ok {
+  color: var(--ok);
+}
+.agente-diagnostico {
+  margin-top: var(--e-3);
+  padding-top: var(--e-2);
+  border-top: 1px dashed var(--linea);
 }
