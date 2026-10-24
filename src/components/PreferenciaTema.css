@@ -1,0 +1,76 @@
+.preferencia-tema {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.preferencia-tema > legend {
+  width: 100%;
+  margin: 0 0 var(--e-3);
+  padding: 0;
+  color: var(--tinta);
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-titulo);
+  line-height: var(--lh-cuerpo);
+}
+.preferencia-tema-opciones {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--e-2);
+}
+.preferencia-tema-opcion {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--e-2);
+  min-width: 0;
+  min-height: 76px;
+  padding: var(--e-3);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-m);
+  background: var(--hoja);
+  color: var(--tinta-2);
+  cursor: pointer;
+}
+.preferencia-tema-opcion > input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--brasa);
+  cursor: pointer;
+}
+.preferencia-tema-opcion > span {
+  grid-column: 1 / -1;
+  font-size: var(--t-nota);
+  font-weight: var(--p-boton);
+  line-height: var(--lh-nota);
+  overflow-wrap: anywhere;
+}
+.preferencia-tema-opcion:has(input:checked) {
+  border-color: var(--brasa);
+  background: var(--brasa-suave);
+  color: var(--brasa);
+}
+.preferencia-tema-opcion:has(input:focus-visible) {
+  outline: 3px solid var(--foco);
+  outline-offset: 3px;
+}
+.preferencia-tema-opcion > input:focus-visible {
+  outline: none;
+}
+.preferencia-tema-ayuda {
+  margin: var(--e-3) 0 0;
+  color: var(--tinta-2);
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+@media (hover: hover) {
+  .preferencia-tema-opcion:hover {
+    border-color: var(--tinta-3);
+  }
+}
+@media (forced-colors: active) {
+  .preferencia-tema-opcion:has(input:checked) {
+    border: 2px solid Highlight;
+  }
+}

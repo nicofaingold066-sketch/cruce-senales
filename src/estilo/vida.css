@@ -1,0 +1,397 @@
+/* CRUXE · color y respuesta al gesto.
+   Capa final compartida: conserva la estructura de las secciones y los estados del servidor.
+   Los contenedores de barras fijas nunca reciben transform. Sin dependencias ni imágenes externas. */
+
+:root {
+  --fondo: #faf6f1;
+  --hoja: #fffdfa;
+  --relleno: #f3ebe3;
+  --relleno-2: #eaded3;
+  --linea: #e4d9ce;
+  --tinta: #29211d;
+  --tinta-2: #63564d;
+  --tinta-3: #75665b;
+  --brasa: #b54325;
+  --brasa-hover: #9f351d;
+  --brasa-suave: #fbe9df;
+  --brasa-viva: #ff8050;
+  --btn: #b54325;
+  --btn-texto: #ffffff;
+  --btn-2: #f1e6dd;
+  --btn-2-texto: #49382d;
+  --noche: #1c151b;
+  --noche-2: #2a2026;
+  --noche-3: #372930;
+  --noche-suave: #c6b7b5;
+  --vida-menta: #246958;
+  --vida-menta-suave: #e2f0e8;
+  --vida-lila: #6a4d93;
+  --vida-lila-suave: #eee6f6;
+  --vida-borde: #d69d83;
+  --vida-halo: rgba(181, 67, 37, 0.13);
+  --vida-ambiente: rgba(246, 168, 128, 0.18);
+  --vida-ambiente-2: rgba(167, 192, 165, 0.12);
+  --vida-sombra: 0 5px 18px rgba(90, 46, 25, 0.08);
+  --vida-sombra-activa: 0 9px 24px rgba(90, 46, 25, 0.12);
+  --vida-sombra-boton: 0 4px 10px rgba(146, 47, 23, 0.2);
+  --vida-duracion: 220ms;
+  --vida-curva: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+:root[data-theme='dark'] {
+  --fondo: #151116;
+  --hoja: #211b22;
+  --relleno: #2c242b;
+  --relleno-2: #3a2f35;
+  --linea: #46363d;
+  --tinta: #f7eee7;
+  --tinta-2: #ccbcb3;
+  --tinta-3: #b09e96;
+  --brasa: #ff9b75;
+  --brasa-hover: #ffb08f;
+  --brasa-suave: #402820;
+  --btn: #ff9b75;
+  --btn-texto: #32180f;
+  --btn-2: #382b2c;
+  --btn-2-texto: #f4d8c9;
+  --noche: #110d13;
+  --noche-2: #211821;
+  --noche-3: #30222e;
+  --vida-menta: #94d7b8;
+  --vida-menta-suave: #1c352d;
+  --vida-lila: #ceb3f0;
+  --vida-lila-suave: #34263f;
+  --vida-borde: #95634f;
+  --vida-halo: rgba(255, 155, 117, 0.16);
+  --vida-ambiente: rgba(192, 94, 77, 0.1);
+  --vida-ambiente-2: rgba(129, 109, 170, 0.1);
+  --vida-sombra: 0 5px 18px rgba(0, 0, 0, 0.18);
+  --vida-sombra-activa: 0 9px 24px rgba(0, 0, 0, 0.28);
+  --vida-sombra-boton: 0 4px 14px rgba(255, 130, 80, 0.12);
+}
+
+/* Una atmósfera cálida en las pantallas cotidianas, también sin escena oscura. */
+#root .s1-portada .s1-hoja,
+#root .vista-s2b {
+  background:
+    radial-gradient(ellipse at 100% 0%, var(--vida-ambiente), transparent 55%),
+    radial-gradient(ellipse at 0% 30%, var(--vida-ambiente-2), transparent 55%),
+    var(--fondo);
+}
+#root .escena {
+  background:
+    radial-gradient(ellipse at 100% 8%, rgba(145, 88, 141, 0.16), transparent 65%),
+    radial-gradient(ellipse at 10% 100%, rgba(235, 111, 65, 0.18), transparent 70%),
+    var(--noche);
+}
+#root .barra {
+  border-bottom: 1px solid rgba(255, 165, 128, 0.14);
+  background: linear-gradient(110deg, var(--noche), var(--noche-2));
+}
+#root .nav-inferior {
+  border-top-color: var(--linea);
+  box-shadow: 0 -4px 20px var(--vida-halo);
+}
+#root .s1-titulo,
+#root .s2b-cabeza h1 {
+  text-decoration: underline;
+  text-decoration-color: var(--vida-borde);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+}
+
+/* El primario tiene color propio incluso si es un enlace dentro de la escena. */
+#root .btn.btn-primario,
+#root .btn.btn-turno {
+  color: var(--btn-texto);
+  background: var(--btn);
+  box-shadow: var(--vida-sombra-boton);
+}
+#root .btn.btn-secundario {
+  color: var(--btn-2-texto);
+  background: var(--btn-2);
+}
+#root .btn.btn-primario,
+#root .btn.btn-turno,
+#root .btn.btn-secundario {
+  transition:
+    translate 140ms var(--vida-curva),
+    transform 140ms var(--vida-curva),
+    background-color var(--vida-duracion) ease,
+    box-shadow var(--vida-duracion) ease,
+    opacity var(--vida-duracion) ease;
+}
+#root .btn:disabled,
+#root .btn[aria-disabled='true'] {
+  box-shadow: none;
+}
+/* Un brillo al interactuar reemplaza el destello que se repetía aun sin actividad. */
+#root .btn-turno::after {
+  animation: none;
+  opacity: 0;
+}
+#root .btn-turno:focus-visible:not(:disabled, [aria-disabled='true'], [aria-busy='true'])::after {
+  animation: vida-brillo 280ms ease-out both;
+}
+#root .btn-hecho {
+  background: var(--ok-suave) !important;
+  color: var(--ok) !important;
+}
+
+/* Superficies con identidad: coral para crear, menta para unirse y lila para el agente. */
+#root .s1-opcion > .s1-opcion-icono,
+#root .vacio-icono {
+  color: var(--brasa);
+  background: var(--brasa-suave);
+}
+#root .s1-opcion-unirme .s1-opcion-icono,
+#root .privado {
+  color: var(--vida-menta);
+  background: var(--vida-menta-suave);
+  border-color: color-mix(in srgb, var(--vida-menta) 25%, transparent);
+}
+#root .s1-opcion-fila .s1-opcion-icono,
+#root .s2-agente,
+#root .agente-presentacion {
+  color: var(--vida-lila);
+  background: var(--vida-lila-suave);
+}
+#root .s2-agente {
+  padding: var(--e-4);
+  border: 1px solid color-mix(in srgb, var(--vida-lila) 20%, transparent);
+  border-radius: var(--r-m);
+}
+#root .s2-agente .s2-gustos,
+#root .privado p {
+  color: var(--tinta-2);
+}
+#root .s2-agente .s2-abrir {
+  color: var(--vida-lila);
+}
+#root .invitar-tarjeta {
+  border-color: color-mix(in srgb, var(--brasa) 22%, var(--linea));
+  background: linear-gradient(125deg, var(--hoja) 45%, var(--brasa-suave));
+}
+#root .s1-te-toca,
+#root .s2b-plan-turno {
+  background: linear-gradient(110deg, var(--brasa-suave), var(--hoja));
+}
+#root .s2b-plan-ok {
+  border-color: color-mix(in srgb, var(--ok) 38%, var(--linea));
+  background: linear-gradient(110deg, var(--ok-suave), var(--hoja));
+}
+#root .s2b-perfil-cabeza .avatar {
+  box-shadow: 0 0 0 6px var(--brasa-suave), 0 0 0 9px var(--hoja);
+}
+#root .s2b-bloque,
+#root .tarjeta,
+#root .s1-opcion,
+#root .s2b-plan {
+  box-shadow: var(--vida-sombra);
+}
+
+/* Los estados conservan texto e iconos. Color únicamente a partir del estado recibido. */
+#root .resultado-reuniendo_interes {
+  --c: var(--info);
+}
+#root .resultado-grupo_confirmado {
+  --c: var(--ok);
+  border-color: var(--ok);
+  background: linear-gradient(135deg, var(--ok-suave), var(--hoja));
+}
+#root .resultado-en_revision {
+  background: linear-gradient(135deg, var(--revision-suave), var(--hoja));
+}
+#root .resultado-esperando_compromisos {
+  background: linear-gradient(135deg, var(--hoja) 55%, var(--brasa-suave));
+}
+#root .resultado .resultado-rotulo,
+#root .resultado.resultado-turno .resultado-frase {
+  color: var(--c);
+}
+#root .resultado .resultado-avatares > .avatar {
+  animation: vida-avatar 260ms var(--vida-curva) both;
+}
+/* A 375 px «Respuestas» y «Opción» se tocaban: dos etapas por fila conservan los cuatro rótulos. */
+@media (max-width: 399px) {
+  #root .resultado-pasos.pasos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: var(--e-2);
+  }
+  #root .s3-cierre > summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--e-1) var(--e-3);
+  }
+  #root .s3-cierre :is(.s3-fila-texto, .s3-fila-valor) {
+    grid-column: 1;
+    overflow-wrap: normal;
+  }
+  #root .s3-cierre .s3-fila-icono {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+#root .progreso-relleno,
+#root .s5-barra > span {
+  transition: width 280ms var(--vida-curva), background-color var(--vida-duracion) ease;
+}
+
+/* Todas las familias de controles responden de la misma manera, sin cambiar su tamaño. */
+#root :is(.s1-opcion, .s1-te-toca, .s1-fila-grupo, .s2b-fila, .s2b-plan, .s5-fila-opcional,
+  .rapida-opcion, .contador button, .s3-cerrar, .grupo-personas, .s2-nuevo-plan) {
+  transition:
+    translate 160ms var(--vida-curva),
+    scale 140ms var(--vida-curva),
+    border-color var(--vida-duracion) ease,
+    background-color var(--vida-duracion) ease,
+    box-shadow var(--vida-duracion) ease;
+}
+#root :is(.s1-opcion, .s1-te-toca, .s1-fila-grupo, .s2b-fila, .s2b-plan, .s5-fila-opcional,
+  .contador button, .s3-cerrar, .grupo-personas, .s2-nuevo-plan):active:not(:disabled, [aria-disabled='true'], [aria-busy='true']) {
+  scale: 0.985;
+}
+#root :is(.fila-chevron, .s1-opcion > svg, .s5-fila-opcional > svg, .s2-abrir) {
+  transition: translate 180ms var(--vida-curva), color 180ms ease;
+}
+#root .campo :is(input, select, textarea):focus {
+  border-color: var(--brasa);
+  box-shadow: 0 0 0 4px var(--vida-halo);
+}
+#root :is(.chip-dia, .chip-hora, .chip-persona, .chip-actividad).chip-activo,
+#root .opcion-radio.opcion-activa,
+#root .chip.chip-activo {
+  background: var(--brasa-suave);
+  color: var(--brasa);
+  border-color: var(--brasa);
+}
+#root .s5 .btn.rapida-elegida {
+  background: var(--brasa-suave);
+  color: var(--brasa);
+  outline-color: var(--brasa);
+  animation: vida-seleccion 240ms var(--vida-curva) both;
+}
+#root .s5 .btn.rapida-elegida .rapida-detalle {
+  color: var(--tinta-2);
+}
+#root .rapida-opcion .rapida-detalle {
+  opacity: 1;
+}
+#root summary::after {
+  transition: transform 180ms var(--vida-curva);
+}
+#root details[open] > :is(.s1-opcion-cuerpo, .s3-fila-cuerpo, .s5-detalle-cuerpo,
+  .s2b-fila-detalle, .agente-plegable-seccion, .plegable-cuerpo) {
+  animation: vida-detalle var(--vida-duracion) var(--vida-curva) both;
+}
+#root :is(.s2b-fila-detalle, .agente-plegable-seccion) {
+  animation: vida-detalle var(--vida-duracion) var(--vida-curva) both;
+}
+#root .nav-activa {
+  color: var(--brasa);
+  background: var(--brasa-suave);
+  border-radius: var(--r-m);
+}
+#root .barra-pestanas a.barra-pestana-activa {
+  border-bottom-color: var(--brasa-viva);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  #root .btn:is(.btn-primario, .btn-turno):hover:not(:disabled, [aria-disabled='true'], [aria-busy='true']) {
+    background: var(--brasa-hover);
+    opacity: 1;
+    translate: 0 -2px;
+    box-shadow: var(--vida-sombra-activa);
+  }
+  #root .btn.btn-secundario:hover:not(:disabled, [aria-disabled='true'], [aria-busy='true']) {
+    background: var(--relleno-2);
+    translate: 0 -1px;
+  }
+  #root .btn-turno:hover:not(:disabled, [aria-disabled='true'], [aria-busy='true'])::after {
+    animation: vida-brillo 280ms ease-out both;
+  }
+  #root :is(a.s1-opcion, button.s1-opcion, .s1-te-toca, a.s1-fila-grupo, a.s2b-plan):hover:not(:disabled, [aria-disabled='true'], [aria-busy='true']) {
+    border-color: var(--vida-borde);
+    translate: 0 -2px;
+    box-shadow: var(--vida-sombra-activa);
+  }
+  #root :is(.s2b-fila, .s5-fila-opcional, .grupo-personas, .s2-nuevo-plan):hover:not(:disabled, [aria-disabled='true'], [aria-busy='true']) {
+    background-color: var(--brasa-suave);
+  }
+  #root :is(a.fila, .s1-opcion, .s5-fila-opcional):hover .fila-chevron,
+  #root .s2-agente:hover .s2-abrir {
+    translate: 3px 0;
+    color: var(--brasa);
+  }
+  #root .barra-marca:hover .marca-x {
+    rotate: -8deg;
+    scale: 1.1;
+  }
+}
+#root .marca-x {
+  transition: rotate var(--vida-duracion) var(--vida-curva), scale var(--vida-duracion) var(--vida-curva);
+}
+
+/* El eco solo indica que se activó un control; nunca significa que se guardó o confirmó. */
+.vida-feedback {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow: hidden;
+  pointer-events: none;
+}
+.vida-eco {
+  position: absolute;
+  left: var(--eco-x);
+  top: var(--eco-y);
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border: 2px solid var(--brasa-viva);
+  border-radius: 50%;
+  background: var(--vida-halo);
+  animation: vida-eco 280ms ease-out both;
+}
+.vida-eco-teclado {
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+}
+@keyframes vida-eco {
+  from { opacity: 0.65; transform: scale(0.35); }
+  to { opacity: 0; transform: scale(1.7); }
+}
+@keyframes vida-brillo {
+  from { opacity: 0.5; transform: translateX(-100%); }
+  to { opacity: 0; transform: translateX(100%); }
+}
+@keyframes vida-avatar {
+  from { opacity: 0; scale: 0.8; }
+  to { opacity: 1; scale: 1; }
+}
+@keyframes vida-detalle {
+  from { opacity: 0; translate: 0 4px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes vida-seleccion {
+  from { box-shadow: 0 0 0 5px var(--vida-halo); }
+  to { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* Incluye las animaciones heredadas y los pseudo-elementos; también detiene la órbita y el confeti. */
+@media (prefers-reduced-motion: reduce) {
+  #root *,
+  #root *::before,
+  #root *::after,
+  .vida-feedback,
+  .vida-feedback * {
+    animation: none !important;
+    transition: none !important;
+    scale: none !important;
+    translate: none !important;
+    rotate: none !important;
+    scroll-behavior: auto !important;
+  }
+  .vida-feedback { display: none; }
+  #root .btn-turno::after { display: none; }
+}
