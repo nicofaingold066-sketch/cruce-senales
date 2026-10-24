@@ -1,0 +1,262 @@
+diff --git a/src/screens/CrearGrupo.tsx b/src/screens/CrearGrupo.tsx
+index 520ba71..35f3f41 100644
+--- a/src/screens/CrearGrupo.tsx
++++ b/src/screens/CrearGrupo.tsx
+@@ -9,6 +9,8 @@ import { Aviso, Boton, ErrorCaja } from '../components/ui'
+ import { Icono } from '../components/Icono'
+ import { CampoIntegrantes } from '../login/Integrantes'
+ import { CampoQuienViene } from '../friccion/QuienViene'
++import { CampoProposito } from '../friccion/Proposito'
++import type { Proposito } from '../friccion/propositos'
+ import { conQuienViene } from '../lib/compartir'
+ import type { QuienViene } from '../lib/compartir'
+ import { ejemploPorSemilla, placeholderGrupo } from '../lib/ejemplos'
+@@ -25,6 +27,8 @@ export default function CrearGrupo() {
+   const [integrantes, setIntegrantes] = useState<string[]>([])
+   // D3 de psico (friccion): quién viene es una regla del grupo; va como marca en el nombre, sin migración.
+   const [quienViene, setQuienViene] = useState<QuienViene | null>(null)
++  // Enmienda 14: para qué es el grupo. 'libre' (por defecto) es el comportamiento de siempre y no se manda al servidor.
++  const [proposito, setProposito] = useState<Proposito>('libre')
+   // Apertura: el ejemplo del nombre rota (no siempre "Los del asado").
+   const ej = useMemo(() => ejemploPorSemilla(new Date().toDateString()), [])
+   const tipo: TipoEspacio = 'amigos'
+@@ -34,8 +38,8 @@ export default function CrearGrupo() {
+   async function hacer(e: FormEvent) {
+     e.preventDefault()
+     if (faltan) return
+-    const r = await ejecutar(`crear:${nombre}:${tipo}:${visible}:${integrantes.join('|')}`, () =>
+-      api.createSpace(conQuienViene(nombre.trim(), quienViene), tipo, visible.trim(), integrantes),
++    const r = await ejecutar(`crear:${nombre}:${tipo}:${visible}:${integrantes.join('|')}:${proposito}`, () =>
++      api.createSpace(conQuienViene(nombre.trim(), quienViene), tipo, visible.trim(), integrantes, proposito),
+     )
+     if (r?.ok) {
+       recordarNombreSiFalta(visible)
+@@ -70,6 +74,7 @@ export default function CrearGrupo() {
+           </fieldset>
+           <CampoIntegrantes integrantes={integrantes} cambiar={setIntegrantes} tuNombre={visible} />
+           <CampoQuienViene valor={quienViene} cambiar={setQuienViene} nombre={nombre} />
++          <CampoProposito valor={proposito} cambiar={setProposito} deshabilitado={soloLectura} />
+           <Aviso tono="info">
+             Vas a ser quien organiza: creas las propuestas y buscas la opción compatible. Las condiciones de cada persona son
+             privadas, también para ti.
+diff --git a/src/screens/NuevaPropuesta.tsx b/src/screens/NuevaPropuesta.tsx
+index 839b712..dc8a075 100644
+--- a/src/screens/NuevaPropuesta.tsx
++++ b/src/screens/NuevaPropuesta.tsx
+@@ -1,6 +1,6 @@
+ import { useCallback, useEffect, useRef, useState } from 'react'
+ import { api } from '../lib/api'
+-import type { ApiError, Espacio } from '../lib/types'
++import type { ActividadClave, ApiError, Espacio } from '../lib/types'
+ import { useAccion } from '../lib/hooks'
+ import { franjaTexto, momentoCorto, ZONA_VISIBLE } from '../lib/format'
+ import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
+@@ -8,7 +8,7 @@ import { Avatar, Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
+ import { Icono } from '../components/Icono'
+ import type { NombreIcono } from '../components/Icono'
+ import { tomarBorradorAgente } from '../agente/api'
+-import { ATAJOS, atajosParaGrupo, ejemploPorSemilla, placeholderPlan } from '../lib/ejemplos'
++import { ATAJOS, atajosParaEspacio, ejemploPorSemilla, placeholderPlan } from '../lib/ejemplos'
+ 
+ // Una propuesta se arma con dos momentos posibles (A y B), cada uno un día y una hora de encuentro,
+ // y una duración aproximada: la hora de fin se calcula sola. El contrato sigue recibiendo inicio y fin
+@@ -29,6 +29,8 @@ interface Formulario {
+   cierre: Cierre
+   /** Solo con cierre "otro". */
+   plazoOtro: string
++  /** Enmienda 14: clave de la actividad del atajo elegido (null = sin actividad; vale en un grupo libre). */
++  actividad: ActividadClave | null
+ }
+ 
+ // Valores exactos del caso canónico (contrato, sección 5): A sáb 31 oct y B dom 1 nov, 14:00 a 17:00; cierre jue 29 oct 20:00.
+@@ -43,10 +45,12 @@ const CASO = {
+   maximo: '6',
+   cierre: 'dos_dias' as Cierre,
+   plazoOtro: '',
++  // El demo es un espacio libre: sin actividad, igual que siempre.
++  actividad: null as ActividadClave | null,
+ }
+ 
+ // Atajos de actividad (apertura, `src/lib/ejemplos.ts`): el que nombra el grupo va primero; "Asado" ya no encabeza siempre.
+-type Actividad = { titulo: string; icono: NombreIcono; min: number }
++type Actividad = { titulo: string; icono: NombreIcono; min: number; actividad: string | null }
+ const HORAS = ['12:00', '13:00', '14:00', '17:00', '19:00', '20:00', '21:00']
+ const DURACIONES = [60, 120, 180, 240]
+ const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+@@ -104,6 +108,7 @@ function campoDeError(e: ApiError | null): Campo | null {
+       return 'imprescindible'
+     case 'campo_faltante':
+     case 'formato_invalido':
++    case 'fuera_de_proposito': // enmienda 14: el mensaje del servidor (TEXTO_FUERA_DE_PROPOSITO) lo muestra ErrorCaja
+       return 'titulo'
+     default:
+       return null
+@@ -168,6 +173,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
+           imprescindibleId: yoM?.miembro_id ?? '',
+           cierre: 'dia_antes',
+           plazoOtro: '',
++          actividad: null,
+         }
+     if (borrador) {
+       const [a, b] = borrador.franjas
+@@ -217,7 +223,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
+   }
+   function elegirActividad(a: Actividad) {
+     const esAtajo = form.titulo.trim() === '' || ATAJOS.some((x) => x.titulo === form.titulo.trim())
+-    setF({ ...form, titulo: esAtajo ? a.titulo : form.titulo, duracion: a.min })
++    setF({ ...form, titulo: esAtajo ? a.titulo : form.titulo, duracion: a.min, actividad: (a.actividad as ActividadClave | null) ?? null })
+     if (error) limpiarError()
+   }
+ 
+@@ -279,6 +285,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
+         maximo: Number(form.maximo),
+         imprescindibleId: form.imprescindibleId,
+         plazo,
++        actividad: form.actividad,
+         intentoId,
+       }),
+     )
+@@ -323,7 +330,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
+           >
+             {desdeAgente ? (
+               <Aviso tono="info" titulo="Borrador del agente">
+-                Título y momentos vienen del borrador del agente. Revisa cupos, anfitrión y cierre: el agente no crea ni confirma nada.
++                Título y momentos vienen del borrador del agente. Revisa cupos, quién no puede faltar y cierre: el agente no crea ni confirma nada.
+               </Aviso>
+             ) : null}
+             {espacio.demo && !desdeAgente ? (
+@@ -347,7 +354,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
+             <fieldset className="form-seccion">
+               <legend>Qué hacen</legend>
+               <div className="carrusel" role="group" aria-label="Atajos de actividad">
+-                {atajosParaGrupo(espacio.nombre).map((a) => (
++                {atajosParaEspacio(espacio.nombre, espacio.familia).map((a) => (
+                   <button
+                     key={a.titulo}
+                     type="button"
+@@ -416,7 +423,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
+                 <Contador id="cupo-maximo" etiqueta="Máximo" valor={form.maximo} onCambio={(v) => poner('maximo', v)} />
+               </div>
+               <p className="suave nota-seccion">El mínimo cuenta a quien es imprescindible.</p>
+-              <div className="anfitrion-elegir" role="radiogroup" aria-label="Persona imprescindible (anfitrión)">
++              <div className="anfitrion-elegir" role="radiogroup" aria-label="Persona que no puede faltar">
+                 <span className="duracion-etiqueta">
+                   <Icono n="anfitrion" tam={16} /> No puede faltar
+                 </span>
+diff --git a/src/screens/PlanTab.tsx b/src/screens/PlanTab.tsx
+index 1f12568..0405bf6 100644
+--- a/src/screens/PlanTab.tsx
++++ b/src/screens/PlanTab.tsx
+@@ -124,7 +124,7 @@ function Ficha({ p, viva }: { p: EstadoPropuesta; viva: PestanaProps['viva'] })
+         <dd>
+           <Nombre m={p.organizador} />
+         </dd>
+-        <dt>Imprescindible (anfitrión)</dt>
++        <dt>No puede faltar</dt>
+         <dd>
+           <Nombre m={p.imprescindible} />
+         </dd>
+@@ -174,7 +174,7 @@ function razonNoAceptar(p: EstadoPropuesta): string {
+   if (p.plazo_vencido) return 'El plazo de aceptación ya cerró.'
+   if (s.elegible_en_version === false) return 'No formas parte de las personas que pueden aceptar esta versión.'
+   if (s.motivo_aceptar === 'cupo_reservado') {
+-    return 'El último cupo está reservado para el anfitrión. Podrás confirmar si se libera un cupo para otros.'
++    return 'El último cupo está reservado para quien no puede faltar. Si se libera otro, podrás confirmar.'
+   }
+   if (p.opcion && p.opcion.cupos.disponibles <= 0) return 'Ya se completaron los cupos de esta versión.'
+   return 'Ahora no puedes confirmar esta versión.'
+@@ -249,7 +249,7 @@ function OpcionVigente({
+           </dd>
+         </div>
+         <div className="cifra">
+-          <dt>Anfitrión ({p.imprescindible.nombre})</dt>
++          <dt>No puede faltar ({p.imprescindible.nombre})</dt>
+           <dd>
+             <span className={`etiqueta ${o.cupos.imprescindible_acepto ? 'etiqueta-ok' : 'etiqueta-pendiente'}`}>
+               {o.cupos.imprescindible_acepto ? 'Ya confirmó' : 'Pendiente'}
+@@ -271,7 +271,7 @@ function OpcionVigente({
+         <p className="nota-linea nota-reserva">
+           <Icono n="anfitrion" tam={16} />
+           <span>
+-            <strong>Cupo del anfitrión</strong> reservado hasta que {p.imprescindible.nombre} confirme. Cupos libres para el resto:{' '}
++            <strong>Cupo reservado</strong> para {p.imprescindible.nombre} (no puede faltar) hasta que confirme. Libres para el resto:{' '}
+             {o.cupos.libres_para_otros}.
+           </span>
+         </p>
+@@ -462,22 +462,18 @@ function AlternativaOrganizador({ p, viva, soloLectura, sinAlternativa }: VivaPr
+ function Bajas({ p }: { p: EstadoPropuesta }) {
+   return (
+     <section className="tarjeta">
+-      <h2>Bajas registradas</h2>
++      <h2>Cambios en el grupo</h2>
+       <ul className="chips-personas chips-bajas">
+         {p.bajas.map((b, i) => (
+           <li key={`${b.miembro.miembro_id}-${i}`} title={momentoCorto(b.en)}>
+-            <Avatar nombre={b.miembro.nombre} simulado={b.miembro.simulado} tam={26} />
++            {/* Enmienda 13 (c), psico §16: sin nombre y sin "había confirmado" (el servidor ya manda "Una persona"). */}
+             <span className="chip-texto">
+-              <Nombre m={b.miembro} />
+-              <span className="chip-nota">
+-                se bajó{b.version != null ? ` (versión ${b.version})` : ''}
+-                {b.habia_aceptado ? ' · había confirmado' : ''}
+-              </span>
++              <span className="chip-nota">Una persona se retiró{b.version != null ? ` (versión ${b.version})` : ''}.</span>
+             </span>
+           </li>
+         ))}
+       </ul>
+-      <p className="suave">Quien se baja no vuelve a ser elegible en esta propuesta.</p>
++      <p className="suave">Quien se retira no vuelve a entrar en este plan.</p>
+     </section>
+   )
+ }
+diff --git a/src/screens/RespuestaTab.tsx b/src/screens/RespuestaTab.tsx
+index 3d6d69e..7174fe7 100644
+--- a/src/screens/RespuestaTab.tsx
++++ b/src/screens/RespuestaTab.tsx
+@@ -16,7 +16,7 @@ const ESTADO_COND: Record<string, string> = {
+   completas: 'Completas',
+ }
+ 
+-export default function RespuestaTab({ p, viva, soloLectura, espacio }: PestanaProps) {
++export default function RespuestaTab({ p, viva, soloLectura, espacio, irAPestana }: PestanaProps) {
+   const s = p.mi_situacion
+   return (
+     <div>
+@@ -35,7 +35,7 @@ export default function RespuestaTab({ p, viva, soloLectura, espacio }: PestanaP
+         </Aviso>
+       ) : null}
+       <Interes p={p} viva={viva} soloLectura={soloLectura} />
+-      <MisCondiciones p={p} viva={viva} soloLectura={soloLectura} demo={espacio?.demo === true} />
++      <MisCondiciones p={p} viva={viva} soloLectura={soloLectura} demo={espacio?.demo === true} irAPestana={irAPestana} />
+       <Retiro p={p} viva={viva} soloLectura={soloLectura} />
+     </div>
+   )
+@@ -91,7 +91,13 @@ function Interes({ p, viva, soloLectura }: VivaProps) {
+   )
+ }
+ 
+-function MisCondiciones({ p, viva, soloLectura, demo }: VivaProps & { demo: boolean }) {
++function MisCondiciones({
++  p,
++  viva,
++  soloLectura,
++  demo,
++  irAPestana,
++}: VivaProps & { demo: boolean; irAPestana: PestanaProps['irAPestana'] }) {
+   const [cond, setCond] = useState<Condiciones | null>(null)
+   const [errorCarga, setErrorCarga] = useState<ApiError | null>(null)
+   const claves = p.franjas.map((f) => f.clave)
+@@ -157,6 +163,12 @@ function MisCondiciones({ p, viva, soloLectura, demo }: VivaProps & { demo: bool
+           />
+           <p className="suave nota-seccion">"Pendiente" = aún no lo sabes (tus condiciones quedan incompletas).</p>
+           {!s.puede.guardar_condiciones ? <p className="aviso-linea">{razonSinGuardar(p)}</p> : null}
++          {/* H16 (sinteticos): la frase manda a un botón que está en el Plan; se ofrece el camino en un toque. */}
++          {!s.puede.guardar_condiciones && !s.retirado && !p.plazo_vencido && s.elegible_en_version === true ? (
++            <button type="button" className="btn btn-secundario" onClick={() => irAPestana('plan')}>
++              Ir al plan
++            </button>
++          ) : null}
+           <div className={`fila-botones ${b.sucio ? 'barra-accion' : ''}`}>
+             <Boton
+               onClick={guardar}
