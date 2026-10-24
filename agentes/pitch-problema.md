@@ -3,7 +3,6 @@
 Quien edita este archivo: solo esta sesión. Última actualización: 04:59.
 
 ## Tocando ahora
-- **CORRIENDO PRUEBA (09:44)**: S6, arreglos de la auditoría (M1, M2, M4, M5, A2), visual a 375/320/768/1280 con la función y las RPC sociales simuladas (cero modelo), demo propio, unos 4 min.
 - [03:19] S6 Agente (`src/agente/**`, `src/estilo/seccion-s6.css`) entregada a frontend para revisión contra el mockup: `wip/agente-ia` **`dfa71c1`**. Espero su revisión. Para mi turno de sección (después de la tanda del coordinador y la 0056): rehacer las capturas de 1280 con los últimos ajustes de CSS. No tomo la base fuera de ese turno.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
