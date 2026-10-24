@@ -350,13 +350,13 @@ function CargarDemo({ deshabilitado, yaCargada, chico, fila }: { deshabilitado: 
     // Pantalla 9: una FILA igual a la de "Tengo un código de invitación".
     return (
       <>
-        <button type="button" className="s1-opcion s1-opcion-fila" onClick={hacer} disabled={deshabilitado} aria-busy={ocupado || undefined}>
+        <button type="button" className="s1-opcion s1-opcion-fila" onClick={hacer} disabled={deshabilitado} aria-busy={ocupado || undefined} aria-labelledby="demo-fila-titulo" aria-describedby="demo-fila-nota">
           <span className="s1-opcion-icono" aria-hidden="true">
             <Icono n="rayo" />
           </span>
           <span className="s1-opcion-texto">
-            <span className="t-subtitulo">{ocupado ? 'Preparando la demo…' : texto}</span>
-            <span className="t-nota">Serás Tomi, quien organiza; las otras cinco personas son simuladas. Datos ficticios.</span>
+            <span className="t-subtitulo" id="demo-fila-titulo">{ocupado ? 'Preparando la demo…' : texto}</span>
+            <span className="t-nota" id="demo-fila-nota">Serás Tomi, quien organiza; las otras cinco personas son simuladas. Datos ficticios.</span>
           </span>
         </button>
         {error ? <ErrorCaja error={error} enfocar /> : null}
