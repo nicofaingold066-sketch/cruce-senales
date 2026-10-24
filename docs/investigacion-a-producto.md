@@ -1,6 +1,6 @@
 # De la investigación al producto (#102)
 
-Dueño: ux-flujo (rama `wip/ux`). Pedido de Nico: "no perder nada de lo que estudiamos y meterlo en la aplicación". Último barrido: viernes 23 oct 2026, 21:10. Próximos barridos: 23:00 y 07:00.
+Dueño: ux-flujo (rama `wip/ux`). Pedido de Nico: "no perder nada de lo que estudiamos y meterlo en la aplicación". Último barrido: viernes 23 oct 2026, 21:11. Próximos barridos: 23:00 y 07:00.
 
 Fuentes (todas en origin): `docs/flujo-usuario.md` (FU) y `docs/output-debate.md` (OD), de ux-flujo; `docs/usuarios-sinteticos.md` (SIN); `docs/rincones.md` (RIN); `docs/qa-noche.md` (QA); `docs/agente-barrido.md` (AB); `docs/apertura.md` (AP); `docs/catalogo-ampliado.md` (CA); `docs/preguntas-jurado.md` (PJ); `docs/psicologia-grupo.md` (PSI); `prompts/contexto-dia-pitch-reglas.md` (CDP) y `prompts/contexto-dia-login-agente-social.md` (CDL).
 
@@ -10,7 +10,7 @@ Impacto: **A** se cierra la juntada en la demo · **B** se entiende a la primera
 Estado: "HECHO" con commit; "sin conectar" = componente listo que espera a front-juan (Nico decidió esperar a Juan); "pedido" = línea enviada al dueño en su ficha o la de quien lo encontró; "decisión de Nico" = está en "Decisiones para Nico" de `agentes/ux-flujo.md` o de la ficha de quien la propuso.
 
 
-Resumen: 138 filas (A 23, B 43, C 22, D 34, E 16). 92 antes de las 11:00, 23 antes de las 12:00, 23 después. Con algo hecho: 45; componentes listos sin conectar: 16; con decisión de Nico de por medio: 16.
+Resumen: 138 filas (A 23, B 43, C 22, D 34, E 16). 92 antes de las 11:00, 23 antes de las 12:00, 23 después. Con algo hecho: 47; componentes listos sin conectar: 16; con decisión de Nico de por medio: 16.
 
 | # | Impacto | Hallazgo (fuente) | Cambio concreto en la app | Dueño | Tipo | Cuándo | Estado |
 |---|---|---|---|---|---|---|---|
@@ -56,7 +56,7 @@ Resumen: 138 filas (A 23, B 43, C 22, D 34, E 16). 92 antes de las 11:00, 23 ant
 | 40 | B · se entiende | Navegador que ya es miembro: todos "no disponible" sin "Seguir como X" (RIN O-02) | "Seguir como X" en "¿Quién eres?" | friccion | componente | antes de las 11:00, sin migración | HECHO `8d881d9` |
 | 41 | B · se entiende | Quien vuelve por el enlace pasa por "Seguir como X" (+1 toque) (ideas ux-flujo) | Si ya es miembro, ir directo a la propuesta vigente | friccion | componente | antes de las 11:00, sin migración | descartado: en un teléfono compartido (#47) entraría como la persona anterior sin preguntar; \"Seguir como X\" es un toque y ya lleva a responder (friccion) |
 | 42 | B · se entiende | Entrar escribiendo el código no reclamaba al integrante anotado (FU §7) | `destinoPorCodigo` | friccion | componente | antes de las 11:00, sin migración | HECHO `3c07fe3` |
-| 43 | B · se entiende | Portada con nombre: "Tengo un código" y "Unirme con un código" a la vez; dos formularios de unión (RIN O-04; CDL S1§5) | Dejar uno solo; reusar `UnirsePorCodigo` | front-juan + friccion | componente | antes de las 11:00, sin migración | pedido de rincones 20:00 |
+| 43 | B · se entiende | Portada con nombre: "Tengo un código" y "Unirme con un código" a la vez; dos formularios de unión (RIN O-04; CDL S1§5) | Dejar uno solo; reusar `UnirsePorCodigo` | front-juan + friccion | componente | antes de las 11:00, sin migración | parte de friccion HECHO `72e60da` (`UnirseConNombre` y `useUnirse` exportados); falta `Inicio.tsx` (front-juan, código exacto pedido por friccion) |
 | 44 | B · se entiende | El organizador anota los nombres de a uno (5 escrituras + 5 toques) (FU §3.1) | En "Quiénes son", aceptar una lista pegada separada por comas o saltos de línea | friccion | componente | antes de las 11:00, sin migración | HECHO `ee27fc5` (friccion) |
 | 45 | B · se entiende | Sin red: tres avisos a la vez; contrato incompatible: dos avisos iguales (RIN O-12a, O-12b) | Un solo aviso | front-juan + friccion | componente | antes de las 11:00, sin migración | parte de friccion (O-12b) HECHO `f72e4af`; el aviso del error de la acción sigue: pedido de rincones a front-juan 20:12 |
 | 46 | B · se entiende | "Hoy paso" deshabilitado sin explicación (RIN O-12c) | Explicarlo u ocultarlo | front-juan | texto | antes de las 11:00, sin migración | pedido de rincones 20:12 |
@@ -87,7 +87,7 @@ Resumen: 138 filas (A 23, B 43, C 22, D 34, E 16). 92 antes de las 11:00, 23 ant
 | 71 | C · privacidad y tono | Palabras que delatan a alguien en el texto del agente (PSI §8.7) | Ampliar la lista prohibida: vegetariano, celíaco, "pareja de", novio, hombres/mujeres, "otra vez en casa"… | agente-ia + qa-noche | agente + prueba | antes de las 11:00, sin migración | pedidos de psico 20:39 |
 | 72 | C · privacidad y tono | Género y pareja son sensibles y delatan en grupos chicos (PSI F24, F27, D2) | No pedirlos ni inferirlos; regla del grupo "¿Quién viene?" (solo el grupo / con parejas / abierta) | front-juan + friccion + Nico | texto + decisión | antes de las 11:00, sin migración | DECIDIDO por Nico 20:51 (D2): no se piden ni se infieren; pedidos de psico a front-juan y friccion |
 | 73 | C · privacidad y tono | Un sorteo acordado antes se acepta (PSI F10) | Ayuda plegable antes de "No puede faltar": "acuerden antes cómo decidir (turnos o sorteo)" | front-juan | texto | antes de las 11:00, sin migración | pedido de psico 20:39 |
-| 74 | C · privacidad y tono | Las bromas con apodos aparecen tal cual (PSI F11) | Bajo "Quiénes son": "Escribe los nombres como les gusta que los llamen" | friccion | texto | antes de las 11:00, sin migración | pedido de psico 20:39 |
+| 74 | C · privacidad y tono | Las bromas con apodos aparecen tal cual (PSI F11) | Bajo "Quiénes son": "Escribe los nombres como les gusta que los llamen" | friccion | texto | antes de las 11:00, sin migración | HECHO `7dfa330` (friccion), en producción desde `3ace04e` |
 | 75 | C · privacidad y tono | "Necesito que me lleven" nombra la limitación sin rodeo (SIN revisión agente-ia) | "Prefiero que me pasen a buscar" | agente-ia | texto | antes de las 11:00, sin migración | pedido de sinteticos 19:58 |
 | 76 | C · privacidad y tono | Voseo en el panel del agente y en las preguntas de E10 en una app en tuteo (FU §7; SIN H5; RIN O-11; PJ C5; PSI §8) | Pasar a "tú" | agente-ia | texto | antes de las 11:00, sin migración | pedidos de sinteticos y rincones; recordado 20:43 |
 | 77 | C · privacidad y tono | El modelo no recibe zonas ni personas; nunca "porque alguien no tiene auto" (AB §1.1) | Solo `viaje.max_minutos` | agente-ia | agente | antes de las 11:00, sin migración | HECHO (E10, `1eaf510`) |
