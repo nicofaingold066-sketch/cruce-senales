@@ -85,11 +85,11 @@ function sinE13(p, nombre) {
   if (Array.isArray(p.bajas) && p.bajas.length > 0) {
     for (const e of (p.historial ?? []).filter(e => e.tipo === 'aceptacion')) if (e.actor?.nombre === 'Caro') privados.push(`E13 ${nombre}: la aceptación de quien se retiró conserva el nombre`)
   }
-  const totales = p.opiniones_totales ?? null
-  if (totales === null) return
-  if (!nombre.startsWith('Tomi')) privados.push(`E13 ${nombre}: ve opiniones_totales`)
-  if (typeof totales !== 'object' || Object.values(totales).some(v => typeof v !== 'number' || v < 2)) privados.push(`E13 ${nombre}: opiniones_totales con menos de 2 o forma rara`)
-  for (const n of NOMBRES_DEMO) if (JSON.stringify(totales).includes(n)) privados.push(`E13 ${nombre}: opiniones_totales nombra a ${n}`)
+  // `opiniones_totales` llega como { asi_no_puedo: n } con n null si hay menos de 2. Solo el organizador puede ver un número.
+  const total = p.opiniones_totales?.asi_no_puedo ?? null
+  if (total !== null && !nombre.startsWith('Tomi')) privados.push(`E13 ${nombre}: ve opiniones_totales`)
+  if (total !== null && (typeof total !== 'number' || total < 2)) privados.push(`E13 ${nombre}: opiniones_totales con menos de 2 o forma rara`)
+  for (const n of NOMBRES_DEMO) if (JSON.stringify(p.opiniones_totales ?? null).includes(n)) privados.push(`E13 ${nombre}: opiniones_totales nombra a ${n}`)
 }
 async function observar(p, nombre) {
   p.setDefaultTimeout(15000)

@@ -53,6 +53,8 @@ describe.skipIf(BASE_OCUPADA)('recorrido canónico real · dos sesiones · contr
   function detectarE13(p: Json) {
     if (e13 === null && p?.mi_situacion) e13 = 'mi_opinion' in p.mi_situacion || 'opiniones_totales' in p
   }
+  /** E13 (a): `opiniones_totales` llega como `{ asi_no_puedo: n }` con n null si hay menos de 2 (o nada para quien no organiza). */
+  const totalAsiNoPuedo = (p: Json): number | null => p?.opiniones_totales?.asi_no_puedo ?? null
   /** E13 (c): la baja no trae nombre ni si había confirmado, en ninguna respuesta compartida (tampoco al organizador). */
   function bajaSinNombre(p: Json, quien: string, ruta: string) {
     if (!e13) return
@@ -270,7 +272,7 @@ describe.skipIf(BASE_OCUPADA)('recorrido canónico real · dos sesiones · contr
     const ev = await llamar(tomi, 'evaluate_and_publish', { p_propuesta_id: id, p_intento_id: randomUUID() })
     expect(ev.resultado).toMatchObject({ tipo: 'opcion_publicada', version: 1 })
     paso(ev.propuesta, 'esperando_compromisos', 'te_toca_aceptar')
-    expect(ev.propuesta.opiniones_totales ?? null, 'cero opiniones: null también para el organizador').toBeNull()
+    expect(totalAsiNoPuedo(ev.propuesta), 'cero opiniones: null también para el organizador').toBeNull()
     // (a) Luna opina sin bajarse. El mismo intento dos veces es UNA opinión.
     const intento = randomUUID()
     const op = await llamar(luna, 'opinar_version', { p_propuesta_id: id, p_version: 1, p_opinion: 'asi_no_puedo', p_intento_id: intento })
@@ -281,21 +283,22 @@ describe.skipIf(BASE_OCUPADA)('recorrido canónico real · dos sesiones · contr
       expect(p.mi_situacion.mi_opinion).toBe('asi_no_puedo')
       expect(p.mi_situacion.retirado, 'opinar no es bajarse').toBe(false)
       expect(p.mi_situacion.puede.guardar_condiciones, 'vuelve a poder actualizar su disponibilidad').toBe(true)
-      expect(p.opiniones_totales ?? null, 'Luna no es organizadora: nunca ve totales').toBeNull()
+      expect(totalAsiNoPuedo(p), 'Luna no es organizadora: nunca ve totales').toBeNull()
       expect(p.bajas ?? null).toEqual(ev.propuesta.bajas ?? null)
     }
     // Totales: el organizador ve null con 1.
     const t1 = await mirar(tomi, id)
-    expect(t1.opiniones_totales ?? null).toBeNull()
+    expect(totalAsiNoPuedo(t1), 'una sola opinión: el total sigue en null').toBeNull()
     expect(t1.mi_situacion.mi_opinion ?? null).toBeNull()
     // Segunda opinión (Tomi): el organizador ve 2, sin nombres; Luna sigue sin verlo; su siguiente acción es rearmar.
     const op2 = await llamar(tomi, 'opinar_version', { p_propuesta_id: id, p_version: 1, p_opinion: 'asi_no_puedo', p_intento_id: randomUUID() })
     expect(op2.propuesta.opiniones_totales).toEqual({ asi_no_puedo: 2 })
+    expect(Object.keys(op2.propuesta.opiniones_totales), 'solo el total, ninguna otra clave').toEqual(['asi_no_puedo'])
     for (const n of NOMBRES) expect(JSON.stringify(op2.propuesta.opiniones_totales)).not.toContain(n)
     expect(op2.propuesta.siguiente_accion.codigo).toBe('buscar_opcion')
     expect(op2.propuesta.siguiente_accion.texto).toMatch(/rearmar/i)
     const l2 = await mirar(luna, id)
-    expect(l2.opiniones_totales ?? null).toBeNull()
+    expect(totalAsiNoPuedo(l2)).toBeNull()
     expect(l2.mi_situacion.mi_opinion).toBe('asi_no_puedo')
     // Versión no vigente: mismo rechazo que al aceptar.
     const noVigente = await llamar(luna, 'opinar_version', { p_propuesta_id: id, p_version: 2, p_opinion: 'asi_no_puedo', p_intento_id: randomUUID() }, false)
@@ -309,7 +312,7 @@ describe.skipIf(BASE_OCUPADA)('recorrido canónico real · dos sesiones · contr
     expect(rep.propuesta.opcion.version).toBe(2)
     expect(rep.propuesta.opcion.aceptaron).toEqual([])
     expect(rep.propuesta.opcion.cupos.confirmados).toBe(0)
-    expect(rep.propuesta.opiniones_totales ?? null, 'v2 no hereda opiniones').toBeNull()
+    expect(totalAsiNoPuedo(rep.propuesta), 'v2 no hereda opiniones').toBeNull()
     expect(rep.propuesta.mi_situacion.mi_opinion ?? null).toBeNull()
     expect(rep.propuesta.bajas ?? null, 'nadie se fue: opinar no reincorpora ni retira').toEqual(ev.propuesta.bajas ?? null)
     const l3 = await mirar(luna, id)
@@ -348,7 +351,7 @@ describe.skipIf(BASE_OCUPADA)('recorrido canónico real · dos sesiones · contr
       }
       expect(r.resultado).toMatchObject({ tipo: 'reparacion_publicada', version: version + 1 })
       expect(r.propuesta.opcion.aceptaron).toEqual([])
-      expect(r.propuesta.opiniones_totales ?? null).toBeNull()
+      expect(totalAsiNoPuedo(r.propuesta)).toBeNull()
     }
     console.log('PASÓ E13: sin opiniones no se rearma; cada versión nueva nace sin aceptaciones ni opiniones.')
   }, 180_000)

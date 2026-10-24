@@ -66,7 +66,7 @@ const revisarE13 = (quien, p) => {
   if (Array.isArray(p.bajas) && p.bajas.length > 0) {
     for (const e of (p.historial ?? []).filter((e) => e.tipo === 'aceptacion')) if (e.actor?.nombre === 'Caro') fugasE13.push(`${quien}: la aceptación de quien se retiró conserva el nombre`)
   }
-  if (quien === 'Luna' && (p.opiniones_totales ?? null) !== null) fugasE13.push('Luna: ve opiniones_totales')
+  if (quien === 'Luna' && (p.opiniones_totales?.asi_no_puedo ?? null) !== null) fugasE13.push('Luna: ve opiniones_totales')
 }
 for (const [n, p] of [['Tomi', T], ['Luna', L]]) {
   p.on('pageerror', (e) => errores.push(`${n}: ${e.message}`))
