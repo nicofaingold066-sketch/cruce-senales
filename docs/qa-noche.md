@@ -26,6 +26,11 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
   - Se quitó la comprobación de **foco** tras el error (antes en `#/entrar`); la portada nueva no maneja foco al fallar el retorno. Idea para friccion/Juan: mover el foco al aviso de error. No se baja lo demás.
 - 19:28 `recorrido-dos-sesiones.mjs` ahora también respeta `MIGRACION EN CURSO` (antes corría igual).
 - 20:28 Enmienda 10: `jurado-navegador.mjs` revisa en toda respuesta compartida (todas menos get/save/simulate_save_preferences) que no aparezcan las claves `movilidad`, `tiempo_max`, `minutos_por_persona` ni los valores de movilidad (`me_llevan`, `auto_con_lugar`…) ni las 8 zonas. Pasa contra producción con la enmienda 10 publicada (main fae49fa).
+- 21:08 **Enmienda 13** (pedido del coordinador 20:51), listo antes de que backend la aplique. Todo se activa solo cuando el servidor trae `mi_situacion.mi_opinion` / `opiniones_totales`; hasta entonces los guiones dicen "E13 pendiente" y no cuentan.
+  - `recorrido-canonico.test.ts` (vitest, RPC): dos pruebas nuevas. (1) Luna opina `asi_no_puedo` sin bajarse (idempotente por intento, puede volver a guardar condiciones, no cuenta como baja ni aceptación); el organizador ve `opiniones_totales` null con 1 y `{asi_no_puedo: 2}` con 2 (Tomi es la segunda opinión), sin nombres; Luna nunca lo ve; versión no vigente → `opcion_desactualizada/version_no_vigente`; `propose_repair` desde `esperando_compromisos` → v2 con cero aceptaciones y cero opiniones, usando la disponibilidad nueva; opinar después de aceptar → `no_autorizado/ya_acepto`. (2) Rearmar sin opiniones se rechaza; v2 y v3 nacen limpias; la cuarta → `sin_alternativa/tope_versiones` (si con dos franjas no hay alternativa antes, se anota). Además, en toda baja (`bajarCaro`) ninguna respuesta compartida —ni la del organizador— trae nombre ni `habia_aceptado`. La suite se salta sola con `MIGRACION EN CURSO`.
+  - `jurado-navegador.mjs`: en cada sobre con `propuesta`, bajas y eventos de baja sin nombre ni `habia_aceptado`; `opiniones_totales` solo en respuestas de Tomi, ≥ 2 y sin nombres. En V2b, el Historial de Luna y de Tomi no nombra a quien se retiró (el texto "Una persona se bajó" es de la interfaz: se avisa, no se exige).
+  - `recorrido-dos-sesiones.mjs`: mismas comprobaciones de red más el Historial de Luna tras la baja de Caro.
+  - `guardia-palabras.mjs`: regla **D2** (género y pareja de una persona no se piden ni se muestran): género/sexo, hombre/mujer, masculino/femenino, casado, estado civil, "tu/su pareja", "¿vienes con pareja?", `autocomplete="sex"`… «Con parejas» / «solo el grupo» como regla de la juntada se permite. Control positivo: detecta las frases prohibidas y deja pasar las permitidas.
 
 ## Registro de corridas
 | Hora | Qué | Contra | Resultado |
@@ -53,6 +58,9 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 20:42 | `wip/friccion` 05e148d: jurado V2a cayó una vez por timeout de 15 s en `waitForResponse` (justo al salir la migración 0041); había pasado 4/4 a las 20:02 | localhost, base | falla aislada, no reproducida |
 | 20:45 | `wip/ux` e1794e1: recorrido 23/23, jurado 4/4, friccion-flujo 19/19, red 10/10 | localhost, base | verde |
 | 20:48 | `wip/friccion` 6bddd27 (merge de fundamentos): recorrido 23/23, jurado 4/4, friccion-flujo 19/19, red-import 4/4, red 10/10 | localhost, base | verde |
+| 20:55 | humo de producción (main 3ace04e) | producción | frenado: backend con MIGRACION EN CURSO (enmienda 13: 0042–0044) desde 20:59; corre solo al liberarse |
+| 21:08 | guardia-palabras con D2 sobre fundamentos 3ace04e | estático | 57 archivos, 0 hallazgos (§8.7: 0, D2: 0); control positivo detecta |
+| 21:08 | sintaxis y tipos de los guiones nuevos (`node --check`, `tsc -p tsconfig.node.json`) | — | ok; E13 sin correr contra la base hasta que backend aplique 0042–0044 |
 
 ## Regresiones abiertas
 (ninguna)
