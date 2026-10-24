@@ -11,7 +11,7 @@ Solo lectura de código y una consulta de lectura al catálogo en la base (`sele
 |---|---|---|
 | Creatividad | 🔴 | El modelo solo elige entre **3 opciones de un catálogo fijo de 17 lugares inventados** y escribe 2 frases. Una lista de palabras prohibidas descarta textos normales y vuelve al texto fijo. |
 | Fuentes de datos reales | 🔴 | Lo único real es el **clima** (Open-Meteo). Lugares, horarios y precios son de simulación. Google Maps/EasyCancha son enlaces, no datos. ATC apunta a **Mendoza, Argentina**. |
-| Coherencia | 🟡 | El cálculo es ordenado y explicable, pero: en grupos sin propósito **no mira cuántas personas son** (pádel para 12), «Asado en casa de Tomi» sale en grupos sin Tomi, y con 4 personas o menos **los gustos no cuentan**. |
+| Coherencia | 🔴 | **4 de 7 casos simulados dan una propuesta incoherente** (§2b). El cálculo es ordenado, pero: en grupos sin propósito **no mira cuántas personas son** (pádel para 12), «Asado en casa de Tomi» sale en grupos sin Tomi, y con 4 personas o menos **los gustos no cuentan**. |
 | Trato parejo (no discriminar) | 🟢 con matices | Los límites duros protegen a cada uno (presupuesto más bajo, techo, viaje máximo). Lo blando lo decide la mayoría. Quien no cargó preferencias o apagó «usar en el agente» no queda protegido. |
 | Que funcione | 🟡 | El camino sin modelo siempre responde. Pero el chip **«Sáb 14 nov» falla hoy siempre** (fuera de los 16 días que acepta el servidor) y ningún texto real del modelo quedó guardado para juzgar la calidad. |
 
@@ -75,6 +75,24 @@ Las **3 primeras** son las candidatas. El modelo recibe por cada una: plan, acti
 | **Reserva** | CRUXE no reserva (decisión de producto). Enlaces genéricos para 3 deportes. | Enlace directo al lugar, teléfono, «reservar en…». | Google Places (`websiteUri`, `nationalPhoneNumber`); EasyCancha no tiene API pública. |
 | **Plan B** | Solo implícito: con lluvia se descarta lo de aire libre. Las candidatas 2 y 3 se ven, pero con texto fijo. | «Si llueve, nos vamos a…» en el mismo mensaje. | El modelo ya podría escribirlo con las 3 candidatas que recibe. |
 
+## 2b. Casos simulados contra el cálculo real (24 oct, 09:38–09:39)
+
+`proponer_plan_borrador` real de producción, con 7 grupos ficticios armados dentro de un bloque SQL que termina en error a propósito: Postgres deshizo todo (comprobado después: 0 grupos «Auditoria caso» en la base). Sin modelo, sin HTTP. Turno de base con marca en la ficha. Sábado 31 oct. Todos con energía «con todo» y ambiente «da igual».
+
+| Caso | Grupo | Lo que propone (top 3, en orden) | ¿Coherente? |
+|---|---|---|---|
+| c1 | 12 personas, todas quieren **pádel**, de mañana | 1. **Pádel (máx. 4)** · 2. Caminata por el cerro · 3. Fútbol (mín. 10) | ❌ Pádel para 12 |
+| c2 | 3 personas, todas quieren **fútbol** | 1. **Caminata por el cerro** (nadie la marcó) · 2. **Fútbol (mín. 10)** · 3. Tenis en parejas (máx. 4) | ❌ ignora el gusto y propone fútbol para 3 |
+| c3 | 4 personas, todas quieren **cine de noche** | 1. **Fiesta en un bar (mín. 6)** · 2. Tragos en un bar · 3. Bowling o escape room. **El cine no aparece.** | ❌ el peor caso: lo que pidieron todos no sale |
+| c4 | 6 personas, alguien pide techo, **sin pronóstico** | 1. **Asado en casa de Tomi** (no hay Tomi) · 2. Juegos de mesa · 3. Cine | 🟡 el techo funciona; «Tomi» no |
+| c5 | 2 personas, **ojalá gratis**, quieren fiesta o bar de noche | 1. Caminata 09:00 · 2. Picnic 12:00 · 3. Museo 11:00 | 🟡 respeta el presupuesto; no hay nada gratis de noche en el catálogo |
+| c6 | 5 personas, Puente Alto y Vitacura, **15 min máx.** en transporte público | «Sin plan compatible: no hay lugar cerca para todos» | ✅ correcto y sin decir para quién |
+| c7 | **20 personas**, quieren café o cena | 1. **Brunch (máx. 6)** · 2. **Cena (máx. 8)** · 3. Caminata (máx. 12) | ❌ ninguna opción entra para 20 |
+
+Por qué pasa c3: con 4 personas, quien pide más 3 «otros» no superan el umbral (`v_n_otros > 3`), así que las marcas valen 0. Gana el momento «noche» (+2 por persona para lo que empieza a las 19:00 o después) y la energía «con todo»; el cine empieza a las 16:00 y cuenta como «tarde». Además nada mira el mínimo de 6 de la fiesta.
+
+Conclusión: **4 de 7 casos dan una propuesta incoherente** por dos reglas: M1 (tamaño) y M3 (gustos que no cuentan en grupos chicos). Las dos suben a **altas**.
+
 ## 3. Hallazgos por gravedad
 
 ### Altos
@@ -97,7 +115,7 @@ Las **3 primeras** son las candidatas. El modelo recibe por cada una: plan, acti
 
 ### Medios
 
-**M1. En grupos sin propósito no se mira cuántas personas son.** · Dueño: servidor
+**M1 (sube a ALTO, confirmado en c1, c2, c3 y c7). En grupos sin propósito no se mira cuántas personas son.** · Dueño: servidor
 - Evidencia: el filtro de tamaño solo corre si `v_fam <> 'libre'` (0050:234) y `personas_max` no se usa nunca. Un grupo libre de 12 puede recibir «Pádel el fin de semana» (máx. 4) o «Tenis en parejas» (2–4); uno de 3 puede recibir «Fútbol en la cancha» (mín. 10).
 - Hoy: el prompt (S6) puede decirle al modelo «no elijas una opción con `personas.max` menor que el tamaño del grupo», porque `personas` ya llega en cada candidata. Después: el filtro en la base.
 
@@ -105,7 +123,7 @@ Las **3 primeras** son las candidatas. El modelo recibe por cada una: plan, acti
 - Evidencia: fila `lugar-sim-01` con `titulo_plantilla = 'Asado en casa de Tomi'` y lugar «Quincho de Tomi». `sinNombres` lo limpia solo para el modelo y solo si en el grupo hay un Tomi (logica.ts:301, 371). La pantalla y «Usar esta opción» usan el título crudo (AgentePanel.tsx:546, 563). En un grupo sin Tomi, el plan dice «en casa de Tomi»: ¿quién es Tomi?
 - Hoy: que la pantalla muestre «Asado en casa» (pasar `sinNombres` siempre, no solo con los del grupo). Después: título neutro en el catálogo.
 
-**M3. Con 4 personas o menos, los gustos no pesan.** · Dueño: servidor (decisión de privacidad E7.1)
+**M3 (sube a ALTO, confirmado en c2 y c3). Con 4 personas o menos, los gustos no pesan.** · Dueño: servidor (decisión de privacidad E7.1)
 - Evidencia: `3 * (case when v_n_otros > 3 then k.marcas else 0 end)` (0050:237). En grupos chicos (lo más común entre amigos) el orden lo deciden energía, ambiente, clima y momento: puede salir una actividad que **nadie** marcó.
 - Es una decisión de privacidad (que no se adivine quién eligió qué). Como Nico prioriza la coherencia: contar las marcas para ordenar y no *decirlas* en el texto mantiene la privacidad del texto y mejora la elección.
 
