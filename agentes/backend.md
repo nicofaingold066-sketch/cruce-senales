@@ -3,7 +3,7 @@
 Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:24 Santiago (reloj).
 
 ## Tocando ahora
-- [21:24] Base libre (MIGRACION TERMINADA 21:22). Sin pruebas contra la base mientras Nico prueba producción (regla P1 21:16). En curso: revisión adversarial de la enmienda 13, solo lectura de código. Esperando ventana del coordinador para la suite completa en serie.
+- [21:28] **MIGRACION EN CURSO** (0046: solo el texto de `condiciones_congeladas`, segundos). Después, suite serial E13 cuando sea mi turno.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
