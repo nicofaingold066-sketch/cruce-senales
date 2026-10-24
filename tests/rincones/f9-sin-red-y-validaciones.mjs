@@ -1,6 +1,6 @@
 // Fase 9: acciones con la red cortada a mitad (guardar condiciones, "Hoy paso", abrir un plan) y vuelta de la red;
 // Nueva propuesta con días/horas cambiados; Perfil "Entrar como otra persona".
-import { abrir, actor, BASE, rincon, nota, guardar, boton, esperarTexto, errores, CARPETA } from './lib.mjs'
+import { abrir, actor, BASE, rincon, nota, guardar, boton, esperarTexto, errores, CARPETA, revisar } from './lib.mjs'
 import { leer, rutaSesion } from './estado.mjs'
 const g = leer(); const b = await abrir()
 const txt = async (p) => (await p.locator('main').innerText()).replace(/\s+/g, ' ').slice(0, 600)
@@ -37,7 +37,7 @@ await corto('R164', o, async () => {
   await o.getByRole('button', { name: /Sumar uno al máximo/ }).click().catch(() => {})
   await rincon(o, 'R164', 'Nueva propuesta: título larguísimo y cupos cambiados', { foco: false })
   nota('R164', 'valor del título aceptado: ' + (await o.getByLabel('Propósito de la propuesta').inputValue()).length + ' caracteres')
-  await o.getByRole('button', { name: /Revisar antes de crear/ }).click(); await T(o, 800)
+  await revisar(o); await T(o, 800)
   await rincon(o, 'R165', 'Paso 2 con título largo (se corta o se parte bien)'); nota('R165', await txt(o))
 })
 // Perfil: entrar como otra persona

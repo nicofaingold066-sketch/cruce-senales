@@ -1,6 +1,6 @@
 // Fase 5: el DEMO ("Los del finde") en una sesión propia: espacio, herramientas, nueva propuesta precargada, Simulación,
 // condiciones del caso, confirmación simulada, baja simulada y reparación. No se resetea el demo ni se llama al agente.
-import { abrir, actor, BASE, rincon, nota, guardar, log, boton, esperarTexto, errores, CARPETA } from './lib.mjs'
+import { abrir, actor, BASE, rincon, nota, guardar, log, boton, esperarTexto, errores, CARPETA, revisar } from './lib.mjs'
 import { escribir, guardarSesion } from './estado.mjs'
 const b = await abrir()
 const t = await actor(b, 'tomi')
@@ -21,7 +21,7 @@ await corto('R101', async () => {
 await corto('R102', async () => {
   await t.getByRole('link', { name: /Crear propuesta|Nueva propuesta/ }).first().click(); await T(2500)
   await rincon(t, 'R102', 'Demo: Nueva propuesta precargada con el caso', { foco: false }); nota('R102', await txt(t))
-  await t.getByRole('button', { name: /Revisar antes de crear/ }).click(); await T(800)
+  await revisar(t); await T(800)
   await boton(t, 'Crear y abrir al grupo').click(); await t.waitForURL(/\/p\//, { timeout: 40000 }); await T(3500)
   await rincon(t, 'R103', 'Demo: propuesta abierta, Plan (reuniendo interés)', { foco: true }); nota('R103', await txt(t))
 })

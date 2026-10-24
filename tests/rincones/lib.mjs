@@ -32,6 +32,12 @@ export async function actor(browser, nombre, extra = {}) {
   const ctx = await browser.newContext({ viewport: { width: 375, height: 812 }, deviceScaleFactor: 1, locale: 'es-CL', timezoneId: 'America/Santiago', ...extra })
   const page = await ctx.newPage()
   page.actor = nombre
+  // S3 del rediseño (frontend 03:05): las fechas A/B y el cierre son filas plegadas (`details.s3-momento`, `details.s3-cierre`).
+  // Para que los guiones funcionales alcancen sus controles se abren solas apenas aparecen; en el build viejo no existen y no hace nada.
+  await page.addInitScript(() => {
+    const abrir = () => document.querySelectorAll('details.s3-momento:not([open]), details.s3-cierre:not([open])').forEach((d) => { d.open = true })
+    new MutationObserver(abrir).observe(document, { childList: true, subtree: true })
+  })
   page.on('pageerror', (e) => errores.push({ actor: nombre, tipo: 'js', texto: String(e.message).slice(0, 200) }))
   page.on('console', (m) => { if (m.type() === 'error') errores.push({ actor: nombre, tipo: 'consola', texto: m.text().slice(0, 200) }) })
   page.on('response', (r) => { if (r.status() >= 400) errores.push({ actor: nombre, tipo: 'red', texto: `${r.status()} ${r.request().method()} ${new URL(r.url()).pathname}` }) })
@@ -306,9 +312,23 @@ export async function rincon(page, id, rincon, { foco = false, anchos = ANCHOS, 
 export const nota = (id, texto) => { (veredictos[id] ??= { rincon: id, notas: [] }).notas.push(texto); log(`  nota ${id}: ${texto}`) }
 export const marcar = (id, v, texto) => { (veredictos[id] ??= { rincon: id, notas: [] }).manual = v; if (texto) nota(id, texto) }
 
+// Bundle del build contra el que corrió la fase (assets/index-XXXX.js): producción cambia a mitad de la noche y el resumen tiene
+// que decir con qué versión se aprobó cada rincón. Se lee del HTML de la base al guardar; si no se puede, queda null.
+async function bundleDe(base) {
+  try { const html = await (await fetch(`${base}/`, { signal: AbortSignal.timeout(5000) })).text(); return html.match(/assets\/index-[A-Za-z0-9_-]+\.js/)?.[0] ?? null } catch { return null }
+}
 export function guardar(nombre = 'hallazgos') {
-  writeFileSync(`${CARPETA}/${nombre}.json`, JSON.stringify({ hora: hora(), base: BASE, hallazgos, veredictos, errores }, null, 1))
+  const salida = { hora: hora(), base: BASE, bundle: null, hallazgos, veredictos, errores }
+  writeFileSync(`${CARPETA}/${nombre}.json`, JSON.stringify(salida, null, 1))
+  // El bundle se completa aparte para no volver asíncrona a guardar(); los guiones terminan después de este await implícito.
+  void bundleDe(BASE).then((b) => { salida.bundle = b; try { writeFileSync(`${CARPETA}/${nombre}.json`, JSON.stringify(salida, null, 1)) } catch {} })
   return `${CARPETA}/${nombre}.json`
 }
 export const boton = (p, texto) => p.getByRole('button', { name: texto, exact: true })
 export const esperarTexto = (p, texto, ms = 20000) => p.getByText(texto, { exact: false }).first().waitFor({ timeout: ms })
+
+/** «Revisar antes de crear» existía en el paso 1; en el mockup (S3) ya no está: el primario «Crear y abrir al grupo» va en el formulario. */
+export async function revisar(p) {
+  const r = p.getByRole('button', { name: /Revisar antes de crear/ })
+  if (await r.isVisible().catch(() => false)) await r.click()
+}
