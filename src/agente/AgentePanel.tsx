@@ -11,6 +11,7 @@ import { irA, rutas } from '../lib/shell'
 import type { ApiError } from '../lib/types'
 import { Aviso, Boton, Cargando, ErrorCaja, RotuloSimulacion } from '../components/ui'
 import './agente.css'
+import { ConsentimientoInvitaciones } from './ConsentimientoInvitaciones'
 import {
   agenteApi,
   guardarBorradorAgente,
@@ -144,6 +145,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   // Enmienda 8: la casilla es un borrador; el permiso cambia al guardar y recibir confirmación.
   const [usar, setUsar] = useState(true)
   const [usarConfirmado, setUsarConfirmado] = useState<boolean | null>(null)
+  const [recibirInicial, setRecibirInicial] = useState<boolean | null>(null)
   const [guardadas, setGuardadas] = useState(false)
   const [aviso, setAviso] = useState<string | null>(null)
   const { ocupado, error, ejecutar } = useAccion()
@@ -157,6 +159,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
       if (r.data.preferencias) setBorrador(r.data.preferencias)
       setUsar(r.data.usar_en_agente)
       setUsarConfirmado(r.data.usar_en_agente)
+      setRecibirInicial(r.data.recibir_invitaciones_agente)
       setGuardadas(Boolean(r.data.preferencias))
       setErrorCarga(null)
     } else setErrorCarga(r.error)
@@ -264,6 +267,7 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
       <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura || sinActividades}>
         {guardadas ? 'Actualizar mis preferencias' : 'Guardar mis preferencias'}
       </Boton>
+      <ConsentimientoInvitaciones espacioId={espacioId} inicial={recibirInicial} soloLectura={soloLectura} />
     </div>
   )
 }
