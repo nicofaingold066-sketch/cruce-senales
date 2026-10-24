@@ -14,6 +14,7 @@
 //   · «Me gustaría» solo de la familia del grupo (0049): se informa como pendiente mientras no esté.
 // Capa de pantalla: la invitación («¿Quién eres?») dice «para jugar fútbol» (friccion); pendiente mientras no esté.
 // Códigos de salida: 0 todo lo exigible en verde (los PENDIENTE se listan), 1 hay fallas, 3 base ocupada, 4 la 0048 no está.
+import { sinIntro } from './nav.mjs'
 import { createRequire } from 'node:module'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
@@ -147,6 +148,7 @@ try {
   // 6. Pantalla: la invitación dice «para jugar fútbol» (friccion). Pendiente mientras no esté la frase.
   const browser = await pw.chromium.launch({ headless: true, executablePath: process.env.CRUXE_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' })
   try {
+sinIntro(browser) // la intro de primera visita no es lo que se prueba
     const ctx = await browser.newContext({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true, locale: 'es-CL' })
     const p = await ctx.newPage()
     const errores = []
