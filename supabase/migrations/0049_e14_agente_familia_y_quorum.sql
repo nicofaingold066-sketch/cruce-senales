@@ -701,7 +701,8 @@ begin
       'titulo', c -> 'titulo', 'franjas', c -> 'franjas', 'viaje', c -> 'viaje',
       'familia', c -> 'familia', 'personas', c -> 'personas'));
   end loop;
-  return cruce.ok(jsonb_build_object('sin_plan_compatible', false, 'opciones', v_ops));
+  -- E14: el aviso de quórum de proponer_plan_borrador pasa tal cual (null si no hay).
+  return cruce.ok(jsonb_build_object('sin_plan_compatible', false, 'opciones', v_ops, 'quorum', r #> '{resultado,quorum}'));
 exception when others then
   get stacked diagnostics v_ctx = pg_exception_context;
   return cruce.fallo('agente_social_candidatos', sqlstate, v_ctx);
