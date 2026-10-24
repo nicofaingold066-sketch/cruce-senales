@@ -1,0 +1,335 @@
+import { useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore, type RefObject } from 'react'
+import type { Identidad, Ruta } from '../lib/shell'
+import { GruPersonaje } from './GruPersonaje'
+import { useEstadoGru } from './gruEstado'
+import './gru-asistente.css'
+
+interface GruAsistenteProps {
+  identidad: Identidad
+  soloLectura: boolean
+  parseRuta: (hash: string) => Ruta
+  rutaAgente: (id: string) => string
+}
+
+const ESTADOS = {
+  disponible: 'Disponible',
+  buscando: 'Buscando',
+  listo: 'Propuesta lista',
+  'sin-opcion': 'Sin opción',
+  error: 'No pude completar la búsqueda',
+}
+
+function suscribirHash(notificar: () => void) {
+  window.addEventListener('hashchange', notificar)
+  return () => window.removeEventListener('hashchange', notificar)
+}
+
+const leerHash = () => window.location.hash
+const hashServidor = () => '#/'
+
+interface UbicacionGru {
+  x: number
+  y: number
+  colocado: boolean
+  reserva: boolean
+  claro: boolean
+  arriba: boolean
+  izquierda: boolean
+  altoPanel: number
+}
+
+const ANCHO_GRU = 54
+const ALTO_GRU = 64
+const MARGEN_GRU = 12
+
+/** Busca espacio real en la pantalla. Una posición segura se conserva hasta cambiar de pestaña. */
+function useUbicacionGru(hash: string, ruta: Ruta['nombre'], raiz: RefObject<HTMLDivElement | null>) {
+  const [ubicacion, setUbicacion] = useState<UbicacionGru>({ x: 0, y: 0, colocado: false, reserva: false, claro: false, arriba: false, izquierda: false, altoPanel: 320 })
+  const actual = useRef(ubicacion)
+  const [animar, setAnimar] = useState(false)
+
+  useEffect(() => {
+    const cuadro = requestAnimationFrame(() => setAnimar(true))
+    return () => cancelAnimationFrame(cuadro)
+  }, [])
+
+  useLayoutEffect(() => {
+    let cuadro = 0
+    let pausaScroll: ReturnType<typeof setTimeout> | undefined
+    let reservaDeRuta = false
+    const medir = (preferirRuta = false) => {
+      const propio = raiz.current
+      if (!propio) return
+      const viewport = window.visualViewport
+      const izquierda = viewport?.offsetLeft ?? 0
+      const arriba = viewport?.offsetTop ?? 0
+      const ancho = viewport?.width ?? document.documentElement.clientWidth
+      const alto = viewport?.height ?? window.innerHeight
+      const derecha = izquierda + ancho
+      const abajo = arriba + alto
+      const elementos = [...document.querySelectorAll<HTMLElement>('button,a,input,textarea,select,summary,h1,h2,h3,p,label,dt,dd,.barra,.nav-inferior,.barra-accion')]
+      const obstaculos: { left: number; right: number; top: number; bottom: number }[] = []
+      let limiteSuperior = arriba + MARGEN_GRU
+      let limiteInferior = abajo - MARGEN_GRU
+      for (const elemento of elementos) {
+        if (propio.contains(elemento) || elemento.closest('.visualmente-oculto,[hidden],[aria-hidden="true"]')) continue
+        const estilo = getComputedStyle(elemento)
+        if (estilo.display === 'none' || estilo.visibility === 'hidden' || Number(estilo.opacity) === 0) continue
+        const caja = elemento.getBoundingClientRect()
+        if (caja.width < 2 || caja.height < 2 || caja.bottom <= arriba || caja.top >= abajo || caja.right <= izquierda || caja.left >= derecha) continue
+        // Los títulos bloquean sus letras, no toda la franja vacía del bloque.
+        const cajas = /^(H[123]|P|LABEL|DT|DD)$/.test(elemento.tagName) ? (() => {
+          const rectangulos: DOMRect[] = []
+          const textos = document.createTreeWalker(elemento, NodeFilter.SHOW_TEXT)
+          let texto: Node | null
+          while ((texto = textos.nextNode())) {
+            if (!texto.textContent?.trim()) continue
+            const rango = document.createRange()
+            rango.selectNodeContents(texto)
+            rectangulos.push(...rango.getClientRects())
+          }
+          return rectangulos
+        })() : [caja]
+        for (const rectangulo of cajas) obstaculos.push(rectangulo)
+        if (elemento.matches('.barra')) limiteSuperior = Math.max(limiteSuperior, caja.bottom + MARGEN_GRU)
+        if (elemento.matches('.nav-inferior,.barra-accion') && caja.width > ancho * 0.65 && caja.top > arriba + alto / 2) {
+          limiteInferior = Math.min(limiteInferior, caja.top - MARGEN_GRU)
+        }
+      }
+
+      const xIzquierda = izquierda + MARGEN_GRU
+      const xDerecha = Math.max(xIzquierda, derecha - ANCHO_GRU - MARGEN_GRU)
+      const yArriba = limiteSuperior
+      const yAbajo = Math.max(yArriba, limiteInferior - ALTO_GRU)
+      const medio = (yArriba + yAbajo) / 2
+      const laterales = [medio, yArriba + (yAbajo - yArriba) * 0.25, yArriba + (yAbajo - yArriba) * 0.75]
+      const preferirIzquierda = ruta === 'inicio'
+      const primero = preferirIzquierda ? xIzquierda : xDerecha
+      const segundo = preferirIzquierda ? xDerecha : xIzquierda
+      const candidatos = [
+        { x: primero, y: yAbajo }, { x: segundo, y: yAbajo },
+        ...laterales.flatMap((y) => [{ x: primero, y }, { x: segundo, y }]),
+        { x: segundo, y: yArriba }, { x: primero, y: yArriba },
+      ]
+      const libre = (punto: { x: number; y: number }) =>
+        punto.x >= izquierda && punto.x + ANCHO_GRU <= derecha && punto.y >= arriba && punto.y + ALTO_GRU <= abajo
+        && !obstaculos.some((caja) => punto.x < caja.right + 5 && punto.x + ANCHO_GRU > caja.left - 5
+          && punto.y < caja.bottom + 5 && punto.y + ALTO_GRU > caja.top - 5)
+
+      const anterior = actual.current
+      // La reserva, si fue necesaria, se mantiene durante esta ruta para que el contenido no oscile.
+      const mantener = !preferirRuta && anterior.colocado && libre(anterior)
+      let punto = mantener ? anterior : candidatos.find(libre)
+      let reserva = false
+      if (!punto) {
+        reservaDeRuta = true
+        reserva = true
+        punto = { x: xDerecha, y: limiteSuperior }
+      }
+
+      // Se toma el color de la superficie bajo el nombre, sin agregarle una pastilla de fondo.
+      const superficies = document.elementsFromPoint(punto.x + ANCHO_GRU / 2, punto.y + ALTO_GRU - 8)
+      let claro = false
+      for (const superficie of superficies) {
+        if (propio.contains(superficie)) continue
+        const color = getComputedStyle(superficie).backgroundColor.match(/[\d.]+/g)?.map(Number)
+        if (color && color.length >= 3 && (color.length < 4 || color[3] > 0.8)) {
+          claro = color[0] * 0.2126 + color[1] * 0.7152 + color[2] * 0.0722 < 145
+          break
+        }
+      }
+      const panelArriba = punto.y > arriba + alto * 0.45
+      const siguiente: UbicacionGru = {
+        x: Math.round(punto.x), y: Math.round(punto.y), colocado: true,
+        reserva: reservaDeRuta || reserva,
+        claro, arriba: panelArriba, izquierda: punto.x < izquierda + ancho / 2,
+        altoPanel: Math.max(100, Math.floor(panelArriba ? punto.y - arriba - 12 : abajo - punto.y - ALTO_GRU - 12)),
+      }
+      if (Object.keys(siguiente).some((clave) => siguiente[clave as keyof UbicacionGru] !== anterior[clave as keyof UbicacionGru])) {
+        actual.current = siguiente
+        setUbicacion(siguiente)
+      }
+    }
+    const programar = () => {
+      if (cuadro) return
+      cuadro = requestAnimationFrame(() => { cuadro = 0; medir() })
+    }
+    const alDesplazar = () => {
+      clearTimeout(pausaScroll)
+      pausaScroll = setTimeout(programar, 120)
+    }
+    medir(true)
+    // Las pantallas con carga diferida pueden aparecer después del cambio de hash.
+    const mutaciones = new MutationObserver((cambios) => {
+      if (cambios.some((cambio) => !raiz.current?.contains(cambio.target))) programar()
+    })
+    mutaciones.observe(document.body, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ['class', 'hidden', 'open', 'aria-hidden', 'aria-modal'] })
+    const tamanos = new ResizeObserver(programar)
+    tamanos.observe(document.body)
+    for (const elemento of document.querySelectorAll('main#contenido,.barra')) tamanos.observe(elemento)
+    window.addEventListener('resize', programar)
+    window.addEventListener('scroll', alDesplazar, { passive: true })
+    window.visualViewport?.addEventListener('resize', programar)
+    window.visualViewport?.addEventListener('scroll', alDesplazar)
+    return () => {
+      cancelAnimationFrame(cuadro)
+      clearTimeout(pausaScroll)
+      mutaciones.disconnect()
+      tamanos.disconnect()
+      window.removeEventListener('resize', programar)
+      window.removeEventListener('scroll', alDesplazar)
+      window.visualViewport?.removeEventListener('resize', programar)
+      window.visualViewport?.removeEventListener('scroll', alDesplazar)
+    }
+  }, [hash, ruta, raiz])
+
+  return { ...ubicacion, animar }
+}
+
+/** Presencia pequeña de GRU. La actividad viene de solicitudes reales; no inicia búsquedas ni modifica planes. */
+export function GruAsistente({ identidad, soloLectura, parseRuta, rutaAgente }: GruAsistenteProps) {
+  const hash = useSyncExternalStore(suscribirHash, leerHash, hashServidor)
+  const ruta = parseRuta(hash)
+  const grupoActual = 'espacioId' in ruta ? ruta.espacioId : null
+  const [ultimoGrupoVisitado, setUltimoGrupoVisitado] = useState(grupoActual)
+  const ultimaActividad = useEstadoGru()
+  const grupoDestino = grupoActual ?? ultimoGrupoVisitado ?? ultimaActividad.espacioId
+  const actividad = useEstadoGru(grupoDestino)
+  const [abiertoEn, setAbiertoEn] = useState<string | null>(null)
+  const abierto = !grupoDestino && abiertoEn === hash
+  const raiz = useRef<HTMLDivElement>(null)
+  const ubicacion = useUbicacionGru(hash, ruta.nombre, raiz)
+  const boton = useRef<HTMLButtonElement>(null)
+  const panelId = useId()
+  const tituloId = useId()
+
+  // El panel se cierra al navegar y no reaparece si se vuelve a ese hash.
+  // No roba el foco de la pantalla que acaba de abrirse.
+  useEffect(() => setAbiertoEn(null), [hash])
+  useEffect(() => {
+    if (grupoActual) setUltimoGrupoVisitado(grupoActual)
+  }, [grupoActual])
+
+  useEffect(() => {
+    if (!abierto) return
+    function cerrarFuera(evento: PointerEvent) {
+      if (evento.target instanceof Node && !raiz.current?.contains(evento.target)) setAbiertoEn(null)
+    }
+    function cerrarConEscape(evento: KeyboardEvent) {
+      if (evento.key !== 'Escape' || evento.defaultPrevented) return
+      evento.preventDefault()
+      setAbiertoEn(null)
+      boton.current?.focus({ preventScroll: true })
+    }
+    document.addEventListener('pointerdown', cerrarFuera)
+    document.addEventListener('keydown', cerrarConEscape)
+    return () => {
+      document.removeEventListener('pointerdown', cerrarFuera)
+      document.removeEventListener('keydown', cerrarConEscape)
+    }
+  }, [abierto])
+
+  function cerrar() {
+    setAbiertoEn(null)
+    boton.current?.focus({ preventScroll: true })
+  }
+
+  const estadoTexto = soloLectura ? 'En pausa' : ESTADOS[actividad.estado]
+  const titulo = soloLectura
+    ? 'Necesitamos actualizar la app.'
+    : 'Soy GRU, tu asistente de IA.'
+  const descripcion = soloLectura
+    ? 'Recargá la aplicación para volver a pedirme un plan.'
+    : 'Elegí uno de tus grupos para abrir mi pestaña y preparar un plan juntos. Me vas a encontrar por acá.'
+  const miniatura = (
+    <>
+      <GruPersonaje estado={actividad.estado} tamano="mini" interactivo={false} className="gru-asistente-personaje" />
+      <span className="gru-asistente-nombre" aria-hidden="true">GRU</span>
+      <span className="gru-asistente-indicador" aria-hidden="true" />
+    </>
+  )
+
+  return (
+    <div
+      ref={raiz}
+      className="gru-asistente"
+      data-estado={actividad.estado}
+      data-abierto={abierto ? 'true' : 'false'}
+      data-colocado={ubicacion.colocado}
+      data-animar={ubicacion.animar}
+      data-reserva={ubicacion.reserva}
+      data-claro={ubicacion.claro}
+      data-panel-arriba={ubicacion.arriba}
+      data-izquierda={ubicacion.izquierda}
+      style={{ transform: `translate3d(${ubicacion.x}px, ${ubicacion.y}px, 0)` }}
+      onBlur={(evento) => {
+        // Popover no modal: Tab puede seguir con el resto de la app.
+        if (evento.relatedTarget instanceof Node && !evento.currentTarget.contains(evento.relatedTarget)) setAbiertoEn(null)
+      }}
+    >
+      {grupoDestino ? (
+        <a
+          className="gru-asistente-boton"
+          href={rutaAgente(grupoDestino)}
+          aria-label={`Abrir pestaña de GRU${grupoActual && identidad.espacio ? ` en ${identidad.espacio}` : ''}. ${estadoTexto}.`}
+          title={`GRU · ${estadoTexto}`}
+          onClick={(evento) => {
+            setAbiertoEn(null)
+            if (ruta.nombre === 'espacio' && ruta.vista === 'agente' && ruta.espacioId === grupoDestino
+              && evento.button === 0 && !evento.metaKey && !evento.ctrlKey && !evento.altKey && !evento.shiftKey) {
+              evento.preventDefault()
+              window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+            }
+          }}
+        >
+          {miniatura}
+        </a>
+      ) : <button
+        ref={boton}
+        type="button"
+        className="gru-asistente-boton"
+        aria-label={`${abierto ? 'Cerrar' : 'Abrir'} a GRU, tu asistente de IA. Elegí un grupo para abrir su pestaña.`}
+        aria-haspopup="dialog"
+        aria-expanded={abierto}
+        aria-controls={abierto ? panelId : undefined}
+        onClick={() => setAbiertoEn(abierto ? null : hash)}
+      >
+        {miniatura}
+      </button>}
+      {abierto ? (
+        <section
+          id={panelId}
+          className="gru-asistente-panel"
+          role="dialog"
+          aria-modal="false"
+          aria-labelledby={tituloId}
+          style={{ maxHeight: ubicacion.altoPanel }}
+        >
+          <div className="gru-asistente-cabecera">
+            <div>
+              <p className="gru-asistente-identidad" id={tituloId}>GRU <span>Tu asistente de IA</span></p>
+              <p className="gru-asistente-estado" role="status">{estadoTexto}</p>
+            </div>
+            <button type="button" className="gru-asistente-cerrar" aria-label="Cerrar el asistente GRU" onClick={cerrar}>
+              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+            </button>
+          </div>
+          <p className="gru-asistente-contexto">Siempre a mano</p>
+          <h2 className="gru-asistente-titulo">{titulo}</h2>
+          <p className="gru-asistente-descripcion">{descripcion}</p>
+          <a
+            className="gru-asistente-enlace"
+            href="#/"
+            onClick={() => setAbiertoEn(null)}
+          >
+            Ver mis grupos
+            <span aria-hidden="true">↗</span>
+          </a>
+          <p className="gru-asistente-nota">Yo propongo. El grupo decide.</p>
+        </section>
+      ) : null}
+    </div>
+  )
+}
+
+export default GruAsistente
