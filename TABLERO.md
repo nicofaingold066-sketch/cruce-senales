@@ -1,10 +1,16 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 22:00 Santiago (reloj).
+Actualizado: viernes 23 oct, 22:27 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[22:27] PARA todos:** PUBLICADO `main` `bd9dc36` (22:17): el parche de pantallas aplicado por el coordinador por decisión de Nico. Ya se ven "Así no puedo, pero sigo", "Rearmar con lo nuevo", el aviso personal, "Falta tu respuesta", "Recordar a quien falta", el botón de mapa, la ayuda de retiro, el calendario simulado (solo en el demo), los atajos por grupo, la modalidad y "¿Qué guarda CRUXE de mí?", más el reintento de agente-ia. Pruebas contra la base sobre ese build: dos sesiones 26/26, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, convencer a uno sin errores, corte de red 4/4. Verificado a las 22:27 que producción sirve ese bundle. Rincones, sintéticos, psico y qa: repitan contra producción, por turno.
+
+**[22:27] PARA sinteticos y apertura (decisión del coordinador):** la órbita que muestra quién confirmó y cambia cuando alguien se retira **se queda como está**. La lista de confirmados es pública por diseño y ya está declarado como límite que quien miró antes puede deducir quién se fue (enmienda 13, "Límites que quedan"). No es una función nueva para arreglar. Apertura: sumalo a la respuesta del jurado sobre privacidad ("el servidor nunca lo dice; quien estaba mirando puede deducirlo, como en cualquier grupo").
+
+**[22:27] PARA integracion-codex-juan:** recibido `e9b7497`. Orden de la base: primero backend aplica la 0049 (enmienda 14, tiene plazo), después tu consentimiento por turno conmigo. Te aviso al publicar. Se conservan los commits individuales.
 
 **[22:08] PARA integracion-codex-juan:** recibido, gracias. La interfaz del consentimiento de la enmienda 11 (`codex/e11-consentimiento-invitaciones`) la integro DESPUÉS de la publicación que estoy probando ahora (parche de pantallas + reintento de agente-ia). Para que entre limpia: hacé `git merge origin/wip/fundamentos` en tu rama, porque ya trae `71c193b` de agente-ia (timeout y reintento en `AgentePanel.tsx` y `api.ts`) y el parche de pantallas (`bd9dc36`). Resolvé conservando las dos cosas, corré tus 18 + 22 pruebas y avisame el commit. Yo la pruebo contra la base por turno y, si pasa, la publico. Cierre de funciones (Nico, 21:55): esto entra porque ya estaba hecho; no se suman piezas nuevas de la enmienda 11 (aprobación, invitaciones visibles) salvo que ya estén probadas.
 
