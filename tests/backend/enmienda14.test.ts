@@ -116,3 +116,118 @@ describe('enmienda 14 (0048): propósito del grupo y actividad de la propuesta',
     expect((await rpcCrudo(clienteSinSesion(), 'create_space', PERMITIDAS.create_space())).error?.code).toBe('42501')
   })
 })
+
+// 0049: el agente con propósito (filtro por familia, quórum) y "Me gustaría" dentro de la familia. Se saltea sola
+// mientras 0049 no esté aplicada (get_my_preferences todavía no trae `familia` en cada actividad).
+describe('enmienda 14 (0049): agente con familia y quórum', { timeout: 180_000 }, () => {
+  let O: Sesion
+  let U: Sesion
+  let V: Sesion
+  let sabado: string
+  let aplicada = false
+  const SECO = { sabado: 'seco', domingo: 'seco' }
+  const PREF = (me: string[]) => ({ presupuesto: 'da_igual', energia: 'con_todo', ambiente: 'da_igual', lugar: 'da_igual', me_gustaria: me })
+
+  const espacioCon = async (proposito: string, gente: Sesion[], integrantes: string[] = []) => {
+    const r = await ok(O, 'create_space', {
+      p_nombre: `t-e14b-${sufijo()}`, p_tipo: 'amigos', p_nombre_visible: 'Org t', p_proposito: proposito,
+      ...(integrantes.length ? { p_integrantes: integrantes } : {}),
+    })
+    for (const [i, s] of gente.entries()) await ok(s, 'join_space', { p_codigo: r.resultado.codigo_invitacion, p_nombre_visible: `P${i} t` })
+    return r.resultado.espacio_id as string
+  }
+  const plan = async (esp: string) => {
+    const r = await rpc(O, 'proponer_plan_borrador', { p_espacio_id: esp, p_sabado: sabado, p_clima: SECO })
+    return r.ok ? r.resultado : r.error
+  }
+
+  beforeAll(async () => {
+    ;[O, U, V] = await Promise.all([nuevaSesion(), nuevaSesion(), nuevaSesion()])
+    const d = await ok(O, 'seed_demo_space')
+    const op = (await ok(O, 'get_my_preferences', { p_espacio_id: d.espacio.id })).opciones.actividades
+    aplicada = op.every((a: Json) => typeof a.familia === 'string')
+    const hoy = (await ok(O, 'server_info')).servidor_ahora.local.slice(0, 10)
+    const x = new Date(`${hoy}T00:00:00Z`)
+    do x.setUTCDate(x.getUTCDate() + 1)
+    while (x.getUTCDay() !== 6)
+    sabado = x.toISOString().slice(0, 10)
+  }, 60_000)
+
+  it('3. "Me gustaría" solo de la familia del grupo; en libre, las 16 con su familia', async () => {
+    if (!aplicada) return
+    const esp = await espacioCon('deporte', [])
+    const op = (await ok(O, 'get_my_preferences', { p_espacio_id: esp })).opciones.actividades
+    expect(op.map((a: Json) => a.clave).sort()).toEqual(['basquet', 'futbol', 'padel', 'tenis'])
+    for (const a of op) expect(a.familia).toBe('deporte')
+    const asado = await rpc(O, 'save_my_preferences', { p_espacio_id: esp, p_preferencias: PREF(['asado']) })
+    expect(err(asado)).toBe('entrada_incompleta/fuera_de_proposito')
+    expect(err(await rpc(O, 'save_my_preferences', { p_espacio_id: esp, p_preferencias: PREF(['padel']) }))).toBe('ok')
+    const libre = await espacioCon('libre', [])
+    const todas = (await ok(O, 'get_my_preferences', { p_espacio_id: libre })).opciones.actividades
+    expect(todas).toHaveLength(16)
+    // Espejo de src/lib/types.ts: familia de cada actividad igual a la del servidor.
+    const espejo: Record<string, string> = {
+      futbol: 'deporte', padel: 'deporte', tenis: 'deporte', basquet: 'deporte', asado: 'comida', cena: 'comida', cafe: 'comida',
+      fiesta: 'salida_noche', bar: 'salida_noche', juegos_salida: 'salida_noche', cultura: 'cultura', cine: 'cultura',
+      parque: 'aire_libre', cerro: 'aire_libre', juegos_casa: 'en_casa', peli_casa: 'en_casa',
+    }
+    expect(Object.fromEntries(todas.map((a: Json) => [a.clave, a.familia]))).toEqual(espejo)
+  })
+
+  it('4. agente: solo la familia, solo lo que alcanza, aviso de quórum; faltan_personas; los pendientes no cuentan', async () => {
+    if (!aplicada) return
+    // Grupo de fútbol con 3 personas (y 2 pendientes que no cuentan): fútbol (10), básquet (6) y pádel (4) no alcanzan.
+    const esp = await espacioCon('futbol', [U, V], ['Pend uno t', 'Pend dos t'])
+    for (const s of [O, U]) await ok(s, 'save_my_preferences', { p_espacio_id: esp, p_preferencias: PREF(['futbol', 'tenis']) })
+    const r = await plan(esp)
+    expect(r.tipo).toBe('borrador')
+    expect(r.candidatas.map((c: Json) => c.actividad)).toEqual(['tenis'])
+    for (const c of r.candidatas) {
+      expect(c.familia).toBe('deporte')
+      expect(c.personas.min).toBeLessThanOrEqual(3)
+    }
+    expect(r.quorum).toEqual({ actividad: 'futbol', etiqueta: 'Fútbol', personas_min: 10, personas_posibles: 3 })
+    // Salida/noche con 2 personas: bar (3) y bowling (4) no alcanzan.
+    const noche = await espacioCon('salida_noche', [U])
+    for (const s of [O, U]) await ok(s, 'save_my_preferences', { p_espacio_id: noche, p_preferencias: PREF(['bar']) })
+    expect(await plan(noche)).toEqual({ tipo: 'sin_plan_compatible', motivo: 'faltan_personas' })
+    // Un grupo de tenis de 2: tenis, con la frase del propósito y sin aviso de quórum.
+    const tenis = await espacioCon('tenis', [U])
+    for (const s of [O, U]) await ok(s, 'save_my_preferences', { p_espacio_id: tenis, p_preferencias: PREF(['tenis']) })
+    const t = await plan(tenis)
+    expect(t.candidatas[0].actividad).toBe('tenis')
+    expect(t.candidatas[0].frases_grupo).toContain('proposito_del_grupo')
+    expect(t.quorum).toBeNull()
+    // Privacidad: nada por persona.
+    const txt = JSON.stringify(r)
+    for (const n of ['P0 t', 'P1 t', 'Pend uno t', 'Org t']) expect(txt).not.toContain(n)
+  })
+
+  it('5. el agente social publica con la actividad de la fila en un grupo con propósito', async () => {
+    if (!aplicada) return
+    const esp = await espacioCon('deporte', [U, V])
+    for (const s of [O, U]) await ok(s, 'save_my_preferences', { p_espacio_id: esp, p_preferencias: PREF(['tenis']) })
+    await ok(U, 'set_recibir_invitaciones_agente', { p_espacio_id: esp, p_recibir: true })
+    const ops = (await ok(O, 'agente_social_candidatos', { p_espacio_id: esp, p_sabado: sabado, p_clima: SECO })).opciones
+    expect(ops[0]).toMatchObject({ actividad: 'tenis', familia: 'deporte', personas: { min: 2, max: 4 } })
+    const id = intento()
+    await ok(O, 'iniciar_ejecucion_agente', { p_espacio_id: esp, p_ejecucion_id: id, p_oportunidad: `sabado:${sabado}`, p_parametros_hash: 'e14' })
+    const g = await ok(O, 'guardar_borrador_agente', { p_ejecucion_id: id, p_opcion_ref: ops[0].opcion_ref, p_texto: 'Tenis el sábado.' })
+    expect(g.borrador.plan).toMatchObject({ actividad: 'tenis', minimo: 2, maximo: 3 })
+    await ok(O, 'aprobar_borrador_agente', { p_ejecucion_id: id, p_borrador_hash: g.borrador.hash, p_intento_id: intento() })
+    const pub = await rpc(O, 'publicar_borrador_agente', { p_ejecucion_id: id, p_borrador_hash: g.borrador.hash, p_intento_id: intento() })
+    expect(err(pub)).toBe('ok')
+    const prop = (await ok(O, 'get_proposal_state', { p_propuesta_id: pub.propuesta.id })).propuesta
+    expect(prop.actividad).toEqual({ clave: 'tenis', etiqueta: 'Tenis', familia: 'deporte' })
+    await ok(O, 'cancel_proposal', { p_propuesta_id: pub.propuesta.id })
+  })
+
+  it('6. el demo (libre) no cambia: el agente sigue eligiendo la parrilla del parque primero', async () => {
+    if (!aplicada) return
+    const d = await ok(O, 'seed_demo_space')
+    await ok(O, 'reset_demo', { p_espacio_id: d.espacio.id, p_intento_id: intento() })
+    const r = await plan(d.espacio.id)
+    expect(r.lugar.id).toBe('lugar-sim-14')
+    expect(r.quorum).toBeNull()
+  })
+})
