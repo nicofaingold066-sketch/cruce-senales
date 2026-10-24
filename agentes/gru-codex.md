@@ -5,7 +5,7 @@ Pedido directo de Nico en Codex (24 oct): integrar el personaje aprobado, llamad
 Rama propia `codex/gru-vivo`, copia aislada `/Users/macair/cruse/cruce-gru`, base `origin/main` `7f47a88`.
 
 ## Tocando ahora
-Pedido directo nuevo de Nico (24 oct): además del movimiento actual, permitir arrastrar GRU libremente con mouse/dedo. Esta autorización reabre solo la interacción visual de GRU. Rutas exactas: `src/agente/GruAsistente.tsx`, `src/agente/gru-asistente.css`. Copia `cruce-gru`, rama `codex/gru-vivo`; actualizar primero con main actual. No tocar panel del agente, backend, modelos, rutas ni otras pantallas. QA local con transporte ficticio fuera del repo; sin turno de base. Evitar pisar el anclaje móvil reciente: conservarlo como posición automática inicial, con drag manual prioritario.
+Vacío. Arrastre manual implementado, probado y subido a la rama propia. Sin procesos ni turno de base.
 
 ## Verificación
 Typecheck, build y navegador local con fixtures ficticios y red externa interceptada. Comprobar navegación, estados de éxito/error/sin opción, teclado, movimiento reducido, móvil 320/375 y escritorio 1280. Cero consultas pagas o escrituras en la base.
@@ -39,3 +39,13 @@ Se integró el main vigente `09a5595c8984ccaac101c17b51fedb0610f11ed9` en la ram
 El conector Vercel corresponde a otra cuenta/equipo; se utilizó el despliegue Git ya configurado. GitHub reportó contexto Vercel **success** para este commit: https://vercel.com/nicofaingold066-sketchs-projects/cruce-senales/73wtP8iUV2Eg8VCeBzqs9kZo7fWe . Alias público https://cruce-senales.vercel.app devuelve HTTP200 y sirve `index-CMAR1AFt.js`.
 
 Prueba del frontend publicado en 375 y 1280: mini transparente, click abre GRU solo grande, formulario nuevo `.gru-prefs-form`, selección nativa de actividades/presupuesto, cancelar restaura y Perfil recupera mini. Ambos recorridos pasan, cero errores JS. Auth/RPC/modelos interceptados antes de navegar con datos ficticios (12 solicitudes simuladas por viewport); cero llamadas reales a base/modelos, cero escrituras. Sin cambios backend ni migraciones. Evidencia: `gru-app-qa/produccion-report.json`, `produccion-gru-375.png`, `produccion-preferencias-375.png` y equivalentes 1280 en la carpeta de artefactos indicada arriba.
+
+
+## Arrastre manual completado (24 oct, nuevo pedido de Nico)
+Rama `codex/gru-vivo`, commit **`9c046d1e8d9e41e181339ed25d3e7e9c90fdf70c`**, sobre main `08aa6e2`. Rama subida, checkout limpio. **No integrado a main ni publicado este corte.** Archivos exactos: `src/agente/GruAsistente.tsx`, `src/agente/gru-asistente.css`.
+
+Arrastrar con mouse o dedo, umbral de 6 px para conservar tap/clic, captura de puntero y recuperación de cancelación. Suelta sin abrir ni navegar; un toque posterior conserva el enlace/panel. Conserva animaciones al soltar y la ubicación elegida en memoria entre rutas y scroll. Clamp del personaje/panel al viewport visible en resize y zoom; panel elige el lado con más espacio. En móvil conserva el anclaje inicial hasta moverlo; ubicación manual por encima de barras y oculta durante modales. Alternativa de teclado Alt+flechas, 16 px y foco conservado.
+
+Validación final: TypeScript y build Vite pasan, diff --check limpio. QA Playwright/Chrome sobre main08aa6e2+drag: **10/10** casos principales y **2/2** zoom2x/horizontal812x240. Mouse real, touch nativo CDP, microgesto, link, panel centro/4 esquinas y botón cerrar real, cancel, rutas/scroll/resize, Alt+flechas, Enter/Space/Escape y movimiento reducido. Cero errores JS, cero escrituras ni llamadas reales a DB/modelos; todo transporte ficticio interceptado. Revisión independiente de código sin hallazgos pendientes tras corregir z-order/ancho/alto del panel.
+
+Evidencia fuera del repo: `/Users/macair/.codex/visualizations/2026/10/24/01a16df4-5928-7463-bcde-e790d4ad173a/gru-drag-qa/` (`drag-report.json`, `viewport-report.json`, scripts y capturas). La ubicación se reinicia al recargar la app. Listo para integración del coordinador o publicación si Nico lo pide.
