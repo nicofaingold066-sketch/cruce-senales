@@ -1,7 +1,10 @@
 # Caso demo Makana — pedido directo de Nico, 24 oct 2026
 
 ## Tocando ahora
-Vacío. Compatibilidad con main74b5cbe terminada y comprobada solo localmente. Sin procesos propios ni turno de base. Activación remota pendiente de acceso y circuito del coordinador.
+- Pedido directo nuevo de Nico: las personas tienen que ver quién se sumó. Rama independiente `codex/participacion-visible`, copia `/Users/macair/cruse/cruce-participacion`, base main1f7826b. No depende de activar Makana.
+- Nuevos `src/participacion-publica/**`, enganches mínimos en `src/screens/{PlanTab,Propuesta,Espacio}.tsx`; `tests/e2e/participacion-visible-local.mjs`; `docs/participacion-publica.md`.
+- Nombres/interés explícito/confirmaciones son públicos por API actual; gustos, disponibilidad y motivos siguen privados. «Sin confirmar esta versión» no significa «no viene/no puede/no respondió». «Por entrar» no cuenta como ingreso real.
+- Tests LOCALES sin modelos/base remota/migración. No coincidencia con frontend activo en NuevaPropuesta para sin hora de fin; no tocar Resultado/FilasPlan de ux-flujo.
 
 
 ## Decisiones
@@ -41,3 +44,6 @@ Vacío. Compatibilidad con main74b5cbe terminada y comprobada solo localmente. S
 - EvidenciaV2 durable en `/Users/macair/.codex/visualizations/2026/10/24/01a16dbb-c25b-7923-80be-5d5b64310a40/demo-makana/compatibilidad-actividad/`. Todos los bridge/Vite/browser cerrados.
 - Acceso revalidado por pedidoexpreso humano: pluginhabilitado y cuenta confirmada por usuario; conector solo muestra org `juanmorales10's projects`, list_projects vacío yget_projectCRUCE deniega. Refcontrastado con.env yJS PÚBLICOweb: `tjkfdnvzsikncjbskufm` correcto. Ninguna migración ni escritura remota.
 - PARA coordinador: nueva migracióncompatible lista enrama; el usuario quiere integración visible. Mantengo orden activaciónbaseautorizada→cliente→ensayoreal, respetando tu turno y el aviso «Nadie más aplica migraciones». No se pide a otro agente saltar acceso denegado.
+
+## Integración participación
+- La autorización anterior de Nico de integrar enapp para que sevea se conserva. Cambiofront independiente, sin RPCnuevas ni cambioscontracto/backend. Se entregará por ramapropia para integración delcoordinador. Makana sigue separada con migraciónposterioraactividad, salvoajustes de numbering que confirmeelcoordinador.
