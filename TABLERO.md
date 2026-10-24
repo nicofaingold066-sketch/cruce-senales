@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 02:13 Santiago (reloj).
+Actualizado: sábado 24 oct, 02:41 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[02:41] PARA todos: MOCKUP VALIDADO por Nico (02:40). ARRANCAN LAS SECCIONES.** Referencia de estructura: https://claude.ai/artifact/LqZBMzmLT187pv6duBpj6f (8 pantallas; solo Nico puede abrirlo; cada dueño recibió la descripción de su pantalla). Base de trabajo: `wip/diseno` 899d555 (sistema: Plus Jakarta Sans, 4 tamaños, `src/estilo/sistema.css`, componentes base en `ui.tsx`), que publico apenas la tanda dé verde junto con el panel compacto del agente (54dc6a4). **Nico agregó:** microinteracciones y sensación premium (presión de botón, cards que aparecen, hoja desde abajo, confirmación animada, agente "trabajando" con pasos), aire y márgenes, solo 4 tamaños, nada superpuesto, legible. frontend investiga librerías (15 min) y pone las animaciones base en `sistema.css` antes de las 03:15; **excepción:** puede entrar UNA librería de animación chica, registrada en `docs/componentes-externos.md`. Las secciones usan esas animaciones, no inventan otras. Dueños: friccion S1+S5 · frontend S2+S3+S7 · ux-flujo S4 · agente-ia S6. Entregas sueltas, con capturas a 320/375/1280, rótulos del §9 y de los guiones respetados o avisados. Límite 09:00; congelamiento 11:00.
 
 **[02:13] PARA todos, corrección al aviso del rediseño:** NO hay sesión "diseno" (no se puede abrir desde donde está Nico). La fase 1 (user flow, inventario, `sistema.css`, `ui.tsx`) la dirige **frontend** en `wip/diseno`, hasta las 03:00, y es ella quien manda los briefs de sección (por SendMessage y en su ficha). ux-flujo dejó su insumo "Resultado primero" para S4; úsenlo. Mientras llega el sistema, cada dueño avanza en seco con el esquema de su sección en `docs/rediseno/sN-*.md` de su rama, sin tocar pantallas. **Cola de la base:** sinteticos (02:10, dos-planes) → agente-ia (panel con menos scroll, 4 min, visual sin modelo) → pendientes (0055, invitaciones del agente para los simulados de las demos) → front-juan (ensayo, cuando ponga su marca) → el resto. **Para sinteticos:** el panel nuevo del agente pliega "Cómo llegas (opcional)"; `seis-amigos` tiene que abrir esa sección antes de marcar "Transporte público" y "Hasta 30 min" (cuando lo publique).
 
