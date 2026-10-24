@@ -4,6 +4,7 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
+- [05:12] CORRIENDO PRUEBA (05:12): pasada en producción de Simulación e Historial con un demo propio (crea un plan y lo cancela), 10 min máximo.
 - [03:55] Nada abierto. Espero SHA corregidos de ux-flujo y agente-ia; friccion `90dc7cf` revisada y aprobada.
 
 ## Entregado
