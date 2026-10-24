@@ -39,27 +39,32 @@ interface UbicacionGru {
 }
 
 const ANCHO_GRU = 54
-const ALTO_GRU = 64
+const ALTO_GRU = 68
 const MARGEN_GRU = 12
 
 /** Busca espacio real en la pantalla. Una posición segura se conserva hasta cambiar de pestaña. */
-function useUbicacionGru(hash: string, ruta: Ruta['nombre'], raiz: RefObject<HTMLDivElement | null>) {
+function useUbicacionGru(hash: string, ruta: Ruta['nombre'], raiz: RefObject<HTMLDivElement | null>, visible: boolean) {
   const [ubicacion, setUbicacion] = useState<UbicacionGru>({ x: 0, y: 0, colocado: false, reserva: false, claro: false, arriba: false, izquierda: false, altoPanel: 320 })
   const actual = useRef(ubicacion)
   const [animar, setAnimar] = useState(false)
 
   useEffect(() => {
+    if (!ubicacion.colocado) return
     const cuadro = requestAnimationFrame(() => setAnimar(true))
     return () => cancelAnimationFrame(cuadro)
-  }, [])
+  }, [ubicacion.colocado])
 
   useLayoutEffect(() => {
+    if (!visible) return
     let cuadro = 0
     let pausaScroll: ReturnType<typeof setTimeout> | undefined
     let reservaDeRuta = false
     const medir = (preferirRuta = false) => {
       const propio = raiz.current
       if (!propio) return
+      const disparador = propio.querySelector('.gru-asistente-boton')?.getBoundingClientRect()
+      const anchoGru = Math.ceil(disparador?.width || ANCHO_GRU)
+      const altoGru = Math.ceil(disparador?.height || ALTO_GRU)
       const viewport = window.visualViewport
       const izquierda = viewport?.offsetLeft ?? 0
       const arriba = viewport?.offsetTop ?? 0
@@ -98,9 +103,9 @@ function useUbicacionGru(hash: string, ruta: Ruta['nombre'], raiz: RefObject<HTM
       }
 
       const xIzquierda = izquierda + MARGEN_GRU
-      const xDerecha = Math.max(xIzquierda, derecha - ANCHO_GRU - MARGEN_GRU)
+      const xDerecha = Math.max(xIzquierda, derecha - anchoGru - MARGEN_GRU)
       const yArriba = limiteSuperior
-      const yAbajo = Math.max(yArriba, limiteInferior - ALTO_GRU)
+      const yAbajo = Math.max(yArriba, limiteInferior - altoGru)
       const medio = (yArriba + yAbajo) / 2
       const laterales = [medio, yArriba + (yAbajo - yArriba) * 0.25, yArriba + (yAbajo - yArriba) * 0.75]
       const preferirIzquierda = ruta === 'inicio'
@@ -110,11 +115,16 @@ function useUbicacionGru(hash: string, ruta: Ruta['nombre'], raiz: RefObject<HTM
         { x: primero, y: yAbajo }, { x: segundo, y: yAbajo },
         ...laterales.flatMap((y) => [{ x: primero, y }, { x: segundo, y }]),
         { x: segundo, y: yArriba }, { x: primero, y: yArriba },
+        // Las esquinas no cubren todos los huecos: también probamos justo antes/después del texto o control.
+        ...obstaculos.flatMap((caja) => [caja.top - altoGru - MARGEN_GRU, caja.bottom + MARGEN_GRU])
+          .filter((y) => y >= yArriba && y <= yAbajo)
+          .sort((a, b) => b - a)
+          .flatMap((y) => [{ x: primero, y }, { x: segundo, y }]),
       ]
       const libre = (punto: { x: number; y: number }) =>
-        punto.x >= izquierda && punto.x + ANCHO_GRU <= derecha && punto.y >= arriba && punto.y + ALTO_GRU <= abajo
-        && !obstaculos.some((caja) => punto.x < caja.right + 5 && punto.x + ANCHO_GRU > caja.left - 5
-          && punto.y < caja.bottom + 5 && punto.y + ALTO_GRU > caja.top - 5)
+        punto.x >= izquierda && punto.x + anchoGru <= derecha && punto.y >= arriba && punto.y + altoGru <= abajo
+        && !obstaculos.some((caja) => punto.x < caja.right + 5 && punto.x + anchoGru > caja.left - 5
+          && punto.y < caja.bottom + 5 && punto.y + altoGru > caja.top - 5)
 
       const anterior = actual.current
       // La reserva, si fue necesaria, se mantiene durante esta ruta para que el contenido no oscile.
@@ -128,7 +138,7 @@ function useUbicacionGru(hash: string, ruta: Ruta['nombre'], raiz: RefObject<HTM
       }
 
       // Se toma el color de la superficie bajo el nombre, sin agregarle una pastilla de fondo.
-      const superficies = document.elementsFromPoint(punto.x + ANCHO_GRU / 2, punto.y + ALTO_GRU - 8)
+      const superficies = document.elementsFromPoint(punto.x + anchoGru / 2, punto.y + altoGru - 8)
       let claro = false
       for (const superficie of superficies) {
         if (propio.contains(superficie)) continue
@@ -143,7 +153,7 @@ function useUbicacionGru(hash: string, ruta: Ruta['nombre'], raiz: RefObject<HTM
         x: Math.round(punto.x), y: Math.round(punto.y), colocado: true,
         reserva: reservaDeRuta || reserva,
         claro, arriba: panelArriba, izquierda: punto.x < izquierda + ancho / 2,
-        altoPanel: Math.max(100, Math.floor(panelArriba ? punto.y - arriba - 12 : abajo - punto.y - ALTO_GRU - 12)),
+        altoPanel: Math.max(100, Math.floor(panelArriba ? punto.y - arriba - 12 : abajo - punto.y - altoGru - 12)),
       }
       if (Object.keys(siguiente).some((clave) => siguiente[clave as keyof UbicacionGru] !== anterior[clave as keyof UbicacionGru])) {
         actual.current = siguiente
@@ -158,6 +168,9 @@ function useUbicacionGru(hash: string, ruta: Ruta['nombre'], raiz: RefObject<HTM
       clearTimeout(pausaScroll)
       pausaScroll = setTimeout(programar, 120)
     }
+    const alTerminarMovimiento = (evento: Event) => {
+      if (evento.target instanceof Node && !raiz.current?.contains(evento.target)) programar()
+    }
     medir(true)
     // Las pantallas con carga diferida pueden aparecer después del cambio de hash.
     const mutaciones = new MutationObserver((cambios) => {
@@ -169,6 +182,8 @@ function useUbicacionGru(hash: string, ruta: Ruta['nombre'], raiz: RefObject<HTM
     for (const elemento of document.querySelectorAll('main#contenido,.barra')) tamanos.observe(elemento)
     window.addEventListener('resize', programar)
     window.addEventListener('scroll', alDesplazar, { passive: true })
+    document.addEventListener('animationend', alTerminarMovimiento, true)
+    document.addEventListener('transitionend', alTerminarMovimiento, true)
     window.visualViewport?.addEventListener('resize', programar)
     window.visualViewport?.addEventListener('scroll', alDesplazar)
     return () => {
@@ -178,10 +193,12 @@ function useUbicacionGru(hash: string, ruta: Ruta['nombre'], raiz: RefObject<HTM
       tamanos.disconnect()
       window.removeEventListener('resize', programar)
       window.removeEventListener('scroll', alDesplazar)
+      document.removeEventListener('animationend', alTerminarMovimiento, true)
+      document.removeEventListener('transitionend', alTerminarMovimiento, true)
       window.visualViewport?.removeEventListener('resize', programar)
       window.visualViewport?.removeEventListener('scroll', alDesplazar)
     }
-  }, [hash, ruta, raiz])
+  }, [hash, ruta, raiz, visible])
 
   return { ...ubicacion, animar }
 }
@@ -190,6 +207,7 @@ function useUbicacionGru(hash: string, ruta: Ruta['nombre'], raiz: RefObject<HTM
 export function GruAsistente({ identidad, soloLectura, parseRuta, rutaAgente }: GruAsistenteProps) {
   const hash = useSyncExternalStore(suscribirHash, leerHash, hashServidor)
   const ruta = parseRuta(hash)
+  const enPestanaGru = ruta.nombre === 'espacio' && ruta.vista === 'agente'
   const grupoActual = 'espacioId' in ruta ? ruta.espacioId : null
   const [ultimoGrupoVisitado, setUltimoGrupoVisitado] = useState(grupoActual)
   const ultimaActividad = useEstadoGru()
@@ -198,7 +216,7 @@ export function GruAsistente({ identidad, soloLectura, parseRuta, rutaAgente }: 
   const [abiertoEn, setAbiertoEn] = useState<string | null>(null)
   const abierto = !grupoDestino && abiertoEn === hash
   const raiz = useRef<HTMLDivElement>(null)
-  const ubicacion = useUbicacionGru(hash, ruta.nombre, raiz)
+  const ubicacion = useUbicacionGru(hash, ruta.nombre, raiz, !enPestanaGru)
   const boton = useRef<HTMLButtonElement>(null)
   const panelId = useId()
   const tituloId = useId()
@@ -248,6 +266,9 @@ export function GruAsistente({ identidad, soloLectura, parseRuta, rutaAgente }: 
       <span className="gru-asistente-indicador" aria-hidden="true" />
     </>
   )
+
+  // En su pestaña ya está el personaje grande. Quitar el dock también elimina cualquier reserva de espacio.
+  if (enPestanaGru) return null
 
   return (
     <div

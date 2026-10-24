@@ -1098,7 +1098,18 @@ function PanelAgente({
         <Card id="agente-idea" className="agente-panel">
           <ProponerPlan key={espacioId} espacioId={espacioId} soloLectura={soloLectura} demo={demo} personasGrupo={personasGrupo} />
         </Card>
-      ) : null}
+      ) : (
+        <Card id="gru-saludo" className="agente-panel">
+          <div className="gru-presentacion">
+            <GruPersonaje estado="disponible" tamano="grande" />
+            <div className="gru-presentacion__contenido">
+              <p className="gru-presentacion__etiqueta">GRU · Tu asistente de IA</p>
+              <h3 className="gru-presentacion__titulo">Tus gustos ayudan a encontrar un plan</h3>
+              <p className="gru-presentacion__ayuda">Decide qué preferencias puede usar GRU. Son privadas: al grupo le llega la propuesta, nunca lo que pusiste.</p>
+            </div>
+          </div>
+        </Card>
+      )}
       <Card id="agente-preferencias" titulo="Mis preferencias" className="agente-panel">
         <MisPreferencias espacioId={espacioId} soloLectura={soloLectura} primario={!esOrganizador} />
       </Card>
