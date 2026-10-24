@@ -637,6 +637,11 @@ Pedido del coordinador (21:02). Hecha a las 21:17 del viernes 23 sobre el códig
 - **Siguen:** «se bajó» (4), «había confirmado» (2), «Bajas registradas» (1), «Imprescindible (anfitrión)» (1) y «ve solo el servidor» (3): son palabras, no exposición (el servidor anonimiza las bajas). No hay «Habrá opción sin carne» (función cerrada).
 - **Límite declarado (coordinador, 22:27):** en «Versión N · ya no vale», con pocas personas se puede deducir por exclusión quién se retiró. No se cambia.
 
+### Actualización a las 23:37 (producción con `main` `d978cc1`, bundle `index-DG20_bTa`)
+- **Llegaron:** «Cambios en el grupo» con «Una persona se retiró.» / «N personas se retiraron.» (sin nombres); «Bajas registradas» e «Imprescindible (anfitrión)» desaparecieron; «anfitrión» ya no aparece en ningún texto. «se bajó» queda solo como etiqueta interna del cruce (1) y «había confirmado» (1) en la columna de la versión anterior.
+- **Textos nuevos de la enmienda 14, leídos en el código publicado y bien de tono:** «¿Para qué es este grupo?» y el aviso de quórum: «Para {actividad} hacen falta al menos {N} personas; este grupo tiene {M} por ahora. Estas opciones se pueden armar con el grupo actual. Cuando se sumen más, vuelve a pedir una propuesta.» (trae el cierre sin reproche que sugerí).
+- **Siguen (bajas):** «ve solo el servidor» (3) y «le sirve al presupuesto de todos» en el «Por qué» del agente (aparece solo con 4 o más personas; palabra de plata).
+
 ### 16.1 Lo que hay que arreglar primero (7 altos): todos son la misma falla
 Cinco de los siete **nombran a quien se retiró** o dicen que «había confirmado» en textos que ve todo el grupo; la enmienda 13 (c), aprobada a las 20:51, pide «Una persona se retiró» sin nombre ni motivo. El historial viaja en capturas al chat. Los otros dos **prometen que todo lo que marques es privado** justo antes de la pantalla donde «me interesa» y la confirmación los ve el grupo.
 

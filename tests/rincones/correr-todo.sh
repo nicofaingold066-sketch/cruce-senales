@@ -14,7 +14,7 @@ COORD=/Users/macair/cruse/cruce-coord-rincones
 FICHA=agentes/rincones.md
 hora() { TZ=America/Santiago date +%H:%M; }
 
-BLOQUES=("f13-enmienda13" "f12-a11y-demo" "f11-responder f0-sin-grupo f1-organizador" "f2-invitados f3-confirmar-y-reparar f3b-baja-y-reparar" "f4-listas-y-cancelar f5-demo f5b-demo-baja" "f6-quien-eres f7-grupo-b f9-sin-red-y-validaciones f10-fallas")
+BLOQUES=("f13-enmienda13 f14-proposito" "f12-a11y-demo" "f11-responder f0-sin-grupo f1-organizador" "f2-invitados f3-confirmar-y-reparar f3b-baja-y-reparar" "f4-listas-y-cancelar f5-demo f5b-demo-baja" "f6-quien-eres f7-grupo-b f9-sin-red-y-validaciones f10-fallas")
 [ "${2:-}" = "--con-agente" ] && BLOQUES+=("f8-agente")
 
 coord_actualizar() { git -C "$COORD" fetch -q origin && git -C "$COORD" checkout -q --detach origin/coordinacion; }
