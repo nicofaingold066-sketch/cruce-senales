@@ -1,4 +1,12 @@
-# Caso canónico de la demo: "Los del finde"
+# Caso de la demo Makana: «El plan que no deja a nadie afuera»
+
+Por pedido de Nico del 24 de octubre, la entrada de demostración pasa al caso social de siete compañeros ficticios: Ana, Bruno, Camila, Diego, Elena, Felipe y Gabriela. El recorrido y la preparación están en [demo-makana.md](demo-makana.md). La aplicación conserva su identidad visual y usa el mismo motor de versiones.
+
+Parque ficticio gratuito, mínimo real de dos personas: Ana y Felipe aceptan el sábado; Felipe se baja; Ana revisa el domingo y la versión nueva comienza con cero aceptaciones; Ana y Camila deciden otra vez. Gabriela sigue pendiente. Preferencias y permisos se aportan por separado y voluntariamente; no se carga disponibilidad desde los perfiles.
+
+La variante `makana` requiere activar la migración `20261024124500_demo_makana.sql` posterior a la de actividad del grupo antes del cliente. El caso anterior se conserva para sus grupos existentes y pruebas de regresión; no se transforman ni borran esos datos. Las pruebas locales no certifican un despliegue remoto ni inferencia del modelo.
+
+# Caso anterior conservado (legacy): «Los del finde»
 
 Todo ficticio. Los personajes son inventados y no corresponden a personas reales.
 
@@ -6,7 +14,7 @@ Todo ficticio. Los personajes son inventados y no corresponden a personas reales
 Recuperar el hábito de verse con amigos. Un asado previsto tuvo seis interesados que dejaron de responder y no se hizo. Hipótesis a validar: no falta ganas ni amigos; falta cerrar la coordinación (condiciones, compromiso explícito y reparación cuando alguien se baja). La causa real del episodio está por investigar y no se afirma.
 
 ## Escenario
-- Espacio: "Los del finde" (amigos). Mismo motor luego con un espacio "Empresa Demo" cambiando los datos.
+- Espacio: "Los del finde" (amigos). Caso histórico para regresiones; la demo Makana actual mantiene el enfoque social.
 - Propuesta: asado en casa de Tomi. Tomi es el anfitrión y es imprescindible.
 - Invitados con interés: Luna, Mati, Caro, Fede, Sofi.
 - Zona horaria visible en pantalla: America/Santiago.

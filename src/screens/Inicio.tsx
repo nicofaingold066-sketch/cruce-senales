@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { api } from '../lib/api'
+import { DEMO_MAKANA, esDemoMakana } from '../lib/casoDemo'
 import type { ApiError, EspacioResumen, PropuestaResumen } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
 import { irA, rutas, useIdentidad, useShell } from '../lib/shell'
@@ -54,7 +55,7 @@ export default function Inicio({ invitacionInvalida }: { invitacionInvalida?: bo
   const conGrupos = (espacios?.length ?? 0) > 0
   const turno = activas.find((x) => esTurno(x.p)) ?? null
   const planDe = (id: string) => activas.find((x) => x.espacio.id === id) ?? null
-  const yaDemo = espacios?.some((e) => e.demo && e.mi_rol === 'organizador') ?? false
+  const yaDemo = espacios?.some((e) => e.demo && esDemoMakana(e) && e.mi_rol === 'organizador') ?? false
 
   const perfil = usePerfil()
   // Pantalla 9 (mockup): primera vez en este teléfono, sin nombre y sin grupos.
@@ -339,14 +340,14 @@ async function planesActivos(espacios: EspacioResumen[]): Promise<PlanActivo[]> 
   return listas.flat().sort((a, b) => Number(turno(b)) - Number(turno(a)))
 }
 
-/** La demo. `chico` (pantalla 2): una línea "o prueba sin crear nada · Probar la demo «Los del finde»". */
+/** La demo social de siete compañeros. No modifica los grupos de demostración anteriores. */
 function CargarDemo({ deshabilitado, yaCargada, chico, fila }: { deshabilitado: boolean; yaCargada: boolean; chico?: boolean; fila?: boolean }) {
   const { ocupado, error, ejecutar } = useAccion()
   async function hacer() {
-    const r = await ejecutar('seed', () => api.seedDemoSpace())
+    const r = await ejecutar('seed-makana', () => api.seedDemoMakana())
     if (r?.ok) irA(rutas.espacio(r.data.resultado.espacio_id))
   }
-  const texto = yaCargada ? 'Abrir la demo «Los del finde»' : 'Probar la demo «Los del finde»'
+  const texto = `${yaCargada ? 'Abrir' : 'Probar'} la demo «${DEMO_MAKANA.nombre}»`
   if (fila) {
     // Pantalla 9: una FILA igual a la de "Tengo un código de invitación".
     return (
@@ -357,7 +358,7 @@ function CargarDemo({ deshabilitado, yaCargada, chico, fila }: { deshabilitado: 
           </span>
           <span className="s1-opcion-texto">
             <span className="t-subtitulo" id="demo-fila-titulo">{ocupado ? 'Preparando la demo…' : texto}</span>
-            <span className="t-nota" id="demo-fila-nota">Serás Tomi, quien organiza; las otras cinco personas son simuladas. Datos ficticios.</span>
+            <span className="t-nota" id="demo-fila-nota">{DEMO_MAKANA.detalle}</span>
           </span>
         </button>
         {error ? <ErrorCaja error={error} enfocar /> : null}
@@ -374,7 +375,7 @@ function CargarDemo({ deshabilitado, yaCargada, chico, fila }: { deshabilitado: 
           </button>
         </p>
         <p className="visualmente-oculto" id="demo-detalle">
-          Serás Tomi, quien organiza; las otras cinco personas son simuladas. Datos ficticios.
+          {DEMO_MAKANA.detalle}
         </p>
         {error ? <ErrorCaja error={error} enfocar /> : null}
       </>
@@ -386,7 +387,7 @@ function CargarDemo({ deshabilitado, yaCargada, chico, fila }: { deshabilitado: 
         {texto}
       </Boton>
       <p className="t-nota s1-nota" id="demo-detalle">
-        Serás Tomi, quien organiza; las otras cinco personas son simuladas. Datos ficticios.
+        {DEMO_MAKANA.detalle}
       </p>
       {error ? <ErrorCaja error={error} enfocar /> : null}
     </>

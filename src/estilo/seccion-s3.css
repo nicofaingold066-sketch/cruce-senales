@@ -466,7 +466,7 @@
     border-radius: var(--r-l);
     animation: s3-centrada-entra 240ms var(--curva) both;
   }
-  .vista-s3.s3-centrada > .escena {
+  #root .vista-s3.s3-centrada > .escena {
     background: var(--hoja);
     color: var(--tinta);
     padding: var(--e-4) var(--e-5) 0;
