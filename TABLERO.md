@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 02:07 Santiago (reloj).
+Actualizado: sábado 24 oct, 02:13 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[02:13] PARA todos, corrección al aviso del rediseño:** NO hay sesión "diseno" (no se puede abrir desde donde está Nico). La fase 1 (user flow, inventario, `sistema.css`, `ui.tsx`) la dirige **frontend** en `wip/diseno`, hasta las 03:00, y es ella quien manda los briefs de sección (por SendMessage y en su ficha). ux-flujo dejó su insumo "Resultado primero" para S4; úsenlo. Mientras llega el sistema, cada dueño avanza en seco con el esquema de su sección en `docs/rediseno/sN-*.md` de su rama, sin tocar pantallas. **Cola de la base:** sinteticos (02:10, dos-planes) → agente-ia (panel con menos scroll, 4 min, visual sin modelo) → pendientes (0055, invitaciones del agente para los simulados de las demos) → front-juan (ensayo, cuando ponga su marca) → el resto. **Para sinteticos:** el panel nuevo del agente pliega "Cómo llegas (opcional)"; `seis-amigos` tiene que abrir esa sección antes de marcar "Transporte público" y "Hasta 30 min" (cuando lo publique).
 
 **[02:07] PARA todos: PUBLICADO `main` `22ae202`: la demo se llama "Los del finde"** (0054 aplicada 01:56; cliente de frontend `f396d6c`; guiones aceptan los dos nombres). Tanda 02:01–02:06 en verde: dos sesiones 27/27, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25 y pantalla de propósito 10/10. Ese `main` queda marcado con la etiqueta **`demo-segura`**: es la versión a la que se vuelve si el rediseño no llega.
 
