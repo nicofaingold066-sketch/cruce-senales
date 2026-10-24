@@ -183,13 +183,20 @@ Además apareció un error viejo: `postgrest-js` no rechaza la promesa cuando se
 
 **Prueba, viernes 23 oct, 21:59:12 a 22:00:07 y 22:00:59 a 22:01:49 (hora del reloj):** build propio, demo propio, la lentitud simulada en el navegador, cero llamadas al modelo. 9 de 9, las dos veces. Carga con 57014: el panel carga con el reintento. Guardado lento: el aviso aparece a los 15,4 s y guarda a los 17,3 s. 57014 al guardar: reintenta y guarda. Dos lentas seguidas: error con "Reintentar" a los 32 s, sin tercera llamada automática, y "Reintentar" guarda. Sin desborde a 375 px y sin errores de consola. La segunda corrida se solapó cerca de un minuto con el arranque de la migración 0048; fueron unas 10 RPC normales.
 
-### 8.6 Enmienda 14 (propósito del grupo): parte del agente, preparada
-`wip/agente-ia` `456f0be`, **sin desplegar y sin probar contra la base**, porque falta la 0049. Si la 0049 no llega a las 09:00, se descarta y el agente queda como hoy.
+### 8.6 Enmienda 14 (propósito del grupo): parte del agente
+Preparada en `wip/agente-ia` `456f0be` y `8a655e7` (texto del quórum igual al del puente de backend y frase `proposito_del_grupo`). Desplegada como función v10 a las 22:42, después de la 0049 (aplicada a las 22:22).
 - La función deja pasar `quorum` arriba, solo con sus cuatro claves (`actividad`, `etiqueta`, `personas_min`, `personas_posibles`), y `familia` y `personas {min, max}` en cada candidata y en la destacada, solo si vienen. Sin la 0049 la respuesta tiene la misma forma que hoy.
 - Al modelo le llega `aviso_quorum` como una razón más, con totales del grupo ("Para Fútbol hacen falta al menos 10 personas; este grupo tiene 4 por ahora."). Nada por persona. Si escribe "se sumaron", "se sumó" o "ya van", su texto se descarta (ajuste 7: tamaño del grupo, no asistencia).
 - `faltan_personas` pasa tal cual, sin llamar al modelo.
 - En el panel: el texto fijo del quórum bajo "Opciones del agente", el de `faltan_personas` en "Sin plan compatible", y "Usar esta opción" guarda también la actividad y sus personas, para que Nueva propuesta precargue actividad, mínimo y máximo (front-juan decide si los usa).
-- Pruebas sin base: lógica 48/48 y la función entera con base y modelo simulados 19/19, con tres casos nuevos (quórum saneado, forma igual sin la 0049, `faltan_personas` sin modelo).
+- Pruebas sin base: lógica 49/49 y la función entera con base y modelo simulados 19/19, con tres casos nuevos (quórum saneado, forma igual sin la 0049, `faltan_personas` sin modelo).
+- **Contra la base, viernes 23 oct, 22:44:19 a 22:44:27 (hora del reloj):** grupo propio "Los del fútbol (prueba del agente)" con propósito fútbol y dos personas ficticias con sesión anónima. "Me gustaría" trae solo deporte (pádel, fútbol, tenis, básquet). Marcar asado da `fuera_de_proposito`. Una llamada a la función: Opus, 6,0 s, candidatas solo de tenis (de 2 a 4 personas) y `quorum = {futbol, Fútbol, 10, 2}`. Sin nombres y sin hablar de asistencia. La IA escribió: "Tenis en parejas se arma bien con un grupo chico, a diferencia del fútbol…".
+- **Panel, 22:44:36 a 22:44:38:** build propio, función simulada en el navegador, cero modelo: 16/16. El texto del quórum, el de `faltan_personas`, "Usar esta opción" con actividad y personas, y los arreglos de tuteo, "Me gustaría", U5 y Open-Meteo.
+
+### 8.7 Opus por la clave de Nico (BYOK), en producción (mejora #99)
+**Viernes 23 oct 2026, de 22:43:08 a 22:43:24 (hora del reloj).** Producción `main` `bd9dc36`, función v10, demo propio, "Simular sol", 375 × 812, una sola llamada. Respondió **Opus** (`modelo_usado: "opus"`, fuente `modelo`) en **10,0 s**, desde que se pide hasta que llega la respuesta. La pantalla dice "Lo redactó la IA (Claude Opus)". La IA escribió: "El asado es lo que más eligió el grupo (3 de 4), calza con un ritmo algo tranquilo y la parrilla del parque queda a menos de 20 minutos para todos, como estimado." Viaje por candidata: 20, 25 y 25 minutos. Sin errores de consola.
+
+**Lo que esta prueba no dice:** si la llamada salió por la clave de Nico (BYOK) o por los créditos del Gateway. La función no recibe metadatos de la ruta del Gateway y los encabezados de la respuesta son solo los de Supabase. Eso se ve en el panel de uso del AI Gateway de Vercel.
 
 ## Historia
 Idea de Nico. Diseño de privacidad del coordinador: el servidor elige y la IA solo ve totales. Enmienda 4 (preferencias, catálogo y elección por reglas), 4.1 (candidatas, perfil del grupo y la IA como coordinadora, pedido de Nico) y 5 (preferencias simuladas). Mejoras #11, #23, #25, #26, #28, #32 y #35. #64: el modelo pasa por el Vercel AI Gateway (pedido de Nico), con un tope de tokens y un límite de llamadas por persona (pedido del coordinador por costo).

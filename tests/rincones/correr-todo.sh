@@ -14,7 +14,7 @@ COORD=/Users/macair/cruse/cruce-coord-rincones
 FICHA=agentes/rincones.md
 hora() { TZ=America/Santiago date +%H:%M; }
 
-BLOQUES=("f0-sin-grupo f1-organizador f2-invitados" "f3-confirmar-y-reparar f3b-baja-y-reparar f4-listas-y-cancelar" "f5-demo f5b-demo-baja f6-quien-eres f7-grupo-b" "f9-sin-red-y-validaciones f10-fallas f11-responder" "f12-a11y-demo")
+BLOQUES=("f13-enmienda13" "f12-a11y-demo" "f11-responder f0-sin-grupo f1-organizador" "f2-invitados f3-confirmar-y-reparar f3b-baja-y-reparar" "f4-listas-y-cancelar f5-demo f5b-demo-baja" "f6-quien-eres f7-grupo-b f9-sin-red-y-validaciones f10-fallas")
 [ "${2:-}" = "--con-agente" ] && BLOQUES+=("f8-agente")
 
 coord_actualizar() { git -C "$COORD" fetch -q origin && git -C "$COORD" checkout -q --detach origin/coordinacion; }
@@ -24,7 +24,9 @@ ocupada() {
   local f
   for f in "$COORD"/agentes/*.md; do
     [ "$(basename "$f")" = "rincones.md" ] && continue
-    if sed -n '/^## Tocando ahora/,/^## /p' "$f" | grep -v TERMINAD | grep -qE 'CORRIENDO PRUEBA ?\(|MIGRACION EN CURSO|PRUEBA DE CARGA EN CURSO'; then
+    # Solo cuenta el aviso real: "CORRIENDO PRUEBA (hh:mm)", "**MIGRACION EN CURSO**" en negrita o "PRUEBA DE CARGA EN CURSO"; una ficha que
+    # solo menciona que ESPERA a una migración (esperan/espera/saque/cuando) no es un candado.
+    if sed -n '/^## Tocando ahora/,/^## /p' "$f" | grep -v 'TERMINAD' | grep -viE 'esper(a|an|ando)|saque|saquen|cuando backend|hasta que' | grep -qE 'CORRIENDO PRUEBA ?\(|\*\*MIGRACION EN CURSO\*\*|PRUEBA DE CARGA EN CURSO'; then
       echo "$(basename "$f" .md)"; return 0
     fi
   done

@@ -46,10 +46,12 @@ async function rpc(p, fn, args) {
 
 // «Así no puedo, pero sigo»: por el botón si existe; si no, por RPC (y queda anotado).
 async function opinar(p, version) {
+  // El botón vive en la pestaña Plan, junto a «Confirmar versión» (lo vio la corrida de producción de las 22:56).
+  await p.tocarPestana('Plan')
   const boton = p.page.getByRole('button', { name: /Así no puedo/ })
   if (await boton.count()) {
     await p.tocar(boton.first(), '«Así no puedo, pero sigo»')
-    await p.page.waitForTimeout(1500)
+    await p.page.getByText(/Así no puedes, pero sigues|Marcaste que así no puedes/).first().waitFor({ timeout: 15000 }).catch(() => {})
     const t = await E.ver(p, `${p.nombre.toLowerCase()}-asi-no-puedo`)
     C[`${p.nombre}OpinoPorBoton`] = true
     return { ok: true, texto: t.texto }
@@ -65,7 +67,7 @@ async function opinar(p, version) {
 try {
   log('— Vale crea «Los del cerro» y la propuesta (mínimo 3)')
   await reintento(() => E.crearGrupo(vale, { integrantes: ['Joaco', 'Renata', 'Gonza', 'Pili'], pegar: true }))
-  await E.crearPropuesta(vale, { actividad: 'Paseo', minimoMas: 1 })
+  await E.crearPropuesta(vale, { actividad: 'Cerro', minimoMas: 1 })
   await E.volverA(vale, E.datos.propuestaUrl, 'Mi respuesta')
   await E.guardarCondiciones(vale, 'Sí puedo', 'Sí puedo')
 

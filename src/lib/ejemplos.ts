@@ -44,9 +44,15 @@ export function placeholderGrupo(e: Ejemplo): string {
   return `Ej.: ${e.grupo}`
 }
 
-/** Placeholder de «Propósito de la propuesta». */
-export function placeholderPlan(e: Ejemplo): string {
-  return `Ej.: ${e.plan}`
+/**
+ * Placeholder de «Propósito de la propuesta». Con la familia del espacio (enmienda 14) el ejemplo es de esa familia, para
+ * que en un grupo de fútbol no se lea «Caminata por el cerro»; sin familia o con `libre`, el ejemplo que rota de siempre.
+ */
+export function placeholderPlan(e: Ejemplo, familia?: Familia | null): string {
+  if (!familia || familia === 'libre') return `Ej.: ${e.plan}`
+  const planes = PLANES_POR_FAMILIA[familia]
+  const i = Math.max(0, EJEMPLOS.indexOf(e))
+  return `Ej.: ${planes[i % planes.length].plan}`
 }
 
 /** Ayuda de «Crear un grupo»: deja claro que sirve cualquier grupo y nombra el tipo del ejemplo. */
@@ -80,6 +86,36 @@ export const FAMILIA_DE_ACTIVIDAD: Readonly<Record<string, Exclude<Familia, 'lib
   cerro: 'aire_libre',
   juegos_casa: 'en_casa',
   peli_casa: 'en_casa',
+}
+
+/** Ejemplos de plan por familia (todos de actividades de esa familia, sin nombrar a nadie; 80 caracteres como máximo). */
+export const PLANES_POR_FAMILIA: Readonly<Record<Exclude<Familia, 'libre'>, readonly { plan: string; actividad: string }[]>> = {
+  deporte: [
+    { plan: 'Fútbol 5 el sábado', actividad: 'futbol' },
+    { plan: 'Pádel el martes a las 20:00', actividad: 'padel' },
+    { plan: 'Tenis en parejas el domingo', actividad: 'tenis' },
+  ],
+  comida: [
+    { plan: 'Sushi el sábado', actividad: 'cena' },
+    { plan: 'Asado en una parrilla del parque', actividad: 'asado' },
+    { plan: 'Brunch del domingo en un café', actividad: 'cafe' },
+  ],
+  salida_noche: [
+    { plan: 'Tragos en un bar el viernes', actividad: 'bar' },
+    { plan: 'Bowling el sábado en la noche', actividad: 'juegos_salida' },
+  ],
+  cultura: [
+    { plan: 'Ir al cine el domingo en la tarde', actividad: 'cine' },
+    { plan: 'Museo o feria el sábado', actividad: 'cultura' },
+  ],
+  aire_libre: [
+    { plan: 'Caminata por el cerro el sábado', actividad: 'cerro' },
+    { plan: 'Picnic en el parque el domingo', actividad: 'parque' },
+  ],
+  en_casa: [
+    { plan: 'Juegos de mesa el sábado', actividad: 'juegos_casa' },
+    { plan: 'Noche de película en casa', actividad: 'peli_casa' },
+  ],
 }
 
 export interface Atajo {

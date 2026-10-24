@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../lib/api'
-import type { ApiError, Espacio } from '../lib/types'
+import type { ActividadClave, ApiError, Espacio } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { franjaTexto, momentoCorto, ZONA_VISIBLE } from '../lib/format'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
-import { atajosParaGrupo, ejemploPorSemilla, placeholderPlan } from '../lib/ejemplos'
+import { ATAJOS, atajosParaEspacio, ejemploPorSemilla, placeholderPlan } from '../lib/ejemplos'
 import type { Atajo } from '../lib/ejemplos'
 import { Avatar, Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
@@ -29,6 +29,8 @@ interface Formulario {
   cierre: Cierre
   /** Solo con cierre "otro". */
   plazoOtro: string
+  /** Enmienda 14: clave de la actividad del atajo elegido (null = sin actividad; vale en un grupo libre). */
+  actividad: ActividadClave | null
 }
 
 // Valores exactos del caso canónico (contrato, sección 5): A sáb 31 oct y B dom 1 nov, 14:00 a 17:00; cierre jue 29 oct 20:00.
@@ -43,6 +45,8 @@ const CASO = {
   maximo: '6',
   cierre: 'dos_dias' as Cierre,
   plazoOtro: '',
+  // El demo es un espacio libre: sin actividad, igual que siempre.
+  actividad: null as ActividadClave | null,
 }
 
 const HORAS = ['12:00', '13:00', '14:00', '17:00', '19:00', '20:00', '21:00']
@@ -102,6 +106,7 @@ function campoDeError(e: ApiError | null): Campo | null {
       return 'imprescindible'
     case 'campo_faltante':
     case 'formato_invalido':
+    case 'fuera_de_proposito': // enmienda 14: el mensaje del servidor (TEXTO_FUERA_DE_PROPOSITO) lo muestra ErrorCaja
       return 'titulo'
     default:
       return null
@@ -127,7 +132,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
   const yo = espacio?.miembros.find((m) => m.es_yo) ?? null
   // Atajos de actividad según el nombre del grupo (#92, apertura): «Los del pádel» ve Pádel primero; el demo
   // («Los del asado») sigue con Asado primero. El ejemplo del placeholder sale del id del grupo: no cambia al escribir.
-  const actividades = useMemo(() => atajosParaGrupo(espacio?.nombre ?? ''), [espacio?.nombre])
+  const actividades = useMemo(() => atajosParaEspacio(espacio?.nombre ?? '', espacio?.familia), [espacio?.nombre, espacio?.familia])
   const ej = useMemo(() => ejemploPorSemilla(espacioId), [espacioId])
   useIdentidad(espacio?.nombre ?? null, yo?.nombre ?? null, espacio ? (espacio.mi_rol === 'organizador' ? 'organizador' : 'miembro') : null)
 
@@ -173,6 +178,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
           imprescindibleId: yoM?.miembro_id ?? '',
           cierre: 'dia_antes',
           plazoOtro: '',
+          actividad: null,
         }
     if (borrador) {
       const [a, b] = borrador.franjas
@@ -224,8 +230,8 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     if (error) limpiarError()
   }
   function elegirActividad(a: Atajo) {
-    const esAtajo = form.titulo.trim() === '' || actividades.some((x) => x.titulo === form.titulo.trim())
-    setF({ ...form, titulo: esAtajo ? a.titulo : form.titulo, duracion: a.min })
+    const esAtajo = form.titulo.trim() === '' || ATAJOS.some((x) => x.titulo === form.titulo.trim())
+    setF({ ...form, titulo: esAtajo ? a.titulo : form.titulo, duracion: a.min, actividad: (a.actividad as ActividadClave | null) ?? null })
     if (!DURACIONES.includes(a.min)) setDuracionExtra(a.min)
     if (error) limpiarError()
   }
@@ -291,6 +297,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
         maximo: Number(form.maximo),
         imprescindibleId: form.imprescindibleId,
         plazo,
+        actividad: form.actividad,
         intentoId,
       }),
     )
@@ -335,7 +342,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
           >
             {desdeAgente ? (
               <Aviso tono="info" titulo="Borrador del agente">
-                Título y momentos vienen del borrador del agente. Revisa cupos, anfitrión y cierre: el agente no crea ni confirma nada.
+                Título y momentos vienen del borrador del agente. Revisa cupos, quién no puede faltar y cierre: el agente no crea ni confirma nada.
               </Aviso>
             ) : null}
             {espacio.demo && !desdeAgente ? (
@@ -378,7 +385,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                   value={form.titulo}
                   onChange={(e) => poner('titulo', e.target.value)}
                   maxLength={80}
-                  placeholder={placeholderPlan(ej)}
+                  placeholder={placeholderPlan(ej, espacio.familia)}
                   aria-invalid={marcado === 'titulo' || (faltantes && form.titulo.trim() === '') ? true : undefined}
                 />
               </label>
@@ -428,7 +435,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                 <Contador id="cupo-maximo" etiqueta="Máximo" valor={form.maximo} onCambio={(v) => poner('maximo', v)} />
               </div>
               <p className="suave nota-seccion">El mínimo cuenta a quien es imprescindible.</p>
-              <div className="anfitrion-elegir" role="radiogroup" aria-label="Persona imprescindible (anfitrión)">
+              <div className="anfitrion-elegir" role="radiogroup" aria-label="Persona que no puede faltar">
                 <span className="duracion-etiqueta">
                   <Icono n="anfitrion" tam={16} /> No puede faltar
                 </span>

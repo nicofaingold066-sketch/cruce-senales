@@ -5,11 +5,13 @@ import type { TipoEspacio } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { recordarNombreSiFalta, usePerfil } from '../lib/perfil'
-import { ayudaGrupo, ejemploPorSemilla, placeholderGrupo } from '../lib/ejemplos'
+import { ejemploPorSemilla, placeholderGrupo } from '../lib/ejemplos'
 import { Aviso, Boton, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { CampoIntegrantes } from '../login/Integrantes'
 import { CampoQuienViene } from '../friccion/QuienViene'
+import { CampoProposito } from '../friccion/Proposito'
+import type { Proposito } from '../friccion/propositos'
 import { conQuienViene } from '../lib/compartir'
 import type { QuienViene } from '../lib/compartir'
 
@@ -28,6 +30,8 @@ export default function CrearGrupo() {
   const [ej] = useState(() => ejemploPorSemilla(String(Math.floor(Date.now() / 3600000))))
   // D3 de psico (friccion): quién viene es una regla del grupo; va como marca en el nombre, sin migración.
   const [quienViene, setQuienViene] = useState<QuienViene | null>(null)
+  // Enmienda 14: para qué es el grupo. 'libre' (por defecto) es el comportamiento de siempre y no se manda al servidor.
+  const [proposito, setProposito] = useState<Proposito>('libre')
   const tipo: TipoEspacio = 'amigos'
   const { ocupado, error, ejecutar } = useAccion()
   const faltan = nombre.trim() === '' || visible.trim() === ''
@@ -57,8 +61,8 @@ export default function CrearGrupo() {
 
   async function crear() {
     if (faltan) return
-    const r = await ejecutar(`crear:${nombre}:${tipo}:${visible}:${integrantes.join('|')}`, () =>
-      api.createSpace(conQuienViene(nombre.trim(), quienViene), tipo, visible.trim(), integrantes),
+    const r = await ejecutar(`crear:${nombre}:${tipo}:${visible}:${integrantes.join('|')}:${proposito}`, () =>
+      api.createSpace(conQuienViene(nombre.trim(), quienViene), tipo, visible.trim(), integrantes, proposito),
     )
     if (r?.ok) {
       recordarNombreSiFalta(visible)
@@ -76,7 +80,7 @@ export default function CrearGrupo() {
         <span className="escena-eyebrow">Nuevo grupo</span>
         <h1 id="crear-titulo">Crear un grupo</h1>
         <p className="escena-sub">
-          Un grupo es la gente con la que siempre dicen «nos juntamos». {ayudaGrupo(ej)} Anota a todos, comparte el enlace y cada
+          Un grupo es la gente con la que siempre dicen «nos juntamos». Anota a todos, comparte el enlace y cada
           uno entra desde su teléfono tocando su nombre.
         </p>
       </section>
@@ -111,6 +115,7 @@ export default function CrearGrupo() {
               : 'Anota a los del grupo: al abrir el enlace, cada uno toca su nombre y listo. Puedes pegar la lista del chat.'}
           </p>
           <CampoQuienViene valor={quienViene} cambiar={setQuienViene} nombre={nombre} />
+          <CampoProposito valor={proposito} cambiar={setProposito} deshabilitado={soloLectura} />
           <Aviso tono="info">
             Vas a ser quien organiza: creas las propuestas y buscas la opción compatible. Las condiciones de cada persona son
             privadas, también para ti.
