@@ -131,7 +131,8 @@ describe('actividad del grupo: ingresos, bajas de planes y salida real', { timeo
       expect(err(await rpc(A, fn, a)), fn).toBe('fuera_de_audiencia/no_miembro')
     }
     // Todas las demás entradas dirigidas a grupo/propuesta tampoco pueden devolver contenido ni mutar.
-    const globales = new Set(['server_info', 'create_space', 'join_space', 'preview_space_by_code', 'list_my_spaces', 'seed_demo_space', 'leave_space'])
+    // 0058: seed_demo_makana es global como seed_demo_space (no recibe grupo; crea el demo Makana del usuario).
+    const globales = new Set(['server_info', 'create_space', 'join_space', 'preview_space_by_code', 'list_my_spaces', 'seed_demo_space', 'seed_demo_makana', 'leave_space'])
     for (const [fn, entrada] of Object.entries(PERMITIDAS)) {
       if (globales.has(fn) || args[fn]) continue
       const a = entrada()
