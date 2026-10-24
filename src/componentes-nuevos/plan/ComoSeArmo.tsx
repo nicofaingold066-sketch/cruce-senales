@@ -47,8 +47,8 @@ export function ComoSeArmo({ p, espacio }: { p: EstadoPropuesta; espacio: Espaci
       texto: sinOpcion
         ? 'Se buscó y no hubo franja posible con las respuestas de hoy. El mínimo no se toca; por privacidad no se dicen los motivos.'
         : o
-          ? `El servidor cruzó las respuestas y eligió ${textoRegla(p.regla)}, con ${p.imprescindible.nombre}, que no puede faltar.`
-          : `Cuando haya respuestas suficientes, el servidor elige ${textoRegla(p.regla)}, con ${p.imprescindible.nombre}, que no puede faltar.`,
+          ? `El servidor cruzó las respuestas y eligió ${textoRegla(p.regla, p.minimo)}, con ${p.imprescindible.nombre}, que no puede faltar.`
+          : `Cuando haya respuestas suficientes, el servidor elige ${textoRegla(p.regla, p.minimo)}, con ${p.imprescindible.nombre}, que no puede faltar.`,
     },
     {
       texto: o

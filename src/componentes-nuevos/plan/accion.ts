@@ -71,8 +71,27 @@ export function cuentaConfirmados(confirmados: number, minimo: number): string {
 }
 
 /** Enmienda 15: cómo elige el motor entre las franjas viables, en palabras (pedido de sinteticos 02:25). */
-export function textoRegla(regla: ReglaMotor | undefined): string {
-  return regla === 'mas_si' ? 'la opción que pueden más personas' : 'la opción más temprana que alcanza el mínimo'
+export function textoRegla(regla: ReglaMotor | undefined, minimo: number): string {
+  return regla === 'mas_si' ? 'la que pueden más personas' : `la fecha más temprana en la que llegan al mínimo (${minimo})`
+}
+
+/**
+ * La línea "Cómo salió" del resultado (pantalla 5 del mockup). Cuántos respondieron solo lo sabe quien organiza (E7.2);
+ * la regla y el mínimo son públicos. Nada de quién puede ni de condiciones.
+ */
+export function textoComoSalio(
+  p: Pick<EstadoPropuesta, 'estado' | 'regla' | 'minimo' | 'personas_con_condiciones' | 'opcion' | 'ultima_evaluacion'>,
+): string {
+  const regla = textoRegla(p.regla, p.minimo)
+  const n = p.personas_con_condiciones
+  const respondieron = n != null ? `${n} ${n === 1 ? 'respondió' : 'respondieron'}; ` : ''
+  if (p.estado === 'reuniendo_interes') {
+    if (p.ultima_evaluacion?.resultado === 'sin_opcion') return `Cómo salió: ${respondieron}con esas respuestas no hubo una fecha posible.`
+    return `Cómo sale: ${respondieron}cuando haya respuestas, se elige ${regla}.`
+  }
+  if (!p.opcion) return `Cómo sale: se elige ${regla}.`
+  const reparada = p.ultima_evaluacion?.resultado === 'reparacion_publicada' && p.ultima_evaluacion.version === p.opcion.version
+  return `Cómo salió: ${respondieron}se eligió ${regla}${reparada ? ', con lo que cada uno marcó después del cambio' : ''}.`
 }
 
 /** Etapa actual de la tira Respuestas · Opción · Confirmar · Encuentro (solo una lectura del estado del servidor). */

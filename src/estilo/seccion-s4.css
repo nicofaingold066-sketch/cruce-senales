@@ -1,70 +1,105 @@
-/* S4 · El plan y su resultado (ux-flujo). Rediseño de la noche: solo los 4 tamaños de sistema.css
-   (--t-titulo 24, --t-subtitulo 18, --t-cuerpo 16, --t-nota 13), toques de 44 px y nada que se pise a 320/375/1280 px.
-   Se importa desde src/screens/Propuesta.tsx. Los selectores que leen los guiones (.estado-hero-etiqueta) se conservan. */
+/* S4 · El plan y su resultado (ux-flujo). Rediseño de la noche, pantalla 5 del mockup validado (02:40).
+   La escena oscura ES el resultado; la hoja trae "Cómo se armó" y las filas. Solo los 4 tamaños de sistema.css
+   (--t-titulo 24, --t-subtitulo 18, --t-cuerpo 16, --t-nota 13), toques de 44 px, nada que se pise a 320/375/1280 px.
+   Movimiento: solo el del sistema (.sd-aparecer al cambiar de estado, .sd-exito al confirmar). Se importa desde Propuesta.tsx.
+   Los selectores que leen los guiones (.estado-hero-etiqueta) se conservan. */
 
-/* ------------------------------------------------------------------ escena: más baja, el cruce más chico */
-.vista .escena {
-  padding-bottom: 40px;
+/* ------------------------------------------------------------------ la escena es el resultado */
+.resultado-escena {
+  padding: var(--e-2) var(--margen) var(--e-6);
 }
-.escena h1 {
-  font-size: var(--t-titulo);
-  line-height: var(--lh-titulo);
+.resultado-escena > * + * {
+  margin-top: var(--e-3);
 }
-.escena .cruce {
-  display: block;
-  width: 100%;
-  max-width: 300px;
-  max-height: 200px;
-  margin: var(--e-2) auto 0;
-}
-.escena .cruce-nombre,
-.escena .cruce-etiqueta,
-.escena .cruce-iniciales {
-  font-size: 13px;
-}
-.escena .cruce-valor {
-  font-size: 24px;
-}
-.escena .cruce-leyenda {
-  font-size: var(--t-nota);
+.resultado-arriba {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
+  gap: var(--e-1) var(--e-2);
+}
+.resultado-arriba .escena-volver {
+  font-size: var(--t-cuerpo);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.resultado-sello.chip {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--noche-texto);
+}
+.resultado-sello.chip-info {
+  background: var(--info-suave);
+  color: var(--info);
 }
 
-/* ------------------------------------------------------------------ resultado: estado, cuándo, cuántos, una acción */
-.resultado.estado-hero {
-  padding: var(--e-4);
-  border-radius: var(--r-l);
-  box-shadow: var(--sombra-flota);
-  animation: s4-aparecer 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+/* El bloque: borde grueso arriba con el color del estado (--c lo ponen las clases estado-hero-*). */
+.resultado {
+  --c: var(--noche-suave);
+  position: relative;
+  padding-top: var(--e-4);
+  border-top: 6px solid var(--c);
+  border-radius: 4px 4px 0 0;
+}
+.resultado.estado-hero-reuniendo_interes,
+.resultado.estado-hero-borrador {
+  --c: var(--info);
+}
+.resultado.estado-hero-esperando_compromisos {
+  --c: var(--brasa-viva);
+}
+.resultado.estado-hero-grupo_confirmado {
+  --c: #4cc98a;
+}
+.resultado.estado-hero-en_revision {
+  --c: #f0b44c;
 }
 .resultado > * + * {
   margin-top: var(--e-4);
 }
-.resultado .estado-hero-etiqueta {
-  font-size: var(--t-subtitulo);
-  line-height: var(--lh-subtitulo);
-  font-weight: var(--p-pantalla);
-  letter-spacing: -0.01em;
+/* Sin margen propio en los párrafos; el aire entre piezas lo pone `.resultado > * + *` (gana por especificidad). */
+:where(.resultado) p {
+  margin: 0;
 }
-.resultado .estado-hero-version {
+
+.resultado .estado-hero-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+}
+.resultado .estado-hero-icono {
+  display: inline-grid;
+  place-items: center;
+  color: var(--c);
+}
+/* "Mayúsculas chicas" del mockup sin cambiar el texto: los guiones leen «Esperando compromisos» tal cual. */
+.resultado .estado-hero-etiqueta {
   font-size: var(--t-nota);
-  line-height: 1;
+  line-height: var(--lh-nota);
+  font-weight: var(--p-pantalla);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
+  color: var(--c);
 }
 .resultado .estado-hero-siguiente {
+  margin-top: var(--e-1);
   font-size: var(--t-cuerpo);
   line-height: var(--lh-cuerpo);
-  margin-top: var(--e-2);
+  font-weight: var(--p-boton);
+  color: var(--noche-texto);
   overflow-wrap: anywhere;
+}
+.resultado-turno .estado-hero-siguiente {
+  color: var(--brasa-viva);
 }
 .resultado .pastilla {
   font-size: var(--t-nota);
 }
 
 .resultado-titulo {
-  margin: 0;
   font-size: var(--t-titulo);
   line-height: var(--lh-titulo);
   font-weight: var(--p-pantalla);
+  color: var(--noche-texto);
 }
 .resultado-fiesta {
   position: relative;
@@ -79,163 +114,205 @@
 .resultado-cuando > div {
   min-width: 0;
 }
-.resultado-cuando p {
-  margin: 0;
-}
 .resultado-eyebrow {
   display: block;
   font-size: var(--t-nota);
   line-height: var(--lh-nota);
   font-weight: var(--p-boton);
-  color: var(--tinta-2);
+  color: var(--noche-suave);
 }
 .resultado-fecha {
   font-size: var(--t-titulo);
   line-height: var(--lh-titulo);
   font-weight: var(--p-pantalla);
   letter-spacing: -0.01em;
+  color: var(--noche-texto);
   overflow-wrap: anywhere;
 }
 .resultado-hora {
   font-size: var(--t-cuerpo);
   line-height: var(--lh-cuerpo);
-  color: var(--tinta-2);
-  overflow-wrap: anywhere;
+  color: var(--noche-suave);
 }
 .resultado-cuando-vieja .resultado-fecha {
   text-decoration: line-through;
   text-decoration-thickness: 2px;
-  color: var(--tinta-2);
+  color: var(--noche-suave);
 }
-
 .resultado-candidatas {
-  margin: 0;
   font-size: var(--t-cuerpo);
   line-height: var(--lh-cuerpo);
+  color: var(--noche-suave);
   overflow-wrap: anywhere;
 }
 .resultado-candidata strong {
   font-size: var(--t-subtitulo);
-}
-.resultado-o {
-  color: var(--tinta-2);
+  color: var(--noche-texto);
 }
 
-.resultado-cifra p {
-  margin: 0;
-}
-.resultado-cuenta {
+h1.resultado-plan {
+  margin: var(--e-2) 0 0;
   font-size: var(--t-subtitulo);
   line-height: var(--lh-subtitulo);
+  font-weight: var(--p-titulo);
+  color: var(--noche-texto);
 }
-.resultado-cuenta strong {
-  font-weight: var(--p-pantalla);
+
+/* El cruce, chico: a 320 px entra sin desplazar. */
+.resultado-cruce .cruce {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  margin: 0 auto;
 }
-.resultado-max {
-  color: var(--tinta-2);
+.resultado-cruce .cruce-nombre,
+.resultado-cruce .cruce-etiqueta,
+.resultado-cruce .cruce-iniciales {
+  font-size: 13px;
+}
+.resultado-cruce .cruce-valor {
+  font-size: 24px;
+}
+.resultado-cruce .cruce-leyenda {
+  justify-content: center;
+  flex-wrap: wrap;
   font-size: var(--t-nota);
 }
-.resultado-cifra .progreso {
-  margin-top: var(--e-2);
-}
-.resultado-detalle,
-.resultado-nota {
-  margin: var(--e-2) 0 0;
-  font-size: var(--t-nota);
-  line-height: var(--lh-nota);
-  color: var(--tinta-2);
+
+.resultado-cuenta {
+  font-size: var(--t-cuerpo);
+  line-height: var(--lh-cuerpo);
+  color: var(--noche-texto);
   overflow-wrap: anywhere;
 }
+.resultado-cuenta strong {
+  font-size: var(--t-subtitulo);
+  font-weight: var(--p-pantalla);
+}
+.resultado-detalle,
+.resultado-como {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--noche-suave);
+  overflow-wrap: anywhere;
+}
+.resultado-como {
+  color: var(--noche-texto);
+}
+
+/* Tira de etapas sobre la escena oscura: el texto baja de línea antes que cortarse. */
+.resultado-pasos.pasos {
+  margin-top: var(--e-4);
+}
+.resultado-pasos .paso {
+  color: var(--noche-suave);
+  font-size: var(--t-nota);
+}
+.resultado-pasos .paso-actual {
+  color: var(--noche-texto);
+}
+.resultado-pasos .paso-barra {
+  background: rgba(255, 255, 255, 0.16);
+}
+.resultado-pasos .paso-texto {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: normal;
+  hyphens: auto;
+}
+/* La hoja de calendario sigue clara sobre la escena: su número va en tinta. */
+.resultado-cuando .dia-tile-num {
+  color: var(--tinta);
+}
+
 .resultado .aviso {
   font-size: var(--t-cuerpo);
 }
 .resultado .aviso-titulo {
   font-size: var(--t-cuerpo);
 }
+.resultado .aviso .suave,
+.resultado .aviso p {
+  font-size: var(--t-nota);
+}
 
-/* Acciones: la primaria primero y a lo ancho en el teléfono; las secundarias envuelven, nunca se pisan. */
-.resultado-acciones {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+.resultado-hecho {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-height: var(--toque);
+  padding: 0 var(--e-4);
+  border-radius: 999px;
+  background: rgba(76, 201, 138, 0.16);
+  color: #8fe2b6;
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-boton);
+}
+.resultado-razon.nota-linea {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--noche-texto);
+}
+
+/* La acción: una sola, fija al alcance del pulgar dentro de la escena. */
+.resultado-escena .barra-accion {
+  margin: var(--e-4) calc(-1 * var(--margen)) 0;
+  background: linear-gradient(to top, var(--noche) 78%, transparent);
+  display: grid;
   gap: var(--e-2);
 }
-.resultado-acciones > .btn,
-.resultado-acciones > a.btn {
+.resultado-escena .barra-accion > .btn {
+  width: 100%;
   min-height: var(--toque);
   font-size: var(--t-cuerpo);
 }
-.resultado-acciones > .btn:first-child {
-  flex: 1 1 100%;
-}
-.resultado-acciones > .asi-no-puedo,
-.resultado-acciones > .buscar-lugar,
-.resultado-acciones > .rearmar-compacto {
-  flex: 1 1 100%;
+.resultado-escena .barra-accion > p {
   margin: 0;
+  text-align: center;
 }
-.resultado-acciones .asi-no-puedo > .btn,
-.resultado-acciones .buscar-lugar > .btn {
-  width: 100%;
-}
-.resultado-acciones .asi-no-puedo-nota,
-.resultado-acciones .buscar-lugar > p {
-  font-size: var(--t-nota);
-  margin-top: var(--e-1);
-}
-.resultado-acciones .asi-no-puedo.tarjeta {
+.resultado-rearmar {
   padding: var(--e-3);
+  border-radius: var(--r-m);
+  background: rgba(255, 255, 255, 0.08);
 }
-.resultado-acciones .asi-no-puedo h2 {
-  font-size: var(--t-cuerpo);
-}
-.rearmar-compacto h3 {
+.resultado-rearmar h3 {
   margin: 0 0 var(--e-1);
   font-size: var(--t-cuerpo);
+  color: var(--noche-texto);
 }
-.rearmar-compacto > p {
+.resultado-rearmar p {
   font-size: var(--t-nota);
-  color: var(--tinta-2);
-  margin: 0 0 var(--e-2);
+  color: var(--noche-suave);
 }
-.rearmar-compacto .barra-accion > .btn {
+.resultado-rearmar .barra-accion {
+  margin: var(--e-2) 0 0;
+  padding: 0;
+  background: none;
+}
+.resultado-rearmar .btn {
   width: 100%;
 }
-.resultado .ir-confirmar {
-  width: 100%;
-}
-.resultado-razon,
-.resultado-ronda {
-  font-size: var(--t-nota);
-  line-height: var(--lh-nota);
-}
 
-/* Tira de etapas: abajo del resultado, cuatro partes iguales; el texto baja de línea antes que pisarse. */
-.resultado-pasos {
-  margin-top: var(--e-4);
-}
-.resultado-pasos .paso-texto {
-  font-size: var(--t-nota);
-  overflow-wrap: anywhere;
-}
-
-/* Pestañas: entran a 320 px (pedido de S7); si no, se desplazan, nunca se salen. */
-.pestanas-carril {
+/* ------------------------------------------------------------------ pestañas: entran a 320 px o se desplazan */
+.vista-plan .pestanas-carril {
   width: max-content;
   min-width: 100%;
 }
-.pestana {
+.vista-plan .pestana {
   font-size: var(--t-cuerpo);
   padding: 8px 10px;
 }
 @media (max-width: 359px) {
-  .pestana {
+  .vista-plan .pestana {
     font-size: var(--t-nota);
-    padding: 8px 8px;
+    padding: 8px;
   }
 }
 
-/* ------------------------------------------------------------------ pestaña Plan */
+/* ------------------------------------------------------------------ hoja: cómo se armó y filas */
 .plan-tab > * + * {
   margin-top: var(--e-5);
 }
@@ -243,12 +320,10 @@
   margin-top: 0;
 }
 
-/* Cómo se armó: cuatro pasos numerados con datos del servidor. */
 .pasos-plan {
   list-style: none;
   margin: 0;
   padding: 0;
-  position: relative;
 }
 .paso-plan {
   position: relative;
@@ -256,11 +331,7 @@
   grid-template-columns: 32px minmax(0, 1fr);
   gap: var(--e-3);
   padding-bottom: var(--e-4);
-  animation: s4-aparecer 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
-.paso-plan:nth-child(2) { animation-delay: 0.05s; }
-.paso-plan:nth-child(3) { animation-delay: 0.1s; }
-.paso-plan:nth-child(4) { animation-delay: 0.15s; }
 .paso-plan:not(:last-child)::before {
   content: '';
   position: absolute;
@@ -311,7 +382,6 @@
 .paso-plan-actual .paso-plan-texto {
   color: var(--tinta);
 }
-
 .versiones {
   margin-top: var(--e-2);
   display: grid;
@@ -365,68 +435,140 @@
   vertical-align: middle;
 }
 
-/* Quiénes */
-.quienes .chips-personas {
-  margin: 0;
-}
-.quienes .chips-personas + .chips-personas,
-.quienes > p {
-  margin-top: var(--e-2);
-}
-.quienes .nombre {
-  font-size: var(--t-nota);
-}
-
-/* Ficha y mover el plan */
-.plan-tab .ficha .datos {
-  font-size: var(--t-nota);
-}
-.plan-tab .ficha summary h2 {
-  font-size: var(--t-subtitulo);
-}
-.mover-plan > .tarjeta + .tarjeta {
+/* Filas: una cosa por fila, 44 px o más, la acción a la derecha. */
+.filas-plan > * + * {
   margin-top: var(--e-3);
 }
-.mover-plan h3 {
+.filas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--linea);
+  border-radius: var(--r-m);
+  background: var(--hoja);
+  overflow: hidden;
+}
+.filas > li + li {
+  border-top: 1px solid var(--linea);
+}
+.fila {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  min-height: 52px;
+  padding: var(--e-2) var(--e-4);
+  color: var(--tinta);
+  text-decoration: none;
+  font-size: var(--t-cuerpo);
+}
+a.fila:hover {
+  background: var(--relleno);
+}
+.fila > svg {
+  flex: none;
+  color: var(--tinta-2);
+}
+.fila-texto {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.fila-nota {
+  color: var(--tinta-2);
+  font-size: var(--t-nota);
+}
+.fila-accion {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-1);
+  font-weight: var(--p-boton);
+}
+.fila-copiar {
+  display: block;
+  min-height: var(--toque);
+  margin: 0 var(--e-4) var(--e-1) calc(var(--e-4) + 18px + var(--e-3));
+  font-size: var(--t-nota);
+}
+.fila-chica {
+  display: block;
+  min-height: var(--toque);
+  font-size: var(--t-nota);
+  color: var(--tinta-2);
+}
+.filas-plan .asi-no-puedo > .btn {
+  width: 100%;
+}
+.filas-plan .asi-no-puedo-nota {
+  font-size: var(--t-nota);
+  margin-top: var(--e-1);
+}
+.filas-plan .asi-no-puedo h2 {
+  font-size: var(--t-subtitulo);
+}
+.ficha-sub {
+  color: var(--tinta-2);
+  font-weight: var(--p-boton);
+  font-size: var(--t-cuerpo);
+}
+.ficha-quienes h3 {
   margin: 0 0 var(--e-2);
   font-size: var(--t-cuerpo);
 }
-.mover-plan .zona-peligro-texto h3 {
-  margin: 0;
+.ficha-quienes .nombre {
+  font-size: var(--t-nota);
 }
-.mover-plan .recordar-faltan .btn {
+.plan-tab .ficha .datos {
+  font-size: var(--t-nota);
+}
+.zona-peligro-chica {
+  padding: var(--e-3) var(--e-4);
+}
+.zona-peligro-chica h3 {
+  margin: 0;
   font-size: var(--t-cuerpo);
 }
 
-/* En la computadora: la escena fija a la izquierda (como hoy) y la hoja con aire. */
+/* ------------------------------------------------------------------ computadora: una columna de 640 px centrada,
+   con la escena a todo el ancho detrás (el jurado ve lo mismo en el teléfono y en la compu). */
 @media (min-width: 960px) {
-  .escena .cruce {
+  .vista.vista-plan {
+    display: block;
+  }
+  .vista-plan .escena {
+    position: relative;
+    top: auto;
+    min-height: 0;
+    padding: var(--e-5) var(--margen) var(--e-6);
+  }
+  .vista-plan .escena > * {
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .vista-plan .escena > * + * {
+    margin-top: var(--e-3);
+  }
+  .vista-plan .hoja {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: var(--e-5) 0 var(--e-6);
+    background: transparent;
+  }
+  .resultado-escena .barra-accion {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .resultado-cruce .cruce {
     max-width: 340px;
-    max-height: 260px;
-  }
-  .resultado-acciones > .btn:first-child {
-    flex: 0 1 auto;
-    min-width: 240px;
-  }
-  .resultado-acciones > .asi-no-puedo,
-  .resultado-acciones > .buscar-lugar {
-    flex: 1 1 240px;
   }
 }
 
-@keyframes s4-aparecer {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+/* El primario sobre la escena oscura: claro y lleno (el brasa queda solo para «te toca»). */
+.resultado-escena .btn-claro {
+  background: var(--noche-texto);
+  color: var(--noche);
 }
-@media (prefers-reduced-motion: reduce) {
-  .resultado.estado-hero,
-  .paso-plan {
-    animation: none;
-  }
+.resultado-escena .btn-claro:hover:not(:disabled) {
+  opacity: 0.9;
 }

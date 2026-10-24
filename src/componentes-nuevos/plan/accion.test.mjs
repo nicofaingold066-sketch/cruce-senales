@@ -1,7 +1,7 @@
 // Pruebas puras de la acción primaria del plan (S4). Correr con: node --test "src/componentes-nuevos/plan/*.test.mjs"
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { accionPrimaria, cuentaConfirmados, etapaDe, porQueNoConfirmo, textoRegla } from './accion.ts'
+import { accionPrimaria, cuentaConfirmados, etapaDe, porQueNoConfirmo, textoComoSalio, textoRegla } from './accion.ts'
 
 const nada = {
   abrir: false, marcar_interes: false, guardar_condiciones: false, evaluar: false, aceptar: false,
@@ -96,9 +96,19 @@ test('por qué no confirmo: una línea por causa, en el orden del servidor', () 
 test('cuenta de confirmados (#56) y regla del motor (E15)', () => {
   assert.equal(cuentaConfirmados(2, 4), '2 de 4')
   assert.equal(cuentaConfirmados(5, 4), '5 (mínimo 4)')
-  assert.equal(textoRegla('mas_si'), 'la opción que pueden más personas')
-  assert.equal(textoRegla('temprana'), 'la opción más temprana que alcanza el mínimo')
-  assert.equal(textoRegla(undefined), 'la opción más temprana que alcanza el mínimo')
+  assert.equal(textoRegla('mas_si', 4), 'la que pueden más personas')
+  assert.equal(textoRegla('temprana', 4), 'la fecha más temprana en la que llegan al mínimo (4)')
+  assert.equal(textoRegla(undefined, 3), 'la fecha más temprana en la que llegan al mínimo (3)')
+})
+
+test('cómo salió: cuántos respondieron solo con el dato del servidor (organiza); nunca quién', () => {
+  const base = { estado: 'esperando_compromisos', regla: 'temprana', minimo: 4, personas_con_condiciones: null, opcion: opcion(1), ultima_evaluacion: { resultado: 'opcion_publicada', version: 1 } }
+  assert.equal(textoComoSalio(base), 'Cómo salió: se eligió la fecha más temprana en la que llegan al mínimo (4).')
+  assert.equal(textoComoSalio({ ...base, personas_con_condiciones: 5 }), 'Cómo salió: 5 respondieron; se eligió la fecha más temprana en la que llegan al mínimo (4).')
+  assert.equal(textoComoSalio({ ...base, regla: 'mas_si', personas_con_condiciones: 1 }), 'Cómo salió: 1 respondió; se eligió la que pueden más personas.')
+  assert.match(textoComoSalio({ ...base, opcion: opcion(2), ultima_evaluacion: { resultado: 'reparacion_publicada', version: 2 } }), /después del cambio\.$/)
+  assert.equal(textoComoSalio({ ...base, estado: 'reuniendo_interes', opcion: null, ultima_evaluacion: null }), 'Cómo sale: cuando haya respuestas, se elige la fecha más temprana en la que llegan al mínimo (4).')
+  assert.equal(textoComoSalio({ ...base, estado: 'reuniendo_interes', opcion: null, personas_con_condiciones: 3, ultima_evaluacion: { resultado: 'sin_opcion' } }), 'Cómo salió: 3 respondieron; con esas respuestas no hubo una fecha posible.')
 })
 
 test('etapas: el grupo confirmado espera el encuentro (no se marca hecho lo que no pasó)', () => {

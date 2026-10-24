@@ -107,3 +107,7 @@ Decisiones (ux-flujo, S4):
 8. El `Cruce` de la escena se queda, más chico (máx. 200 px de alto en el teléfono) y con textos de 13 px.
 
 Rótulos que cambian (con su guion): ninguno de la lista de §2 cambia de texto. Lo que se va: el encabezado «Respuestas del grupo», «Historial resumido», «Alternativa», «Buscar opción», «Borrador», y el botón «Ir a Mi respuesta» del bloque de respuestas (ahora la acción es «Responder en un toque»). Este último lo usa `tests/e2e/convencer-uno.mjs:202` (qa-noche, aviso en la ficha).
+
+## 7. Entrega 2 (sáb 24, 03:20): pantalla 5 del mockup validado
+
+Sobre `wip/diseno` `dd61eeb`. La escena oscura es el resultado (`componentes-nuevos/plan/Resultado.tsx`, el cruce sale de `plan/escena.ts`); la hoja = «Cómo se armó» + filas (`plan/FilasPlan.tsx`) + ficha plegada con quién confirmó (`plan/FichaPlan.tsx`). Se fueron `Quienes.tsx` y `MoverPlan.tsx`. «Ir a Mi respuesta» vuelve (junto a «Responder en un toque»), así que `convencer-uno.mjs` no necesita su plan B. Decisiones en `docs/rediseno/decisiones.md` (S4, 03:20). Capturas nuevas en `capturas/s4/`.

@@ -9,6 +9,7 @@ import type { PropuestaViva } from '../../lib/hooks'
 import type { EstadoPropuesta } from '../../lib/types'
 import PlanTab from '../../screens/PlanTab'
 import { Resultado } from '../plan/Resultado'
+import { escenaDe } from '../plan/escena'
 import { CASOS_S4, SERVIDOR_AHORA, espacioDe } from './estados-s4'
 import type { CasoS4 } from './estados-s4'
 
@@ -29,19 +30,17 @@ function vivaDe(p: EstadoPropuesta): PropuestaViva {
 function Caso({ c, solo }: { c: CasoS4; solo: boolean }) {
   const espacio = espacioDe(c.yo, c.demo ?? false)
   const quien = `${c.yo.nombre}${c.p.mi_situacion.es_organizador ? ' (organiza)' : ''}`
+  const cruce = escenaDe(c.p, espacio)
   return (
     <section className="galeria-caso" aria-labelledby={`caso-${c.id}`} data-caso={c.id} style={solo ? undefined : { marginBottom: 48 }}>
-      <div className="vista">
-        <section className="escena" data-tono={c.p.estado === 'grupo_confirmado' ? 'ok' : c.p.estado === 'en_revision' ? 'revision' : 'vivo'}>
-          <span className="escena-eyebrow">{solo ? 'S4 · datos ficticios' : c.titulo}</span>
-          <h1 id={`caso-${c.id}`}>{c.p.titulo}</h1>
-          <p className="escena-sub">
-            {c.p.estado_etiqueta}
-            {c.p.opcion ? ` · versión ${c.p.opcion.version}` : ''} · mira {quien}
-          </p>
+      <div className="vista vista-plan">
+        <section className="escena resultado-escena" data-tono={cruce.tono}>
+          <div className="resultado-arriba">
+            <span className="escena-volver">{solo ? `‹ ${espacio.nombre}` : `${c.titulo} · mira ${quien}`}</span>
+          </div>
+          <Resultado p={c.p} viva={vivaDe(c.p)} soloLectura={false} espacio={espacio} activa="plan" irAPestana={() => {}} cruce={cruce} />
         </section>
         <div className="hoja">
-          <Resultado p={c.p} viva={vivaDe(c.p)} soloLectura={false} espacio={espacio} activa="plan" irAPestana={() => {}} />
           <div className="pestanas">
             <div className="pestanas-carril" role="tablist" aria-label="Secciones de la propuesta">
               {['Plan', 'Mi respuesta', 'Historial', ...(c.p.mi_situacion.es_organizador_espacio && c.demo ? ['Simulación'] : [])].map((t, i) => (

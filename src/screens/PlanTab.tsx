@@ -1,18 +1,18 @@
-// Pestaña Plan (S4, rediseño). El resultado y la acción viven arriba de las pestañas (`Resultado`); acá va lo que
-// explica y acompaña: cómo se armó, quiénes, la ficha plegada y, para quien organiza, mover el plan.
+// Pestaña Plan (S4, rediseño; pantalla 5 del mockup). El resultado y la acción viven en la escena (`Resultado`); acá va lo
+// que explica y acompaña: cómo se armó, las filas (tu respuesta, así no puedo, avisar, mapa, cambios), la ficha plegada
+// con quién confirmó y, al final y chico, no voy y cancelar.
 import type { PestanaProps } from './tabs'
 import { ComoSeArmo } from '../componentes-nuevos/plan/ComoSeArmo'
 import { FichaPlan } from '../componentes-nuevos/plan/FichaPlan'
-import { MoverPlan } from '../componentes-nuevos/plan/MoverPlan'
-import { Quienes } from '../componentes-nuevos/plan/Quienes'
+import { FilasPlan } from '../componentes-nuevos/plan/FilasPlan'
 
-export default function PlanTab({ p, viva, soloLectura, espacio }: PestanaProps) {
+export default function PlanTab({ p, viva, soloLectura, espacio, irAPestana }: PestanaProps) {
   return (
     <div className="plan-tab">
       <ComoSeArmo p={p} espacio={espacio ?? null} />
-      <Quienes p={p} />
-      <FichaPlan p={p} viva={viva} />
-      <MoverPlan p={p} viva={viva} soloLectura={soloLectura} codigo={espacio?.codigo_invitacion ?? null} />
+      <FilasPlan p={p} viva={viva} soloLectura={soloLectura} espacio={espacio ?? null} irAPestana={irAPestana}>
+        <FichaPlan p={p} viva={viva} />
+      </FilasPlan>
     </div>
   )
 }
