@@ -3,7 +3,6 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, archivos NUEVOS en `src/friccion/**`.
 
 ## Tocando ahora
-- CORRIENDO PRUEBA (23:54): e2e en serie (friccion toques) contra https://cruce-senales.vercel.app
 - [21:57] (nada en edición) `wip/friccion` = `23ea4d9` lista para integrar. Contra la base: espero turno (una corrida a la vez, con mi marca); cuando backend publique la enmienda 14 en la base, pruebo el selector de punta a punta.
 ## Entregado
 - [23:07] **Parche listo para conectar el selector de propósito** (no toqué `CrearGrupo.tsx`, es de front-juan): armado y probado en una rama descartable sobre `wip/fundamentos` + mi rama (typecheck y build en verde), guardado como `/Users/macair/Library/Application Support/Claude/side-session-notes/local_98e4e650-1136-4e42-8cf2-6108e6bb3e43/parche-crear-grupo-proposito.patch` (7 líneas agregadas, 2 cambiadas, solo `src/screens/CrearGrupo.tsx`: import de `CampoProposito` y del tipo, estado `proposito = 'libre'`, el campo bajo `CampoQuienViene`, el quinto argumento de `api.createSpace` y el propósito en la huella del intento). Con 'libre' no se manda `p_proposito` (api.ts lo omite), así que no cambia nada para los guiones.
