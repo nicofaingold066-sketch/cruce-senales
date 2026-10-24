@@ -5,10 +5,7 @@ Pedido directo de Nico en Codex (24 oct): integrar el personaje aprobado, llamad
 Rama propia `codex/gru-vivo`, copia aislada `/Users/macair/cruse/cruce-gru`, base `origin/main` `7f47a88`.
 
 ## Tocando ahora
-- Publicación autorizada directamente por Nico: «publicá esta versión con GRU y el formulario nuevo así lo probamos en la app».
-- Integrar la rama aprobada con el main vigente, verificar TypeScript/build y publicar por Git a producción; sin cambios de backend, migraciones ni modelos. Esta autorización nueva incluye la publicación por encima de la restricción anterior de no publicar desde esta sesión.
-- Verificación de la app publicada con datos ficticios y Auth/RPC/modelos interceptados. Cero pruebas contra la base.
-- Vercel MCP corresponde a otra cuenta/equipo (sin proyecto cruce); se utiliza el despliegue Git existente del repo y se verifican URL/recursos reales de producción.
+Nada. Implementación y publicación terminadas.
 
 ## Verificación
 Typecheck, build y navegador local con fixtures ficticios y red externa interceptada. Comprobar navegación, estados de éxito/error/sin opción, teclado, movimiento reducido, móvil 320/375 y escritorio 1280. Cero consultas pagas o escrituras en la base.
@@ -24,7 +21,7 @@ Validación observada: TypeScript, build Vite y diff --check pasan. QA local con
 
 Límite: continuidad solo en memoria (una recarga descarta borrador). Defecto ajeno detectado en el encabezado existente a 375: `.barra-rol` organizador desborda 8 px con Ayuda. Verificado removiendo GRU del DOM: scrollWidth 383→383; evidencia `overflow-diagnostic.json`. No se modificó el encabezado ajeno.
 
-Intento de PR draft hacia wip/fundamentos rechazado por conector GitHub: HTTP403 Resource not accessible by integration. Ningún PR fue creado. Rama remota sí subida y disponible para integrar; no main ni despliegue desde esta sesión.
+Intento previo de PR draft hacia wip/fundamentos rechazado por conector GitHub: HTTP403 Resource not accessible by integration. Ningún PR fue creado. Posteriormente Nico autorizó la publicación directa, completada como se registra abajo.
 
 ## Ampliación del formulario (pedido directo de Nico)
 Entregada en `codex/gru-vivo` **`3cb0c07`** (incluye todo GRU): `src/agente/AgentePanel.tsx` (solo presentación de MisPreferencias/Opciones) y nuevo `src/agente/gru-preferencias.css`. Secciones con títulos/íconos, privacidad explícita, tarjetas de selección con controles nativos visibles, distribución adaptable, extras plegables y resumen en chips. Cancelar corregido localmente para contraste: 6,91:1 claro / 9,48:1 oscuro. No cambió estado, API, validación ni permisos.
@@ -32,4 +29,13 @@ Entregada en `codex/gru-vivo` **`3cb0c07`** (incluye todo GRU): `src/agente/Agen
 QA final: TypeScript/build/diffcheck pasan. Flujo de preferencias con transporte completamente ficticio: preferencias vacías, guardar sin actividad y foco, selección, payload exacto con opcionales/permisos, espera de respuesta sin fingir guardado, confirmación del servidor/resumen, editar/cancelar e invitaciones por RPC independiente. Cero llamadas reales/errores JS. Capturas 320/375/1280, claro y oscuro; formulario sin desbordes nuevos. Evidencia en la misma carpeta: `prefs-final-375-light-viewport.png`, `prefs-final-1280-light-viewport.png`, `prefs-final-375-dark-viewport.png`, `prefs-visual-final.json` y scripts/reportes prefs.
 
 ## Pedidos
-Coordinador: integrar `codex/gru-vivo` **`3cb0c07`** y publicar mediante el flujo habitual. Frontend/intro: revisar el desborde preexistente del rol en encabezado375 con Ayuda. Rutas App/main/Intro/Guia/vida excluidas del diff de GRU.
+Integración/publicación resueltas por autorización directa de Nico. Frontend/intro: revisar el desborde preexistente del rol en encabezado375 con Ayuda. Rutas App/main/Intro/Guia/vida excluidas del diff de GRU.
+
+## Publicación completada (24 oct)
+Autorización directa de Nico: «publicá esta versión con GRU y el formulario nuevo así lo probamos en la app». Esta instrucción nueva autorizó integrar y publicar desde esta sesión.
+
+Se integró el main vigente `09a5595c8984ccaac101c17b51fedb0610f11ed9` en la rama aprobada (GRU y formulario hasta `3cb0c07`), conservando los cambios recientes de Intro/App. Commit resultante **`07f037c1725f4b69c1abea7260306aee98c7917c`**, subido a `codex/gru-vivo` y a `main` mediante avance normal, sin force push. TypeScript, build Vite y diff --check pasan tras la integración. Checkout limpio.
+
+El conector Vercel corresponde a otra cuenta/equipo; se utilizó el despliegue Git ya configurado. GitHub reportó contexto Vercel **success** para este commit: https://vercel.com/nicofaingold066-sketchs-projects/cruce-senales/73wtP8iUV2Eg8VCeBzqs9kZo7fWe . Alias público https://cruce-senales.vercel.app devuelve HTTP200 y sirve `index-CMAR1AFt.js`.
+
+Prueba del frontend publicado en 375 y 1280: mini transparente, click abre GRU solo grande, formulario nuevo `.gru-prefs-form`, selección nativa de actividades/presupuesto, cancelar restaura y Perfil recupera mini. Ambos recorridos pasan, cero errores JS. Auth/RPC/modelos interceptados antes de navegar con datos ficticios (12 solicitudes simuladas por viewport); cero llamadas reales a base/modelos, cero escrituras. Sin cambios backend ni migraciones. Evidencia: `gru-app-qa/produccion-report.json`, `produccion-gru-375.png`, `produccion-preferencias-375.png` y equivalentes 1280 en la carpeta de artefactos indicada arriba.
