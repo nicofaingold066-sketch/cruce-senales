@@ -63,7 +63,16 @@ function usePropuestaPorResponder(espacioId: string, propuestaId?: string) {
     const abiertas = mias.filter((x) => x.estado === 'reuniendo_interes')
     // Enmienda 13: con "así no puedo" marcado en la versión vigente, también se vuelve a responder en un toque.
     const esperando = mias.filter((x) => x.estado === 'esperando_compromisos')
-    const candidata = abiertas.length === 1 ? abiertas[0] : abiertas.length === 0 && esperando.length === 1 ? esperando[0] : null
+    // "Cambiar ›" desde un plan EN REVISIÓN: el servidor permite guardar condiciones (la reparación las usa).
+    const enRevision = propuestaId ? mias.filter((x) => x.estado === 'en_revision') : []
+    const candidata =
+      abiertas.length === 1
+        ? abiertas[0]
+        : abiertas.length === 0 && esperando.length === 1
+          ? esperando[0]
+          : abiertas.length === 0 && esperando.length === 0 && enRevision.length === 1
+            ? enRevision[0]
+            : null
     const sinNada = propuestaId ? (vivas.find((x) => x.id === propuestaId) ?? null) : vivas.length === 1 ? vivas[0] : null
     if (!candidata) return salir(sinNada)
     const e = await api.getProposalState(candidata.id)
@@ -73,7 +82,7 @@ function usePropuestaPorResponder(espacioId: string, propuestaId?: string) {
     const s = p.mi_situacion
     const reabierta = p.estado === 'esperando_compromisos' && miOpinion(s) === 'asi_no_puedo'
     // Sin propuesta pedida, solo se ofrece lo que falta; con una pedida ("Cambiar ›" en el plan) se puede volver a responder.
-    const corresponde = propuestaId ? p.estado === 'reuniendo_interes' || reabierta : p.estado === 'reuniendo_interes' ? s.condiciones !== 'completas' : reabierta
+    const corresponde = propuestaId ? p.estado === 'reuniendo_interes' || p.estado === 'en_revision' || reabierta : p.estado === 'reuniendo_interes' ? s.condiciones !== 'completas' : reabierta
     if (!s.puede.guardar_condiciones || !corresponde) return salir(candidata)
     const espacio = esp.data.espacio
     const yo = espacio.miembros.find((m) => m.es_yo)?.nombre ?? s.nombre
