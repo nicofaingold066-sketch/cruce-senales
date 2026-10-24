@@ -10,12 +10,15 @@ Dueña: sesión `qa-noche` (rama `wip/qa`). Las horas son del reloj de Santiago.
 | `red-controlada.mjs` | N1–N8, F1, F1b con red interceptada (10) | no | `node tests/e2e/red-controlada.mjs <url>` |
 | `sesiones-recuperacion.mjs` | S1–S9 y L1–L3 (12): sesión guardada, volver, identidad conservada; Auth ficticio | no | `node tests/e2e/sesiones-recuperacion.mjs` (levanta su propio Vite) |
 
-Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/backend.md` dice `MIGRACION EN CURSO` o `PRUEBA DE CARGA EN CURSO`; la guardia común está en `tests/e2e/base-libre.mjs`. Una falla 57014 o de tiempo se reintenta antes de concluir.
+Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/backend.md` dice `MIGRACION EN CURSO` o `PRUEBA DE CARGA EN CURSO`; la guardia común está en `tests/e2e/base-libre.mjs`. Una falla 57014 o de tiempo se reintenta antes de concluir. Desde las 21:16 (aviso del coordinador: Nico probando producción; parones de ~7 s con pruebas en paralelo) toda corrida contra la base va de a UNA en todo el equipo, con la marca «CORRIENDO PRUEBA (hh:mm)» en la ficha: para eso está `turno-base.sh`.
 | `toques-invitacion.mjs` | Toques del enlace de invitación a la primera respuesta, 375 px (de friccion) | sí | `node tests/e2e/toques-invitacion.mjs <url> <etiqueta>` |
 | `red-import-cortada.mjs` | #82: corte de red al importar una pantalla (reintento `?r=1`, barrera «Recargar», precarga) | sí (caso C) | `node tests/e2e/red-import-cortada.mjs <url>` |
 | `friccion-flujo.mjs` | #88, #90 (demo) y volver con el mismo enlace, de friccion (85 líneas) | sí | `node tests/e2e/friccion-flujo.mjs <url>` |
 | `convencer-uno.mjs` | #98 de ux-flujo: organizador + 5 invitados por enlace, toques y pantallas por persona (6 sesiones por corrida) | sí | `node tests/e2e/convencer-uno.mjs <url>` |
 | `guardia-palabras.mjs` | P-A de psico (§8.7) + regla D2 (género y pareja de una persona no se piden ni se muestran): ninguna palabra de la lista (vegetariano, celíaco, «pareja de», novio/a, hombres, mujeres, chicos, chicas, «otra vez en casa»…) en copia visible de `src/` ni `supabase/functions/agente/` (sin pruebas, comentarios, catálogo ni listas de prohibidas) | no | `node tests/e2e/guardia-palabras.mjs [raíz de otra copia]` (sale 1 si hay hallazgos) |
+| `plan-b-un-aparato.mjs` | Guion de la demo §8 (5), de apertura: una sola sesión (Tomi) recorre el caso con Simulación; informa si el caso carga a Luna, v1 sábado con 4, quiénes aceptan, baja de Caro, v2 domingo y segundos totales | sí | `node tests/e2e/plan-b-un-aparato.mjs <url>` |
+| `demo-reinicio-luna.mjs` | Guion de la demo §8 (4), de apertura: Luna reclamada sigue reclamada tras «Reiniciar demo» (sesión nueva no puede elegirla; la misma sesión sigue en un toque y responde) | sí | `node tests/e2e/demo-reinicio-luna.mjs <url>` |
+| `turno-base.sh` | Envoltorio de la regla 21:16: espera a que ninguna ficha diga MIGRACION / PRUEBA DE CARGA / CORRIENDO PRUEBA, marca «CORRIENDO PRUEBA (hh:mm)» en mi ficha, corre UNA prueba y quita la marca | — | `tests/e2e/turno-base.sh "<qué>" <comando…>` |
 | `preparar-grupo.mjs` | Ayudante: crea grupo ficticio (Orga, Ana, Beto) y propuesta abierta | sí | lo llaman los dos anteriores |
 
 ## Cambios en los guiones
@@ -63,6 +66,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 21:08 | sintaxis y tipos de los guiones nuevos (`node --check`, `tsc -p tsconfig.node.json`) | — | ok; E13 sin correr contra la base hasta que backend aplique 0042–0044 |
 | 21:12 | `wip/friccion` fc66c0b (E13 (a) «Así no puedo, pero sigo» y D3 «¿Quién viene?»): typecheck, build, red 10/10, sesiones-recuperación 12/12, guardia-palabras 0/0 (61 archivos). El selector «¿Quién viene?» es regla del grupo (Sin definir / Solo el grupo / Con parejas / Abierta), sin datos de personas: cumple D2 | localhost, sin base | verde; recorrido, jurado y friccion-flujo esperan la base |
 | 21:12 | `wip/ux` 603678e: typecheck, build, red 10/10, guardia-palabras 0/0 | localhost, sin base | verde; recorrido y jurado esperan la base |
+| 21:19 | guiones nuevos para apertura (`plan-b-un-aparato`, `demo-reinicio-luna`) y `turno-base.sh` | — | solo sintaxis; corren de a uno contra producción cuando la base se libere (migración E13 desde 20:59) |
 
 ## Regresiones abiertas
 (ninguna)
