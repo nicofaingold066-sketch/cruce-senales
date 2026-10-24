@@ -5632,3 +5632,12 @@ li:has(> .plan-vivo) {
   background: var(--hoja);
   box-shadow: 0 0 0 1px var(--linea);
 }
+.barra-accion > .casilla-corta {
+  min-height: 44px;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 0.92rem;
+}
+.barra-accion > .casilla-corta input {
+  margin: 0;
+}
