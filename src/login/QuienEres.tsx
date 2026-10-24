@@ -15,6 +15,9 @@ import { leerPerfil, recordarNombreSiFalta, usePerfil } from '../lib/perfil'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { marcarConEspacios } from './estado'
+import { QueGuarda } from '../friccion/QueGuarda'
+import { FRASE_QUIEN_VIENE, quienVieneDe, sinQuienViene } from '../lib/compartir'
+import { destinoDesdeVista, destinoPorCodigo } from '../friccion/porCodigo'
 import './login.css'
 
 export interface MiembroPorReclamar {
@@ -50,7 +53,7 @@ function entrarAlEspacio(r: UnirseOk['resultado'], espacio: string, nombre: stri
   } else if (sesionGuardada) {
     dejarAviso(`Entraste como ${nombre}.${extra}`)
   } else {
-    dejarAviso(`Te uniste a «${espacio}» como ${nombre}. Cuando haya un plan, marca si te interesa y carga en privado cuándo puedes.`)
+    dejarAviso(`Te uniste a «${sinQuienViene(espacio)}» como ${nombre}. Cuando haya un plan, marca si te interesa y carga en privado cuándo puedes.`)
   }
   // #88: quien eligió su nombre de la lista va directo a responder la propuesta abierta (un toque). Si no hay una sola
   // propuesta por responder, esa pantalla lo deja en el espacio. Por el formulario se sigue entrando al espacio.
@@ -87,8 +90,8 @@ interface YaMiembro {
   nombreActual: string
 }
 
-/** Unirse (por la lista o por el formulario), con el cuidado de navegador compartido de la portada (#47). */
-function useUnirse(fuente: FuenteEntrada) {
+/** Unirse (por la lista o por el formulario), con el cuidado de navegador compartido de la portada (#47). Exportado para la portada. */
+export function useUnirse(fuente: FuenteEntrada) {
   const { ocupado, error, ejecutar } = useAccion()
   const [origen, setOrigen] = useState<Origen | null>(null)
   const [yaMiembro, setYaMiembro] = useState<YaMiembro | null>(null)
@@ -104,7 +107,8 @@ function useUnirse(fuente: FuenteEntrada) {
       setYaMiembro({ intento: i, espacioId: r.data.resultado.espacio_id, espacio: r.data.espacio.nombre, nombreActual: yo?.nombre ?? 'otra persona' })
       return
     }
-    entrarAlEspacio(r.data.resultado, r.data.espacio.nombre, i.nombre, i.miembroId != null, sesionGuardada)
+    // Por la lista se va directo a responder; por el formulario, al espacio (aunque reclame un lugar anotado por el nombre).
+    entrarAlEspacio(r.data.resultado, r.data.espacio.nombre, i.nombre, i.origen === 'lista', sesionGuardada)
   }
   return { ocupado, error, origen, yaMiembro, setYaMiembro, unirse }
 }
@@ -183,6 +187,9 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
   const [errorVista, setErrorVista] = useState<ApiError | null>(null)
   const [elegido, setElegido] = useState<MiembroPorReclamar | null>(null)
   const [yaEstoy, setYaEstoy] = useState<{ espacioId: string; miembroId: string } | null>(null)
+  // D3: la regla de quién viene va como marca al final del nombre; acá se muestra limpio y la regla aparte.
+  const nombreEspacio = vista ? sinQuienViene(vista.espacio.nombre) : ''
+  const reglaEspacio = vista ? quienVieneDe(vista.espacio.nombre) : null
   const u = useUnirse(fuente)
   const titulo = useRef<HTMLHeadingElement>(null)
   const campoNombre = useRef<HTMLInputElement>(null)
@@ -242,7 +249,8 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
           {vista ? '¿Quién eres?' : codigoMalo ? 'Esta invitación no existe' : 'Te invitaron a un plan'}
         </h1>
         {/* El nombre del espacio va fuera de los títulos: los guiones esperan el título del espacio para saber que ya se entró. */}
-        {vista ? <p className="quien-espacio">en «{vista.espacio.nombre}»</p> : null}
+        {vista ? <p className="quien-espacio">en «{nombreEspacio}»</p> : null}
+        {reglaEspacio ? <p className="quien-espacio quien-regla">{FRASE_QUIEN_VIENE[reglaEspacio]}</p> : null}
         <p className="escena-sub">
           {codigoMalo
             ? 'Revisa que el enlace esté completo o pide uno nuevo a quien organiza. También puedes escribir el código abajo.'
@@ -272,7 +280,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
           <section className="tarjeta entrada-opcion entrada-principal" aria-labelledby="quien-confirmar">
             <h2 id="quien-confirmar">¿Eres {elegido.nombre}?</h2>
             <p className="suave">
-              Este teléfono queda como {elegido.nombre} en «{vista.espacio.nombre}». Lo que marques después es privado.
+              Este teléfono queda como {elegido.nombre} en «{nombreEspacio}». Lo que marques después es privado.
             </p>
             <div className="entrada-botones">
               <Boton
@@ -341,7 +349,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
           </section>
         ) : null}
 
-        <UnirseConNombre codigoInicial={codigo} u={u} campoNombre={campoNombre} deshabilitado={soloLectura} demo={vista?.espacio.demo === true} />
+        <UnirseConNombre codigoInicial={codigo} u={u} campoNombre={campoNombre} deshabilitado={soloLectura} vista={vista} />
         <div className="privado" role="note">
           <span className="privado-icono" aria-hidden="true">
             <Icono n="candado" tam={20} />
@@ -351,26 +359,33 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
             <p>Tu sesión queda guardada en este teléfono. Lo que marques sobre cuándo puedes lo ve solo el servidor.</p>
           </div>
         </div>
+        <QueGuarda />
       </div>
     </div>
   )
 }
 
-/** "No estoy en la lista": el formulario de siempre (mismos nombres accesibles que la portada). */
-function UnirseConNombre({
+/**
+ * "No estoy en la lista": el formulario de siempre (mismos nombres accesibles que la portada). Coherente con el enlace:
+ * si el nombre escrito es el de un integrante anotado y libre de este grupo, reclama ese lugar (antes daba "nombre en
+ * uso"); con otro código, mira ese grupo y, si tiene nombres libres que no coinciden, lleva a su "¿Quién eres?".
+ * Exportado para que la portada (front-juan) use este mismo formulario con `vista={null}`.
+ */
+export function UnirseConNombre({
   codigoInicial,
   u,
   campoNombre,
   deshabilitado,
-  demo,
+  vista,
 }: {
   codigoInicial: string
   u: ReturnType<typeof useUnirse>
   campoNombre: React.RefObject<HTMLInputElement | null>
   deshabilitado: boolean
-  /** La ayuda de "reclamar a una persona simulada" solo tiene sentido en la demo (en un grupo real confunde). */
-  demo: boolean
+  /** La lista ya cargada de este grupo (null en la portada o mientras carga). */
+  vista: VistaPorCodigo | null
 }) {
+  const demo = vista?.espacio.demo === true
   const [codigo, setCodigo] = useState(codigoInicial)
   const [nombre, setNombre] = useState(() => leerPerfil()?.nombre ?? '')
   const perfil = usePerfil()
@@ -387,10 +402,33 @@ function UnirseConNombre({
     if (nombreMal) campoNombre.current?.focus()
   }, [error, nombreMal, campoNombre])
 
-  function hacer(e: FormEvent) {
+  const [mirando, setMirando] = useState(false)
+  async function hacer(e: FormEvent) {
     e.preventDefault()
-    if (faltan) return
-    void u.unirse({ codigo: codigo.trim(), nombre: nombre.trim(), miembroId: null, origen: 'formulario' })
+    if (faltan || mirando) return
+    const cod = codigo.trim()
+    const nom = nombre.trim()
+    let miembroId: string | null = null
+    let nombreFinal = nom
+    if (vista && cod.toUpperCase() === codigoInicial.toUpperCase()) {
+      // Mismo grupo. En la demo el servidor ya resuelve el nombre de una persona simulada; no se cambia esa llamada.
+      if (!demo) {
+        const d = destinoDesdeVista(vista, nom)
+        miembroId = d.miembroId
+        nombreFinal = d.nombre
+      }
+    } else {
+      setMirando(true)
+      const d = await destinoPorCodigo(cod, nom)
+      setMirando(false)
+      if (d.elegir) {
+        irA(rutas.unirse(cod))
+        return
+      }
+      miembroId = d.miembroId
+      nombreFinal = d.nombre
+    }
+    void u.unirse({ codigo: cod, nombre: nombreFinal, miembroId, origen: 'formulario' })
   }
 
   return (
@@ -421,7 +459,7 @@ function UnirseConNombre({
         />
         {demo ? <small>Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.</small> : null}
       </label>
-      <Boton type="submit" variante="secundario" ocupado={u.ocupado && u.origen === 'formulario'} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado}>
+      <Boton type="submit" variante="secundario" ocupado={(u.ocupado && u.origen === 'formulario') || mirando} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado}>
         Unirme
       </Boton>
       {error ? <ErrorCaja error={error} enfocar={!nombreMal} /> : null}
