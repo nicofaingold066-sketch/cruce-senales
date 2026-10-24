@@ -198,7 +198,7 @@ function MisPreferencias({ espacioId, soloLectura, primario }: { espacioId: stri
     setRecibirInicial(r.ok ? r.data.recibir_invitaciones_agente : null)
   }, [espacioId])
 
-  if (cargando) return <Cargando texto={reintentando ? AVISO_REINTENTO : 'Cargando tus preferencias…'} />
+  if (cargando) return <Cargando esqueleto texto={reintentando ? AVISO_REINTENTO : 'Cargando tus preferencias…'} />
   if (errorCarga) return <ErrorCaja error={errorCarga} onReintentar={() => void cargar()} />
 
   const poner = <K extends keyof Preferencias>(k: K, v: Preferencias[K]) => {
@@ -525,7 +525,7 @@ function BorradorTarjeta({
   }
 
   return (
-    <div className="agente-resultado sd-aparecer">
+    <div className="agente-resultado sd-aparecer sd-respira">
       <p className="agente-sobretitulo">
         {esLaDestacada ? 'Recomendado' : 'Elegido por ti'} · {total === 1 ? '1 opción' : `${total} opciones`}
       </p>
@@ -891,7 +891,7 @@ function AgenteTrabajando({ largo }: { largo: boolean }) {
   const [visibles, setVisibles] = useState(1)
   useEffect(() => {
     if (visibles >= PASOS_TRABAJO.length) return
-    const t = setTimeout(() => setVisibles((v) => v + 1), 1400)
+    const t = setTimeout(() => setVisibles((v) => v + 1), 600)
     return () => clearTimeout(t)
   }, [visibles])
   return (
