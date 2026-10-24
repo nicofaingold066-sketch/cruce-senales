@@ -4,7 +4,7 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- (nada; 00:38. La E15 quedó lista y apagada en `wip/frontend-e15`.)
+- [01:05] `src/styles.css` (rincones O-01 cabecera a 320 px y O-14b insignia de Simulación), en `wip/frontend`.
 
 ## Entregado
 - [00:44] `wip/frontend` = `3cca951` (igual a `wip/fundamentos` y `main`; todo lo mío ya está publicado). `wip/frontend-e15` = `f8e4840` (E15 apagada + `3cca951` fusionado; ahora compila sola porque el puente ya está en fundamentos): tsc OK, vitest puro 90/90, build 0. `InvitacionAgente` quedó montado debajo de mis avisos en PlanTab, como acordamos. La E15 sigue apagada hasta el aviso de 0052/0053.
