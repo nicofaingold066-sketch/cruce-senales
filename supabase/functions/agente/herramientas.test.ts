@@ -218,3 +218,11 @@ test('una respuesta del modelo sin la forma esperada → null, sin lanzar', asyn
   const sinContenido = async () => ({ stop_reason: 'tool_use' }) as unknown as RespuestaModelo
   assert.equal(await bucleHerramientas(base(sinContenido)), null)
 })
+
+test('dos elegir_plan en la misma vuelta: cada tool_use recibe su tool_result', async () => {
+  const mala = { ...ELIGE('inventada'), id: 't8' }
+  const g = guion([vuelta(uso('t1', 'buscar_planes', {})), vuelta(mala, { ...ELIGE('inventada'), id: 't7' }), vuelta(ELIGE())])
+  const r = await bucleHerramientas(base(g.llamar))
+  assert.ok(r)
+  assert.deepEqual((g.recibido[2][4].content as { tool_use_id: string }[]).map((x) => x.tool_use_id), ['t8', 't7'])
+})

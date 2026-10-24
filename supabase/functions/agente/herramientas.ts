@@ -211,7 +211,7 @@ export async function bucleHerramientas(opciones: {
     const usos = r.content.filter((b) => b.type === 'tool_use' && typeof b.name === 'string' && typeof b.id === 'string')
     if (usos.length === 0) return null
     const acciones = usos.filter((b) => b.name !== NOMBRE_ELEGIR)
-    const eleccion = usos.find((b) => b.name === NOMBRE_ELEGIR)
+    const [eleccion, ...otrasElecciones] = usos.filter((b) => b.name === NOMBRE_ELEGIR)
     usadas += acciones.length
     if (usadas > max) return null
     const resultados: unknown[] = []
@@ -251,6 +251,10 @@ export async function bucleHerramientas(opciones: {
           'salud, ánimo ni de quién falta, no digas que algo está confirmado o reservado, y respeta los largos máximos.'
       }
       resultados.push({ type: 'tool_result', tool_use_id: eleccion.id, content: JSON.stringify({ error: motivo }), is_error: true })
+    }
+    // Cada tool_use necesita su tool_result: una segunda elección en la misma vuelta no vale.
+    for (const otra of otrasElecciones) {
+      resultados.push({ type: 'tool_result', tool_use_id: otra.id, content: JSON.stringify({ error: 'Una sola elección por vez.' }), is_error: true })
     }
     // El turno del modelo vuelve tal cual (incluye sus bloques de pensamiento, que no se pueden tocar).
     mensajes.push({ role: 'assistant', content: r.content })
