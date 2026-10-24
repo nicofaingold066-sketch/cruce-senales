@@ -4,7 +4,7 @@ Producción: https://cruce-senales.vercel.app. Corridas A–D iniciales sobre `m
 Guiones en `tests/qa-gente/` (`node tests/qa-gente/<guion>.mjs [url]`; cada uno toma turno de base, corre ≤10 min y suelta). Registros de la tanda en `docs/qa/logs/`. Capturas en `docs/qa/capturas/`.
 Todo ficticio (grupos «Dúo/Trío/Veinte/Treinta… <hhmm>», nombres inventados), sin agente de IA, sin borrar nada, sin `service_role`. Los grupos creados quedan en la base (no se borran).
 
-**Resumen: 7 bloques, 150 verificaciones, 0 defectos graves. Un solo comportamiento contradice lo pedido (no hay tope de 20 en el grupo) y hay 5 hallazgos de gravedad media/baja.** Ningún 500, ningún `57014`, ningún sobrecupo, ninguna confirmación doble en las carreras.
+**Resumen: 7 bloques, 152 verificaciones, 0 defectos graves. Un solo comportamiento contradice lo pedido (no hay tope de 20 en el grupo) y hay 5 hallazgos de gravedad media/baja.** Ningún 500, ningún `57014`, ningún sobrecupo, ninguna confirmación doble en las carreras.
 
 ## Tabla de escenarios
 
