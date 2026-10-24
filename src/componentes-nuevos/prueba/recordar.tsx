@@ -6,6 +6,7 @@ import '../../styles.css'
 import { RecordarFaltan } from '../RecordarFaltan'
 import { AvisoParaMi } from '../AvisoParaMi'
 import { RearmarConLoNuevo } from '../RearmarConLoNuevo'
+import { BuscarLugar } from '../BuscarLugar'
 import type { PropuestaViva } from '../../lib/hooks'
 import type { EstadoPropuesta } from '../../lib/types'
 import type { DatosAvisoParaMi } from '../avisoPersonal'
@@ -42,6 +43,10 @@ function Banco() {
           p={{ estado: 'esperando_compromisos', imprescindible: vale, minimo: 4, mi_situacion: { ...yo({ miembro_id: 'm-ana', es_organizador: false, elegible_en_version: true }), mi_opinion: 'asi_no_puedo' } }}
           irARespuesta={() => {}}
         />
+        <section className="tarjeta">
+          <h2>Opción vigente</h2>
+          <BuscarLugar titulo="Pádel y algo después" demo={false} />
+        </section>
         <RearmarConLoNuevo p={propuestaFalsa(1, 2)} viva={vivaFalsa} codigo="ABCD1234" />
         <RearmarConLoNuevo p={propuestaFalsa(3, 2)} viva={vivaFalsa} codigo="ABCD1234" />
         <AvisoParaMi p={{ estado: 'grupo_confirmado', imprescindible: vale, mi_situacion: yo({ condiciones: 'completas', elegible_en_version: true }) }} />
