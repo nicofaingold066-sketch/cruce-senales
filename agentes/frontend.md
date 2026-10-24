@@ -4,7 +4,7 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- [12:04] Nada. Sesión frontend cerrada en el corte de las 12:00. Lo último mío (`4127cd0`, aire en la tarjeta de GRU) está en `wip/rediseno-s2` esperando que el coordinador lo integre; todo lo anterior está en `main`.
+- [12:34] Nada. Sesión frontend cerrada en el corte de las 12:00. Todo lo mío está en `main` (último: `4127cd0`, aire en la tarjeta de GRU). No corro pruebas contra la base (regla de Nico 12:30).
 
 ## Entregado
 - [11:58] `wip/rediseno-s2` = `4127cd0` (sobre `main` e1d7e19): tarjeta de GRU con más aire (padding 20/24, 16–18 px entre bloques, chips y cita con más line-height, 15 px mínimo en móvil), solo CSS en `seccion-s6.css`. tsc OK, vitest src 50/50. Sin capturas ni medición en la app real (Nico pidió subirlo ya). Pendiente de integrar.
