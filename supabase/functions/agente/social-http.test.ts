@@ -7,6 +7,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { atenderSocial } from './social-http.ts'
 import { crearModeloSocial } from './modelo-social.ts'
 import * as logica from './logica.ts'
+import * as herramientas from './herramientas.ts'
 import type { ClienteRpcSocial } from './puerto-social.ts'
 
 const ESP = '00000000-0000-4000-8000-000000000001'
@@ -103,6 +104,7 @@ function montar(source: string, cliente: ClienteRpcSocial, conClave = false) {
   let sdk = 0
   const sinImports = source.replace(/^import \{ createClient \} from .*$/m, '')
     .replace(/^import Anthropic from .*$/m, '').replace(/import \{[\s\S]*?\} from '\.\/logica\.ts'/, '')
+    .replace(/import \{[\s\S]*?\} from '\.\/herramientas\.ts'/, '')
     .replaceAll("await import('./social-http.ts')", 'depsSocial')
     .replaceAll("await import('./modelo-social.ts')", 'depsModelo')
   class SdkFicticio {
@@ -114,8 +116,8 @@ function montar(source: string, cliente: ClienteRpcSocial, conClave = false) {
   const entorno: Record<string, string> = { SUPABASE_URL: 'https://proyecto.invalid', SUPABASE_ANON_KEY: 'publica-ficticia',
     ...(conClave ? { AI_GATEWAY_API_KEY: 'valor-ficticio-de-prueba-no-es-credencial' } : {}) }
   const runtime = { env: { get: (nombre: string) => entorno[nombre] }, serve: (fn: typeof handler) => { handler = fn } }
-  new Function('createClient', 'Anthropic', 'Deno', 'depsSocial', 'depsModelo', ...Object.keys(logica), stripTypeScriptTypes(sinImports))(
-    () => cliente, SdkFicticio, runtime, { atenderSocial }, { crearModeloSocial }, ...Object.values(logica))
+  new Function('createClient', 'Anthropic', 'Deno', 'depsSocial', 'depsModelo', ...Object.keys(logica), ...Object.keys(herramientas), stripTypeScriptTypes(sinImports))(
+    () => cliente, SdkFicticio, runtime, { atenderSocial }, { crearModeloSocial }, ...Object.values(logica), ...Object.values(herramientas))
   return { pedir: (body: unknown, auth = true, signal?: AbortSignal) => handler(new Request('https://prueba.invalid/agente', {
     method: 'POST', headers: { 'Content-Type': 'application/json', ...(auth ? { Authorization: 'Bearer sesion-ficticia' } : {}) }, body: JSON.stringify(body), signal,
   })), get sdk() { return sdk } }

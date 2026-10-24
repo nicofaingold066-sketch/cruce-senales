@@ -295,12 +295,47 @@ Qué no mejoró (sigue abierto): H5 («Marcá al menos una» bloquea guardar pre
 Nuevo en esta corrida:
 - **H15 (media)**: en la enmienda 10 la zona solo tiene 8 comunas de Santiago y «Necesito que me lleven» es muy directo; ya anotado a agente-ia. Con 6 amigos y la regla de 4 personas, nunca aparece «Queda a menos de N minutos» en un grupo real de 6 donde no todos cargaron zona.
 
+## Enmienda 14, propósito del grupo (producción `d978cc1`, 23:45; guion `tests/sinteticos/proposito-grupo.mjs`; capturas en `capturas/2347/`)
+
+Grupo nuevo «Los del fútbol» (Teo organiza; Lalo, Maca y Rufi; Rufi nunca abre el enlace). El pedido de Nico: un grupo «para jugar fútbol» solo recibe propuestas de deporte.
+
+| Qué se comprobó | Qué pasó |
+|---|---|
+| Crear el grupo | El formulario pregunta «¿Para qué es este grupo?» (Libre por defecto: «Cualquiera del grupo puede proponer lo que quiera») y «¿Quién viene?» (Sin definir / Solo el grupo / Con parejas / Abierta). Teo lo hizo en 6 toques (nombres pegados, «Fútbol», «Solo el grupo», «Crear grupo»); al elegir dice «Las propuestas de este grupo serán de este tipo de plan (deporte)» y «En la invitación dirá: …» |
+| Nombre del grupo | Queda «Los del fútbol · solo el grupo» (la regla viaja en el nombre) |
+| «¿Quién eres?» de Lalo | «en «Los del fútbol» · **Esta vez es solo el grupo. Este grupo es para jugar fútbol.**» ✔ |
+| La invitación de WhatsApp (botón del espacio) | «Súmate a «Los del fútbol» en CRUXE… **Esta vez es solo el grupo.** Sin cuenta ni contraseña…»: lleva la regla pero **no dice «para jugar fútbol»** (H19, abajo) |
+| Atajos de «Nueva propuesta» | Solo **Fútbol, Pádel, Tenis, Básquet**: no se ofrece «Asado»; el servidor no necesita rechazar nada porque la interfaz no deja elegirlo (el rechazo «Este grupo se armó para otro tipo de plan…» no se pudo provocar desde la pantalla) |
+| «No puede faltar» | ✔ sin «anfitrión» (el parche 2 cambió el texto en el formulario y en el plan) |
+| Propuesta de deporte (Pádel, distinto del propósito puntual) | creada y abierta ✔ |
+| «Me gustaría» (las preferencias) | Lalo, Maca y Teo ven solo **Pádel, Fútbol, Tenis, Básquet** ✔ (así «me interesa más pádel» queda dentro del tipo de plan, sin votación) |
+| Voseo | «Cómo te mueves», «Hasta cuánto viajas», «Marca al menos una»: ya en tuteo ✔ (H5 en lo del voseo) |
+| El agente con 3 personas reales y fútbol pidiendo 10 | **Sin leer todavía**: mi guion tomó «El agente está buscando opciones para el grupo» como respuesta y cerró antes de que terminara (una llamada gastada). Ya espera hasta que desaparezca «El agente está pensando…»; se repite en la próxima tanda |
+
+- **H19 (baja, front-juan):** la invitación del botón del espacio no incluye «para jugar fútbol» aunque `textoInvitacion` ya acepta el propósito (`src/lib/compartir.ts`): `Espacio.tsx` lo llama solo con nombre y código. «¿Quién eres?» sí lo dice. Con el texto de la invitación en el chat de WhatsApp, quien lo recibe se entera de la regla pero no del propósito.
+- **H20 (baja, front-juan):** el espacio del organizador no recuerda para qué es el grupo ni la regla fuera del nombre: tras crearlo, la pantalla no dice «Este grupo es para jugar fútbol» (solo está el nombre con la marca). Nico pidió poder mostrarlo al jurado creando «Los del fútbol» en vivo; hoy el propósito se ve en «Nueva propuesta» (los atajos) y en «¿Quién eres?».
+
+## Qué mejoró con el parche 2 (producción `d978cc1`, 23:46–23:50)
+
+| Hallazgo | Estado hoy |
+|---|---|
+| **H9** «Anfitrión» en un plan de fútbol/asado | **RESUELTO**: «No puede faltar (Vale)», «Cupo reservado para Vale (no puede faltar) hasta que confirme. Libres para el resto: 5.»; el formulario también dice «No puede faltar» |
+| **H16** «Mi respuesta» manda al botón que está en Plan | **RESUELTO**: «Ir al plan» bajo la frase |
+| **H18** título de «Así no puedes, pero sigues» | **RESUELTO**: «Dijiste: así no puedo, pero sigo» |
+| **H1** Bruno fuera de la v1 | **MEJOR**: «Esta versión no te incluye · Se armó sin tu disponibilidad completa. Si la completas, cuenta si el plan se rearma. Ir a Mi respuesta» |
+| **H5** voseo de las preguntas nuevas | **RESUELTO el voseo** («Marca al menos una»); sigue exigiendo marcar una actividad para guardar presupuesto/techo |
+| Baja en el historial | «Una persona se retiró.» también en la comparación v1 → v2 ✔ |
+| **H6** «Ya hay 4 personas con condiciones» (cuenta a quien dijo No/No) | sigue (decisión de Nico: después de la demo) |
+| **H8** «Sábado 31 oct 20:00 → Sábado 31 oct 20:00» | sigue |
+| **H10** «hora de Santiago (America/Santiago)», **H12** «1 confirmaron», **H13** editor visible tras «No voy» | siguen |
+
 ## Corridas
 
 | Hora | Contra | Resultado |
 |---|---|---|
 | 19:28 | build `95def89` (parcial: el guion se cortó al confirmar Gonza; corrió durante MIGRACION EN CURSO) | descartada |
 | 19:40 | build `95def89`, base libre | completa; hallazgos H1–H14 |
+| 23:45–23:50 | **PRODUCCIÓN** `main` `d978cc1` (parche 2 de pantallas + enmienda 14 visible) | cuatro guiones completos, sin errores del guion y sin fugas: `proposito-grupo` (nuevo), `seis-amigos` (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6), `asi-no-puedo` (22/22 verdaderas y las dos «falsas» son lo esperado: nadie ve nombres) y `psico-perfiles`. La llamada del agente en `proposito-grupo` se leyó antes de que terminara de pensar (mi guion): pendiente repetirla |
 | 23:06–23:11 | **PRODUCCIÓN** `main` `8f27c5b` (enmienda 14 completa, 0048–0050) | las tres corridas completas, sin errores del guion y sin fugas: **`asi-no-puedo` ahora con los BOTONES** («Así no puedo, pero sigo» y «Rearmar con lo nuevo», sin RPC de respaldo; las 23 comprobaciones en orden, v2 el domingo, nadie ve quién), `seis-amigos` (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2) y `psico-perfiles` (Vale 4 toques para crear el grupo, el resto 3). El plan en revisión dice «La versión 1 ya no reúne lo necesario para juntarse» (neutro) pero la «Próxima acción» del servidor todavía dice «…el plan ya no cumple el mínimo o la presencia del anfitrión». **H16 y H18 todavía no están en producción** (`73ab15e` de friccion y el enlace de front-juan no se publicaron); H17 ya está en `preguntas-jurado` |
 | 22:17–22:20 | **PRODUCCIÓN** (con el parche de pantallas y la enmienda 13) | `psico-perfiles` completo (Vale 4 toques para crear el grupo, Dani/Ana/Beto/Flor 3 toques cada uno) y `seis-amigos` completo (Joaco 3, Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2). Sin fugas. **H14 resuelto**: la baja sale como «Una persona se retiró» |
 | 20:41 y 20:43 | build integrado local (+ apertura `0e03b8a`), base recién liberada tras la 0041 | 20:41: Renata no recibió «Respuesta guardada» en 20 s y vio «No se pudo cargar la lista del grupo: El servidor tarda en responder» (un tiempo del servidor justo después de la migración). 20:43: repetida, completa y sin fallas (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6). Un solo caso: no lo trato como defecto, pero si vuelve a verse en producción va a backend |

@@ -4,6 +4,7 @@
 import { execFileSync } from 'node:child_process'
 import { mkdirSync } from 'node:fs'
 import { createRequire } from 'node:module'
+import { fileURLToPath } from 'node:url'
 import { tmpdir } from 'node:os'
 import { baseLibre } from './base-libre.mjs'
 baseLibre()
@@ -12,7 +13,7 @@ let pw
 try { pw = require('playwright') } catch {
   pw = require(process.env.CRUXE_PLAYWRIGHT_DIR || '/Users/macair/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright')
 }
-const DIR = new URL('.', import.meta.url).pathname
+const DIR = fileURLToPath(new URL('.', import.meta.url))
 const BASE = process.argv[2] ?? 'http://localhost:4185', ETQ = process.argv[3] ?? 'antes'
 const caps = `${process.env.CRUXE_CAPTURAS || tmpdir()}/toques-${ETQ}`; mkdirSync(caps, { recursive: true })
 const g = JSON.parse(execFileSync('node', [`${DIR}preparar-grupo.mjs`], { encoding: 'utf8' }))

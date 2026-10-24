@@ -242,6 +242,8 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
 
   // rincones O-08: con un código que no existe, el título no invita a elegir un nombre.
   const codigoMalo = !vista && errorVista?.detalle === 'codigo_inexistente'
+  // front-juan P1: si ningún nombre está libre, la lista no tiene salida; se ve directo el campo de nombre.
+  const sinLibres = vista != null && vista.miembros.every((m) => !m.libre)
   const errorLista = u.origen === 'lista' ? u.error : null
   const yaLista = u.origen === 'lista' ? u.yaMiembro : null
   return (
@@ -249,7 +251,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
       <section className="escena escena-invitacion" aria-labelledby="quien-titulo">
         <span className="escena-eyebrow">Invitación a CRUXE</span>
         <h1 id="quien-titulo" ref={titulo} tabIndex={-1}>
-          {vista ? '¿Quién eres?' : codigoMalo ? 'Esta invitación no existe' : 'Te invitaron a un plan'}
+          {vista ? (sinLibres ? 'Escribe tu nombre para entrar' : '¿Quién eres?') : codigoMalo ? 'Esta invitación no existe' : 'Te invitaron a un plan'}
         </h1>
         {/* El nombre del espacio va fuera de los títulos: los guiones esperan el título del espacio para saber que ya se entró. */}
         {vista ? <p className="quien-espacio">en «{nombreEspacio}»</p> : null}
@@ -258,7 +260,9 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
         <p className="escena-sub">
           {codigoMalo
             ? 'Revisa que el enlace esté completo o pide uno nuevo a quien organiza. También puedes escribir el código abajo.'
-            : 'Elige tu nombre. Este teléfono quedará como esa persona; no pedimos correo ni contraseña.'}
+            : sinLibres
+              ? 'Los nombres de la lista ya entraron. Escribe el tuyo para sumarte al grupo; no pedimos correo ni contraseña.'
+              : 'Elige tu nombre. Este teléfono quedará como esa persona; no pedimos correo ni contraseña.'}
         </p>
       </section>
       <div className="hoja">
@@ -312,7 +316,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
           </section>
         ) : null}
 
-        {vista && !elegido ? (
+        {vista && !elegido && !sinLibres ? (
           <section aria-labelledby="quien-lista">
             <h2 id="quien-lista" className="entrada-subtitulo">
               Integrantes
@@ -339,7 +343,6 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
                 </li>
               ))}
             </ul>
-            {vista.miembros.every((m) => !m.libre) ? <p className="suave">Ya no queda ningún nombre libre en la lista.</p> : null}
             <button
               type="button"
               className="btn btn-secundario entrada-enlace"

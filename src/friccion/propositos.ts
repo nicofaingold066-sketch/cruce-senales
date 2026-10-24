@@ -43,8 +43,8 @@ export const ACTIVIDADES: { clave: ActividadClave; etiqueta: string; familia: Fa
   { clave: 'peli_casa', etiqueta: 'Película en casa', familia: 'en_casa' },
 ]
 
-/** Ajustes de la revisión (contrato E14, 8): `fiesta` no es candidata (no tiene domingo), no se ofrece como propósito concreto; `cultura` ya es la familia. */
-const NO_OFRECER = new Set(['fiesta', 'cultura'])
+/** Solo `cultura` no se repite: ya es la familia. `fiesta` SÍ se ofrece (pedido de Nico, 00:01): pendientes le da a `evento-sim-01` horario de domingo de noche y pasa a ser candidata del agente (antes, ajuste 8 del contrato E14, no se ofrecía porque no tenía domingo). */
+const NO_OFRECER = new Set(['cultura'])
 
 /** La frase de la invitación y de "¿Quién eres?": "para jugar fútbol". Falta una clave → sin frase (texto de siempre). */
 export const FRASE_PROPOSITO: Record<string, string> = {
@@ -55,6 +55,7 @@ export const FRASE_PROPOSITO: Record<string, string> = {
   asado: 'para hacer un asado',
   cena: 'para salir a cenar',
   cafe: 'para tomar un café o un brunch',
+  fiesta: 'para hacer una fiesta',
   bar: 'para ir a un bar',
   juegos_salida: 'para ir a bowling o a un escape room',
   cine: 'para ir al cine',
@@ -101,7 +102,7 @@ export interface GrupoProposito {
   opciones: OpcionProposito[]
 }
 
-/** Lo que ofrece el selector: "Libre" primero y, por familia, "Cualquier …" y sus actividades (sin fiesta; cultura ya es la familia). */
+/** Lo que ofrece el selector: "Libre" primero y, por familia, "Cualquier …" y sus actividades (cultura ya es la familia, no se repite). */
 export function opcionesProposito(): { libre: OpcionProposito; grupos: GrupoProposito[] } {
   return {
     libre: { valor: 'libre', etiqueta: 'Libre: cualquiera propone lo que quiera' },

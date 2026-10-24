@@ -286,6 +286,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
         {/* Agente del círculo (enmienda 4): plegado para no estorbar el recorrido de la demo. */}
         <details
           ref={agenteRef}
+          id="mis-preferencias"
           className="tarjeta plegable agente-plegable"
           open={agenteAbierto}
           onToggle={(e) => setAgenteAbierto(e.currentTarget.open)}

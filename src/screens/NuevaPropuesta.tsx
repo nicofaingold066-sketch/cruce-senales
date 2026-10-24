@@ -452,10 +452,17 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                       <span>
                         {m.nombre}
                         {m.simulado ? <span className="visualmente-oculto"> (Simulación)</span> : null}
+                        {m.pendiente ? <span className="chip-nota"> (por entrar)</span> : null}
                       </span>
                     </label>
                   ))}
                 </div>
+                {/* Enmienda 9: `pendiente` = lo anotó el organizador y todavía no entró con el enlace. */}
+                {imprescindible?.pendiente ? (
+                  <p className="suave nota-seccion" role="note">
+                    {imprescindible.nombre} todavía no entró con el enlace. Si no entra y marca cuándo puede, no va a haber opción.
+                  </p>
+                ) : null}
               </div>
             </fieldset>
 

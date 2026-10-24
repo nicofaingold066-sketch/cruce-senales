@@ -58,7 +58,8 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana, espacio }: P
       <InvitacionAgente situacion={p.mi_situacion} onResponder={() => irAPestana('respuesta')} />
 
       {p.estado === 'cancelado' || p.estado === 'expirado' ? (
-        <Aviso tono="aviso" titulo={p.estado_etiqueta}>
+        // O-09 (rincones): "Cancelado"/"Expirado" ya está en el encabezado del plan; el aviso no lo repite.
+        <Aviso tono="aviso">
           {p.siguiente_accion.texto}
         </Aviso>
       ) : null}
@@ -227,6 +228,8 @@ function OpcionVigente({
   const confirmado = p.estado === 'grupo_confirmado'
   const sobreMinimo = o.cupos.confirmados > o.cupos.minimo
   const cuenta = cuentaConfirmados(o.cupos.confirmados, o.cupos.minimo)
+  // #79 (sinteticos, ux-flujo): si arriba ya está "Tu confirmación solo vale si llegan N", no se apila otra nota bajo el botón.
+  const avisoArriba = avisoParaMi(p)?.clave === 'solo_vale_si_llegan'
 
   async function aceptar() {
     // Siempre se envía la versión que la persona está viendo, nunca una calculada.
@@ -259,7 +262,7 @@ function OpcionVigente({
         />
         <div className="progreso-leyenda" aria-hidden="true">
           <span>
-            <strong>{o.cupos.confirmados}</strong> confirmaron
+            <strong>{o.cupos.confirmados}</strong> {o.cupos.confirmados === 1 ? 'confirmó' : 'confirmaron'}
           </span>
           <span>
             mín. {o.cupos.minimo} · máx. {o.cupos.maximo} · {o.cupos.disponibles} {o.cupos.disponibles === 1 ? 'libre' : 'libres'}
@@ -289,7 +292,7 @@ function OpcionVigente({
         {/* Enmienda 7 (E7.2): solo el organizador recibe este conteo; con null no se muestra. */}
         {o.cupos.pendientes != null ? (
           <div className="cifra">
-            <dt>Faltan por responder</dt>
+            <dt>Faltan por confirmar</dt>
             <dd>
               <strong>{o.cupos.pendientes}</strong>
               <span className="visualmente-oculto"> {o.cupos.pendientes === 1 ? 'persona' : 'personas'}</span>
@@ -337,7 +340,7 @@ function OpcionVigente({
             <p role="status" className="suave">
               Enviando tu confirmación. Todavía no está confirmada hasta que el servidor responda.
             </p>
-          ) : (
+          ) : avisoArriba ? null : (
             <p className="suave">
               Tu confirmación vale solo para la versión {o.version}. Si el plan cambia, tendrás que confirmar de nuevo.
             </p>
@@ -395,7 +398,14 @@ function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
       </h2>
       {ant ? (
         <p className="cv-resumen">
-          {diaDe(ant.inicio.local)} {hora(ant.inicio.local)} → <strong>{diaDe(o.franja.inicio.local)} {hora(o.franja.inicio.local)}</strong>
+          {/* H8 (sinteticos): con la misma franja, "sáb 20:00 → sáb 20:00" parecía un error; lo que cambió es quién puede ir. */}
+          {ant.inicio.local === o.franja.inicio.local && ant.fin.local === o.franja.fin.local ? (
+            <>Misma fecha y hora; cambió quién puede ir.</>
+          ) : (
+            <>
+              {diaDe(ant.inicio.local)} {hora(ant.inicio.local)} → <strong>{diaDe(o.franja.inicio.local)} {hora(o.franja.inicio.local)}</strong>
+            </>
+          )}
         </p>
       ) : null}
       <div className="cv-grilla">
