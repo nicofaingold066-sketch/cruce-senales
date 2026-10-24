@@ -185,3 +185,11 @@
   padding: 0;
   cursor: pointer;
 }
+
+/* ---- nada por debajo de 13 px: iniciales del avatar en los chips de persona y "(por entrar)" */
+.vista-s3 .chip-persona .avatar {
+  font-size: var(--t-nota);
+}
+.vista-s3 .chip-nota {
+  font-size: var(--t-nota);
+}
