@@ -5,7 +5,9 @@ Pedido directo de Nico en Codex (24 oct): integrar el personaje aprobado, llamad
 Rama propia `codex/gru-vivo`, copia aislada `/Users/macair/cruse/cruce-gru`, base `origin/main` `7f47a88`.
 
 ## Tocando ahora
-Nada. Código entregado en rama propia; sin corridas contra la base.
+- Ampliación directa de Nico: formulario de la pestaña GRU más legible y estético acorde a la app.
+- `src/agente/AgentePanel.tsx`: solo presentación de preferencias (markup, íconos y clases); conservar estado, validaciones, permisos y llamadas.
+- Nuevo `src/agente/gru-preferencias.css`: estilo acotado al formulario y resumen de preferencias, adaptable y accesible.
 
 ## Verificación
 Typecheck, build y navegador local con fixtures ficticios y red externa interceptada. Comprobar navegación, estados de éxito/error/sin opción, teclado, movimiento reducido, móvil 320/375 y escritorio 1280. Cero consultas pagas o escrituras en la base.
