@@ -77,7 +77,10 @@ try {
   await elegir(B.p, g.codigo, 'Beto')
   await B.p.getByRole('heading', { name: '¿Cuándo puedes?' }).waitFor({ timeout: 20000 })
   ver('"Solo el …" dice qué día queda como No', (await B.p.getByText('queda como No', { exact: false }).count()) === 2)
-  ver('#90: en un grupo real no se ofrece la agenda ficticia', (await B.p.getByRole('button', { name: /Tomar de mi calendario/ }).count()) === 0)
+  // S5 exacto al mockup (friccion 03:10): la fila «Tomar de mi calendario (simulación)» va siempre en Opcional; lo que no
+  // puede pasar es que se ofrezca como calendario real.
+  { const agenda = B.p.getByRole('button', { name: /Tomar de mi calendario/ }); const n = await agenda.count()
+    ver('#90: en un grupo real la agenda, si aparece, se rotula simulación', n === 0 || /simulación/i.test(await agenda.first().innerText())) }
   await B.p.getByRole('button', { name: /^No puedo ninguno/ }).click()
   await respuestaGuardada(B.p)
   ver('"No puedo ninguno": no habla de confirmar ni ofrece "Me interesa"', (await B.p.getByText('la confirmas en el plan', { exact: false }).count()) === 0 && (await B.p.getByRole('button', { name: /^(Me interesa|Avisar que me interesa)/ }).count()) === 0)
@@ -92,7 +95,7 @@ try {
   const sug = L.p.locator('.rapida-sugerida')
   ver('#90: la agenda resalta una opción y NO guarda', (await sug.count()) === 1 && (await L.p.getByText('Guardado.', { exact: false }).count()) === 0, (await sug.innerText().catch(() => '')).replace(/\s+/g, ' '))
   await sug.click()
-  ver('#90: tocar la sugerida guarda', await L.p.getByText('Guardado. Solo tú ves estas condiciones.').waitFor({ timeout: 15000 }).then(() => true, () => false))
+  ver('#90: tocar la sugerida guarda', await respuestaGuardada(L.p).then(() => true, () => false))
   ver('#90: sin desborde a 375 px', !(await desborde(L.p)))
   await L.p.screenshot({ path: DIR + 'e2e-luna-guardado.png' })
   // 4. Sin propuesta: después de elegir el nombre, entra al grupo con el aviso.

@@ -65,7 +65,8 @@ async function crearGrupo(nombre, etiquetaProposito) {
   // se confirma con «Crear sin lista» / «Crear sin agregarlo». Si el aviso no aparece, se sigue (versiones anteriores).
   const sinLista = T.getByRole('button', { name: /^Crear sin (?:lista|agregarlo)$/ })
   if (await sinLista.waitFor({ timeout: 2500 }).then(() => true, () => false)) await sinLista.click()
-  await T.getByRole('heading', { name: nombre }).waitFor({ timeout: 25000 })
+  // S2 (mockup): tras crear el grupo la app va directo a «Nuevo plan» (la cabecera trae el nombre del grupo) o al grupo.
+  await T.getByRole('heading', { name: new RegExp(`^(${nombre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}|Nuevo plan)$`) }).first().waitFor({ timeout: 25000 })
   return { porDefecto, enviado: ultimo('create_space') }
 }
 
@@ -80,7 +81,8 @@ try {
   if (familia !== undefined) verificar('El grupo queda con familia deporte', familia === 'deporte', String(familia))
 
   // 2. Nueva propuesta: atajos de la familia.
-  await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Nuevo plan/ }).first().click()
+  // Si ya estamos en «Nuevo plan» (S2 lleva ahí al crear el grupo), no hay enlace que tocar.
+  if (!(await T.getByRole('group', { name: 'Atajos de actividad' }).isVisible().catch(() => false))) await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Nuevo plan/ }).first().click()
   await T.getByRole('group', { name: 'Atajos de actividad' }).waitFor({ timeout: 25000 })
   const a1 = await chips()
   verificar('Atajos del grupo de fútbol: hay al menos uno y NINGUNO es de comida (sin «Asado», «Cena», «Café»)', a1.length > 0 && !a1.some((t) => /asado|cena|caf[eé]|brunch/i.test(t)), a1.join(' · '))
@@ -99,7 +101,8 @@ try {
   // 3. Un grupo libre sigue ofreciendo de todo.
   const g2 = await crearGrupo('Los de siempre QA', null)
   verificar('Grupo sin elegir propósito: se manda libre (o no se manda) y el servidor responde ok', [undefined, 'libre'].includes(g2.enviado?.args?.p_proposito) && g2.enviado?.resp?.ok === true, `${g2.enviado?.args?.p_proposito ?? '(no se manda)'}`)
-  await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Nuevo plan/ }).first().click()
+  // Si ya estamos en «Nuevo plan» (S2 lleva ahí al crear el grupo), no hay enlace que tocar.
+  if (!(await T.getByRole('group', { name: 'Atajos de actividad' }).isVisible().catch(() => false))) await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Nuevo plan/ }).first().click()
   await T.getByRole('group', { name: 'Atajos de actividad' }).waitFor({ timeout: 25000 })
   const a2 = await chips()
   verificar('Grupo libre: ofrece más atajos que el de fútbol y de más de una familia', a2.length > a1.length, `${a2.length} vs ${a1.length}: ${a2.join(' · ')}`)

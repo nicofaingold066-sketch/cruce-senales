@@ -50,6 +50,11 @@ export async function irA(p, nombre, { espera = 500, timeout = 15000 } = {}) {
     }
     throw new Error(`irA: no encuentro «Historial» (ni plegado ni como pestaña) en ${p.url()}`)
   }
+  if (nombre === 'Simulación') {
+    // Ya abierta (la fila desaparece mientras se ve la Simulación): no hay nada que tocar.
+    const abierta = await primeroVisible([p.getByRole('button', { name: /^‹? ?Volver al plan$/ }), p.getByRole('heading', { name: /^Personas simuladas$/ })])
+    if (abierta) return
+  }
   const candidatos = nombre === 'Mi respuesta'
     ? [p.locator('a.fila[href*="/responder/"]'), p.getByRole('link', { name: /^Tu respuesta/ }), p.getByRole('tab', { name: exacto })]
     : nombre === 'Simulación'

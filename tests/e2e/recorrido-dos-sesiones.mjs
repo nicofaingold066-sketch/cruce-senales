@@ -160,8 +160,13 @@ try {
 
   // 3. Luna entra con el enlace en su ventana privada. La lista tiene que aparecer sola (F1, mejora #52).
   await L.goto(`${BASE}/#/unirse/${codigo}`)
-  await L.getByRole('textbox').nth(1).fill('Luna')
-  await tocar(L, 'Unirme')
+  // S1 (mockup, pantalla 10): en la demo «¿Quién eres?» lista los nombres y Luna entra en UN toque; si no hay lista, el
+  // formulario de siempre (nombre + «Unirme»/«Entrar»).
+  { const fila = L.getByRole('button', { name: 'Luna', exact: true })
+    if (await fila.waitFor({ timeout: 8000 }).then(() => true, () => false)) {
+      await fila.click()
+      const si = boton(L, 'Sí, soy Luna'); if (await si.isVisible({ timeout: 1500 }).catch(() => false)) await si.click()
+    } else { await L.getByRole('textbox').nth(1).fill('Luna'); await L.getByRole('button', { name: /^(Unirme|Entrar)$/ }).first().click() } }
   await L.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
   const t0 = Date.now()
   const listaSola = await L.getByText('Asado en casa de Tomi', { exact: false }).first().waitFor({ timeout: 4000 }).then(() => true, () => false)
