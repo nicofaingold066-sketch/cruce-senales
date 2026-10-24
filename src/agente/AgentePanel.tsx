@@ -506,14 +506,53 @@ function PerfilDelGrupo({ perfil }: { perfil: PerfilGrupo | null | undefined }) 
   )
 }
 
-function etiquetaOpcion(c: CandidataAgente): string {
-  return `${c.actividad_etiqueta} · ${c.lugar.nombre.replace(' (Simulación)', '')}`
+const DIA_CORTO = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+const MES_CORTO = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+
+/** "Sáb 31 oct · 14:00–17:00" desde la hora local de Santiago que manda el servidor (sin convertir zonas). */
+function franjaChip(inicio: string, fin: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}:\d{2})/.exec(inicio)
+  const n = /T(\d{2}:\d{2})/.exec(fin)
+  if (!m || !n) return franjaTexto(inicio, fin)
+  const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])))
+  return `${DIA_CORTO[d.getUTCDay()]} ${Number(m[3])} ${MES_CORTO[d.getUTCMonth()]} · ${m[4]}–${n[1]}`
+}
+
+const CLIMA_CHIP: Record<string, string> = { seco: 'Sol', lluvia: 'Lluvia', desconocido: 'Sin pronóstico' }
+
+/** Lo esencial de una opción en una fila de chips: cuándo, cuánto viaje, clima. */
+function DatosOpcion({ c, b }: { c: CandidataAgente; b: BorradorAgente }) {
+  const viaje = viajeDeOpcion(c, b)
+  const clima = CLIMA_CHIP[b.clima.sabado] ?? null
+  return (
+    <ul className="gru-datos" aria-label="Datos del plan">
+      {c.franjas.map((f, i) => (
+        <li key={i} className="gru-dato">
+          <Icono n="calendario" tam={16} />
+          {franjaChip(f.inicio, f.fin)}
+        </li>
+      ))}
+      {viaje ? (
+        <li className="gru-dato">
+          <Icono n="paseo" tam={16} />
+          {`≤ ${viaje.max_minutos} min para todos${viaje.estimado ? ' (estimado)' : ''}`}
+        </li>
+      ) : null}
+      {clima ? (
+        <li className="gru-dato">
+          <Icono n="reloj" tam={16} />
+          {b.clima.fuente === 'simulacion' ? `${clima} (simulación)` : clima}
+        </li>
+      ) : null}
+    </ul>
+  )
 }
 
 /**
- * El resultado del agente, como la pantalla 7 del mockup: tarjeta con borde grueso, "RECOMENDADO · N OPCIONES", el
- * título grande, fecha y viaje, el mensaje de la IA entre comillas con "Lo redactó la IA", un desplegable con lo que
- * hizo el agente y las otras opciones, el primario "Usar esta opción" y, chico, que el agente invite al grupo.
+ * El resultado del agente (pedido de Nico, 24 oct ~11:40: "que se vea mucho mejor cuál es la respuesta"). Una tarjeta
+ * con jerarquía: cabecera chica (PROPUESTA DE GRU + Recomendada), título grande, chips de datos duros, el mensaje como
+ * cita destacada, UN primario "Usar esta opción" y, debajo, secundarios discretos: invitar, las otras opciones y
+ * "Cómo lo armó". Lo técnico (por qué, pasos, a quiénes cuenta, clima, canchas, servicio) va plegado.
  */
 function BorradorTarjeta({
   espacioId,
@@ -532,7 +571,8 @@ function BorradorTarjeta({
   invitar: { disponible: boolean | null; abrir: () => void } | null
 }) {
   const [seleccion, setSeleccion] = useState(b.elegida_id)
-  const [verMas, setVerMas] = useState(false)
+  const [verOtras, setVerOtras] = useState(false)
+  const [verComo, setVerComo] = useState(false)
   const elegida = b.candidatas.find((c) => c.id === seleccion) ?? b.candidatas[0]
   const esLaDestacada = elegida.id === b.elegida_id
   // La explicación y el mensaje del modelo son de la opción que destacó; para otra, el texto fijo.
@@ -542,19 +582,11 @@ function BorradorTarjeta({
   const mensaje = esLaDestacada ? b.mensaje_al_grupo : mensajeFijo(elegida)
   const deModelo = esLaDestacada && b.explicacion_fuente === 'modelo'
   const canchas = enlacesCanchas(elegida.actividad, elegida.franjas[0])
-  // Enmienda 10: el viaje de la opción que está mirando el organizador (null con menos de 4 personas con zona).
-  const viaje = viajeDeOpcion(elegida, b)
-  const lugar = elegida.lugar.nombre.replace(' (Simulación)', '')
-  const total = b.candidatas.length
-  const otras = total - 1
+  const lugar = (c: CandidataAgente) => c.lugar.nombre.replace(' (Simulación)', '')
+  const otras = b.candidatas.filter((c) => c.id !== elegida.id)
   const nPasos = pasos?.length ?? 0
-  const partes = [
-    nPasos > 0 ? `Lo que hizo el agente (${nPasos} pasos)` : null,
-    otras > 0 ? (otras === 1 ? 'la otra opción' : `las otras ${otras} opciones`) : null,
-  ].filter((t): t is string => Boolean(t))
-  const desplegable = partes.length > 0 ? partes.join(' y ').replace(/^l/, 'L') : 'Por qué esta opción'
-  // E5: "N opciones para N personas" dice a quiénes cuenta.
-  const quienes = `${total > 1 ? `${total} opciones` : 'Opción'} para ${b.personas_consideradas} personas: cuenta a quienes cargaron preferencias y las habilitaron${
+  // E5: a quiénes cuenta "N opciones para N personas".
+  const quienes = `${b.candidatas.length > 1 ? `${b.candidatas.length} opciones` : 'Una opción'} para ${b.personas_consideradas} personas: cuenta a quienes cargaron preferencias y las habilitaron${
     personasGrupo && personasGrupo > b.personas_consideradas ? ` (${b.personas_consideradas} de ${personasGrupo} en el grupo)` : ''
   }.`
 
@@ -570,116 +602,119 @@ function BorradorTarjeta({
   }
 
   return (
-    <div className="agente-resultado sd-aparecer sd-respira">
-      <p className="agente-sobretitulo">
-        {esLaDestacada ? 'Recomendado' : 'Elegido por ti'} · {total === 1 ? '1 opción' : `${total} opciones`}
-      </p>
+    <article className="agente-resultado gru-card sd-aparecer sd-respira" aria-labelledby="gru-card-titulo">
+      <div className="gru-card-cabeza">
+        <span className="agente-sobretitulo">Propuesta de GRU</span>
+        <span className="gru-card-chips">
+          {esLaDestacada ? <Chip tono="ok">{b.eleccion_fuente === 'modelo' ? 'Recomendada' : 'Recomendada'}</Chip> : <Chip tono="info">Elegida por ti</Chip>}
+          <Chip>Borrador</Chip>
+        </span>
+      </div>
       {b.quorum ? <p className="suave agente-quorum">{textoQuorum(b.quorum)}</p> : null}
-      <p className="t-titulo agente-recomendada-nombre">
-        {elegida.actividad_etiqueta} en {lugar}
-        {elegida.lugar.simulado ? <> <RotuloSimulacion /></> : null}
-      </p>
-      <ul className="agente-franjas">
-        {elegida.franjas.map((f, i) => (
-          <li key={i}>{franjaTexto(f.inicio, f.fin)}</li>
-        ))}
-      </ul>
-      {viaje ? (
-        <p className="agente-viaje-linea">
-          <strong>Queda a menos de {viaje.max_minutos} minutos para todos{viaje.estimado ? ' (estimado)' : ''}.</strong>
-        </p>
-      ) : null}
-      <blockquote className="agente-cita">“{mensaje}”</blockquote>
-      <p className="suave">
-        {deModelo ? 'Lo redactó la IA, que solo vio opciones válidas, el clima y totales del grupo.' : 'Texto fijo, armado con reglas.'}
-      </p>
-      <Plegable id="agente-mas" titulo={desplegable} resumen="" abierto={verMas} onCambio={setVerMas}>
-        <p>
-          <strong>Por qué: </strong>
-          {explicacion}
-        </p>
-        {b.clima.fuente === 'simulacion' ? (
-          <p className="suave">
-            Clima de prueba <RotuloSimulacion />: {b.clima.resumen.replace('Simulación: ', '')} No es un pronóstico real.
-          </p>
-        ) : (
-          <p className="suave">
-            Clima: {b.clima.resumen}
-            {b.clima.fuente === 'open-meteo' ? (
-              <>
-                {' '}
-                (pronóstico de{' '}
-                <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">
-                  Open-Meteo
-                </a>
-                )
-              </>
-            ) : null}
-          </p>
-        )}
-        {nPasos > 0 ? (
-          <>
-            <h3 className="agente-subtitulo">Lo que hizo el agente</h3>
-            <PasosAgente pasos={pasos!} />
-          </>
-        ) : null}
-        <fieldset className="grupo agente-candidatas">
-          <legend>{quienes}</legend>
-          <div className="opciones">
-            {b.candidatas.map((c) => {
-              const id = `agente-opcion-${c.id}`
-              return (
-                <label key={c.id} htmlFor={id} className={`opcion-radio ${seleccion === c.id ? 'opcion-activa' : ''}`}>
-                  <input id={id} type="radio" name="agente-opcion" checked={seleccion === c.id} onChange={() => setSeleccion(c.id)} />
-                  {etiquetaOpcion(c)}
-                  {c.lugar.simulado ? <> <RotuloSimulacion /></> : null}
-                  {c.id === b.elegida_id ? (
-                    <span className="etiqueta etiqueta-destacada">
-                      {b.eleccion_fuente === 'modelo' ? 'Recomendada por el agente' : 'Recomendada'}
-                    </span>
-                  ) : null}
-                </label>
-              )
-            })}
-          </div>
-        </fieldset>
-        <PerfilDelGrupo perfil={b.perfil_grupo} />
-        {canchas.length > 0 ? (
-          <div className="bloque agente-canchas">
-            <p>
-              <strong>Dónde buscar canchas: </strong>
-              {elegida.lugar.simulado ? 'el club de esta opción es de simulación; ' : ''}
-              la disponibilidad se ve en cada sitio. CRUXE no reserva ni confirma.
-            </p>
-            <div className="fila-botones agente-compartir">
-              {canchas.map((e) => (
-                <a key={e.clave} className="btn btn-secundario btn-chico" href={e.url} target="_blank" rel="noopener noreferrer">
-                  {e.texto}
-                </a>
-              ))}
-            </div>
-            <small>Google Maps muestra lo que está cerca de quien toca el enlace: CRUXE no conoce la ubicación de nadie.</small>
-          </div>
-        ) : null}
-      </Plegable>
+      <div className="gru-card-titulo-fila">
+        <h3 id="gru-card-titulo" className="t-titulo agente-recomendada-nombre">
+          {elegida.actividad_etiqueta} en {lugar(elegida)}
+        </h3>
+        {elegida.lugar.simulado ? <RotuloSimulacion /> : null}
+      </div>
+      <DatosOpcion c={elegida} b={b} />
+      <figure className="gru-cita">
+        <blockquote>“{mensaje}”</blockquote>
+        <figcaption className="t-nota">{deModelo ? 'Lo redactó la IA' : 'Texto fijo, armado con reglas'}</figcaption>
+      </figure>
       <Boton onClick={usar} disabled={soloLectura}>
         Usar esta opción
       </Boton>
-      {invitar && !soloLectura ? (
-        invitar.disponible === false ? (
-          <p className="suave">Que el agente invite al grupo no está disponible ahora.</p>
-        ) : (
-          <>
-            <button type="button" className="agente-enlace agente-enlace-chico" onClick={invitar.abrir} disabled={invitar.disponible === null}>
-              o que el agente invite al grupo por mí (revisás y aprobás antes)
-            </button>
-            {invitar.disponible ? <p className="suave agente-estado-ok">Servicio disponible: puedes preparar el borrador social.</p> : null}
-          </>
-        )
-      ) : null}
-    </div>
+      <div className="gru-secundarios">
+        {invitar && !soloLectura && invitar.disponible !== false ? (
+          <button type="button" className="agente-enlace" onClick={invitar.abrir} disabled={invitar.disponible === null}>
+            Que GRU invite al grupo (revisás antes)
+          </button>
+        ) : null}
+        {otras.length > 0 ? (
+          <Plegable
+            id="gru-otras"
+            titulo={otras.length === 1 ? 'Ver la otra opción' : `Ver las otras ${otras.length} opciones`}
+            resumen=""
+            abierto={verOtras}
+            onCambio={setVerOtras}
+          >
+            <div className="gru-otras">
+              {otras.map((c) => (
+                <button key={c.id} type="button" className="gru-mini" onClick={() => setSeleccion(c.id)} aria-label={`Elegir ${c.actividad_etiqueta} en ${lugar(c)}`}>
+                  <span className="gru-mini-titulo">
+                    {c.actividad_etiqueta} en {lugar(c)}
+                  </span>
+                  <span className="gru-mini-fecha">{c.franjas[0] ? franjaChip(c.franjas[0].inicio, c.franjas[0].fin) : ''}</span>
+                  <span className="gru-mini-chips">
+                    {c.id === b.elegida_id ? <Chip tono="ok">Recomendada</Chip> : null}
+                    {c.lugar.simulado ? <RotuloSimulacion /> : null}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </Plegable>
+        ) : null}
+        <Plegable id="gru-como" titulo={nPasos > 0 ? `Cómo lo armó (${nPasos} pasos)` : 'Cómo lo armó'} resumen="" abierto={verComo} onCambio={setVerComo}>
+          <p>
+            <strong>Por qué: </strong>
+            {explicacion}
+          </p>
+          {nPasos > 0 ? <PasosAgente pasos={pasos!} /> : null}
+          <p className="suave">{quienes}</p>
+          <PerfilDelGrupo perfil={b.perfil_grupo} />
+          {b.clima.fuente === 'simulacion' ? (
+            <p className="suave">
+              Clima de prueba <RotuloSimulacion />: {b.clima.resumen.replace('Simulación: ', '')} No es un pronóstico real.
+            </p>
+          ) : (
+            <p className="suave">
+              Clima: {b.clima.resumen}
+              {b.clima.fuente === 'open-meteo' ? (
+                <>
+                  {' '}
+                  (pronóstico de{' '}
+                  <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">
+                    Open-Meteo
+                  </a>
+                  )
+                </>
+              ) : null}
+            </p>
+          )}
+          {deModelo ? <p className="suave">La IA solo vio opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.</p> : null}
+          {canchas.length > 0 ? (
+            <div className="bloque agente-canchas">
+              <p>
+                <strong>Dónde buscar canchas: </strong>
+                {elegida.lugar.simulado ? 'el club de esta opción es de simulación; ' : ''}
+                la disponibilidad se ve en cada sitio. CRUXE no reserva ni confirma.
+              </p>
+              <div className="fila-botones agente-compartir">
+                {canchas.map((e) => (
+                  <a key={e.clave} className="btn btn-secundario btn-chico" href={e.url} target="_blank" rel="noopener noreferrer">
+                    {e.texto}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : null}
+          {invitar && !soloLectura ? (
+            <p className="suave">
+              {invitar.disponible === false
+                ? 'Que GRU invite al grupo no está disponible ahora.'
+                : invitar.disponible
+                  ? 'Servicio disponible: puedes preparar el borrador social.'
+                  : 'Comprobando el servicio de invitaciones…'}
+            </p>
+          ) : null}
+        </Plegable>
+      </div>
+    </article>
   )
 }
+
+export { BorradorTarjeta }
 
 /**
  * Cuando aparece un error, lleva el foco al primer botón o enlace útil del aviso (mejora #35),
