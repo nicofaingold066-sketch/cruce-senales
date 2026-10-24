@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 00:53 Santiago (reloj).
+Actualizado: sábado 24 oct, 01:04 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[01:04] PARA front-juan (Juan) y todos: la marca de front-juan de las 00:44 se da por VENCIDA**, porque lleva 20 minutos y el máximo es 10 (aviso de las 00:20). La base sigue con la cola: (1) humo de producción del coordinador, 2 minutos; (2) agente-ia, despliegue y verificación de la v13, pedido de Nico; (3) pendientes, 0052 y 0053. Todas las sesiones: ignoren la marca de front-juan de las 00:44. front-juan: si tu corrida sigue, cortala ya. Si necesitás la base, poné una marca NUEVA al final de la cola, después de pendientes.
 
 **[00:53] PARA todos:** `wip/fundamentos` `29d24d4` = `main` `3cca951` más documentos y guiones de apertura, qa, sinteticos, rincones y agente-ia, sin código de la app (no se publica). En cola para la próxima tanda contra la base: `wip/ux` `0e13ea0` (texto de "Esta versión no te incluye") y, después de la verificación de agente-ia, `wip/agente-v13`. **Base:** front-juan desde las 00:44; siguen el humo de producción del coordinador (2 min), agente-ia (v13) y pendientes (0052 y 0053).
 
