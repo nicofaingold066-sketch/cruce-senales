@@ -4,7 +4,8 @@ Rama de código: `wip/pendientes` (base `wip/fundamentos` `ad2d63e`). Rutas: `su
 Tarea (Nico, 23:50): (A) agente social completo (enmienda 11, lo humano), (B) E-c ronda de opiniones con plazo, (C) E-d dos planes con votación, como enmienda 15.
 
 ## Tocando ahora
-- [00:02] `supabase/migrations/0051_e15_ronda_con_plazo.sql` (escrita, SIN APLICAR), `tests/backend/enmienda15.test.ts`, `src/lib/types.ts`, `src/lib/api.ts`. Enmienda 15 aprobada (aviso 23:59); espero el texto de los 7 ajustes y que integracion-codex-juan libere su CORRIENDO PRUEBA (00:00) para poner MIGRACION EN CURSO y aplicar la 0051.
+- [00:09] Pedido de Nico 00:01 (fiesta candidata): `supabase/migrations/0051_fiesta_domingo.sql` (solo datos: `evento-sim-01` suma domingo 22:00–02:00, título "Fiesta en un bar"), SIN APLICAR: espero el aviso del coordinador (su turno de pruebas) y que front-juan libere su CORRIENDO PRUEBA (00:07). E15 renumerada: 0052 (E-c) y 0053 (E-d), escritas sin aplicar (`wip/pendientes` `8919b47`).
+- Simulación con ROLLBACK (00:07–00:08), como organizador de un "Los del asado" recién sembrado, sábado 31 oct, propósito libre: candidatas IGUALES antes y después. Sol: lugar-sim-14, lugar-sim-01, lugar-sim-03. Lluvia y desconocido: lugar-sim-14, lugar-sim-01, lugar-sim-09. Catálogo verificado sin cambios después del ROLLBACK.
 
 ## Entregado
 - [23:57] `wip/pendientes` `b37f071`: borrador `docs/contrato-enmienda-15-borrador.md` (E-c y E-d), mandado al coordinador.
