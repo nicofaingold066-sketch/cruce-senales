@@ -3,6 +3,7 @@
 Quien edita este archivo: solo el coordinador. Última actualización: 10:57 (hora real).
 
 ## Tocando ahora
+- **MIGRACION EN CURSO (10:31)** 0058 demo Makana (archivo 20261024124500_demo_makana.sql de codex/demo-makana): aplico, corro tests/backend en serie, reversa lista en supabase/revertir/0058_demo_makana_revertir.sql (coordinador)
 - `docs/contrato*.md`, `AGENTS.md`, `CLAUDE.md`, `docs/tareas/**`, `docs/contexto-proyecto.md`
 - Rama `coordinacion` (tablero, mapa de dueños)
 
