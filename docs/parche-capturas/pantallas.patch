@@ -359,7 +359,7 @@ index 0ccec0e..9a209f7 100644
      </div>
    )
 diff --git a/src/screens/PlanTab.tsx b/src/screens/PlanTab.tsx
-index 284728e..4069a9e 100644
+index 284728e..8868d22 100644
 --- a/src/screens/PlanTab.tsx
 +++ b/src/screens/PlanTab.tsx
 @@ -10,8 +10,16 @@ import { Confeti } from '../components/Confeti'
@@ -430,14 +430,14 @@ index 284728e..4069a9e 100644
  
        {reuniendo ? <ReuniendoInteres p={p} irAPestana={irAPestana} /> : null}
  
++      <FaltaTuRespuesta p={p} espacioId={p.espacio_id} />
++
 +      {p.estado === 'reuniendo_interes' && organiza && codigo ? (
 +        <section className="tarjeta" aria-labelledby="avisar-faltan">
 +          <h2 id="avisar-faltan">Avisar al grupo</h2>
 +          <RecordarFaltan codigo={codigo} titulo={p.titulo} motivo="faltan" />
 +        </section>
 +      ) : null}
-+
-+      <FaltaTuRespuesta p={p} espacioId={p.espacio_id} />
 +
        {p.estado === 'reuniendo_interes' ? (
          <BuscarOpcion p={p} viva={viva} soloLectura={soloLectura} sinOpcion={sinOpcion} />

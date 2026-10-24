@@ -47,9 +47,12 @@ Lo que NO toca: rótulos que buscan los guiones de `tests/e2e/` (la lista fija d
 | `npx vite build` | verde | entre 21:20 y 21:21 |
 | `node tests/e2e/red-controlada.mjs` (sin base) | **10/10** | 21:16 |
 | `node --test "src/componentes-nuevos/*.test.mjs"` | 34/34 | entre 21:20 y 21:21 |
-| `recorrido-dos-sesiones.mjs` contra el build | PENDIENTE: backend con MIGRACION EN CURSO (enmienda 13) y regla de una corrida a la vez (21:16) | — |
-| `jurado-navegador.mjs` contra el build | PENDIENTE (misma razón) | — |
-| Capturas a 375 y 320 px de cada pantalla con las piezas | PENDIENTE (necesita la base) | — |
+| `recorrido-dos-sesiones.mjs` contra el build del parche | **23/23** (21:23 y de nuevo 21:33 con el parche final) | 21:33-21:34 |
+| `jurado-navegador.mjs` contra el build | **4/4**, 174 RPC, privacidad sin hallazgos (21:25 y 21:35) | 21:34-21:35 |
+| Capturas con comprobaciones (3 sesiones) | **16/16**, 24 imágenes a 375 y 320 px en `docs/parche-capturas/` | 21:32-21:33 |
+| Enmienda 13 de punta a punta (6 sesiones, con `api.opinarVersion` de backend `4022f62`): 5 invitados en 4 toques, 2 "así no puedo" con el botón real de friccion, el organizador ve "Algunos no pueden así" sin nombres, "Rearmar con lo nuevo", versión 2 sin confirmaciones heredadas, baja de una persona que los demás ven como "Una persona se bajó" | **26/26** | 21:30-21:32 |
+
+Base de la prueba: `wip/fundamentos` + `wip/friccion` (`1623ee8`, que arregla un typecheck que rompían los tipos nuevos de backend) + `wip/apertura` + `wip/ux` + `wip/backend` (`4022f62`). Typecheck completo verde con todo eso junto.
 
 Forma de la enmienda 13 (c) que el parche tiene en cuenta (leída en la migración `0043` de backend): las bajas de otras personas llegan como `miembro: { miembro_id: null, nombre: "Una persona" }` y `habia_aceptado: null`, y el evento de baja del historial con ese mismo actor. `Propuesta.tsx` y `PlanTab.tsx` no se rompen con esa forma (no hace falta tocarlos por eso).
 
@@ -57,6 +60,7 @@ Forma de la enmienda 13 (c) que el parche tiene en cuenta (leída en la migraci�
 
 - `AsiNoPuedo` necesita `api.opinarVersion` en `src/lib/api.ts` (backend, con la enmienda 13). Sin eso, el botón aparece y responde "todavía no está disponible".
 - `Inicio.tsx` es el cambio más grande (borra el formulario viejo). Si preferís no tocar la portada esta noche, aplicá el parche sin ese archivo: `git apply --exclude=src/screens/Inicio.tsx /tmp/pantallas.patch`.
+- En el plan del organizador, "responder" aparece tres veces (estado del servidor, el aviso viejo "Aún no completaste tus condiciones" y "¿Cuándo puedes?" de friccion). Sugerencia: sacar el aviso viejo; antes avisar a qa-noche (`tests/e2e/convencer-uno.mjs:202` toca "Ir a Mi respuesta").
 - Los textos de la auditoría de tono de psico (§16: "Bajas registradas" → "Cambios en el grupo", "anfitrión" → "no puede faltar", etc.) NO están en este parche: son pedidos aparte en la ficha de psico, y algunos cambian rótulos que buscan los guiones (avisar antes a qa-noche).
 
 ## 5. El parche completo
@@ -423,7 +427,7 @@ index 0ccec0e..9a209f7 100644
      </div>
    )
 diff --git a/src/screens/PlanTab.tsx b/src/screens/PlanTab.tsx
-index 284728e..4069a9e 100644
+index 284728e..8868d22 100644
 --- a/src/screens/PlanTab.tsx
 +++ b/src/screens/PlanTab.tsx
 @@ -10,8 +10,16 @@ import { Confeti } from '../components/Confeti'
@@ -494,14 +498,14 @@ index 284728e..4069a9e 100644
  
        {reuniendo ? <ReuniendoInteres p={p} irAPestana={irAPestana} /> : null}
  
++      <FaltaTuRespuesta p={p} espacioId={p.espacio_id} />
++
 +      {p.estado === 'reuniendo_interes' && organiza && codigo ? (
 +        <section className="tarjeta" aria-labelledby="avisar-faltan">
 +          <h2 id="avisar-faltan">Avisar al grupo</h2>
 +          <RecordarFaltan codigo={codigo} titulo={p.titulo} motivo="faltan" />
 +        </section>
 +      ) : null}
-+
-+      <FaltaTuRespuesta p={p} espacioId={p.espacio_id} />
 +
        {p.estado === 'reuniendo_interes' ? (
          <BuscarOpcion p={p} viva={viva} soloLectura={soloLectura} sinOpcion={sinOpcion} />
