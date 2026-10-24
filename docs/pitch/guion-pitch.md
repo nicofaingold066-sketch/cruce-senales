@@ -50,12 +50,12 @@ Sigue las **8 diapositivas del deck** de la sesión «Presentación para el jura
 ### 2:10–3:50 · Demo en vivo (1:40) · diapositiva 5 «Demo en vivo» (Juan pasa a la app)
 Juan opera como Bastián; Nico narra. Desde las 11:28 la app muestra los nombres nuevos (Bastián, Nacho, Carlos, Kai, Charlie, Joaco, Pía), así que se puede nombrarlos. Paso a paso con rótulos: `docs/pitch/demo-en-vivo.md`. El momento clave es la baja: **pausa** antes de que Joaco se baje. Si la app falla, la diapositiva 5 tiene dos capturas reales: se vuelve a ella y se narra igual.
 
-- «Bastián propone un plan que le sirve a todos: un parque, gratis, sábado o domingo a la tarde. Y sin Joaco no se hace.»
+- «Bastián propone un plan que le sirve a todos: un parque, gratis, sábado o domingo a la tarde. Hacen falta cuatro.»
 - «Cada uno dice en privado cuándo puede. Charlie, solo el sábado. Kai y Carlos, solo el domingo. Nadie ve lo de los demás.»
 - «El servidor propone una sola opción: el sábado, con cuatro. Pía no respondió: no cuenta. El silencio no es asistencia.»
 - «Cada uno confirma **esta** versión. Y el grupo ve quién confirmó, no qué dijo cada uno.»
 - *(pausa)* «Ahora Joaco se baja.»
-- «Joaco no podía faltar: el plan no finge que sigue armado, queda *En revisión*. Y no dice quién se bajó.»
+- «Quedan tres, menos del mínimo: el plan no finge que sigue armado, queda *En revisión*. Y no dice quién se bajó.»
 - «Se rearma el domingo: versión 2, desde cero. Cada uno vuelve a decidir… y se juntan.»
 
 ### 3:50–4:10 · Qué lo hace distinto (y cómo lo construimos) · diapositiva 6 «36 h · 30 a la vez sin sobrecupo · 152 verificaciones»
@@ -90,7 +90,7 @@ Juan opera como Bastián; Nico narra. Desde las 11:28 la app muestra los nombres
 | 0:00–0:20 | Gancho | «¿Cuántos tienen un grupo de amigos donde alguien escribió *che, ¿cuándo nos juntamos?*… y nunca pasó? A nosotros nos pasó el 8 de octubre: un plan del grupo, seis interesados, cero encuentros.» |
 | 0:20–0:45 | Insight | «Creemos que no faltan ganas: falla el cierre. Nadie dice en el grupo que no le alcanza. *Me interesa* no es *voy*. Y cuando uno se baja, se cae todo. El silencio no es asistencia, y una confirmación vale para una sola versión del plan.» |
 | 0:45–1:00 | Qué hace | «CRUXE: cada uno dice en privado cuándo puede, el servidor propone una opción, cada uno confirma esa versión, y si alguien se baja, se repara con una versión nueva.» |
-| 1:00–2:20 | Demo | Versión corta de `demo-en-vivo.md` (Makana), Charlie solo sábado, Kai y Carlos solo domingo → «Buscar opción compatible» → v1 sábado con cuatro → Joaco (no puede faltar) se baja → «En revisión» → v2 domingo desde cero → «¡Se juntan!». |
+| 1:00–2:20 | Demo | Versión corta de `demo-en-vivo.md` (Makana), Charlie solo sábado, Kai y Carlos solo domingo → «Buscar opción compatible» → v1 sábado con cuatro → Joaco se baja (quedan 3 de 4) → «En revisión» → v2 domingo desde cero → «¡Se juntan!». |
 | 2:20–2:40 | Distinto + cómo | «El servidor decide cupos, plazos y estado. El agente propone, no confirma. 36 horas, pruebas contra la base real, 30 personas a la vez sin sobrecupo.» |
 | 2:40–3:00 | Makana + cierre | «Para Makana, es el último metro: que el encuentro ocurra. Piloto voluntario, midiendo encuentros concretados y bajas reparadas. Que juntarse deje de depender de que uno persiga a todos. Gracias por escucharnos.» |
 

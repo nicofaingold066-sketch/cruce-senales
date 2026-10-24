@@ -62,27 +62,27 @@ Duración: el recorrido completo dura unos **4 minutos**. En el pitch de 5 minut
 
 **Caso en el servidor desde la 0062 (coordinador, ~11:45):** Nacho y Joaco pueden **los dos días**; Charlie **solo el sábado**; Kai y Carlos **solo el domingo**; Pía no responde. Los seis traen gustos cargados (pádel y comida).
 
-**Receta exacta (coordinador, 11:4x):** mínimo **4**, «No puede faltar: **Joaco**»; v1 = **sábado** (Bastián, Nacho, Charlie, Joaco); Joaco se baja → **En revisión**; «Buscar alternativa» → v2 = **domingo** (Bastián, Nacho, Kai, Carlos), desde cero.
+**Receta exacta (coordinador, corregida 11:5x):** mínimo **4**; «No puede faltar» queda en **Bastián** (valor por defecto, no se toca); v1 = **sábado** (Bastián, Nacho, Charlie, Joaco); Joaco se baja → quedan 3 de 4 → **En revisión** (mismo mecanismo que la baja de Caro en «Los del finde»); «Buscar alternativa» → v2 = **domingo** (Bastián, Nacho, Kai, Carlos), desde cero.
 
 **Antes de subir (un solo aparato: Juan es Bastián y simula al resto):**
 1. Abrir la demo **desde una sesión nueva o con «Reiniciar demo»** para tomar los nombres y el caso nuevos. Portada → «Probar la demo «El plan que no deja a nadie afuera»».
-2. «+ Nuevo plan»: precargado con «Parque del Encuentro (ficticio) · acceso norte · encuentro gratuito», sáb 31 oct y dom 1 nov a las 16:00, 2 horas. **Cambiar: mínimo 4; «No puede faltar: Joaco»** (viene Bastián y mínimo 2: hay que cambiar los dos) → «Crear y abrir al grupo». ✂
+2. «+ Nuevo plan»: precargado con «Parque del Encuentro (ficticio) · acceso norte · encuentro gratuito», sáb 31 oct y dom 1 nov a las 16:00, 2 horas. **Cambiar solo el mínimo a 4** (viene en 2); «No puede faltar» queda en Bastián → «Crear y abrir al grupo». ✂
 3. Bastián responde «Puedo los dos días». ✂
 
 **Atajos de la simulación:** «Cargar las respuestas de los N de una vez» y «Aceptar versión N por …» quedan habilitados para Makana en la publicación de ~12:00 (frontend saca el `!makana` de `SimulacionTab.tsx`). Si al subir todavía no aparecen, usar las filas por persona: «Usar valores del caso para …» y «Aceptar v1».
 
 | Min | Juan toca (como Bastián) | Se ve | Nico dice |
 |---|---|---|---|
-| 0:00 | Mostrar el grupo y el plan | Siete amigos, «Actividad del grupo», el plan del parque «Reuniendo respuestas», mínimo 4 | «Bastián propone un plan que le sirve a todos: un parque, gratis, sábado o domingo a la tarde. Y sin Joaco no se hace.» |
+| 0:00 | Mostrar el grupo y el plan | Siete amigos, «Actividad del grupo», el plan del parque «Reuniendo respuestas», mínimo 4 | «Bastián propone un plan que le sirve a todos: un parque, gratis, sábado o domingo a la tarde. » |
 | 0:15 | «Simulación (demo)» → «Cargar las respuestas de los 5 de una vez» | Respuestas cargadas (solo las ve quien simula) | «Cada uno dice en privado cuándo puede. Charlie, solo el sábado. Kai y Carlos, solo el domingo. Nadie del grupo ve lo de los demás.» |
 | 0:35 | Plan → «Buscar opción compatible» | **Versión 1: sábado 31**, con Bastián, Nacho, Charlie y Joaco | «El servidor propone una sola opción: el sábado, con cuatro. Pía no respondió: no cuenta. El silencio no es asistencia.» |
 | 0:50 | «Confirmar versión 1» → «Simulación (demo)» → «Aceptar versión 1 por …» | «Participación del plan»: «Confirmaron la versión 1»; **«¡Se juntan!»** | «Cada uno confirma **esta** versión. El grupo ve quién confirmó, no qué dijo cada uno. Ahora sí hay plan.» |
 | 1:10 | *(pausa)* | — | «Ahora Joaco se baja.» |
-| 1:15 | «Simulación (demo)» → «Se baja: Joaco» → «Sí, Joaco se baja» → Plan | **«En revisión»**, «Una persona se retiró» | «Joaco no podía faltar: el plan no finge que sigue armado. Y no dice quién se bajó; lo digo yo porque es una simulación.» |
+| 1:15 | «Simulación (demo)» → «Se baja: Joaco» → «Sí, Joaco se baja» → Plan | **«En revisión»**, «Una persona se retiró» | «Quedan tres, menos del mínimo: el plan no finge que sigue armado. Y no dice quién se bajó; lo digo yo porque es una simulación.» |
 | 1:35 | «Buscar alternativa» (o «Rearmar con lo nuevo») | **Versión 2: domingo 1**, con Bastián, Nacho, Kai y Carlos; «Nadie confirmó todavía: las confirmaciones anteriores no pasan a esta versión» | «Se rearma el domingo: versión 2, desde cero. Nadie arrastra una confirmación vieja.» |
 | 1:55 | «Confirmar versión 2» → «Simulación (demo)» → «Aceptar versión 2 por …» | **«¡Se juntan!»** otra vez | «Cada uno vuelve a decidir. Y el plan sigue en pie.» |
 
-**Verificar en el ensayo (riesgo):** Joaco es «no puede faltar» en la v1 y se baja. Según el caso canónico, si quien no puede faltar deja de estar disponible, el motor puede responder «Sin opción compatible» en vez de armar la v2 (`docs/caso-canonico.md`, recorrido paso 7). El coordinador dice que la v2 sale el domingo sin Joaco; si en el ensayo sale «Sin opción compatible», Nico lo dice así: «Sin Joaco no hay plan, y la app no inventa uno», y se pasa a la diapositiva 6.
+**Verificar en el ensayo:** con «No puede faltar» en Bastián, la baja de Joaco deja 3 de 4 y el plan pasa a revisión; la v2 del domingo tiene 4 (Bastián, Nacho, Kai, Carlos). Si por algo en el ensayo sale «Sin opción compatible», Nico lo dice así: «Sin Joaco no hay plan, y la app no inventa uno», y se pasa a la diapositiva 6.
 
 **No decir en la versión Makana** (`docs/demo-makana.md`, «Relato breve y límites»): que el agente usó la preferencia «gratis» de Carlos, salvo que se haya llamado al agente y se haya visto; «integración con Makana»; resultados comerciales. Mínimo 2 es del caso, no se sube para fabricar la revisión.
 
