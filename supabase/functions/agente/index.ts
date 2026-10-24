@@ -240,6 +240,7 @@ Deno.serve(async (req) => {
     const modelo = crearModeloSocial({
       proveedor: elegirProveedor((n) => Deno.env.get(n)),
       modo: Deno.env.get('AGENTE_SALIDA'), nombres, hastaMs: inicio + PLAZO_TOTAL_MS,
+      signal: req.signal,
       permitir: () => limiteModelo.permitir(usuarioDe(autorizacion), Date.now()),
       invocar: async (proveedor, pedido, signal, plazo) => {
         const clave = Deno.env.get(proveedor.variableClave)

@@ -74,6 +74,18 @@ test('cancelación en vuelo corta aunque el SDK simulado ignore señal; sin resp
   assert.equal(await pendiente, null); assert.equal(t.pedidos.length, 1); assert.equal(t.pedidos[0][2].aborted, true)
 })
 
+test('cancelación de la petición HTTP corta el SDK aunque el orquestador siga activo', async () => {
+  const c = new AbortController(); const t = banco(async () => new Promise(() => {}))
+  t.deps.signal = c.signal
+  const pendiente = t.correr(); c.abort()
+  assert.equal(await pendiente, null); assert.equal(t.pedidos.length, 1); assert.equal(t.pedidos[0][2].aborted, true)
+})
+
+test('petición HTTP ya cancelada no cobra permiso ni inicia SDK', async () => {
+  const c = new AbortController(); c.abort(); const t = banco(); t.deps.signal = c.signal
+  assert.equal(await t.correr(), null); assert.equal(t.pedidos.length, 0); assert.equal(t.permisos, 0)
+})
+
 test('formato herramienta existente transforma el mismo esquema y sin thinking incompatible', async () => {
   const t = banco(async () => ({ stop_reason: 'tool_use', content: [{ type: 'tool_use', name: 'elegir_plan', input: {
     eleccion_id: opcion.opcion_ref, explicacion: 'Una idea.', mensaje_al_grupo: TEXTO,
