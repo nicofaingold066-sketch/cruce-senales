@@ -19,7 +19,7 @@ import {
   crearLimiteModelo,
   datosGeneracion,
   elegirProveedor,
-  ESPERA_GENERACION_MS,
+  ESPERAS_GENERACION_MS,
   GATEWAY_URL,
   familiaModelo,
   entradaModelo,
@@ -135,15 +135,15 @@ function registrarGeneracion(proveedor: Proveedor, clave: string, id: unknown): 
   if (tipo !== 'gen' || typeof runtime?.waitUntil !== 'function') return
   runtime.waitUntil(
     (async () => {
-      // Los datos de uso llegan unos segundos después: dos intentos.
-      for (let intento = 0; intento < 2; intento++) {
-        await new Promise((r) => setTimeout(r, ESPERA_GENERACION_MS))
+      // Los datos de uso llegan con demora: un intento después de cada espera.
+      for (const [intento, espera] of ESPERAS_GENERACION_MS.entries()) {
+        await new Promise((r) => setTimeout(r, espera))
         try {
           const r = await fetch(`${GATEWAY_URL}/v1/generation?id=${encodeURIComponent(String(id))}`, {
             headers: { Authorization: `Bearer ${clave}` },
             signal: AbortSignal.timeout(5000),
           })
-          if (r.status === 404 && intento === 0) continue
+          if (r.status === 404 && intento < ESPERAS_GENERACION_MS.length - 1) continue
           if (!r.ok) {
             console.info('agente: no se pudo leer la generación del Gateway', r.status)
             return

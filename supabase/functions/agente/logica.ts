@@ -459,7 +459,8 @@ export function familiaModelo(modelo: string): 'fable' | 'opus' | 'haiku' | 'son
 // misma clave y del lado del servidor, y al registro van solo estos tres datos: nunca la clave ni el contenido.
 // ---------------------------------------------------------------------------------------------
 
-export const ESPERA_GENERACION_MS = 4000
+// Los datos de uso llegan con demora (con 4 y 8 s dio 404, prueba del 23 oct a las 23:15): tres intentos.
+export const ESPERAS_GENERACION_MS = [5000, 10000, 20000]
 
 /** De qué tipo es el id que devolvió el Gateway: "gen" sirve para consultar la generación; null si no vino. */
 export function tipoDeIdGeneracion(id: unknown): 'gen' | 'msg' | 'otro' | null {
