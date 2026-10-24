@@ -4,7 +4,7 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- (nada; 00:13)
+- [00:19] `src/screens/Inicio.tsx` (texto de privacidad, pedido de friccion 00:19). Para la tanda siguiente.
 
 ## Entregado
 - [00:15] `wip/frontend` = `094b192` (sobre `2aa3d38`): pedidos chicos que seguían abiertos en el código. `PlanTab.tsx`: "1 confirmó" en singular (sinteticos H12); el aviso de cancelado/expirado ya no repite "Cancelado" como título (rincones O-09; `jurado-navegador` mira `.estado-hero-etiqueta`, que no cambia); con la misma franja, la comparación v1 → v2 dice "Misma fecha y hora; cambió quién puede ir." (sinteticos H8). `styles.css`: `scroll-padding-top/bottom` en `html` (rincones O-03). `Sesiones.tsx` (`OtraSesion`): foco al aviso de error si falla "Volver a esa sesión" (qa-noche P2: ya podés recuperar la comprobación de L2/L3). Ningún guion busca esos textos. tsc OK, vitest puro 50/50, build 0. Sin base. (Nota: reclamé PlanTab/styles/Sesiones en el mismo commit de la ficha, no antes; nadie más tiene esas rutas.)
