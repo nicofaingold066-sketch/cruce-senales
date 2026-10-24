@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:24 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:29 Santiago (reloj).
 
 ## Tocando ahora
-- [21:28] **MIGRACION EN CURSO** (0046: solo el texto de `condiciones_congeladas`, segundos). Después, suite serial E13 cuando sea mi turno.
+- [21:29] MIGRACION TERMINADA (0046 aplicada 21:29, solo texto). Base libre. Espero mi turno (ninguna ficha con CORRIENDO PRUEBA) para la suite serial E13.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -32,6 +32,8 @@ Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 Ninguno.
 
 ## Pedidos a otros
+- coordinador [21:29]: 0046 aplicada (21:29) y subida (`0efdf0e`), anotada en Implementación. Ojo: `tests/verificacion-altas/a4-helper.ts:223` (ruta tuya) tiene el texto viejo de `condiciones_congeladas`; si esa batería compara mensajes exactos, va a fallar hasta que lo actualices.
+- front-juan [21:29]: el servidor ahora dice para `no_autorizado/condiciones_congeladas`: "Estás en la versión vigente. Si esta fecha no te sirve, marca «Así no puedo, pero sigo» y podrás cambiar cuándo puedes." `src/screens/RespuestaTab.tsx:178` tiene su propia copia del texto viejo ("Formas parte de la versión vigente…"): conviene mostrar `error.mensaje` del servidor o copiar el nuevo.
 - psico [21:23]: hecho tu P-B de textos en `src/lib/api.ts` (`85c2ab5`, `wip/backend`): sin conexión, resultado incierto ("No sabemos si llegó…"), demora, "Hay una versión nueva de CRUXE: recarga la página." (las dos), función no disponible, cupo reservado para quien no puede faltar y nombre en uso. Ningún guion e2e buscaba esos textos. El de `:227` ("No perteneces a este espacio o el elemento no existe.") NO lo cambié: copia el mensaje del servidor para `fuera_de_audiencia/no_miembro`, que fija el contrato (`cruce.mensaje`); si querés cambiarlo, pedíselo al coordinador y cambio los dos juntos.
 - coordinador [21:23]: la 0045 (21:15:51) cambió `cruce.vista_propuesta` después de la última suite completa (21:02 a 21:08, que tuvo 7 fallas ya corregidas y probadas archivo por archivo: 48/48 en los 7 archivos tocados y enmienda13 5/5 a las 21:21). Me falta UNA suite completa en serie y sin concurrencia para el corte de la 01:00; por tu regla no la corro mientras Nico prueba producción. Avisame una ventana (unos 6 minutos) antes de las 00:45.
 - ux-flujo [21:22] (forma exacta E13 (c), aplicada): (1) `bajas[]` de OTRA persona: `{miembro: {miembro_id: null, nombre: "Una persona", simulado: false}, en, version, habia_aceptado: null}`; `en` y `version` se mantienen; la propia baja viene como siempre (con nombre y `habia_aceptado` true/false). (2) `historial[]`: mismo `tipo: "baja"`, con `actor` = ese mismo objeto anónimo (no null), así `format.ts` dice "Una persona se bajó". Desde 0045, también los eventos `aceptacion` de quien después se retiró salen con ese actor anónimo ("Una persona aceptó la versión N"), salvo para la propia persona. `actor_tipo` y `ejecutado_por` no cambian. (3) `opcion_anterior` no trae nombres (no cambia). En el cruce (`Propuesta.tsx`), como `bajas[].miembro.miembro_id` es null para otros, nadie más aparece como "baja" en el gráfico. No hay otros campos nuevos sin nombre. (4) Ya están subidos en `wip/backend` (`4022f62`): `api.opinarVersion(propuestaId, version, opinion, intentoId)`, `OpinarOk`, `MiSituacion.mi_opinion`, `Puede.opinar`, `EstadoPropuesta.opiniones_totales`, `MiembroEnBaja`, `habia_aceptado: boolean | null`, `TEXTO_GRACIAS_BAJA` y `esPersonaAnonima()` en `src/lib/types.ts`. typecheck y build ok.
