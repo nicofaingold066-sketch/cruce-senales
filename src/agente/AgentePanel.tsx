@@ -10,7 +10,9 @@ import { franjaTexto } from '../lib/format'
 import { irA, rutas } from '../lib/shell'
 import type { ApiError, ApiResult } from '../lib/types'
 import { Aviso, Boton, Card, Cargando, Chip, ErrorCaja, RotuloSimulacion } from '../components/ui'
+import { Icono } from '../components/Icono'
 import '../estilo/seccion-s6.css'
+import './gru-preferencias.css'
 import { ConsentimientoInvitaciones } from './ConsentimientoInvitaciones'
 import { AgenteSocial } from './AgenteSocial'
 import { socialApi } from './socialApi'
@@ -128,7 +130,7 @@ function Opciones<T extends string>({
   deshabilitado?: boolean
 }) {
   return (
-    <fieldset className="grupo" disabled={deshabilitado}>
+    <fieldset className="grupo gru-prefs-grupo" disabled={deshabilitado}>
       <legend>{titulo}</legend>
       <div className="opciones">
         {opciones.map((o) => {
@@ -136,7 +138,7 @@ function Opciones<T extends string>({
           return (
             <label key={o.v || 'sin-respuesta'} htmlFor={id} className={`opcion-radio ${valor === o.v ? 'opcion-activa' : ''}`}>
               <input id={id} type="radio" name={nombre} checked={valor === o.v} onChange={() => onCambio(o.v)} />
-              {o.texto}
+              <span className="gru-prefs-opcion-texto">{o.texto}</span>
             </label>
           )
         })}
@@ -266,9 +268,13 @@ function MisPreferencias({ espacioId, soloLectura, primario }: { espacioId: stri
   const resumenViaje = viaje.length > 0 ? viaje.join(', ') : 'sin responder'
   const resumenPermisos = `${usar ? 'el agente puede usarlas' : 'el agente no las usa'} · invitaciones ${recibirInicial === true ? 'activadas' : recibirInicial === false ? 'desactivadas' : 'sin dato'}`
   const privacidad = (
-    <p className="suave">
-      Solo las ves tú: el agente las usa con tu permiso y al grupo le llega la propuesta, nunca lo que pusiste.
-    </p>
+    <div className="gru-prefs-privacidad">
+      <Icono n="candado" tam={20} />
+      <div>
+        <strong>Solo las ves tú</strong>
+        <p className="suave">GRU las usa con tu permiso. Al grupo le llega la propuesta, nunca tus respuestas.</p>
+      </div>
+    </div>
   )
 
   if (!editando) {
@@ -288,14 +294,19 @@ function MisPreferencias({ espacioId, soloLectura, primario }: { espacioId: stri
       .filter(Boolean)
       .join(' · ')
     return (
-      <div className="bloque agente-prefs-linea">
+      <div className="bloque agente-prefs-linea gru-prefs-resumen">
         <div className="agente-linea-fila">
-          <p className="agente-linea">{linea}</p>
+          <div className="gru-prefs-resumen-datos" aria-label="Tus preferencias guardadas">
+            {linea.split(' · ').map((texto, i) => <span className="gru-prefs-resumen-chip" key={`${texto}-${i}`}>{texto}</span>)}
+          </div>
           <button type="button" className="agente-enlace" onClick={() => { setAviso(null); setEditando(true) }} disabled={soloLectura}>
             Editar ›
           </button>
         </div>
-        <p className="suave">Solo las ves tú: al grupo le llega la propuesta, nunca lo que pusiste.</p>
+        <div className="gru-prefs-privacidad">
+          <Icono n="candado" tam={20} />
+          <p>Solo las ves tú: al grupo le llega la propuesta, nunca lo que pusiste.</p>
+        </div>
         {aviso ? <Aviso tono="ok">{aviso}</Aviso> : null}
         <p className="agente-sr" aria-live="polite">
           {aviso ?? ''}
@@ -305,38 +316,67 @@ function MisPreferencias({ espacioId, soloLectura, primario }: { espacioId: stri
   }
 
   return (
-    <div className="bloque">
+    <div className="bloque gru-prefs-form">
       {privacidad}
-      <h3 className="agente-subtitulo">Qué te gusta</h3>
-      <fieldset
-        ref={refGustos}
-        className={`grupo ${sinActividades && intentoSinActividad ? 'grupo-error' : ''}`}
-        disabled={soloLectura || ocupado}
-        aria-describedby={sinActividades ? 'pref-gusta-ayuda' : undefined}
-      >
-        <legend>Me gustaría</legend>
-        <div className="opciones">
-          {actividades.map((a) => {
-            const id = `pref-gusta-${a.clave}`
-            const activa = borrador.me_gustaria.includes(a.clave)
-            return (
-              <label key={a.clave} htmlFor={id} className={`opcion-radio ${activa ? 'opcion-activa' : ''}`}>
-                <input id={id} type="checkbox" checked={activa} onChange={() => alternar(a.clave)} />
-                {a.etiqueta}
-              </label>
-            )
-          })}
+      <section className="gru-prefs-seccion" aria-labelledby="gru-prefs-gustos">
+        <div className="gru-prefs-cabecera">
+          <Icono n="chispa" tam={24} />
+          <div>
+            <h3 id="gru-prefs-gustos" className="agente-subtitulo">Qué te gusta</h3>
+            <p>Marca los planes que te entusiasman. Puedes elegir varios.</p>
+          </div>
         </div>
-        {sinActividades ? (
-          <small id="pref-gusta-ayuda" role={intentoSinActividad ? 'alert' : undefined}>
-            Marca al menos una actividad para guardar.
-          </small>
-        ) : null}
-      </fieldset>
-      <Opciones nombre="pref-presupuesto" titulo="Presupuesto este finde" opciones={PRESUPUESTO} valor={borrador.presupuesto} onCambio={(v) => poner('presupuesto', v)} deshabilitado={soloLectura || ocupado} />
-      <Opciones nombre="pref-energia" titulo="Energía" opciones={ENERGIA} valor={borrador.energia} onCambio={(v) => poner('energia', v)} deshabilitado={soloLectura || ocupado} />
-      <Opciones nombre="pref-ambiente" titulo="Ambiente" opciones={AMBIENTE} valor={borrador.ambiente} onCambio={(v) => poner('ambiente', v)} deshabilitado={soloLectura || ocupado} />
-      <Opciones nombre="pref-lugar" titulo="Lugar" opciones={LUGAR} valor={borrador.lugar} onCambio={(v) => poner('lugar', v)} deshabilitado={soloLectura || ocupado} />
+        <fieldset
+          ref={refGustos}
+          className={`grupo gru-prefs-actividades ${sinActividades && intentoSinActividad ? 'grupo-error' : ''}`}
+          disabled={soloLectura || ocupado}
+          aria-describedby={sinActividades ? 'pref-gusta-ayuda' : undefined}
+        >
+          <legend>Me gustaría</legend>
+          <div className="opciones">
+            {actividades.map((a) => {
+              const id = `pref-gusta-${a.clave}`
+              const activa = borrador.me_gustaria.includes(a.clave)
+              return (
+                <label key={a.clave} htmlFor={id} className={`opcion-radio ${activa ? 'opcion-activa' : ''}`}>
+                  <input id={id} type="checkbox" checked={activa} onChange={() => alternar(a.clave)} />
+                  <Icono
+                    n={a.clave === 'asado' ? 'asado'
+                      : ['futbol', 'padel', 'tenis', 'basquet'].includes(a.clave) ? 'futbol'
+                        : ['cena', 'comida', 'restaurante', 'cafe'].includes(a.clave) ? 'cena'
+                          : a.clave === 'cine' ? 'cine'
+                            : a.clave === 'fiesta' ? 'fiesta'
+                              : ['parque', 'paseo', 'senderismo'].includes(a.clave) ? 'paseo' : 'chispa'}
+                    tam={21}
+                  />
+                  <span className="gru-prefs-opcion-texto">{a.etiqueta}</span>
+                </label>
+              )
+            })}
+          </div>
+          {sinActividades ? (
+            <small id="pref-gusta-ayuda" role={intentoSinActividad ? 'alert' : undefined}>
+              Marca al menos una actividad para guardar.
+            </small>
+          ) : null}
+        </fieldset>
+      </section>
+      <section className="gru-prefs-seccion" aria-labelledby="gru-prefs-plan">
+        <div className="gru-prefs-cabecera">
+          <Icono n="rayo" tam={24} />
+          <div>
+            <h3 id="gru-prefs-plan" className="agente-subtitulo">Tu plan ideal</h3>
+            <p>Cuéntale a GRU qué prefieres para este finde.</p>
+          </div>
+        </div>
+        <div className="gru-prefs-disposicion">
+          <Opciones nombre="pref-presupuesto" titulo="Presupuesto este finde" opciones={PRESUPUESTO} valor={borrador.presupuesto} onCambio={(v) => poner('presupuesto', v)} deshabilitado={soloLectura || ocupado} />
+          <Opciones nombre="pref-energia" titulo="Energía" opciones={ENERGIA} valor={borrador.energia} onCambio={(v) => poner('energia', v)} deshabilitado={soloLectura || ocupado} />
+          <Opciones nombre="pref-ambiente" titulo="Ambiente" opciones={AMBIENTE} valor={borrador.ambiente} onCambio={(v) => poner('ambiente', v)} deshabilitado={soloLectura || ocupado} />
+          <Opciones nombre="pref-lugar" titulo="Lugar" opciones={LUGAR} valor={borrador.lugar} onCambio={(v) => poner('lugar', v)} deshabilitado={soloLectura || ocupado} />
+        </div>
+      </section>
+      <div className="gru-prefs-extras">
       <Plegable id="pref-sec-viaje" titulo="Cómo llegas (opcional)" resumen={resumenViaje} abierto={verViaje} onCambio={setVerViaje}>
         <p className="suave">Sirve para elegir un lugar que te quede a mano. Nadie del grupo ve tu zona ni cómo te mueves.</p>
         <Opciones nombre="pref-zona" titulo="Tu zona" opciones={ZONA} valor={borrador.zona ?? ''} onCambio={(v) => ponerOpcional('zona', v)} deshabilitado={soloLectura || ocupado} />
@@ -379,13 +419,14 @@ function MisPreferencias({ espacioId, soloLectura, primario }: { espacioId: stri
       {/* E11 (integracion-codex-juan): el consentimiento de invitaciones, junto al otro permiso. */}
       <ConsentimientoInvitaciones key={String(recibirInicial)} espacioId={espacioId} inicial={recibirInicial} soloLectura={soloLectura} />
       </Plegable>
+      </div>
       <div ref={refError}>{error ? <ErrorCaja error={error} onReintentar={() => void guardar()} /> : null}</div>
       {ocupado && reintentando ? <Aviso tono="aviso">{AVISO_REINTENTO}</Aviso> : null}
       {aviso ? <Aviso tono={usarConfirmado !== null && usar !== usarConfirmado ? 'info' : 'ok'}>{aviso}</Aviso> : null}
       <p className="agente-sr" aria-live="polite">
         {ocupado ? (reintentando ? AVISO_REINTENTO : 'Guardando tus preferencias…') : aviso ?? ''}
       </p>
-      <div className="fila-botones">
+      <div className="fila-botones gru-prefs-acciones">
         {/* Un solo primario por pantalla: para quien organiza, el primario es el del agente. */}
         <Boton variante={primario ? 'primario' : 'secundario'} onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura}>
           {guardadas ? 'Actualizar mis preferencias' : 'Guardar mis preferencias'}

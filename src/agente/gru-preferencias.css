@@ -1,0 +1,181 @@
+/* Preferencias de GRU: misma paleta y controles de CRUXE, con jerarquía y espacio para leer. */
+.gru-prefs-form {
+  display: grid;
+  gap: 28px;
+  padding-top: 8px;
+}
+.gru-prefs-form > * { min-width: 0; }
+.gru-prefs-privacidad {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--r-m);
+  background: var(--brasa-suave);
+  color: var(--tinta);
+}
+.gru-prefs-privacidad > svg { flex: none; margin-top: 3px; color: var(--brasa); }
+.gru-prefs-privacidad p { margin: 0; }
+.gru-prefs-privacidad strong { display: block; margin-bottom: 4px; font-size: var(--t-cuerpo); }
+.agente-panel .gru-prefs-privacidad .suave {
+  color: var(--tinta-2);
+  font-size: var(--t-nota);
+  line-height: 1.6;
+}
+.gru-prefs-seccion { min-width: 0; }
+.gru-prefs-seccion + .gru-prefs-seccion {
+  padding-top: 24px;
+  border-top: 1px solid var(--linea);
+}
+.gru-prefs-cabecera {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.gru-prefs-cabecera > svg { flex: none; margin-top: 3px; color: var(--brasa); }
+.agente-panel .gru-prefs-cabecera h3 {
+  margin: 0;
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+}
+.gru-prefs-cabecera p {
+  margin: 6px 0 0;
+  font-size: var(--t-nota);
+  line-height: 1.6;
+  color: var(--tinta-2);
+}
+.gru-prefs-disposicion {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px 22px;
+}
+.agente-panel .gru-prefs-form .grupo {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.agente-panel .gru-prefs-form .grupo > legend {
+  width: 100%;
+  margin: 0 0 12px;
+  padding: 0;
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-titulo);
+  line-height: 1.5;
+  color: var(--tinta);
+}
+.agente-panel .gru-prefs-form .opciones {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 9px;
+}
+.agente-panel .gru-prefs-actividades .opciones {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.agente-panel .gru-prefs-form .opcion-radio {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-width: 0;
+  min-height: 54px;
+  margin: 0;
+  padding: 13px 14px;
+  border: 1px solid var(--linea);
+  border-radius: 13px;
+  background: var(--hoja);
+  color: var(--tinta);
+  font-size: var(--t-cuerpo);
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: left;
+  box-shadow: none;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+.agente-panel .gru-prefs-form .opcion-radio:hover { border-color: var(--tinta-3); }
+.agente-panel .gru-prefs-form .opcion-radio.opcion-activa {
+  border-color: var(--brasa);
+  background: var(--brasa-suave);
+  color: var(--tinta);
+}
+.agente-panel .gru-prefs-form .opcion-radio:focus-within {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+.agente-panel .gru-prefs-form .opcion-radio input {
+  position: static;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  opacity: 1;
+  clip: auto;
+  appearance: auto;
+  accent-color: var(--brasa);
+}
+.gru-prefs-form .opcion-radio > svg { flex: none; width: 20px; height: 20px; color: var(--tinta-2); }
+.gru-prefs-form .opcion-activa > svg { color: var(--brasa); }
+.gru-prefs-opcion-texto { min-width: 0; overflow-wrap: anywhere; }
+.gru-prefs-form .opcion-activa .gru-prefs-opcion-texto { font-weight: var(--p-boton); }
+.agente-panel .gru-prefs-form .grupo-error { border: 0; }
+.gru-prefs-form .grupo-error .opcion-radio { border-color: var(--error); }
+.gru-prefs-form .grupo > small { display: block; margin-top: 12px; line-height: 1.5; }
+.gru-prefs-form .grupo:disabled .opcion-radio { opacity: .65; cursor: not-allowed; }
+.gru-prefs-extras {
+  border: 1px solid var(--linea);
+  border-radius: var(--r-m);
+  overflow: clip;
+}
+.gru-prefs-extras .agente-plegable-seccion { margin: 0; border: 0; }
+.gru-prefs-extras .agente-plegable-seccion + .agente-plegable-seccion { border-top: 1px solid var(--linea); }
+.gru-prefs-extras .agente-plegable-boton {
+  display: grid;
+  gap: 5px;
+  align-content: center;
+  min-height: 76px;
+  padding: 16px 44px 16px 18px;
+}
+.gru-prefs-extras .agente-plegable-resumen { font-weight: 400; line-height: 1.5; color: var(--tinta-2); }
+.gru-prefs-extras .agente-plegable-flecha { right: 18px; }
+.gru-prefs-extras .agente-plegable-cuerpo { display: grid; gap: 22px; padding: 2px 18px 22px; }
+.gru-prefs-extras .agente-plegable-cuerpo[hidden] { display: none; }
+.gru-prefs-extras .agente-plegable-cuerpo > p { margin: 0; line-height: 1.6; }
+.gru-prefs-extras .agente-casilla { margin: 0; padding: 0; gap: 12px; }
+.gru-prefs-extras .agente-casilla input { flex: none; accent-color: var(--brasa); }
+.gru-prefs-extras .agente-casilla small { margin-top: 7px; color: var(--tinta-2); line-height: 1.6; }
+.gru-prefs-acciones { padding-top: 20px; border-top: 1px solid var(--linea); gap: 10px; }
+.gru-prefs-acciones .btn-claro { color: var(--tinta-2); background: transparent; border: 1px solid var(--linea); }
+.gru-prefs-acciones .btn-claro:hover:not(:disabled) { background: var(--relleno); }
+.gru-prefs-form > div:empty { display: none; }
+.gru-prefs-form > .agente-sr { margin: 0; }
+.gru-prefs-resumen .agente-linea-fila { align-items: flex-start; gap: 16px; }
+.gru-prefs-resumen-datos { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; padding-top: 8px; }
+.gru-prefs-resumen-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 7px 11px;
+  border-radius: 10px;
+  background: var(--relleno);
+  font-size: var(--t-nota);
+  line-height: 1.5;
+  color: var(--tinta);
+  overflow-wrap: anywhere;
+}
+@media (max-width: 620px) {
+  .gru-prefs-disposicion { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .gru-prefs-form { gap: 24px; }
+  .agente-panel .gru-prefs-form .opcion-radio { padding: 12px; gap: 9px; }
+  .gru-prefs-acciones { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .gru-prefs-acciones .btn { width: 100%; justify-content: center; }
+  .gru-prefs-resumen .agente-linea-fila { gap: 8px; }
+}
+@media (max-width: 360px) {
+  .agente-panel .gru-prefs-actividades .opciones { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .agente-panel .gru-prefs-form .opcion-radio { transition: none; }
+}
