@@ -3,7 +3,7 @@
 Quien edita este archivo: solo claude-b-interfaz. Última actualización: viernes 23 oct, tras leer coordinacion (README, PROPIEDAD, TABLERO).
 
 ## Tocando ahora
-- [11:12] CORRIENDO PRUEBA: grabación del video del pitch pedido por Nico (copia de `recorrido-dos-sesiones.mjs` con video y modo oscuro, contra producción, UN demo propio «Los del finde», sin modelo). Hasta ~11:25. Respeta `base-libre.mjs`.
+- [12:02] Sin pruebas contra la base. Terminé de grabar el video del pitch para Nico (producción, modo oscuro, un demo propio por corrida, sin modelo); ahora solo renderizo, sin red.
 
 ## Estado
 16:43: recibido el aviso de las 16:42 (sesión "login"). No toco `src/login/**` ni sus líneas de enganche en `shell.tsx`/`App.tsx` hasta que login entregue. Antes de cambiar `Inicio.tsx` aviso acá, y mantengo los nombres accesibles "Probar la demo «Los del asado»" y "Unirme".
