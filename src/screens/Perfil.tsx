@@ -9,6 +9,7 @@ import { Avatar, Aviso, Boton, Cargando, ErrorCaja, IconoGrupo } from '../compon
 import { Icono } from '../components/Icono'
 import { OtraSesion } from '../components/Sesiones'
 import { Confirmacion, useVolverFoco } from '../components/Confirmacion'
+import { PreferenciaTema } from '../components/PreferenciaTema'
 import '../estilo/seccion-s2b.css'
 
 // Pantalla 13 del mockup (nivel "Mi espacio"): Perfil. No hay cuenta ni contraseña: la sesión es anónima (contrato 0.1).
@@ -146,6 +147,8 @@ export default function Perfil() {
           ) : null}
           <p className="s2b-nota">Hoy se guarda en cada grupo, en su agente. Dentro del grupo solo se ve como resumen.</p>
         </section>
+
+        <PreferenciaTema />
 
         <section aria-labelledby="perfil-sesion-privacidad">
           <h2 id="perfil-sesion-privacidad" className="s2b-oculto">

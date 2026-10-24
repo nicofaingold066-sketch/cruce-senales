@@ -10,6 +10,7 @@ import { franjaTexto } from '../lib/format'
 import { irA, rutas } from '../lib/shell'
 import type { ApiError, ApiResult } from '../lib/types'
 import { Aviso, Boton, Card, Cargando, Chip, ErrorCaja, RotuloSimulacion } from '../components/ui'
+import { PreferenciaTema } from '../components/PreferenciaTema'
 import { Icono } from '../components/Icono'
 import '../estilo/seccion-s6.css'
 import './gru-preferencias.css'
@@ -1152,6 +1153,7 @@ function PanelAgente({
         </Card>
       )}
       <Card id="agente-preferencias" titulo="Mis preferencias" className="agente-panel">
+        <PreferenciaTema />
         <MisPreferencias espacioId={espacioId} soloLectura={soloLectura} primario={!esOrganizador} />
       </Card>
     </>

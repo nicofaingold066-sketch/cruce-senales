@@ -507,3 +507,26 @@
 .agente-estado-ok {
   color: var(--tinta-2);
 }
+
+/* Preferencias: contenedor neutro y Apariencia separada de los gustos del grupo.
+   Los controles y la distribución usan gru-preferencias.css. */
+.vista-agente .s2-agente-pantalla {
+  background: none;
+}
+#agente-preferencias {
+  padding: var(--e-4);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-l);
+  background: var(--hoja);
+}
+#agente-preferencias > .tarjeta-cabeza {
+  margin: 0 0 var(--e-4);
+}
+#agente-preferencias > .preferencia-tema {
+  margin-bottom: var(--e-5);
+  padding-bottom: var(--e-5);
+  border-bottom: 1px solid var(--linea);
+}
+#agente-preferencias > .bloque {
+  margin: 0;
+}
