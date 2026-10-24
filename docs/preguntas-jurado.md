@@ -2,13 +2,14 @@
 
 Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo ficticio; nada de esto lleva datos de personas reales.
 
-**Para qué sirve.** El pitch dura 5 minutos con demo en vivo y hay 3 minutos de preguntas. El jurado (equipo de producto de Makana) puntúa **Problema, Solución y Convicción**, de 1 a 7, con el mismo peso; en la convicción cuentan las respuestas a las preguntas (`prompts/contexto-dia-pitch-reglas.md`, bases §10). Acá hay 29 preguntas probables, incluidas las incómodas, con una respuesta de 2 o 3 frases y la evidencia que la respalda.
+**Para qué sirve.** El pitch dura 5 minutos con demo en vivo y hay 3 minutos de preguntas. El jurado (equipo de producto de Makana) puntúa **Problema, Solución y Convicción**, de 1 a 7, con el mismo peso; en la convicción cuentan las respuestas a las preguntas (`prompts/contexto-dia-pitch-reglas.md`, bases §10). Acá hay 30 preguntas probables, incluidas las incómodas, con una respuesta de 2 o 3 frases y la evidencia que la respalda.
 
 **Cómo usarlo.**
 - **★ = una de las 5 más probables.** **⚠ = una de las 3 más peligrosas** (la respuesta honesta cuesta; hay que ensayarla).
 - Cada respuesta está escrita para decirse en voz alta, sin leer. No se dicen las marcas.
 - **Evidencia:** archivo, prueba o número. Si no hay evidencia, la fila dice **«Sin evidencia»** y propone qué decir sin inventar.
-- **Regla de oro** (de `docs/pitch.md`): solo se dice lo que funciona en vivo. Lo demás es «siguiente paso».
+- **Regla de oro** (de `docs/pitch.md`): solo se dice lo que funciona en vivo. Lo demás es «siguiente paso». El guion de la demo, con rótulos exactos y plan B, está en `docs/guion-demo.md`.
+- **Enmienda 13** (aprobada por Nico a las 20:51; corte: aplicada antes de la 01:00 del sábado): opinar sin bajarse, rearmar con lo nuevo, baja sin nombre y asado en lugar neutro. Varias respuestas tienen dos versiones, «si entró» y «si no entró»: elegir en el «Estado verificado» de las 10:30.
 - Las pruebas citadas son de esta noche; las horas son del reloj de Santiago. Las fuentes viven en `docs/evidencia.md`, `docs/usuarios-sinteticos.md`, `docs/rincones.md`, `docs/qa-noche.md` y `docs/flujo-usuario.md`. Antes de subir al escenario, rehacer las cifras con el último `main` (el estado cambia hasta las 12:45).
 
 ## Las cinco más probables (★)
@@ -78,22 +79,23 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 **Límite.** Hoy no hay recordatorios automáticos. «Recordar a quien falta» (`RecordarFaltan`, de ux-flujo) está construido pero **sin conectar a la pantalla** (decisión de Nico pendiente).
 
 ### S3 ★ · ¿Cómo se discute o se debate la propuesta?
-**Respuesta.** La charla sigue en WhatsApp: bromas, quién lleva qué. CRUXE no es un chat; lo que se decide no se pierde ahí. Cada persona responde en la app, en privado (puedo los dos días, solo un día, no puedo), y después confirma esa versión o se baja. Si una versión no junta el mínimo, el plan se rearma con lo que dijeron y nadie arrastra una confirmación vieja. Hoy cada persona confirma o se baja; lo siguiente que tenemos diseñado es poder decir «así no puedo, pero sigo» y elegir entre dos planes, siempre con totales y nunca con nombres.
-**Evidencia.** `docs/output-debate.md` §1 (tabla del output de hoy, con marcas visto/leído) y §4 (esta respuesta), rama `wip/ux` `ff38be0` y `392f24b`; `docs/flujo-usuario.md` §3.6 (corrida en producción, `fae49fa`, 20:26). El mensaje de WhatsApp que sale hoy es el de cierre («Confirmado en CRUXE… Van: …», sin enlace; `PlanTab.tsx:608`); al publicarse la opción no sale nada.
-**Construido pero sin conectar a pantalla** (decisión de Nico pendiente): `RecordarFaltan` (`8e2432d`, prueba 14/14) y los mensajes de WhatsApp al publicar y al cerrar con enlace. **Diseñado, necesita enmienda:** «Así no puedo, pero sigo», «Rearmar con lo nuevo», ronda con plazo y dos planes con etiqueta.
-**No decir** que hoy se puede votar entre planes ni comentar en la app: no existe. No decir que CRUXE «manda mensajes» al publicar la opción: hoy no lo hace.
+**Respuesta, si la enmienda 13 NO está en producción o el botón no está en pantalla.** La charla sigue en WhatsApp: bromas, quién lleva qué. CRUXE no es un chat; lo que se decide no se pierde ahí. Cada persona responde en la app, en privado (puedo los dos días, solo un día, no puedo), y después confirma esa versión o se baja. Si una versión no junta el mínimo, el plan se rearma con lo que dijeron y nadie arrastra una confirmación vieja. Hoy cada persona confirma o se baja; lo siguiente que tenemos diseñado es poder decir «así no puedo, pero sigo» y elegir entre dos planes, siempre con totales y nunca con nombres.
+**Respuesta, si la enmienda 13 está en producción Y el botón está conectado (verificar en el recorrido de 5 invitados antes del pitch).** La charla sigue en WhatsApp. Cuando sale la opción, cuando cambia y cuando se confirma, CRUXE le deja listo al organizador un mensaje con el enlace. Cada uno responde en la app, en privado: confirma esa versión o dice «así no puedo, pero sigo», sin bajarse. Si la versión no junta el mínimo, el organizador la rearma con lo nuevo y nadie arrastra una confirmación vieja. El organizador ve cuántos no pueden, nunca quiénes. Lo que dejamos para después es elegir entre dos planes distintos.
+**Evidencia.** `docs/output-debate.md` §1 (tabla del output de hoy) y §4 (las dos versiones de la respuesta; ux-flujo, `wip/ux` `a4d78ed`); `docs/flujo-usuario.md` §3.6 (corrida en producción, `fae49fa`, 20:26); `docs/contrato-enmienda-13.md` (a) `opinar_version` con `asi_no_puedo`, totales solo al organizador y solo con 2 o más, y (b) `propose_repair` desde «esperando compromisos», tope de 3 versiones. Hoy el único mensaje de WhatsApp que sale es el de cierre («Confirmado en CRUXE… Van: …», `PlanTab.tsx:641`); al publicarse la opción no sale nada.
+**Construido pero sin conectar a pantalla** (decisión de Nico pendiente): `RecordarFaltan` (`8e2432d`, prueba 14/14) y los mensajes de WhatsApp al publicar y al cerrar. La pantalla del botón «Así no puedo, pero sigo» es de front-juan.
+**No decir** que hoy se puede votar entre planes ni comentar en la app: no existe. No decir que CRUXE «manda mensajes solo»: deja el mensaje listo; lo manda una persona.
 
 ### S4 ★ · ¿Dónde está la IA y qué hace?
 **Respuesta.** Hay un agente opcional: con preferencias privadas y el clima, el servidor elige hasta tres planes de un catálogo ficticio y un modelo (Claude Haiku, por el AI Gateway de Vercel) redacta el porqué. La IA solo explica: no confirma, no crea ni cambia estados, y nunca ve quién dijo qué. Si el modelo falla o no hay clave, entra una regla fija y un texto fijo, y la pantalla lo dice.
 **Evidencia.** Probado en vivo con el modelo real el 23 a las 16:50:59 (`docs/evidencia.md`: `eleccion_fuente` y `explicacion_fuente` = «modelo»); función sin red 17/17 (`node --test "supabase/functions/agente/*.test.ts"`); pruebas del opt-out en `tests/backend/` (enmienda 8). `docs/agente-ia.md`.
-**Límites.** La función con la enmienda 10 estaba sin desplegar a las 20:25 (aviso del coordinador); no se midió el límite de costo; cada llamada cuesta. En la demo usar «Simular sol/lluvia» y una o dos llamadas.
+**Límites.** La función con la enmienda 10 estaba sin desplegar a las 20:25 (aviso del coordinador); no se midió el límite de costo; cada llamada cuesta. En la demo usar «Simular sol/lluvia» y una o dos llamadas. La base ya tiene el «agente social» (enmienda 11, migración 0041, suite 84/84 a las 20:40), pero su interfaz no está conectada: **no decir** que el agente invita, publica o manda nada solo.
 
 ### S5 ★ · ¿Y la privacidad?
 **Respuesta.** Cada persona carga sus condiciones y preferencias en privado, con opciones cerradas y sin texto libre; solo las lee el servidor. El grupo ve el plan y totales (con 4 personas o más y 2 o más votos), nunca el presupuesto ni quién dijo qué. Hay un opt-out para que el agente no use las preferencias de alguien.
 **Evidencia.** Revisión de toda la app: sin exposición directa, 8 hallazgos (4 corregidos en la enmienda 7, 2 declarados como límite y 2 endurecimientos) en `docs/agente-revision-privacidad.md` y `docs/contrato-enmienda-7.md`; backend 78/78 y verificación de privilegios sin hallazgos (`docs/evidencia.md`, aviso 20:25); guiones de punta a punta con privacidad de sobres sin hallazgos (`jurado-navegador` 4/4, `docs/qa-noche.md`).
 
 ### S5b ⚠ · ¿Un grupo chico puede deducir quién dijo qué?
-**Respuesta.** A veces sí, y lo decimos. Quien organiza puede usar el motor como «oráculo» (probando varias veces) para deducir si alguien puede una franja; comparar el perfil antes y después de que alguien guarde deja ver qué cargó; y una baja que deja el plan «En revisión» dice algo de quien se bajó. No prometemos ausencia total de inferencia en grupos chicos; sí que ninguna respuesta muestra condiciones ajenas.
+**Respuesta.** A veces sí, y lo decimos. Quien organiza puede usar el motor como «oráculo» (probando varias veces) para deducir si alguien puede una franja; comparar el perfil antes y después de que alguien guarde deja ver qué cargó; y una baja que deja el plan «En revisión» dice que alguien que podía se bajó (con la enmienda 13 (c) ya no se muestra su nombre al grupo; el organizador ve el total de bajas, no quién). No prometemos ausencia total de inferencia en grupos chicos; sí que ninguna respuesta muestra condiciones ajenas.
 **Evidencia.** `docs/contrato-enmienda-7.md`, «Límites declarados». README: «No prometemos privacidad perfecta».
 **No decir** «es 100 % privado».
 
@@ -101,6 +103,7 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 **Respuesta.** Si la baja deja el plan por debajo del mínimo, pasa a «En revisión» y se registra la baja con su hora. Quien organiza busca una alternativa, que sale como **versión 2 y empieza sin aceptaciones heredadas**; solo vuelve a «Grupo confirmado» cuando todos aceptan esa versión. Si no hay opción, dice «Sin opción compatible» y no baja el mínimo.
 **Evidencia.** Recorrido canónico (`docs/caso-canonico.md`, pasos 5 a 7); `recorrido-dos-sesiones.mjs` 23/23 en producción (`docs/qa-noche.md`, 19:52); variantes del jurado 4/4 (`jurado-navegador`, 19:59).
 **Límite (visto por sintéticos).** Si la baja no cambia la fecha, el cartel puede decir «Sábado → Sábado» sin explicar que cambió la gente (`docs/usuarios-sinteticos.md`, H8).
+**Si la enmienda 13 (c) entró (corte 01:00):** el grupo ve «Una persona se retiró», sin nombre, sin motivo y sin decir si había confirmado; quien se retira lee «Gracias por avisar. No hace falta contar por qué.» Si no entró, hoy el grupo ve el nombre de quien se bajó (hallazgo H14 de sintéticos): decirlo así.
 
 ### S7 · ¿Escala a otros grupos o a otras actividades?
 **Respuesta.** El motor es el mismo para cualquier juntada (deporte semanal, cumpleaños, familia, ex compañeros, estudio, club de lectura); cambia el peso de cada condición. El catálogo del agente tiene 13 actividades de simulación. No escala hoy a otras ciudades (zonas de Santiago) ni a usos que no son sociales.
@@ -118,11 +121,15 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 
 ### S10 · ¿Los lugares son reales? ¿Reservan algo?
 **Respuesta.** No. Todo el catálogo es de simulación y cada lugar lo dice («Simulación»). La app propone y deriva con enlaces a Google Maps, EasyCancha o ATC; nunca dice «disponible» ni «reservado».
-**Evidencia.** `docs/agente-barrido.md` (fuentes reales estudiadas, sin conectar); `src/agente/canchas.ts` (solo enlaces).
+**Evidencia.** `docs/agente-barrido.md` (fuentes reales estudiadas, sin conectar); `src/agente/canchas.ts` (solo enlaces). Con la enmienda 13 (d) el catálogo suma «Parrilla del parque (Simulación)» (`lugar-sim-14`, `docs/catalogo-ampliado.md`): el asado deja de ser solo «en casa de alguien» y puede competir con un lugar neutro.
 
 ### S11 · ¿Y si se corta internet durante la demo?
 **Respuesta.** Probamos cortes de red controlados y la app reintenta y avisa. Igual dejamos un video de respaldo grabado.
 **Evidencia.** `red-controlada.mjs` 10/10 y `red-import-cortada.mjs` 4/4 (`docs/qa-noche.md`, 20:02–20:14). El video de respaldo: **Sin evidencia todavía**: grabarlo antes de las 13:00 (`prompts/contexto-dia-pitch-reglas.md`, punto 15).
+
+### S12 · ¿Preguntan género o si alguien está en pareja? ¿Cómo saben quién viene?
+**Respuesta.** No. El género y la situación de pareja no se piden ni se infieren: son datos sensibles y en un grupo de cinco delatan a alguien. «Quién viene» es una regla del grupo, no de una persona: solo el grupo, con parejas o abierta. Por ahora va en el título del plan; un campo propio queda para después.
+**Evidencia.** Decisiones D2 y D3 de psico, aceptadas por Nico (20:51): `agentes/psico.md`, `docs/psicologia-grupo.md` (rama `wip/psico`); `docs/contrato-enmienda-13.md`, «Fuera». La Ley 21.719 lista identidad de género y vida sexual entre los datos sensibles (guía secundaria; plena vigencia el 1 dic 2026): no citar artículos que no leímos.
 
 ---
 
@@ -178,7 +185,8 @@ Dueño: apertura. Pedido #101 (Nico, 20:30 del viernes 23 oct 2026). Todo fictic
 - Un paso del recorrido que no figure como verificado.
 
 ## 5. Pendientes (se actualizan con las ramas)
-- **Debate (#100):** unir la respuesta corta de ux-flujo (`docs/output-debate.md` §4) en S3 cuando llegue a `main`. Pedido enviado a ux-flujo a las 20:30.
+- **Enmienda 13 (corte 01:00):** S3, S5b, S6 y S10 tienen versión «si entró» y «si no entró». A las 10:30, con el «Estado verificado», dejar una sola. El botón «Así no puedo, pero sigo» lo conecta front-juan; sin botón, vale la versión «no entró» aunque la base lo tenga.
+- **Guion de la demo:** `docs/guion-demo.md` (#103), con sus [a verificar].
 - **Cifras vivas:** rehacer 78/78, 23/23, 4/4, 10/10 y los 4 toques con el `main` final antes del pitch (sábado 10:30, «Estado verificado para el pitch»).
 - **Video de respaldo** y **ensayo de C1, C6, P2 y S5b** con cronómetro: tareas de Nico.
 - **Teléfono físico:** no probado; si se prueba antes del pitch, actualizar S9.
