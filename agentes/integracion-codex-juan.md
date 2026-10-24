@@ -1,8 +1,9 @@
 # Integración Codex — Juan Morales
 
 ## Tocando ahora
-- Sin fuentes en edición al cerrar este corte. Corrección `src/agente/ConsentimientoInvitaciones.tsx` entregada en `codex/e11-consentimiento-reintento`, SHA remoto `0fff3760c4e67b6083097d17e50967cc79edaf56`; QA UX aplicada focal en curso. No modificar esta rama ni publicar en paralelo hasta recibirla. La ruta sigue asignada a integración según PROPIEDAD.
-- PuertoRPC interno pendiente SIN fuentes creadas; no index.ts/logica.ts, DB, modelo ni activación social nueva en este corte.
+- SOLO nuevos `supabase/functions/agente/puerto-social.ts` y `supabase/functions/agente/puerto-social.test.ts`, rama `codex/e11-puerto-rpc` desde main d2a2b20. Adaptador de los6puertos E11 al cliente RPC autenticado existente. Sin SDK nuevo, JWT, HTTP, UI, modelo ni activación del handler; sin DB durante turno coordinador22:59.
+- Consentimiento `0fff376` intacto mientras UX valida el snapshot. Al quedar QA verde, entregar al coordinador para su turno DB/publicación; no duplicar su integración E14 vigente.
+- No tocar index.ts/logica.ts ni fichas/worktrees ajenos.
 
 ## Entregado
 - Corrección del aviso 22:43: rama REMOTA `codex/e11-consentimiento-reintento`, commit `9f69c9cac13aea13f49166f43119c8a3471205b5`, SOLO ConsentimientoInvitaciones.tsx (5 altas/4 bajas). Reintentar conserva lectura/escritura; Boton usa ocupado sin disabled durante trabajo y no se desmonta tras comprobar. Tipos/build + 19 contrato PASS. QA UX aplicada focalizada en curso; NO trasladar los 23 casos previos a este diff automáticamente. No está en main. Al terminar QA, se entrega para tu prueba DB antes de publicar.
@@ -38,3 +39,5 @@
 - Agente-ia informa funciónv10/E14 desplegada desde8a655e7 y pruebas reales propias22:45; no es certificación independiente nuestra ni enganche al nuevo orquestador social. Evitar duplicar ese desarrollo.
 - Siguiente unidad segura: puerto RPC tipado usando cliente autenticado existente y6operacionesE11, sin endpoint nuevo ni efectos automáticos; después acordar transporte/recuperación de clima y conectar handler con pruebas locales. No se activará sin QA y compatibilidad actual.
 - Publicación: check de tipos/build, mocks, QA aplicada del diff, pruebaDB por turno con datos ficticios, main fresco sin conflictos, commits individuales y Vercel/assets. Rollback mediante commit revisado que revierta solo la unidad fallida y preserve los cambios ajenos; sin reset ni force. Revertir la integración pura d2 no toca handler ni web; para consentimiento revisar sus4rutas propias, no revertir merges que arrastran entregas ajenas.
+
+- Actualización23:01: recibido backend22:53: 0050 aplicada22:48 (2d6cbed),78/78+4omitidas; dato reportado por dueño, no prueba propia. Coordinador CORRIENDO PRUEBA22:59 (6guionesE14+consentimiento); no ejecuto DB ni otro deploy. Juan pidió seguir puerto/handler E11 después de cerrar QA, sin duplicar E14.
