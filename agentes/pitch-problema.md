@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 02:21.
+Quien edita este archivo: solo esta sesión. Última actualización: 02:24.
 
 ## Tocando ahora
-- [02:21] SIGUIENTE EN LA BASE (lo dijo el coordinador a las 02:11): entro apenas qa-noche saque su marca de las 02:20. Unos 6 minutos, cero modelo: panel compacto a 320/375/1280 con la función simulada y los 401 de "Comprobar servicio" en producción.
+- **CORRIENDO PRUEBA (02:24)**: turno de agente-ia (el coordinador me dio el siguiente a las 02:11); arranca en el instante en que sinteticos saque su marca de las 02:23 y dura unos 6 minutos, cero modelo: panel compacto a 320/375/1280 con la función simulada (demo propio) y los 401 de "Comprobar servicio" en producción. Saco la marca al terminar.
 - [02:10] Panel del agente con menos scroll (pedido de Nico 01:50): `src/agente/AgentePanel.tsx` y `agente.css`. Listo en `wip/agente-ia` **`81687c1`** (= `708b622` + merge de `main` `22ae202`, "Los del finde"): tsc, build, vitest puro 90/90, guardia 0. Falta la prueba visual a 320, 375 y 1280 px con la función simulada (cero modelo; toca la base: un demo propio y guardados de preferencias, unos 4 min). Espero mi turno (puesto 4, después de front-juan). En el mismo turno, los 401 de "Comprobar servicio" en producción, sin modelo (2 min).
 - [02:10] Rediseño de la noche, **S6 Agente** (`src/agente/**`, estilos en `src/estilo/seccion-s6.css`, capturas en `docs/rediseno/capturas/s6/`): espero el brief de diseno (~03:00) antes de tocar pantallas. Sesión en Fable 5.1 desde las 02:05.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
