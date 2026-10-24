@@ -1,7 +1,7 @@
 // Regresiones de la enmienda 2 (docs/contrato-enmienda-2.md), contra el proyecto real.
 // A1 reserva de cupo del imprescindible · A2 reclamo de asiento simulado · A3 reinicio idempotente y
 // tombstones · A4 carreras (seed/seed, create/create, reset/create, join/simulación) · A5 privilegios.
-// Espacios de prueba con prefijo "t-"; los demos "Los del asado" son propios de cada sesión de prueba
+// Espacios de prueba con prefijo "t-"; los demos "Los del finde" (antes "Los del asado", 0054) son propios de cada sesión de prueba
 // (sesiones anónimas nuevas) y nunca son el demo de los dispositivos reales.
 import { beforeAll, describe, expect, it } from 'vitest'
 import {
