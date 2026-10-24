@@ -1,9 +1,10 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 01:57.
+Quien edita este archivo: solo esta sesión. Última actualización: 02:10.
 
 ## Tocando ahora
-- [01:57] Panel del agente con menos scroll (pedido de Nico 01:50): `src/agente/AgentePanel.tsx` y `src/agente/agente.css`. Código en `wip/agente-ia` `975ee98` (sobre `main` `af79fcb`): tsc, build, vitest puro 90/90 y guardia 0. Falta la prueba visual a 320 y 375 px con la función simulada (toca la base: un demo propio y un guardado de preferencias). Espero mi turno, puesto 4 de la cola. Ahí mismo, los 401 de "Comprobar servicio" en producción, sin modelo (unos 2 min).
+- [02:10] Panel del agente con menos scroll (pedido de Nico 01:50): `src/agente/AgentePanel.tsx` y `agente.css`. Listo en `wip/agente-ia` **`81687c1`** (= `708b622` + merge de `main` `22ae202`, "Los del finde"): tsc, build, vitest puro 90/90, guardia 0. Falta la prueba visual a 320, 375 y 1280 px con la función simulada (cero modelo; toca la base: un demo propio y guardados de preferencias, unos 4 min). Espero mi turno (puesto 4, después de front-juan). En el mismo turno, los 401 de "Comprobar servicio" en producción, sin modelo (2 min).
+- [02:10] Rediseño de la noche, **S6 Agente** (`src/agente/**`, estilos en `src/estilo/seccion-s6.css`, capturas en `docs/rediseno/capturas/s6/`): espero el brief de diseno (~03:00) antes de tocar pantallas. Sesión en Fable 5.1 desde las 02:05.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
