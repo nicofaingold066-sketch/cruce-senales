@@ -3,6 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cruce-qa`). Rutas: `tests/e2e/**`, `docs/qa-noche.md`. Puerto de preview: 4185.
 
 ## Tocando ahora
+- CORRIENDO PRUEBA (21:59) proposito.mjs sonda 0048 (qa-noche)
 - [21:43] Turno por turno, con marca: el humo de dos sesiones en producción FALLÓ en un paso (ver `docs/qa-noche.md`); sigo con el diagnóstico. Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
 
 ## Entregado
