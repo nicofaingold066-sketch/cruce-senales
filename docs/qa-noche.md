@@ -15,7 +15,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | `red-import-cortada.mjs` | #82: corte de red al importar una pantalla (reintento `?r=1`, barrera «Recargar», precarga) | sí (caso C) | `node tests/e2e/red-import-cortada.mjs <url>` |
 | `friccion-flujo.mjs` | #88, #90 (demo) y volver con el mismo enlace, de friccion (85 líneas) | sí | `node tests/e2e/friccion-flujo.mjs <url>` |
 | `convencer-uno.mjs` | #98 de ux-flujo: organizador + 5 invitados por enlace, toques y pantallas por persona (6 sesiones por corrida) | sí | `node tests/e2e/convencer-uno.mjs <url>` |
-| `guardia-palabras.mjs` | P-A de psico (§8.7): ninguna palabra de la lista (vegetariano, celíaco, «pareja de», novio/a, hombres, mujeres, chicos, chicas, «otra vez en casa»…) en copia visible de `src/` ni `supabase/functions/agente/` (sin pruebas, comentarios, catálogo ni listas de prohibidas) | no | `node tests/e2e/guardia-palabras.mjs` (sale 1 si hay hallazgos) |
+| `guardia-palabras.mjs` | P-A de psico (§8.7) + regla D2 (género y pareja de una persona no se piden ni se muestran): ninguna palabra de la lista (vegetariano, celíaco, «pareja de», novio/a, hombres, mujeres, chicos, chicas, «otra vez en casa»…) en copia visible de `src/` ni `supabase/functions/agente/` (sin pruebas, comentarios, catálogo ni listas de prohibidas) | no | `node tests/e2e/guardia-palabras.mjs [raíz de otra copia]` (sale 1 si hay hallazgos) |
 | `preparar-grupo.mjs` | Ayudante: crea grupo ficticio (Orga, Ana, Beto) y propuesta abierta | sí | lo llaman los dos anteriores |
 
 ## Cambios en los guiones
@@ -61,6 +61,8 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 20:55 | humo de producción (main 3ace04e) | producción | frenado: backend con MIGRACION EN CURSO (enmienda 13: 0042–0044) desde 20:59; corre solo al liberarse |
 | 21:08 | guardia-palabras con D2 sobre fundamentos 3ace04e | estático | 57 archivos, 0 hallazgos (§8.7: 0, D2: 0); control positivo detecta |
 | 21:08 | sintaxis y tipos de los guiones nuevos (`node --check`, `tsc -p tsconfig.node.json`) | — | ok; E13 sin correr contra la base hasta que backend aplique 0042–0044 |
+| 21:12 | `wip/friccion` fc66c0b (E13 (a) «Así no puedo, pero sigo» y D3 «¿Quién viene?»): typecheck, build, red 10/10, sesiones-recuperación 12/12, guardia-palabras 0/0 (61 archivos). El selector «¿Quién viene?» es regla del grupo (Sin definir / Solo el grupo / Con parejas / Abierta), sin datos de personas: cumple D2 | localhost, sin base | verde; recorrido, jurado y friccion-flujo esperan la base |
+| 21:12 | `wip/ux` 603678e: typecheck, build, red 10/10, guardia-palabras 0/0 | localhost, sin base | verde; recorrido y jurado esperan la base |
 
 ## Regresiones abiertas
 (ninguna)

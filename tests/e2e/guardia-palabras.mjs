@@ -9,7 +9,8 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { join, relative } from 'node:path'
-const RAIZ = fileURLToPath(new URL('../../', import.meta.url))
+// Raíz a revisar: este repo, u otra copia de trabajo pasada como argumento (para revisar la rama de otra sesión).
+const RAIZ = process.argv[2] ? join(process.argv[2], '/') : fileURLToPath(new URL('../../', import.meta.url))
 const PALABRAS_87 = ['vegetarian[oa]s?', 'vegan[oa]s?', 'celíac[oa]s?', 'alérgic[oa]s?', 'no come', 'pareja de', 'novi[oa]s?', 'solter[oa]s?',
   'hombres', 'mujeres', 'chicos', 'chicas', 'otra vez en casa', 'de nuevo en casa', 'ya que nadie', 'como nadie', 'para variar']
 const PALABRAS_D2 = ['g[eé]nero', 'sexo', 'sex', 'hombre', 'mujer', 'masculin[oa]s?', 'femenin[oa]s?', 'casad[oa]s?', 'estado civil',
