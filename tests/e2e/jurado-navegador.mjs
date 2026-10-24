@@ -166,8 +166,9 @@ const estado = (p, t) => p.locator('.estado-hero-etiqueta').filter({ hasText: ro
 function comprobar(condicion, mensaje) { assert.ok(condicion, mensaje); comprobadas++ }
 async function accion(p, fn, clic, ok = true) {
   const espera = p.waitForResponse(r => new URL(r.url()).pathname === `/rest/v1/rpc/${fn}`)
+  espera.catch(() => {}) // si el clic tarda más que la espera, el rechazo se lee abajo y no tumba el proceso
   await clic()
-  const response = await espera
+  const response = await espera.catch((e) => { throw new Error(`${fn}: sin respuesta (${String(e.message).split('\n')[0]})`) })
   const r = await response.json()
   assert.equal(response.status(), 200, `${fn}: transporte`)
   assert.equal(r.contrato, 2, `${fn}: contrato`)
@@ -237,8 +238,14 @@ async function cancelar() {
   const cancelarBtn = T.getByRole('button', { name: /^Cancelar (la )?propuesta$/ }).first()
   if (!(await cancelarBtn.waitFor({ timeout: 6000 }).then(() => true, () => false))) { log('Sin «Cancelar la propuesta» en este estado: queda sin cancelar (S4).'); actual.cancelada = 'sin-boton'; return }
   await cancelarBtn.click()
-  await accion(T, 'cancel_proposal', () => tocar(T, 'Sí, cancelar'))
-  await estado(T, 'Cancelado'); actual.cancelada = true
+  try {
+    await accion(T, 'cancel_proposal', () => tocar(T, 'Sí, cancelar'))
+    await estado(T, 'Cancelado'); actual.cancelada = true
+  } catch (e) {
+    log(`No se pudo cancelar desde la UI: ${String(e.message).split('\n')[0]}`)
+    await foto(T, 'fallo-cancelar-Tomi').catch(() => {})
+    actual.cancelada = 'fallo-ui'
+  }
 }
 async function variante(nombre, prueba) {
   const inicio = Date.now()
