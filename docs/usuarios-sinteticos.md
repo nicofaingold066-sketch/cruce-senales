@@ -347,6 +347,26 @@ Hallazgos de esta llamada (pedidos en la ficha):
 - **H23 (baja, codex-juan/agente-ia):** al final de la opción aparece un bloque «**Flujo social no disponible** · No pudimos confirmar que el servidor admita este recorrido. No se enviará una preparación. Comprobar servicio · Preparar borrador social» (la función v13 todavía no está desplegada). Es un estado de error visible al jurado en la pantalla del agente: ocultarlo mientras no esté disponible o suavizar el texto.
 - **H19 y H20** siguen: la invitación de WhatsApp lleva la regla pero no «para jugar fútbol», y el espacio del organizador no repite el propósito.
 
+## Enmienda 15, dos planes con nombre y «la que pueden más» (producción `22ae202`, 02:10; guion `tests/sinteticos/dos-planes.mjs`; capturas en `capturas/0210/`)
+
+Grupo nuevo «Los de la terraza»: Mara organiza con dos planes con nombre («Asado en el parque» el sábado, «Cine y pizza» el domingo) y regla «La que pueden más»; Teo (320 px) y Lola pueden los dos y prefieren «Cine y pizza»; Nano solo puede el sábado; Pipo nunca abre el enlace. Mínimo 3.
+
+| Qué se comprobó | Qué pasó |
+|---|---|
+| Nueva propuesta | «Nombre de este plan (opcional)» en cada opción ✔; «Más opciones» (plegado) con «Sin ronda / 2 h / 12 h / 24 h» y «La que empieza antes / La que pueden más» ✔; el texto de arriba cambia a «Si sirven las dos, gana la que pueden más personas (lo cuenta el servidor).» ✔ |
+| Mi respuesta | «Si te sirven los dos, ¿cuál prefieres?» aparece **solo con las dos en Sí** (Mara no lo vio antes de responder; sí después) y ofrece los nombres de los planes como opciones ✔; «Opcional y privado: solo desempata si los dos planes los pueden los mismos.» ✔; Teo y Lola guardaron su preferencia ✔ |
+| Lo que ve quien organiza antes de buscar | «Cómo viene cada plan · Franja A: pueden 3 · Franja B: pueden 2 · la prefieren 2 · Solo lo ves tú, sin contarte a ti y sin decir quién. El servidor elige.» ✔ (los números son correctos: A = Teo, Lola, Nano; B = Teo, Lola) |
+| Lo que ven los demás | Teo y Nano no ven totales ni preferencias ✔; ninguna pantalla ajena nombra a quien prefiere qué ni a quien solo puede un día ✔ (fugas: ninguna) |
+| La opción publicada | Gana **A, «Asado en el parque»** (3 pueden) aunque B es la preferida de 2 ✔ (la regla cuenta quiénes pueden; la preferencia solo desempata); la etiqueta aparece en «Opción vigente · Asado en el parque» ✔ |
+| «Así no puedo» y confirmar | Teo tiene el botón y confirmar sigue abierto ✔ |
+| Ronda de 2 h (E-c) | **sin probar**: mi guion tocó el «2 h» de «Dura aprox.» (que viene antes) en vez del de «Ronda de opiniones». Corregido; se repite en la próxima corrida |
+| Toques | Mara: 4 para el grupo (lista pegada); Teo, Lola y Nano: 3 desde el enlace; la preferencia cuesta 2 toques más (ir a «Mi respuesta», elegir, guardar) |
+
+Hallazgos nuevos (pedidos en la ficha):
+- **H24 (media, friccion S5 / ux-flujo):** la pantalla de un toque «¿Cuándo puedes?» **no muestra los nombres de los planes**: con «Asado en el parque» y «Cine y pizza» cargados, Teo leyó «Puedo los dos días · Sábado 31 oct y Domingo 1 nov», «Solo el sábado 31 oct», «Solo el domingo 1 nov». Responde sin saber qué es cada uno. Y ese camino **no ofrece «¿cuál prefieres?»**: con «la que pueden más», quien responde por el enlace (el 100 % de los invitados) nunca desempata; solo quien entra a «Mi respuesta». Captura `capturas/0210/teo-03-responder-en-un-paso.png`.
+- **H25 (baja, límite ya declarado):** con 4 que entraron, «pueden 3 / pueden 2 · la prefieren 2» deja deducir cosas en un grupo chico; es el mismo límite que H17 y lo cubre la frase de `preguntas-jurado.md` S5b («en grupos chicos el total puede deducirse; la app nunca dice quién»).
+- **Observación (baja, ux-flujo):** después de publicar, la «Ficha del plan» queda plegada y «Gana la que pueden más personas» deja de verse; para el jurado conviene que la regla se lea junto a la opción vigente («Ganó porque la pueden más»).
+
 ## Qué mejoró con el parche 2 (producción `d978cc1`, 23:46–23:50)
 
 | Hallazgo | Estado hoy |
@@ -367,6 +387,7 @@ Hallazgos de esta llamada (pedidos en la ficha):
 |---|---|---|
 | 19:28 | build `95def89` (parcial: el guion se cortó al confirmar Gonza; corrió durante MIGRACION EN CURSO) | descartada |
 | 19:40 | build `95def89`, base libre | completa; hallazgos H1–H14 |
+| 02:10–02:13 | **PRODUCCIÓN** `22ae202` (la demo se llama «Los del finde») | `dos-planes` (nuevo, E15): dos planes con nombre, «la que pueden más», «¿cuál prefieres?» y totales solo a quien organiza, sin fugas (ronda sin probar por mi selector; arreglado). `seis-amigos` completo: Joaco 3 toques (4,0 s), Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2. Corrida cortada después por pedido de pendientes (0055): «así no puedo», psico y propósito quedan para después de su migración |
 | 01:42–01:43 | **PRODUCCIÓN** `44e6de6` (v13, «Novedades» fuera, CSS de 320 px, fricción y arreglos de Juan) | `seis-amigos` completo, sin errores del guion ni fugas: Joaco 3 toques (4,7 s, 320 px), Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2. **H8 resuelto**: la reparación dice «Misma fecha y hora; cambió quién puede ir.». Nuevos textos buenos: «Faltan por confirmar 3 personas», «6 personas (1 por entrar)» y la tarjeta «Invita a tu grupo · Por ahora entraron 5 · Faltan por entrar: Pili» (para quien nunca abre el enlace). Corrí antes de mi turno por un error de mi cola (empezó justo al liberarse la 0053): se terminó esa corrida de 1 minuto y no lancé más |
 | 00:26–00:27 | **PRODUCCIÓN** `d978cc1` | `proposito-grupo` otra vez, esta vez esperando al agente: el texto de quórum sale como pidió Nico (arriba); H21–H23 nuevos |
 | 23:45–23:50 | **PRODUCCIÓN** `main` `d978cc1` (parche 2 de pantallas + enmienda 14 visible) | cuatro guiones completos, sin errores del guion y sin fugas: `proposito-grupo` (nuevo), `seis-amigos` (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6), `asi-no-puedo` (22/22 verdaderas y las dos «falsas» son lo esperado: nadie ve nombres) y `psico-perfiles`. La llamada del agente en `proposito-grupo` se leyó antes de que terminara de pensar (mi guion): pendiente repetirla |

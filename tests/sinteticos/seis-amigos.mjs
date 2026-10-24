@@ -249,7 +249,10 @@ try {
     await bruno.tocar(bruno.page.getByText('Ojalá gratis', { exact: true }), 'Presupuesto: Ojalá gratis')
     await bruno.tocar(bruno.page.getByText('Prefiero bajo techo', { exact: true }), 'Lugar: bajo techo')
     await bruno.tocar(bruno.page.locator('input[id^=pref-gusta-]').first().locator('xpath=..'), 'Me gustaría: la primera actividad')
-    // Enmienda 10, si ya está en el build: transporte, 30 minutos.
+    // Enmienda 10, si ya está en el build: transporte, 30 minutos. Con el panel compacto (agente-ia, 02:12) esas
+    // preguntas viven plegadas en «Cómo llegas (opcional)»: se abre si existe (en el panel largo no está).
+    const plegado = bruno.page.getByRole('button', { name: /Cómo llegas \(opcional\)/ })
+    if (await plegado.count()) await bruno.tocar(plegado.first(), 'abrir «Cómo llegas (opcional)»')
     for (const [txt, que] of [['Transporte público', 'Cómo te movés'], ['Hasta 30 min', 'Hasta cuánto viajás']]) {
       const o = bruno.page.getByText(txt, { exact: true })
       if (await o.count()) await bruno.tocar(o.first(), que)
