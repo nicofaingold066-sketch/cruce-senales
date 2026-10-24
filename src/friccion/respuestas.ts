@@ -41,7 +41,9 @@ export function opcionesRapidas(franjas: Franja[]): Opcion[] | null {
   const igualHorario = horario(a) === horario(b)
   const conNombres = etiqueta(a) != null || etiqueta(b) != null
   const otra = (f: Franja) => (dias ? `el ${diaDe(f.inicio.local).split(' ')[0].toLocaleLowerCase('es')}` : `de ${horario(f)}`)
-  const solo = (f: Franja) => `${dias ? `Solo el ${diaDe(f.inicio.local).toLocaleLowerCase('es')}` : `Solo de ${horario(f)}`}${etiqueta(f) ? ` · ${etiqueta(f)}` : ''}`
+  // Mockup (pantalla 6): "Solo el sábado 31" (sin el mes; la ficha del día lo muestra al lado).
+  const diaCorto = (f: Franja) => diaDe(f.inicio.local).split(' ').slice(0, 2).join(' ').toLocaleLowerCase('es')
+  const solo = (f: Franja) => `${dias ? `Solo el ${diaCorto(f)}` : `Solo de ${horario(f)}`}${etiqueta(f) ? ` · ${etiqueta(f)}` : ''}`
   const plan = (f: Franja) => (etiqueta(f) ? `${etiqueta(f)} (${diaDe(f.inicio.local).toLocaleLowerCase('es')})` : diaDe(f.inicio.local))
   return [
     {

@@ -126,3 +126,98 @@
 .s5 .zona-peligro {
   margin-top: var(--e-5);
 }
+
+/* ---- Mockup validado (pantallas 6 y 14) ---- */
+.s5 .btn.rapida-ninguna {
+  min-height: var(--toque);
+  border: 1.5px dashed var(--linea);
+  background: transparent;
+}
+.s5-todavia {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque);
+  font-size: var(--t-nota);
+}
+.s5-opcional {
+  margin: var(--e-5) 0 0;
+}
+.s5 .s5-opcional-titulo {
+  margin: 0 0 var(--e-2);
+  font-size: var(--t-nota);
+  font-weight: var(--p-rotulo);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-2);
+}
+.s5-fila-opcional {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-3);
+  min-height: 56px;
+  padding: var(--e-2) var(--e-4);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-m);
+  background: var(--hoja);
+  color: var(--tinta);
+  font-size: var(--t-cuerpo);
+  text-decoration: none;
+  margin: 0 0 var(--e-2);
+}
+.s5-fila-opcional > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.s5-fila-opcional .btn {
+  flex: none;
+  margin: 0;
+  min-height: var(--toque);
+}
+.s5-fila-boton {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.s5-opcional .calendario-sim {
+  margin: 0;
+}
+.s5-check {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: var(--e-2) 0 var(--e-2);
+  border-radius: 50%;
+  background: var(--ok);
+  color: #fff;
+}
+.s5-respondiste,
+.s5-grupo {
+  margin: 0 0 var(--e-3);
+}
+.s5-respondiste p {
+  margin: 0;
+}
+.s5-barra {
+  height: 8px;
+  margin: var(--e-2) 0 var(--e-1);
+  border-radius: 999px;
+  background: var(--relleno);
+  overflow: hidden;
+}
+.s5-barra > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--tinta);
+}
+.s5-filas {
+  margin: 0 0 var(--e-4);
+}
+.s5 .btn.s5-listo {
+  width: 100%;
+  min-height: 52px;
+  margin: 0 0 var(--e-4);
+}

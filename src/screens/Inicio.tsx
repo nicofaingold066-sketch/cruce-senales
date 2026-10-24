@@ -12,6 +12,8 @@ import { OtraSesion } from '../components/Sesiones'
 import { guardarPerfil, usePerfil } from '../lib/perfil'
 import { vibrar } from '../lib/tacto'
 import { Aviso, Boton, Cargando, Chip, ErrorCaja, colorAvatar, iniciales } from '../components/ui'
+import { Orbita } from '../components/Orbita'
+import { Resaltado } from '../components/Resaltado'
 import { esTurno } from '../components/PlanVivo'
 import { Icono } from '../components/Icono'
 import { UnirseConNombre, useUnirse } from '../login/QuienEres'
@@ -51,6 +53,12 @@ export default function Inicio({ invitacionInvalida }: { invitacionInvalida?: bo
   const turno = activas.find((x) => esTurno(x.p)) ?? null
   const planDe = (id: string) => activas.find((x) => x.espacio.id === id)?.p ?? null
   const yaDemo = espacios?.some((e) => e.demo && e.mi_rol === 'organizador') ?? false
+
+  const perfil = usePerfil()
+  // Pantalla 9 (mockup): primera vez en este teléfono, sin nombre y sin grupos.
+  if (!perfil && espacios !== null && espacios.length === 0) {
+    return <PortadaNueva soloLectura={soloLectura} invitacionInvalida={invitacionInvalida} />
+  }
 
   return (
     <div className="vista s1 s1-portada">
@@ -130,8 +138,7 @@ function FilaGrupo({ e, plan }: { e: EspacioResumen; plan: PropuestaResumen | nu
         <span className="fila-texto">
           <span className="fila-titulo">{e.nombre}</span>
           <span className="fila-meta t-nota">
-            {personas}
-            {plan ? ` · ${plan.titulo}` : ''}
+            {personas} · {plan ? `${plan.titulo}, ${plan.estado_etiqueta.toLocaleLowerCase('es')}` : 'sin plan todavía'}
           </span>
         </span>
         {e.demo ? <Chip tono="sim">Demo</Chip> : null}
@@ -154,7 +161,7 @@ function OpcionesNuevo({ soloLectura, yaDemo, conNombre }: { soloLectura: boolea
         </span>
         <span className="s1-opcion-texto">
           <span className="t-subtitulo">Crear un grupo</span>
-          <span className="t-nota">Anotas a tus amigos y les mandas un enlace.</span>
+          <span className="t-nota">Pones el nombre y a tus amigos. Después armas el plan.</span>
         </span>
         <span className="fila-chevron" aria-hidden="true">
           <Icono n="chevron" />
@@ -170,7 +177,7 @@ function OpcionesNuevo({ soloLectura, yaDemo, conNombre }: { soloLectura: boolea
           </span>
           <span className="s1-opcion-texto">
             <span className="t-subtitulo">Unirme con un código</span>
-            <span className="t-nota">El que te mandaron por WhatsApp.</span>
+            <span className="t-nota">Te lo mandó quien organiza.</span>
           </span>
         </summary>
         <div className="s1-opcion-cuerpo">
@@ -179,7 +186,7 @@ function OpcionesNuevo({ soloLectura, yaDemo, conNombre }: { soloLectura: boolea
       </details>
       <div className="s1-demo">
         <p className="t-nota s1-nota">o prueba sin crear nada</p>
-        <CargarDemo deshabilitado={soloLectura} yaCargada={yaDemo} />
+        <CargarDemo deshabilitado={soloLectura} yaCargada={yaDemo} sinDetalle />
       </div>
     </div>
   )
@@ -207,11 +214,84 @@ function HojaNuevo({ cerrar, children }: { cerrar: () => void; children: ReactNo
       <div className="s1-hoja-cabeza">
         <h2 id="hoja-nuevo-titulo">Nuevo grupo</h2>
         <button type="button" className="btn btn-secundario s1-cerrar" onClick={cerrar} aria-label="Cerrar">
-          <Icono n="menos" tam={18} />
+          <span className="s1-x" aria-hidden="true">
+            <Icono n="mas" tam={20} />
+          </span>
         </button>
       </div>
       {children}
     </dialog>
+  )
+}
+
+/**
+ * Pantalla 9: primera vez, sin nombre y sin grupos. Título, la órbita chica, "Entrar a CRUXE" con el nombre (primario) y
+ * dos filas: la demo y "Tengo un código de invitación", que se despliega ahí mismo. Al entrar con el nombre se ve "Tus
+ * grupos" vacío con "Crear un grupo" a la vista.
+ */
+function PortadaNueva({ soloLectura, invitacionInvalida }: { soloLectura: boolean; invitacionInvalida?: boolean }) {
+  const [nombre, setNombre] = useState('')
+  const [aviso, setAviso] = useState<string | null>(null)
+  function entrar(e: FormEvent) {
+    e.preventDefault()
+    if (!nombre.trim()) return
+    vibrar(10)
+    if (!guardarPerfil(nombre)) setAviso('Este navegador no deja guardar datos: escribirás tu nombre al crear o unirte.')
+  }
+  return (
+    <div className="vista s1 s1-nueva">
+      <section className="escena escena-portada" aria-labelledby="portada-titulo">
+        <h1 id="portada-titulo" className="portada-lema">
+          Del «nos juntamos» al{' '}
+          <em className="sin-corte">
+            <Resaltado>encuentro que ocurre</Resaltado>.
+          </em>
+        </h1>
+        <p className="portada-sub">Cada uno dice en privado cuándo puede. Sale un solo plan y cada uno lo confirma.</p>
+        <div className="s1-orbita-chica">
+          <Orbita compacta />
+        </div>
+      </section>
+      <div className="hoja">
+        {invitacionInvalida ? (
+          <Aviso tono="aviso" titulo="Ese enlace de invitación no es válido">
+            Pide uno nuevo o escribe el código en «Tengo un código de invitación».
+          </Aviso>
+        ) : null}
+        <OtraSesion />
+        <form className="tarjeta s1-entrar" onSubmit={entrar} noValidate aria-labelledby="ingreso-titulo">
+          <h2 id="ingreso-titulo">Entrar a CRUXE</h2>
+          <p className="t-nota s1-nota">Sin contraseña ni correo. Tu sesión queda en este teléfono.</p>
+          <label className="campo">
+            <span>¿Cómo te llaman tus amigos?</span>
+            <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={30} autoComplete="nickname" placeholder="Tu nombre" />
+          </label>
+          <Boton type="submit" className="s1-btn" disabled={!nombre.trim()}>
+            Entrar
+          </Boton>
+          {aviso ? <p role="status">{aviso}</p> : null}
+        </form>
+        <div className="s1-opciones">
+          <div className="s1-opcion s1-opcion-demo">
+            <CargarDemo deshabilitado={soloLectura} yaCargada={false} />
+          </div>
+          <details className="s1-opcion s1-opcion-unirme">
+            <summary>
+              <span className="s1-opcion-icono" aria-hidden="true">
+                <Icono n="llave" />
+              </span>
+              <span className="s1-opcion-texto">
+                <span className="t-subtitulo">Tengo un código de invitación</span>
+                <span className="t-nota">Te lo mandó quien organiza.</span>
+              </span>
+            </summary>
+            <div className="s1-opcion-cuerpo">
+              <UnirsePortada deshabilitado={soloLectura} />
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -280,7 +360,7 @@ async function planesActivos(espacios: EspacioResumen[]): Promise<PlanActivo[]> 
   return listas.flat().sort((a, b) => Number(turno(b)) - Number(turno(a)))
 }
 
-function CargarDemo({ deshabilitado, yaCargada }: { deshabilitado: boolean; yaCargada: boolean }) {
+function CargarDemo({ deshabilitado, yaCargada, sinDetalle }: { deshabilitado: boolean; yaCargada: boolean; sinDetalle?: boolean }) {
   const { ocupado, error, ejecutar } = useAccion()
   async function hacer() {
     const r = await ejecutar('seed', () => api.seedDemoSpace())
@@ -291,7 +371,7 @@ function CargarDemo({ deshabilitado, yaCargada }: { deshabilitado: boolean; yaCa
       <Boton variante="secundario" className="s1-btn" onClick={hacer} ocupado={ocupado} ocupadoTexto="Preparando la demo…" disabled={deshabilitado} aria-describedby="demo-detalle">
         {yaCargada ? 'Abrir la demo «Los del finde»' : 'Probar la demo «Los del finde»'}
       </Boton>
-      <p className="t-nota s1-nota" id="demo-detalle">
+      <p className={`t-nota s1-nota ${sinDetalle ? 'visualmente-oculto' : ''}`} id="demo-detalle">
         Serás Tomi, quien organiza; las otras cinco personas son simuladas. Datos ficticios.
       </p>
       {error ? <ErrorCaja error={error} enfocar /> : null}

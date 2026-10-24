@@ -364,3 +364,69 @@ details.s1-opcion {
     display: none;
   }
 }
+
+/* ---- Mockup validado, pantallas 1, 2, 9 y 10 (03:15) ---- */
+/* El "+" flotante va abajo al centro (sobre la barra inferior). */
+.btn.s1-mas {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}
+.btn.s1-mas:active {
+  transform: translateX(-50%) scale(0.97);
+}
+/* La X de la hoja: el ícono "+" girado. */
+.s1-x {
+  display: inline-grid;
+  transform: rotate(45deg);
+}
+/* Pantalla 9 */
+.s1-nueva .escena {
+  padding-bottom: var(--e-6);
+}
+.s1-orbita-chica {
+  max-width: 220px;
+  margin: var(--e-3) auto 0;
+}
+.s1-entrar {
+  margin: 0 0 var(--e-3);
+}
+.s1-entrar h2 {
+  margin: 0 0 var(--e-1);
+}
+.s1-entrar .campo {
+  margin: var(--e-3) 0;
+}
+.s1-opcion-demo {
+  display: block;
+  padding: var(--e-3) var(--e-4);
+}
+.s1-opcion-demo .btn {
+  width: 100%;
+  margin: 0;
+}
+.s1-opcion-demo .s1-nota {
+  margin: var(--e-2) 0 0;
+}
+/* Pantalla 10 */
+.s1 .s1-grupo-grande {
+  margin: var(--e-1) 0 var(--e-1);
+  font-size: var(--t-titulo);
+  line-height: var(--lh-titulo);
+  font-weight: var(--p-pantalla);
+  color: var(--noche-texto);
+  overflow-wrap: anywhere;
+}
+.s1-quien .escena h1 {
+  margin-top: var(--e-4);
+}
+.s1-quien .quien-nombre {
+  gap: var(--e-3);
+}
+.s1-quien .quien-nombre .avatar {
+  flex: none;
+}
+.btn.s1-no-estoy {
+  border: 1.5px dashed var(--linea);
+  background: transparent;
+}

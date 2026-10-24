@@ -10,7 +10,7 @@ import type { ApiError, EstadoPropuesta, Preferencia, PropuestaResumen } from '.
 import { useAccion } from '../lib/hooks'
 import { dejarAviso, rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { vibrar } from '../lib/tacto'
-import { Boton, Cargando, ErrorCaja } from '../components/ui'
+import { Boton, Cargando, Chip, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { TomarDeCalendario } from './Calendario'
 import { nombreDelPlan, opcionesRapidas } from './respuestas'
@@ -25,7 +25,7 @@ import './friccion.css'
 type Carga =
   | { fase: 'cargando' }
   | { fase: 'error'; error: ApiError }
-  | { fase: 'lista'; p: EstadoPropuesta; espacio: string; demo: boolean; yo: string | null; organizador: boolean; reabierta: boolean }
+  | { fase: 'lista'; p: EstadoPropuesta; espacio: string; demo: boolean; yo: string | null; organizador: boolean; reabierta: boolean; personas: number }
 
 /** Busca la única propuesta que esta persona puede responder ahora; si no hay una sola, sale (ver `salir`). */
 function usePropuestaPorResponder(espacioId: string, propuestaId?: string) {
@@ -76,7 +76,7 @@ function usePropuestaPorResponder(espacioId: string, propuestaId?: string) {
     if (!s.puede.guardar_condiciones || !corresponde || !opcionesRapidas(p.franjas)) return salir(candidata)
     const espacio = esp.data.espacio
     const yo = espacio.miembros.find((m) => m.es_yo)?.nombre ?? s.nombre
-    setCarga({ fase: 'lista', p, espacio: sinQuienViene(espacio.nombre), demo: espacio.demo, yo, organizador: espacio.mi_rol === 'organizador', reabierta })
+    setCarga({ fase: 'lista', p, espacio: sinQuienViene(espacio.nombre), demo: espacio.demo, yo, organizador: espacio.mi_rol === 'organizador', reabierta, personas: espacio.miembros.filter((m) => !m.pendiente).length })
   }, [espacioId, propuestaId, salir])
 
   useEffect(() => {
@@ -169,26 +169,41 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
     }
   }
 
+  // Pantalla 14: lo que marcaste, en una línea ("Puedes los dos días.").
+  const loQueMarcaste = elegida
+    ? elegida.id === 'ninguna'
+      ? 'No puedes ninguno de los días.'
+      : elegida.id === 'ambas' || elegida.id === 'si'
+        ? elegida.texto.replace(/^Puedo/, 'Puedes') + '.'
+        : elegida.texto.replace(/^Solo/, 'Puedes solo') + '.'
+    : ''
+  // Cuántos respondieron: el servidor solo se lo da a quien organiza la propuesta (E7.2); nunca se calcula acá.
+  const respondieron = p.personas_con_condiciones
+
   return (
     <div className="vista s5 s5-responder">
       <section className="escena" aria-labelledby="responder-titulo">
-        <a className="escena-volver" href={rutas.espacio(espacioId)}>
-          <Icono n="atras" tam={20} /> Ver el grupo
+        <a className="escena-volver" href={verPlan}>
+          <Icono n="atras" tam={20} /> Ver el plan
         </a>
-        <span className="escena-eyebrow">{p.titulo}</span>
+        <span className="escena-eyebrow">
+          {elegida ? 'Respuesta guardada · ' : ''}
+          {p.titulo} · {lista.espacio}
+        </span>
+        {elegida ? (
+          <span className="s5-check sd-exito" aria-hidden="true">
+            <Icono n="check" tam={40} />
+          </span>
+        ) : null}
         <h1 id="responder-titulo" ref={titulo} tabIndex={-1}>
-          {elegida ? 'Respuesta guardada' : '¿Cuándo puedes?'}
+          {elegida ? 'Respondiste' : '¿Cuándo puedes?'}
         </h1>
         <p className="escena-sub">
           {!elegida
             ? lista.reabierta
               ? 'Marcaste que así no puedes. ¿Cuándo sí? Toca una opción: si se rearma, cuenta esto. Es privado: nadie del grupo lo ve.'
               : 'Toca una opción y listo. Es privado: nadie del grupo ve qué elegiste.'
-            : Object.values(elegida.disponibilidad).includes('si')
-              ? s.es_organizador
-                ? 'Cuando el grupo haya respondido, busca una opción compatible desde el plan.'
-                : 'Cuando el grupo haya respondido, quien organiza busca una opción compatible. Si te sirve, la confirmas en el plan.'
-              : 'Quedó guardado que no puedes en ninguno. Si algo cambia, puedes cambiarlo mientras se reúnen respuestas.'}
+            : loQueMarcaste}
         </p>
       </section>
       <div className="hoja">
@@ -199,116 +214,158 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
         ) : null}
 
         {!elegida ? (
-          <section aria-labelledby="responder-titulo">
-            <RespuestasRapidas franjas={p.franjas} onElegir={(o) => void responder(o)} ocupado={guardar.ocupado} deshabilitado={soloLectura} sugerida={sugerida} />
-            {guardar.ocupado ? <p role="status" className="suave">Guardando…</p> : null}
-            {sugerida ? (
-              <p id="rapida-sugerencia" className="suave" role="status">
-                Tu agenda ficticia sugiere «{opciones.find((o) => o.id === sugerida)?.texto}». Tócala para responder.
-              </p>
-            ) : null}
-            {lista.demo ? (
-              <TomarDeCalendario
-                franjas={p.franjas}
-                semilla={s.miembro_id}
-                deshabilitado={soloLectura || guardar.ocupado}
-                textoUsar="Ver qué sugiere mi agenda"
-                onTomar={(d) => {
-                  const o = opciones.find((x) => p.franjas.every((f) => x.disponibilidad[f.clave] === d[f.clave]))
-                  if (!o) return
-                  setSugerida(o.id)
-                  const b = document.getElementById(`rapida-${o.id}`)
-                  b?.scrollIntoView({ block: 'center', behavior: 'smooth' })
-                  b?.focus({ preventScroll: true })
-                }}
-              />
-            ) : null}
-            {guardar.error ? <ErrorCaja error={guardar.error} enfocar /> : null}
-            <a className="btn btn-secundario entrada-enlace" href={verPlan}>
-              Todavía no sé: ver el plan
-            </a>
-            <p className="suave rapida-nota">Si todavía no sabes, vuelve a abrir el mismo enlace cuando sepas: te trae directo aquí.</p>
-          </section>
-        ) : (
-          <section className="tarjeta entrada-principal sd-exito" aria-labelledby="rapida-hecho">
-            <h2 id="rapida-hecho" ref={hecho} tabIndex={-1}>
-              <Icono n="check" tam={20} /> {elegida.texto}
-            </h2>
-            <p className="suave">
-              Guardado. Solo tú ves estas condiciones.
-            </p>
-            {conDesempate ? (
-              <div className="rapida-prefiero">
-                <p className="suave">
-                  {prefiero
-                    ? `Prefieres «${nombreDelPlan(p.franjas, prefiero)}». Es privado y solo desempata si puedes en los dos.`
-                    : 'Si puedes en los dos, ¿cuál prefieres? Es privado y solo desempata; puedes dejarlo sin responder.'}
+          <>
+            <section aria-labelledby="responder-titulo">
+              <RespuestasRapidas franjas={p.franjas} onElegir={(o) => void responder(o)} ocupado={guardar.ocupado} deshabilitado={soloLectura} sugerida={sugerida} />
+              {guardar.ocupado ? <p role="status" className="suave">Guardando…</p> : null}
+              {sugerida ? (
+                <p id="rapida-sugerencia" className="suave" role="status">
+                  Tu agenda ficticia sugiere «{opciones.find((o) => o.id === sugerida)?.texto}». Tócala para responder.
                 </p>
-                {!prefiero ? (
-                  <div className="rapida-prefiero-botones">
-                    {(['A', 'B'] as Preferencia[]).map((q) => (
-                      <Boton key={q} variante="secundario" onClick={() => void preferir(q)} ocupado={prefer.ocupado} ocupadoTexto="Guardando…" disabled={soloLectura}>
-                        Prefiero «{nombreDelPlan(p.franjas, q)}»
-                      </Boton>
-                    ))}
-                  </div>
-                ) : null}
-                {prefer.error ? <ErrorCaja error={prefer.error} enfocar /> : null}
-              </div>
-            ) : null}
-            <div className="entrada-botones">
-              <a className="btn btn-primario" href={verPlan}>
-                Ver el plan
+              ) : null}
+              {guardar.error ? <ErrorCaja error={guardar.error} enfocar /> : null}
+              <a className="enlace s5-todavia" href={verPlan}>
+                Todavía no sé: ver el plan
               </a>
-              <Boton variante="secundario" onClick={() => {
+            </section>
+
+            {/* Mockup (pantalla 6): lo opcional, chico y debajo, cada cosa diciendo quién la ve. */}
+            <section className="s5-opcional" aria-labelledby="s5-opcional-titulo">
+              <h2 id="s5-opcional-titulo" className="s5-opcional-titulo">
+                Opcional
+              </h2>
+              {s.puede.marcar_interes && !s.interesado ? (
+                <div className="s5-fila-opcional">
+                  <span>
+                    Avisar que me interesa <span className="t-nota">(lo ve el grupo)</span>
+                  </span>
+                  <Boton variante="secundario" onClick={() => void marcarInteres()} ocupado={interes.ocupado} disabled={soloLectura}>
+                    Me interesa
+                  </Boton>
+                </div>
+              ) : null}
+              {s.interesado ? <p className="t-nota">Ya avisaste que te interesa (lo ve el grupo; no es confirmar).</p> : null}
+              {interesNota ? <p role="status">{interesNota}</p> : null}
+              {interes.error ? <ErrorCaja error={interes.error} enfocar /> : null}
+              <a
+                className="s5-fila-opcional s5-fila-enlace"
+                href={rutas.espacio(espacioId)}
+                onClick={() => {
+                  // El grupo abre "Mis preferencias" si encuentra esta marca.
+                  try {
+                    sessionStorage.setItem('cruxe:abrir-preferencias', '1')
+                  } catch {
+                    // Sin almacenamiento: se llega al grupo igual.
+                  }
+                }}
+              >
+                <span>
+                  Mis gustos y presupuesto <span className="t-nota">(privado)</span>
+                </span>
+                <Icono n="chevron" tam={18} />
+              </a>
+              {lista.demo ? (
+                <TomarDeCalendario
+                  franjas={p.franjas}
+                  semilla={s.miembro_id}
+                  deshabilitado={soloLectura || guardar.ocupado}
+                  textoUsar="Ver qué sugiere mi agenda"
+                  onTomar={(d) => {
+                    const o = opciones.find((x) => p.franjas.every((f) => x.disponibilidad[f.clave] === d[f.clave]))
+                    if (!o) return
+                    setSugerida(o.id)
+                    const b = document.getElementById(`rapida-${o.id}`)
+                    b?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+                    b?.focus({ preventScroll: true })
+                  }}
+                />
+              ) : null}
+            </section>
+          </>
+        ) : (
+          <>
+            {/* Pantalla 14: "Respondiste". */}
+            <section className="tarjeta s5-respondiste" aria-labelledby="rapida-hecho">
+              <h2 id="rapida-hecho" ref={hecho} tabIndex={-1} className="visualmente-oculto">
+                {elegida.texto}
+              </h2>
+              <p className="t-cuerpo">Guardado. Solo tú ves estas condiciones. Cuando haya un plan, lo ves acá.</p>
+              {conDesempate ? (
+                <div className="rapida-prefiero">
+                  <p className="suave">
+                    {prefiero
+                      ? `Prefieres «${nombreDelPlan(p.franjas, prefiero)}». Es privado y solo desempata si puedes en los dos.`
+                      : 'Si puedes en los dos, ¿cuál prefieres? Es privado y solo desempata; puedes dejarlo sin responder.'}
+                  </p>
+                  {!prefiero ? (
+                    <div className="rapida-prefiero-botones">
+                      {(['A', 'B'] as Preferencia[]).map((q) => (
+                        <Boton key={q} variante="secundario" onClick={() => void preferir(q)} ocupado={prefer.ocupado} ocupadoTexto="Guardando…" disabled={soloLectura}>
+                          Prefiero «{nombreDelPlan(p.franjas, q)}»
+                        </Boton>
+                      ))}
+                    </div>
+                  ) : null}
+                  {prefer.error ? <ErrorCaja error={prefer.error} enfocar /> : null}
+                </div>
+              ) : null}
+            </section>
+
+            <section className="tarjeta s5-grupo" aria-label={`Estado de ${lista.espacio}`}>
+              <div className="tarjeta-cabeza">
+                <strong className="t-cuerpo">{lista.espacio}</strong>
+                <Chip>{p.estado_etiqueta}</Chip>
+              </div>
+              {respondieron != null && lista.personas > 0 ? (
+                <>
+                  <div className="s5-barra" role="img" aria-label={`${respondieron} de ${lista.personas} respondieron`}>
+                    <span style={{ width: `${Math.min(100, Math.round((respondieron / lista.personas) * 100))}%` }} />
+                  </div>
+                  <p className="t-nota">
+                    {respondieron} de {lista.personas} respondieron
+                  </p>
+                </>
+              ) : null}
+              <p className="t-nota s5-nota">
+                {s.es_organizador
+                  ? 'Cuando haya suficientes respuestas, busca la opción desde el plan.'
+                  : 'Quien organiza busca la opción cuando haya suficientes respuestas.'}
+              </p>
+            </section>
+
+            <div className="s5-filas">
+              <button
+                type="button"
+                className="s5-fila-opcional s5-fila-boton"
+                onClick={() => {
                   setSugerida(null)
                   setPrefiero(null)
                   setElegida(null)
                 }}
               >
-                Cambiar mi respuesta
-              </Boton>
+                <span>Cambiar mi respuesta</span>
+                <Icono n="chevron" tam={18} />
+              </button>
+              {algunSi && s.puede.marcar_interes && !s.interesado ? (
+                <div className="s5-fila-opcional">
+                  <span>
+                    Avisar que me interesa <span className="t-nota">(opcional · lo ve el grupo)</span>
+                  </span>
+                  <Boton variante="secundario" onClick={() => void marcarInteres()} ocupado={interes.ocupado} disabled={soloLectura}>
+                    Me interesa
+                  </Boton>
+                </div>
+              ) : null}
+              {interesNota ? <p role="status">{interesNota}</p> : null}
+              {interes.error ? <ErrorCaja error={interes.error} enfocar /> : null}
             </div>
-            {algunSi && s.puede.marcar_interes && !s.interesado ? (
-              // sinteticos: después de las acciones y más bajo, porque la escena acaba de decir que la respuesta es privada.
-              <div className="rapida-interes">
-                <p className="suave">
-                  ¿Quieres avisar al grupo que te interesa? Es opcional, y esto sí lo ve el grupo: tu nombre entre los interesados. Interés
-                  no es confirmación.
-                </p>
-                <Boton variante="secundario" onClick={() => void marcarInteres()} ocupado={interes.ocupado} disabled={soloLectura}>
-                  Me interesa
-                </Boton>
-              </div>
-            ) : null}
-            {interesNota ? <p role="status">{interesNota}</p> : null}
-            {interes.error ? <ErrorCaja error={interes.error} enfocar /> : null}
-            <a
-              className="rapida-preferencias"
-              href={rutas.espacio(espacioId)}
-              onClick={() => {
-                // El espacio abre "Mis preferencias" si encuentra esta marca (lo conecta front-juan en Espacio.tsx).
-                try {
-                  sessionStorage.setItem('cruxe:abrir-preferencias', '1')
-                } catch {
-                  // Sin almacenamiento: se llega al espacio igual.
-                }
-              }}
-            >
-              Contar mis gustos y presupuesto (opcional, privado)
+
+            <a className="btn btn-primario s5-listo" href={verPlan}>
+              Listo
             </a>
-          </section>
+          </>
         )}
 
-        <div className="privado" role="note">
-          <span className="privado-icono" aria-hidden="true">
-            <Icono n="candado" tam={20} />
-          </span>
-          <div>
-            <strong>Tu respuesta es privada</strong>
-            <p>Nadie del grupo ve qué días puedes. Responder no es confirmar: eso viene después, con una sola opción.</p>
-          </div>
-        </div>
         <QueGuarda />
       </div>
     </div>

@@ -12,7 +12,7 @@ import { useAccion } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { entrarComoOtraPersona, leerGuardada } from '../lib/sesiones'
 import { leerPerfil, recordarNombreSiFalta, usePerfil } from '../lib/perfil'
-import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
+import { Avatar, Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { marcarConEspacios } from './estado'
 import { QueGuarda } from '../friccion/QueGuarda'
@@ -250,20 +250,20 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
   return (
     <div className="vista s1 s1-quien">
       <section className="escena escena-invitacion" aria-labelledby="quien-titulo">
-        <span className="escena-eyebrow">Invitación a CRUXE</span>
+        <span className="escena-eyebrow">{vista ? 'Te invitaron a' : 'Invitación a CRUXE'}</span>
+        {/* El nombre del grupo va grande pero fuera de los títulos: los guiones esperan el título del grupo para saber que ya se entró. */}
+        {vista ? <p className="s1-grupo-grande">{nombreEspacio}</p> : null}
+        {reglaEspacio ? <p className="quien-espacio quien-regla">{FRASE_QUIEN_VIENE[reglaEspacio]}</p> : null}
+        {vista && fraseProposito(vista.espacio.proposito) ? <p className="quien-espacio quien-regla">Este grupo es {fraseProposito(vista.espacio.proposito)}.</p> : null}
         <h1 id="quien-titulo" ref={titulo} tabIndex={-1}>
           {vista ? (sinLibres ? 'Escribe tu nombre para entrar' : '¿Quién eres?') : codigoMalo ? 'Esta invitación no existe' : 'Te invitaron a un plan'}
         </h1>
-        {/* El nombre del espacio va fuera de los títulos: los guiones esperan el título del espacio para saber que ya se entró. */}
-        {vista ? <p className="quien-espacio">en «{nombreEspacio}»</p> : null}
-        {reglaEspacio ? <p className="quien-espacio quien-regla">{FRASE_QUIEN_VIENE[reglaEspacio]}</p> : null}
-        {vista && fraseProposito(vista.espacio.proposito) ? <p className="quien-espacio quien-regla">Este grupo es {fraseProposito(vista.espacio.proposito)}.</p> : null}
         <p className="escena-sub">
           {codigoMalo
             ? 'Revisa que el enlace esté completo o pide uno nuevo a quien organiza. También puedes escribir el código abajo.'
             : sinLibres
               ? 'Los nombres de la lista ya entraron. Escribe el tuyo para sumarte al grupo; no pedimos correo ni contraseña.'
-              : 'Elige tu nombre. Este teléfono quedará como esa persona; no pedimos correo ni contraseña.'}
+              : 'Toca tu nombre y entras. Sin contraseña.'}
         </p>
       </section>
       <div className="hoja">
@@ -338,6 +338,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
                           onClick={() => setElegido(m)}
                           aria-describedby={m.libre ? undefined : `ya-${m.miembro_id}`}
                         >
+                          <Avatar nombre={m.nombre} tam={32} />
                           {m.nombre}
                         </button>
                         {m.libre ? null : (
@@ -353,7 +354,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
             </ul>
             <button
               type="button"
-              className="btn btn-secundario entrada-enlace"
+              className="btn btn-secundario entrada-enlace s1-no-estoy"
               onClick={() => {
                 const f = document.getElementById('unirse')
                 f?.scrollIntoView({ behavior: 'smooth', block: 'start' })

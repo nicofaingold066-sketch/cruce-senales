@@ -32,7 +32,7 @@ export function RespuestasRapidas({
             <button
               type="button"
               id={`rapida-${o.id}`}
-              className={`btn ${primaria ? 'btn-primario' : 'btn-secundario'} rapida-opcion ${sugerida === o.id ? 'rapida-sugerida' : ''} ${elegida === o.id ? 'rapida-elegida' : ''}`}
+              className={`btn ${primaria ? 'btn-primario' : 'btn-secundario'} rapida-opcion ${o.id === 'ninguna' ? 'rapida-ninguna' : ''} ${sugerida === o.id ? 'rapida-sugerida' : ''} ${elegida === o.id ? 'rapida-elegida' : ''}`}
               aria-describedby={sugerida === o.id ? 'rapida-sugerencia' : undefined}
               aria-pressed={elegida ? elegida === o.id : undefined}
               onClick={() => onElegir(o)}
