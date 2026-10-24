@@ -60,30 +60,29 @@ Duración: el recorrido completo dura unos **4 minutos**. En el pitch de 5 minut
 
 **Personas (ficticias, en producción desde `main` `233bb2e`, 11:28):** Bastián organiza (Juan); Nacho, Carlos, Kai, Charlie, Joaco y Pía son simulados y rotulados. Portada: «Serás Bastián, quien organiza; los otros seis amigos son ficticios y simulados.» Con los nombres ya en pantalla, **Nico puede nombrarlos**.
 
-**El caso cambió con la 0060 (11:24)** (`supabase/migrations/0060_demo_makana_cargada.sql`): Nacho, Kai y Joaco pueden **los dos días**; Charlie **solo el sábado**; Carlos **solo el domingo**; Pía no responde. Los seis traen gustos cargados (pádel y comida). El deck y el video dicen «Joaco solo sábado»: en pantalla Joaco puede los dos días; Nico no dice «solo sábado» de Joaco.
+**Caso en el servidor desde la 0062 (coordinador, ~11:45):** Nacho y Joaco pueden **los dos días**; Charlie **solo el sábado**; Kai y Carlos **solo el domingo**; Pía no responde. Los seis traen gustos cargados (pádel y comida).
+
+**Receta exacta (coordinador, 11:4x):** mínimo **4**, «No puede faltar: **Joaco**»; v1 = **sábado** (Bastián, Nacho, Charlie, Joaco); Joaco se baja → **En revisión**; «Buscar alternativa» → v2 = **domingo** (Bastián, Nacho, Kai, Carlos), desde cero.
 
 **Antes de subir (un solo aparato: Juan es Bastián y simula al resto):**
-1. Abrir la demo **desde una sesión nueva o con «Reiniciar demo»** para tomar los nombres y gustos nuevos (la 0060 dice que las demos ya sembradas los toman al reiniciar). Portada → «Probar la demo «El plan que no deja a nadie afuera»».
-2. «+ Nuevo plan»: precargado con **«Parque del Encuentro (ficticio) · acceso norte · encuentro gratuito»**, sáb 31 oct y dom 1 nov a las 16:00, 2 horas, mínimo 2, máximo 7 (`src/lib/casoDemo.ts`) → «Crear y abrir al grupo». ✂
+1. Abrir la demo **desde una sesión nueva o con «Reiniciar demo»** para tomar los nombres y el caso nuevos. Portada → «Probar la demo «El plan que no deja a nadie afuera»».
+2. «+ Nuevo plan»: precargado con «Parque del Encuentro (ficticio) · acceso norte · encuentro gratuito», sáb 31 oct y dom 1 nov a las 16:00, 2 horas. **Cambiar: mínimo 4; «No puede faltar: Joaco»** (viene Bastián y mínimo 2: hay que cambiar los dos) → «Crear y abrir al grupo». ✂
 3. Bastián responde «Puedo los dos días». ✂
 
-**Clave para que se vea la reparación:** con mínimo 2, la baja solo pone el plan «En revisión» si las confirmaciones vigentes quedan por debajo de 2. Por eso en la versión 1 confirman **solo Bastián y Joaco**: no usar «aceptar por todos». Si confirman más, la baja de Joaco no rompe el plan (queda registrada y el plan sigue: `docs/caso-canonico.md`, «Regla del motor»).
-
-**Respuestas de los simulados:** en «Simulación (demo)», por persona: «Usar valores del caso para Joaco» (y para Carlos y Charlie si hay tiempo) o «Editar interés y condiciones de …» → «Guardar condiciones de …». El atajo de una vez «Cargar las respuestas de los N de una vez» sigue oculto para Makana en el cliente (`SimulacionTab.tsx:90`, condición `!makana`), aunque la 0060 lo habilita en el servidor: **verlo en el ensayo**.
+**Atajos de la simulación:** «Cargar las respuestas de los N de una vez» y «Aceptar versión N por …» quedan habilitados para Makana en la publicación de ~12:00 (frontend saca el `!makana` de `SimulacionTab.tsx`). Si al subir todavía no aparecen, usar las filas por persona: «Usar valores del caso para …» y «Aceptar v1».
 
 | Min | Juan toca (como Bastián) | Se ve | Nico dice |
 |---|---|---|---|
-| 0:00 | Mostrar el grupo | Siete amigos, «Actividad del grupo», el plan del parque «Reuniendo respuestas» | «Bastián propone un plan que le sirve a todos: un parque, gratis, sábado o domingo a la tarde.» |
-| 0:15 | «Simulación (demo)» → «Usar valores del caso para Joaco» | Fila de Joaco con su respuesta (solo la ve quien simula) | «Cada uno dice en privado cuándo puede. Nadie del grupo ve lo de los demás.» |
-| 0:30 ✂ | Igual con Carlos (solo domingo) y Charlie (solo sábado) | — | «Carlos, solo el domingo. Charlie, solo el sábado. Pía no respondió.» |
-| 0:45 | Plan → «Buscar opción compatible» | Versión 1: sábado 31, 16:00 | «El servidor propone una sola opción: el sábado. Pía no respondió: no cuenta. El silencio no es asistencia.» |
-| 1:00 | «Confirmar versión 1» → «Simulación (demo)» → **solo** «Aceptar v1» en la fila de Joaco | «Participación del plan»: «Confirmaron la versión 1» (Bastián, Joaco), «Sin confirmar esta versión»; «¡Se juntan!» (mínimo 2) | «Bastián y Joaco confirman esta versión. El grupo ve quién confirmó, no qué dijo cada uno.» |
-| 1:20 | *(pausa)* | — | «Ahora Joaco se baja.» |
-| 1:25 | «Simulación (demo)» → «Se baja: Joaco» → «Sí, Joaco se baja» → Plan | **«En revisión»**, «Una persona se retiró» | «Queda una sola confirmación: no llega al mínimo. El plan no finge que sigue armado. Y no dice quién se bajó; lo digo yo porque es una simulación.» |
-| 1:45 | «Buscar alternativa» (o «Rearmar con lo nuevo») | Versión 2 (**leer el día en pantalla**: por la regla del motor, la franja más temprana viable sin Joaco; con Nacho, Kai y Charlie el sábado sigue viable); «Nadie confirmó todavía: las confirmaciones anteriores no pasan a esta versión» | «Se rearma sin Joaco: versión 2, desde cero.» (no decir «el domingo» si la pantalla dice sábado) |
-| 2:00 | «Confirmar versión 2» → «Simulación (demo)» → «Aceptar v2» en una fila (p. ej. Kai) | **«¡Se juntan!»** | «Cada uno vuelve a decidir. Y el plan sigue en pie.» |
+| 0:00 | Mostrar el grupo y el plan | Siete amigos, «Actividad del grupo», el plan del parque «Reuniendo respuestas», mínimo 4 | «Bastián propone un plan que le sirve a todos: un parque, gratis, sábado o domingo a la tarde. Y sin Joaco no se hace.» |
+| 0:15 | «Simulación (demo)» → «Cargar las respuestas de los 5 de una vez» | Respuestas cargadas (solo las ve quien simula) | «Cada uno dice en privado cuándo puede. Charlie, solo el sábado. Kai y Carlos, solo el domingo. Nadie del grupo ve lo de los demás.» |
+| 0:35 | Plan → «Buscar opción compatible» | **Versión 1: sábado 31**, con Bastián, Nacho, Charlie y Joaco | «El servidor propone una sola opción: el sábado, con cuatro. Pía no respondió: no cuenta. El silencio no es asistencia.» |
+| 0:50 | «Confirmar versión 1» → «Simulación (demo)» → «Aceptar versión 1 por …» | «Participación del plan»: «Confirmaron la versión 1»; **«¡Se juntan!»** | «Cada uno confirma **esta** versión. El grupo ve quién confirmó, no qué dijo cada uno. Ahora sí hay plan.» |
+| 1:10 | *(pausa)* | — | «Ahora Joaco se baja.» |
+| 1:15 | «Simulación (demo)» → «Se baja: Joaco» → «Sí, Joaco se baja» → Plan | **«En revisión»**, «Una persona se retiró» | «Joaco no podía faltar: el plan no finge que sigue armado. Y no dice quién se bajó; lo digo yo porque es una simulación.» |
+| 1:35 | «Buscar alternativa» (o «Rearmar con lo nuevo») | **Versión 2: domingo 1**, con Bastián, Nacho, Kai y Carlos; «Nadie confirmó todavía: las confirmaciones anteriores no pasan a esta versión» | «Se rearma el domingo: versión 2, desde cero. Nadie arrastra una confirmación vieja.» |
+| 1:55 | «Confirmar versión 2» → «Simulación (demo)» → «Aceptar versión 2 por …» | **«¡Se juntan!»** otra vez | «Cada uno vuelve a decidir. Y el plan sigue en pie.» |
 
-La secuencia exacta (sobre todo el día de la v2) no la vi en pantalla: **Juan la recorre una vez en el ensayo** y, si el día cambia, Nico dice el que se ve.
+**Verificar en el ensayo (riesgo):** Joaco es «no puede faltar» en la v1 y se baja. Según el caso canónico, si quien no puede faltar deja de estar disponible, el motor puede responder «Sin opción compatible» en vez de armar la v2 (`docs/caso-canonico.md`, recorrido paso 7). El coordinador dice que la v2 sale el domingo sin Joaco; si en el ensayo sale «Sin opción compatible», Nico lo dice así: «Sin Joaco no hay plan, y la app no inventa uno», y se pasa a la diapositiva 6.
 
 **No decir en la versión Makana** (`docs/demo-makana.md`, «Relato breve y límites»): que el agente usó la preferencia «gratis» de Carlos, salvo que se haya llamado al agente y se haya visto; «integración con Makana»; resultados comerciales. Mínimo 2 es del caso, no se sube para fabricar la revisión.
 
