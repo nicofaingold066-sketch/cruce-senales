@@ -56,6 +56,20 @@ Contraste sobre el fondo de tarjeta (calculado a mano, aproximado):
 
 Los demás componentes de `ui.tsx` (Avatar, AvatarPila, Progreso, ErrorCaja, Vacio, DiaTile, Nombre, InsigniaEstado, Cargando) siguen como están y adoptan los tokens cuando su sección los toque.
 
+## Movimiento (pedido de Nico, 02:40; sin librería)
+
+Cinco movimientos, y solo estos. Las secciones los usan con estas clases y no inventan otros. Todo en `src/estilo/sistema.css`; con `prefers-reduced-motion` queda quieto.
+
+| Qué | Cómo se usa | Dura |
+|---|---|---|
+| Presión del dedo | automático en `.btn`, chips, opciones, pestañas y la tarjeta del plan (`:active` encoge 3 %) | `--dur-1` 120 ms |
+| Aparecer | automático en `.hoja .tarjeta` y `.lista-planes > li`, escalonado de a 40 ms (hasta 8); `.sd-aparecer` para otra pieza; `.sd-escalonado` escalona a sus hijos | `--dur-2` 220 ms |
+| La hoja sube | automático en `.hoja` al abrir cada pantalla | `--dur-3` 380 ms |
+| Confirmación | `className="sd-exito"` en la tarjeta de «¡Se juntan!», «Ya confirmaste» y «Respuesta guardada» (no en un contenedor con barra fija adentro: lleva `transform`) | 460 ms |
+| Trabajando | `<ul className="sd-pasos">` con `<li className="sd-paso-hecho">` / `sd-paso-activo`; `.sd-pulso` para una espera sin pasos | late a 1 s |
+
+Las de la hoja y las tarjetas se mueven con `top`, no con `transform`: un transform en un contenedor vuelve relativa a la barra fija de abajo y la hace saltar.
+
 ## Reglas de composición (las revisa diseno en cada entrega)
 
 1. Una pantalla = un resultado arriba, una acción primaria, el resto plegado o secundario.
