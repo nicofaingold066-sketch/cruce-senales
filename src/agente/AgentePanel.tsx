@@ -157,6 +157,12 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
   // Rincones O-15: "Me gustaría" se marca en rojo recién al intentar guardar sin ninguna actividad.
   const [intentoSinActividad, setIntentoSinActividad] = useState(false)
   const refGustos = useRef<HTMLFieldSetElement>(null)
+  // Pedido de Nico (24 oct, 01:50): menos scroll. Con preferencias guardadas se ve un resumen y "Editar mis
+  // preferencias"; en el formulario, "Cómo llegas" y "Permisos" se abren a pedido (plegados no se dibujan).
+  const [editando, setEditando] = useState(false)
+  const [verViaje, setVerViaje] = useState(false)
+  const [verPermisos, setVerPermisos] = useState(false)
+  const [guardado, setGuardado] = useState<Preferencias | null>(null)
   const { ocupado, error, ejecutar } = useAccion()
   const refError = useFocoEnError(error)
 
@@ -172,6 +178,8 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
       setUsarConfirmado(r.data.usar_en_agente)
       setRecibirInicial(r.data.recibir_invitaciones_agente)
       setGuardadas(Boolean(r.data.preferencias))
+      setGuardado(r.data.preferencias ?? null)
+      setEditando(!r.data.preferencias)
       setErrorCarga(null)
     } else setErrorCarga(r.error)
     setCargando(false)
@@ -222,18 +230,70 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
       setAviso(r.data.usar_en_agente !== usar
         ? 'El servidor confirmó otro permiso. Tu cambio sigue sin guardar; revisa y vuelve a guardar.'
         : r.data.usar_en_agente ? 'Guardado. Nadie más ve tus preferencias.' : 'Guardado. El agente no usa tus preferencias; siguen guardadas solo para ti.')
+      // Guardado y confirmado tal cual: vuelve al resumen. Si el servidor confirmó otro permiso, sigue editando.
+      if (r.data.usar_en_agente === usar) {
+        setGuardado(borrador)
+        setEditando(false)
+      }
     }
+  }
+
+  function cancelar() {
+    if (guardado) setBorrador(guardado)
+    if (usarConfirmado !== null) setUsar(usarConfirmado)
+    setIntentoSinActividad(false)
+    setAviso(null)
+    setEditando(false)
+  }
+
+  const textoDe = <T extends string>(lista: { v: T | SinRespuesta; texto: string }[], v: string | undefined) =>
+    lista.find((o) => o.v === v)?.texto ?? null
+  const viaje = [textoDe(ZONA, borrador.zona), textoDe(MOVILIDAD, borrador.movilidad), textoDe(TIEMPO, borrador.tiempo_max), textoDe(MOMENTO, borrador.momento)]
+    .filter((t): t is string => Boolean(t))
+  const resumenViaje = viaje.length > 0 ? viaje.join(', ') : 'sin responder'
+  const resumenPermisos = `${usar ? 'el agente puede usarlas' : 'el agente no las usa'} · invitaciones ${recibirInicial === true ? 'activadas' : recibirInicial === false ? 'desactivadas' : 'sin dato'}`
+  const privacidad = (
+    <p className="suave">
+      Solo las ves tú. Con tu permiso guardado, el agente puede usarlas para sugerir un plan. Al grupo le llega solo la propuesta, nunca lo que pusiste.
+    </p>
+  )
+
+  if (!editando) {
+    const gustos = actividades.filter((a) => borrador.me_gustaria.includes(a.clave)).map((a) => a.etiqueta)
+    const filas: [string, string][] = [
+      ['Me gustaría', gustos.length > 0 ? gustos.join(', ') : 'sin marcar'],
+      ['Presupuesto este finde', textoDe(PRESUPUESTO, borrador.presupuesto) ?? ''],
+      ['Ritmo y ambiente', [textoDe(ENERGIA, borrador.energia), textoDe(AMBIENTE, borrador.ambiente)].filter(Boolean).join(' · ')],
+      ['Lugar', textoDe(LUGAR, borrador.lugar) ?? ''],
+      ['Cómo llegas', resumenViaje],
+      ['Permisos', resumenPermisos],
+    ]
+    return (
+      <div className="bloque">
+        {privacidad}
+        <dl className="agente-resumen">
+          {filas.map(([k, v]) => (
+            <div key={k}>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))}
+        </dl>
+        {aviso ? <Aviso tono="ok">{aviso}</Aviso> : null}
+        <p className="agente-sr" aria-live="polite">
+          {aviso ?? ''}
+        </p>
+        <Boton variante="secundario" onClick={() => { setAviso(null); setEditando(true) }} disabled={soloLectura}>
+          Editar mis preferencias
+        </Boton>
+      </div>
+    )
   }
 
   return (
     <div className="bloque">
-      <p className="suave">
-        Solo las ves tú. Con tu permiso guardado, el agente puede usarlas para sugerir un plan. Al grupo le llega solo la propuesta, nunca lo que pusiste.
-      </p>
-      <Opciones nombre="pref-presupuesto" titulo="Presupuesto este finde" opciones={PRESUPUESTO} valor={borrador.presupuesto} onCambio={(v) => poner('presupuesto', v)} deshabilitado={soloLectura || ocupado} />
-      <Opciones nombre="pref-energia" titulo="Energía" opciones={ENERGIA} valor={borrador.energia} onCambio={(v) => poner('energia', v)} deshabilitado={soloLectura || ocupado} />
-      <Opciones nombre="pref-ambiente" titulo="Ambiente" opciones={AMBIENTE} valor={borrador.ambiente} onCambio={(v) => poner('ambiente', v)} deshabilitado={soloLectura || ocupado} />
-      <Opciones nombre="pref-lugar" titulo="Lugar" opciones={LUGAR} valor={borrador.lugar} onCambio={(v) => poner('lugar', v)} deshabilitado={soloLectura || ocupado} />
+      {privacidad}
+      <h3 className="agente-subtitulo">Qué te gusta</h3>
       <fieldset
         ref={refGustos}
         className={`grupo ${sinActividades && intentoSinActividad ? 'grupo-error' : ''}`}
@@ -259,14 +319,18 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
           </small>
         ) : null}
       </fieldset>
-      <div className="bloque agente-viaje">
-        <h3 className="agente-subtitulo">Para elegir un lugar a mano (opcional)</h3>
+      <Opciones nombre="pref-presupuesto" titulo="Presupuesto este finde" opciones={PRESUPUESTO} valor={borrador.presupuesto} onCambio={(v) => poner('presupuesto', v)} deshabilitado={soloLectura || ocupado} />
+      <Opciones nombre="pref-energia" titulo="Energía" opciones={ENERGIA} valor={borrador.energia} onCambio={(v) => poner('energia', v)} deshabilitado={soloLectura || ocupado} />
+      <Opciones nombre="pref-ambiente" titulo="Ambiente" opciones={AMBIENTE} valor={borrador.ambiente} onCambio={(v) => poner('ambiente', v)} deshabilitado={soloLectura || ocupado} />
+      <Opciones nombre="pref-lugar" titulo="Lugar" opciones={LUGAR} valor={borrador.lugar} onCambio={(v) => poner('lugar', v)} deshabilitado={soloLectura || ocupado} />
+      <Plegable id="pref-sec-viaje" titulo="Cómo llegas (opcional)" resumen={resumenViaje} abierto={verViaje} onCambio={setVerViaje}>
         <p className="suave">Solo lo usa el servidor para elegir un lugar que te quede a mano. Nadie del grupo ve tu zona ni cómo te mueves.</p>
         <Opciones nombre="pref-zona" titulo="Tu zona" opciones={ZONA} valor={borrador.zona ?? ''} onCambio={(v) => ponerOpcional('zona', v)} deshabilitado={soloLectura || ocupado} />
         <Opciones nombre="pref-movilidad" titulo="Cómo te mueves" opciones={MOVILIDAD} valor={borrador.movilidad ?? ''} onCambio={(v) => ponerOpcional('movilidad', v)} deshabilitado={soloLectura || ocupado} />
         <Opciones nombre="pref-tiempo" titulo="Hasta cuánto viajas" opciones={TIEMPO} valor={borrador.tiempo_max ?? ''} onCambio={(v) => ponerOpcional('tiempo_max', v)} deshabilitado={soloLectura || ocupado} />
         <Opciones nombre="pref-momento" titulo="Momento del día" opciones={MOMENTO} valor={borrador.momento ?? ''} onCambio={(v) => ponerOpcional('momento', v)} deshabilitado={soloLectura || ocupado} />
-      </div>
+      </Plegable>
+      <Plegable id="pref-sec-permisos" titulo="Permisos" resumen={resumenPermisos} abierto={verPermisos} onCambio={setVerPermisos}>
       <label htmlFor="pref-usar" className="agente-casilla">
         <input
           id="pref-usar"
@@ -288,16 +352,57 @@ function MisPreferencias({ espacioId, soloLectura }: { espacioId: string; soloLe
         {usarConfirmado === true ? 'Permiso guardado: el agente puede usar tus preferencias.' : usarConfirmado === false ? 'Permiso guardado: el agente no usa tus preferencias.' : 'Permiso guardado pendiente de lectura.'}
         {usarConfirmado !== null && usar !== usarConfirmado ? ' Cambio sin guardar: el permiso anterior sigue vigente.' : ''}
       </p>
+      {/* E11 (integracion-codex-juan): el consentimiento de invitaciones, junto al otro permiso. */}
+      <ConsentimientoInvitaciones espacioId={espacioId} inicial={recibirInicial} soloLectura={soloLectura} />
+      </Plegable>
       <div ref={refError}>{error ? <ErrorCaja error={error} onReintentar={() => void guardar()} /> : null}</div>
       {ocupado && reintentando ? <Aviso tono="aviso">{AVISO_REINTENTO}</Aviso> : null}
       {aviso ? <Aviso tono={usarConfirmado !== null && usar !== usarConfirmado ? 'info' : 'ok'}>{aviso}</Aviso> : null}
       <p className="agente-sr" aria-live="polite">
         {ocupado ? (reintentando ? AVISO_REINTENTO : 'Guardando tus preferencias…') : aviso ?? ''}
       </p>
-      <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura}>
-        {guardadas ? 'Actualizar mis preferencias' : 'Guardar mis preferencias'}
-      </Boton>
-      <ConsentimientoInvitaciones espacioId={espacioId} inicial={recibirInicial} soloLectura={soloLectura} />
+      <div className="fila-botones">
+        <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto="Guardando…" disabled={soloLectura}>
+          {guardadas ? 'Actualizar mis preferencias' : 'Guardar mis preferencias'}
+        </Boton>
+        {guardadas ? (
+          <Boton variante="claro" onClick={cancelar} disabled={ocupado}>
+            Cancelar
+          </Boton>
+        ) : null}
+      </div>
+    </div>
+  )
+}
+
+/** Sección que se abre a pedido. Plegada no se dibuja: nada oculto que tocar ni que leer en voz alta. */
+function Plegable({
+  id,
+  titulo,
+  resumen,
+  abierto,
+  onCambio,
+  children,
+}: {
+  id: string
+  titulo: string
+  resumen: string
+  abierto: boolean
+  onCambio: (v: boolean) => void
+  children: ReactNode
+}) {
+  return (
+    <div className="agente-plegable-seccion">
+      <button type="button" className="agente-plegable-boton" aria-expanded={abierto} aria-controls={id} onClick={() => onCambio(!abierto)}>
+        <span className="agente-plegable-titulo">{titulo}</span>
+        {!abierto ? <span className="agente-plegable-resumen">{resumen}</span> : null}
+        <span aria-hidden="true" className="agente-plegable-flecha">{abierto ? '▴' : '▾'}</span>
+      </button>
+      {abierto ? (
+        <div id={id} className="agente-plegable-cuerpo">
+          {children}
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -834,19 +939,20 @@ function PanelAgente({
 
   return (
     <>
-      <section className="tarjeta agente-panel">
-        <h2>Mis preferencias</h2>
-        <MisPreferencias espacioId={espacioId} soloLectura={soloLectura} />
-      </section>
+      {/* Pedido de Nico (01:50): primero lo que se usa en la demo; las preferencias, debajo y resumidas. */}
       {esOrganizador ? (
         <section className="tarjeta agente-panel">
           <h2>Agente del círculo</h2>
           <p className="suave">
-            Usa las preferencias habilitadas, mira el clima y un catálogo de lugares (de Simulación) para sugerir ideas. La disponibilidad y la confirmación se resuelven después, para una versión del plan.
+            Usa las preferencias habilitadas, el clima y un catálogo de lugares (de Simulación) para sugerir ideas. Nadie queda confirmado.
           </p>
           <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} invitacion={invitacion} />
         </section>
       ) : null}
+      <section className="tarjeta agente-panel">
+        <h2>Mis preferencias</h2>
+        <MisPreferencias espacioId={espacioId} soloLectura={soloLectura} />
+      </section>
     </>
   )
 }
