@@ -187,5 +187,16 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | R203 | Calendario simulado "Tomar de mi calendario (Simulación)" en Responder (solo demo) | — | pendiente (`f12`) |
 | R230 | Chip "Datos ficticios" en el encabezado | ojo | O (O-01, O-16) |
 
+### Por llegar: enmienda 13, modalidad de la invitación y "¿Qué guarda CRUXE de mí?" (filas reservadas; se recorren cuando estén en `main`)
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| R240 | Mi respuesta: "Así no puedo, pero sigo" junto a confirmar (opinar sin bajarse, E13-a); después puede volver a cargar disponibilidad y confirmar | — | pendiente |
+| R241 | Plan del organizador: "Rearmar con lo nuevo" desde esperando compromisos ("Algunos no pueden así…"), versión N+1 sin aceptaciones; tope de 3 versiones | — | pendiente |
+| R242 | Baja sin nombre en historial, eventos y "siguiente acción" de otros ("Una persona se retiró"); a quien se retira: "Gracias por avisar. No hace falta contar por qué." | — | pendiente |
+| R243 | Agente: "Parrilla del parque (Simulación)" como candidata de asado en lugar neutro | — | pendiente |
+| R244 | Invitación con modalidad (quién viene: solo el grupo / con pareja / abierta) en el texto de WhatsApp: `compartir.ts` ya trae `FRASE_QUIEN_VIENE`; falta la pantalla que lo elige | — | pendiente |
+| R245 | Plegable "¿Qué guarda CRUXE de mí?" en "¿Quién eres?" y "¿Cuándo puedes?" (`wip/friccion` 366b7af, todavía no en `main`) | — | pendiente |
+| R246 | Calendario `.ics` con dos recordatorios (víspera y 2 h antes) y líneas plegadas a 75 octetos (`compartir.ts`): abrirlo en un calendario real | — | pendiente (solo se puede mirar el archivo) |
+
 ## Pendiente de recorrer
 "Entrar como otra persona" confirmado, reclamar un lugar simulado libre del demo, "Hoy paso" ya marcado, plazo vencido (expirado), cierre elegido a mano con fecha pasada, y los cuatro anchos de cada rincón mirados a ojo (hoy `auto` en varios). Se repite lo afectado tras cada publicación en `main`.
