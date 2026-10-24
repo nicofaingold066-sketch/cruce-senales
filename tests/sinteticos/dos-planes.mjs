@@ -1,4 +1,4 @@
-// Enmienda 15 (E-c y E-d) con un grupo NUEVO, «Los del finde»: dos planes con nombre, «gana la que pueden más», «¿cuál
+// Enmienda 15 (E-c y E-d) con un grupo NUEVO, «Los de la terraza» (no «Los del finde»: así se llama la demo desde la 0054): dos planes con nombre, «gana la que pueden más», «¿cuál
 // prefieres?» (desempate privado) y una ronda de opiniones de 2 h.
 //   Mara  — organiza: pone nombre a cada plan, elige «La que pueden más» y ronda de 2 h; ve los totales; rearma.
 //   Teo   — puede los dos; prefiere B (desempate).
@@ -21,7 +21,7 @@ exigirBaseLibre()
 
 const BASE = (process.argv[2] || process.env.CRUXE_URL || 'https://cruce-senales.vercel.app').replace(/\/+$/, '')
 const SALIDA = carpetaDeSalida(process.env.CRUXE_SALIDA || new URL('./salida', import.meta.url).pathname)
-const GRUPO = 'Los del finde'
+const GRUPO = 'Los de la terraza'
 const TITULO = 'Plan del finde'
 const t0 = Date.now()
 
@@ -48,7 +48,7 @@ const tiene = (texto, re) => re.test(texto.replace(/\s+/g, ' '))
 
 try {
   // ── Mara crea el grupo y la propuesta con los dos planes ───────────────────────────────────────────
-  log('— Mara crea «Los del finde»')
+  log('— Mara crea «Los de la terraza»')
   await reintento(() => E.crearGrupo(mara, { integrantes: ['Teo', 'Lola', 'Nano', 'Pipo'], pegar: true }))
   await mara.tocarEnlace('Crear propuesta', false)
   await mara.page.getByRole('heading', { name: 'Nueva propuesta' }).waitFor({ timeout: 15000 })
