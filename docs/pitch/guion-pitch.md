@@ -12,7 +12,7 @@ Reglas que no se rompen en escena (`docs/guion-demo.md`, «Reglas que no se romp
 
 ## A. Versión de 5 minutos (la del escenario)
 
-Sigue las **8 diapositivas del deck** de la sesión «Presentación para el jurado» (Figma «CRUXE — Pitch Makana», copia en `docs/pitch/presentacion.pdf` de la rama `presentacion`, `e8cf8e0`), con sus títulos y minutos: 0:00, 0:30, 1:10, 1:50, 2:10, 3:50, 4:10, 4:40. **Caso en pantalla y en la demo: «El plan que no deja a nadie afuera»** (texto de Nico; siete compañeros; publicado en producción a las 11:03). El 8 de octubre se cuenta como «un plan del grupo»: el hecho real fue un asado, no se nombra y no se dice que fue otra cosa. Cifras que se dicen igual que en el deck: 8 de octubre, 6 interesados / 0 encuentros, 36 h, 30 personas a la vez, 152 verificaciones, ~1 000 commits.
+Sigue las **8 diapositivas del deck** de la sesión «Presentación para el jurado» (Figma «CRUXE — Pitch Makana», copia en `docs/pitch/presentacion.pdf` de la rama `presentacion`, `a145a58`; la diapositiva 5 no nombra personas: los nombres los dice Nico sobre la demo en vivo), con sus títulos y minutos: 0:00, 0:30, 1:10, 1:50, 2:10, 3:50, 4:10, 4:40. **Caso en pantalla y en la demo: «El plan que no deja a nadie afuera»** (texto de Nico; siete compañeros; publicado en producción a las 11:03). El 8 de octubre se cuenta como «un plan del grupo»: el hecho real fue un asado, no se nombra y no se dice que fue otra cosa. Cifras que se dicen igual que en el deck: 8 de octubre, 6 interesados / 0 encuentros, 36 h, 30 personas a la vez, 152 verificaciones, ~1 000 commits.
 
 ### 0:00–0:30 · Gancho · diapositiva 1 «Che, ¿cuándo nos juntamos?»
 - «Levanten la mano los que tienen un grupo de WhatsApp de amigos.» *(levantás la tuya)*
