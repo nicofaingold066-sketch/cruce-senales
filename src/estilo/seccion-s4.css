@@ -546,3 +546,23 @@ a.fila:hover {
   display: inline-block;
   width: auto;
 }
+
+/* Los enlaces con aspecto de botón dentro del bloque de resultado (`.escena a` pinta de blanco los enlaces de la escena,
+   con más fuerza que `.btn-*`): el texto del botón manda. */
+.resultado a.btn-primario {
+  color: var(--btn-texto);
+}
+.resultado a.btn-secundario {
+  color: var(--btn-2-texto);
+}
+.resultado a.btn-claro {
+  color: var(--tinta);
+}
+.resultado a.btn-turno {
+  color: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  .resultado a.btn-turno {
+    color: #1b0b03;
+  }
+}
