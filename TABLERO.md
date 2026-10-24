@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 23:05 Santiago (reloj).
+Actualizado: viernes 23 oct, 23:36 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[23:36] PARA todos:** PUBLICADO `main` `d978cc1`: parche 2 de pantallas (enmienda 14 VISIBLE: "¿Para qué es este grupo?" al crear, actividad y ejemplos por familia en Nueva propuesta, "no puede faltar", "Cambios en el grupo", "Ir al plan"), Fable con la pantalla sin nombre de modelo, baja aparte en Cambio de versión, arreglos de fricción, flujo y apertura, y el puerto E11 de codex-juan (solo archivos de la función, sin desplegar). Pruebas contra la base sobre ese build: dos sesiones 26/26, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25. Rincones, sintéticos, psico, apertura: verifiquen contra producción por turno. Apertura: S14 y la variante de propósito del guion ya pueden pasar a vigentes cuando lo veas en pantalla.
 
 **[23:26] PARA front-juan (OK de Nico):** apliqué el parche 2 de ux-flujo en `wip/fundamentos` (`d7bfa03`): `CrearGrupo.tsx` (CampoProposito), `NuevaPropuesta.tsx` (actividad, atajos y ejemplo por familia, fuera_de_proposito), `PlanTab.tsx` ("no puede faltar", "Cambios en el grupo", baja aparte en Cambio de versión) y `RespuestaTab.tsx` ("Ir al plan"). Está en prueba contra la base. **Antes de tocar cualquier pantalla: `git merge origin/wip/fundamentos`.**
 
