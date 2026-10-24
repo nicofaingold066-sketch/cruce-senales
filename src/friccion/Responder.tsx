@@ -6,61 +6,19 @@
 // El servidor decide si puede guardar (`puede.guardar_condiciones`); esta pantalla nunca lo calcula.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../lib/api'
-import type { ApiError, Disponibilidad, EstadoPropuesta, Franja, PropuestaResumen } from '../lib/types'
+import type { ApiError, EstadoPropuesta, Preferencia, PropuestaResumen } from '../lib/types'
 import { useAccion } from '../lib/hooks'
 import { dejarAviso, rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
-import { diaDe, hora } from '../lib/format'
 import { vibrar } from '../lib/tacto'
 import { Boton, Cargando, DiaTile, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { TomarDeCalendario } from './Calendario'
+import { nombreDelPlan, opcionesRapidas } from './respuestas'
+import type { Opcion } from './respuestas'
 import { QueGuarda } from './QueGuarda'
 import { miOpinion } from './opinar'
 import { sinQuienViene } from '../lib/compartir'
 import './friccion.css'
-
-interface Opcion {
-  id: string
-  texto: string
-  detalle: string
-  disponibilidad: Disponibilidad
-  /** Para el día del calendario decorativo. */
-  dia?: string
-}
-
-const mismoDia = (a: Franja, b: Franja) => a.inicio.local.slice(0, 10) === b.inicio.local.slice(0, 10)
-const horario = (f: Franja) => `${hora(f.inicio.local)} a ${hora(f.fin.local)}`
-const cuando = (f: Franja) => `${diaDe(f.inicio.local)}, ${horario(f)}`
-
-/** Las respuestas de un toque. Con más de dos franjas no hay atajo: se responde en el plan. */
-export function opcionesRapidas(franjas: Franja[]): Opcion[] | null {
-  if (franjas.length === 1) {
-    const [a] = franjas
-    return [
-      { id: 'si', texto: 'Puedo', detalle: cuando(a), disponibilidad: { [a.clave]: 'si' }, dia: a.inicio.local },
-      { id: 'no', texto: 'No puedo', detalle: cuando(a), disponibilidad: { [a.clave]: 'no' } },
-    ]
-  }
-  if (franjas.length !== 2) return null
-  const [a, b] = franjas
-  const dias = !mismoDia(a, b)
-  const igualHorario = horario(a) === horario(b)
-  const otra = (f: Franja) => (dias ? `el ${diaDe(f.inicio.local).split(' ')[0].toLocaleLowerCase('es')}` : `de ${horario(f)}`)
-  const solo = (f: Franja) => (dias ? `Solo el ${diaDe(f.inicio.local).toLocaleLowerCase('es')}` : `Solo de ${horario(f)}`)
-  return [
-    {
-      id: 'ambas',
-      texto: dias ? 'Puedo los dos días' : 'Puedo en los dos horarios',
-      detalle: dias
-        ? `${diaDe(a.inicio.local)} y ${diaDe(b.inicio.local)}${igualHorario ? `, ${horario(a)}` : ''}`
-        : `${diaDe(a.inicio.local)}: ${horario(a)} y ${horario(b)}`,
-      disponibilidad: { [a.clave]: 'si', [b.clave]: 'si' },
-    },
-    { id: a.clave, texto: solo(a), detalle: `${dias ? horario(a) : diaDe(a.inicio.local)} · ${otra(b)} queda como No`, disponibilidad: { [a.clave]: 'si', [b.clave]: 'no' }, dia: a.inicio.local },
-    { id: b.clave, texto: solo(b), detalle: `${dias ? horario(b) : diaDe(b.inicio.local)} · ${otra(a)} queda como No`, disponibilidad: { [a.clave]: 'no', [b.clave]: 'si' }, dia: b.inicio.local },
-    { id: 'ninguna', texto: dias ? 'No puedo ninguno' : 'No puedo en ninguno', detalle: 'Puedes cambiarlo después', disponibilidad: { [a.clave]: 'no', [b.clave]: 'no' } },
-  ]
-}
 
 type Carga =
   | { fase: 'cargando' }
@@ -137,6 +95,9 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
   // #90: la agenda ficticia solo SUGIERE una opción (se resalta); responder sigue siendo tocarla.
   const [sugerida, setSugerida] = useState<string | null>(null)
   const [interesNota, setInteresNota] = useState<string | null>(null)
+  // Enmienda 15 (E-d): con la regla "la que más pueden", quien puede en los dos planes puede decir cuál prefiere (privado).
+  const prefer = useAccion()
+  const [prefiero, setPrefiero] = useState<Preferencia | null>(null)
   const titulo = useRef<HTMLHeadingElement>(null)
   const hecho = useRef<HTMLHeadingElement>(null)
 
@@ -195,6 +156,16 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
   }
 
   const algunSi = elegida ? Object.values(elegida.disponibilidad).includes('si') : false
+  const conDesempate = p.regla === 'mas_si' && elegida?.id === 'ambas'
+  async function preferir(q: Preferencia) {
+    if (!elegida) return
+    const r = await prefer.ejecutar(`prefiero:${p.id}:${q}`, () => api.saveMyConditions(p.id, elegida.disponibilidad, q))
+    if (r?.ok) {
+      vibrar(10)
+      setCarga({ ...lista!, p: r.data.propuesta })
+      setPrefiero(q)
+    }
+  }
 
   return (
     <div className="vista">
@@ -284,11 +255,35 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
             <p className="suave">
               Guardado. Solo tú ves estas condiciones. Puedes cambiarlas en el plan mientras se reúnen respuestas.
             </p>
+            {conDesempate ? (
+              <div className="rapida-prefiero">
+                <p className="suave">
+                  {prefiero
+                    ? `Prefieres «${nombreDelPlan(p.franjas, prefiero)}». Es privado y solo desempata si puedes en los dos.`
+                    : 'Si puedes en los dos, ¿cuál prefieres? Es privado y solo desempata; puedes dejarlo sin responder.'}
+                </p>
+                {!prefiero ? (
+                  <div className="rapida-prefiero-botones">
+                    {(['A', 'B'] as Preferencia[]).map((q) => (
+                      <Boton key={q} variante="secundario" onClick={() => void preferir(q)} ocupado={prefer.ocupado} ocupadoTexto="Guardando…" disabled={soloLectura}>
+                        Prefiero «{nombreDelPlan(p.franjas, q)}»
+                      </Boton>
+                    ))}
+                  </div>
+                ) : null}
+                {prefer.error ? <ErrorCaja error={prefer.error} enfocar /> : null}
+              </div>
+            ) : null}
             <div className="entrada-botones">
               <a className="btn btn-primario" href={verPlan}>
                 Ver el plan
               </a>
-              <Boton variante="secundario" onClick={() => setElegida(null)}>
+              <Boton variante="secundario" onClick={() => {
+                  setSugerida(null)
+                  setPrefiero(null)
+                  setElegida(null)
+                }}
+              >
                 Cambiar mi respuesta
               </Boton>
             </div>
