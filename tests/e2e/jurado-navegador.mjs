@@ -298,7 +298,7 @@ try {
     comprobar(r.resultado.tipo === 'sin_opcion' && r.propuesta.minimo === 4 && r.propuesta.opcion === null, 'Sin opción, reglas intactas')
     await texto(T, 'Sin opción compatible'); await texto(L, 'Sin opción compatible')
     await estado(T, 'Reuniendo interés'); await estado(L, 'Reuniendo interés')
-    comprobar(/Mínimo 4/.test(await L.locator('main').innerText()), 'UI: mínimo no se reduce')
+    comprobar(/[Mm]ínimo:? 4|mínimo \(4\)|\(mínimo 4\)/.test(await L.locator('main').innerText()), 'UI: mínimo no se reduce')
     comprobar(!/Tomi.{0,30}(?:no puede|no está disponible)/i.test(await L.locator('main').innerText()), 'UI: no revela motivo privado')
     await foto(L, 'V2a-sin-opcion')
   })
@@ -357,7 +357,8 @@ try {
       })
       await aceptar('Fede')
       await tab(T, 'Plan'); await estado(T, 'Esperando compromisos')
-      await texto(T, 'Libres para el resto: 0')
+      // S4 (mockup): «Libres para el resto» ya no se muestra; el servidor lo sigue devolviendo (cupos.libres_para_otros) y se comprueba abajo.
+      if ((await T.getByText('Libres para el resto', { exact: false }).count()) > 0) await texto(T, 'Libres para el resto: 0')
       const r = await accion(vieja, 'simulate_accept', () => tocar(vieja, 'Aceptar versión 1 por Sofi'), false)
       comprobar(r.error.codigo === 'cupo_completo' && r.error.detalle === 'reservado_imprescindible', 'Servidor revalida y reserva a Tomi')
       await texto(vieja, 'reservado')
@@ -368,7 +369,7 @@ try {
       const fin = await aceptar('Tomi')
       comprobar(fin.propuesta.confirmados === 4 && fin.propuesta.estado === 'grupo_confirmado' && fin.propuesta.opcion.cupos.disponibles === 0, 'Tomi confirma último: cuatro, sin sobrecupo')
       await estado(T, 'Grupo confirmado'); await estado(L, 'Grupo confirmado')
-      comprobar(/4 de 4/.test(await L.locator('.opcion').innerText()), 'UI: cuatro de cuatro en la sesión de Luna')
+      comprobar(/4 de 4|4 confirmaron/.test(await L.locator('main').innerText()), 'UI: cuatro de cuatro en la sesión de Luna') // S4: el conteo va en el hero
       await foto(L, 'V3-cupo-reservado-confirmado')
     } finally {
       for (const route of retenidas) await route.abort().catch(() => {})
