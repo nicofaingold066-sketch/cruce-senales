@@ -8,6 +8,26 @@ Seis amigos ficticios usan la app como lo haría gente real, para contar dónde 
 - La guardia (`guardia.mjs`) frena el guion si la ficha de backend dice «MIGRACION EN CURSO».
 - Los toques cuentan solo lo que la persona toca (no escribir, ni deslizar, ni las redirecciones automáticas). Los segundos son de máquina: son una cota inferior de lo que tarda una persona; un toque humano con lectura ronda 1,5 s.
 
+## Cómo correr los guiones (para quien tome la posta; sesión archivada a las 03:14)
+
+Todos corren con Playwright y el Chrome del sistema (como `tests/e2e/`), cada persona en un contexto aparte, siempre en un **grupo nuevo** (nunca la demo), sin tocar datos ajenos. Salida (no se commitea): `tests/sinteticos/salida/<sello>/` con capturas, `textos.md` (el texto de cada pantalla que vio cada persona) y `resultados.json` (toques, segundos, hallazgos y comprobaciones). La **guardia** (`guardia.mjs`) mira TODAS las fichas de `agentes/` y frena (código 3) si alguna declara «MIGRACION EN CURSO»; `turno.sh` además espera y marca «CORRIENDO PRUEBA» en la ficha de quien lo corre.
+
+| Guion | Qué hace | Cómo se corre | Duración |
+|---|---|---|---|
+| `seis-amigos.mjs` | Los 6 perfiles (organizadora, apurado a 320 px, sin franja, con condiciones, interesado que se baja, silencio): crear grupo, responder, v1, baja, reparación | `node tests/sinteticos/seis-amigos.mjs https://cruce-senales.vercel.app` | ~1,3 min |
+| `dos-planes.mjs` | Enmienda 15: dos planes con nombre, «la que pueden más», «¿cuál prefieres?», ronda de 2 h, totales solo a quien organiza | idem con `dos-planes` | ~1 min |
+| `asi-no-puedo.mjs` | Enmienda 13: «Así no puedo, pero sigo», rearmar, v2 sin herencias, nadie ve quién | idem con `asi-no-puedo` | ~1,2 min |
+| `psico-perfiles.mjs` | Perfiles de psico (siempre organiza, casa, sin carne, pareja en «solo el grupo» a 320 px, mal momento, silencio) | idem con `psico-perfiles` | ~1,3 min |
+| `proposito-grupo.mjs` | Enmienda 14: propósito «Fútbol» al crear el grupo, atajos y «Me gustaría» solo deporte, texto de quórum del agente | idem; `CRUXE_AGENTE=0` evita la llamada al modelo (cuesta una por corrida) | ~1 min (sin agente) |
+
+Una tanda completa contra un build propio: `npx vite build && npx vite preview --port 4186` y la URL `http://localhost:4186` en vez de producción. Con `tests/sinteticos/turno.sh <url> <guion>...` se encadenan cediendo ante migraciones y marcas de otros. Las ediciones de lib/escena/revisar son mías; el resto de `tests/sinteticos/` es de quien lo lea.
+
+**Rótulos del rediseño que los guiones ya aceptan** (lo de hoy y lo nuevo, el viejo solo si existe): «Nuevo plan» o «Nueva propuesta» (título); «Revisar antes de crear» opcional (con el mockup S3 el primario «Crear y abrir al grupo» va en el formulario); fechas A y B plegadas (`details.s3-momento`, se abren antes de tocarlas); atajos tras «Más…» si no están a la vista; «Cómo llegas (opcional)» se abre si existe; el final de «Respondiste» puede ser «Ver el plan» o «Listo»; desde la portada el plan se alcanza por la tarjeta «Tu plan» o por la línea «Te toca confirmar» (`a[href*="/p/"]`); «Prefiero «<plan>»» en un toque (friccion) además de «¿cuál prefieres?» en Mi respuesta.
+
+**Lo que NO está verificado todavía** (porque el `main` con ese diseño aún no se había publicado cuando se archivó la sesión): `main` `60a98e0` solo trae el S3 anterior; el mockup exacto de S3 (`wip/rediseno-s3` 0b7ce46), S1/S5 de friccion (`0b5e4d1`) y el resto de las secciones se probaron solo por lectura de código y mensajes de sus dueños. Primera corrida a hacer contra el `main` nuevo: `seis-amigos` y `dos-planes`; si alguno falla, el error dice qué rótulo no encontró en su línea.
+
+**Hallazgos abiertos al archivar** (detalle y capturas arriba): H2 (franjas primero en «Mi respuesta», en manos del rediseño S5), H6 («Ya hay N personas con condiciones» cuenta a quien dijo No/No: decisión de Nico, después de la demo), H12 («1 confirmaron»), H13 (el editor de condiciones sigue a la vista tras «No voy»), H19/H20 (la invitación y el espacio del organizador no dicen «para jugar fútbol»), H21 («3 por ahora» frente a «4 personas»: agente-ia lo tomó), H22 (tenis al aire libre con lluvia sin decirlo), H23 («Flujo social no disponible» visible), H10 (la hora «de Santiago»: ux-flujo lo saca de la opción). Resueltos y verificados en producción: H1, H4, H8, H9, H14, H16, H17, H18 y la enmienda 13 completa, la 14 y la 15 con su ronda.
+
 ## Los seis perfiles
 
 | # | Persona | Ancho | Qué quiere | Qué hace el guion |
