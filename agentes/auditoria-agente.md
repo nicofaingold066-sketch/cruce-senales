@@ -4,6 +4,7 @@ Rama: `auditoria-agente` (checkout `/Users/macair/cruse/cruce-auditoria-agente`)
 Solo lectura y pruebas simuladas; no arreglo código (los defectos van a su dueño). Cero llamadas reales al modelo salvo autorización escrita de Nico en mi sesión.
 
 ## Tocando ahora
+- MIGRACION EN CURSO (09:55) 0057 coherencia del borrador: aplico y corro la suite de backend en serie (reversa lista)
 - Rutas de E16 (asignadas por el coordinador 09:4x, sí de Nico 09:49): `supabase/migrations/0057_coherencia_borrador.sql`, `supabase/revertir/0057_coherencia_borrador.sql`, `tests/backend/coherencia-borrador.test.ts` y las pruebas de `tests/backend/` que cambien de orden por E16 (con comentario «E16»), `docs/contrato-enmienda-16.md`, una línea en `docs/rediseno/decisiones.md`. Rama `auditoria-agente`.
 
 ## Entregado
