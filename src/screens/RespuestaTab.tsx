@@ -114,6 +114,7 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
   // de las condiciones (que son privadas). Desmarcada por defecto.
   const [avisarInteres, setAvisarInteres] = useState(false)
   const [notaInteres, setNotaInteres] = useState<string | null>(null)
+  const interes = useMutacion(viva)
   const s = p.mi_situacion
   const ofrecerInteres =
     s.puede.marcar_interes && !s.interesado && !soloLectura && Object.values(b.draft).includes('si')
@@ -139,13 +140,17 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
       vibrar(10)
       setCond(r.data.condiciones)
       setGuardado(true)
-      if (avisarInteres && ofrecerInteres) {
-        const i = await correr(`interes:${p.id}:true`, () => api.markInterest(p.id, true))
-        if (i?.ok) {
-          setAvisarInteres(false)
-          setNotaInteres('Marcaste "Me interesa": el grupo ve tu nombre entre los interesados. No es una confirmación.')
-        }
-      }
+      if (avisarInteres && ofrecerInteres) await avisar()
+    }
+  }
+
+  // El aviso de interés tiene su propio error: si falla, las condiciones ya quedaron guardadas y no debe parecer
+  // que fallaron ellas (E-11 de la revisión).
+  async function avisar() {
+    const i = await interes.correr(`interes:${p.id}:true`, () => api.markInterest(p.id, true))
+    if (i?.ok) {
+      setAvisarInteres(false)
+      setNotaInteres('Marcaste "Me interesa": el grupo ve tu nombre entre los interesados. No es una confirmación.')
     }
   }
 
@@ -221,6 +226,14 @@ function MisCondiciones({ p, viva, soloLectura }: VivaProps) {
         </>
       ) : null}
       {error ? <ErrorCaja error={error} enfocar /> : null}
+      {interes.error && !s.interesado ? (
+        <ErrorCaja
+          error={interes.error}
+          titulo="Tus condiciones se guardaron; no pudimos avisar que te interesa"
+          onReintentar={() => void avisar()}
+          enfocar
+        />
+      ) : null}
     </section>
   )
 }
