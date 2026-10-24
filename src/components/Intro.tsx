@@ -42,8 +42,10 @@ export function useEntrada() {
     // Se recuerda también si se omitió por movimiento reducido; nunca escribir en el inicializador de React.
     marcarVista()
   }, [])
+  // Repetir desde Ayuda no altera las marcas de primera visita ni fuerza movimiento.
+  const abrir = useCallback(() => setVisible(!movimientoReducido()), [])
   const cerrar = useCallback(() => setVisible(false), [])
-  return { visible, cerrar }
+  return { visible, abrir, cerrar }
 }
 
 export function Entrada({ alTerminar }: { alTerminar: () => void }) {
@@ -54,6 +56,7 @@ export function Entrada({ alTerminar }: { alTerminar: () => void }) {
   useLayoutEffect(() => {
     const el = dialogo.current
     if (!el) return
+    const origen = document.activeElement instanceof HTMLElement ? document.activeElement : null
     const overflowAnterior = document.body.style.overflow
     // Un diálogo nativo mantiene el fondo inerte y el foco en «Saltar intro».
     el.showModal()
@@ -62,7 +65,10 @@ export function Entrada({ alTerminar }: { alTerminar: () => void }) {
       const focoEnIntro = el.contains(document.activeElement)
       el.close()
       document.body.style.overflow = overflowAnterior
-      if (focoEnIntro) document.getElementById('contenido')?.focus({ preventScroll: true })
+      if (focoEnIntro) {
+        const destino = origen?.isConnected && origen !== document.body ? origen : document.getElementById('contenido')
+        destino?.focus({ preventScroll: true })
+      }
     }
   }, [])
 
