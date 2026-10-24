@@ -5448,3 +5448,14 @@ li:has(> .plan-vivo) {
     align-items: center;
   }
 }
+
+/* Con el botón de Ayuda en la barra (codex-intro), a 360–420 px el rol («organizador») empujaba 10 px fuera de la
+   pantalla. Como ya se hacía bajo 360 px, el rol se oculta a la vista; el nombre queda y el lector sigue oyendo la sesión. */
+@media (max-width: 420px) {
+  .barra .barra-rol {
+    display: none;
+  }
+  .barra-identidad {
+    min-width: 0;
+  }
+}
