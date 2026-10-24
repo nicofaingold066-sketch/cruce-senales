@@ -17,7 +17,7 @@ test('imprescindible sin condiciones en reuniendo interés: nada (lo cubren el s
   assert.equal(avisoParaMi({ estado: 'reuniendo_interes', imprescindible: vale, mi_situacion: ana }), null)
 })
 
-test('no elegible en la versión: "Esta versión es sin ti", con o sin grupo confirmado', () => {
+test('no elegible en la versión: "Esta versión no te incluye", con o sin grupo confirmado', () => {
   const coni = yo({ miembro_id: 'm-coni', nombre: 'Coni', condiciones: 'completas', elegible_en_version: false })
   for (const estado of ['esperando_compromisos', 'grupo_confirmado']) {
     const a = avisoParaMi({ estado, imprescindible: vale, mi_situacion: coni })
@@ -49,7 +49,7 @@ test('en revisión: sin nombre ni motivo; organizador con dos salidas', () => {
   assert.match(a.texto, /^Una persona se retiró\. Faltan 2 para el mínimo\. Si sale una versión nueva/)
   assert.doesNotMatch(a.titulo + a.texto, /Vale|Ana|porque|se bajó|había confirmado/)
   const sinOpcion = avisoParaMi({ estado: 'en_revision', imprescindible: vale, mi_situacion: ana })
-  assert.equal(sinOpcion.texto, 'Una persona se retiró. Si sale una versión nueva, las confirmaciones anteriores no cuentan: confírmala de nuevo si te sirve.')
+  assert.equal(sinOpcion.texto, 'Una persona se retiró. Si sale una versión nueva, las confirmaciones anteriores no cuentan: si esa te sirve, la confirmas.')
 })
 
 test('grupo confirmado: gracias al organizador, nada a los demás', () => {
@@ -85,7 +85,9 @@ test('organizador cerca del cierre con pendientes: hoy conviene recordar; lejos 
   const opcion = { cupos: { pendientes: 2 } }
   const a = avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: org, opcion, minimo: 4 }, { plazoTexto: 'mañana', horasAlCierre: 20 })
   assert.equal(a?.clave, 'hoy_conviene_recordar')
-  assert.match(a.texto, /^Faltan 2 por confirmar y se cierra mañana\. CRUXE no manda avisos solo/)
+  assert.equal(a.texto, 'Faltan 2 por confirmar y se cierra mañana. CRUXE no manda avisos por su cuenta: el recordatorio lo mandas tú.')
+  const uno = avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: org, opcion: { cupos: { pendientes: 1 } }, minimo: 4 }, { plazoTexto: 'mañana', horasAlCierre: 20 })
+  assert.equal(uno.texto, 'Aún faltan confirmaciones y se cierra mañana. CRUXE no manda avisos por su cuenta: el recordatorio lo mandas tú.')
   assert.equal(avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: org, opcion, minimo: 4 }, { horasAlCierre: 80 }), null)
   assert.equal(avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: org, opcion: { cupos: { pendientes: 0 } }, minimo: 4 }, { horasAlCierre: 10 }), null)
   assert.equal(avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: org, opcion: { cupos: { pendientes: null } }, minimo: 4 }, { horasAlCierre: 10 }), null)

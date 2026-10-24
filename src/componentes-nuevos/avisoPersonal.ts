@@ -70,7 +70,7 @@ export function avisoParaMi(
           clave: 'cambio_el_plan',
           tono: 'info',
           titulo: 'Cambió el plan',
-          texto: `Una persona se retiró. ${cuantos} Si sale una versión nueva, las confirmaciones anteriores no cuentan: confírmala de nuevo si te sirve.`.replace(/\s+/g, ' ').trim(),
+          texto: `Una persona se retiró. ${cuantos} Si sale una versión nueva, las confirmaciones anteriores no cuentan: si esa te sirve, la confirmas.`.replace(/\s+/g, ' ').trim(),
           irARespuesta: false,
         }
   }
@@ -83,9 +83,9 @@ export function avisoParaMi(
     return {
       clave: 'version_sin_ti',
       tono: 'info',
-      titulo: 'Esta versión es sin ti',
+      titulo: 'Esta versión no te incluye',
       texto: incompleta
-        ? 'Tu disponibilidad quedó incompleta, así que no entraste en esta versión. Si la completas, cuenta si el plan se rearma.'
+        ? 'Se armó sin tu disponibilidad completa. Si la completas, cuenta si el plan se rearma.'
         : 'Con lo que marcaste, esta fecha no te queda. No tienes que hacer nada.',
       irARespuesta: incompleta && yo.puede.guardar_condiciones === true,
     }
@@ -98,7 +98,8 @@ export function avisoParaMi(
         clave: 'hoy_conviene_recordar',
         tono: 'info',
         titulo: 'Hoy conviene recordar',
-        texto: `Faltan ${pendientes} por confirmar${plazoTexto ? ` y se cierra ${plazoTexto}` : ''}. CRUXE no manda avisos solo: el recordatorio lo mandas tú.`,
+        // Psico §16: con 1 no se da el número (en un grupo chico se adivina quién falta).
+        texto: `${pendientes >= 2 ? `Faltan ${pendientes} por confirmar` : 'Aún faltan confirmaciones'}${plazoTexto ? ` y se cierra ${plazoTexto}` : ''}. CRUXE no manda avisos por su cuenta: el recordatorio lo mandas tú.`,
         irARespuesta: false,
       }
     }
