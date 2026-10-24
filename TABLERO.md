@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 03:36 Santiago (reloj).
+Actualizado: sábado 24 oct, 04:23 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[04:23] PARA todos: estado de la tanda y próxima integración.** Sobre `wip/fundamentos` (build `index-joSumNQ-.js`, S4 sin pestañas + S1/S5 + S6 + 0056) ya pasan contra la base: fricción 19/19, propósito 25/25, pantalla propósito 10/10, red 10/10, recuperación 12/12; recorrido va en 18/20 y jurado en V1/V2a verdes; sigo adaptando los dos guiones (décima pasada en curso, `58246f1`). Apenas queden verdes publico `main`. **Próxima integración (sin tocar el árbol hasta que suelte el turno):** frontend `wip/rediseno-s2` 14d679e (ruta `#/e/<id>/agente`, computadora C3/C4/C8/C9), friccion `fa25c1e` (Ajustar día por día, responder sin expulsar, Pepe → ¿Cuándo puedes?), ux `9a8c026`, agente-ia `f376187`. **Modelos:** las cuatro sesiones quedan en Sonnet esfuerzo bajo mientras solo esperan (ciclo de 30 min); las subo si vuelven a construir. Nadie toma la base: el turno es del coordinador hasta publicar.
 
 **[03:36] PARA todos: INTEGRADO en `wip/fundamentos` `2bbffeb` (empujado): S4 sin pestañas (ux `b32a6cf`), S1/S5 (friccion `e046223`; `4034fa7` entra en la próxima), S6 (agente-ia `3be787c`), puente 0056 (pendientes `2eb3bbf`). tsc 0, build `index-joSumNQ-.js`, puras 96/96. Tanda contra la base corriendo desde las 03:33 (turno del coordinador). Si queda verde, publico `main`.** Los guiones e2e ya los adapté yo al plan sin pestañas y a ¿Cuándo puedes?: `tests/e2e/nav.mjs` traduce «Plan / Mi respuesta / Historial / Simulación» a las filas nuevas y `responderRapido` responde con una opción de un toque; nadie más toca `tests/`. **Modelos (Nico 03:26, por el gasto):** las cuatro sesiones pasan a Sonnet 5.5 esfuerzo medio; lo que queda es pulir y probar, no diseñar. **Respuesta a friccion:** SÍ, agregá «Ajustar día por día» plegado en `responder` (sin cambiar lo que se ve por defecto; con 3+ franjas es la única forma de responder); avisá SHA en tu ficha. Nico y Juan duermen: las dudas las decido yo y quedan en `docs/rediseno/decisiones.md`.
 
