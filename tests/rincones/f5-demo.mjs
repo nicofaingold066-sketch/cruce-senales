@@ -1,4 +1,4 @@
-// Fase 5: el DEMO ("Los del asado") en una sesión propia: espacio, herramientas, nueva propuesta precargada, Simulación,
+// Fase 5: el DEMO ("Los del finde") en una sesión propia: espacio, herramientas, nueva propuesta precargada, Simulación,
 // condiciones del caso, confirmación simulada, baja simulada y reparación. No se resetea el demo ni se llama al agente.
 import { abrir, actor, BASE, rincon, nota, guardar, log, boton, esperarTexto, errores, CARPETA } from './lib.mjs'
 import { escribir, guardarSesion } from './estado.mjs'
@@ -10,9 +10,9 @@ const corto = async (id, f) => { try { await f() } catch (e) { nota(id, `ERROR D
 const pestana = async (n) => { await t.getByRole('tab', { name: n }).click(); await T(1500) }
 await t.goto(BASE); await t.waitForTimeout(4200)
 await corto('R100', async () => {
-  await boton(t, 'Probar la demo «Los del asado»').click(); await t.waitForURL(/#\/e\//, { timeout: 40000 }); await T(4500)
+  await boton(t, /^Probar la demo «Los del (asado|finde)»$/).click(); await t.waitForURL(/#\/e\//, { timeout: 40000 }); await T(4500)
   escribir({ demoEspacio: t.url().split('/e/')[1].split('/')[0] }); await guardarSesion(t)
-  await rincon(t, 'R100', 'Demo: espacio "Los del asado" recién abierto (Tomi organiza, 5 simulados)', { foco: true }); nota('R100', await txt(t))
+  await rincon(t, 'R100', 'Demo: espacio "Los del finde" recién abierto (Tomi organiza, 5 simulados)', { foco: true }); nota('R100', await txt(t))
 })
 await corto('R101', async () => {
   await t.getByText('Herramientas del organizador').click().catch(() => {}); await T(600)

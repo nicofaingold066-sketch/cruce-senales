@@ -27,12 +27,12 @@ await rinconA11y(t, 'A00', 'Portada sin nombre (lo primero que ve el jurado)')
 // A01 demo
 let codigo = ''
 await corto('A01', t, async () => {
-  await boton(t, 'Probar la demo «Los del asado»').click()
+  await boton(t, /^Probar la demo «Los del (asado|finde)»$/).click()
   await t.waitForURL(/#\/e\//, { timeout: 40000 }); await T(t, 4500)
   await focoTrasNavegar(t, 'A01', 'Demo recién creado')
   codigo = ((await t.locator('.codigo').first().textContent()) || '').trim()
   escribir({ demoA11y: t.url().split('/e/')[1].split('/')[0] }); await guardarSesion(t)
-  await rinconA11y(t, 'A01', 'Demo: espacio "Los del asado" recién creado (Tomi)')
+  await rinconA11y(t, 'A01', 'Demo: espacio "Los del finde" recién creado (Tomi)')
 })
 
 // A02-A04 nueva propuesta y plan

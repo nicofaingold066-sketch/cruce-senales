@@ -1,7 +1,7 @@
 // Sesión "login": la ENTRADA de CRUXE (#/entrar). No hay contraseñas, correos ni teléfonos: la identidad es la
 // sesión anónima que este navegador conserva y un nombre visible ficticio dentro de cada espacio.
 // Primera vez (sesión sin espacios): esta pantalla, con tres entradas. Vuelta (con espacios): la portada de siempre.
-// Los nombres accesibles ("Probar la demo «Los del asado»", "Tu nombre en el espacio", "Unirme") son los mismos de la
+// Los nombres accesibles ("Probar la demo «Los del finde»", "Tu nombre en el espacio", "Unirme") son los mismos de la
 // portada: los guiones e2e arrancan en #/ y los buscan por nombre.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
@@ -211,7 +211,7 @@ function EntradaDemo({ deshabilitado, enfocar }: { deshabilitado: boolean; enfoc
     <section className="tarjeta entrada-opcion entrada-principal" aria-labelledby="entrada-demo">
       <h2 id="entrada-demo">Ver cómo funciona</h2>
       <Boton onClick={hacer} ocupado={ocupado} ocupadoTexto="Preparando la demo…" disabled={deshabilitado} autoFocus={enfocar}>
-        Probar la demo «Los del asado»
+        Probar la demo «Los del finde»
       </Boton>
       <p className="suave">Serás Tomi, quien organiza. Las otras cinco personas son simuladas (datos ficticios).</p>
       {error ? <ErrorCaja error={error} enfocar /> : null}
@@ -280,7 +280,7 @@ function EntradaCodigo({ deshabilitado }: { deshabilitado: boolean }) {
           maxLength={30}
           aria-invalid={nombreMal || undefined}
         />
-        <small>Solo en la demo «Los del asado»: si escribes el nombre de una persona simulada (por ejemplo "Luna"), tomas su lugar.</small>
+        <small>Solo en la demo «Los del finde»: si escribes el nombre de una persona simulada (por ejemplo "Luna"), tomas su lugar.</small>
       </label>
       <Boton type="submit" variante="secundario" ocupado={ocupado} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado}>
         Unirme
