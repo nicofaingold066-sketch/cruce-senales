@@ -308,7 +308,8 @@ try {
   await T.getByText('Este navegador guarda otra sesión', { exact: false }).first().waitFor({ state: 'detached', timeout: 20000 }).catch(() => {})
   await T.goto(urlEspacio)
   await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
-  const cabTomi = (await T.locator('header').innerText()).replace(/\s+/g, ' ')
+  // El rol («organizador») se oculta a la vista bajo 420 px (frontend 0998421) pero sigue en el DOM para el lector: se lee textContent.
+  const cabTomi = (await T.locator('header').evaluate((h) => h.textContent ?? '')).replace(/\s+/g, ' ')
   const herramientas = await T.getByText('Herramientas del organizador').first().waitFor({ timeout: 15000 }).then(() => true, () => false)
   verificar('Vuelve a ser Tomi, organizador, con sus herramientas', /Tomi/.test(cabTomi) && /organizador/.test(cabTomi) && herramientas, cabTomi.slice(0, 80))
   await T.goto(`${BASE}/#/`)
