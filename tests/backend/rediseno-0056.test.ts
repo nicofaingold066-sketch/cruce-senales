@@ -54,10 +54,8 @@ describe('0056: fecha_local, organizador y plan para el rediseño', { timeout: 1
     expect(pv.plan).toEqual({ titulo: 'Asado t-0056', fecha_local: fecha })
     // Nada privado ni conteos en la vista por código.
     const txt = JSON.stringify(pv)
-    for (const x of ['disponibilidad', 'confirmados', 'minimo', 'interesados', 'condiciones', 'Uno r"', O.userId, U.userId]) {
-      if (x === 'Uno r"') continue // los nombres de la lista de integrantes ya eran públicos (enmienda 9)
-      expect(txt).not.toContain(x)
-    }
+    // (Los nombres de la lista de integrantes ya eran públicos por código desde la enmienda 9.)
+    for (const x of ['disponibilidad', 'confirmados', 'minimo', 'interesados', 'condiciones', O.userId, U.userId]) expect(txt).not.toContain(x)
 
     // Cancelada: deja de ser plan destacado.
     await ok(O, 'cancel_proposal', { p_propuesta_id: p })
