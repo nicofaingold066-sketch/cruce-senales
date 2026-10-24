@@ -40,6 +40,17 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si CUALQUIER 
   - `recorrido-dos-sesiones.mjs`: mismas comprobaciones de red más el Historial de Luna tras la baja de Caro.
   - `guardia-palabras.mjs`: regla **D2** (género y pareja de una persona no se piden ni se muestran): género/sexo, hombre/mujer, masculino/femenino, casado, estado civil, "tu/su pareja", "¿vienes con pareja?", `autocomplete="sex"`… «Con parejas» / «solo el grupo» como regla de la juntada se permite. Control positivo: detecta las frases prohibidas y deja pasar las permitidas.
 
+## Rediseño de la noche: cómo se adaptan los guiones (regla 03:07: «el mockup gana y el guion se adapta»)
+El mockup validado (21 pantallas, `prompts/rediseno-secciones.md`) cambia cómo se llega a cada cosa. Lo que mis guiones tocan y puede moverse, y lo que ya dejé preparado (03:04):
+| Hoy los guiones usan | En el mockup | Preparado |
+|---|---|---|
+| Pestañas del plan: `Plan` · `Mi respuesta` · `Historial` · `Simulación` | filas y hojas: «Tu respuesta · Cambiar ›», «Historial ⌄», «Simulación (demo)» (plegadas) | `tests/e2e/nav.mjs` → `irA(p, nombre)`: prueba la pestaña y, si no existe, un botón, enlace o resumen que empiece por el nombre; si no encuentra nada falla diciendo qué buscó. Lo usan dos sesiones, jurado y plan B. Falta: los guiones de friccion/toques/convencer que tocan una pestaña suelta |
+| Enlace «Crear propuesta» | «+ Nuevo plan» (S2) | acepta `Crear propuesta`, `Nueva propuesta` y `Nuevo plan` |
+| Botón «Revisar antes de crear» antes de «Crear y abrir al grupo» | un solo primario «Crear y abrir al grupo» (S3) | «Revisar antes de crear» es opcional en los 6 guiones que crean propuestas |
+| Campos «Mínimo»/«Máximo» como cajas | «Mínimo y Máximo lado a lado con −/+» (S3) | **pendiente**: jurado los rellena con `getByLabel(...).fill`; se adapta cuando S3 (`wip/rediseno-s3`) entregue el control |
+| «Ir a Mi respuesta» | «Responder en un toque» (S4) | `convencer-uno` ya usa la pestaña «Mi respuesta» si el botón no está |
+| «Unirme» a la vista en la portada | dentro de «Tengo un código de invitación» / hoja «+ Nuevo grupo» (S1) | los guiones con sesión nueva lo ven en la portada sin sesión (pantalla 9); si cae, `entrada-lista` y `sesiones-recuperacion` L2 lo avisan |
+
 ## Registro de corridas
 | Hora | Qué | Contra | Resultado |
 |---|---|---|---|

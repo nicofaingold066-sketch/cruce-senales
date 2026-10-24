@@ -78,12 +78,12 @@ try {
   if (familia !== undefined) verificar('El grupo queda con familia deporte', familia === 'deporte', String(familia))
 
   // 2. Nueva propuesta: atajos de la familia.
-  await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta/ }).first().click()
+  await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Nuevo plan/ }).first().click()
   await T.getByRole('group', { name: 'Atajos de actividad' }).waitFor({ timeout: 25000 })
   const a1 = await chips()
   verificar('Atajos del grupo de fútbol: hay al menos uno y NINGUNO es de comida (sin «Asado», «Cena», «Café»)', a1.length > 0 && !a1.some((t) => /asado|cena|caf[eé]|brunch/i.test(t)), a1.join(' · '))
   await T.getByRole('group', { name: 'Atajos de actividad' }).getByRole('button').first().click()
-  await boton('Revisar antes de crear').click()
+  { const r = boton('Revisar antes de crear'); if (await r.isVisible().catch(() => false)) await r.click() } // el mockup (S3) la deja opcional
   await boton('Crear y abrir al grupo').click()
   await T.waitForURL(/\/p\//, { timeout: 25000 })
   const c1 = ultimo('create_proposal')
@@ -97,7 +97,7 @@ try {
   // 3. Un grupo libre sigue ofreciendo de todo.
   const g2 = await crearGrupo('Los de siempre QA', null)
   verificar('Grupo sin elegir propósito: se manda libre (o no se manda) y el servidor responde ok', [undefined, 'libre'].includes(g2.enviado?.args?.p_proposito) && g2.enviado?.resp?.ok === true, `${g2.enviado?.args?.p_proposito ?? '(no se manda)'}`)
-  await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta/ }).first().click()
+  await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Nuevo plan/ }).first().click()
   await T.getByRole('group', { name: 'Atajos de actividad' }).waitFor({ timeout: 25000 })
   const a2 = await chips()
   verificar('Grupo libre: ofrece más atajos que el de fútbol y de más de una familia', a2.length > a1.length, `${a2.length} vs ${a1.length}: ${a2.join(' · ')}`)

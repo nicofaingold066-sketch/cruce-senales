@@ -15,6 +15,7 @@
 import { createRequire } from 'node:module'
 import { mkdirSync } from 'node:fs'
 import { baseLibre } from './base-libre.mjs'
+import { irA } from './nav.mjs'
 baseLibre()
 const require = createRequire(import.meta.url)
 let pw
@@ -103,7 +104,7 @@ const captura = async (p, nombre) => {
 const boton = (p, texto) => p.getByRole('button', { name: texto, exact: true })
 const tocar = async (p, texto) => { const b = boton(p, texto); await b.scrollIntoViewIfNeeded(); await b.click() }
 const esperarTexto = (p, texto, ms = 20000) => p.getByText(texto, { exact: false }).first().waitFor({ timeout: ms })
-const pestana = async (p, nombre) => { await p.getByRole('tab', { name: nombre }).click(); await p.waitForTimeout(600) }
+const pestana = (p, nombre) => irA(p, nombre, { espera: 600 })
 const siPuedo = (p, franja) => p.locator('fieldset', { hasText: `Franja ${franja}` }).getByText('Sí puedo', { exact: true }).click()
 const estado = (p) => p.locator('.estado-hero-etiqueta').first().innerText().catch(() => '')
 // Cada paso espera lo que devuelve el servidor, no un tiempo fijo.
@@ -143,8 +144,9 @@ try {
   await captura(T, 'tomi-espacio')
 
   // 2. Propuesta del caso, creada y abierta.
-  await T.getByRole('link', { name: 'Crear propuesta' }).click()
-  await tocar(T, 'Revisar antes de crear')
+  await T.getByRole('link', { name: /^(Crear propuesta|\+? ?Nuevo plan)$/ }).first().click()
+  // El mockup (S3) deja un solo primario («Crear y abrir al grupo»): el paso «Revisar antes de crear» es opcional.
+  { const revisar = T.getByRole('button', { name: 'Revisar antes de crear', exact: true }); if (await revisar.isVisible().catch(() => false)) await revisar.click() }
   await tocar(T, 'Crear y abrir al grupo')
   await T.waitForURL(/\/p\//, { timeout: 20000 })
   await T.getByRole('tab', { name: 'Plan' }).waitFor({ timeout: 20000 })
