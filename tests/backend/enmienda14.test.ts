@@ -203,6 +203,29 @@ describe('enmienda 14 (0049): agente con familia y quórum', { timeout: 180_000 
     for (const n of ['P0 t', 'P1 t', 'Pend uno t', 'Org t']) expect(txt).not.toContain(n)
   })
 
+  it('10. (0051, pedido de Nico 00:01) la fiesta es candidata en un grupo de noche de 6: sábado 23–03 y domingo 22–02', async () => {
+    if (!aplicada) return
+    const otros = await Promise.all([nuevaSesion(), nuevaSesion(), nuevaSesion()])
+    const esp = await espacioCon('fiesta', [U, V, ...otros]) // 6 personas, ninguna pendiente
+    const NOCHE = { ...PREF(['fiesta', 'bar']), ambiente: 'fiesta', momento: 'noche' }
+    for (const s of [O, U, V]) await ok(s, 'save_my_preferences', { p_espacio_id: esp, p_preferencias: NOCHE })
+    const r = await plan(esp)
+    expect(r.tipo).toBe('borrador')
+    const fiesta = r.candidatas.find((c: Json) => c.actividad === 'fiesta')
+    expect(fiesta, JSON.stringify(r.candidatas.map((c: Json) => c.actividad))).toBeTruthy()
+    expect(fiesta.titulo).toBe('Fiesta en un bar')
+    const dom = new Date(`${sabado}T12:00:00Z`)
+    dom.setUTCDate(dom.getUTCDate() + 1)
+    const lun = new Date(dom)
+    lun.setUTCDate(lun.getUTCDate() + 1)
+    const d = (x: Date) => x.toISOString().slice(0, 10)
+    expect(fiesta.franjas).toEqual([
+      { inicio: `${sabado}T23:00`, fin: `${d(dom)}T03:00` },
+      { inicio: `${d(dom)}T22:00`, fin: `${d(lun)}T02:00` },
+    ])
+    expect(r.quorum).toBeNull() // 6 personas alcanzan el mínimo de la fiesta
+  })
+
   it('5. el agente social publica con la actividad de la fila en un grupo con propósito', async () => {
     if (!aplicada) return
     const esp = await espacioCon('deporte', [U, V])
