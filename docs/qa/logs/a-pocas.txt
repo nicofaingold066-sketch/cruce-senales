@@ -1,0 +1,41 @@
+[08:31:56 a. m.] turno tomado 08:31: qa-gente (a) pocas personas: grupos de 2 y 3
+[08:32:10 a. m.] PASS a1: la organizadora ve ¡Se juntan!
+[08:32:10 a. m.] PASS a1 grupo de 2, mínimo 2: ambos responden, se confirma y se juntan (13.4 s)
+[08:32:19 a. m.] PASS a2: con nadie respondiendo, el botón de buscar opción existe o la pantalla explica por qué no → botón=0; «Trío 0831 Reuniendo respuestas Próxima acción: Primero marca tu disponibilidad: eres quien no puede faltar. Cena de prueba sáb 31 oct 20:00 »
+[08:32:20 a. m.] PASS a2b: con solo la organizadora respondida, aparece «Buscar opción compatible» → Reuniendo respuestas
+[08:32:24 a. m.] PASS a2b: dice que no hay opción compatible y no publica versión → Trío 0831 Reuniendo respuestas Próxima acción: Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar. Cena de prueba sáb 31 oct 20:00 · dom 1 nov 20:00 1 de 3 respondieron Respuestas Opción Confirmar Encuentro Cómo 
+[08:32:24 a. m.] PASS a3: «No puedo ninguno» se guarda
+[08:32:29 a. m.] PASS a3: con un «No puedo ninguno» y mínimo 3 no hay versión que lo incluya (sin Confirmar versión) → estado «Reuniendo respuestas»; «Trío 0831 Reuniendo respuestas Próxima acción: Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar. Cena de prueba sáb 31 oct 20:00 · dom 1 nov 20:00 3 de 3 respondieron Respuestas Opción Confi»
+[08:32:30 a. m.] PASS a3: quien dijo «No puedo ninguno» ve el plan sin error → «Trío 0831 Reuniendo respuestas Próxima acción: Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar. Cena de prueb»
+[08:32:30 a. m.] PASS a2 grupo de 3, mínimo 3: nadie responde y se busca opción (20.4 s)
+[08:32:46 a. m.] PASS a4: con una versión publicada existe «Retirarme de este plan» → Esperando confirmaciones
+[08:32:49 a. m.] PASS a4: tras retirarse la organizadora (imprescindible) el plan queda en revisión / explicado, sin error → estado «En revisión»; «Retiro 0831 v1 · cierra vie 30 oct, 20:00 En revisión · Una persona se retiró Próxima acción: Gracias por avisar. No hace falta contar por qué. Versión 1 (en revisión, no confirmada) Sábado 31 oct 20:00 a 22:00 ya no llega al mínimo (3) Cena de prueba ? 0 sigu»
+[08:32:50 a. m.] PASS a4: un invitado ve el plan sin el nombre de quien se retiró → estado «En revisión»; «Retiro 0831 v1 · cierra vie 30 oct, 20:00 En revisión · Una persona se retiró Próxima acción: La versión 1 ya no reúne lo necesario para juntarse. Versión 1 (en revisión, no confirmada) Sábado 31 oct 20:00 a 22:00 ya no »
+[08:32:50 a. m.] PASS a4 la organizadora se retira con una versión publicada (19.8 s)
+[08:33:01 a. m.] PASS a5: queda «Cancelado» para la organizadora
+[08:33:02 a. m.] PASS a5: quien había respondido ve el plan cancelado (sin botones de confirmar) → Cancel 0831 Cancelado Próxima acción: El organizador canceló la propuesta. Cena de prueba Ficha del plan · Historial
+[08:33:04 a. m.] PASS a5: abrir «¿Cuándo puedes?» de un plan cancelado no muestra botones de respuesta activos → Grupos C0 Cancel 0831 3 personas FQ GQ HQ Personas › Invitar al grupo KYBT7MKK Copiar enlace WhatsApp Planes + Nuevo plan (Crear propuesta) Cancelado Cena de pr
+[08:33:04 a. m.] PASS a5 cancelar la propuesta con respuestas cargadas (14.1 s)
+RPC (todas las personas):
+  server_info                n=21 p50=146ms p95=246ms max=267ms
+  create_space               n=4 p50=199ms p95=231ms max=231ms
+  get_space                  n=37 p50=120ms p95=163ms max=175ms
+  create_proposal            n=4 p50=198ms p95=367ms max=367ms
+  open_proposal              n=4 p50=173ms p95=202ms max=202ms
+  get_proposal_state         n=98 p50=137ms p95=214ms max=249ms
+  get_my_preferences         n=5 p50=156ms p95=160ms max=160ms
+  list_proposals             n=16 p50=134ms p95=309ms max=309ms
+  save_my_conditions         n=10 p50=202ms p95=421ms max=421ms
+  get_my_conditions          n=16 p50=113ms p95=382ms max=382ms
+  evaluate_and_publish       n=4 p50=208ms p95=288ms max=288ms
+  accept_version             n=3 p50=316ms p95=316ms max=316ms
+  list_my_spaces             n=7 p50=154ms p95=245ms max=245ms
+  preview_space_by_code      n=7 p50=167ms p95=352ms max=352ms
+  join_space                 n=7 p50=160ms p95=232ms max=232ms
+  withdraw_commitment        n=1 p50=226ms p95=226ms max=226ms
+  cancel_proposal            n=1 p50=201ms p95=201ms max=201ms
+Errores RPC: {}
+[08:33:04 a. m.] PASS sin errores de consola
+[08:33:07 a. m.] turno liberado
+a-pocas: 18 PASS, 0 FAIL
+JSON {"guion":"a-pocas","filas":[{"nombre":"a1: la organizadora ve ¡Se juntan!","cond":true,"detalle":""},{"nombre":"a1 grupo de 2, mínimo 2: ambos responden, se confirma y se juntan (13.4 s)","cond":true,"detalle":""},{"nombre":"a2: con nadie respondiendo, el botón de buscar opción existe o la pantalla explica por qué no","cond":true,"detalle":"botón=0; «Trío 0831 Reuniendo respuestas Próxima acción: Primero marca tu disponibilidad: eres quien no puede faltar. Cena de prueba sáb 31 oct 20:00 »"},{"nombre":"a2b: con solo la organizadora respondida, aparece «Buscar opción compatible»","cond":true,"detalle":"Reuniendo respuestas"},{"nombre":"a2b: dice que no hay opción compatible y no publica versión","cond":true,"detalle":"Trío 0831 Reuniendo respuestas Próxima acción: Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar. Cena de prueba sáb 31 oct 20:00 · dom 1 nov 20:00 1 de 3 respondieron Respuestas Opción Confirmar Encuentro Cómo "},{"nombre":"a3: «No puedo ninguno» se guarda","cond":true,"detalle":""},{"nombre":"a3: con un «No puedo ninguno» y mínimo 3 no hay versión que lo incluya (sin Confirmar versión)","cond":true,"detalle":"estado «Reuniendo respuestas»; «Trío 0831 Reuniendo respuestas Próxima acción: Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar. Cena de prueba sáb 31 oct 20:00 · dom 1 nov 20:00 3 de 3 respondieron Respuestas Opción Confi»"},{"nombre":"a3: quien dijo «No puedo ninguno» ve el plan sin error","cond":true,"detalle":"«Trío 0831 Reuniendo respuestas Próxima acción: Sin opción compatible con las condiciones actuales. Se puede esperar más disponibilidad o cancelar. Cena de prueb»"},{"nombre":"a2 grupo de 3, mínimo 3: nadie responde y se busca opción (20.4 s)","cond":true,"detalle":""},{"nombre":"a4: con una versión publicada existe «Retirarme de este plan»","cond":true,"detalle":"Esperando confirmaciones"},{"nombre":"a4: tras retirarse la organizadora (imprescindible) el plan queda en revisión / explicado, sin error","cond":true,"detalle":"estado «En revisión»; «Retiro 0831 v1 · cierra vie 30 oct, 20:00 En revisión · Una persona se retiró Próxima acción: Gracias por avisar. No hace falta contar por qué. Versión 1 (en revisión, no confirmada) Sábado 31 oct 20:00 a 22:00 ya no llega al mínimo (3) Cena de prueba ? 0 sigu»"},{"nombre":"a4: un invitado ve el plan sin el nombre de quien se retiró","cond":true,"detalle":"estado «En revisión»; «Retiro 0831 v1 · cierra vie 30 oct, 20:00 En revisión · Una persona se retiró Próxima acción: La versión 1 ya no reúne lo necesario para juntarse. Versión 1 (en revisión, no confirmada) Sábado 31 oct 20:00 a 22:00 ya no »"},{"nombre":"a4 la organizadora se retira con una versión publicada (19.8 s)","cond":true,"detalle":""},{"nombre":"a5: queda «Cancelado» para la organizadora","cond":true,"detalle":""},{"nombre":"a5: quien había respondido ve el plan cancelado (sin botones de confirmar)","cond":true,"detalle":"Cancel 0831 Cancelado Próxima acción: El organizador canceló la propuesta. Cena de prueba Ficha del plan · Historial"},{"nombre":"a5: abrir «¿Cuándo puedes?» de un plan cancelado no muestra botones de respuesta activos","cond":true,"detalle":"Grupos C0 Cancel 0831 3 personas FQ GQ HQ Personas › Invitar al grupo KYBT7MKK Copiar enlace WhatsApp Planes + Nuevo plan (Crear propuesta) Cancelado Cena de pr"},{"nombre":"a5 cancelar la propuesta con respuestas cargadas (14.1 s)","cond":true,"detalle":""},{"nombre":"sin errores de consola","cond":true,"detalle":""}],"defectos":[]}
