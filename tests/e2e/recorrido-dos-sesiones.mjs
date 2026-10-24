@@ -15,7 +15,7 @@
 import { createRequire } from 'node:module'
 import { mkdirSync } from 'node:fs'
 import { baseLibre } from './base-libre.mjs'
-import { irA, responderRapido, respuestaGuardada, rotulo } from './nav.mjs'
+import { irA, responderRapido, respuestaGuardada, rotulo, sinIntro } from './nav.mjs'
 baseLibre()
 const require = createRequire(import.meta.url)
 let pw
@@ -44,6 +44,7 @@ const enmascarar = (codigo) => (codigo ? `${codigo.slice(0, 2)}…` : '(sin cód
 const browser = await pw.chromium.launch({ headless: true,
   executablePath: process.env.CRUXE_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' })
 const opts = { viewport: { width: 375, height: 812 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: 'es-CL' }
+sinIntro(browser) // la intro de primera visita no es lo que se prueba
 const ctxTomi = await browser.newContext(opts) // ventana normal
 const ctxLuna = await browser.newContext(opts) // ventana privada: almacenamiento separado
 const T = await ctxTomi.newPage(), L = await ctxLuna.newPage()
@@ -290,7 +291,8 @@ try {
     /Pepe/.test(cab) && (await T.getByText('Herramientas del organizador').count()) === 0, cab.replace(/\s+/g, ' ').slice(0, 80))
   await T.getByText('Asado en casa de Tomi', { exact: false }).first().waitFor({ timeout: 15000 })
   // La tarjeta une el texto del servidor (siguiente_accion) y el conteo que arma la interfaz.
-  const tarjeta = (await T.locator('.plan-vivo, .tarjeta-prop, a[href*="/p/"]').first().innerText()).replace(/\s+/g, ' ')
+  // La tarjeta del plan, no cualquier enlace a /p/ (la actividad del grupo también enlaza al plan con «Ver plan»).
+  const tarjeta = (await T.locator('.plan-vivo, .tarjeta-prop, a[href*="/p/"]').filter({ hasText: 'Asado en casa de Tomi' }).first().innerText()).replace(/\s+/g, ' ')
   const imposiblesTarjeta = conteosImposibles(tarjeta)
   verificar('#56: la tarjeta dice "N confirmaron (mínimo M)" y no "N de M" con N mayor',
     imposiblesTarjeta.length === 0 && /\d+ confirmaron \(mínimo \d+\)/.test(tarjeta), imposiblesTarjeta.length ? imposiblesTarjeta.join(', ') : tarjeta)
@@ -307,7 +309,8 @@ try {
   await T.getByText('Este navegador guarda otra sesión', { exact: false }).first().waitFor({ state: 'detached', timeout: 20000 }).catch(() => {})
   await T.goto(urlEspacio)
   await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
-  const cabTomi = (await T.locator('header').innerText()).replace(/\s+/g, ' ')
+  // El rol («organizador») se oculta a la vista bajo 420 px (frontend 0998421) pero sigue en el DOM para el lector: se lee textContent.
+  const cabTomi = (await T.locator('header').evaluate((h) => h.textContent ?? '')).replace(/\s+/g, ' ')
   const herramientas = await T.getByText('Herramientas del organizador').first().waitFor({ timeout: 15000 }).then(() => true, () => false)
   verificar('Vuelve a ser Tomi, organizador, con sus herramientas', /Tomi/.test(cabTomi) && /organizador/.test(cabTomi) && herramientas, cabTomi.slice(0, 80))
   await T.goto(`${BASE}/#/`)

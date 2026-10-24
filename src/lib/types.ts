@@ -1,4 +1,5 @@
 // Tipos del contrato backend-interfaz (docs/contrato.md + docs/contrato-enmienda-2.md; la enmienda prevalece). Todo dato es ficticio.
+import type { EventoActividadGrupo } from '../actividad-grupo/tipos'
 
 export interface Momento {
   utc: string
@@ -295,6 +296,8 @@ export interface Espacio {
   mi_miembro_id: string
   mi_rol: 'organizador' | 'miembro'
   miembros: MiembroEspacio[]
+  /** Actividad compartida: ingresos, salidas y bajas de planes. No incluye motivos ni preferencias. */
+  actividad?: EventoActividadGrupo[]
   /** Enmienda 14: para qué es el grupo ('libre', una familia o una actividad) y su familia derivada. */
   proposito?: Proposito
   familia?: Familia

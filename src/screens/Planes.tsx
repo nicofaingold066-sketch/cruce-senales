@@ -3,6 +3,7 @@ import { api } from '../lib/api'
 import type { ApiError, EspacioResumen, PropuestaResumen } from '../lib/types'
 import { useSondeo } from '../lib/hooks'
 import { rutas, useIdentidad } from '../lib/shell'
+import { etiquetaPlan } from '../componentes-nuevos/plan/accion'
 import { momentoCorto } from '../lib/format'
 import { Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
@@ -130,7 +131,7 @@ function TarjetaPlan({ p, espacio }: { p: PropuestaResumen; espacio: EspacioResu
   return (
     <a className={`tarjeta-prop s2b-plan ${clase}`} href={rutas.propuesta(espacio.id, p.id)}>
       <span className="s2b-plan-arriba">
-        <span className="s2b-plan-estado">{turno ? 'Te toca confirmar' : p.estado_etiqueta}</span>
+        <span className="s2b-plan-estado">{turno ? 'Te toca confirmar' : etiquetaPlan(p.estado, p.estado_etiqueta)}</span>
         <span className="s2b-plan-grupo">{espacio.nombre}</span>
       </span>
       {/* Mismo nombre de transición que el título de la pantalla del plan: el título "viaja" al abrirlo. */}

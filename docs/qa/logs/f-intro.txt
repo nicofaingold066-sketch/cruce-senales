@@ -1,0 +1,17 @@
+[08:39:45 a. m.] turno tomado 08:39: qa-gente (f) intro de primera visita desde una invitación
+[08:39:50 a. m.] PASS f1: la primera visita por una invitación muestra la intro → 433 ms hasta verla
+[08:39:53 a. m.] PASS f1: la intro termina sola y dura ≲ 4,5 s (2,6 s + salida) → 3487 ms desde abrir el enlace
+[08:39:53 a. m.] PASS f1: al terminar, «¿Quién eres?» está usable (botón con el nombre) → desborde 0 px
+[08:39:53 a. m.] PASS f1: de abrir el enlace a ¿Cuándo puedes? con la intro completa → 4315 ms (primer toque posible a los 3496 ms)
+[08:39:54 a. m.] PASS f2: «Saltar intro» recibe el foco al abrir
+[08:39:55 a. m.] PASS f2: «Saltar intro» cierra en < 1 s → 830 ms
+[08:39:55 a. m.] PASS f2: el scroll de la página se restituye tras la intro → visible
+[08:39:56 a. m.] PASS f3: Escape cierra la intro
+[08:39:58 a. m.] PASS f4: a la segunda visita la intro no vuelve
+[08:40:00 a. m.] PASS f5: con «reducir movimiento» no hay intro y la invitación se ve de inmediato
+[08:40:02 a. m.] PASS f6: la intro a 320 px no genera desborde → 0 px
+[08:40:03 a. m.] PASS f7: con el almacenamiento del navegador bloqueado se puede entrar igual (la intro no traba) → errores de consola nuevos: 0
+[08:40:03 a. m.] PASS sin errores de consola
+[08:40:06 a. m.] turno liberado
+f-intro: 13 PASS, 0 FAIL
+JSON {"guion":"f-intro","filas":[{"nombre":"f1: la primera visita por una invitación muestra la intro","cond":true,"detalle":"433 ms hasta verla"},{"nombre":"f1: la intro termina sola y dura ≲ 4,5 s (2,6 s + salida)","cond":true,"detalle":"3487 ms desde abrir el enlace"},{"nombre":"f1: al terminar, «¿Quién eres?» está usable (botón con el nombre)","cond":true,"detalle":"desborde 0 px"},{"nombre":"f1: de abrir el enlace a ¿Cuándo puedes? con la intro completa","cond":true,"detalle":"4315 ms (primer toque posible a los 3496 ms)"},{"nombre":"f2: «Saltar intro» recibe el foco al abrir","cond":true,"detalle":""},{"nombre":"f2: «Saltar intro» cierra en < 1 s","cond":true,"detalle":"830 ms"},{"nombre":"f2: el scroll de la página se restituye tras la intro","cond":true,"detalle":"visible"},{"nombre":"f3: Escape cierra la intro","cond":true,"detalle":""},{"nombre":"f4: a la segunda visita la intro no vuelve","cond":true,"detalle":""},{"nombre":"f5: con «reducir movimiento» no hay intro y la invitación se ve de inmediato","cond":true,"detalle":""},{"nombre":"f6: la intro a 320 px no genera desborde","cond":true,"detalle":"0 px"},{"nombre":"f7: con el almacenamiento del navegador bloqueado se puede entrar igual (la intro no traba)","cond":true,"detalle":"errores de consola nuevos: 0"},{"nombre":"sin errores de consola","cond":true,"detalle":""}],"defectos":[]}

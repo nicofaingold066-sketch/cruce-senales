@@ -65,6 +65,7 @@ export const PERMITIDAS: Record<string, () => Record<string, unknown>> = {
   preview_space_by_code: () => ({ p_codigo: 'ZZZZZZZZ' }), // enmienda 9
   list_my_spaces: () => ({}),
   get_space: () => ({ p_espacio_id: Z }),
+  leave_space: () => ({ p_espacio_id: Z, p_intento_id: randomUUID() }), // actividad del grupo
   seed_demo_space: () => ({}),
   seed_demo_makana: () => ({}), // 0057: caso de siete perfiles, aislado de legacy
   add_simulated_member: () => ({ p_espacio_id: Z, p_nombre_visible: 'x' }),
@@ -116,8 +117,8 @@ export const PERMITIDAS: Record<string, () => Record<string, unknown>> = {
   opinar_version: () => ({ p_propuesta_id: Z, p_version: 1, p_opinion: 'asi_no_puedo', p_intento_id: randomUUID() }),
 }
 
-/** Tamaño de la lista permitida (A5): 31 hasta la enmienda 9; 40 con la 11 (agente social); 41 con la 13; 42 con la demo Makana (0057). */
-export const TOTAL_PERMITIDAS = 42
+/** Lista permitida: 41 con E13, 42 con leave_space, 43 con seed_demo_makana. */
+export const TOTAL_PERMITIDAS = 43
 
 /** Lista cerrada de siguiente_accion.codigo (enmienda 3). */
 export const CODIGOS_SIGUIENTE = [

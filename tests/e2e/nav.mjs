@@ -116,3 +116,18 @@ export const ROTULO = {
   'Cancelado': /Cancelad[oa]/i,
 }
 export const rotulo = (t) => ROTULO[t] ?? new RegExp(`^${esc(t)}$`, 'i')
+
+// Intro cinematográfica de primera visita (codex-intro, 24 oct): tapa la portada 2,6 s en un navegador limpio y se recuerda
+// con `cruxe:entrada-vista` = '1'. Los guiones la marcan como vista en cada contexto nuevo para probar la app, no la intro.
+export function sinIntro(browser) {
+  const nuevo = browser.newContext.bind(browser)
+  browser.newContext = async (...args) => {
+    const ctx = await nuevo(...args)
+    await ctx.addInitScript(() => {
+      // Intro (`cruxe:entrada-vista`) y guía interactiva de tres pasos (`cruxe:guia-vista:v1`): las dos se marcan vistas.
+      for (const tipo of ['localStorage', 'sessionStorage']) for (const clave of ['cruxe:entrada-vista', 'cruxe:guia-vista:v1']) { try { window[tipo].setItem(clave, '1') } catch { /* sin almacenamiento */ } }
+    })
+    return ctx
+  }
+  return browser
+}

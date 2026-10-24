@@ -59,6 +59,7 @@ export type VistaPorCodigoOk = OkBase & {
   plan?: PlanPorCodigo | null
 }
 export type VerEspacioOk = OkBase & { espacio: Espacio }
+export type SalirEspacioOk = OkBase & { resultado: { espacio_id: string; miembro_id: string; repetido: boolean } }
 export type SembrarDemoOk = EspacioOk<{ espacio_id: string; creado: boolean; repetido: boolean }>
 export type AgregarSimuladoOk = EspacioOk<{ miembro_id: string }>
 export type ReiniciarDemoOk = EspacioOk<{ propuestas_eliminadas: number; generacion: number }>
@@ -351,6 +352,8 @@ export const api = {
   previewSpaceByCode: (codigo: string) => llamar<VistaPorCodigoOk>('preview_space_by_code', { p_codigo: codigo }, false),
   listMySpaces: () => llamar<ListaEspaciosOk>('list_my_spaces', {}, false),
   getSpace: (espacioId: string) => llamar<VerEspacioOk>('get_space', { p_espacio_id: espacioId }, false),
+  leaveSpace: (espacioId: string, intentoId: string) =>
+    llamar<SalirEspacioOk>('leave_space', { p_espacio_id: espacioId, p_intento_id: intentoId }, true),
   seedDemoSpace: () => llamar<SembrarDemoOk>('seed_demo_space', {}, true),
   seedDemoMakana: () => llamar<SembrarDemoOk>('seed_demo_makana', {}, true),
   addSimulatedMember: (espacioId: string, nombreVisible: string) =>

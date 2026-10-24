@@ -1,6 +1,7 @@
 // #34. Sin base, Auth, modelos ni escrituras reales. Intercepta TODA salida de red externa.
 // node tests/e2e/red-controlada.mjs
 // Playwright debe estar disponible previamente; no instala paquetes ni navegadores.
+import { sinIntro } from './nav.mjs'
 import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
 import { createServer } from 'vite'
@@ -38,6 +39,7 @@ async function hasta(fn, mensaje, ms = 4000) {
 }
 let aprobadas = 0, fallidas = 0
 async function caso(nombre, mock, prueba, modo = 'hooks') {
+sinIntro(browser) // la intro de primera visita no es lo que se prueba
   const context = await browser.newContext()
   const page = await context.newPage()
   const errores = [], inesperadas = [], pendientes = new Set()

@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../lib/api'
-import type { ApiError, Espacio as EspacioT, PropuestaResumen } from '../lib/types'
+import type { ApiError, Espacio as EspacioT, Momento, PropuestaResumen } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
 import { irA, parseRuta, rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { momentoCorto } from '../lib/format'
@@ -9,6 +9,9 @@ import { Avatar, AvatarPila, Aviso, Boton, Cargando, ErrorCaja, IconoGrupo, Nomb
 import { Confirmacion, useVolverFoco } from '../components/Confirmacion'
 import { Icono } from '../components/Icono'
 import { PlanVivo } from '../components/PlanVivo'
+import { ActividadGrupo } from '../actividad-grupo/ActividadGrupo'
+import { SalirGrupo } from '../actividad-grupo/SalirGrupo'
+import { etiquetaPlan } from '../componentes-nuevos/plan/accion'
 import { textoInvitacion, urlWhatsApp } from '../lib/compartir'
 import '../estilo/seccion-s2.css'
 // El panel del agente va en su propia parte del paquete (mejora #14): se descarga solo al abrir el bloque.
@@ -42,6 +45,7 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
   const [verPersonas, setVerPersonas] = useState(false)
   const [gustos, setGustos] = useState<string>('Tus gustos son privados: solo los usa el agente.')
   const [espacio, setEspacio] = useState<EspacioT | null>(null)
+  const [servidorAhora, setServidorAhora] = useState<Momento | undefined>()
   const [propuestas, setPropuestas] = useState<PropuestaResumen[] | null>(null)
   const [errorEspacio, setErrorEspacio] = useState<ApiError | null>(null)
   const [errorLista, setErrorLista] = useState<ApiError | null>(null)
@@ -91,13 +95,20 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
       const reinicio = generacion.current != null && g > generacion.current
       generacion.current = g
       setEspacio(r.data.espacio)
+      setServidorAhora(r.data.servidor_ahora)
       setErrorEspacio(null)
       if (reinicio) {
         // Hubo un reinicio real: la lista vieja y las pedidas antes ya no valen.
         setPropuestas([])
         void cargarLista()
       }
-    } else setErrorEspacio(r.error)
+    } else {
+      setErrorEspacio(r.error)
+      if (r.error.codigo === 'fuera_de_audiencia') {
+        setEspacio(null)
+        setPropuestas(null)
+      }
+    }
   }, [espacioId, cargarLista])
 
   const cargarTodo = useCallback(async () => {
@@ -230,13 +241,14 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
       </section>
 
       <div className="hoja">
+        <ActividadGrupo actividad={espacio.actividad} espacioId={espacio.id} ahora={servidorAhora} />
         {aviso ? (
           <Aviso tono="ok" accion={<button type="button" className="btn btn-secundario btn-chico" onClick={() => setAviso(null)}>Entendido</button>}>
             {aviso}
           </Aviso>
         ) : null}
 
-        {/* Invitar al grupo: el output de quien organiza; va primero. */}
+        {/* Invitación disponible junto a la actividad compartida y los planes del grupo. */}
         <section className="tarjeta invitar-tarjeta" aria-labelledby="invitar-titulo">
           <div className="invitar-cabeza">
             <h2 id="invitar-titulo">Invitar al grupo</h2>
@@ -329,7 +341,7 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
                 <li key={p.id}>
                   <a href={rutas.propuesta(espacioId, p.id)}>
                     <span>{p.titulo}</span>
-                    <span className="suave">{p.estado_etiqueta}</span>
+                    <span className="suave">{etiquetaPlan(p.estado, p.estado_etiqueta)}</span>
                   </a>
                 </li>
               ))}
@@ -343,13 +355,16 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
         </details>
       </div>
 
-      {verPersonas ? <HojaPersonas miembros={espacio.miembros} demo={espacio.demo} cerrar={() => setVerPersonas(false)} /> : null}
+      {verPersonas ? (
+        <HojaPersonas espacio={espacio} deshabilitado={soloLectura || fondo} cerrar={() => setVerPersonas(false)} />
+      ) : null}
     </div>
   )
 }
 
 /** "Personas ›": hoja desde abajo con la gente del grupo (sistema: .sd-velo y .sd-hoja-modal). */
-function HojaPersonas({ miembros, demo, cerrar }: { miembros: EspacioT['miembros']; demo: boolean; cerrar: () => void }) {
+function HojaPersonas({ espacio, deshabilitado, cerrar }: { espacio: EspacioT; deshabilitado: boolean; cerrar: () => void }) {
+  const { miembros, demo } = espacio
   const caja = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const anterior = document.activeElement as HTMLElement | null
@@ -387,6 +402,9 @@ function HojaPersonas({ miembros, demo, cerrar }: { miembros: EspacioT['miembros
           ))}
         </ul>
         {demo ? <p className="suave">Grupo de demostración con datos ficticios.</p> : null}
+        {espacio.actividad !== undefined ? (
+          <SalirGrupo espacioId={espacio.id} nombre={espacio.nombre} esOrganizador={espacio.mi_rol === 'organizador'} deshabilitado={deshabilitado} />
+        ) : null}
       </div>
     </>
   )
