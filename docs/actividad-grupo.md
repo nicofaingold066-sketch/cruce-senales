@@ -49,7 +49,7 @@ La migración agrega una RPC pública a la lista cerrada: 42 ejecutables por `au
 - Las seis pruebas nuevas de `tests/backend/actividad-grupo.test.ts` pasan contra ese PostgreSQL aislado, usando un adaptador de transporte local. Esto verifica el SQL real, aunque no sustituye la comprobación del servidor publicado.
 - Fallo forzado en el segundo retiro: ambos planes, aceptaciones, actividad y membresía quedan sin efectos parciales; el reintento posterior funciona.
 - Auditoría independiente del SQL: sin bloqueantes.
-- Servidor real: migración `20261024115616` instalada. Catálogo observado: 42 RPC autenticadas, 0 sin sesión, 0 helpers expuestos y 0 tablas de `cruce` sin RLS. Las seis pruebas nuevas pasan contra producción (16,12 s). Las nueve pruebas de E2/privilegios también pasaron. La primera tanda E13 se interrumpió por fallos de conexión y se repite por separado antes de publicar el front.
+- Servidor real: migración `20261024115616` instalada. Catálogo observado: 42 RPC autenticadas, 0 sin sesión, 0 helpers expuestos y 0 tablas de `cruce` sin RLS. Las seis pruebas nuevas pasan contra producción (16,12 s). Las nueve pruebas de E2/privilegios también pasaron. La primera tanda E13 se interrumpió por fallos de conexión; tras recuperarse la conexión, su ejecución aislada pasó 6/6 (17,93 s).
 - Despliegue de interfaz y verificación visual en producción: pendientes al escribir este corte.
 
 No se agregaron dependencias de producción ni llamadas a modelos.
