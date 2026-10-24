@@ -21,6 +21,20 @@
   transition: transform 360ms ease;
 }
 
+.gru-asistente[data-manual='true'] {
+  z-index: 45;
+  transition: none;
+}
+
+.gru-asistente[data-arrastrando='true'] .gru-asistente-boton {
+  cursor: grabbing;
+}
+
+.gru-asistente[data-arrastrando='true'] .gru-grafico *,
+.gru-asistente[data-arrastrando='true'] .gru-grafico *::after {
+  animation-play-state: paused;
+}
+
 .gru-asistente-boton {
   position: relative;
   display: flex;
@@ -36,8 +50,11 @@
   color: #2c2016;
   background: transparent;
   box-shadow: none;
-  cursor: pointer;
-  touch-action: manipulation;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   text-decoration: none;
 }
 
@@ -244,12 +261,12 @@ body:has(.gru-asistente[data-reserva='true']) main#contenido {
   .gru-asistente-panel { animation: none; }
 }
 
-/* ---- Teléfono e iPad vertical (< 768 px), pedido de Nico vía coordinador (09:09): GRU queda anclado abajo a la
+/* ---- Teléfono e iPad vertical (< 768 px), pedido de Nico vía coordinador (09:09): GRU empieza anclado abajo a la
    derecha, encima de la barra de pestañas o de la acción fija, y el contenido reserva ese alto al final para que
    GRU nunca tape texto cuando se llega abajo. El cálculo de huecos (posición con transform) queda para computadora.
-   Solo el personaje recibe toques; el panel se abre hacia arriba. */
+   Solo el personaje recibe toques; el panel se abre hacia arriba. Al arrastrarlo, manda la ubicación manual. */
 @media (max-width: 767px) {
-  .gru-asistente {
+  .gru-asistente:not([data-manual='true']) {
     top: auto;
     left: auto;
     right: 12px;
@@ -261,22 +278,22 @@ body:has(.gru-asistente[data-reserva='true']) main#contenido {
   .gru-asistente-panel {
     pointer-events: auto;
   }
-  body:has(.nav-inferior) .gru-asistente {
+  body:has(.nav-inferior) .gru-asistente:not([data-manual='true']) {
     bottom: calc(76px + env(safe-area-inset-bottom));
   }
   /* Nuevo plan lleva su primario fijo al pie: GRU sube por encima. (El del plan va dentro del bloque, no al pie.) */
-  body:has(.vista-s3) .gru-asistente {
+  body:has(.vista-s3) .gru-asistente:not([data-manual='true']) {
     bottom: calc(88px + env(safe-area-inset-bottom));
   }
   /* Abajo el fondo es claro: el nombre va oscuro y legible. */
-  .gru-asistente[data-claro='true'] .gru-asistente-boton {
+  .gru-asistente[data-claro='true']:not([data-manual='true']) .gru-asistente-boton {
     color: #2c2016;
   }
-  .gru-asistente[data-claro='true'] .gru-asistente-nombre {
+  .gru-asistente[data-claro='true']:not([data-manual='true']) .gru-asistente-nombre {
     text-shadow: 0 1px 3px rgb(255 255 255 / 80%);
   }
-  .gru-asistente .gru-asistente-panel,
-  .gru-asistente[data-izquierda='true'] .gru-asistente-panel {
+  .gru-asistente:not([data-manual='true']) .gru-asistente-panel,
+  .gru-asistente[data-izquierda='true']:not([data-manual='true']) .gru-asistente-panel {
     top: auto;
     bottom: calc(100% + 10px);
     left: auto;
