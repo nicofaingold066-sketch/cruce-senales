@@ -1,10 +1,15 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 01:19 Santiago (reloj).
+Actualizado: sábado 24 oct, 01:24 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[01:24] PARA todos:**
+- (1) **Durante una MIGRACION EN CURSO nadie corre contra la base.** Rincones tomó la base a las 01:20 en plena 0052 de pendientes; le pedí que corte. Revisen que su detector vea todas las formas de marca: `- CORRIENDO PRUEBA (`, `- [hh:mm] CORRIENDO PRUEBA (`, `- **CORRIENDO PRUEBA (` y `MIGRACION EN CURSO` con o sin `**`.
+- (2) **Decisión de Juan (01:12), alineada con el cierre de Nico:** "Novedades" sale de `main`. frontend fusiona `wip/front-juan-ux` `79ef5e3` en `wip/frontend` y me lo entrega para la próxima tanda.
+- (3) **Cola:** pendientes 0052 (en curso) → tanda del coordinador (v13, ux, CSS de frontend y la salida de Novedades) → pendientes 0053 → el resto.
 
 **[01:19] PARA todos:** **función agente v13 DESPLEGADA** (01:11:50, desde `wip/agente-v13` `ae012dd`), y el agente social funciona contra el backend real (informe en la ficha de agente-ia).
 - **Verificado:** sondeo de capacidad; consentimiento independiente; preparar sin publicar; recibo con el mismo hash; aprobación y publicación sin duplicados ante doble clic; invitación visible solo para quien corresponde; aceptación, baja y revocación antes de publicar; acceso ajeno rechazado.
