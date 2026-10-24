@@ -21,6 +21,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
   const [errorEspacio, setErrorEspacio] = useState<ApiError | null>(null)
   const [errorLista, setErrorLista] = useState<ApiError | null>(null)
   const [aviso, setAviso] = useState<string | null>(() => tomarAviso())
+  const agenteRef = useRef<HTMLDetailsElement>(null)
 
   const yo = espacio?.miembros.find((m) => m.es_yo) ?? null
   useIdentidad(espacio?.nombre ?? null, yo?.nombre ?? null, espacio ? (espacio.mi_rol === 'organizador' ? 'organizador' : 'miembro') : null)
@@ -91,6 +92,22 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
   }, [cargarTodo])
   // Contrato 4: con la lista visible, list_proposals cada 10 s.
   useSondeo(cargarTodo, 10000)
+
+  // "Contar mis gustos y presupuesto" (friccion/Responder) deja una marca: al llegar, se abre "Mis preferencias".
+  const hayEspacio = espacio != null
+  useEffect(() => {
+    if (!hayEspacio || !agenteRef.current) return
+    let marca: string | null = null
+    try {
+      marca = sessionStorage.getItem('cruxe:abrir-preferencias')
+      sessionStorage.removeItem('cruxe:abrir-preferencias')
+    } catch {
+      // Sin almacenamiento: el agente queda plegado como siempre.
+    }
+    if (marca !== '1') return
+    agenteRef.current.open = true
+    agenteRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [hayEspacio])
 
   if (errorEspacio && !espacio) {
     const fuera = errorEspacio.codigo === 'fuera_de_audiencia'
@@ -239,7 +256,11 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
         </section>
 
         {/* Agente del círculo (enmienda 4): plegado para no estorbar el recorrido de la demo. */}
-        <details className="tarjeta plegable agente-plegable" onToggle={(e) => setAgenteAbierto(e.currentTarget.open)}>
+        <details
+          ref={agenteRef}
+          id="mis-preferencias"
+          className="tarjeta plegable agente-plegable"
+          onToggle={(e) => setAgenteAbierto(e.currentTarget.open)}>
           <summary>
             <span className="agente-icono" aria-hidden="true">
               <Icono n="chispa" tam={22} />
