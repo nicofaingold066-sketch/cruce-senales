@@ -65,6 +65,7 @@ Notas de la Parte A:
 **Frases listas para la Parte A** (preguntas que harían los perfiles de sinteticos):
 - «¿Qué anfitrión, si es un fútbol?» → «Anfitrión es quien no puede faltar: sin esa persona no hay plan. El texto lo estamos ajustando.»
 - «¿Y si solo sé el sábado?» → «Toca ‹Solo el sábado›: el domingo queda como No. Lo que no se sabe no arma plan; se puede cambiar mientras se reúnen respuestas.»
+- «¿Y si el grupo no se pone de acuerdo entre dos planes?» → «Quien organiza puede ponerle nombre a cada plan y pedir que gane el que más personas pueden; cada uno dice en privado cuál prefiere, solo para desempatar. Y puede abrir una ronda de opiniones con plazo antes de rearmar.» (Enmienda 15, en producción desde `af79fcb`; está en «Más opciones» de Nueva propuesta. **No se muestra en la demo**; si piden verlo, hacerlo en un grupo aparte, no en «Los del asado».)
 - «¿Esto es real?» (por el chip «Datos ficticios») → «Todo lo que ven es ficticio por regla del evento; el flujo y el servidor son reales.»
 - «¿Cómo se enteran los que no abrieron el enlace?» → «La app no manda nada: Vale les reenvía el enlace por WhatsApp. Es un límite declarado.» (D8; no hay botón que mostrar.)
 
