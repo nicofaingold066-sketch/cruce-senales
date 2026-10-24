@@ -199,7 +199,11 @@ await toque(O, ORG, btn(O, 'Buscar opción compatible'), 'Buscar opción compati
 await O.waitForTimeout(2000)
 await foto(O, ORG, 'buscar-sin-imprescindible')
 writeFileSync(DIR + 'buscar-sin-imprescindible.txt', await O.locator('body').innerText())
-await toque(O, ORG, O.getByRole('button', { name: /Ir a Mi respuesta/ }), 'Ir a Mi respuesta')
+// «Ir a Mi respuesta» se fue de S4 (ux-flujo 02:49: ahora «Responder en un toque», que lleva a otra pantalla): para llegar al
+// formulario completo de condiciones se usa la pestaña «Mi respuesta», que siempre existe.
+const irRespO = O.getByRole('button', { name: /Ir a Mi respuesta/ })
+if (await irRespO.isVisible().catch(() => false)) await toque(O, ORG, irRespO, 'Ir a Mi respuesta')
+else await toque(O, ORG, O.getByRole('tab', { name: /Mi respuesta/ }), 'pestaña Mi respuesta')
 await O.waitForTimeout(1000)
 for (const [i, letra] of [[0, 'A'], [1, 'B']]) {
   const g = O.locator('fieldset, [role=radiogroup]').filter({ hasText: /Sí puedo|No puedo/ }).nth(i)
