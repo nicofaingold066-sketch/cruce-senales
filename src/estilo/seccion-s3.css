@@ -1,0 +1,187 @@
+/* S3 · Nueva propuesta (rediseño de la noche). Solo lo de esta pantalla: migra sus tamaños a los cuatro del sistema
+   (docs/rediseno/sistema.md), acomoda el formulario para leerse de arriba abajo y deja un solo primario.
+   Se importa desde src/screens/NuevaPropuesta.tsx y gana a styles.css por orden de carga; la especificidad se iguala
+   con .vista-s3. Nada de clamp ni vw. */
+
+/* ---- escena */
+.vista-s3 .escena-compacta h1 {
+  font-size: var(--t-titulo);
+  line-height: var(--lh-titulo);
+  font-weight: var(--p-pantalla);
+}
+.vista-s3 .escena-eyebrow {
+  font-size: var(--t-nota);
+}
+.vista-s3 .escena-volver {
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-boton);
+}
+
+/* ---- secciones del formulario */
+.vista-s3 .form-compacto .form-seccion {
+  padding: var(--e-4);
+  margin: 0 0 var(--e-3);
+}
+.vista-s3 .form-compacto .form-seccion > legend {
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+  font-weight: var(--p-titulo);
+  margin-bottom: var(--e-3);
+}
+.vista-s3 .campo > span,
+.vista-s3 .cupo-etiqueta,
+.vista-s3 .duracion-etiqueta,
+.vista-s3 .momento-resumen {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+.vista-s3 .campo > span,
+.vista-s3 .cupo-etiqueta,
+.vista-s3 .duracion-etiqueta {
+  font-weight: var(--p-boton);
+  color: var(--tinta-2);
+}
+.vista-s3 .campo input,
+.vista-s3 .campo select {
+  font-size: var(--t-cuerpo);
+  min-height: var(--toque);
+  padding: 10px 14px;
+}
+.vista-s3 .nota-seccion {
+  font-size: var(--t-nota) !important;
+  line-height: var(--lh-nota);
+  color: var(--tinta-2);
+}
+.vista-s3 .nota-caso,
+.vista-s3 .nota-caso .enlace {
+  font-size: var(--t-nota);
+}
+
+/* ---- chips de actividad, hora, persona y opciones: un solo tamaño de texto, 44 px */
+.vista-s3 .chip-actividad,
+.vista-s3 .chip-hora,
+.vista-s3 .chip-persona,
+.vista-s3 .opciones-compactas .opcion-radio,
+.vista-s3 .opcion-radio {
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-boton);
+  min-height: var(--toque);
+}
+.vista-s3 .chip-hora-otra input {
+  font-size: var(--t-cuerpo);
+}
+
+/* ---- días: número en subtítulo, día de la semana en nota */
+.vista-s3 .chip-dia {
+  width: 52px;
+}
+.vista-s3 .chip-dia-num {
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+  font-weight: var(--p-pantalla);
+}
+.vista-s3 .chip-dia-sem,
+.vista-s3 .chip-dia-mes {
+  font-size: var(--t-nota);
+  line-height: 1;
+}
+
+/* ---- cada opción (A / B) */
+.vista-s3 .momento {
+  padding: var(--e-3) 0 var(--e-1);
+}
+.vista-s3 .momento-cabeza strong {
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-titulo);
+}
+.vista-s3 .franja-letra {
+  font-size: var(--t-nota);
+  font-weight: var(--p-titulo);
+}
+.vista-s3 .campo-etiqueta-plan {
+  margin: var(--e-2) 0 0;
+}
+.vista-s3 .campo-etiqueta-plan > span {
+  font-weight: var(--p-rotulo);
+}
+
+/* ---- cupos */
+.vista-s3 .form-compacto .contador input {
+  font-size: var(--t-subtitulo);
+  font-weight: var(--p-pantalla);
+  min-height: var(--toque);
+}
+.vista-s3 .contador button {
+  font-size: var(--t-subtitulo);
+  font-weight: var(--p-titulo);
+}
+
+/* ---- más opciones (E15): plegable con el mismo título que las secciones */
+.vista-s3 .mas-opciones > summary {
+  min-height: var(--toque);
+}
+.vista-s3 .mas-opciones .summary-texto > span:first-child {
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-titulo);
+}
+.vista-s3 .mas-opciones .summary-texto small {
+  font-size: var(--t-nota);
+}
+
+/* ---- paso 2: resumen corto en lugar del ticket largo */
+.vista-s3 .ticket-cabeza small {
+  font-size: var(--t-nota);
+  color: var(--tinta-2);
+}
+.vista-s3 .ticket-cabeza strong {
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+  font-weight: var(--p-pantalla);
+}
+.vista-s3 .resumen-s3 {
+  list-style: none;
+  margin: 0;
+  padding: var(--e-3) var(--e-4) var(--e-4);
+  display: grid;
+  gap: var(--e-2);
+}
+.vista-s3 .resumen-s3 > li {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: var(--e-2);
+  align-items: start;
+  font-size: var(--t-cuerpo);
+  line-height: var(--lh-cuerpo);
+  overflow-wrap: anywhere;
+}
+.vista-s3 .resumen-s3 > li > svg {
+  margin-top: 3px;
+  color: var(--tinta-2);
+}
+.vista-s3 .resumen-s3 strong {
+  font-weight: var(--p-titulo);
+}
+.vista-s3 .resumen-nota {
+  margin: var(--e-3) 0 0;
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--tinta-2);
+}
+/* Un solo primario por pantalla: "Crear y abrir al grupo" en la barra; "Volver a editar" secundario; el borrador, un enlace. */
+.vista-s3 .acciones-revisar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e-2) var(--e-4);
+  margin-top: var(--e-3);
+}
+.vista-s3 .acciones-revisar .enlace {
+  font-size: var(--t-nota);
+  font-weight: var(--p-boton);
+  color: var(--tinta-2);
+  background: none;
+  border: 0;
+  min-height: var(--toque);
+  padding: 0;
+  cursor: pointer;
+}
