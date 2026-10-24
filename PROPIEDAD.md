@@ -10,7 +10,7 @@ Detalle y reglas: `prompts/equipo-noche.md`.
 | `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, `src/lib/compartir.ts` (desde las 19:42), nuevos en `src/friccion/**` | friccion (sesión nueva, Opus) | `wip/friccion` |
 | `docs/flujo-usuario.md`, `docs/front-back-puente.md`, `docs/output-debate.md`, `docs/investigacion-a-producto.md`, nuevos en `src/componentes-nuevos/**` | ux-flujo (sesión nueva, Opus) | `wip/ux` |
 | `docs/apertura.md`, `docs/catalogo-ampliado.md`, `src/lib/ejemplos.ts`, `docs/preguntas-jurado.md` | apertura (sesión nueva, Sonnet) | `wip/apertura` |
-| `tests/e2e/**`, `docs/qa-noche.md` | qa-noche (sesión nueva, Sonnet) | `wip/qa` |
+| `tests/e2e/**`, `tests/verificacion-altas/**` (cedida por el coordinador, 21:46), `docs/qa-noche.md` | qa-noche (sesión nueva, Sonnet) | `wip/qa` |
 | `tests/sinteticos/**`, `docs/usuarios-sinteticos.md` | sinteticos (sesión nueva, Sonnet) | `wip/sinteticos` |
 | `tests/rincones/**`, `docs/rincones.md` | rincones (sesión nueva, Sonnet) | `wip/rincones` |
 | `docs/psicologia-grupo.md`, `docs/psicologia-fuentes.md` | psico (sesión nueva, Sonnet; solo investigación y diseño, sin código) | `wip/psico` |
