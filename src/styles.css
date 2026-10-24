@@ -5731,3 +5731,21 @@ li:has(> .plan-vivo) {
   background: var(--hoja);
   box-shadow: 0 0 0 1px var(--linea);
 }
+
+/* ------------------------------------------------------------------ enmienda 15 (ronda de opiniones y dos planes) */
+.mas-opciones-bloque + .mas-opciones-bloque {
+  margin-top: 16px;
+}
+.mas-opciones .nota-seccion {
+  margin-top: 8px;
+}
+.campo-etiqueta-plan {
+  margin: 8px 0 10px;
+}
+.opcion-etiqueta {
+  margin: 0 0 2px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--tinta-2);
+  overflow-wrap: anywhere;
+}

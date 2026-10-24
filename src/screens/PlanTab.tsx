@@ -135,6 +135,16 @@ type VivaProps = Pick<PestanaProps, 'p' | 'viva' | 'soloLectura'>
 
 // ------------------------------------------------------------------ ficha
 
+/** Enmienda 15 (E-d): nombre público del plan de una franja (null sin nombre o antes de la 0053). */
+function etiquetaDe(p: EstadoPropuesta, clave: string): string | null {
+  return p.franjas.find((f) => f.clave === clave)?.etiqueta ?? null
+}
+
+/** Enmienda 15 (E-d): totales que el servidor da solo a quien organiza; null = menos de 2 (nunca quién). */
+function cifraPlan(n: number | null): string {
+  return n == null ? 'menos de 2' : String(n)
+}
+
 function Ficha({ p, viva }: { p: EstadoPropuesta; viva: PestanaProps['viva'] }) {
   const ahora = useAhora(1000)
   return (
@@ -155,10 +165,29 @@ function Ficha({ p, viva }: { p: EstadoPropuesta; viva: PestanaProps['viva'] }) 
         <dd>
           {p.franjas.map((f) => (
             <div key={f.clave}>
-              <strong>Franja {f.clave}:</strong> {franjaTexto(f.inicio, f.fin)}
+              <strong>Franja {f.clave}{f.etiqueta ? ` · ${f.etiqueta}` : ''}:</strong> {franjaTexto(f.inicio, f.fin)}
             </div>
           ))}
         </dd>
+        {p.regla === 'mas_si' ? (
+          <>
+            <dt>Si sirven las dos</dt>
+            <dd>Gana la que pueden más personas; lo cuenta el servidor.</dd>
+          </>
+        ) : null}
+        {p.planes_totales ? (
+          <>
+            <dt>Cómo viene cada plan</dt>
+            <dd>
+              {Object.entries(p.planes_totales).map(([clave, t]) => (
+                <div key={clave}>
+                  <strong>Franja {clave}:</strong> pueden {cifraPlan(t.si)} · la prefieren {cifraPlan(t.prefieren)}
+                </div>
+              ))}
+              <div className="suave">Solo lo ves tú, sin contarte a ti y sin decir quién. El servidor elige.</div>
+            </dd>
+          </>
+        ) : null}
         <dt>Zona horaria</dt>
         <dd>{ZONA_VISIBLE}</dd>
         <dt>Cupos</dt>
@@ -226,6 +255,7 @@ function OpcionVigente({
   const confirmado = p.estado === 'grupo_confirmado'
   const sobreMinimo = o.cupos.confirmados > o.cupos.minimo
   const cuenta = cuentaConfirmados(o.cupos.confirmados, o.cupos.minimo)
+  const etiqueta = o.franja.etiqueta ?? etiquetaDe(p, o.franja.clave)
   // #79 (sinteticos, ux-flujo): si arriba ya está "Tu confirmación solo vale si llegan N", no se apila otra nota bajo el botón.
   const avisoArriba = avisoParaMi(p)?.clave === 'solo_vale_si_llegan'
 
@@ -241,6 +271,7 @@ function OpcionVigente({
       <div className="opcion-cuando">
         <DiaTile local={o.franja.inicio.local} />
         <div>
+          {etiqueta ? <p className="opcion-etiqueta">{etiqueta}</p> : null}
           <p className="franja-grande">{franjaTexto(o.franja.inicio, o.franja.fin)}</p>
           <p className="suave">
             Franja {o.franja.clave} · hora de Santiago ({ZONA_VISIBLE}) · publicada {momentoCorto(o.publicada_en)}
@@ -350,6 +381,17 @@ function OpcionVigente({
           {razonNoAceptar(p)}
         </p>
       )}
+      {/* Enmienda 15 (E-c): la ronda la decide el servidor (`abierta` no se recalcula con el reloj del teléfono). */}
+      {p.ronda ? (
+        <p className="nota-linea" role="note">
+          <Icono n="reloj" tam={16} />
+          <span>
+            {p.ronda.abierta
+              ? `Opiniones hasta ${momentoCorto(p.ronda.cierra)} (hora de Santiago). Mientras tanto no se rearma; confirmar sigue abierto.`
+              : `La ronda de opiniones cerró ${momentoCorto(p.ronda.cierra)}. Todavía se puede confirmar o retirarse.`}
+          </span>
+        </p>
+      ) : null}
       <AsiNoPuedo p={p} viva={viva} soloLectura={soloLectura} irAPestana={irAPestana} />
       {/* Si el servidor ya muestra la confirmación hecha, la duda de "pudo haberse registrado o no" quedó resuelta (E-1). */}
       {error && error.codigo !== 'sin_alternativa' && !(error.resultadoIncierto && p.mi_situacion.acepte_version) ? (
