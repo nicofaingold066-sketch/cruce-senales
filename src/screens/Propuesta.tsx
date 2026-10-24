@@ -325,14 +325,19 @@ function escenaDe(
       return { nodos, valor: cuenta, etiqueta: 'se juntan', fraccion: 1, tono: 'ok' }
     case 'en_revision':
       return { nodos, valor: `v${p.opcion?.version ?? ''}`, etiqueta: 'en revisión', fraccion: c ? c.confirmados / c.minimo : 0, tono: 'revision' }
-    case 'reuniendo_interes':
-      return {
-        nodos,
-        valor: String(p.interesados.cantidad),
-        etiqueta: p.ultima_evaluacion?.resultado === 'sin_opcion' ? 'sin opción' : 'con interés',
-        fraccion: 0,
-        tono: p.ultima_evaluacion?.resultado === 'sin_opcion' ? 'neutro' : 'info',
-      }
+    case 'reuniendo_interes': {
+      // El motor arma la opción con las respuestas (condiciones completas), no con "Me interesa": el centro no
+      // cuenta interés. El organizador ve cuántos respondieron (E7.2: el servidor solo se lo da a él); los demás,
+      // si ya respondieron ellos mismos.
+      if (p.ultima_evaluacion?.resultado === 'sin_opcion') return { nodos, valor: '—', etiqueta: 'sin opción', fraccion: 0, tono: 'neutro' }
+      const n = p.personas_con_condiciones
+      const s = p.mi_situacion
+      if (n != null) return { nodos, valor: String(n), etiqueta: n === 1 ? 'respondió' : 'respondieron', fraccion: 0, tono: 'info' }
+      if (s.retirado) return { nodos, valor: '—', etiqueta: 'te retiraste', fraccion: 0, tono: 'neutro' }
+      return s.condiciones === 'completas'
+        ? { nodos, valor: '✓', etiqueta: 'respondiste', fraccion: 0, tono: 'info' }
+        : { nodos, valor: '—', etiqueta: 'falta tu respuesta', fraccion: 0, tono: 'info' }
+    }
     case 'borrador':
       return { nodos, valor: '—', etiqueta: 'borrador', fraccion: 0, tono: 'neutro' }
     default:
@@ -340,7 +345,8 @@ function escenaDe(
   }
 }
 
-const PASOS = ['Interés', 'Opción', 'Confirmar', 'Encuentro'] as const
+// La primera etapa es responder cuándo se puede (lo que usa el motor); "Me interesa" es opcional.
+const PASOS = ['Respuestas', 'Opción', 'Confirmar', 'Encuentro'] as const
 
 /** Seguimiento tipo pedido en curso. Es solo una lectura del estado que devuelve el servidor. */
 function Pasos({ p }: { p: EstadoPropuesta }) {
