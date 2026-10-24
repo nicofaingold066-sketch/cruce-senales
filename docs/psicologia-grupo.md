@@ -544,3 +544,63 @@ Hoy el presupuesto tiene **un solo sentido**: baja el tope. Valores: «ojalá gr
 1. **Costo visible desde el principio**: el plan ya declara «costo cero» o «aporte fijo conocido por persona» (`caso-canonico.md`). Mantenerlo y mostrarlo arriba (U1): nadie descubre el costo en la puerta.
 2. **«Cada uno lleva algo»** como modalidad (§3.1).
 3. **Un plan «simple» siempre disponible como segunda forma**, aunque el estilo pedido sea «especial».
+
+## 14. Lámina de 30 segundos: «CRUXE entiende la dinámica de un grupo» (para `docs/guion-demo.md` y `docs/preguntas-jurado.md`)
+Pedido del coordinador (21:02). Versión para leer en voz alta; unas 90 palabras, 30–35 segundos. Dueño de los documentos del pitch: apertura (`guion-demo.md`, `preguntas-jurado.md`) y agente-ia (`pitch*.md`). Cada línea dice de dónde sale, para que quien la lea pueda verificarla contra el «Estado verificado para el pitch».
+
+> 1. Un grupo no discute el plan: discute lo que el plan dice de cada uno.
+> 2. En CRUXE cada uno dice en privado cuándo puede y qué necesita. Nadie del grupo lo ve.
+> 3. El servidor propone una sola opción, a menos de N minutos para todos, sin decir quién vive dónde.
+> 4. Cada uno confirma esa versión exacta. El silencio no es un sí.
+> 5. Si alguien se baja, no tiene que decir por qué, y el plan se rearma desde cero.
+> 6. Del enlace a responder: cuatro toques, sin cuenta ni contraseña.
+> 7. Lo que falta, y hoy no está: dos formas de juntarse y que la casa rote sola.
+
+| Línea | De dónde sale | Cuidado |
+|---|---|---|
+| 1 | Este documento, §0 | Es la tesis, no un dato. |
+| 2 | Condiciones y preferencias privadas (contrato; E4, E8, E10) | «Nadie del grupo lo ve» vale para condiciones y preferencias; «me interesa» y las confirmaciones sí se ven. Si hay tiempo, decir «cuándo puede y qué necesita». |
+| 3 | Una opción por versión; E10 «Queda a menos de N minutos para todos (estimado)», publicado (`main` `3ace04e`) | Decir la N real de la demo (sale solo con 4 o más personas con zona; los simulados del demo la tienen). Es estimado. |
+| 4 | Confirmación por versión; «interés no es confirmación» | — |
+| 5 | «No voy» sin motivo; reparación a versión 2 sin aceptaciones heredadas | «Sin nombre» solo cuando la enmienda 13 esté en producción; mientras tanto, «no tiene que decir por qué» es lo cierto. |
+| 6 | Fricción #88, publicado (`main` `fae49fa`): «4 toques del enlace a responder» | Confirmar la cuenta con la última corrida de sinteticos (`docs/usuarios-sinteticos.md`). |
+| 7 | §7 y §6 de este documento | Si agente-ia construye «dos formas» esta noche, cambiar a «la casa rote sola y el grupo elija entre dos planes». No prometer fechas. |
+
+Si hay que recortar, sacar la línea 6. Si preguntan «¿y la IA?»: «El servidor elige con reglas fijas; la IA solo explica y redacta la invitación. Nunca ve a una persona.» Si preguntan por género o clase social: «No los pedimos ni los inferimos. En un grupo de cinco, delatan.»
+
+## 15. Borrador: «¿Qué guarda CRUXE de mí?» (D5, rotulado para después del evento)
+Pedido del coordinador (21:02), para que no se pierda. Es el texto de una pantalla o un enlace bajo la portada (la fila 55 de `docs/investigacion-a-producto.md` ya lo tiene como pendiente de friccion). **No es asesoría legal** y no afirma cumplimiento de la Ley 21.719 (vigente desde el 1 dic 2026): dice qué hace la app. Lo marcado **[a confirmar]** lo tiene que revisar backend antes de publicarlo. Tono: «tú», frases cortas.
+
+> ### ¿Qué guarda CRUXE de mí?
+>
+> **Lo que guardamos**
+> - Una sesión anónima: ni correo, ni teléfono, ni contraseña. Y el nombre que elegiste al entrar.
+> - El grupo al que entraste y los planes de ese grupo.
+> - Para cada plan: cuándo puedes (sí, no o pendiente por cada horario), si marcaste «me interesa», qué versión confirmaste y si te retiraste.
+> - Si usaste el agente: tus preferencias, todas opcionales (presupuesto, ritmo, ambiente, bajo techo, qué te gustaría, tu comuna, cómo te mueves, cuánto viajas, momento del día), y si dejaste que el agente las use o que te invite.
+> - Si opinaste sobre una versión («así no puedo, pero sigo»).
+>
+> **Quién ve qué**
+> - **Solo tú y el servidor:** cuándo puedes, tus preferencias y tus opiniones. Nadie del grupo las ve, ni quien organiza.
+> - **El grupo:** tu nombre, si marcaste «me interesa» y qué versión confirmaste.
+> - **Quien organiza:** además, totales sin nombres («2 personas no pueden así»), y solo cuando son 2 o más.
+> - **La inteligencia artificial:** nunca te ve. Recibe opciones ya elegidas por el servidor, el clima y totales del grupo. No recibe nombres, preferencias de nadie, comunas ni cómo se mueve cada uno.
+>
+> **Lo que no guardamos**
+> - Tu ubicación. Solo la comuna que elegiste, si la elegiste, y nunca una dirección.
+> - Tu dieta, tu salud, tu ánimo, tu pareja, tu género ni cuánto ganas. No se preguntan.
+> - Tus conversaciones: CRUXE no lee WhatsApp.
+> - Tus condiciones en registros de errores ni en mensajes compartidos.
+>
+> **Por qué tratamos el presupuesto y la comida con más cuidado**
+> Cuánto puedes gastar y qué puedes comer dicen cosas de ti que no tienen por qué saberse en un grupo. La ley chilena de datos personales trata la situación económica y la salud como datos sensibles. Por eso el presupuesto nunca sale del servidor ni aparece en totales, y la comida se pregunta por esta juntada y no como una etiqueta tuya: el plan dice «habrá opción sin carne» para todos, sin decir quién lo pidió.
+>
+> **Cómo se borra**
+> - Si cierras el navegador o borras sus datos, pierdes el acceso a esa sesión: para volver, necesitas el enlace del grupo y elegir tu nombre de nuevo. **[a confirmar: qué pasa con el asiento anterior]**
+> - Hoy no hay un botón para borrar tus datos del servidor. Está en la lista de lo que sigue. Mientras tanto, lo que guardamos queda ligado a una sesión anónima sin correo ni teléfono. **[a confirmar con backend: retención y vía de borrado]**
+> - El grupo de prueba «Los del asado» se reinicia en cada demo; nada de lo que se carga ahí es real.
+>
+> **Límite honesto**
+> El plan elegido también dice algo. Si sale un plan gratis, el grupo puede pensar que alguien lo pidió. No prometemos que nadie pueda adivinar nada en un grupo chico; prometemos que la app no lo dice.
+
+**Qué falta para publicarlo (después del evento):** confirmar con backend la retención y la vía de borrado; decidir si «retirarme» borra tus respuestas de ese plan o solo las desactiva; revisar el consentimiento al guardar preferencias (hoy es implícito al guardar) frente a la Ley 21.719; y poner el enlace en la portada (friccion, fila 55).
