@@ -4,7 +4,7 @@
 Nico aprobó la variante «A la vista» y pidió implementarla dentro del grupo, visible a todos los miembros: quién se unió, quién salió y quién se bajó de un plan. Esta autorización actual sustituye H14/E13 únicamente en la identidad pública de estos movimientos; motivos, condiciones, opiniones y preferencias siguen privados.
 
 ## Tocando ahora
-- MIGRACION EN CURSO: `20261024115616_actividad_grupo` (Supabase CRUXE producción, SQL Editor autenticado por Nico). No correr suites compartidas hasta liberar esta marca.
+- CORRIENDO PRUEBA: actividad del grupo, E13 y ACL42 contra backend real; solo espacios propios ficticios. Migración `20261024115616` ya aplicada y verificada 42/0.
 - Rama propia `codex/actividad-grupo`, copia aislada `/Users/macair/cruse/cruce-actividad`, base `origin/main` `9a15539`.
 - Nuevos `src/actividad-grupo/**`: sección visible, presentación, fechas y pruebas propias.
 - `src/screens/Espacio.tsx`: importación/montaje de Actividad debajo de integrantes; salida del grupo con confirmación. Conservar cambios de títulos GRU de codex-preferencias y cualquier trabajo de otras ramas.
@@ -20,4 +20,4 @@ Nico aprobó la variante «A la vista» y pidió implementarla dentro del grupo,
 ## Estado
 Nico autorizó además integrar y publicar en producción al terminar (mensaje de esta sesión). Front integrado y 62 pruebas puras + tipos/build en verde. Migración en construcción, todavía no aplicada. Se verifican SQL y roles en PostgreSQL aislado PGlite fuera del repositorio; las 56 migraciones base aplican sin modificaciones.
 
-Acceso de publicación: el conector Supabase de esta sesión lista cero proyectos y rechaza el proyecto CRUXE por permisos; Nico inició sesión en el panel de Supabase y confirmó la conexión; acceso al SQL Editor del proyecto de producción verificado. Se inspeccionan metadatos antes de aplicar. Todavía sin modificaciones de DB. Vercel se publicará por la integración Git existente tras la verificación de backend.
+Acceso de publicación: el conector Supabase de esta sesión lista cero proyectos y rechaza el proyecto CRUXE por permisos; Nico inició sesión en el panel de Supabase y confirmó la conexión; acceso al SQL Editor del proyecto de producción verificado. Se inspeccionan metadatos antes de aplicar. Migración aplicada por SQL Editor en transacción; catálogo real 42 RPC autenticadas/0 sin sesión. Primera tentativa revertida por validación histórica; corregida y aplicada sin reescribir filas antiguas. Vercel se publicará por la integración Git existente tras la verificación de backend.
