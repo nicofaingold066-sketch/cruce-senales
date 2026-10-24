@@ -60,9 +60,9 @@ const PLAZO_TOTAL_MS = 30000
 const PLAZO_PRINCIPAL_MS = 20000
 const PLAZO_RESPALDO_MS = 8000
 const PLAZO_CLIMA_MS = 3000
-// Con herramientas: el bucle tiene hasta 25 s; si no llega, el camino de siempre usa solo Haiku hasta los 32 s
-// (la pantalla espera 35 s).
-const PLAZO_TOTAL_HERRAMIENTAS_MS = 32000
+// Con herramientas: el bucle tiene hasta 25 s; si no llega, el camino de siempre usa solo Haiku hasta los 31 s
+// (la pantalla espera 35 s y su reloj arranca antes que el de la función).
+const PLAZO_TOTAL_HERRAMIENTAS_MS = 31000
 // Canchas reales por actividad: los mismos sitios que arma el panel en src/agente/canchas.ts.
 const SITIOS_CANCHAS = ['Google Maps', 'EasyCancha', 'ATC']
 // Una llamada al modelo por persona cada 10 s y un tope por minuto, en la memoria de esta instancia (mejor esfuerzo).
@@ -283,7 +283,13 @@ async function conHerramientas(
       throw e
     }
   }
-  const resultado = await bucleHerramientas({ llamar, herramientas, entradaInicial, nombres, hastaMs })
+  let resultado: Awaited<ReturnType<typeof bucleHerramientas>> = null
+  try {
+    resultado = await bucleHerramientas({ llamar, herramientas, entradaInicial, nombres, hastaMs })
+  } catch (e) {
+    // Nada del bucle puede tirar la respuesta: sigue el camino de siempre.
+    console.error('agente: el bucle con herramientas falló', e instanceof Error ? e.constructor.name : 'desconocido')
+  }
   if (!resultado) {
     console.info('agente: el bucle con herramientas no llegó; va el camino de siempre', proveedor.tipo, familia)
     return { resultado: null, contado: true, modelo: familia }
@@ -370,6 +376,7 @@ Deno.serve(async (req) => {
         if (data.resultado?.tipo !== 'borrador') return { tipo: 'sin_plan', motivo: typeof data.resultado?.motivo === 'string' ? data.resultado.motivo : null }
         const b = data.resultado as ResultadoPlan
         const cs = candidatasDe(b).map(candidataSegura)
+        if (cs.length === 0 || cs.some((x) => typeof x.id !== 'string')) return { tipo: 'error' }
         return {
           tipo: 'borrador',
           candidatas: cs,
@@ -378,6 +385,8 @@ Deno.serve(async (req) => {
       },
       buscarCanchas: (actividad) => (['padel', 'futbol', 'tenis'].includes(actividad) ? SITIOS_CANCHAS : []),
     }
+    // La búsqueda siempre hace falta (también para el camino de siempre): arranca ya, una sola vez.
+    void planDe()
     const entradaInicial = { pedido: `Arma el mejor plan para el grupo para el fin de semana del sábado ${sabado}.` }
     const hecho = await conHerramientas(herramientas, entradaInicial, nombres, inicio + PLAZO_HERRAMIENTAS_MS, usuarioDe(autorizacion))
     if (hecho?.resultado) {

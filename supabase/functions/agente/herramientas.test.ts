@@ -134,11 +134,61 @@ test('salida inválida → null: elige antes de buscar, una opción inventada, u
   assert.equal(await bucleHerramientas(base(guion([rechazo]).llamar)), null)
 })
 
-test('sin plan compatible: buscar_planes dice ninguno y no se puede elegir → null', async () => {
+test('sin plan compatible o error del servidor: corta enseguida, sin otra vuelta del modelo → null', async () => {
   const sinPlan: Herramientas = { ...herramientas(), buscarPlanes: async () => ({ tipo: 'sin_plan', motivo: 'faltan_personas' }) }
   const g = guion([vuelta(uso('t1', 'buscar_planes', {})), vuelta(ELIGE())])
   assert.equal(await bucleHerramientas({ ...base(g.llamar), herramientas: sinPlan }), null)
-  assert.match(String((g.recibido[1][2].content as { content: string }[])[0].content), /faltan_personas/)
+  assert.equal(g.vueltas(), 1)
+  const caido: Herramientas = { ...herramientas(), buscarPlanes: async () => ({ tipo: 'error' }) }
+  const g2 = guion([vuelta(uso('t1', 'buscar_planes', {})), vuelta(ELIGE())])
+  assert.equal(await bucleHerramientas({ ...base(g2.llamar), herramientas: caido }), null)
+  assert.equal(g2.vueltas(), 1)
+})
+
+test('elegir antes de buscar: vuelve con is_error ("primero buscar_planes") y el modelo puede seguir', async () => {
+  const g = guion([vuelta(ELIGE()), vuelta(uso('t1', 'buscar_planes', {})), vuelta(ELIGE())])
+  const r = await bucleHerramientas(base(g.llamar))
+  assert.ok(r)
+  const primero = (g.recibido[1][2].content as { is_error?: boolean; content: string; tool_use_id: string }[])[0]
+  assert.equal(primero.tool_use_id, 't9'); assert.equal(primero.is_error, true); assert.match(primero.content, /Primero usa buscar_planes/)
+})
+
+test('buscar_planes y elegir_plan en la misma vuelta: primero busca y después valida la elección', async () => {
+  const g = guion([vuelta(uso('t1', 'buscar_planes', {}), ELIGE())])
+  const r = await bucleHerramientas(base(g.llamar))
+  assert.ok(r)
+  assert.deepEqual(r.pasos, ['Busqué planes que le sirven a todo el grupo: 2', 'Elegí: Asado en Parrilla del parque (Simulación)'])
+})
+
+test('elección inválida: una sola corrección; si vuelve a fallar → null', async () => {
+  const mala = ELIGE('lugar-sim-14', { mensaje_al_grupo: 'Ya está confirmado el asado para el sábado, nos vemos.' })
+  const g = guion([vuelta(uso('t1', 'buscar_planes', {})), vuelta(mala), vuelta(ELIGE('lugar-sim-02'))])
+  const r = await bucleHerramientas(base(g.llamar))
+  assert.ok(r); assert.equal(r.eleccion.id, 'lugar-sim-02')
+  assert.match(String((g.recibido[2][4].content as { content: string }[])[0].content), /no pasó las reglas/)
+  const g2 = guion([vuelta(uso('t1', 'buscar_planes', {})), vuelta(mala), vuelta(mala), vuelta(ELIGE())])
+  assert.equal(await bucleHerramientas(base(g2.llamar)), null)
+  assert.equal(g2.vueltas(), 3)
+})
+
+test('entradas raras ("constructor", "toString") no pasan como actividad ni día, y no dejan pasos raros', async () => {
+  const g = guion([
+    vuelta(uso('t1', 'buscar_canchas', { actividad: 'constructor' }), uso('t2', 'ver_clima', { dia: 'toString' })),
+    vuelta(uso('t3', 'buscar_planes', {})),
+    vuelta(ELIGE()),
+  ])
+  const r = await bucleHerramientas(base(g.llamar))
+  assert.ok(r)
+  assert.deepEqual((g.recibido[1][2].content as { is_error?: boolean }[]).map((x) => x.is_error), [true, true])
+  assert.ok(!r.pasos.some((p) => /function|native|undefined|toString|constructor/.test(p)), r.pasos.join(' | '))
+  assert.equal(textoPaso('buscar_canchas', { actividad: 'constructor' }, []), null)
+})
+
+test('un paso repetido no se repite en la lista', async () => {
+  const g = guion([vuelta(uso('t1', 'ver_clima', { dia: 'sabado' })), vuelta(uso('t2', 'ver_clima', { dia: 'sabado' }), uso('t3', 'buscar_planes', {})), vuelta(ELIGE())])
+  const r = await bucleHerramientas(base(g.llamar))
+  assert.ok(r)
+  assert.equal(r.pasos.filter((p) => p.startsWith('Miré el clima del sábado')).length, 1)
 })
 
 test('una herramienta que lanza no rompe el bucle: vuelve con is_error', async () => {
@@ -160,4 +210,11 @@ test('textoPaso: textos fijos, sin nada del modelo', () => {
   assert.equal(textoPaso('buscar_planes', {}, { tipo: 'sin_plan', motivo: null }), 'Busqué planes que le sirven a todo el grupo: ninguno')
   assert.equal(textoPaso('buscar_canchas', { actividad: 'tenis' }, []), 'No hay sitios de canchas para tenis')
   assert.equal(textoPaso('ver_clima', { dia: 'lunes' }, { estado: 'seco' }), null)
+})
+
+test('una respuesta del modelo sin la forma esperada → null, sin lanzar', async () => {
+  const raro = async () => null as unknown as RespuestaModelo
+  assert.equal(await bucleHerramientas(base(raro)), null)
+  const sinContenido = async () => ({ stop_reason: 'tool_use' }) as unknown as RespuestaModelo
+  assert.equal(await bucleHerramientas(base(sinContenido)), null)
 })

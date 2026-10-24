@@ -116,8 +116,8 @@ export function textoPaso(nombre: string, entrada: unknown, resultado: unknown):
   const e = (entrada ?? {}) as Record<string, unknown>
   if (nombre === 'ver_clima') {
     const r = resultado as { estado?: EstadoClimaDia; simulado?: boolean } | null
-    const dia = DIA_TEXTO[e.dia as Dia]
-    if (!dia || !r?.estado) return null
+    const dia = tieneClave(DIA_TEXTO, e.dia) ? DIA_TEXTO[e.dia] : null
+    if (!dia || !r?.estado || !tieneClave(CLIMA_TEXTO, r.estado)) return null
     return `Miré el clima del ${dia}: ${CLIMA_TEXTO[r.estado]}${r.simulado ? ' (simulación)' : ''}`
   }
   if (nombre === 'buscar_planes') {
@@ -127,12 +127,17 @@ export function textoPaso(nombre: string, entrada: unknown, resultado: unknown):
     return `Busqué planes que le sirven a todo el grupo: ${n === 0 ? 'ninguno' : n}`
   }
   if (nombre === 'buscar_canchas') {
-    const act = ACTIVIDAD_TEXTO[String(e.actividad)]
+    const act = tieneClave(ACTIVIDAD_TEXTO, e.actividad) ? ACTIVIDAD_TEXTO[e.actividad] : null
     const sitios = Array.isArray(resultado) ? (resultado as string[]) : []
     if (!act) return null
     return sitios.length > 0 ? `Busqué canchas reales de ${act}: ${unirLista(sitios)}` : `No hay sitios de canchas para ${act}`
   }
   return null
+}
+
+/** Solo claves propias del objeto (así "constructor" o "toString" no pasan como actividad o día). */
+function tieneClave<T extends Record<string, string>>(o: T, k: unknown): k is keyof T & string {
+  return typeof k === 'string' && Object.hasOwn(o, k)
 }
 
 function unirLista(xs: string[]): string {
@@ -158,7 +163,7 @@ async function ejecutar(
     return { paraModelo: r.paraModelo, resultado: r, error: false, busqueda: r }
   }
   if (nombre === 'buscar_canchas') {
-    if (typeof e.actividad !== 'string' || !ACTIVIDAD_TEXTO[e.actividad]) {
+    if (!tieneClave(ACTIVIDAD_TEXTO, e.actividad)) {
       return { paraModelo: { error: 'actividad debe ser padel, futbol o tenis' }, resultado: [], error: true }
     }
     const sitios = h.buscarCanchas(e.actividad)
@@ -185,10 +190,14 @@ export async function bucleHerramientas(opciones: {
   const max = opciones.maxHerramientas ?? MAX_HERRAMIENTAS
   const mensajes: Mensaje[] = [{ role: 'user', content: JSON.stringify(opciones.entradaInicial) }]
   const pasos: string[] = []
+  const anotar = (paso: string | null) => {
+    if (paso && !pasos.includes(paso)) pasos.push(paso)
+  }
   let usadas = 0
+  let segundaOportunidad = true
   let busqueda: ResultadoBusqueda | null = null
-  // Una vuelta por herramienta más la de la elección, con margen; el tope real es `max`.
-  for (let vuelta = 0; vuelta < max + 2; vuelta++) {
+  // Una vuelta por herramienta más la elección y una corrección, con margen; el tope real es `max`.
+  for (let vuelta = 0; vuelta < max + 3; vuelta++) {
     const restante = opciones.hastaMs - ahora()
     if (restante < 1500) return null
     let r: RespuestaModelo
@@ -198,21 +207,15 @@ export async function bucleHerramientas(opciones: {
       return null
     }
     if (ahora() > opciones.hastaMs) return null
-    if (r.stop_reason !== 'tool_use') return null
+    if (!r || !Array.isArray(r.content) || r.stop_reason !== 'tool_use') return null
     const usos = r.content.filter((b) => b.type === 'tool_use' && typeof b.name === 'string' && typeof b.id === 'string')
     if (usos.length === 0) return null
+    const acciones = usos.filter((b) => b.name !== NOMBRE_ELEGIR)
     const eleccion = usos.find((b) => b.name === NOMBRE_ELEGIR)
-    if (eleccion) {
-      if (!busqueda || busqueda.tipo !== 'borrador') return null
-      const valida = validarSalidaModelo(JSON.stringify(eleccion.input ?? {}), busqueda.candidatas, opciones.nombres)
-      if (!valida) return null
-      pasos.push(`Elegí: ${valida.eleccion.actividad_etiqueta} en ${valida.eleccion.lugar.nombre}`)
-      return { ...valida, candidatas: busqueda.candidatas, pasos, idRespuesta: r.id }
-    }
-    usadas += usos.length
+    usadas += acciones.length
     if (usadas > max) return null
     const resultados: unknown[] = []
-    for (const uso of usos) {
+    for (const uso of acciones) {
       let hecho: Awaited<ReturnType<typeof ejecutar>>
       try {
         hecho = await ejecutar(uso.name as string, uso.input, opciones.herramientas)
@@ -220,14 +223,34 @@ export async function bucleHerramientas(opciones: {
         hecho = { paraModelo: { error: 'la herramienta falló' }, resultado: null, error: true }
       }
       if (hecho.busqueda) busqueda = hecho.busqueda
-      const paso = hecho.error && uso.name !== 'buscar_planes' ? null : textoPaso(uso.name as string, uso.input, hecho.resultado)
-      if (paso) pasos.push(paso)
+      anotar(hecho.error && uso.name !== 'buscar_planes' ? null : textoPaso(uso.name as string, uso.input, hecho.resultado))
       resultados.push({
         type: 'tool_result',
         tool_use_id: uso.id,
         content: JSON.stringify(hecho.paraModelo),
         ...(hecho.error ? { is_error: true } : {}),
       })
+    }
+    // Sin opciones (sin plan compatible o error del servidor) no hay nada que elegir: sigue el camino de siempre,
+    // que responde lo mismo con la búsqueda ya hecha, sin gastar más vueltas del modelo.
+    if (busqueda && busqueda.tipo !== 'borrador') return null
+    if (eleccion) {
+      // Solo se elige entre las candidatas del servidor (de esta vuelta o de una anterior).
+      let motivo = 'Primero usa buscar_planes: solo puedes elegir entre las opciones que devuelve.'
+      if (busqueda?.tipo === 'borrador') {
+        const valida = validarSalidaModelo(JSON.stringify(eleccion.input ?? {}), busqueda.candidatas, opciones.nombres)
+        if (valida) {
+          anotar(`Elegí: ${valida.eleccion.actividad_etiqueta} en ${valida.eleccion.lugar.nombre}`)
+          return { ...valida, candidatas: busqueda.candidatas, pasos, idRespuesta: r.id }
+        }
+        // Una sola corrección: elección fuera de la lista o textos que no pasan las reglas.
+        if (!segundaOportunidad) return null
+        segundaOportunidad = false
+        motivo =
+          'La elección no pasó las reglas: usa un eleccion_id de buscar_planes, no nombres a nadie, no hables de dinero, ' +
+          'salud, ánimo ni de quién falta, no digas que algo está confirmado o reservado, y respeta los largos máximos.'
+      }
+      resultados.push({ type: 'tool_result', tool_use_id: eleccion.id, content: JSON.stringify({ error: motivo }), is_error: true })
     }
     // El turno del modelo vuelve tal cual (incluye sus bloques de pensamiento, que no se pueden tocar).
     mensajes.push({ role: 'assistant', content: r.content })
