@@ -317,7 +317,8 @@ try {
   await joaco.page.getByRole('heading', { level: 1 }).first().waitFor({ timeout: 20000 })
   await joaco.page.waitForTimeout(1500)
   await ver(joaco, 'joaco-portada-vuelve')
-  await joaco.tocar(joaco.page.locator('a.plan-vivo').first(), 'tarjeta «Tu plan»')
+  // Rediseño S1 (57b89f1): la portada ya no tiene la tarjeta «Tu plan»; el camino es la línea «Te toca confirmar» (enlace al plan).
+  await joaco.tocar(joaco.page.locator('a.plan-vivo, a[href*="/p/"]').first(), 'el plan desde la portada («Tu plan» o «Te toca confirmar»)')
   await joaco.tocarBoton('Confirmar versión 1')
   await joaco.esperar('Ya confirmaste la versión 1', 25000)
   joaco.fin('de la portada a «Confirmar versión 1»')
