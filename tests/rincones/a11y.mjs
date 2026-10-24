@@ -25,6 +25,7 @@ const ESTRUCTURA = () => {
     if (e.labels && e.labels.length) { const t = [...e.labels].map((l) => l.textContent).join(' ').trim(); if (t) return t }
     const t = (e.innerText || e.textContent || '').trim(); if (t) return t
     const ti = e.getAttribute('title'); if (ti) return ti
+    if (e.placeholder) return `(placeholder) ${e.placeholder}` // lo reporta la regla "etiqueta", no "nombre"
     return ''
   }
   // idioma y título
@@ -96,12 +97,22 @@ const ESTRUCTURA = () => {
   // a sin href con texto (parece enlace pero no es enfocable)
   for (const a of document.querySelectorAll('a:not([href])')) if (visible(a) && a.textContent.trim()) add('aviso', 'teclado', `<a> sin href "${a.textContent.trim().slice(0, 30)}" (no se alcanza con Tab)`)
   // tamaño de objetivo (WCAG 2.5.8: 24×24 mínimo, salvo enlaces dentro de un texto)
+  const objetivos = [...document.querySelectorAll('button, a[href], input, select, textarea, [role=tab], [role=button], summary, label')].filter((x) => visible(x) && !oculto(x))
   for (const e of document.querySelectorAll('button, a[href], input[type=checkbox], input[type=radio], [role=tab], [role=button], summary, select')) {
     if (!visible(e) || oculto(e)) continue
     const obj = e.matches('input[type=checkbox], input[type=radio]') ? (e.closest('label') || e) : e
     const r = obj.getBoundingClientRect()
     const enTexto = e.tagName === 'A' && e.parentElement && /^(P|LI|SPAN|SMALL)$/.test(e.parentElement.tagName) && e.parentElement.textContent.trim().length > e.textContent.trim().length + 8
-    if (!enTexto && (r.width < 24 || r.height < 24)) add('falla', 'objetivo', `${desc(e)} "${nombre(e).slice(0, 30)}" mide ${Math.round(r.width)}×${Math.round(r.height)} (< 24×24)`)
+    if (!enTexto && (r.width < 24 || r.height < 24)) {
+      // Excepción de espaciado (WCAG 2.5.8): pasa si un cuadrado de 24 px centrado en el objetivo no toca otro objetivo.
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2
+      const vecino = objetivos.some((o) => {
+        if (o === obj || o.contains(obj) || obj.contains(o)) return false
+        const q = o.getBoundingClientRect()
+        return q.width > 0 && Math.max(q.left, cx - 12) < Math.min(q.right, cx + 12) && Math.max(q.top, cy - 12) < Math.min(q.bottom, cy + 12)
+      })
+      add(vecino ? 'falla' : 'aviso', 'objetivo', `${desc(e)} "${nombre(e).slice(0, 30)}" mide ${Math.round(r.width)}×${Math.round(r.height)} (< 24×24; ${vecino ? 'con otro objetivo pegado' : 'pasa por espaciado'})`)
+    }
   }
   // regiones vivas
   const vivas = document.querySelectorAll('[aria-live]:not([aria-live=off]), [role=status], [role=alert], [role=log]').length

@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title></title>
+<style>body{margin:0;font:16px sans-serif;background:#fff} .cab{position:fixed;top:0;height:40px;width:100%;background:#000;color:#fff}
+.nav-inferior{position:fixed;bottom:0;left:0;right:0;height:60px;background:#222} .gris{color:#aaa} .chico{width:18px;height:18px;padding:0;border:1px solid #000}
+:focus{outline:none} .ok:focus{outline:3px solid blue} .corta{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:120px}</style></head>
+<body><header class="cab">Cabecera fija</header>
+<main style="padding:60px 16px 0">
+<h2>Sin h1: empieza en h2</h2>
+<p class="gris">Texto gris claro con poco contraste sobre blanco</p>
+<p class="corta">Texto largo que se corta con puntos suspensivos si se agranda el espaciado</p>
+<button class="chico"></button>
+<button class="ok">Botón con foco visible</button>
+<button>Botón sin indicador de foco</button>
+<label>Nombre <input value=""></label>
+<input placeholder="Solo placeholder">
+<div role="tablist" aria-label="Secciones"><button role="tab" aria-selected="true" aria-controls="no-existe">Plan</button><button role="tab" aria-selected="false">Otra</button></div>
+<div aria-hidden="true"><a href="#x">enlace oculto pero enfocable</a></div>
+<div style="height:320px"></div><div style="height:320px"></div>
+<button>Último botón, queda bajo la barra fija</button><button style="margin-left:2px">Pegado</button>
+<p id="vivo" role="status"></p>
+</main><nav class="nav-inferior"></nav></body></html>
