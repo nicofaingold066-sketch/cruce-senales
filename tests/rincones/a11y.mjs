@@ -16,7 +16,8 @@ const ESTRUCTURA = () => {
     const r = e.getBoundingClientRect(); const s = getComputedStyle(e)
     return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'
   }
-  const oculto = (e) => !!e.closest('[aria-hidden="true"]')
+  const enCerrado = (e) => { const d = e.closest('details:not([open])'); return !!d && !e.closest('summary') }
+  const oculto = (e) => !!e.closest('[aria-hidden="true"]') || enCerrado(e)
   const desc = (e) => `${e.tagName.toLowerCase()}${e.id ? '#' + e.id : ''}${typeof e.className === 'string' && e.className.trim() ? '.' + e.className.trim().split(/\s+/).slice(0, 2).join('.') : ''}`
   const nombre = (e) => {
     const al = e.getAttribute('aria-label'); if (al && al.trim()) return al.trim()
@@ -135,7 +136,7 @@ async function recorridoTeclado(page, max = 90) {
   const vistos = new Set()
   for (let i = 0; i < max; i++) {
     await page.keyboard.press('Tab')
-    await page.waitForTimeout(60)
+    await page.waitForTimeout(320) // deja terminar el desplazamiento suave del carrusel y las transiciones de 150–300 ms
     const info = await page.evaluate(() => {
       const e = document.activeElement
       if (!e || e === document.body || e.id === '__inicio_a11y') return null
@@ -177,7 +178,8 @@ async function contrastePixeles(page) {
   const alto = await page.evaluate(() => { window.scrollTo(0, 0); return document.documentElement.scrollHeight })
   const h = Math.min(alto, 6000)
   await page.setViewportSize({ width: vp.width, height: h })
-  await page.waitForTimeout(300)
+  await page.mouse.move(0, 0) // sin pasar el mouse por encima de nada (los hover cambian colores)
+  await page.waitForTimeout(900) // transiciones y animaciones de entrada (0,15–0,3 s) terminadas
   const png = (await page.screenshot({ type: 'png' })).toString('base64')
   const res = await page.evaluate(async (b64) => {
     const img = new Image(); img.src = `data:image/png;base64,${b64}`; await img.decode()
@@ -191,6 +193,7 @@ async function contrastePixeles(page) {
     const vistos = new Set()
     const els = [...document.querySelectorAll('body *')].filter((e) => {
       if (e.closest('[aria-hidden="true"], .visualmente-oculto, svg, button:disabled, [disabled], [aria-disabled="true"], .saltar')) return false
+      { const d = e.closest('details:not([open])'); if (d && !e.closest('summary')) return false }
       const s = getComputedStyle(e); const r = e.getBoundingClientRect()
       if (r.width < 2 || r.height < 2 || s.visibility === 'hidden' || s.display === 'none' || parseFloat(s.opacity) === 0) return false
       return [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim().length > 1)
