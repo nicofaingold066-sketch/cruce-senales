@@ -249,7 +249,8 @@ export function armarEscena({ base, salida, grupo, titulo, fugas = [] }) {
     await p.tocarBoton('Retirarme de esta propuesta')
     await ver(p, 'confirma-la-baja')
     await p.tocarBoton('Sí, no voy')
-    await p.esperar('Te retiraste', 25000)
+    // Texto de hoy, o el de la enmienda 13 (c) para quien se retira («Gracias por avisar. No hace falta contar por qué.»).
+    await p.esperar(/Te retiraste|Gracias por avisar/, 25000)
   }
 
   // El bloque «Agente del círculo» plegado al final del espacio: ahí viven las preferencias privadas.
