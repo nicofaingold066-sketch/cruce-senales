@@ -6,7 +6,7 @@ cd "$(dirname "$0")" || exit 1
 URL="${1:-http://localhost:4187}"
 export RINCONES_CORRIDA="$(TZ=America/Santiago date +%Y%m%d%H%M)"
 echo "corrida $RINCONES_CORRIDA contra $URL"
-FASES="f0-sin-grupo f1-organizador f2-invitados f3-confirmar-y-reparar f3b-baja-y-reparar f4-listas-y-cancelar f5-demo f5b-demo-baja f6-quien-eres f7-grupo-b f9-sin-red-y-validaciones f10-fallas"
+FASES="f0-sin-grupo f1-organizador f2-invitados f3-confirmar-y-reparar f3b-baja-y-reparar f4-listas-y-cancelar f5-demo f5b-demo-baja f6-quien-eres f7-grupo-b f9-sin-red-y-validaciones f10-fallas f11-responder"
 [ "$2" = "--con-agente" ] && FASES="$FASES f8-agente"
 for f in $FASES; do
   echo "=== $f"

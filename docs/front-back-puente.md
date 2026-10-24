@@ -1,15 +1,16 @@
 # Puente front ↔ back de CRUXE
 
 Dueño: ux-flujo (rama `wip/ux`). Se actualiza con cada entrega del equipo. Flujo y fricciones: `docs/flujo-usuario.md`.
-Base: `wip/fundamentos` `95def89`, migraciones `0001` a `0034`. Actualizado: viernes 23 oct 2026, 19:34.
+Base: `wip/fundamentos`, migraciones `0001` a `0041` (E10 0035-0038, E12 0039-0040, E11 0041). Actualizado: viernes 23 oct 2026, 20:48.
 
-Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegibilidad y estado; la interfaz solo muestra. Todas las respuestas tienen la forma `{ok:true, contrato:2, servidor_ahora, …}` o `{ok:false, error:{codigo, detalle, mensaje}}`. Las escrituras que pueden repetirse llevan `p_intento_id`. Lista permitida: 31 funciones para `authenticated`, 0 para `anon`.
+Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegibilidad y estado; la interfaz solo muestra. Todas las respuestas tienen la forma `{ok:true, contrato:2, servidor_ahora, …}` o `{ok:false, error:{codigo, detalle, mensaje}}`. Las escrituras que pueden repetirse llevan `p_intento_id`. Lista permitida: 40 funciones para `authenticated` (31 + 9 del agente social), 0 para `anon`.
 
 ## 1. Por pantalla: qué llama y qué usa
 
 | Pantalla (dueño) | RPC | Campos que usa de la respuesta |
 |---|---|---|
 | Responder en un paso `src/friccion/Responder.tsx` (friccion, #88, en `wip/friccion` `efede20`, sin integrar) | `list_proposals`, `get_space`, `get_proposal_state`, `save_my_conditions`, `mark_interest` | propuestas en `reuniendo_interes` sin `plazo_vencido` ni `retirado`; `mi_situacion.{puede.guardar_condiciones, condiciones, interesado, puede.marcar_interes}`, `franjas[].{clave, inicio, fin}`. Si no hay exactamente una propuesta para responder, vuelve al espacio |
+| Agente social (enmienda 11, agente-ia, en `src/agente/**` y la función `agente`; interfaz en curso) | `agente_social_contexto`, `agente_social_candidatos`, `set_recibir_invitaciones_agente` (cada persona), `set_politica_agente_social`, `iniciar_ejecucion_agente`, `guardar_borrador_agente`, `aprobar_borrador_agente`, `publicar_borrador_agente`, `cerrar_ejecucion_agente` | conteos `personas_autorizadas`/`destinatarios` (solo organizador); `opciones[].{opcion_ref, actividad_etiqueta, titulo, franjas, viaje}`; `borrador.plan` para mostrar ANTES de aprobar; `propuesta.id` e `invitados` (cuántos). Lista permitida 31 → 40. El agente no confirma por nadie: cada invitado responde y confirma como siempre |
 | Arranque (`App.tsx`, friccion) | `server_info` | `contrato` (si no es 2, aviso de versión) |
 | Portada `Inicio.tsx` (front-juan) | `list_my_spaces`, `list_proposals` (de hasta 4 espacios, para "Tu plan"), `seed_demo_space`, `join_space` (formulario "Unirme con un código", sin `p_miembro_id`) | `espacios[].{id,nombre,tipo,demo,mi_rol,cantidad_miembros}`; de cada propuesta `estado`, `version`, `siguiente_accion.{codigo,texto}`, conteos y `plazo` |
 | ¿Quién eres? `QuienEres.tsx` (friccion) | `preview_space_by_code`, `join_space(código, nombre, miembro_id)` | `espacio.{nombre,demo}`, `miembros[].{miembro_id,nombre,libre}`; de `join_space`: `resultado.{espacio_id, ya_era_miembro, reclamo_pendiente, reclamo_asiento_simulado}`; errores `miembro_ya_reclamado`, `asiento_en_uso`, `codigo_inexistente`, `nombre_en_uso` |
@@ -63,3 +64,4 @@ Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegib
 | 19:28-19:41 | backend `c63200d`, `aef9c7d` (`wip/backend`) | E10 Parte A (0035-0037) y Parte B (0038, 13 actividades) aplicadas en la base; enmienda10 9/9 | §2: las filas E10 pasan a "en la base, sin pantalla". Las claves nuevas salen en `get_my_preferences.preferencias` solo si tienen valor; `save_my_preferences` reemplaza (la clave que falta queda vacía); `get_my_preferences.opciones.actividades` ya trae las 13 |
 | 19:50 | ux-flujo `c535212` | merge de `wip/fundamentos`; `recorrido-dos-sesiones.mjs` 23/23 contra el build 4183 | — |
 | 19:37-19:40 | agente-ia `d5d913e`, `1eaf510` (`wip/agente-ia`) | interfaz de E10: cuatro preguntas opcionales ("Prefiero no responder" saca la clave) y "Queda a menos de N minutos para todos (estimado)" | §2: filas E10 con pantalla en su rama, sin integrar. Textos en voseo ("Cómo te movés", "Hasta cuánto viajás") en una app en tuteo |
+| 20:32 | coordinador / backend | enmienda 11 (agente social) autorizada; 0041 en curso (lista permitida 31 → 40) | cuando se aplique: 9 funciones nuevas que usa solo el agente (`src/agente/**`, función `agente`); ninguna pantalla de `src/screens/**` las llama. Pendiente de registrar en §1 |

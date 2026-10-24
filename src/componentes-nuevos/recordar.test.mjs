@@ -9,7 +9,7 @@ const enlace = 'https://ejemplo.test/#/unirse/ABCD1234'
 
 test('faltan: mensaje genérico con el enlace, sin nombres ni conteos', () => {
   const t = textoAviso({ motivo: 'faltan', titulo: 'Pádel y algo después', enlace })
-  assert.equal(t, 'Para «Pádel y algo después»: si todavía no respondiste, toca, elige tu nombre y marca cuándo puedes (es privado). Si ya respondiste, no hace falta nada: ' + enlace)
+  assert.equal(t, 'Te lo recuerda CRUXE: para «Pádel y algo después», si todavía no respondiste, sin apuro: toca, elige tu nombre y marca cuándo puedes (es privado). Si ya respondiste, no hace falta nada: ' + enlace)
   // Llega también a quien ya respondió o se bajó (pedido de sinteticos): no le reclama nada.
   assert.match(t, /si todavía no respondiste/i)
   assert.match(t, /Si ya respondiste, no hace falta nada/)
@@ -17,22 +17,32 @@ test('faltan: mensaje genérico con el enlace, sin nombres ni conteos', () => {
   assert.doesNotMatch(t.replace(enlace, ''), /\d/)
 })
 
-test('versión nueva con fecha', () => {
+test('versión nueva con fecha: dice qué hacer si no puede', () => {
   const t = textoAviso({ motivo: 'version_nueva', titulo: 'Cine', cuando: 'sábado 31 oct, 20:00', enlace })
-  assert.equal(t, 'Hay opción para «Cine»: sábado 31 oct, 20:00. Si vas, toca y confírmala: ' + enlace)
+  assert.equal(t, 'Hay opción para «Cine»: sábado 31 oct, 20:00. Si vas, toca y confírmala; si no puedes, no confirmes: el plan sale solo con quienes confirman. ' + enlace)
+})
+
+test('confirmado: lleva el enlace y los cupos libres, sin nombres', () => {
+  const t = textoAviso({ motivo: 'confirmado', titulo: 'Pádel', cuando: 'sábado 31 oct, 20:00', enlace, cuposLibres: 2 })
+  assert.equal(t, 'Se juntan: «Pádel», sábado 31 oct, 20:00. Quedan 2 cupos. Si vas y no confirmaste, toca y confirma: ' + enlace)
+  assert.match(textoAviso({ motivo: 'confirmado', titulo: 'Pádel', enlace, cuposLibres: 1 }), /Queda 1 cupo\./)
+  const lleno = textoAviso({ motivo: 'confirmado', titulo: 'Pádel', enlace, cuposLibres: 0 })
+  assert.doesNotMatch(lleno, /cupo/)
+  assert.equal(rotuloAviso('confirmado'), 'Avisar al grupo')
 })
 
 test('reparación dice que las confirmaciones anteriores no cuentan', () => {
   const t = textoAviso({ motivo: 'reparacion', titulo: 'Cena', cuando: 'domingo 1 nov, 20:00', enlace })
-  assert.match(t, /^Cambió «Cena»: ahora domingo 1 nov, 20:00\./)
+  assert.match(t, /^Hay una versión nueva de «Cena»: ahora domingo 1 nov, 20:00\./)
+  assert.doesNotMatch(t, /porque|se bajó|baja/)
   assert.match(t, /no cuentan/)
   assert.ok(t.endsWith(enlace))
 })
 
 test('sin fecha, versión nueva y reparación no dejan huecos', () => {
-  for (const motivo of ['version_nueva', 'reparacion']) {
+  for (const motivo of ['version_nueva', 'reparacion', 'confirmado']) {
     const t = textoAviso({ motivo, titulo: 'Cumple', cuando: null, enlace })
-    assert.doesNotMatch(t, /: \.|ahora \.|undefined|null/)
+    assert.doesNotMatch(t, /: \.|ahora \.|, \.|undefined|null/)
   }
 })
 

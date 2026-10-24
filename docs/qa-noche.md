@@ -14,6 +14,8 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | `toques-invitacion.mjs` | Toques del enlace de invitación a la primera respuesta, 375 px (de friccion) | sí | `node tests/e2e/toques-invitacion.mjs <url> <etiqueta>` |
 | `red-import-cortada.mjs` | #82: corte de red al importar una pantalla (reintento `?r=1`, barrera «Recargar», precarga) | sí (caso C) | `node tests/e2e/red-import-cortada.mjs <url>` |
 | `friccion-flujo.mjs` | #88, #90 (demo) y volver con el mismo enlace, de friccion (85 líneas) | sí | `node tests/e2e/friccion-flujo.mjs <url>` |
+| `convencer-uno.mjs` | #98 de ux-flujo: organizador + 5 invitados por enlace, toques y pantallas por persona (6 sesiones por corrida) | sí | `node tests/e2e/convencer-uno.mjs <url>` |
+| `guardia-palabras.mjs` | P-A de psico (§8.7): ninguna palabra de la lista (vegetariano, celíaco, «pareja de», novio/a, hombres, mujeres, chicos, chicas, «otra vez en casa»…) en copia visible de `src/` ni `supabase/functions/agente/` (sin pruebas, comentarios, catálogo ni listas de prohibidas) | no | `node tests/e2e/guardia-palabras.mjs` (sale 1 si hay hallazgos) |
 | `preparar-grupo.mjs` | Ayudante: crea grupo ficticio (Orga, Ana, Beto) y propuesta abierta | sí | lo llaman los dos anteriores |
 
 ## Cambios en los guiones
@@ -23,6 +25,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
   - L3 verifica que, con HTTP 503, la copia sigue ofrecida (volver / olvidarla).
   - Se quitó la comprobación de **foco** tras el error (antes en `#/entrar`); la portada nueva no maneja foco al fallar el retorno. Idea para friccion/Juan: mover el foco al aviso de error. No se baja lo demás.
 - 19:28 `recorrido-dos-sesiones.mjs` ahora también respeta `MIGRACION EN CURSO` (antes corría igual).
+- 20:28 Enmienda 10: `jurado-navegador.mjs` revisa en toda respuesta compartida (todas menos get/save/simulate_save_preferences) que no aparezcan las claves `movilidad`, `tiempo_max`, `minutos_por_persona` ni los valores de movilidad (`me_llevan`, `auto_con_lugar`…) ni las 8 zonas. Pasa contra producción con la enmienda 10 publicada (main fae49fa).
 
 ## Registro de corridas
 | Hora | Qué | Contra | Resultado |
@@ -44,6 +47,12 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 20:07 | `wip/ux` 715ec27: typecheck, build, recorrido 23/23, jurado 4/4, red 10/10 | localhost, base | verde |
 | 20:09 | `wip/agente-ia` ddcce58: typecheck, build, recorrido 23/23; jurado cortado a mitad por una MIGRACION EN CURSO nueva de backend (no es regresión) | localhost, base | jurado y red se reintentan al salir la migración |
 | 20:14 | `wip/agente-ia` ddcce58: jurado 4/4 (privacidad de sobres sin hallazgos) y red 10/10 (reintento) | localhost, base | verde |
+| 20:28 | main `fae49fa` publicado (enmienda 10/12, fricción): recorrido 23/23, jurado 4/4 con la revisión nueva de privacidad E10 | producción | verde |
+| 20:35 | `convencer-uno.mjs` versionado | — | sin correr (backend con MIGRACION EN CURSO 0041 desde 20:32) |
+| 20:42 | guardia-palabras sobre `wip/qa`+fundamentos d9176a9: 57 archivos, 0 hallazgos; control con un archivo de prueba detecta 2 | estático | verde |
+| 20:42 | `wip/friccion` 05e148d: jurado V2a cayó una vez por timeout de 15 s en `waitForResponse` (justo al salir la migración 0041); había pasado 4/4 a las 20:02 | localhost, base | falla aislada, no reproducida |
+| 20:45 | `wip/ux` e1794e1: recorrido 23/23, jurado 4/4, friccion-flujo 19/19, red 10/10 | localhost, base | verde |
+| 20:48 | `wip/friccion` 6bddd27 (merge de fundamentos): recorrido 23/23, jurado 4/4, friccion-flujo 19/19, red-import 4/4, red 10/10 | localhost, base | verde |
 
 ## Regresiones abiertas
 (ninguna)
