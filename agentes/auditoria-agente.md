@@ -6,5 +6,6 @@ Solo lectura y pruebas simuladas; no arreglo código (los defectos van a su due�
 ## Tocando ahora
 
 ## Entregado
+- [09:45] ENTREGA. Rama `auditoria-agente` (`6feebfd`), `docs/auditoria-agente.md`. **Alcance cambiado por Nico en mi sesión (09:2x):** creatividad, coherencia, trato parejo, parámetros que usa y faltan, fuentes reales e ideas; privacidad, costos y seguridad fuera de alcance (3 observaciones de pasada en §7). Semáforo: creatividad 🔴, fuentes reales 🔴, coherencia 🟡, trato parejo 🟢 con matices, que funcione 🟡. Altos: A1 catálogo fijo de 17 lugares simulados y solo 3 candidatas; A2 palabras prohibidas que tumban textos normales al texto fijo; A3 ningún texto real del modelo guardado. Sin marcas de base (solo un select al catálogo), cero llamadas al modelo.
 
 ## Pedidos
