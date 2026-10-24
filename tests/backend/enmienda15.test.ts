@@ -90,6 +90,8 @@ describe('enmienda 15 (E-c): ronda de opiniones con plazo', { timeout: 180_000 }
     // La versión sigue igual y aceptar no se bloquea.
     const acc = await ok(O, 'accept_version', { p_propuesta_id: p, p_version: 1, p_intento_id: intento() })
     expect(acc.propuesta.opcion.version).toBe(1)
+    // Ajuste 1: con la ronda abierta, ni antes ni después de aceptar se invita a rearmar.
+    expect(acc.propuesta.siguiente_accion.texto).not.toBe(REARMAR)
     // Los demás ven la ronda (es pública) y la regla, pero no las opiniones.
     const deU = await estado(U, p)
     expect(deU.ronda).toEqual(r)
