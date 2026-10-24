@@ -171,8 +171,9 @@ try {
     await E.abrirPreferencias(teo)
     await teo.page.getByRole('button', { name: 'Que el agente proponga' }).scrollIntoViewIfNeeded()
     await teo.tocarBoton('Que el agente proponga')
-    const resp = await teo.page.getByText(/Opciones del agente|Todavía no hay suficientes personas|Con lo que cargó el grupo|no está disponible ahora|tardó demasiado|opciones para/).first()
-      .waitFor({ timeout: 90000 }).then(() => true, () => false)
+    // Espera a que el agente TERMINE de pensar (los textos de «pensando» incluyen «opciones para el grupo»: no sirven de señal).
+    await teo.page.getByText('El agente está pensando').first().waitFor({ timeout: 10000 }).catch(() => {})
+    const resp = await teo.page.getByText('El agente está pensando').first().waitFor({ state: 'detached', timeout: 120000 }).then(() => true, () => false)
     await teo.page.waitForTimeout(1500)
     const ag = await E.ver(teo, 'agente-en-grupo-de-futbol')
     C.agenteRespondio = resp
