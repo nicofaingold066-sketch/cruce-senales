@@ -227,9 +227,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
       if (!DURACIONES.includes(duracion)) setDuracionExtra(duracion)
       setF({
         ...base,
-        // El borrador no trae cupos: el mínimo 4 del caso del asado no vale para un parque. Se parte del 2 de siempre
-        // y quien organiza lo ajusta; el servidor valida el cupo (el mínimo real lo calcula el flujo social).
-        minimo: '2',
+        // Se usan los límites de la actividad cuando están disponibles; el servidor valida los cupos.
         titulo: borrador.titulo,
         actividad: (borrador.actividad ?? null) as ActividadClave | null,
         minimo: String(borrador.personas?.min ?? 2),

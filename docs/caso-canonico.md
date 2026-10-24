@@ -4,7 +4,7 @@ Por pedido de Nico del 24 de octubre, la entrada de demostración pasa al caso s
 
 Parque ficticio gratuito, mínimo real de dos personas: Ana y Felipe aceptan el sábado; Felipe se baja; Ana revisa el domingo y la versión nueva comienza con cero aceptaciones; Ana y Camila deciden otra vez. Gabriela sigue pendiente. Preferencias y permisos se aportan por separado y voluntariamente; no se carga disponibilidad desde los perfiles.
 
-La variante `makana` requiere activar la migración 0057 antes del cliente. El caso anterior se conserva para sus grupos existentes y pruebas de regresión; no se transforman ni borran esos datos. Las pruebas locales no certifican un despliegue remoto ni inferencia del modelo.
+La variante `makana` requiere activar la migración `20261024124500_demo_makana.sql` posterior a la de actividad del grupo antes del cliente. El caso anterior se conserva para sus grupos existentes y pruebas de regresión; no se transforman ni borran esos datos. Las pruebas locales no certifican un despliegue remoto ni inferencia del modelo.
 
 # Caso anterior conservado (legacy): «Los del finde»
 
