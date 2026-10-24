@@ -3,6 +3,7 @@
 Pedido directo del usuario: «quiero que cambiemos en la parte de preferencias de cada uno, que sea mas ordenado visualmente y sea mas estetico». Alcance: presentación de las preferencias privadas, en rama aislada; sin publicar producción.
 
 ## Tocando ahora
+- Integración/publicación hechas: `main` y `codex/preferencias-visuales` = `8fba205` (push atómico normal, desde main `27bcc6c`). GitHub confirma Vercel success para ese SHA; producción ya sirve el arranque de tema y `index-amv0LR_h.css`. Prueba final del build publicado en curso con Auth/RPC interceptadas.
 - Integración actualizada con `main` `27bcc6c`: conserva GRU publicado (`07f037c`) y vida (`27bcc6c`). Se añade `src/estilo/vida.css` al reclamo, únicamente su bloque oscuro para que respete el selector manual; no se altera su paleta ni animaciones.
 - Nuevo pedido directo del usuario: «cuando teermines publica los cambios e integralos en la app». Autoriza integración/publicación de preferencias y tema, con el título elegido y corrección del violeta. Se conservarán los avances de main al integrar; sin despliegues de backend.
 - Ampliación directa del usuario: selector claro/oscuro en preferencias, quitar esquinas violetas y título elegido «GRU · Planes para el grupo».
