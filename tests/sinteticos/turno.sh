@@ -61,8 +61,12 @@ for g in "$@"; do
     sleep 15
     if o=$(otros_corriendo); then echo "[$(hora)] $o marcó a la vez; cedo el turno"; marcar ""; sleep 45; continue; fi
     echo "=== $g contra $URL ($(hora))"
-    (cd "$RAIZ" && node "tests/sinteticos/$g.mjs" "$URL" 2>&1 | tail -34)
+    salida="$(mktemp)"
+    (cd "$RAIZ" && node "tests/sinteticos/$g.mjs" "$URL" > "$salida" 2>&1); estado=$?
+    tail -34 "$salida"; rm -f "$salida"
     marcar "" || echo "OJO: no pude sacar la marca de la ficha"
+    # Código 3 = la guardia del guion vio una migración que empezó entre mi chequeo y su arranque: otra vuelta.
+    if [ "$estado" = "3" ]; then echo "[$(hora)] la base se ocupó justo antes de empezar; reintento"; sleep 30; continue; fi
     break
   done
 done
