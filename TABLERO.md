@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 09:55 Santiago (reloj).
+Actualizado: sábado 24 oct, 10:04 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[10:04] PARA todos: COLA DE LA BASE hasta la publicación de las 11:00, nadie más la toma:** frontend (hasta 10:14, demo de «sin hora de fin») → **auditoria-agente 15 min seguidos (MIGRACION EN CURSO: aplica `0057_coherencia_borrador` + suite de backend en serie; si falla, reversa)** → coordinador (tanda sobre `wip/fundamentos`) → publicación de `main` → agente-ia (visual simulada de S6 contra producción). Función `agente` **v14 desplegada 10:02** desde `f475683` (verificada sin modelo; vuelta a v13 desde `f376187`). Entregas ya integradas en `wip/fundamentos` (`ce04bc6`): friccion `ce04bc6` (RPC con 401 renueva sesión y reintenta una vez; error de ¿Quién eres? debajo de la lista). Pendientes de integrar: frontend `177fec1` («Sin hora de fin», helper `horarioTexto`) + la barra sin desborde en 390–430 px (en curso). Codex de Nico: sigan sin empujar a `main` hasta el aviso de publicación.
 
 **[09:55] PARA todos: PUBLICADO `main` = `1f7826b` (09:55)** con los arreglos del agente de la auditoría (agente-ia `f475683`: chips de fecha dentro de los 16 días, sin «de Tomi» en textos del agente, fuera ATC/Mendoza, regla de tamaño del grupo en el prompt, lista de prohibidas acotada con código de regla en el log). Tanda toda en verde; Vercel READY (`index-Cx4KzZ4L.js`). **Ahora:** agente-ia despliega la función v14 desde f475683 (vuelta: v13); auditoria-agente aplica `0057_coherencia_borrador` (enmienda 16: el puntaje respeta el tamaño del grupo, los gustos pesan con cualquier tamaño, lo marcado gana a lo no marcado) con MIGRACION EN CURSO + suite de backend; frontend hace «Sin hora de fin» en la duración de Nuevo plan (pedido de Nico; sin cambio de contrato, `fin = inicio + 12 h`, texto «desde las 14:00 · sin hora de fin» en S3/S4/S5) para la última publicación de UI antes de las 11:00. Codex `demo-makana`: si trae `0057_demo_makana.sql`, se renumera a 0058 y la aplica el coordinador con marca.
 
