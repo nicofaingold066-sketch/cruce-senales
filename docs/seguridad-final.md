@@ -1,6 +1,6 @@
 # Seguridad de la base: informe final (mejora #81)
 
-Autor: backend. Proyecto Supabase `tjkfdnvzsikncjbskufm` (el único de CRUXE). **Estado final: sábado 24 oct 2026, 02:25 (hora de Santiago), con la última migración aplicada `0055_demo_simulados_reciben_invitaciones` (55 migraciones en total; las de la noche son 0035 a 0055). Repetido por pendientes después de 0051 a 0055: mismas cifras que el corte de las 23:05 (backend).** Las cifras de abajo son las finales; lo medido más temprano está al pie en "Historial del informe". Si después se aplica otra migración, este informe se vuelve a correr y se actualiza la fecha.
+Autor: backend. Proyecto Supabase `tjkfdnvzsikncjbskufm` (el único de CRUXE). **Estado final: sábado 24 oct 2026, 02:25 (hora de Santiago), con la última migración aplicada `0056_rediseno_fecha_y_plan` (56 migraciones en total; las de la noche son 0035 a 0056). Repetido por pendientes después de 0051 a 0055: mismas cifras que el corte de las 23:05 (backend).** Las cifras de abajo son las finales; lo medido más temprano está al pie en "Historial del informe". Si después se aplica otra migración, este informe se vuelve a correr y se actualiza la fecha.
 
 ## Resumen
 | Control | Resultado | Cómo se midió |
@@ -96,3 +96,4 @@ select
 - 21:00 a 21:48: enmienda 13 (0042 a 0047): 41 funciones (`opinar_version`), 22 tablas (`opiniones`).
 - 22:03 a 22:48: enmienda 14 (0048, 0049, 0050): ninguna función nueva ni firma duplicada (se cambiaron dos firmas con un parámetro opcional al final); `verificar_privilegios()` sin hallazgos al final de cada migración.
 - 00:27 a 02:14 (pendientes): 0051 (fiesta con domingo, solo datos), 0052 y 0053 (enmienda 15: `create_proposal` suma dos parámetros opcionales al final, una sola firma; sin RPC nuevas), 0054 (demo "Los del finde", solo nombre) y 0055 (simulados de la demo reciben invitaciones). Catálogo, RLS, advisors y `verificar_privilegios()` iguales al corte de las 23:05. Cada una con su reversa en `supabase/revertir/`.
+- 03:18 (pendientes): 0056 (rediseño: `fecha_local` en `list_proposals` y `list_my_spaces`; `organizador` y `plan {titulo, fecha_local}` en `preview_space_by_code`; solo lectura, sin datos privados ni conteos). 41/0, 0 internas expuestas, `verificar_privilegios()` sin hallazgos; suite en serie 109/109 (03:17–03:21). Última migración: 0056 (56 en total).
