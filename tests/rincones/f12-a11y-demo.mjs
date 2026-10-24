@@ -135,7 +135,8 @@ await corto('A08', t, async () => {
 await corto('A09', t, async () => {
   await pestana(t, 'Simulación')
   const baja = t.getByRole('button', { name: /^Se baja: (Mati|Caro)/ }).first()
-  const quien = (await baja.innerText()).replace('Se baja: ', '').trim()
+  // S7: el botón visible dice «Se baja»; el nombre de la persona está en el nombre accesible («Se baja: Caro»).
+  const quien = ((await baja.getAttribute('aria-label')) ?? (await baja.innerText())).replace('Se baja: ', '').trim()
   await baja.click(); await T(t, 500)
   await rinconA11y(t, 'A09a', `Demo: confirmación "¿Dar de baja a ${quien}?"`, { anchos: [375] })
   await t.getByRole('button', { name: new RegExp(`Sí, ${quien} se baja`) }).click(); await T(t, 5000)

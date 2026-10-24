@@ -3,7 +3,7 @@ import { api, nuevoIntento } from '../lib/api'
 import type { CargarCasoOk } from '../lib/api'
 import type { ApiError, Disponibilidad, EstadoPropuesta, MiembroPanel } from '../lib/types'
 import { useBorradorCondiciones, useMutacion, useSondeo } from '../lib/hooks'
-import { Avatar, Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
+import { Avatar, Aviso, Boton, Cargando, ErrorCaja, RotuloSimulacion, Vacio } from '../components/ui'
 import { Confirmacion, useVolverFoco } from '../components/Confirmacion'
 import { EditorCondiciones, ETIQUETA_VALOR } from '../components/Condiciones'
 import '../estilo/seccion-s7.css'
@@ -57,13 +57,12 @@ export default function SimulacionTab({ p, viva, soloLectura }: PestanaProps) {
   const puedenAceptar = (miembros ?? []).filter((m) => m.puede.aceptar)
   const aceptarTodos = useAceptarTodos(p, puedenAceptar, cargar, viva)
 
+  // S7 (mockup validado): el primario dice qué hace en palabras de la demo; el nombre accesible sigue siendo el de
+  // siempre, que es el que tocan los guiones (jurado-navegador, recorrido-dos-sesiones, plan-b, rincones).
+  const delCaso = (miembros ?? []).filter((m) => CASO[m.miembro.nombre.trim().toLowerCase()]).length || (miembros ?? []).length
+
   return (
     <div className="panel-sim">
-      <div className="banda-sim" role="note">
-        <span className="rotulo-sim rotulo-sim-grande">Simulación</span>
-        <span>Actúas por personas ficticias. Queda en el historial como Simulación.</span>
-      </div>
-
       {error && miembros === null ? <ErrorCaja error={error} onReintentar={cargar} /> : null}
       {error && miembros !== null ? (
         <Aviso tono="aviso">No pudimos actualizar el panel. Se muestra la última información recibida.</Aviso>
@@ -77,47 +76,59 @@ export default function SimulacionTab({ p, viva, soloLectura }: PestanaProps) {
       ) : null}
 
       {miembros && miembros.length > 0 ? (
-        <>
-          <section className="tarjeta tarjeta-sim sim-atajos" aria-label="Atajos de simulación">
-            <h2>Atajos</h2>
-            <div className="sim-atajos-botones">
-              {p.mi_situacion.puede.simular ? (
-                <Boton
-                  variante="secundario"
-                  onClick={guardarTodos.ejecutar}
-                  ocupado={guardarTodos.ocupado}
-                  ocupadoTexto="Cargando condiciones…"
-                  disabled={soloLectura}
-                >
-                  Cargar condiciones del caso a las personas simuladas
-                </Boton>
-              ) : (
-                <p className="suave">{motivoSinAtajo(p)}</p>
-              )}
-              {version != null && puedenAceptar.length > 0 ? (
-                <Boton
-                  onClick={aceptarTodos.ejecutar}
-                  ocupado={aceptarTodos.ocupado}
-                  ocupadoTexto="Enviando confirmaciones…"
-                  disabled={soloLectura}
-                >
-                  {/* Con una sola persona, "Aceptar versión 1 por Sofi" se llamaba igual que el botón de su tarjeta (dos
-                      botones idénticos; el guion del jurado fallaba según cuándo se refrescaba el panel). */}
-                  {puedenAceptar.length === 1
-                    ? `Aceptar versión ${version} por quien falta: ${puedenAceptar[0].miembro.nombre}`
-                    : `Aceptar versión ${version} por ${puedenAceptar.map((m) => m.miembro.nombre).join(', ')}`}
-                </Boton>
-              ) : null}
-            </div>
-            {guardarTodos.resumen ? <p role="status">{guardarTodos.resumen}</p> : null}
-            {aceptarTodos.resumen ? <p role="status">{aceptarTodos.resumen}</p> : null}
-          </section>
-          <div className="sim-lista">
+        <section className="tarjeta sim-hoja" aria-labelledby="sim-titulo">
+          <RotuloSimulacion />
+          <h2 id="sim-titulo" className="t-subtitulo">
+            Personas simuladas
+          </h2>
+          <p className="t-nota sim-linea">Respondes y confirmas por ellas. Todo queda en el historial como simulación.</p>
+
+          <div className="sim-atajos" role="group" aria-label="Atajos de simulación">
+            {p.mi_situacion.puede.simular ? (
+              <Boton
+                onClick={guardarTodos.ejecutar}
+                ocupado={guardarTodos.ocupado}
+                ocupadoTexto="Cargando las respuestas…"
+                disabled={soloLectura}
+                aria-label="Cargar condiciones del caso a las personas simuladas"
+              >
+                {delCaso === 1 ? 'Cargar la respuesta del caso' : `Cargar las respuestas de los ${delCaso} de una vez`}
+              </Boton>
+            ) : (
+              <p className="t-nota suave">{motivoSinAtajo(p)}</p>
+            )}
+            {version != null && puedenAceptar.length > 1 ? (
+              // Atajo chico (no está en el mockup; lo usan los guiones de la demo con /^Aceptar versión N por /).
+              // Con una sola persona no aparece: su fila ya dice «Aceptar v1».
+              <Boton
+                variante="secundario"
+                className="sim-atajo-chico"
+                onClick={aceptarTodos.ejecutar}
+                ocupado={aceptarTodos.ocupado}
+                ocupadoTexto="Enviando confirmaciones…"
+                disabled={soloLectura}
+              >
+                {`Aceptar versión ${version} por ${puedenAceptar.map((m) => m.miembro.nombre).join(', ')}`}
+              </Boton>
+            ) : null}
+            {guardarTodos.resumen ? (
+              <p role="status" className="t-nota">
+                {guardarTodos.resumen}
+              </p>
+            ) : null}
+            {aceptarTodos.resumen ? (
+              <p role="status" className="t-nota">
+                {aceptarTodos.resumen}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="sim-filas sd-escalonado">
             {miembros.map((m) => (
-              <TarjetaSimulado key={m.miembro.miembro_id} m={m} p={p} viva={viva} soloLectura={soloLectura} alCambiar={cargar} />
+              <FilaSimulado key={m.miembro.miembro_id} m={m} p={p} viva={viva} soloLectura={soloLectura} alCambiar={cargar} />
             ))}
           </div>
-        </>
+        </section>
       ) : null}
     </div>
   )
@@ -212,19 +223,24 @@ function useAceptarTodos(
   return { ocupado, resumen, ejecutar }
 }
 
-type EstadoSim = { clase: string; texto: string }
-
-/** Solo reformula lo que dice el servidor sobre esta persona. */
-function estadoSim(m: MiembroPanel, version: number | null): EstadoSim {
-  if (m.retirado) return { clase: 'sim-chip-baja', texto: 'Se bajó' }
-  if (m.acepte_version) return { clase: 'sim-chip-ok', texto: `Confirmó v${version}` }
-  if (m.elegible_en_version === null) return { clase: 'sim-chip-neutro', texto: 'Sin versión publicada' }
-  if (m.puede.aceptar) return { clase: 'sim-chip-turno', texto: 'Puede confirmar' }
-  if (m.elegible_en_version) return { clase: 'sim-chip-neutro', texto: 'En la versión' }
-  return { clase: 'sim-chip-neutro', texto: 'No forma parte' }
+/**
+ * La línea de estado de una fila («A: Sí · B: Sí · aceptó la v1»). Solo reformula lo que dice el servidor sobre esta
+ * persona; quien la ve es el organizador del demo, que es quien carga sus condiciones.
+ */
+function lineaEstado(m: MiembroPanel, claves: string[], version: number | null): string {
+  const partes: string[] = []
+  if (m.condiciones.estado === 'sin_cargar') partes.push(m.interesado ? 'Le interesa · sin responder' : 'Sin responder')
+  else partes.push(...claves.map((c) => `${c}: ${ETIQUETA_VALOR[m.condiciones.disponibilidad[c] ?? 'pendiente']}`))
+  if (m.retirado) partes.push('se bajó')
+  else if (version != null) {
+    if (m.acepte_version) partes.push(`aceptó la v${version}`)
+    // Si puede aceptar, ya lo dice el botón de la fila («Aceptar v1»).
+    else if (!m.puede.aceptar && m.elegible_en_version === false) partes.push(`fuera de la v${version}`)
+  }
+  return partes.join(' · ')
 }
 
-function TarjetaSimulado({
+function FilaSimulado({
   m,
   p,
   viva,
@@ -241,9 +257,11 @@ function TarjetaSimulado({
   const b = useBorradorCondiciones(m.condiciones.disponibilidad, claves)
   const { ocupado, error, correr } = useMutacion(viva)
   const [confirmarBaja, setConfirmarBaja] = useState(false)
+  const [aviso, setAviso] = useState<string | null>(null)
   const { zona, volver } = useVolverFoco<HTMLElement>()
   const version = p.opcion?.version ?? null
   const id = m.miembro.miembro_id
+  const nombre = m.miembro.nombre
 
   async function tras<T>(promesa: Promise<T>) {
     const r = await promesa
@@ -255,95 +273,118 @@ function TarjetaSimulado({
     tras(correr(`s-int:${id}:${v}:${p.state_rev}`, () => api.simulateMarkInterest(p.id, id, v)))
   const guardar = () =>
     tras(correr(`s-cond:${id}:${JSON.stringify(b.draft)}`, () => api.simulateSaveConditions(p.id, id, b.draft)))
-  const aceptar = () => {
-    if (version == null) return Promise.resolve(null)
-    return tras(correr(`s-acc:${p.id}:${id}:${version}`, (intento) => api.simulateAccept(p.id, id, version, intento)))
+  const aceptar = async () => {
+    if (version == null) return
+    setAviso(null)
+    const r = await tras(correr(`s-acc:${p.id}:${id}:${version}`, (intento) => api.simulateAccept(p.id, id, version, intento)))
+    // El mismo resumen que el atajo de todos: los guiones esperan «Confirmaron la versión N:».
+    if (r?.ok) setAviso(`Confirmaron la versión ${version}: ${nombre}.`)
   }
   const bajar = async () => {
     const r = await tras(correr(`s-baja:${id}:${p.state_rev}`, () => api.simulateWithdraw(p.id, id)))
-    if (r?.ok) setConfirmarBaja(false)
+    if (r?.ok) {
+      setConfirmarBaja(false)
+      setAviso(null)
+    }
   }
 
   // E7 (recorrido de Nico): "Se baja" solo con una versión publicada; antes no hay nada de qué bajarse a la vista.
-  // Si se puede, lo sigue diciendo el servidor (`puede.retirarme`).
-  const puedeBaja = m.puede.retirarme && version != null
-  const caso = CASO[m.miembro.nombre.trim().toLowerCase()]
-  const est = estadoSim(m, version)
-  const condTexto =
-    m.condiciones.estado === 'sin_cargar'
-      ? 'Condiciones sin cargar'
-      : claves.map((c) => `${c}: ${ETIQUETA_VALOR[m.condiciones.disponibilidad[c] ?? 'pendiente']}`).join(' · ')
+  // S7 (mockup): y solo si aceptó esa versión. Si se puede, lo sigue diciendo el servidor (`puede.retirarme`).
+  const puedeBaja = m.puede.retirarme && version != null && m.acepte_version
+  const puedeAceptar = m.puede.aceptar && version != null
+  // Un solo botón por fila, el que corresponde ahora: aceptar, bajarse o, si no hay ninguna de las dos, editar.
+  const editable = !puedeAceptar && !puedeBaja && (m.puede.marcar_interes || m.puede.guardar_condiciones)
+  const caso = CASO[nombre.trim().toLowerCase()]
 
   return (
-    <section ref={zona} className={`tarjeta tarjeta-sim sim-persona ${m.retirado ? 'sim-persona-baja' : ''}`} aria-label={`Simulación de ${m.miembro.nombre}`}>
-      <div className="sim-cabeza">
-        <Avatar nombre={m.miembro.nombre} simulado={m.miembro.simulado} />
-        <h2>
-          <Nombre m={m.miembro} />
-        </h2>
-        <span className={`sim-chip ${est.clase}`}>{est.texto}</span>
-      </div>
-      <p className="sim-datos">
-        <span>{m.interesado ? 'Le interesa' : 'Sin interés marcado'}</span>
-        <span aria-hidden="true"> · </span>
-        <span>{condTexto}</span>
-      </p>
-
-      {m.puede.aceptar || (puedeBaja && !confirmarBaja) ? (
-        <div className="sim-acciones">
-          {m.puede.aceptar && version != null ? (
-            <Boton variante="secundario" onClick={() => void aceptar()} ocupado={ocupado} ocupadoTexto="Enviando…" disabled={soloLectura} aria-label={`Aceptar versión ${version} por ${m.miembro.nombre}`}>
-              {`Aceptar versión ${version} por ${m.miembro.nombre}`}
-            </Boton>
-          ) : null}
-          {puedeBaja && !confirmarBaja ? (
-            <Boton variante="secundario" onClick={() => setConfirmarBaja(true)} disabled={soloLectura} aria-label={`Se baja: ${m.miembro.nombre}`} data-abre-confirmacion>
-              {`Se baja: ${m.miembro.nombre}`}
-            </Boton>
-          ) : null}
+    <section
+      ref={zona}
+      className={`sim-fila ${m.retirado ? 'sim-fila-baja' : ''} ${editable ? 'sim-fila-editable' : ''}`}
+      aria-label={`Simulación de ${nombre}`}
+    >
+      <div className="sim-fila-cabeza">
+        <Avatar nombre={nombre} simulado={m.miembro.simulado} />
+        <div className="sim-fila-texto">
+          <h3 className="t-cuerpo sim-fila-nombre">{nombre}</h3>
+          <p className="t-nota sim-fila-estado">{lineaEstado(m, claves, version)}</p>
         </div>
+        {puedeAceptar ? (
+          <Boton
+            variante="secundario"
+            className="sim-fila-accion"
+            onClick={() => void aceptar()}
+            ocupado={ocupado}
+            ocupadoTexto="Enviando…"
+            disabled={soloLectura}
+            aria-label={`Aceptar versión ${version} por ${nombre}`}
+          >
+            {`Aceptar v${version}`}
+          </Boton>
+        ) : puedeBaja && !confirmarBaja ? (
+          <Boton
+            variante="secundario"
+            className="sim-fila-accion"
+            onClick={() => setConfirmarBaja(true)}
+            disabled={soloLectura}
+            aria-label={`Se baja: ${nombre}`}
+            data-abre-confirmacion
+          >
+            Se baja
+          </Boton>
+        ) : null}
+      </div>
+
+      {aviso ? (
+        <p role="status" className="t-nota sim-fila-aviso">
+          {aviso}
+        </p>
       ) : null}
+
       {confirmarBaja ? (
-        <Confirmacion titulo={`¿Dar de baja a ${m.miembro.nombre}?`}>
+        <Confirmacion titulo={`¿Dar de baja a ${nombre}?`}>
           Es definitivo en esta propuesta. Si el grupo queda por debajo del mínimo, el plan pasa a En revisión.
           <div className="fila-botones">
-            <Boton variante="peligro" onClick={() => void bajar()} ocupado={ocupado} ocupadoTexto="Registrando baja…" aria-label={`Sí, ${m.miembro.nombre} se baja`}>
-              {`Sí, ${m.miembro.nombre} se baja`}
+            <Boton variante="peligro" onClick={() => void bajar()} ocupado={ocupado} ocupadoTexto="Registrando baja…" aria-label={`Sí, ${nombre} se baja`}>
+              {`Sí, ${nombre} se baja`}
             </Boton>
-            <Boton variante="secundario" onClick={() => volver(() => setConfirmarBaja(false))} disabled={ocupado} aria-label={`Volver sin dar de baja a ${m.miembro.nombre}`}>
+            <Boton variante="secundario" onClick={() => volver(() => setConfirmarBaja(false))} disabled={ocupado} aria-label={`Volver sin dar de baja a ${nombre}`}>
               Volver
             </Boton>
           </div>
         </Confirmacion>
       ) : null}
 
-      {m.puede.marcar_interes || m.puede.guardar_condiciones ? (
+      {editable ? (
         <details className="sim-editar">
-          <summary>{`Editar interés y condiciones de ${m.miembro.nombre}`}</summary>
-          {m.puede.marcar_interes ? (
-            <div className="fila-botones">
-              <Boton variante="secundario" onClick={() => void interes(!m.interesado)} ocupado={ocupado} disabled={soloLectura}>
-                {m.interesado ? `Hoy pasa: ${m.miembro.nombre}` : `Me interesa: ${m.miembro.nombre}`}
-              </Boton>
-            </div>
-          ) : null}
-          {m.puede.guardar_condiciones ? (
-            <>
-              <EditorCondiciones franjas={p.franjas} valor={b.draft} onCambio={b.poner} deshabilitado={soloLectura} prefijo={`sim-${id}`} />
+          <summary className="btn btn-secundario sim-fila-accion" aria-label={`Editar interés y condiciones de ${nombre}`}>
+            Editar
+          </summary>
+          <div className="sim-editor">
+            {m.puede.marcar_interes ? (
               <div className="fila-botones">
-                {caso ? (
-                  <Boton variante="secundario" onClick={() => b.reemplazar(caso)} disabled={soloLectura}>
-                    {`Usar valores del caso para ${m.miembro.nombre}`}
-                  </Boton>
-                ) : null}
-                <Boton onClick={() => void guardar()} ocupado={ocupado} disabled={!b.sucio || soloLectura}>
-                  {`Guardar condiciones de ${m.miembro.nombre}`}
+                <Boton variante="secundario" onClick={() => void interes(!m.interesado)} ocupado={ocupado} disabled={soloLectura}>
+                  {m.interesado ? `Hoy pasa: ${nombre}` : `Me interesa: ${nombre}`}
                 </Boton>
               </div>
-            </>
-          ) : (
-            <p className="suave">Sus condiciones no se pueden cambiar ahora (forma parte de la versión vigente).</p>
-          )}
+            ) : null}
+            {m.puede.guardar_condiciones ? (
+              <>
+                <EditorCondiciones franjas={p.franjas} valor={b.draft} onCambio={b.poner} deshabilitado={soloLectura} prefijo={`sim-${id}`} />
+                <div className="fila-botones">
+                  {caso ? (
+                    <Boton variante="secundario" onClick={() => b.reemplazar(caso)} disabled={soloLectura}>
+                      {`Usar valores del caso para ${nombre}`}
+                    </Boton>
+                  ) : null}
+                  <Boton variante="secundario" onClick={() => void guardar()} ocupado={ocupado} disabled={!b.sucio || soloLectura}>
+                    {`Guardar condiciones de ${nombre}`}
+                  </Boton>
+                </div>
+              </>
+            ) : (
+              <p className="t-nota suave">Sus condiciones no se pueden cambiar ahora (forma parte de la versión vigente).</p>
+            )}
+          </div>
         </details>
       ) : null}
       {error ? <ErrorCaja error={error} enfocar /> : null}
