@@ -4,8 +4,15 @@
 // Todo lo decide el servidor (valida el propósito y filtra propuestas); esto solo arma el selector y las frases.
 
 export type Familia = 'deporte' | 'comida' | 'salida_noche' | 'cultura' | 'aire_libre' | 'en_casa'
-/** 'libre' (sin restricción), una familia o una actividad del catálogo. */
-export type Proposito = 'libre' | Familia | string
+export type ActividadClave =
+  | 'futbol' | 'padel' | 'tenis' | 'basquet'
+  | 'asado' | 'cena' | 'cafe'
+  | 'fiesta' | 'bar' | 'juegos_salida'
+  | 'cultura' | 'cine'
+  | 'parque' | 'cerro'
+  | 'juegos_casa' | 'peli_casa'
+/** 'libre' (sin restricción), una familia o una actividad del catálogo. Misma unión cerrada que backend (types.ts, E14). */
+export type Proposito = 'libre' | Familia | ActividadClave
 
 export const FAMILIAS: { clave: Familia; etiqueta: string; cualquier: string }[] = [
   { clave: 'deporte', etiqueta: 'Deporte', cualquier: 'Cualquier deporte' },
@@ -17,7 +24,7 @@ export const FAMILIAS: { clave: Familia; etiqueta: string; cualquier: string }[]
 ]
 
 /** Actividades del catálogo con su familia (contrato E14 §a). `cultura` es a la vez familia y actividad: vale como familia. */
-export const ACTIVIDADES: { clave: string; etiqueta: string; familia: Familia }[] = [
+export const ACTIVIDADES: { clave: ActividadClave; etiqueta: string; familia: Familia }[] = [
   { clave: 'futbol', etiqueta: 'Fútbol', familia: 'deporte' },
   { clave: 'padel', etiqueta: 'Pádel', familia: 'deporte' },
   { clave: 'tenis', etiqueta: 'Tenis', familia: 'deporte' },
@@ -67,7 +74,7 @@ export function esFamilia(p: string): p is Familia {
   return FAMILIAS.some((f) => f.clave === p)
 }
 
-export function esProposito(p: string): boolean {
+export function esProposito(p: string): p is Proposito {
   return p === 'libre' || esFamilia(p) || ACTIVIDADES.some((a) => a.clave === p)
 }
 

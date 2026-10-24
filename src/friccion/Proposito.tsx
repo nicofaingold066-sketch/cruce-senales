@@ -6,7 +6,7 @@
 //   api.createSpace(nombre, tipo, nombreVisible, integrantes, proposito)   // quinto argumento: backend lo agrega a api.ts
 // Con el valor por defecto ('libre') no cambia nada para los guiones. No se pregunta nada de ninguna persona (D2).
 import { useId } from 'react'
-import { explicacionProposito, opcionesProposito } from './propositos'
+import { esProposito, explicacionProposito, opcionesProposito } from './propositos'
 import type { Proposito } from './propositos'
 import './friccion.css'
 
@@ -26,7 +26,10 @@ export function CampoProposito({
       <label htmlFor={`${id}-sel`}>
         <span>¿Para qué es este grupo?</span>
       </label>
-      <select id={`${id}-sel`} className="proposito-sel" value={valor} onChange={(e) => cambiar(e.target.value)} disabled={deshabilitado} aria-describedby={`${id}-ayuda`}>
+      <select id={`${id}-sel`} className="proposito-sel" value={valor} onChange={(e) => {
+          // Los valores salen de opcionesProposito(): siempre son un Proposito válido.
+          if (esProposito(e.target.value)) cambiar(e.target.value)
+        }} disabled={deshabilitado} aria-describedby={`${id}-ayuda`}>
         <option value={libre.valor}>{libre.etiqueta}</option>
         {grupos.map((g) => (
           <optgroup key={g.familia} label={g.etiqueta}>

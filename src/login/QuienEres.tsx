@@ -18,6 +18,7 @@ import { marcarConEspacios } from './estado'
 import { QueGuarda } from '../friccion/QueGuarda'
 import { FRASE_QUIEN_VIENE, quienVieneDe, sinQuienViene } from '../lib/compartir'
 import { fraseProposito } from '../friccion/propositos'
+import type { Proposito } from '../friccion/propositos'
 import { destinoDesdeVista, destinoPorCodigo } from '../friccion/porCodigo'
 import './login.css'
 
@@ -30,7 +31,7 @@ export interface MiembroPorReclamar {
 
 export interface VistaPorCodigo {
   /** `proposito` (enmienda 14): la clave que eligió quien creó el grupo; falta en respuestas anteriores a la enmienda. */
-  espacio: { nombre: string; demo: boolean; proposito?: string }
+  espacio: { nombre: string; demo: boolean; proposito?: Proposito }
   miembros: MiembroPorReclamar[]
 }
 
