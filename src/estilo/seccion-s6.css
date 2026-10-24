@@ -530,3 +530,148 @@
 #agente-preferencias > .bloque {
   margin: 0;
 }
+
+/* ------------------------------------------------------------------ tarjeta de resultado de GRU (pedido de Nico, 24 oct)
+   Jerarquía: cabecera chica → título grande → chips de datos → cita → un primario → secundarios discretos. */
+.gru-card {
+  padding: var(--e-5) var(--e-4);
+  border: 2px solid var(--tinta);
+  border-radius: var(--r-l);
+  background: var(--hoja);
+}
+.gru-card > * {
+  margin: 0;
+}
+.gru-card > * + * {
+  margin-top: var(--e-4);
+}
+.gru-card-cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-2);
+}
+.gru-card-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--e-1);
+}
+.gru-card-titulo-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e-2);
+}
+.gru-card-titulo-fila h3 {
+  margin: 0;
+  font-size: var(--t-titulo);
+  line-height: var(--lh-titulo);
+  font-weight: var(--p-pantalla);
+  overflow-wrap: anywhere;
+}
+.gru-datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+  list-style: none;
+  padding: 0;
+}
+.gru-dato {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: var(--e-1) var(--e-3);
+  border-radius: 999px;
+  background: var(--relleno);
+  color: var(--tinta);
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  font-weight: var(--p-rotulo);
+}
+.gru-dato svg {
+  flex: none;
+  color: var(--tinta-2);
+}
+.gru-cita {
+  padding: var(--e-4);
+  border-radius: var(--r-m);
+  background: var(--relleno);
+}
+.gru-cita blockquote {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  line-height: var(--lh-cuerpo);
+  overflow-wrap: anywhere;
+}
+.gru-cita figcaption {
+  margin-top: var(--e-2);
+  color: var(--tinta-2);
+}
+.gru-card > .btn-primario {
+  width: 100%;
+}
+.gru-secundarios {
+  display: grid;
+  gap: var(--e-1);
+}
+.gru-secundarios > .agente-enlace {
+  justify-self: start;
+}
+.gru-secundarios .agente-plegable-seccion {
+  margin: 0;
+}
+.gru-otras {
+  display: grid;
+  gap: var(--e-2);
+}
+.gru-mini {
+  display: grid;
+  gap: var(--e-1);
+  width: 100%;
+  min-height: var(--toque);
+  padding: var(--e-3);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-m);
+  background: var(--hoja);
+  color: var(--tinta);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.gru-mini:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+.gru-mini-titulo {
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-boton);
+  overflow-wrap: anywhere;
+}
+.gru-mini-fecha {
+  font-size: var(--t-nota);
+  color: var(--tinta-2);
+}
+.gru-mini-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--e-1);
+}
+@media (min-width: 960px) {
+  .gru-otras {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.gru-card .gru-datos {
+  margin-right: 0;
+  margin-bottom: 0;
+  margin-left: 0;
+  padding: 0;
+}
+.gru-card .gru-datos > li {
+  margin: 0;
+}
+.gru-card .gru-datos > li::before {
+  content: none;
+}
