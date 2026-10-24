@@ -66,7 +66,8 @@ describe('enmienda 5: preferencias simuladas en vivo', { timeout: 90_000 }, () =
     const r = await plan()
     // E13 (d): la parrilla del parque (viaje máximo 20) le gana al quincho (25) a igual puntaje.
     expect(r).toMatchObject({ actividad: 'asado', lugar: { id: 'lugar-sim-14' } })
-    expect(r.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-14', 'lugar-sim-01', 'lugar-sim-03'])
+    // E16 (0057): el fútbol (mín. 10) va al final para los 6 del demo; entra el parque.
+    expect(r.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-14', 'lugar-sim-01', 'lugar-sim-04'])
   })
 
   it('2. no organizador, espacio no demo, miembro real o de otro espacio, y sesión ajena: error y sin cambios', async () => {

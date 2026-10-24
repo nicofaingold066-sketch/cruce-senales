@@ -35,9 +35,17 @@ El orden completo queda: rango de tamaño → marcada → puntaje de siempre (co
 ## Pruebas
 
 - Nueva: `tests/backend/coherencia-borrador.test.ts`, los 7 casos de la auditoría.
-- Ajustadas con el comentario «E16»: ver la lista al final de esta sección (se completa al correr la suite).
+- Suite completa de backend en serie después de aplicar (24 oct, 10:07–10:12): **120/126**. Las 6 que fallaron eran pruebas viejas de orden exacto, todas explicadas por E16; se ajustaron con el comentario «E16»:
+  - `enmienda10.test.ts` 1 (viaje máximo), 3 (equidad), 5 (momento) y 8 (actividades nuevas): usaban pádel (máx. 4), fútbol (mín. 10) o tenis (máx. 4) con los 6 del demo. Se cambiaron por actividades que entran para 6 (bar, parque, cine; película en casa y asado; cerro) y siguen probando lo mismo. En la 8, el tenis se prueba al revés: no sale aunque lo marquen todos.
+  - `enmienda5.test.ts` 1: después de `reset_demo`, la tercera candidata pasa de fútbol a parque.
+  - `enmienda7.test.ts` E7.1: se reescribió como «E7.1 → E16». Ahora prueba que lo marcado que entra va primero y que el texto sigue sin `el_mas_elegido`.
+- Los 4 archivos afectados (enmienda5, enmienda7, enmienda10 y coherencia-borrador): **29/29** (10:14–10:15).
+- Se quedan sin cambios todas las demás (enmienda4, 8, 13 y 14, entre otras): pasaron en la corrida de las 10:07.
+- Una segunda corrida completa (10:16) se cortó a las 10:27, al terminar el turno de base: anduvo muy lenta en enmienda3 (24 s en una prueba) y enmienda5 quedó entera saltada por su preparación. Son archivos que no tocan el plan y pasaron en la primera corrida; parece el tope de sesiones anónimas por hora. **No hay una corrida completa limpia de punta a punta después de los ajustes.**
 
 ## Migración y reversa
+
+- **Aplicada en producción el 24 oct a las 10:06** (`schema_migrations` 20261024130710), con el sí de Nico escrito en la sesión auditoria-agente.
 
 - `supabase/migrations/0057_coherencia_borrador.sql`. Parte de la versión vigente en producción, `20261024115616_actividad_grupo` (0050 más los filtros `salio_en`), **no** de la de 0050.
 - `supabase/revertir/0057_coherencia_borrador.sql` vuelve a esa versión.

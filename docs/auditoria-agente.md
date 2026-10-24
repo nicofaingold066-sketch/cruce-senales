@@ -11,7 +11,7 @@ Solo lectura de código y una consulta de lectura al catálogo en la base (`sele
 |---|---|---|
 | Creatividad | 🔴 | El modelo solo elige entre **3 opciones de un catálogo fijo de 17 lugares inventados** y escribe 2 frases. Una lista de palabras prohibidas descarta textos normales y vuelve al texto fijo. |
 | Fuentes de datos reales | 🔴 | Lo único real es el **clima** (Open-Meteo). Lugares, horarios y precios son de simulación. Google Maps/EasyCancha son enlaces, no datos. ATC apunta a **Mendoza, Argentina**. |
-| Coherencia | 🔴 | **4 de 7 casos simulados dan una propuesta incoherente** (§2b). El cálculo es ordenado, pero: en grupos sin propósito **no mira cuántas personas son** (pádel para 12), «Asado en casa de Tomi» sale en grupos sin Tomi, y con 4 personas o menos **los gustos no cuentan**. |
+| Coherencia | 🟡 (era 🔴) | **4 de 7 casos simulados daban una propuesta incoherente** (§2b); **M1 y M3 arreglados con la 0057** (10:06). Queda «Tomi». El cálculo es ordenado, pero: en grupos sin propósito **no mira cuántas personas son** (pádel para 12), «Asado en casa de Tomi» sale en grupos sin Tomi, y con 4 personas o menos **los gustos no cuentan**. |
 | Trato parejo (no discriminar) | 🟢 con matices | Los límites duros protegen a cada uno (presupuesto más bajo, techo, viaje máximo). Lo blando lo decide la mayoría. Quien no cargó preferencias o apagó «usar en el agente» no queda protegido. |
 | Que funcione | 🟡 | El camino sin modelo siempre responde. Pero el chip **«Sáb 14 nov» falla hoy siempre** (fuera de los 16 días que acepta el servidor) y ningún texto real del modelo quedó guardado para juzgar la calidad. |
 
@@ -92,6 +92,8 @@ Las **3 primeras** son las candidatas. El modelo recibe por cada una: plan, acti
 Por qué pasa c3: con 4 personas, quien pide más 3 «otros» no superan el umbral (`v_n_otros > 3`), así que las marcas valen 0. Gana el momento «noche» (+2 por persona para lo que empieza a las 19:00 o después) y la energía «con todo»; el cine empieza a las 16:00 y cuenta como «tarde». Además nada mira el mínimo de 6 de la fiesta.
 
 Conclusión: **4 de 7 casos dan una propuesta incoherente** por dos reglas: M1 (tamaño) y M3 (gustos que no cuentan en grupos chicos). Las dos suben a **altas**.
+
+**Arreglado (24 oct, 10:06): migración 0057, enmienda 16** (`docs/contrato-enmienda-16.md`). Con la función nueva, los 7 casos dan: c1 caminata, fútbol y parque (entran 12; el pádel no sale) · c2 caminata, tenis y parque (entran 3) · c3 **cine**, bar y bowling · c4 asado, juegos de mesa y cine (bajo techo) · c5 cerro, parque y museo (gratis) · c6 sin lugar cerca · c7 parque y fiesta (entran 20). Prueba: `tests/backend/coherencia-borrador.test.ts` 7/7.
 
 ## 3. Hallazgos por gravedad
 
