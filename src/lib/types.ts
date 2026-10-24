@@ -518,9 +518,12 @@ export interface QuorumAgente {
   personas_posibles: number
 }
 
-/** Texto fijo del quórum (contrato E14, ajuste 7): tamaño del grupo, nunca asistencia. */
+/**
+ * Texto fijo del quórum: tamaño del grupo, nunca asistencia (contrato E14, ajuste 7), y cierre de psico (21:56) para
+ * que no se lea como reproche a quien armó un grupo chico.
+ */
 export function textoQuorum(q: QuorumAgente): string {
-  return `Para ${q.etiqueta} hacen falta al menos ${q.personas_min} personas; este grupo tiene ${q.personas_posibles} por ahora. Estas opciones se pueden armar con el grupo actual.`
+  return `Para ${q.etiqueta} hacen falta al menos ${q.personas_min} personas; este grupo tiene ${q.personas_posibles} por ahora. Estas opciones se pueden armar con el grupo actual. Cuando se sumen más, vuelve a pedir una propuesta.`
 }
 
 /** Mensaje del error `entrada_incompleta/fuera_de_proposito` (lo manda el servidor en `error.mensaje`). */
