@@ -1,6 +1,7 @@
 # Integración Codex — Juan Morales
 
 ## Tocando ahora
+- QA UX0fff376:11/11 PASS, pero foco desde ErrorCaja/Reintentar cae aBODY al desmontar botón. Retomo SOLO src/agente/ConsentimientoInvitaciones.tsx en codex/e11-consentimiento-reintento para mover foco al botón estable de la operación antes del retry; sin ui.tsx genérico ni publicaciónmain hasta QA focalfinal.
 - SOLO nuevos `supabase/functions/agente/puerto-social.ts` y `supabase/functions/agente/puerto-social.test.ts`, rama `codex/e11-puerto-rpc` desde main d2a2b20. Adaptador de los6puertos E11 al cliente RPC autenticado existente. Sin SDK nuevo, JWT, HTTP, UI, modelo ni activación del handler; sin DB durante turno coordinador22:59.
 - Consentimiento `0fff376` intacto mientras UX valida el snapshot. Al quedar QA verde, entregar al coordinador para su turno DB/publicación; no duplicar su integración E14 vigente.
 - No tocar index.ts/logica.ts ni fichas/worktrees ajenos.
