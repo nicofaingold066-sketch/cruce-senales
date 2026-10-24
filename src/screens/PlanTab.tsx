@@ -612,7 +612,7 @@ function ReuniendoInteres({ p, irAPestana }: { p: EstadoPropuesta; irAPestana: P
       <p className="suave">
         {p.personas_con_condiciones != null
           ? 'La opción sale de lo que cada persona marca en privado, Sí o No en cada franja: aquí solo se cuenta quién respondió.'
-          : `La opción sale de lo que cada uno marca en privado, Sí o No en cada franja. Hacen falta al menos ${p.minimo} que puedan en el mismo horario.`}{' '}
+          : `La opción sale de lo que cada uno marca en privado, Sí o No en cada franja. Hacen falta al menos ${p.minimo} que puedan en el mismo horario, contando a quien no puede faltar.`}{' '}
         "Me interesa" es opcional: lo ve el grupo y no es una confirmación.
       </p>
       {p.interesados.miembros.length > 0 ? (
