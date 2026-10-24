@@ -27,7 +27,8 @@ function vivaDe(p: EstadoPropuesta): PropuestaViva {
 }
 
 function Caso({ c, solo }: { c: CasoS4; solo: boolean }) {
-  const espacio = espacioDe(c.yo, c.demo ?? false)
+  const demo = (c.demo ?? false) || new URLSearchParams(window.location.search).get('demo') === '1'
+  const espacio = espacioDe(c.yo, demo)
   const quien = `${c.yo.nombre}${c.p.mi_situacion.es_organizador ? ' (organiza)' : ''}`
   return (
     <section className="galeria-caso" aria-labelledby={`caso-${c.id}`} data-caso={c.id} style={solo ? undefined : { marginBottom: 48 }}>
@@ -41,7 +42,7 @@ function Caso({ c, solo }: { c: CasoS4; solo: boolean }) {
         </section>
         <div className="hoja">
           <div>
-            <PlanTab p={c.p} viva={vivaDe(c.p)} soloLectura={false} irAPestana={() => {}} espacio={espacio} conSimulacion={c.p.mi_situacion.es_organizador_espacio && !!c.demo} />
+            <PlanTab p={c.p} viva={vivaDe(c.p)} soloLectura={false} irAPestana={() => {}} espacio={espacio} conSimulacion={c.p.mi_situacion.es_organizador_espacio && demo} />
           </div>
         </div>
       </div>
