@@ -17,8 +17,8 @@ exigirBaseLibre()
 const BASE = (process.argv[2] || process.env.CRUXE_URL || 'https://cruce-senales.vercel.app').replace(/\/+$/, '')
 const SALIDA = carpetaDeSalida(process.env.CRUXE_SALIDA || new URL('./salida', import.meta.url).pathname)
 const GRUPO = 'Los del reencuentro'
-// D3: la modalidad va en el título. Hoy la escribe la organizadora a mano (no hay selector).
-const TITULO = 'Asado del reencuentro · solo el grupo'
+// D3: «¿Quién viene?» es una regla del grupo; desde el parche 2 (d978cc1) hay selector y la marca va en el nombre del grupo.
+const TITULO = 'Asado del reencuentro'
 const t0 = Date.now()
 
 const fugas = [
@@ -46,7 +46,7 @@ const tiene = (texto, re) => re.test(texto.replace(/\s+/g, ' '))
 try {
   // ── Vale: crear el grupo pegando la lista (friccion) ────────────────────────────────────────────────
   log('— Vale (siempre organiza): crea el grupo pegando la lista')
-  await reintento(() => E.crearGrupo(vale, { integrantes: ['Dani', 'Ana', 'Beto', 'Flor', 'Pili'], pegar: true }))
+  await reintento(() => E.crearGrupo(vale, { integrantes: ['Dani', 'Ana', 'Beto', 'Flor', 'Pili'], pegar: true, quienViene: 'Solo el grupo' }))
   const crear = (await vale.page.locator('body').innerText().catch(() => '')) // ya en el espacio; el texto del formulario quedó en textos.md
   C.listaPegadaDeUnaVez = (await vale.page.getByText('Dani', { exact: true }).count()) > 0 && (await vale.page.getByText('Pili', { exact: true }).count()) > 0
   resumen.valeCrearGrupo = lecturas.at(-1)
@@ -55,7 +55,7 @@ try {
   log('— Vale: crea la propuesta («solo el grupo» en el título, a mano)')
   const prop = await E.crearPropuesta(vale, { actividad: 'Asado', minimoMas: 1 })
   C.ayudaDondeSeJuntan = tiene(prop.textoFormulario, /D[oó]nde se juntan|lugar neutro|por turnos/i)
-  C.selectorModalidad = tiene(prop.textoFormulario, /Solo el grupo|Con parejas|Abierta/)
+  C.selectorModalidadEnNuevaPropuesta = tiene(prop.textoFormulario, /¿Quién viene\?/)
   C.diceGanaLaA = tiene(prop.textoFormulario, /gana la A/)
   C.textoNoPuedeFaltar = tiene(prop.textoFormulario, /No puede faltar/)
   C.anfitrionEnFormulario = tiene(prop.textoFormulario, /anfitri/i)
@@ -104,7 +104,7 @@ try {
   // ── Beto: pareja, «solo el grupo» (320 px) ─────────────────────────────────────────────────────────
   log('— Beto (va con pareja; la juntada es «solo el grupo»)')
   const betoEntrada = await reintento(() => E.entrarPorEnlace(beto))
-  C.betoVeSoloElGrupoAlResponder = tiene(betoEntrada.texto, /solo el grupo/i)
+  C.betoVeSoloElGrupoAlResponder = tiene(betoEntrada.texto, /Esta vez es solo el grupo/i)
   await E.responder(beto, 'Sí puedo', 'Sí puedo')
   beto.fin('del enlace a la respuesta guardada')
   await E.irAlPlan(beto)
@@ -112,7 +112,7 @@ try {
   C.betoVeSoloElGrupoEnElPlan = tiene(betoPlan.texto, /solo el grupo/i)
   C.betoPuedeDecirVengoConAlguien = tiene(betoPlan.texto, /acompañante|traer a alguien|\+1/i)
   // El organizador anotó «solo el grupo» a mano: ¿el plan lo explica como regla de la ocasión o queda como parte del título?
-  C.soloElGrupoSoloEnElTitulo = C.betoVeSoloElGrupoEnElPlan && !tiene(betoPlan.texto, /Esta vez es solo el grupo/)
+  C.soloElGrupoEsFraseDeRegla = tiene(betoEntrada.texto, /Esta vez es solo el grupo\./)
 
   // ── Flor: mal momento ──────────────────────────────────────────────────────────────────────────────
   log('— Flor (después se baja)')
