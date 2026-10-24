@@ -3,6 +3,7 @@
 Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:56 Santiago (reloj).
 
 ## Tocando ahora
+- (sesión archivada a las 23:52; pendientes y guardia en la sesión 'pendientes')
 
 ## Estado final del backend (23 oct, 23:10; para el README)
 1. Base única: Supabase `tjkfdnvzsikncjbskufm`, 50 migraciones (0001 a 0050; esta noche 0035 a 0050), todo dato ficticio, sesiones anónimas, sin claves en el repo.
