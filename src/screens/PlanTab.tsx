@@ -11,6 +11,7 @@ import { Resaltado } from '../components/Resaltado'
 import { descargarCalendario, urlWhatsApp } from '../lib/compartir'
 import { vibrar } from '../lib/tacto'
 import { AvisoParaMi } from '../componentes-nuevos/AvisoParaMi'
+import { avisoParaMi } from '../componentes-nuevos/avisoPersonal'
 import { BuscarLugar } from '../componentes-nuevos/BuscarLugar'
 import { RearmarConLoNuevo } from '../componentes-nuevos/RearmarConLoNuevo'
 import { RecordarFaltan } from '../componentes-nuevos/RecordarFaltan'
@@ -197,6 +198,8 @@ function OpcionVigente({
   const confirmado = p.estado === 'grupo_confirmado'
   const sobreMinimo = o.cupos.confirmados > o.cupos.minimo
   const cuenta = cuentaConfirmados(o.cupos.confirmados, o.cupos.minimo)
+  // #79 (sinteticos, ux-flujo): si arriba ya está "Tu confirmación solo vale si llegan N", no se apila otra nota bajo el botón.
+  const avisoArriba = avisoParaMi(p)?.clave === 'solo_vale_si_llegan'
 
   async function aceptar() {
     // Siempre se envía la versión que la persona está viendo, nunca una calculada.
@@ -307,7 +310,7 @@ function OpcionVigente({
             <p role="status" className="suave">
               Enviando tu confirmación. Todavía no está confirmada hasta que el servidor responda.
             </p>
-          ) : (
+          ) : avisoArriba ? null : (
             <p className="suave">
               Tu confirmación vale solo para la versión {o.version}. Si el plan cambia, tendrás que confirmar de nuevo.
             </p>
