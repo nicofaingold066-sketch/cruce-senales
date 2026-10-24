@@ -45,5 +45,16 @@ for (const f of comunes) {
   const eA = new Set(A[f].errores), eB = new Set(B[f].errores)
   const errNuevos = [...eB].filter((x) => !eA.has(x))
   if (errNuevos.length) console.log(`  ERRORES DE RED/CONSOLA NUEVOS en ${f}: ${errNuevos.slice(0, 5).join(' · ')}`)
+  // Texto de la pantalla que cambió entre builds (notas del veredicto, sin números): dice qué rincones hay que volver a mirar a ojo.
+  const limpiar = (n) => norm(n).replace(/\s+/g, ' ').trim()
+  for (const id of Object.keys(B[f].veredictos)) {
+    const na = (A[f].veredictos[id]?.notas || []).map(limpiar), nb = (B[f].veredictos[id]?.notas || []).map(limpiar)
+    if (!na.length || na.join('\n') === nb.join('\n')) continue
+    const dif = nb.find((x, i) => x !== na[i]) ?? ''
+    const ant = na[nb.findIndex((x, i) => x !== na[i])] ?? ''
+    // Primer punto en que divergen, para leer el cambio sin la parte común.
+    let i = 0; while (i < dif.length && i < ant.length && dif[i] === ant[i]) i++
+    console.log(`  CAMBIÓ EL TEXTO ${id}: …${ant.slice(Math.max(0, i - 20), i + 90)}  →  …${dif.slice(Math.max(0, i - 20), i + 110)}`)
+  }
 }
 console.log(`\nTOTAL: desaparecieron ${desap} · nuevos ${nuevos} · siguen ${siguen}`)
