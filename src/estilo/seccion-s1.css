@@ -570,3 +570,21 @@ button.s1-opcion-fila {
 .s5 .rapida-dos-fichas .dia-tile {
   color: var(--tinta);
 }
+
+/* Frontend (03:35): el título no dibuja anillo al tomar el foco (lo anuncia el lector); y "ya entró" va DENTRO de la fila. */
+.s1 h1:focus {
+  outline: none;
+}
+.s1-quien .quien-lista li {
+  position: relative;
+}
+.s1-quien .quien-lista li .quien-nombre {
+  width: 100%;
+}
+.s1-quien .quien-lista li .quien-tomado {
+  position: absolute;
+  right: var(--e-4);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--t-nota);
+}
