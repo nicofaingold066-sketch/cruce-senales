@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../lib/api'
+import { DEMO_MAKANA, esDemoMakana } from '../lib/casoDemo'
 import { RONDA_HORAS } from '../lib/types'
 import type { ActividadClave, ApiError, Espacio, ReglaMotor, RondaHoras } from '../lib/types'
 import { useAccion } from '../lib/hooks'
@@ -200,7 +201,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
     const tomi = espacio.miembros.find((m) => m.nombre.toLowerCase() === 'tomi')
     const borrador = tomarBorradorAgente(espacio.id)
     const sabado = proximoSabado()
-    const base: Formulario = espacio.demo
+    const base: Formulario = esDemoMakana(espacio)
+      ? { ...CASO, ...DEMO_MAKANA.propuesta, imprescindibleId: yoM?.miembro_id ?? '' }
+      : espacio.demo
       ? { ...CASO, imprescindibleId: (tomi ?? yoM)?.miembro_id ?? '' }
       : {
           titulo: '',
@@ -226,6 +229,9 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
       setF({
         ...base,
         titulo: borrador.titulo,
+        actividad: (borrador.actividad ?? null) as ActividadClave | null,
+        minimo: String(borrador.personas?.min ?? 2),
+        maximo: String(Math.max(borrador.personas?.min ?? 2, Math.min(Number(base.maximo), borrador.personas?.max ?? 20))),
         aDia: a.inicio.slice(0, 10),
         aHora: a.inicio.slice(11, 16),
         bDia: b.inicio.slice(0, 10),
@@ -483,7 +489,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                           value={etiqueta}
                           onChange={(e) => poner(clave === 'A' ? 'aEtiqueta' : 'bEtiqueta', e.target.value)}
                           maxLength={40}
-                          placeholder={clave === 'A' ? 'Ej.: asado en lo de Tomi' : 'Ej.: picnic en el parque'}
+                          placeholder={clave === 'A' ? 'Ej.: encuentro tranquilo en el parque' : 'Ej.: café y conversación'}
                         />
                       </label>
                     ) : null}

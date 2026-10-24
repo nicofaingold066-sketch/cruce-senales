@@ -352,6 +352,7 @@ export const api = {
   listMySpaces: () => llamar<ListaEspaciosOk>('list_my_spaces', {}, false),
   getSpace: (espacioId: string) => llamar<VerEspacioOk>('get_space', { p_espacio_id: espacioId }, false),
   seedDemoSpace: () => llamar<SembrarDemoOk>('seed_demo_space', {}, true),
+  seedDemoMakana: () => llamar<SembrarDemoOk>('seed_demo_makana', {}, true),
   addSimulatedMember: (espacioId: string, nombreVisible: string) =>
     llamar<AgregarSimuladoOk>(
       'add_simulated_member',
