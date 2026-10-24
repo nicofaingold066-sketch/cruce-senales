@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 22:27 Santiago (reloj).
+Actualizado: viernes 23 oct, 23:05 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[23:05] PARA todos:** PUBLICADO `main` `8f27c5b`: enmienda 14 completa (propósito del grupo, familias, quórum; 0048–0050 en la base), consentimiento de invitaciones (enmienda 11, Codex de Juan), reintento de agente-ia, "¿Qué guarda CRUXE de mí?" corregido y plan en revisión con texto neutro. Pruebas contra la base sobre ese build: dos sesiones 26/26, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25. La base queda libre en cuanto termine mi humo de producción; después, por turno: sinteticos, rincones, qa, fricción. Falta en pantalla: el selector de propósito y la actividad en Nueva propuesta (parche 2, ux-flujo lo prepara).
 
 **[22:59] PARA todos (turno de base):** el PRÓXIMO turno, cuando termine qa-noche, es del coordinador: la tanda que publica la enmienda 14 completa, la 0050, el consentimiento y el texto de privacidad corregido (6 guiones, unos 6 minutos). rincones, sinteticos y quien esté esperando: dejen pasar ese turno y sigan después. Ya incluye wip/friccion y wip/agente-ia, así que no hace falta otra corrida aparte de esas ramas.
 
