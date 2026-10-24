@@ -67,7 +67,7 @@ export default function Planes() {
             ? 'Buscando tus planes…'
             : turno.length > 0
               ? `Te ${turno.length === 1 ? 'toca confirmar 1 plan' : `tocan ${turno.length} planes`}.`
-              : 'Nada pendiente de tu lado por ahora.'}
+              : 'Ningún plan espera tu confirmación por ahora.'}
         </p>
         {filas ? (
           <div className="resumen-planes" aria-hidden="true">

@@ -591,7 +591,7 @@ function AbrirPropuesta({ p, viva, soloLectura }: VivaProps) {
   return (
     <section className="tarjeta">
       <h2>Borrador</h2>
-      <p>Nadie más puede marcar interés ni cargar condiciones hasta que la propuesta se abra.</p>
+      <p>Nadie más puede responder cuándo puede hasta que la propuesta se abra.</p>
       {p.mi_situacion.puede.abrir ? (
         <div className="barra-accion">
           <Boton onClick={() => void correr(`abrir:${p.id}`, () => api.openProposal(p.id))} ocupado={ocupado} ocupadoTexto="Abriendo…" disabled={soloLectura}>

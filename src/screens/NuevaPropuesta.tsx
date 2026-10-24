@@ -393,7 +393,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
 
             <fieldset className={`form-seccion ${marcado === 'franjas' ? 'grupo-error' : ''}`}>
               <legend>Cuándo · dos opciones</legend>
-              <p className="suave nota-seccion">El grupo dice en privado cuál le sirve. Si sirven las dos, gana la A.</p>
+              <p className="suave nota-seccion">El grupo dice en privado cuál le sirve. Si sirven las dos, gana la que empieza antes.</p>
               {(['A', 'B'] as const).map((clave) => {
                 const dia = clave === 'A' ? form.aDia : form.bDia
                 const horaSel = clave === 'A' ? form.aHora : form.bHora
@@ -519,7 +519,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
               </dl>
             </div>
             <p className="suave" style={{ marginTop: 12 }}>
-              "Abrir" permite que cada persona marque su interés y cargue sus condiciones. Marcar interés no suma confirmados.
+              "Abrir" permite que cada persona marque en privado cuándo puede. "Me interesa" es opcional y no suma confirmados.
             </p>
             {error ? <ErrorCaja error={error} onReintentar={() => void crear(abrirUltimo)} enfocar /> : null}
             <div className="fila-botones">
