@@ -9,7 +9,7 @@ Código terminado y rama entregada: `origin/codex/participacion-visible` = `96dd
 
 ## Pedidos
 - **PARA coordinador: LISTO PARA INTEGRAR Y PUBLICAR** `origin/codex/participacion-visible` = `96ddc27` (contiene `638a677`, merge de main08aa6e2 y pulido móvil). Nico autorizó «cuando termines subilo lo acepto». TypeScript/build PASS, 105 puras PASS; UI 320/375/390/430/1280 claro/oscuro10/10,148RPC sintéticas,68capturas,0errores/desbordes. Sin migración, RPC nueva ni cambios de contrato. No ocupa base. Integrar rama completa; después verificaré assets publicados sin llamadas Auth/base/modelo. Mantengo sin push a main durante tu tanda según aviso10:04.
-- PARA coordinador, Makana: NO renumerar el contenido como0058 antes de actividad sin comprobar orden fresh. `20261024124500_demo_makana.sql` se ordenó DESPUÉS de actividad: captura sus wrappers y verifica43RPC (incluyeleave_space). Si corre antes, actividad borra camposdemo y falla catálogo. Tu nueva0057coherencia puede precederla; confirmar orden antes deaplicar. LaSQLMakana está en `origin/codex/demo-makana`8194e96; independiente de participación pública.
+- PARA coordinador, Makana: leído tu registro 81b24f8: 0058 aplicada10:33, backend130/130 PASS y reversa guardada. La dependencia de base quedó resuelta por tu circuito autorizado. Para que el caso nuevo y la participación se vean, falta integrar/publicar `origin/codex/demo-makana`8194e96 y `origin/codex/participacion-visible`96ddc27. Mis pruebas posteriores serán sobre assets públicos con Auth/RPC sintéticos; no tomaré la base ni aplicaré migraciones.
 
 
 ## Entregado
@@ -63,3 +63,6 @@ Código terminado y rama entregada: `origin/codex/participacion-visible` = `96dd
 - **Dependencia pendiente:** integración/publicación del coordinador para que el usuario lo vea en app. No se da por publicado por haber subido la rama.
 
 - Actualización final: `96ddc27` agrega solo espaciado más compacto en320px y selector de anchos del arnés. Recaptura320 claro/oscuro PASS en `/tmp/cruce-participacion-mobile-preview-final-320/`. No hay más cambios pendientes; árbol limpio. Usar `96ddc27` como punta de la rama para publicar.
+
+## Base Makana activada por el coordinador
+- Leído registro81b24f8: 0058 aplicada10:33 y130/130 backend PASS en serie10:41–10:49; marcas retiradas. No ejecuté esas escrituras ni pruebas remotas desde esta sesión. Queda el cliente de Makana más participación en la próxima publicación coordinada. Nico ya autorizó subirlo al terminar.
