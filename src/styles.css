@@ -5702,3 +5702,33 @@ li:has(> .plan-vivo) {
 .barra-accion > .casilla-corta input {
   margin: 0;
 }
+
+/* ---- pasada en producción (04:58): la barra de arriba, la de abajo y los toques usan solo 13/16/18/24 y 44 px ---- */
+.barra .marca-nombre {
+  font-size: var(--t-subtitulo);
+}
+.barra .chip-ficticio,
+.barra .barra-rol,
+.barra .avatar,
+.nav-inferior a span,
+.nav-inferior a {
+  font-size: var(--t-nota);
+}
+.barra strong {
+  font-size: var(--t-nota);
+}
+.vista-s3 .s3-gana .enlace {
+  min-height: var(--toque);
+  display: inline-flex;
+  align-items: center;
+}
+.vista-s3 input[type='time'] {
+  min-height: var(--toque);
+}
+@media (min-width: 960px) {
+  .barra a {
+    min-height: var(--toque);
+    display: inline-flex;
+    align-items: center;
+  }
+}

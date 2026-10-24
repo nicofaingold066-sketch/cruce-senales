@@ -377,7 +377,7 @@
   display: block;
 }
 .vista-s3 .s3-gana .enlace {
-  min-height: 0;
+  min-height: var(--toque);
   font-size: var(--t-nota);
   font-weight: var(--p-boton);
   text-decoration: underline;
