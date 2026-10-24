@@ -4,9 +4,10 @@ Rama de código: `wip/pendientes` (base `wip/fundamentos` `ad2d63e`). Rutas: `su
 Tarea (Nico, 23:50): (A) agente social completo (enmienda 11, lo humano), (B) E-c ronda de opiniones con plazo, (C) E-d dos planes con votación, como enmienda 15.
 
 ## Tocando ahora
-- **MIGRACION EN CURSO (02:14)**: 0055 (en las demos los simulados reciben invitaciones del agente), después suite en serie y circuito por RPC en una demo propia. Nadie corre contra la base.
+- [02:21] Base LIBRE (0055 terminada). De guardia del backend para el rediseño: pedidos de campos de solo lectura o textos del servidor, acá en "Pedidos". Nada después de las 09:00.
 
 ## Entregado
+- [02:21] **0055 APLICADA (02:14)**: en las demos los simulados reciben invitaciones del agente (`seed_demo_space`, `add_simulated_member`, destinatarios de `plan_agente` y `agente_social_contexto`; UPDATE a 7403 simulados de demos; 0 fuera de demos, 0 pendientes). md5 = archivo, 41/0, `verificar_privilegios()` sin hallazgos. Suite en serie: 106 ok + 1 falla de transporte en enmienda2 A5 (código vacío; sola 5/5). Nueva `agente-social-demo.test.ts` 2/2: demo nueva → `destinatarios` 5 → circuito sin modelo publica con 5 invitaciones (en la base: 5 filas a simulados, 0 al organizador, 0 participaciones); fuera de la demo nadie nace con permiso y publicar da `sin_destinatarios`. Detalle en `docs/contrato-enmienda-11.md` § 0055. Reversa `supabase/revertir/0055_revertir.sql`. `wip/pendientes`: último commit sobre `ef6030a`.
 - [02:02] **0054 demo "Los del finde" APLICADA (01:56)** (pedido de Nico 01:51), `wip/pendientes` `cbab6af`: `seed_demo_space` siembra con el nombre nuevo; 1342 demos renombrados (0 quedan con "Los del asado"; 0 funciones con el nombre viejo). 41/0, `verificar_privilegios()` sin hallazgos. Pruebas aceptan los dos nombres (`Los del (asado|finde)`). Reversa: `supabase/revertir/0054_revertir.sql`.
 - [02:02] **Suite completa en serie sin concurrencia: 105/105, 18 archivos (01:57:26–02:00:53)**, con 0051 a 0054 aplicadas.
 - [02:02] **Propuesta del AGENTE por todo el circuito humano: VERDE** (`tests/backend/agente-social-reparacion.test.ts`, en la suite y sola 02:01:07–02:01:14). Agente sin modelo → publicada (1 invitado, 0 confirmados, la invitación no es interés) → (1) `grupo_confirmado` con 3 → (2) baja → `en_revision` → `propose_repair` v2 con 0 confirmados y `aceptaron = []` → (3) aceptar v1: `version_no_vigente` (no "retirado"); quien se retiró: `retirado` → (4) en la v2 la invitación sigue solo para Uno y no suma hasta que acepta (después, 1). Detalle en `docs/contrato-enmienda-11.md` § Verificación (`wip/pendientes`).
@@ -33,6 +34,9 @@ Tarea (Nico, 23:50): (A) agente social completo (enmienda 11, lo humano), (B) E-
 - coordinador [01:42]: E15 completa en la base (0052 01:17, 0053 01:35), `wip/pendientes` `fdf948e` (migraciones, pruebas, contrato con "Implementación", reversas, puente). Lista para integrar.
 
 - ux-flujo [01:46]: sí, es así. Con la ronda cerrada: `opinar_version` (opinar o retirar la opinión) → `plazo_vencido/ronda_cerrada` y `puede.opinar = false`; `mi_situacion.mi_opinion` SIGUE en `asi_no_puedo` (las opiniones dadas valen hasta que la persona acepte o se retire), así que "Marcaste que así no puedes" sigue correcto. Mientras la ronda está abierta, el organizador no ve "rearmar" (ni texto ni `puede.proponer_reparacion`), aunque sí `opiniones_totales`. `ronda.cierra.local` para "hasta las HH:MM".
+
+- agente-ia, integracion-codex-juan [02:21]: con la 0055, en una demo nueva "Preparar borrador social" ya tiene destinatarios: el plan dice `invitados: 5` (los simulados) y publicar crea 5 invitaciones; `agente_social_contexto.destinatarios` = 5 con solo Tomi real. Un borrador preparado en una demo ANTES de las 02:14 da `borrador_cambiado`: se descarta (`cerrar_ejecucion_agente` 'reemplazada') y se prepara otro.
+- sinteticos [02:21]: base libre, podés retomar (así no puedo, psico, propósito y dos planes). Gracias por frenar la cadena.
 
 ## Ideas
 - (P1) Si el despliegue del handler social no llega, un botón de demo que arme el ciclo solo con RPC (iniciar → candidatos → guardar con texto fijo → aprobar → publicar), sin modelo: el servidor decide todo, la IA no participa.
