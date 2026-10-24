@@ -26,7 +26,7 @@ ocupada() {
     [ "$(basename "$f")" = "rincones.md" ] && continue
     # Solo cuenta el aviso real: "CORRIENDO PRUEBA (hh:mm)", "**MIGRACION EN CURSO**" en negrita o "PRUEBA DE CARGA EN CURSO"; una ficha que
     # solo menciona que ESPERA a una migración (esperan/espera/saque/cuando) no es un candado.
-    if sed -n '/^## Tocando ahora/,/^## /p' "$f" | grep -v 'TERMINAD' | grep -viE 'esper(a|an|ando)|saque|saquen|cuando backend|hasta que' | grep -qE 'CORRIENDO PRUEBA ?\(|\*\*MIGRACION EN CURSO\*\*|PRUEBA DE CARGA EN CURSO'; then
+    if sed -n '/^## Tocando ahora/,/^## /p' "$f" | grep -v 'TERMINAD' | grep -qE '^- (\[[0-9:]+\] )?(\*\*)?(CORRIENDO PRUEBA|MIGRACION EN CURSO|PRUEBA DE CARGA EN CURSO)'; then
       echo "$(basename "$f" .md)"; return 0
     fi
   done
