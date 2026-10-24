@@ -39,9 +39,19 @@
   line-height: var(--lh-nota);
 }
 .agente-panel .campo input,
+.agente-panel .aviso-texto,
 .agente-panel .opcion-radio,
 .agente-panel .btn {
   font-size: var(--t-cuerpo);
+}
+/* Títulos de tarjeta en --t-subtitulo y notas en --t-nota (styles.css todavía fija 1.15rem y 0.92rem). */
+.agente-panel h2 {
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+}
+.agente-panel .suave {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
 }
 .agente-panel .grupo > legend,
 .agente-panel h3,

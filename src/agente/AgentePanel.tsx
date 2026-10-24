@@ -834,7 +834,9 @@ function ProponerPlan({
         </fieldset>
       ) : null}
       <div className="agente-botones">
+        {/* Un solo primario: con una opción a la vista, el primario pasa a "Usar esta opción". */}
         <Boton
+          variante={resultado?.tipo === 'borrador' ? 'secundario' : 'primario'}
           onClick={() => void proponer(false)}
           ocupado={ocupado && !conHerramientas}
           ocupadoTexto="El agente está pensando…"
