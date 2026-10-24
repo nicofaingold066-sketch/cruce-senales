@@ -5,7 +5,9 @@ import type { FuenteEntrada } from './QuienEres'
 export const fuenteReal: FuenteEntrada = {
   verPorCodigo: async (codigo) => {
     const r = await api.previewSpaceByCode(codigo)
-    return r.ok ? { ok: true, data: { espacio: r.data.espacio, miembros: r.data.miembros } } : r
+    return r.ok
+      ? { ok: true, data: { espacio: r.data.espacio, miembros: r.data.miembros, organizador: r.data.organizador, plan: r.data.plan } }
+      : r
   },
   unirse: (codigo, nombre, miembroId) => api.joinSpace(codigo, nombre, miembroId),
   yaEstoy: async (codigo) => {

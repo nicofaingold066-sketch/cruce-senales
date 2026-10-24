@@ -430,3 +430,81 @@ details.s1-opcion {
   border: 1.5px dashed var(--linea);
   background: transparent;
 }
+
+/* ---- Mockup exacto (03:05): pantallas 1, 2, 8, 9 y 10; tablet y computadora ---- */
+.s1-columna-titulo {
+  margin: 0 0 var(--e-3);
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+}
+/* Pantalla 2, abajo y chico: "o prueba sin crear nada · Probar la demo «Los del finde»". */
+.s1-demo-linea {
+  margin: var(--e-2) 0 0;
+  text-align: center;
+  color: var(--tinta-2);
+}
+.s1-demo-enlace {
+  min-height: var(--toque);
+  font-size: var(--t-nota);
+}
+/* Pantalla 10: el plan en una línea, bajo el nombre del grupo. */
+.s1 .s1-plan-linea {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  color: var(--noche-texto);
+}
+.s1-no-estoy-form {
+  margin-top: var(--e-3);
+}
+/* Tablet (768): la pantalla del teléfono en una columna de 640 px. */
+@media (min-width: 768px) and (max-width: 959px) {
+  .s1-portada .hoja.s1-hoja {
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .s1-nueva .escena,
+  .s1-nueva .hoja,
+  .s1-quien .escena,
+  .s1-quien .hoja {
+    padding-left: max(var(--margen), calc((100% - 640px) / 2));
+    padding-right: max(var(--margen), calc((100% - 640px) / 2));
+  }
+}
+/* Computadora: C1 (portada sin sesión) 7/12 | 5/12; C2 (¿Quién eres?) 5/12 | 7/12 con los nombres en dos columnas. */
+@media (min-width: 960px) {
+  .vista.s1-nueva {
+    grid-template-columns: 7fr 5fr;
+  }
+  .vista.s1-quien {
+    grid-template-columns: 5fr 7fr;
+  }
+  .s1-nueva .hoja,
+  .s1-quien .hoja {
+    max-width: none;
+  }
+  .s1-quien .quien-lista {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--e-2) var(--e-3);
+  }
+  .s1-quien .quien-lista > .s1-elegido {
+    grid-column: 1 / -1;
+  }
+}
+/* Pantalla 9 sin barra inferior (una sola tarea). */
+.contenido:has(.vista.s1-nueva) ~ .nav-inferior {
+  display: none;
+}
+/* La X de la hoja: un botón redondo de 44 px. */
+.btn.s1-cerrar {
+  width: var(--toque);
+  height: var(--toque);
+  min-height: var(--toque);
+  padding: 0;
+  border-radius: 50%;
+  flex: none;
+}
+.con-nav:has(.vista.s1-nueva) {
+  padding-bottom: 0;
+}

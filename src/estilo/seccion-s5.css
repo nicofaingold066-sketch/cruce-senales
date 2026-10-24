@@ -221,3 +221,81 @@
   min-height: 52px;
   margin: 0 0 var(--e-4);
 }
+
+/* ---- Mockup exacto (03:05): pantallas 6 y 14, tablet y computadora ---- */
+/* Pantalla 6: "Opcional" va fuera de la hoja (para la computadora); en el teléfono la continúa con el mismo fondo. */
+.s5-responder .hoja {
+  min-height: 0;
+}
+.s5-opcional-afuera {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  padding: 0 var(--margen) var(--e-6);
+  background: var(--fondo);
+}
+.s5-responder .hoja:has(+ .s5-opcional-afuera) {
+  padding-bottom: 0;
+}
+.s5-opcional .calendario-sim-fila .calendario-sim-cuerpo {
+  padding: var(--e-2) 0 var(--e-3);
+}
+.s5 .s5-solo-tu {
+  margin-top: var(--e-1);
+}
+/* Tablet (768): la pantalla del teléfono en una columna de 640 px. */
+@media (min-width: 768px) and (max-width: 959px) {
+  .s5-responder .escena,
+  .s5-responder .hoja,
+  .s5-opcional-afuera {
+    padding-left: max(var(--margen), calc((100% - 640px) / 2));
+    padding-right: max(var(--margen), calc((100% - 640px) / 2));
+  }
+}
+/* Computadora (C6): a la izquierda 5/12 el título, la explicación y lo opcional; a la derecha 7/12 los botones grandes.
+   "Respondiste" sigue la regla general: el bloque principal a la izquierda, las filas y "Listo" a la derecha. */
+@media (min-width: 960px) {
+  .vista.s5-responder {
+    grid-template-columns: 5fr 7fr;
+    grid-template-rows: auto 1fr;
+  }
+  .s5-responder .escena {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .s5-responder .escena:has(~ .s5-opcional-afuera) {
+    position: relative;
+    top: auto;
+    min-height: 0;
+  }
+  .s5-responder .hoja {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    max-width: none;
+  }
+  .s5-opcional-afuera {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: stretch;
+    padding: 0 40px 40px;
+    background: var(--noche);
+  }
+  .s5 .s5-opcional-afuera .s5-opcional-titulo {
+    color: var(--noche-suave);
+  }
+}
+@media (min-width: 960px) {
+  /* El brillo de la escena no corta a la mitad de la columna: con "Opcional" debajo, se apaga. */
+  .s5-responder .escena:has(~ .s5-opcional-afuera)::before {
+    display: none;
+  }
+}
+@media (max-width: 959px) {
+  /* La hoja ya no estira hasta abajo cuando la sigue "Opcional": estira lo opcional, así no queda un hueco en el medio. */
+  .vista.s5-responder > .hoja:has(+ .s5-opcional-afuera) {
+    flex: none;
+  }
+  .vista.s5-responder > .s5-opcional-afuera {
+    flex: 1;
+  }
+}
