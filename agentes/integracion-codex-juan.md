@@ -1,6 +1,7 @@
 # Integración Codex — Juan Morales
 
 ## Tocando ahora
+- CORRIENDO PRUEBA (00:00) humo API producto acotado:5checks/7RPC,1sesiónficticia+espaciopropio,0SQL/modelo; verificaciónnuevadeausenciadeotrosturnosANTESdeAuth. GestiónEdgeSupabasecontinúadenegada; estohumonoenumera/administrafunciones.
 - Delegación confirmada social: SOLO `supabase/functions/agente/social/orquestador.ts` y `orquestador.test.ts`, rama nueva codex/e11-preparar-sin-publicar sobre8f27c5b; opción interna publicacionAutomatica=false paraquePREPARARjamáspublique aunbajopolíticaautonoma. Defaultactualno cambia; publicaciónexplícita revalidadaenDB. RootNOeditaesasdosrutasenparalelo.
 - Handler usará fechaSOLOsocial.sabado (nunca raíz); funciónvieja cortasinRPC/modelo, inclusoenrollback. Rootañadeademás adaptador mínimo de modelo en `supabase/functions/agente/modelo-social.ts` y `modelo-social.test.ts`, reutilizaproveedorySDKexistente; sin llamadaremotaenpruebas, clave/proveedor nuevos0. Textofijo es fallback, nocertificacióndeIA. Modelo NOveplan/nombres/condiciones ni invocaaprobaciones.
 - Siguienteunidad solicitada porJuan: root toma `supabase/functions/agente/social-http.ts`, `social-http.test.ts`, engancheaditivo `index.ts`, y luego SOLOmontajes en `src/agente/AgentePanel.tsx` y `src/screens/PlanTab.tsx`. Rama codex/e11-handler sobre8f27c5b, preservaE14; sin SQL, nuevoendpoint, credenciales, llamadasmodelo ni deploymanual.
