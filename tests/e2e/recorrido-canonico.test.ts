@@ -292,7 +292,12 @@ describe.skipIf(BASE_OCUPADA)('recorrido canónico real · dos sesiones · contr
     expect(t1.mi_situacion.mi_opinion ?? null).toBeNull()
     // Segunda opinión (Tomi): el organizador ve 2, sin nombres; Luna sigue sin verlo; su siguiente acción es rearmar.
     const op2 = await llamar(tomi, 'opinar_version', { p_propuesta_id: id, p_version: 1, p_opinion: 'asi_no_puedo', p_intento_id: randomUUID() })
-    expect(op2.propuesta.opiniones_totales).toEqual({ asi_no_puedo: 2 })
+    // Dos formas válidas del servidor (backend 21:45, migración 0047 pendiente de OK): hasta 0046 el total cuenta también la
+    // opinión del organizador (aquí: 2); con 0047 cuenta solo las de los DEMÁS (aquí: 1 → null) y no baja si alguien acepta.
+    // Con solo dos identidades reales no se llega a 2 «de los demás»: ese caso lo cubre tests/backend/enmienda13.test.ts.
+    const total2 = totalAsiNoPuedo(op2.propuesta)
+    expect([2, null], `total con la opinión de Luna y la del organizador: ${total2}`).toContain(total2)
+    console.log(`E13: opiniones_totales con dos opiniones (Luna + organizador) = ${total2} (${total2 === 2 ? 'cuenta también la del organizador' : 'cuenta solo las de los demás'})`)
     expect(Object.keys(op2.propuesta.opiniones_totales), 'solo el total, ninguna otra clave').toEqual(['asi_no_puedo'])
     for (const n of NOMBRES) expect(JSON.stringify(op2.propuesta.opiniones_totales)).not.toContain(n)
     // Lo que importa: el organizador PUEDE rearmar (botón disponible). El texto "puedes rearmar con lo nuevo" (código
