@@ -171,3 +171,196 @@
   background: transparent;
   box-shadow: none;
 }
+
+/* ---- Portada "Mi espacio" (mockup 02:40) ---- */
+.s1-portada .s1-hoja {
+  padding-top: var(--e-5);
+}
+.s1-titulo {
+  margin: 0 0 var(--e-3);
+  font-size: var(--t-titulo);
+  line-height: var(--lh-titulo);
+  font-weight: var(--p-pantalla);
+}
+.s1-te-toca {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-height: var(--toque);
+  margin: 0 0 var(--e-4);
+  padding: var(--e-2) var(--e-4);
+  border-radius: var(--r-m);
+  background: var(--brasa-suave, var(--relleno));
+  color: var(--brasa);
+  font-size: var(--t-cuerpo);
+  text-decoration: none;
+}
+.s1-te-toca span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.s1-vacio {
+  margin: 0 0 var(--e-4);
+  color: var(--tinta-2);
+}
+.s1-fila-grupo {
+  min-height: 64px;
+}
+.s1-opciones {
+  display: grid;
+  gap: var(--e-3);
+}
+.s1-opcion {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  min-height: 64px;
+  padding: var(--e-3) var(--e-4);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-m);
+  background: var(--hoja);
+  color: var(--tinta);
+  text-decoration: none;
+}
+details.s1-opcion {
+  display: block;
+  padding: 0;
+}
+.s1-opcion-unirme > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  min-height: 64px;
+  padding: var(--e-3) var(--e-4);
+}
+.s1-opcion-unirme > summary::-webkit-details-marker {
+  display: none;
+}
+.s1-opcion-cuerpo {
+  padding: 0 var(--e-4) var(--e-4);
+}
+.s1-opcion-icono {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-s);
+  background: var(--relleno);
+}
+.s1-opcion-texto {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  overflow-wrap: anywhere;
+}
+.s1-opcion-texto .t-nota {
+  color: var(--tinta-2);
+}
+.s1-opciones .s1-demo {
+  margin: var(--e-2) 0 0;
+}
+.s1-opciones .s1-demo > .s1-nota:first-child {
+  margin: 0 0 var(--e-2);
+  text-align: center;
+}
+.s1-nombre {
+  padding: var(--e-3) var(--e-4);
+  border: 1px dashed var(--linea);
+  border-radius: var(--r-m);
+}
+.s1-nombre h2 {
+  margin: 0 0 var(--e-2);
+  font-weight: var(--p-titulo);
+}
+.s1-nombre .s1-nota {
+  margin: var(--e-2) 0 0;
+}
+
+/* El "+" flotante (solo con grupos y en el teléfono): encima de la barra inferior. */
+.s1-mas {
+  position: fixed;
+  right: var(--margen);
+  bottom: calc(76px + env(safe-area-inset-bottom));
+  z-index: 25;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-height: 52px;
+  padding: 0 var(--e-5);
+  border-radius: 999px;
+  box-shadow: var(--sombra-flota);
+  font-size: var(--t-cuerpo);
+}
+
+/* La hoja del "+": un dialog pegado abajo, ancho del contenido. */
+.s1-hoja-modal {
+  width: 100%;
+  max-width: 640px;
+  max-height: 88vh;
+  margin: auto auto 0;
+  padding: var(--e-4) var(--margen) calc(var(--e-5) + env(safe-area-inset-bottom));
+  border: 0;
+  border-radius: var(--r-l) var(--r-l) 0 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  overflow-y: auto;
+}
+.s1-hoja-modal::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+.s1-hoja-cabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-3);
+  margin: 0 0 var(--e-3);
+}
+.s1-hoja-cabeza h2 {
+  margin: 0;
+}
+.s1-cerrar {
+  min-width: var(--toque);
+  min-height: var(--toque);
+  margin: 0;
+  padding: 0;
+}
+
+/* Teléfono con grupos: las opciones viven en la hoja; sin grupos, a la vista bajo la lista. */
+.s1-con-grupos .s1-columna-nuevo {
+  display: none;
+}
+.s1-sin-grupos .s1-columna-nuevo {
+  margin-top: var(--e-2);
+}
+
+/* Computadora: grupos a la izquierda (7 columnas) y "Nuevo grupo" a la derecha, sin la hoja ni el "+". */
+@media (min-width: 960px) {
+  /* La portada no tiene escena: no usa la grilla escena | hoja de styles.css; ocupa el ancho, centrada. */
+  .vista.s1-portada {
+    display: block;
+    /* Sin escena no hace falta ocupar el alto: así la portada no desplaza en 1280 (la barra mide 60 y no --barra-alto). */
+    min-height: 0;
+  }
+  .s1-portada .hoja.s1-hoja {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--e-6) 40px 96px;
+  }
+  .s1-cuerpo {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: var(--e-6);
+    align-items: start;
+  }
+  .s1-con-grupos .s1-columna-nuevo {
+    display: block;
+  }
+  .btn.s1-mas {
+    display: none;
+  }
+}
