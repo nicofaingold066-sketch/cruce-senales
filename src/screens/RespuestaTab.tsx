@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '../lib/api'
-import type { ApiError, Condiciones, EstadoPropuesta } from '../lib/types'
+import type { ApiError, Condiciones, EstadoPropuesta, Preferencia } from '../lib/types'
 import { useBorradorCondiciones, useMutacion } from '../lib/hooks'
 import { Aviso, Boton, Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
@@ -9,6 +9,10 @@ import { EditorCondiciones } from '../components/Condiciones'
 import type { PestanaProps } from './tabs'
 import { AyudaRetiro } from '../componentes-nuevos/AyudaRetiro'
 import { TomarDeCalendario } from '../friccion/Calendario'
+
+// Enmienda 15 (E-d): "¿cuál prefieres?" queda APAGADO hasta el aviso de la 0053 (antes el servidor responde
+// `disponibilidad_invalida` si llega `prefiero`).
+const E15_PREFIERO = true
 
 const ESTADO_COND: Record<string, string> = {
   sin_cargar: 'Sin cargar',
@@ -126,6 +130,14 @@ function MisCondiciones({
   const s = p.mi_situacion
   const ofrecerInteres =
     s.puede.marcar_interes && !s.interesado && !soloLectura && Object.values(b.draft).includes('si')
+  // Enmienda 15 (E-d): con "gana la que pueden más" y las dos en Sí, cuál prefiere (privado; solo desempata).
+  const [prefiero, setPrefiero] = useState<Preferencia | null>(null)
+  useEffect(() => {
+    setPrefiero(cond?.prefiero ?? null)
+  }, [cond])
+  const ofrecerPrefiero = E15_PREFIERO && p.regla === 'mas_si' && claves.length === 2 && claves.every((c) => b.draft[c] === 'si')
+  const prefieroEnviar = ofrecerPrefiero ? prefiero : null
+  const sucio = b.sucio || (ofrecerPrefiero && prefiero !== (cond?.prefiero ?? null))
 
   const cargar = useCallback(async () => {
     const r = await api.getMyConditions(p.id)
@@ -143,7 +155,9 @@ function MisCondiciones({
   async function guardar() {
     setGuardado(false)
     setNotaInteres(null)
-    const r = await correr(`cond:${p.id}:${JSON.stringify(b.draft)}`, () => api.saveMyConditions(p.id, b.draft))
+    const r = await correr(`cond:${p.id}:${JSON.stringify(b.draft)}:${prefieroEnviar ?? ''}`, () =>
+      api.saveMyConditions(p.id, b.draft, prefieroEnviar),
+    )
     if (r?.ok) {
       vibrar(10)
       setCond(r.data.condiciones)
@@ -197,6 +211,29 @@ function MisCondiciones({
             deshabilitado={!s.puede.guardar_condiciones || soloLectura}
             prefijo={`mi-${p.id}`}
           />
+          {ofrecerPrefiero ? (
+            <fieldset className="prefiero">
+              <legend>Si te sirven los dos, ¿cuál prefieres?</legend>
+              <div className="opciones opciones-compactas">
+                {p.franjas.map((f) => (
+                  <label key={f.clave} className={`opcion-radio ${prefiero === f.clave ? 'opcion-activa' : ''}`}>
+                    <input
+                      type="radio"
+                      name={`mi-${p.id}-prefiero`}
+                      checked={prefiero === f.clave}
+                      disabled={!s.puede.guardar_condiciones || soloLectura}
+                      onChange={() => {
+                        setGuardado(false)
+                        setPrefiero(f.clave as Preferencia)
+                      }}
+                    />
+                    {f.etiqueta ?? `Opción ${f.clave}`}
+                  </label>
+                ))}
+              </div>
+              <p className="suave nota-seccion">Opcional y privado: solo desempata si los dos planes los pueden los mismos.</p>
+            </fieldset>
+          ) : null}
           {/* El motor solo cuenta condiciones completas: con un "Pendiente" no se entra en ninguna franja, tampoco en
               la que se marcó "Sí". Se dice antes de guardar, no solo con la etiqueta, y en una sola nota. */}
           {s.puede.guardar_condiciones && Object.values(b.draft).includes('pendiente') && (b.sucio || s.condiciones === 'incompletas') ? (
@@ -215,11 +252,11 @@ function MisCondiciones({
               Ir al plan
             </button>
           ) : null}
-          <div className={`fila-botones ${b.sucio ? 'barra-accion' : ''}`}>
+          <div className={`fila-botones ${sucio ? 'barra-accion' : ''}`}>
             {/* Dentro de la barra fija, encima del botón: se ve justo cuando se decide (a 375 px la barra tapa lo de arriba).
                 En una sola línea para que la barra no crezca; la explicación va para lectores de pantalla y en la tarjeta
                 "¿Avisar que te interesa?". */}
-            {ofrecerInteres && s.puede.guardar_condiciones && b.sucio ? (
+            {ofrecerInteres && s.puede.guardar_condiciones && sucio ? (
               <label htmlFor={`mi-${p.id}-interes`} className="casilla casilla-corta">
                 <input
                   id={`mi-${p.id}-interes`}
@@ -241,15 +278,16 @@ function MisCondiciones({
               onClick={guardar}
               ocupado={ocupado}
               ocupadoTexto="Guardando…"
-              disabled={!s.puede.guardar_condiciones || !b.sucio || soloLectura}
+              disabled={!s.puede.guardar_condiciones || !sucio || soloLectura}
             >
               Guardar condiciones
             </Boton>
-            {b.sucio ? (
+            {sucio ? (
               <Boton
                 variante="secundario"
                 onClick={() => {
                   b.descartar()
+                  setPrefiero(cond?.prefiero ?? null)
                   setAvisarInteres(false)
                 }}
                 disabled={ocupado}
@@ -258,8 +296,8 @@ function MisCondiciones({
               </Boton>
             ) : null}
           </div>
-          {b.sucio ? <p className="suave">Tienes cambios sin guardar.</p> : null}
-          {guardado && !b.sucio ? <p role="status">Guardado. Solo tú ves estas condiciones.</p> : null}
+          {sucio ? <p className="suave">Tienes cambios sin guardar.</p> : null}
+          {guardado && !sucio ? <p role="status">Guardado. Solo tú ves estas condiciones.</p> : null}
           {notaInteres ? <p role="status">{notaInteres}</p> : null}
         </>
       ) : null}
