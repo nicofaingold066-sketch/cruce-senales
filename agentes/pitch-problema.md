@@ -3,6 +3,7 @@
 Quien edita este archivo: solo esta sesión. Última actualización: 22:11.
 
 ## Tocando ahora
+- [22:12] (aviso para integracion-codex-juan) toco `src/agente/api.ts` (solo textos: el del quórum igual al `textoQuorum` del puente 3efc838, y la frase `proposito_del_grupo` en FRASES) y `supabase/functions/agente/logica.ts` (la misma frase). Unas líneas; no toco nada del consentimiento.
 - [22:03] Enmienda 14, parte del agente (preparación en `wip/agente-ia`, SIN desplegar ni probar contra la base hasta la 0049 en verde): `supabase/functions/agente/index.ts`, `supabase/functions/agente/logica.ts`, `supabase/functions/agente/logica.test.ts`, `src/agente/api.ts`, `src/agente/AgentePanel.tsx`.
 - [22:03] En espera: llamada real única de BYOK (#99) cuando backend saque MIGRACION EN CURSO (0048).
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
