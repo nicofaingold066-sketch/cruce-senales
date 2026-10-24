@@ -6,7 +6,7 @@ El plan ya no tiene barra de pestañas (mockup obligatorio; decisión del coordi
 | Antes | Ahora |
 |---|---|
 | pestaña «Plan» | no existe: el plan es la pantalla. Quitar el toque (o tolerar que falte). |
-| pestaña «Mi respuesta» (editor por franja, `fieldset` «Franja A», «Guardar condiciones», «Me interesa») | enlace «Tu respuesta: … · Cambiar» (`a.fila[href*="/responder/"]`) → ¿Cuándo puedes? (S5, friccion; el editor día por día va ahí plegado: preguntar a friccion el botón que lo abre) |
+| pestaña «Mi respuesta» (editor por franja, `fieldset` «Franja A», «Guardar condiciones», «Me interesa») | enlace «Tu respuesta: … · Cambiar» (`a.fila[href*="/responder/"]`) → ¿Cuándo puedes? (S5, friccion; el editor día por día va ahí plegado: «Ajustar día por día», desplegable) |
 | pestaña «Historial» | `details` con `summary` «Historial» (en ¡se juntan! y en revisión está dentro de «Ficha del plan · Historial») |
 | pestaña «Simulación» | botón «Simulación demo» (fila; solo quien organiza la demo) → misma pantalla con «‹ Volver al plan» |
 | «Retirarme de esta propuesta» → «Sí, no voy» (en Mi respuesta) | en el plan: «Retirarme de este plan» (esperando) o «Ya no puedo ir…» (¡se juntan!) → «¿Retirarte definitivamente?» → «Sí, no voy» (igual) |
