@@ -3,6 +3,7 @@ import {
   ATAJOS,
   EJEMPLOS,
   atajosParaGrupo,
+  ordenarActividadesParaGrupo,
   ayudaGrupo,
   ejemploPorIndice,
   ejemploPorSemilla,
@@ -78,5 +79,18 @@ describe('ejemplos que rotan (mejora #92)', () => {
       expect(new Set(r.map((a) => a.titulo)).size).toBe(ATAJOS.length)
     }
     expect(atajosParaGrupo('Amigos de siempre')[0].titulo).toBe('Pádel')
+  })
+
+  it('los chips de Me gustaría: el grupo sube su actividad y Asado deja el primer lugar', () => {
+    const a = ['asado', 'padel', 'futbol', 'parque', 'fiesta', 'cena', 'bar'].map((clave) => ({ clave }))
+    const claves = (l: { clave: string }[]) => l.map((x) => x.clave)
+    expect(claves(ordenarActividadesParaGrupo(a, 'Los del pádel'))[0]).toBe('padel')
+    expect(claves(ordenarActividadesParaGrupo(a, 'Los del asado'))[0]).toBe('asado')
+    const sin = claves(ordenarActividadesParaGrupo(a, 'Amigos de siempre'))
+    expect(sin[0]).not.toBe('asado')
+    expect(sin).toContain('asado')
+    expect([...sin].sort()).toEqual(claves(a).sort())
+    expect(ordenarActividadesParaGrupo([], 'x')).toEqual([])
+    expect(claves(a)[0]).toBe('asado')
   })
 })

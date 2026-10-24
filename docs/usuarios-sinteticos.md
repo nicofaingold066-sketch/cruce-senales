@@ -39,6 +39,9 @@ Variables que existen hoy: **franjas** Sí / No / Pendiente por opción A y B (p
 | Tiene ganas pero no puede este finde | «Me interesa» + No / No | Interés es público; las franjas no. El grupo ve «le interesa» sin saber que no puede | Las franjas sí (queda fuera); el interés no suma confirmados | «Quiero, pero otro día»: no hay otra fecha ni «avisenme». La señal de ganas llega al grupo y puede leerse como que viene |
 | Niños o mascota | Hoy: nada | — | No | No hay etiqueta ni «apto para ir con peques/mascota». Parte de la solución: «bajo techo», un momento temprano, pero no lo dice |
 | No toma alcohol | Ambiente «tranquilo» (aproximado) | Sí | Aproximado vía agente | No hay forma de decir «sin alcohol», ni el plan lo muestra como propiedad del lugar. Fiesta/bar lo dejan afuera sin decirlo |
+| No come carne («Ana») | Hoy: nada explícito (ambiente/actividad aproximan) | — | No | Pedido de psico (20:39, P-A): comprobar que el texto compartido del plan sea IDÉNTICO haya o no respondido alguien eso. **Pendiente**: lo compruebo cuando agente-ia aplique A1 (corrida con y sin la respuesta, comparando el texto compartido) |
+| No toma («Beto») | Hoy: nada (ambiente «tranquilo» aproxima) | — | No | Idem: el texto compartido no puede cambiar si Beto respondió o no. **Pendiente** de A1 |
+| Juntada solo del grupo (sin género ni pareja) | — | — | — | Comprobar que ninguna pantalla compartida diga género ni estado de pareja. **Pendiente** de A1; el revisor de textos (`revisar.mjs`) ya busca esas palabras en cada pantalla de la corrida |
 | Prefiere algo tranquilo | Energía «algo tranquilo» + ambiente «tranquilo» | Sí; el grupo ve solo «La mayoría prefiere…» con 4 o más personas | Sí, vía agente | — (está cubierto) |
 | No responde nunca | Silencio | — | **Nunca cuenta como asistencia**: ni elegible ni confirmada; el grupo la ve «Sin confirmar» como a cualquiera que no confirmó | Nada de más: sigue «por entrar» hasta que abra el enlace. El organizador no tiene un «recordarle» (mejora #89, ux-flujo) |
 
@@ -123,7 +126,7 @@ Una persona real tarda más que la máquina (leer, buscar con el dedo): 7 toques
 
 **H6. Quedan «Con condiciones 4» aunque solo 3 pueden.** Renata dijo «No puedo» en las dos y cuenta como condiciones completas; Vale ve 4 y «Ya hay 3 personas con condiciones» y no puede saber que una de ellas no va. → backend/front-juan: decir «3 pueden» o contar solo con al menos un Sí (sin decir quién).
 
-**H7. «Me interesa» separado de la respuesta.** Joaco, Renata y Bruno contestaron las franjas; el grupo ve «2 con interés» (Vale y Gonza) y a Joaco como los demás. Sí puedo no suma interés. Es la duplicación que friccion saca con #88. A comprobar cuando entre.
+**H7 (decidido por ux-flujo 20:43: un Sí no se vuelve interés público porque haría públicas las condiciones; a quien organiza el centro dirá «N respondieron»). «Me interesa» separado de la respuesta.** Joaco, Renata y Bruno contestaron las franjas; el grupo ve «2 con interés» (Vale y Gonza) y a Joaco como los demás. Sí puedo no suma interés. Es la duplicación que friccion saca con #88. A comprobar cuando entre.
 
 **H8. La reparación dice «Sábado → Sábado».** Tras la baja de Gonza, «Buscar alternativa» publica la versión 2 en la misma franja (con Bruno adentro); el cartel «El plan cambió: versión 1 → versión 2 · Sábado 31 oct 20:00 → Sábado 31 oct 20:00» no explica qué cambió (cambió la gente, no la fecha). Captura: `vale-15`. → front-juan: «Misma fecha; cambió quién va».
 
@@ -175,5 +178,7 @@ Nuevo en esta corrida:
 |---|---|---|
 | 19:28 | build `95def89` (parcial: el guion se cortó al confirmar Gonza; corrió durante MIGRACION EN CURSO) | descartada |
 | 19:40 | build `95def89`, base libre | completa; hallazgos H1–H14 |
+| 20:41 y 20:43 | build integrado local (+ apertura `0e03b8a`), base recién liberada tras la 0041 | 20:41: Renata no recibió «Respuesta guardada» en 20 s y vio «No se pudo cargar la lista del grupo: El servidor tarda en responder» (un tiempo del servidor justo después de la migración). 20:43: repetida, completa y sin fallas (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6). Un solo caso: no lo trato como defecto, pero si vuelve a verse en producción va a backend |
+| 20:26 | **PRODUCCIÓN** https://cruce-senales.vercel.app (`main` `7f2423e`) | completa, sin fugas, mismos números que el build integrado: Joaco 3 toques (4,2 s), Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2. Solo 3 hallazgos automáticos (todos bajos: «asado», «hora de Santiago», «anfitrión») |
 | 20:12 | mismo build integrado, rehecho con `b8e19ae` (enmienda 12 b), friccion `05e148d` | completa, sin fugas; Joaco 3 toques (3,5 s), Renata 3, Gonza 4, Bruno 6. **H1 cerrado en lo importante**: Bruno lee «Tu disponibilidad está incompleta: no entraste en esta versión. Si la completas, cuenta si el plan se rearma.» (queda además la línea repetida «No formas parte de las personas…», menor) |
 | 20:06 | build integrado local (fundamentos + friccion + ux + agente-ia + front-juan), base con 0035–0039 | completa; Joaco 3 toques; H1 y H4 en parte arreglados |

@@ -154,6 +154,15 @@ Viernes 23, 20:04-20:05, sobre una fusión LOCAL de `wip/ux` + `wip/friccion` (`
 - Para confirmar, igual que antes: volver a abrir la app, tarjeta "Tu plan", "Confirmar versión 1" (Ana, Beto y Ema confirmaron).
 - Límite de mi guion: espera 2,5 s en la portada al volver; con la entrada animada, a Diego y Coni la portada todavía decía "Buscando tus espacios…" y el guion no encontró la tarjeta. No es una falla de la app; no lo cuento como duda.
 
+### 3.6 Tercera corrida, en producción [visto]
+
+Viernes 23, 20:26-20:28, contra https://cruce-senales.vercel.app (`main` `fae49fa`, recién publicado), mismo guion y grupo ficticio, 6 sesiones nuevas. Sin errores de la app.
+
+- Invitados: los cinco responden en **4 toques**. Ana, Beto, Diego y Ema confirman la versión 1 (sábado); Coni (solo domingo) no puede, como corresponde.
+- Organizador: 21 toques. La próxima acción ya dice "Primero marca tu disponibilidad: eres quien no puede faltar." (enmienda 12 (a), verificada), **pero el botón "Buscar opción compatible" sigue ahí**; si lo toca igual, "Sin opción compatible". Falta `AvisoParaMi` (o apagar el botón en ese caso) en `PlanTab.tsx`.
+- Coni ve "Grupo confirmado · Cupos disponibles: 3" sin aviso de que la versión es sin ella. Falta `AvisoParaMi`.
+- Nadie avisa por WhatsApp al publicar la opción (0 enlaces): falta conectar `RecordarFaltan`.
+
 ## 4. Recorrido del organizador, paso por paso
 
 Rutas: `shell.tsx:77-90`. Pantallas: `App.tsx:175-197`. RPC: `api.ts:269-383`.

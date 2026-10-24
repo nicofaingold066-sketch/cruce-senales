@@ -94,3 +94,38 @@ export function atajosParaGrupo(nombreGrupo: string): readonly Atajo[] {
   const elegido = ATAJOS.find((a) => a.palabras.some((p) => palabras.includes(p)))
   return elegido ? [elegido, ...ATAJOS.filter((a) => a !== elegido)] : ATAJOS
 }
+
+// Orden de los chips de «Me gustaría» (pedido de sinteticos, H11): el servidor las devuelve por `orden` del catálogo y
+// «Asado» sale primero siempre. Esta función solo reordena lo que la pantalla ya recibió; no cambia qué actividades hay.
+const PALABRAS_ACTIVIDAD: Readonly<Record<string, readonly string[]>> = {
+  asado: ['asado', 'parrilla', 'quincho'],
+  padel: ['padel', 'tenis'],
+  futbol: ['futbol', 'pichanga', 'baby'],
+  parque: ['parque', 'picnic'],
+  fiesta: ['fiesta', 'carrete'],
+  cena: ['cena', 'restaurante'],
+  bar: ['bar', 'tragos', 'cerveza'],
+  juegos_casa: ['juegos', 'mesa'],
+  cine: ['cine', 'pelicula'],
+  cultura: ['museo', 'feria', 'cultura', 'teatro'],
+  juegos_salida: ['bowling', 'escape'],
+  cerro: ['cerro', 'trekking', 'caminata'],
+  cafe: ['cafe', 'brunch', 'once', 'lectura'],
+}
+
+/**
+ * Misma lista, otro orden: la actividad que nombra el grupo («Los del pádel») va primero; si ninguna, «Asado» deja el
+ * primer lugar y queda en el medio. Estable (el resto conserva su orden) y sin perder ni repetir actividades.
+ */
+export function ordenarActividadesParaGrupo<T extends { clave: string }>(actividades: readonly T[], nombreGrupo: string): T[] {
+  const lista = [...actividades]
+  const palabras = sinTildes(nombreGrupo).split(/[^a-z0-9]+/).filter(Boolean)
+  const nombrada = lista.find((a) => (PALABRAS_ACTIVIDAD[a.clave] ?? []).some((p) => palabras.includes(p)))
+  if (nombrada) return [nombrada, ...lista.filter((a) => a !== nombrada)]
+  if (lista[0]?.clave === 'asado' && lista.length > 2) {
+    const [asado, ...resto] = lista
+    resto.splice(Math.floor(lista.length / 2) - 1, 0, asado)
+    return resto
+  }
+  return lista
+}
