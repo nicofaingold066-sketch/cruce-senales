@@ -105,8 +105,8 @@ test('enmienda 13: quien marcó "así no puedo" sigue en el plan y puede actuali
   const a = avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: ana, minimo: 4 })
   assert.equal(a?.clave, 'marcaste_asi_no_puedo')
   assert.equal(a?.irARespuesta, true)
-  assert.equal(a.titulo, 'Anotado')
-  assert.match(a.texto, /^Sigues en el plan\. Cambia cuándo puedes: si se rearma, lo vas a ver acá\./)
+  assert.equal(a.titulo, 'Así no puedes, pero sigues')
+  assert.equal(a.texto, 'Marcaste que así no puedes. Sigues en el plan: si se rearma, cuenta lo que marques ahora.')
   // Si después confirma, el aviso deja de salir.
   const conf = avisoParaMi({ estado: 'esperando_compromisos', imprescindible: vale, mi_situacion: { ...ana, acepte_version: true }, minimo: 4 })
   assert.notEqual(conf?.clave, 'marcaste_asi_no_puedo')

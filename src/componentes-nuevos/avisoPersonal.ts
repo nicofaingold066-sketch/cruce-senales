@@ -116,9 +116,10 @@ export function avisoParaMi(
     return {
       clave: 'marcaste_asi_no_puedo',
       tono: 'info',
-      // Texto de psico §8.10 (el mismo que muestra el botón de friccion al marcarlo).
-      titulo: 'Anotado',
-      texto: 'Sigues en el plan. Cambia cuándo puedes: si se rearma, lo vas a ver acá. Si al final puedes, confirma esta versión.',
+      // El mismo texto que la tarjeta de friccion (`TEXTO_ASI_NO_PUEDO`, src/friccion/AsiNoPuedo.tsx), para que la
+      // persona lea lo mismo arriba del plan y en su respuesta.
+      titulo: 'Así no puedes, pero sigues',
+      texto: 'Marcaste que así no puedes. Sigues en el plan: si se rearma, cuenta lo que marques ahora.',
       irARespuesta: yo.puede.guardar_condiciones === true,
     }
   }
