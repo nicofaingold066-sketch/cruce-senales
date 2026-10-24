@@ -10,7 +10,8 @@ import { useMutacion } from '../../lib/hooks'
 import type { PropuestaViva } from '../../lib/hooks'
 import { rutas } from '../../lib/shell'
 import type { Espacio, EstadoPropuesta } from '../../lib/types'
-import { Aviso, Boton, ErrorCaja } from '../../components/ui'
+import { Boton, ErrorCaja } from '../../components/ui'
+import { Confirmacion, useVolverFoco } from '../../components/Confirmacion'
 import { Icono } from '../../components/Icono'
 import { AsiNoPuedo } from '../../friccion/AsiNoPuedo'
 import type { Pestana } from '../../screens/tabs'
@@ -139,32 +140,34 @@ export function FilasPlan({
 function Cancelar({ p, viva, soloLectura }: { p: EstadoPropuesta; viva: PropuestaViva; soloLectura: boolean }) {
   const [confirmar, setConfirmar] = useState(false)
   const { ocupado, error, correr } = useMutacion(viva)
+  // #67 (A2): la pregunta toma el foco y "Volver" lo devuelve al botón que la abrió.
+  const { zona, volver } = useVolverFoco<HTMLElement>()
   async function hacer() {
     const r = await correr(`cancelar:${p.id}`, () => api.cancelProposal(p.id))
     if (r?.ok) setConfirmar(false)
   }
   return (
-    <section className={`zona-peligro zona-peligro-chica ${confirmar ? '' : 'zona-peligro-fila'}`} aria-labelledby="cancelar-titulo">
+    <section ref={zona} className={`zona-peligro zona-peligro-chica ${confirmar ? '' : 'zona-peligro-fila'}`} aria-labelledby="cancelar-titulo">
       <div className="zona-peligro-texto">
         <h3 id="cancelar-titulo">¿Ya no va?</h3>
         <p className="suave">Pasa a Cancelado y no se puede reabrir.</p>
       </div>
       {!confirmar ? (
-        <Boton variante="secundario" onClick={() => setConfirmar(true)} disabled={soloLectura}>
+        <Boton variante="secundario" onClick={() => setConfirmar(true)} disabled={soloLectura} data-abre-confirmacion>
           Cancelar propuesta
         </Boton>
       ) : (
-        <Aviso tono="aviso" titulo="¿Cancelar la propuesta?">
+        <Confirmacion titulo="¿Cancelar la propuesta?">
           La propuesta pasa a Cancelado y no se puede reabrir.
           <div className="fila-botones">
             <Boton variante="peligro" onClick={() => void hacer()} ocupado={ocupado} ocupadoTexto="Cancelando…">
               Sí, cancelar
             </Boton>
-            <Boton variante="secundario" onClick={() => setConfirmar(false)} disabled={ocupado}>
+            <Boton variante="secundario" onClick={() => volver(() => setConfirmar(false))} disabled={ocupado}>
               Volver
             </Boton>
           </div>
-        </Aviso>
+        </Confirmacion>
       )}
       {error ? <ErrorCaja error={error} enfocar /> : null}
     </section>
