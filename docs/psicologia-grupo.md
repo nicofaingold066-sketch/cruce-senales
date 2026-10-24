@@ -402,8 +402,8 @@ Los rótulos los fija la enmienda 13 y las pantallas son de front-juan. Si algun
 | A1 | **Frase universal de comida y alcohol** en el texto del plan y del mensaje del agente ("Habrá opción sin carne") | agente-ia (prompt del agente y texto fijo) | Bajo | Alto |
 | A2 | **Lista de palabras prohibidas** ampliada (§8.7) en el filtro de salida del modelo | agente-ia | Bajo | Alto |
 | A3 | **«Dos formas de juntarse»**: presentación A/B de dos de las tres candidatas con el eje de «dónde» y la plantilla de §7; mapeo actividad→concepto en `src/agente` | agente-ia | Medio | Alto |
-| A4 | **Modalidad de la juntada** (solo grupo / con parejas / abierta) en «Nueva propuesta» como marca en el título y repetida en el mensaje del enlace | front-juan (NuevaPropuesta) + friccion (compartir.ts) | Bajo | Medio |
-| A5 | **Ayuda plegable «¿Dónde se juntan?»** (casa / neutro / turnos) antes de elegir a la persona que no puede faltar | front-juan | Bajo | Medio |
+| A4 | **[22:25, sinteticos: NO conectado en producción; con el cierre de funciones pasa a «siguiente paso»; hoy la regla existe solo si quien organiza la escribe en el título y la invitación de WhatsApp no la repite]** **Modalidad de la juntada** (solo grupo / con parejas / abierta) en «Nueva propuesta» como marca en el título y repetida en el mensaje del enlace | front-juan (NuevaPropuesta) + friccion (compartir.ts) | Bajo | Medio |
+| A5 | **[22:25: NO conectado; siguiente paso]** **Ayuda plegable «¿Dónde se juntan?»** (casa / neutro / turnos) antes de elegir a la persona que no puede faltar | front-juan | Bajo | Medio |
 | A6 | **Textos de §8** (baja, plan cambia, +1, quien organiza) en avisos y mensajes | ux-flujo (avisoPersonal, recordar), friccion (compartir.ts) | Bajo | Medio |
 | A7 | **Lámina de pitch** (§10) | agente-ia (`docs/pitch*.md`) | Bajo | Alto |
 | A8 | Pregunta de contexto a Nico: confirmar que **género/pareja de personas no se piden** (D2) | Nico | — | Alto |
@@ -612,6 +612,25 @@ Pedido del coordinador (21:02). Hecha a las 21:17 del viernes 23 sobre el códig
 **Criterios:** C1 culpa · C2 expone · C3 asume asado o anfitrión en texto genérico · C4 orden o jerga de sistema · C5 rompe §8 · C6 voseo · C7 promete de más · C8 confunde · C9 humor con blanco.
 
 **Cobertura:** unos 930 textos revisados en `src/screens`, `src/components`, `src/login`, `src/friccion`, `src/componentes-nuevos`, `src/agente`, `src/App.tsx`, `src/lib/shell.tsx`, `src/lib/compartir.ts` y los textos fijos de `supabase/functions/agente`. **89 hallazgos: 7 altos, 22 medios, 60 bajos** (69 de los cinco lectores, 10 del lote 6 y 10 del lote 7: los mensajes que el servidor manda a pantalla, fijados por el contrato; los lotes 6 y 7 los revisé yo a las 21:20). Ningún C9 (humor con blanco) en toda la app. Sin hallazgos en `compartir.ts` (los textos de WhatsApp y calendario ya son los de §8), `Integrantes.tsx`, `Calendario.tsx`, `Planes.tsx`, `Propuesta.tsx` y los componentes gráficos.
+
+### Estado en producción a las 22:01 (`main` `140cdaf`, bundle `index-BTad15GY`; lectura de los 11 archivos JS publicados, sin tocar la base)
+| Texto | En producción |
+|---|---|
+| «Una persona se retiró» (`format.ts`) | **Sí** (2 apariciones) |
+| «lo que marques después es privado» (A6, A7) | **Corregido** (0) |
+| «Te lo recuerda CRUXE» | **Corregido** (0) |
+| «se bajó» (4), «había confirmado» (2), «perdió al anfitrión» (1), «Bajas registradas» (1), «Imprescindible (anfitrión)» (1) | **Siguen** en `PlanTab.tsx` y `Cruce.tsx`: los 4 altos de front-juan (A2 a A5) no están |
+| «ve solo el servidor» | **Sigue** (3) |
+| Voseo en el panel del agente («podés» 2, «movés» 2, «Marcá» 1) | **Sigue** |
+| «Así no puedo, pero sigo», «Gracias por avisar», «Cambios en el grupo», «Buscar el lugar en el mapa» | **No están**: la enmienda 13 está en la base, pero sus pantallas todavía no se conectaron |
+| «Habrá opción sin carne», «Tu confirmación solo vale si llegan N» | **No están** (pedidos A1 y D1, no hechos) |
+| «Parrilla del parque» | No aparece en el código del cliente, como corresponde: es un dato del catálogo del servidor |
+
+### Actualización a las 22:24 (producción con `main` `bd9dc36`, bundle `index-DhEEDVTR`)
+- **Llegaron:** «Así no puedo, pero sigo» (3), «Buscar el lugar en el mapa» (1), «nadie queda comprometido» (1), «Una persona se retiró» (4).
+- **Siguen igual:** «se bajó» (4), «había confirmado» (2), «perdió al anfitrión», «Bajas registradas» (en `PlanTab.tsx` y `Cruce.tsx`; el parche de pantallas de ux-flujo no los tocó), el voseo del panel del agente y «ve solo el servidor» (3).
+- **Rebaja de A2 a A5 (de alta a media):** leí las migraciones 0043, 0045 y 0047: el **servidor ya anonimiza** las bajas de otras personas (actor «Una persona», `habia_aceptado` nulo, y las aceptaciones de quienes se retiraron ya no salen). Entonces la pantalla no puede mostrar un nombre; lo que queda es la **palabra** («se bajó» en vez de «se retiró») y el texto «perdió al anfitrión». Sigue valiendo cambiarlos, pero ya no es una exposición. **Pendiente de comprobar en pantalla:** que la columna «Versión N · ya no vale» de `PlanTab.tsx` no deje deducir quién se retiró por exclusión.
+- **Cerrado por backend:** el mensaje `condiciones_congeladas` del lote 7 (migración 0046).
 
 ### 16.1 Lo que hay que arreglar primero (7 altos): todos son la misma falla
 Cinco de los siete **nombran a quien se retiró** o dicen que «había confirmado» en textos que ve todo el grupo; la enmienda 13 (c), aprobada a las 20:51, pide «Una persona se retiró» sin nombre ni motivo. El historial viaja en capturas al chat. Los otros dos **prometen que todo lo que marques es privado** justo antes de la pantalla donde «me interesa» y la confirmación los ve el grupo.

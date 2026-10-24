@@ -1,6 +1,7 @@
 // Compartir fuera de CRUXE: enlace de invitación, WhatsApp y archivo de calendario (.ics).
 // Todo se arma en el teléfono con datos públicos del plan; nunca lleva condiciones de nadie.
 import { rutas } from './shell'
+import { fraseProposito } from '../friccion/propositos'
 
 export function enlaceInvitacion(codigo: string): string {
   return `${window.location.origin}${window.location.pathname}${rutas.unirse(codigo)}`
@@ -51,11 +52,13 @@ export function cabeQuienViene(texto: string, q: QuienViene | null, max = 60): b
   return q == null || conQuienViene(texto, q, max) !== sinQuienViene(texto)
 }
 
-export function textoInvitacion(espacio: string, codigo: string, quienViene?: QuienViene | null): string {
+export function textoInvitacion(espacio: string, codigo: string, quienViene?: QuienViene | null, proposito?: string | null): string {
   // Fricción: decir de entrada que no hay cuenta y qué hacer. "Me interesa" lo ve el grupo: no se promete que todo es privado.
   const q = quienViene ?? quienVieneDe(espacio)
   const regla = q ? ` ${FRASE_QUIEN_VIENE[q]}` : ''
-  return `Súmate a «${sinQuienViene(espacio)}» en CRUXE: toca el enlace, elige tu nombre y marca cuándo puedes.${regla} Sin cuenta ni contraseña; tus condiciones solo las ve la app: ${enlaceInvitacion(codigo)}`
+  // Enmienda 14: "para jugar fútbol" cuando el grupo tiene propósito; libre o sin dato, el texto de siempre.
+  const para = fraseProposito(proposito)
+  return `Súmate a «${sinQuienViene(espacio)}» en CRUXE${para ? ` ${para}` : ''}: toca el enlace, elige tu nombre y marca cuándo puedes.${regla} Sin cuenta ni contraseña; tus condiciones solo las ve la app: ${enlaceInvitacion(codigo)}`
 }
 
 /** Enlace universal de WhatsApp con el texto ya escrito; la persona elige a quién mandarlo. */

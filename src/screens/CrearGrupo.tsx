@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../lib/api'
 import type { TipoEspacio } from '../lib/types'
@@ -8,6 +8,10 @@ import { recordarNombreSiFalta, usePerfil } from '../lib/perfil'
 import { Aviso, Boton, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { CampoIntegrantes } from '../login/Integrantes'
+import { CampoQuienViene } from '../friccion/QuienViene'
+import { conQuienViene } from '../lib/compartir'
+import type { QuienViene } from '../lib/compartir'
+import { ejemploPorSemilla, placeholderGrupo } from '../lib/ejemplos'
 
 // Crear un grupo propio (un "espacio" del contrato). Solo lo social: el tipo queda fijo en "amigos"
 // (decisión de Nico y Juan, 11:51). Después se invita con el enlace desde la pantalla del grupo.
@@ -19,6 +23,10 @@ export default function CrearGrupo() {
   const [visible, setVisible] = useState(() => perfil?.nombre ?? '')
   // Enmienda 9 (fase 2, sesión login): los nombres del grupo; cada uno elige el suyo al abrir la invitación.
   const [integrantes, setIntegrantes] = useState<string[]>([])
+  // D3 de psico (friccion): quién viene es una regla del grupo; va como marca en el nombre, sin migración.
+  const [quienViene, setQuienViene] = useState<QuienViene | null>(null)
+  // Apertura: el ejemplo del nombre rota (no siempre "Los del asado").
+  const ej = useMemo(() => ejemploPorSemilla(new Date().toDateString()), [])
   const tipo: TipoEspacio = 'amigos'
   const { ocupado, error, ejecutar } = useAccion()
   const faltan = nombre.trim() === '' || visible.trim() === ''
@@ -27,7 +35,7 @@ export default function CrearGrupo() {
     e.preventDefault()
     if (faltan) return
     const r = await ejecutar(`crear:${nombre}:${tipo}:${visible}:${integrantes.join('|')}`, () =>
-      api.createSpace(nombre.trim(), tipo, visible.trim(), integrantes),
+      api.createSpace(conQuienViene(nombre.trim(), quienViene), tipo, visible.trim(), integrantes),
     )
     if (r?.ok) {
       recordarNombreSiFalta(visible)
@@ -52,7 +60,7 @@ export default function CrearGrupo() {
             <legend>El grupo</legend>
             <label className="campo">
               <span>Nombre del grupo</span>
-              <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} placeholder="Ej.: Los del asado" />
+              <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} placeholder={placeholderGrupo(ej)} />
             </label>
             <label className="campo">
               <span>Tu nombre en el grupo</span>
@@ -61,6 +69,7 @@ export default function CrearGrupo() {
             </label>
           </fieldset>
           <CampoIntegrantes integrantes={integrantes} cambiar={setIntegrantes} tuNombre={visible} />
+          <CampoQuienViene valor={quienViene} cambiar={setQuienViene} nombre={nombre} />
           <Aviso tono="info">
             Vas a ser quien organiza: creas las propuestas y buscas la opción compatible. Las condiciones de cada persona son
             privadas, también para ti.

@@ -163,6 +163,15 @@ Viernes 23, 20:26-20:28, contra https://cruce-senales.vercel.app (`main` `fae49f
 - Coni ve "Grupo confirmado · Cupos disponibles: 3" sin aviso de que la versión es sin ella. Falta `AvisoParaMi`.
 - Nadie avisa por WhatsApp al publicar la opción (0 enlaces): falta conectar `RecordarFaltan`.
 
+### 3.7 Con la enmienda 13 y el parche para Juan [visto en copia local, no en producción]
+
+Viernes 23, 21:30-21:32, build local con el parche (`docs/parche-pantallas-juan.md`) sobre la base real, 6 sesiones, 26/26:
+- Cinco invitados responden en 4 toques. Versión 1 = sábado.
+- Beto y Diego tocan "Así no puedo, pero sigo" (botón de friccion): siguen en el plan, ven "Así no puedes, pero sigues" arriba del plan y cambian su disponibilidad.
+- Vale (organiza) ve "Algunos no pueden así" (2 personas, sin nombres) y "Rearmar con lo nuevo": sale la versión 2 (domingo), sin confirmaciones heredadas, y la pantalla ofrece avisar al grupo.
+- Coni confirma y después se retira: el resto ve "Una persona se bajó (versión 2)" y "Una persona aceptó la versión 2", nunca su nombre.
+Pendiente: que esté en producción (hace falta aplicar el parche en las pantallas).
+
 ## 4. Recorrido del organizador, paso por paso
 
 Rutas: `shell.tsx:77-90`. Pantallas: `App.tsx:175-197`. RPC: `api.ts:269-383`.

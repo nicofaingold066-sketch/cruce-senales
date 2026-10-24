@@ -10,8 +10,16 @@ import { Confeti } from '../components/Confeti'
 import { Resaltado } from '../components/Resaltado'
 import { descargarCalendario, urlWhatsApp } from '../lib/compartir'
 import { vibrar } from '../lib/tacto'
+import { AvisoParaMi } from '../componentes-nuevos/AvisoParaMi'
+import { BuscarLugar } from '../componentes-nuevos/BuscarLugar'
+import { RearmarConLoNuevo } from '../componentes-nuevos/RearmarConLoNuevo'
+import { RecordarFaltan } from '../componentes-nuevos/RecordarFaltan'
+import { AsiNoPuedo } from '../friccion/AsiNoPuedo'
+import { FaltaTuRespuesta } from '../friccion/FaltaTuRespuesta'
 
-export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaProps) {
+export default function PlanTab({ p, viva, soloLectura, irAPestana, espacio }: PestanaProps) {
+  const codigo = espacio?.codigo_invitacion ?? null
+  const organiza = p.mi_situacion.es_organizador
   const enRevision = p.estado === 'en_revision'
   const conOpcion = p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado'
   const reuniendo = p.estado === 'borrador' || p.estado === 'reuniendo_interes'
@@ -25,6 +33,8 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
 
   return (
     <div>
+      <AvisoParaMi p={p} servidorAhora={viva.servidorAhora} irARespuesta={() => irAPestana('respuesta')} />
+
       {p.estado === 'cancelado' || p.estado === 'expirado' ? (
         <Aviso tono="aviso" titulo={p.estado_etiqueta}>
           {p.siguiente_accion.texto}
@@ -38,9 +48,33 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
       {p.estado === 'borrador' ? <AbrirPropuesta p={p} viva={viva} soloLectura={soloLectura} /> : null}
 
       {/* El cierre (calendario, aviso) es para quien va: quien confirmó esta versión. */}
-      {p.estado === 'grupo_confirmado' && p.opcion && p.mi_situacion.acepte_version ? <CierrePlan p={p} /> : null}
+      {p.estado === 'grupo_confirmado' && p.opcion && p.mi_situacion.acepte_version ? <CierrePlan p={p} codigo={codigo} /> : null}
 
-      {conOpcion && p.opcion ? <OpcionVigente key={p.opcion.version} p={p} viva={viva} soloLectura={soloLectura} /> : null}
+      {conOpcion && p.opcion ? (
+        <OpcionVigente
+          key={p.opcion.version}
+          p={p}
+          viva={viva}
+          soloLectura={soloLectura}
+          irAPestana={irAPestana}
+          demo={espacio?.demo ?? true}
+        />
+      ) : null}
+
+      {/* Enmienda 13 (b): solo para quien organiza, con 2 o más "así no puedo"; se oculta solo si no corresponde. */}
+      {p.estado === 'esperando_compromisos' && organiza ? <RearmarConLoNuevo p={p} viva={viva} soloLectura={soloLectura} /> : null}
+
+      {p.estado === 'esperando_compromisos' && organiza && codigo && p.opcion ? (
+        <section className="tarjeta" aria-labelledby="avisar-version">
+          <h2 id="avisar-version">Avisar al grupo</h2>
+          <RecordarFaltan
+            codigo={codigo}
+            titulo={p.titulo}
+            motivo={p.opcion_anterior ? 'reparacion' : 'version_nueva'}
+            cuando={franjaTexto(p.opcion.franja.inicio, p.opcion.franja.fin)}
+          />
+        </section>
+      ) : null}
 
       {enRevision ? (
         <AlternativaOrganizador p={p} viva={viva} soloLectura={soloLectura} sinAlternativa={sinAlternativa} />
@@ -49,6 +83,15 @@ export default function PlanTab({ p, viva, soloLectura, irAPestana }: PestanaPro
       {enRevision && p.opcion ? <OpcionAnterior p={p} /> : null}
 
       {reuniendo ? <ReuniendoInteres p={p} irAPestana={irAPestana} /> : null}
+
+      <FaltaTuRespuesta p={p} espacioId={p.espacio_id} />
+
+      {p.estado === 'reuniendo_interes' && organiza && codigo ? (
+        <section className="tarjeta" aria-labelledby="avisar-faltan">
+          <h2 id="avisar-faltan">Avisar al grupo</h2>
+          <RecordarFaltan codigo={codigo} titulo={p.titulo} motivo="faltan" />
+        </section>
+      ) : null}
 
       {p.estado === 'reuniendo_interes' ? (
         <BuscarOpcion p={p} viva={viva} soloLectura={soloLectura} sinOpcion={sinOpcion} />
@@ -142,7 +185,13 @@ function cuentaConfirmados(confirmados: number, minimo: number): string {
   return confirmados > minimo ? `${confirmados} (mínimo ${minimo})` : `${confirmados} de ${minimo}`
 }
 
-function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
+function OpcionVigente({
+  p,
+  viva,
+  soloLectura,
+  irAPestana,
+  demo,
+}: VivaProps & { irAPestana: PestanaProps['irAPestana']; demo: boolean }) {
   const o = p.opcion!
   const { ocupado, error, correr } = useMutacion(viva)
   const confirmado = p.estado === 'grupo_confirmado'
@@ -167,6 +216,7 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
           </p>
         </div>
       </div>
+      <BuscarLugar titulo={p.titulo} demo={demo} />
 
       {/* Solo dibuja los números que entrega el servidor: confirmados, mínimo (la marca) y máximo. */}
       <div>
@@ -269,6 +319,7 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
           {razonNoAceptar(p)}
         </p>
       )}
+      <AsiNoPuedo p={p} viva={viva} soloLectura={soloLectura} irAPestana={irAPestana} />
       {error && error.codigo !== 'sin_alternativa' ? <ErrorCaja error={error} enfocar /> : null}
     </section>
   )
@@ -279,7 +330,8 @@ function OpcionVigente({ p, viva, soloLectura }: VivaProps) {
 function BloqueRevision({ p }: { p: EstadoPropuesta }) {
   return (
     <Aviso tono="aviso" titulo="Una baja dejó el plan sin cumplir">
-      {p.opcion ? `La versión ${p.opcion.version} ya no alcanza el mínimo o perdió al anfitrión. ` : ''}
+      {/* Enmienda 14, 0050: texto neutro; nombrar la causa ("perdió al anfitrión") junto a los conteos dejaba deducir quién se fue. */}
+      {p.opcion ? `La versión ${p.opcion.version} ya no reúne lo necesario para juntarse. ` : ''}
       Sus confirmaciones ya no bastan para confirmar el encuentro. El plan está <strong>En revisión</strong> hasta que se
       publique una alternativa y se reúnan de nuevo las confirmaciones necesarias.
     </Aviso>
@@ -370,12 +422,8 @@ function OpcionAnterior({ p }: { p: EstadoPropuesta }) {
     <section className="tarjeta opcion-anterior">
       <h2>Versión {o.version} (en revisión, no confirmada)</h2>
       <p>{franjaTexto(o.franja.inicio, o.franja.fin)}</p>
-      <p className="suave">
-        {o.cupos.confirmados > o.cupos.minimo
-          ? `Conserva ${o.cupos.confirmados} confirmaciones (mínimo ${o.cupos.minimo}).`
-          : `Conserva ${o.cupos.confirmados} confirmación(es) de ${o.cupos.minimo} necesarias.`}{' '}
-        No se transfiere a la próxima versión.
-      </p>
+      {/* Enmienda 14, 0050: en revisión no se compara con el mínimo; con el mínimo cumplido a la vista se deducía que se fue quien no podía faltar. */}
+      <p className="suave">Sus confirmaciones no pasan a la próxima versión.</p>
     </section>
   )
 }
@@ -600,7 +648,7 @@ function Cancelar({ p, viva, soloLectura }: VivaProps) {
 // ------------------------------------------------------------------ cierre: el encuentro ocurre
 
 /** Final del recorrido: el servidor confirmó el grupo. Llevarlo al calendario y avisar afuera de CRUXE. */
-function CierrePlan({ p }: { p: EstadoPropuesta }) {
+function CierrePlan({ p, codigo }: { p: EstadoPropuesta; codigo: string | null }) {
   const o = p.opcion!
   const [nota, setNota] = useState<string | null>(null)
   const cuando = franjaTexto(o.franja.inicio, o.franja.fin)
@@ -638,10 +686,16 @@ function CierrePlan({ p }: { p: EstadoPropuesta }) {
         <button type="button" className="btn btn-primario btn-chico" onClick={agendar} aria-label="Agregar al calendario">
           <Icono n="agendar" tam={18} /> Calendario
         </button>
-        <a className="btn btn-secundario btn-chico" href={urlWhatsApp(texto)} target="_blank" rel="noopener noreferrer" aria-label="Avisar por WhatsApp">
-          <Icono n="whatsapp" tam={18} /> WhatsApp
-        </a>
+        {codigo ? null : (
+          <a className="btn btn-secundario btn-chico" href={urlWhatsApp(texto)} target="_blank" rel="noopener noreferrer" aria-label="Avisar por WhatsApp">
+            <Icono n="whatsapp" tam={18} /> WhatsApp
+          </a>
+        )}
       </div>
+      {/* Con el código, el aviso lleva el enlace y los cupos libres (sin nombres) para que se sume quien no confirmó. */}
+      {codigo ? (
+        <RecordarFaltan codigo={codigo} titulo={p.titulo} motivo="confirmado" cuando={cuando} cuposLibres={o.cupos.disponibles} />
+      ) : null}
       {nota ? <p role="status">{nota}</p> : null}
     </section>
   )

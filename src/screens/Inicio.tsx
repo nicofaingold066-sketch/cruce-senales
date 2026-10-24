@@ -3,10 +3,9 @@ import type { FormEvent } from 'react'
 import { api } from '../lib/api'
 import type { ApiError, EspacioResumen, PropuestaResumen, TipoEspacio } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
-import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
-import { leerGuardada, sesionNueva } from '../lib/sesiones'
+import { irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { OtraSesion } from '../components/Sesiones'
-import { guardarPerfil, leerPerfil, recordarNombreSiFalta, usePerfil } from '../lib/perfil'
+import { guardarPerfil, usePerfil } from '../lib/perfil'
 import { vibrar } from '../lib/tacto'
 import { Aviso, Boton, Cargando, ErrorCaja, colorAvatar, iniciales } from '../components/ui'
 import { PlanVivo, esTurno } from '../components/PlanVivo'
@@ -15,6 +14,8 @@ import { Icono } from '../components/Icono'
 import { Orbita } from '../components/Orbita'
 import { Resaltado } from '../components/Resaltado'
 import { Tablero } from '../components/Tablero'
+import { UnirseConNombre, useUnirse } from '../login/QuienEres'
+import { fuenteReal } from '../login/fuente'
 
 const TIPO: Record<TipoEspacio, string> = { amigos: 'Amigos', empresa: 'Empresa' }
 
@@ -76,7 +77,7 @@ export default function Inicio({
           </div>
         </section>
         <div className="hoja">
-          <UnirsePorCodigo deshabilitado={soloLectura} codigoInicial={codigoInvitacion} />
+          <UnirsePortada deshabilitado={soloLectura} codigoInicial={codigoInvitacion} />
           <div className="privado" role="note">
             <span className="privado-icono" aria-hidden="true">
               <Icono n="candado" tam={20} />
@@ -194,7 +195,7 @@ export default function Inicio({
           </section>
         ) : null}
 
-        <UnirsePorCodigo deshabilitado={soloLectura} />
+        <UnirsePortada deshabilitado={soloLectura} />
 
         {conPlan ? null : (
           <section aria-labelledby="como-titulo">
@@ -335,171 +336,11 @@ function irAUnirse() {
   form?.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true })
 }
 
-function UnirsePorCodigo({ deshabilitado, codigoInicial }: { deshabilitado: boolean; codigoInicial?: string }) {
-  const [codigo, setCodigo] = useState(codigoInicial ?? '')
-  // Por un enlace de invitación puede llegar otra persona al teléfono de alguien: ahí el nombre NO se precarga
-  // (revisión del rediseño, P2); se ofrece "Soy X" o "No soy X" (sesión nueva, la de X queda guardada).
-  const porInvitacion = codigoInicial != null
-  const [nombre, setNombre] = useState(() => (porInvitacion ? '' : (leerPerfil()?.nombre ?? '')))
-  const perfil = usePerfil()
-  // Si la persona escribe su nombre en el ingreso con este formulario ya en pantalla, se completa solo.
-  useEffect(() => {
-    if (perfil && !porInvitacion) setNombre((n) => n || perfil.nombre)
-  }, [perfil, porInvitacion])
-  const [separando, setSeparando] = useState(false)
-  async function noSoy(quien: string) {
-    if (separando) return
-    setSeparando(true)
-    const s = await sesionNueva(quien)
-    setSeparando(false)
-    if (!s.ok) setErrorCambio(s.mensaje)
-  }
-  const { ocupado, error, ejecutar } = useAccion()
-  // Navegador compartido: la sesión guardada ya es miembro de este espacio con otro nombre.
-  const [yaMiembro, setYaMiembro] = useState<{ espacioId: string; espacio: string; nombreActual: string } | null>(null)
-  const [confirmar, setConfirmar] = useState(false)
-  const [cambiando, setCambiando] = useState(false)
-  const [errorCambio, setErrorCambio] = useState<string | null>(null)
-  const faltan = codigo.trim() === '' || nombre.trim() === ''
-
-  function entrar(r: { espacio_id: string; reclamo_asiento_simulado: boolean }, espacio: string, sesionGuardada?: string) {
-    recordarNombreSiFalta(nombre)
-    if (r.reclamo_asiento_simulado) {
-      dejarAviso(`Reclamaste el lugar de ${nombre.trim()}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.${sesionGuardada ? ` ${sesionGuardada}` : ''}`)
-    } else if (sesionGuardada) {
-      dejarAviso(`Entraste como ${nombre.trim()}. ${sesionGuardada}`)
-    } else {
-      dejarAviso(`Te uniste a «${espacio}» como ${nombre.trim()}. Cuando haya un plan, marca si te interesa y carga en privado cuándo puedes.`)
-    }
-    irA(rutas.espacio(r.espacio_id))
-  }
-
-  async function hacer(e: FormEvent) {
-    e.preventDefault()
-    if (faltan) return
-    setYaMiembro(null)
-    setConfirmar(false)
-    setErrorCambio(null)
-    const r = await ejecutar(`join:${codigo.trim()}:${nombre.trim()}`, () =>
-      api.joinSpace(codigo.trim(), nombre.trim()),
-    )
-    if (!r?.ok) return
-    if (r.data.resultado.ya_era_miembro) {
-      // El servidor no cambia el nombre ni crea a otra persona: no se entra en silencio como quien estaba antes.
-      const yo = r.data.espacio.miembros.find((m) => m.es_yo)
-      setYaMiembro({ espacioId: r.data.resultado.espacio_id, espacio: r.data.espacio.nombre, nombreActual: yo?.nombre ?? 'otra persona' })
-      return
-    }
-    entrar(r.data.resultado, r.data.espacio.nombre)
-  }
-
-  async function entrarComoOtra() {
-    if (!yaMiembro || cambiando) return
-    const previa = yaMiembro
-    setCambiando(true)
-    setErrorCambio(null)
-    try {
-      const s = await sesionNueva(previa.nombreActual)
-      if (!s.ok) {
-        setErrorCambio(s.mensaje)
-        return
-      }
-      setYaMiembro(null)
-      setConfirmar(false)
-      const r = await ejecutar(`join-nueva:${codigo.trim()}:${nombre.trim()}`, () => api.joinSpace(codigo.trim(), nombre.trim()))
-      if (r?.ok) {
-        entrar(
-          r.data.resultado,
-          r.data.espacio.nombre,
-          s.guardada ? `La sesión de ${previa.nombreActual} quedó guardada en este navegador: para volver a ella, ve a tus espacios.` : undefined,
-        )
-      }
-    } finally {
-      setCambiando(false)
-    }
-  }
-  const otraGuardada = yaMiembro && confirmar ? leerGuardada() : null
-  return (
-    <form id="unirse" className="tarjeta unirse" onSubmit={hacer} noValidate>
-      <h2>Unirme con un código</h2>
-      <label className="campo campo-codigo">
-        <span>Código de invitación</span>
-        <input
-          value={codigo}
-          onChange={(e) => setCodigo(e.target.value)}
-          autoCapitalize="characters"
-          autoComplete="off"
-          spellCheck={false}
-          maxLength={16}
-          aria-invalid={error?.detalle === 'codigo_inexistente' ? true : undefined}
-        />
-      </label>
-      {porInvitacion && perfil ? (
-        <div className="quien-soy" role="group" aria-label="Quién usa este teléfono">
-          <p>
-            Este teléfono está como <strong>{perfil.nombre}</strong>. ¿Eres tú?
-          </p>
-          <div className="fila-botones">
-            <button type="button" className="btn btn-secundario btn-chico" onClick={() => setNombre(perfil.nombre)}>
-              Soy {perfil.nombre}
-            </button>
-            <Boton variante="secundario" className="btn-chico" onClick={() => void noSoy(perfil.nombre)} ocupado={separando} ocupadoTexto="Separando…">
-              No soy {perfil.nombre}
-            </Boton>
-          </div>
-        </div>
-      ) : null}
-      <label className="campo">
-        <span>Tu nombre en el espacio</span>
-        <input
-          autoFocus={codigoInicial != null}
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          autoComplete="nickname"
-          maxLength={30}
-          aria-invalid={error?.detalle === 'nombre_en_uso' ? true : undefined}
-        />
-        <small>Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.</small>
-      </label>
-      <Boton type="submit" className="btn-bloque" ocupado={ocupado} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado || cambiando}>
-        Unirme
-      </Boton>
-      {error ? <ErrorCaja error={error} enfocar /> : null}
-      {yaMiembro ? (
-        <Aviso tono="aviso" titulo={`Este navegador ya está en este espacio como ${yaMiembro.nombreActual}`}>
-          {confirmar ? (
-            <>
-              <p>
-                {otraGuardada
-                  ? `Este navegador ya guarda la sesión de ${otraGuardada.etiqueta}; la de ${yaMiembro.nombreActual} no se guardará y no se podrá volver a ella desde acá.`
-                  : `Se abre una sesión nueva para ti. La de ${yaMiembro.nombreActual} queda guardada en este navegador: se puede retomar desde tus espacios con "Volver a esa sesión".`}
-              </p>
-              <div className="fila-botones">
-                <Boton variante={otraGuardada ? 'peligro' : 'primario'} onClick={() => void entrarComoOtra()} ocupado={cambiando} ocupadoTexto="Cambiando de persona…">
-                  Sí, entrar como {nombre.trim() || 'otra persona'}
-                </Boton>
-                <Boton variante="secundario" onClick={() => setConfirmar(false)} disabled={cambiando}>
-                  Cancelar
-                </Boton>
-              </div>
-            </>
-          ) : (
-            <>
-              <p>
-                Si eres {yaMiembro.nombreActual}, sigue. Si eres otra persona, entra con una sesión nueva: así no ves ni cambias lo que
-                cargó {yaMiembro.nombreActual}.
-              </p>
-              <div className="fila-botones">
-                <Boton onClick={() => irA(rutas.espacio(yaMiembro.espacioId))}>Seguir como {yaMiembro.nombreActual}</Boton>
-                <Boton variante="secundario" onClick={() => setConfirmar(true)}>
-                  Entrar como otra persona
-                </Boton>
-              </div>
-            </>
-          )}
-          {errorCambio ? <p role="alert">{errorCambio}</p> : null}
-        </Aviso>
-      ) : null}
-    </form>
-  )
+/** Un solo formulario de unión (friccion, fila 43 de la tabla #102): el de "¿Quién eres?", que reclama al integrante
+ * anotado o lleva a la lista del grupo según el código. Mismos rótulos ("Código de invitación", "Tu nombre en el
+ * espacio", "Unirme") y mismo aviso de navegador compartido (#47). */
+function UnirsePortada({ deshabilitado, codigoInicial = '' }: { deshabilitado: boolean; codigoInicial?: string }) {
+  const u = useUnirse(fuenteReal)
+  const campoNombre = useRef<HTMLInputElement>(null)
+  return <UnirseConNombre codigoInicial={codigoInicial} u={u} campoNombre={campoNombre} deshabilitado={deshabilitado} vista={null} />
 }

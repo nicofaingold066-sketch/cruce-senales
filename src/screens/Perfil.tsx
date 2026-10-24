@@ -8,6 +8,7 @@ import { leerGuardada, sesionNueva } from '../lib/sesiones'
 import { Avatar, Aviso, Boton, Cargando, ErrorCaja, colorAvatar, iniciales } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { OtraSesion } from '../components/Sesiones'
+import { QueGuarda } from '../friccion/QueGuarda'
 
 // Perfil: cómo entraste a CRUXE en este navegador. No hay cuenta ni contraseña: la sesión es anónima
 // (contrato 0.1). Acá se cambia el nombre local, se ven tus grupos y se entra como otra persona sin perder la sesión.
@@ -103,6 +104,7 @@ export default function Perfil() {
         </section>
 
         <CambiarPersona nombre={perfil?.nombre ?? null} />
+        <QueGuarda />
       </div>
     </div>
   )

@@ -18,11 +18,13 @@ hora() { TZ=America/Santiago date +%H:%M; }
 # La misma lectura que guardia.mjs (ignora la frase citada entre comillas).
 migrando() { (cd "$RAIZ" && node -e "import('./tests/sinteticos/guardia.mjs').then(m=>process.exit(m.migracionEnCurso()?0:1))"); }
 
-# Una marca activa de otro agente: línea con CORRIENDO PRUEBA que no sea histórica ni una regla citada.
+# Una marca activa de otro agente.
 otros_corriendo() {
   git -C "$COORD" fetch -q origin coordinacion 2>/dev/null || return 1
   for f in $(git -C "$COORD" ls-tree --name-only origin/coordinacion agentes/ | grep '\.md$' | grep -v "$FICHA"); do
-    if git -C "$COORD" show "origin/coordinacion:$f" | grep -E 'CORRIENDO PRUEBA' | grep -v -i -E 'terminad|anotado|revisá|solap|histor|regla|antes de' | grep -q .; then
+    # Solo cuenta la marca en sí: una línea que EMPIEZA con «- CORRIENDO PRUEBA (hh:mm)» (formato de la regla del 21:16).
+    # Menciones dentro de otra frase ("el coordinador está en CORRIENDO PRUEBA…") no son una marca.
+    if git -C "$COORD" show "origin/coordinacion:$f" | grep -E '^[-*] \**CORRIENDO PRUEBA \(?[0-9]' | grep -v -i -E 'terminad' | grep -q .; then
       echo "$f"
       return 0
     fi
@@ -59,8 +61,12 @@ for g in "$@"; do
     sleep 15
     if o=$(otros_corriendo); then echo "[$(hora)] $o marcó a la vez; cedo el turno"; marcar ""; sleep 45; continue; fi
     echo "=== $g contra $URL ($(hora))"
-    (cd "$RAIZ" && node "tests/sinteticos/$g.mjs" "$URL" 2>&1 | tail -34)
+    salida="$(mktemp)"
+    (cd "$RAIZ" && node "tests/sinteticos/$g.mjs" "$URL" > "$salida" 2>&1); estado=$?
+    tail -34 "$salida"; rm -f "$salida"
     marcar "" || echo "OJO: no pude sacar la marca de la ficha"
+    # Código 3 = la guardia del guion vio una migración que empezó entre mi chequeo y su arranque: otra vuelta.
+    if [ "$estado" = "3" ]; then echo "[$(hora)] la base se ocupó justo antes de empezar; reintento"; sleep 30; continue; fi
     break
   done
 done
