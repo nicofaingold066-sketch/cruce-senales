@@ -142,13 +142,20 @@ function etiquetaDe(p: EstadoPropuesta, clave: string): string | null {
   return p.franjas.find((f) => f.clave === clave)?.etiqueta ?? null
 }
 
-/** Enmienda 15 (E-d): totales que el servidor da solo a quien organiza; null = menos de 2 (nunca quién). */
-function cifraPlan(n: number | null): string {
-  return n == null ? 'menos de 2' : String(n)
+/**
+ * Enmienda 15 (E-d): totales que el servidor da solo a quien organiza. Un número en null (menos de 2) no se muestra:
+ * así no se adivina quién (pedido de pendientes 01:42). Sin ningún número, la fila no sale.
+ */
+function textoPlan(t: { si: number | null; prefieren: number | null }): string | null {
+  const partes = [t.si != null ? `pueden ${t.si}` : null, t.prefieren != null ? `la prefieren ${t.prefieren}` : null].filter(Boolean)
+  return partes.length > 0 ? partes.join(' · ') : null
 }
 
 function Ficha({ p, viva }: { p: EstadoPropuesta; viva: PestanaProps['viva'] }) {
   const ahora = useAhora(1000)
+  const totalesPlanes = Object.entries(p.planes_totales ?? {})
+    .map(([clave, t]) => [clave, textoPlan(t)] as const)
+    .filter((x): x is readonly [string, string] => x[1] !== null)
   return (
     <details className="tarjeta plegable ficha" open={!p.opcion}>
       <summary>
@@ -177,13 +184,13 @@ function Ficha({ p, viva }: { p: EstadoPropuesta; viva: PestanaProps['viva'] }) 
             <dd>Gana la que pueden más personas; lo cuenta el servidor.</dd>
           </>
         ) : null}
-        {p.planes_totales ? (
+        {totalesPlanes.length > 0 ? (
           <>
             <dt>Cómo viene cada plan</dt>
             <dd>
-              {Object.entries(p.planes_totales).map(([clave, t]) => (
+              {totalesPlanes.map(([clave, texto]) => (
                 <div key={clave}>
-                  <strong>Franja {clave}:</strong> pueden {cifraPlan(t.si)} · la prefieren {cifraPlan(t.prefieren)}
+                  <strong>Franja {clave}:</strong> {texto}
                 </div>
               ))}
               <div className="suave">Solo lo ves tú, sin contarte a ti y sin decir quién. El servidor elige.</div>

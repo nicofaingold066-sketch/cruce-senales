@@ -19,7 +19,7 @@ type Cierre = 'dia_antes' | 'dos_dias' | 'otro'
 // Enmienda 15: las pantallas quedan listas pero APAGADAS hasta el aviso de cada migración (antes, el servidor
 // rechaza los parámetros nuevos). E-c (ronda de opiniones) llega con la 0052; E-d (nombre por plan y "Gana") con la 0053.
 const E15_RONDA = true
-const E15_DOS_PLANES = false
+const E15_DOS_PLANES = true
 
 interface Formulario {
   titulo: string

@@ -12,7 +12,7 @@ import { TomarDeCalendario } from '../friccion/Calendario'
 
 // Enmienda 15 (E-d): "¿cuál prefieres?" queda APAGADO hasta el aviso de la 0053 (antes el servidor responde
 // `disponibilidad_invalida` si llega `prefiero`).
-const E15_PREFIERO = false
+const E15_PREFIERO = true
 
 const ESTADO_COND: Record<string, string> = {
   sin_cargar: 'Sin cargar',
