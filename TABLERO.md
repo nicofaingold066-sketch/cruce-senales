@@ -1,10 +1,22 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: viernes 23 oct, 21:16 Santiago (reloj).
+Actualizado: viernes 23 oct, 21:55 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[21:55] PARA todos — CIERRE DE FUNCIONES (decisión de Nico):** la enmienda 14 (propósito del grupo, `docs/contrato-enmienda-14.md`, wip/fundamentos) está APROBADA y es la **última función nueva**. Desde ahora NADIE agrega funciones: se cierra lo que hay para que ande, se arregla lo que encontremos probando a mano y, donde haga falta, se SIMULA (calendario, avisos, lo que no esté conectado), rotulado "Simulación". Lo que más pesa en el pitch es que la demo funcione. Ideas nuevas: van a "Ideas" de tu ficha como "después del evento", no se construyen. Prioridad de cada sesión: lo que pide la enmienda 14 (si te toca), el parche de pantallas, los hallazgos de rincones, sintéticos y psico, y el guion de la demo.
+
+**[21:55] PARA backend:** enmienda 14 aprobada con los "Ajustes obligatorios" del final del contrato. Orden: (1) YA, el puente en `src/lib/types.ts` y `src/lib/api.ts` con campos opcionales, push y aviso; (2) migración **0048** (propósito, familias, `create_space` y `create_proposal` con parámetro opcional, `actividad` null aceptada, validación de familia DESPUÉS de pertenencia, re-baseline de las pruebas viejas que fijan candidatas) en la primera ventana libre; (3) **0049** (agente: filtro por familia, quórum, textos de tamaño de grupo), solo si la 0048 quedó en verde; límite duro 09:00. MIGRACION EN CURSO y commit/push inmediato como siempre.
+
+**[21:55] PARA friccion:** enmienda 14: pieza nueva `CampoProposito` ("¿Para qué es este grupo?", Libre por defecto; familias y actividades desde la tabla de `types.ts`; sin `fiesta` como actividad) para que Juan la conecte en Crear grupo, y el texto de la invitación con el propósito ("para jugar fútbol") en `compartir.ts`. Con prueba. Antes de las 00:30.
+
+**[21:55] PARA apertura:** enmienda 14: clave de actividad en cada atajo de `src/lib/ejemplos.ts` y atajos filtrables por familia (básquet, tenis, película en casa incluidos), con prueba. Antes de las 23:30. Después, actualizá el guion: la Parte A puede crear "Los del fútbol" en vivo.
+
+**[21:55] PARA qa-noche:** enmienda 14: guion `tests/e2e/proposito.mjs` (crear con Fútbol; propuesta con actividad asado → rechazada con el mensaje; pádel → aceptada; sin actividad → aceptada; invitación con "para jugar fútbol"). Corrélo apenas esté la 0048 y otra vez a las 08:30, por turno.
+
+**[21:55] PARA front-juan:** gracias por los arreglos de las 21:34–21:40, ya están integrados y en prueba. Dos cosas: (1) por favor, no empujes a `main`: entregá en `wip/front-juan` y yo publico después de correr las pruebas contra la base (así lo pidió Nico); (2) lo más importante de la noche es que apliques el parche de pantallas ya probado: `docs/parche-pantallas-juan.md` en `wip/ux` (tres comandos, un minuto). Conecta las 15 piezas de la noche. Después, `CampoProposito` de friccion en Crear grupo y la actividad en Nueva propuesta (enmienda 14).
 
 **[21:30] PARA front-juan (agregar a tu cola, después de las 4 prioridades):** `src/screens/RespuestaTab.tsx:178` todavía dice "Formas parte de la versión vigente; tu disponibilidad no puede cambiar mientras esté vigente.". Con la enmienda 13 (0046) el servidor manda: "Estás en la versión vigente. Si esta fecha no te sirve, marca «Así no puedo, pero sigo» y podrás cambiar cuándo puedes." Usá ese texto (o mostrá el `mensaje` que manda el servidor) junto al botón de friccion.
 
