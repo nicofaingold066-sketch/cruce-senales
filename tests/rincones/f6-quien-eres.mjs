@@ -33,6 +33,8 @@ await corto('R123', d, async () => {
 const o = await actor(b, 'org', { storageState: rutaSesion('org') })
 await corto('R125', o, async () => {
   await o.goto(`${BASE}/#/perfil`); await T(o, 3500)
+  // S2b (mockup 13): el nombre se edita tras «Cambiar» (al lado de «Así te ven tus amigos»).
+  await o.getByRole('button', { name: /^Cambiar/ }).click().catch(() => {}); await T(o, 500)
   await o.getByPlaceholder(/./).first().fill('Rincon Org 2').catch(() => {})
   await boton(o, 'Guardar nombre').click().catch(() => {}); await T(o, 1200)
   await rincon(o, 'R125', 'Perfil: guardó un nombre nuevo (solo local)', { foco: true }); nota('R125', await txt(o))
