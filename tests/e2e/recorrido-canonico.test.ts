@@ -327,9 +327,9 @@ describe.skipIf(BASE_OCUPADA)('recorrido canónico real · dos sesiones · contr
     const id = await preparar()
     if (!e13) return pendienteE13(ctx)
     await llamar(tomi, 'evaluate_and_publish', { p_propuesta_id: id, p_intento_id: randomUUID() })
-    // Sin "así no puedo" no hay nada que rearmar: rechazo tipado y v1 sigue vigente (el código exacto lo fija backend).
+    // Sin "así no puedo" no hay nada que rearmar: rechazo tipado (backend, 21:22) y v1 sigue vigente.
     const sinMotivo = await llamar(tomi, 'propose_repair', { p_propuesta_id: id, p_intento_id: randomUUID() }, false)
-    console.log(`E13: rearmar sin opiniones → ${sinMotivo.error.codigo}/${sinMotivo.error.detalle}`)
+    expect(sinMotivo.error).toMatchObject({ codigo: 'opcion_desactualizada', detalle: 'estado_no_admite' })
     expect((await mirar(luna, id)).opcion.version).toBe(1)
     // Con una opinión por versión: v2 y v3; la cuarta → sin_alternativa/tope_versiones. Si con dos franjas el servidor
     // no encuentra alternativa antes del tope, se anota (el tope lo cubre tests/backend/enmienda13.test.ts).
