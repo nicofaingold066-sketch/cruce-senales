@@ -3,6 +3,7 @@
 Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:56 Santiago (reloj).
 
 ## Tocando ahora
+- CORRIENDO PRUEBA (22:32) suite backend completa en serie, sin concurrencia (cierre E14), unos 4 minutos (backend)
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
