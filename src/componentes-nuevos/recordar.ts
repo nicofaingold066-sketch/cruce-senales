@@ -30,7 +30,8 @@ export function textoAviso({ motivo, titulo, cuando, enlace, cuposLibres }: Dato
   const fecha = cuando ? limpio(cuando) : ''
   switch (motivo) {
     case 'faltan':
-      return `Te lo recuerda CRUXE: para ${plan}, si todavía no respondiste, sin apuro: toca, elige tu nombre y marca cuándo puedes (es privado). Si ya respondiste, no hace falta nada: ${enlace}`
+      // Psico §16 (auditoría de tono): la app no manda recordatorios (D8) y "todavía no respondiste" reprocha.
+      return `Recordatorio para ${plan}: si aún no marcaste cuándo puedes, sin apuro: toca, elige tu nombre y marca (es privado). Si ya lo hiciste, no hace falta nada: ${enlace}`
     case 'version_nueva':
       // #100: decir qué hacer si NO puede (no confirmar), para que el "no" no vuelva al chat ni al silencio ambiguo.
       return `Hay opción para ${plan}${fecha ? `: ${fecha}` : ''}. Si vas, toca y confírmala; si no puedes, no confirmes: el plan sale solo con quienes confirman. ${enlace}`

@@ -80,7 +80,7 @@ export async function volverAGuardada(g: SesionGuardada): Promise<{ ok: true } |
   if (error || !data.session) {
     // Un error de red no invalida el token: se conserva para reintentar.
     if (error && isAuthRetryableFetchError(error)) {
-      return { ok: false, mensaje: 'Sin conexión con el servidor. La sesión sigue guardada; intenta de nuevo.' }
+      return { ok: false, mensaje: 'Sin conexión. Tu sesión sigue guardada; intenta de nuevo.' }
     }
     olvidarGuardada()
     return { ok: false, mensaje: `La sesión de ${g.etiqueta} ya no se puede recuperar en este navegador.` }

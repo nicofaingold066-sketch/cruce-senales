@@ -111,7 +111,7 @@ describe('enmienda 9, fase 1: ¿quién eres? (preview y reclamo por integrante)'
   })
 
   it('5. catálogo: 31 para authenticated, 0 para anon, una sola firma de join_space', async () => {
-    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40
+    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40; E13: 41
     for (const fn of ['preview_space_by_code', 'join_space']) {
       expect((await rpcCrudo(clienteSinSesion(), fn, PERMITIDAS[fn]())).error?.code, fn).toBe('42501')
       const b = await rpcCrudo(O, fn, PERMITIDAS[fn]())

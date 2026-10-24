@@ -1,7 +1,7 @@
 # Puente front ↔ back de CRUXE
 
 Dueño: ux-flujo (rama `wip/ux`). Se actualiza con cada entrega del equipo. Flujo y fricciones: `docs/flujo-usuario.md`.
-Base: `wip/fundamentos`, migraciones `0001` a `0041` (E10 0035-0038, E12 0039-0040, E11 0041). Actualizado: viernes 23 oct 2026, 20:48.
+Base: `wip/fundamentos`, migraciones `0001` a `0041` (E10 0035-0038, E12 0039-0040, E11 0041). Actualizado: viernes 23 oct 2026, 20:58.
 
 Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegibilidad y estado; la interfaz solo muestra. Todas las respuestas tienen la forma `{ok:true, contrato:2, servidor_ahora, …}` o `{ok:false, error:{codigo, detalle, mensaje}}`. Las escrituras que pueden repetirse llevan `p_intento_id`. Lista permitida: 40 funciones para `authenticated` (31 + 9 del agente social), 0 para `anon`.
 
@@ -35,6 +35,11 @@ Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegib
 | Preferencias `zona`, `movilidad`, `tiempo_max` (texto), `momento` **[E10: en la base, sin pantalla]** | 0035 | las cuatro preguntas en "Mis preferencias" | agente-ia #87: hecho en `wip/agente-ia` `1eaf510`, sin integrar. Leído: el panel manda las ocho claves juntas en un solo formulario, así que guardar no borra las de viaje (el riesgo de "reemplazar" queda cubierto) |
 | Actividades nuevas en `me_gustaria` (cena, bar, juegos_casa, cine, cultura, juegos_salida, cerro, cafe) **[E10 parte B: en la base, sin pantalla]** | 0036 (backend #86) | chips nuevos en preferencias | agente-ia; apertura propone el catálogo (#95) |
 
+| `opinar_version(p_propuesta_id, p_version, p_opinion 'asi_no_puedo' / 'retirar_opinion', p_intento_id)` **[E13, pendiente de aplicar; corte 01:00]** | migración de backend (número a confirmar) | botón "Así no puedo, pero sigo" junto a confirmar | componente de friccion (por armar); conecta front-juan |
+| `mi_situacion.mi_opinion` y, solo al organizador, `opiniones_totales.asi_no_puedo` (null con menos de 2) **[E13]** | misma migración | aviso "Marcaste que así no puedes" y texto de "Rearmar con lo nuevo" | `AvisoParaMi` y `RearmarConLoNuevo` HECHOS (`40481b6`), sin conectar |
+| `propose_repair` desde `esperando_compromisos` (con `puede.proponer_reparacion`), tope de 3 versiones (`sin_alternativa/tope_versiones`) **[E13]** | misma migración | "Rearmar con lo nuevo" del organizador | `RearmarConLoNuevo` HECHO, sin conectar. Forma pedida a backend 20:53 (si `puede.proponer_reparacion` refleja la condición) |
+| Baja sin nombre en respuestas compartidas ("Una persona se retiró") **[E13]** | misma migración | `PlanTab.tsx` "Bajas registradas" e Historial sin nombres | pedido a front-juan |
+
 ## 3. Lo que le falta al front y habría que pedir al back
 
 | Necesidad (vista en el recorrido) | Pedido | Estado |
@@ -65,3 +70,4 @@ Reglas que valen para todo lo de abajo: el servidor decide cupos, plazos, elegib
 | 19:50 | ux-flujo `c535212` | merge de `wip/fundamentos`; `recorrido-dos-sesiones.mjs` 23/23 contra el build 4183 | — |
 | 19:37-19:40 | agente-ia `d5d913e`, `1eaf510` (`wip/agente-ia`) | interfaz de E10: cuatro preguntas opcionales ("Prefiero no responder" saca la clave) y "Queda a menos de N minutos para todos (estimado)" | §2: filas E10 con pantalla en su rama, sin integrar. Textos en voseo ("Cómo te movés", "Hasta cuánto viajás") en una app en tuteo |
 | 20:32 | coordinador / backend | enmienda 11 (agente social) autorizada; 0041 en curso (lista permitida 31 → 40) | cuando se aplique: 9 funciones nuevas que usa solo el agente (`src/agente/**`, función `agente`); ninguna pantalla de `src/screens/**` las llama. Pendiente de registrar en §1 |
+| 20:52-20:57 | coordinador `3ace04e` (contrato E13) · ux-flujo `40481b6` | enmienda 13 aprobada por Nico (opinar sin bajarse, rearmar, baja sin nombre, asado en lugar neutro); `RearmarConLoNuevo` y avisos sin nombre listos | §2: cuatro filas nuevas de E13; lista permitida pasará a 41 |

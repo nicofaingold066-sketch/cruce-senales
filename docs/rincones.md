@@ -1,10 +1,10 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: viernes 23 oct, 20:12 (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: viernes 23 oct, 21:28 (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
-Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 14 (3 ya corregidos en `wip/friccion`)** (ninguno impide completar el recorrido canónico), el resto APROBADO.
+Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 16**, de los cuales **2 ya APROBADOS** en `main` 3ace04e (O-06 y O-08, corrida 4 `f0` 20:55) y 3 por confirmar en la misma corrida (O-02, O-12b, O-13) (ninguno impide completar el recorrido canónico), el resto APROBADO.
 Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no de función):
 1. **O-01** Cabecera a 320 px: el avatar de la sesión tapa el chip "Datos ficticios" en TODAS las pantallas con nombre.
 2. **O-02** Entrada por enlace en un navegador que ya es miembro: "¿Quién eres?" lo muestra "no disponible" y dice "Ya no queda ningún nombre libre", sin "Seguir como X".
@@ -27,15 +27,27 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | O-03 | OBSERVADO | Foco con teclado, portada con plan y tarjetas al pie (375) | Tab hasta "Tengo un código de invitación" o la tarjeta del plan: el foco queda bajo `.nav-inferior` (falta `scroll-padding-bottom`) | `202610231944/R80-375.png` | front-juan |
 | O-04 | OBSERVADO | Portada con nombre | "Tengo un código de invitación" (tarjeta) y "Unirme con un código" (formulario) aparecen a la vez, repetidos | `202610231944/R80-375.png` | front-juan |
 | O-05 | OBSERVADO | Plan en revisión, tarjeta "Versión 1 (en revisión, no confirmada)" | Texto "Conserva 1 confirmación(es) de 2 necesarias" | `202610231941/R63-375.png` | front-juan |
-| O-06 | OBSERVADO | `#/e/<id que no es uuid>` | Pantalla "Falla temporal. Intenta de nuevo. Reintentar" (el servidor responde 400); reintentar nunca va a andar. Un id mal escrito no es una falla temporal | `202610231928/R07b-375.png` | friccion — **CORREGIDO en `wip/friccion` `05e148d`/`dc26ba4` (20:00): "Este enlace no lleva a ningún grupo"; pendiente de integrar** |
+| O-06 | OBSERVADO | `#/e/<id que no es uuid>` | Pantalla "Falla temporal. Intenta de nuevo. Reintentar" (el servidor responde 400); reintentar nunca va a andar. Un id mal escrito no es una falla temporal | `202610231928/R07b-375.png` | friccion — **CORREGIDO en `wip/friccion` `05e148d`/`dc26ba4` (20:00): "Este enlace no lleva a ningún grupo". **APROBADO en `main` 3ace04e (corrida 4, `f0`, 20:55)** |
 | O-07 | OBSERVADO (leve) | Avatares con iniciales (todas las pantallas) | Texto de 10,4 px y contraste 3,0–3,6:1 en "AN", "BE", "CA" | `202610231931/R25-375.png` | front-juan |
-| O-08 | OBSERVADO (leve) | `#/unirse/<código inexistente>` | El título dice "Te invitaron a un plan · Elige tu nombre" aunque el código no existe; el error está arriba y el resto sigue como si sirviera | `202610231928/R04-375.png` | friccion — **CORREGIDO en `wip/friccion` `05e148d`: "Esta invitación no existe"; pendiente de integrar** |
+| O-08 | OBSERVADO (leve) | `#/unirse/<código inexistente>` | El título dice "Te invitaron a un plan · Elige tu nombre" aunque el código no existe; el error está arriba y el resto sigue como si sirviera | `202610231928/R04-375.png` | friccion — **CORREGIDO en `wip/friccion` `05e148d`: "Esta invitación no existe". **APROBADO en `main` 3ace04e (corrida 4, `f0`, 20:55)** |
 | O-09 | OBSERVADO (leve) | Propuesta cancelada | "Cancelado" dos veces seguidas (tarjeta de estado y aviso) | `202610231944/R89-375.png` | front-juan |
 | O-10 | OBSERVADO | Nueva propuesta, "No puede faltar" | Con integrantes que todavía no entraron ("por entrar"), la lista los ofrece igual que a los demás y no avisa que, si el elegido no entra, no se puede publicar una opción (R141/R143/R144) | `202610231956/R141-375.png` | front-juan |
 | O-11 | OBSERVADO | Agente del círculo, resultado en un grupo real | Voseo ("Elegís vos", "completás") en una app que tutea; la opción "Asado · Quincho de Tomi" y los lugares marcados "SIMULACIÓN" aparecen en un grupo que no es el demo | `202610231958/R154-375.png` | agente-ia |
 | O-12 | OBSERVADO (leve) | Avisos repetidos | (a) Sin red en un plan: banner global + banner "Sin conexión" del plan + error del botón (R161); (b) contrato incompatible: "Versión incompatible" arriba y "No se pudo completar · Versión incompatible" debajo (R170); (c) "Hoy paso" aparece deshabilitado sin explicación mientras no se marque "Me interesa" (R162) | `202610232002/R161-375.png`, `202610232004/R170-375.png` | front-juan (a, c) / friccion (b) |
 | O-13 | OBSERVADO (leve) | Falla al iniciar la sesión anónima | El texto dice "el inicio de sesión anónimo puede estar deshabilitado en el proyecto": lenguaje técnico para una persona que solo abrió el enlace (R173) | `202610232004/R173-375.png` | friccion |
 | O-14 | OBSERVADO | Demo, pestaña Simulación a **320 px** | (a) La pestaña "Simulación" se sale de la pantalla (262–360 de 320); (b) en cada persona simulada la etiqueta "SIMULACIÓN" queda tapada por la insignia "Sin versión publicada" ("SIMUL…") | `202610231946/R104-320.png` | front-juan |
+| O-16 | OBSERVADO (decisión) | Chip "Datos ficticios" del encabezado | Aparece en TODAS las pantallas, también en un grupo real con personas de verdad (`App.tsx:85`, fricción 19 de `docs/flujo-usuario.md`); un grupo real podría leerlo como "esto no vale". Y a 320 px lo pisa el avatar (O-01) | `202610231931/R25-320.png` | **Decidido (21:10, ux-flujo `603678e`, tabla #102 H3): el chip se queda.** Cerrado como aceptado; lo único que sigue abierto es O-01 (a 320 px lo pisa el avatar) |
+
+## Accesibilidad a fondo (método, `tests/rincones/a11y.mjs`; se aplica a la demo en `f12`)
+Rincones de la demo en el orden del jurado, en 320, 375 y 1280 px. Por rincón:
+- **Lector de pantalla:** se guarda el árbol accesible (`<id>-aria.yml`: lo que un lector anuncia) y se revisa `lang`, `<title>`, un solo `h1` y sin saltos de nivel, regiones, nombre accesible de cada control, etiquetas de campos (no solo placeholder), grupos de opciones con nombre, pestañas con panel real, nada enfocable dentro de `aria-hidden`, imágenes con nombre, ids repetidos.
+- **Anuncios:** tras cada acción ("Guardado…", "Te toca confirmar…", "Respuesta guardada") se comprueba que el texto esté en una región viva (`aria-live`, `status`, `alert`) o reciba el foco; si no, el lector se queda mudo.
+- **Teclado:** recorrido completo con Tab: primera parada "Saltar al contenido", indicador visible en cada parada (se compara el estilo con y sin foco), que lo enfocado no quede bajo la barra superior ni la inferior, y dónde queda el foco al cambiar de pantalla.
+- **Contraste:** medido sobre los píxeles de la captura (vale con degradés y transparencias): 4,5:1, o 3:1 en texto grande; placeholders incluidos.
+- **Tamaño de objetivo:** 24×24 (WCAG 2.5.8) con la excepción de espaciado.
+- **320 px y espaciado (WCAG 1.4.12):** texto que se corta al forzar interlineado 1,5, letras 0,12 em y palabras 0,16 em.
+- **Movimiento reducido:** con `prefers-reduced-motion` la entrada, la órbita y el confeti deben quedarse quietos.
+Autoprueba del módulo: `node tests/rincones/prueba-a11y/correr.mjs` (página local con fallas sembradas; las detecta todas, sin tocar la base).
 
 ## Inventario de rincones
 (Estado: A = APROBADO, O = OBSERVADO, R = ROTO, — = pendiente de recorrer.)
@@ -47,11 +59,11 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | R01 | Portada, sesión anónima nueva, sin nombre | `#/` | ojo | A | |
 | R02 | Portada: nombre vacío o de 60 caracteres | `#/` | auto | A | Entrar deshabilitado; el campo corta en 30 |
 | R03 | Portada: código inexistente | `#/` | ojo | A | "El código de invitación no existe", campo en rojo |
-| R04 | Enlace con código inexistente | `#/unirse/ZZZZ9999` | ojo | O (O-08) | |
+| R04 | Enlace con código inexistente | `#/unirse/ZZZZ9999` | ojo | **A desde 20:55** (O-08 corregido por friccion) | "Esta invitación no existe. Revisa que el enlace esté completo o pide uno nuevo…" |
 | R05 | Enlace mal copiado (`%`, 2 caracteres) | `#/unirse/%` | auto | A | Aviso "Ese enlace de invitación no es válido" y portada |
 | R06 | Ruta desconocida | `#/cosa-rara/x/y` | auto | A | Cae en la portada |
 | R07 | Espacio inexistente (uuid válido) | `#/e/0000…` | ojo | A | "No perteneces a este espacio o el elemento no existe" + "Volver a tus espacios" |
-| R07b | Espacio con id que no es uuid | `#/e/no-es-uuid` | ojo | O (O-06) | |
+| R07b | Espacio con id que no es uuid | `#/e/no-es-uuid` | ojo | **A desde 20:55** (O-06 corregido por friccion) | "Este enlace no lleva a ningún grupo… Ir a tus espacios" |
 | R08 | Propuesta inexistente | `#/e/<uuid>/p/<uuid>` | auto | A | |
 | R09 | Nueva propuesta en espacio inexistente | `#/e/<uuid>/nueva` | auto | A | |
 | R10 | Planes sin grupos | `#/planes` | auto | A | "Todavía no hay planes" |
@@ -176,6 +188,37 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | R171 | 500 al abrir un espacio: "Falla temporal. Intenta de nuevo." + Reintentar (sana al reintentar) | auto | A |
 | R172 | Respuesta lenta: "Cargando el espacio…" con esqueleto | auto | A |
 | R173 | No se pudo iniciar la sesión anónima: Reintentar | ojo | O (O-13) |
+
+### Respuesta en un paso (#88) y chip Datos ficticios (`f11` 20:43 sobre `main` 7f2423e; se repite en la corrida 4 sobre 3ace04e)
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| R200 | Invitación con la lista de integrantes y una propuesta ya abierta | auto | A |
+| R201 | "¿Cuándo puedes?" en un paso: "Puedo los dos días", "Solo el sábado 31 oct", "Solo el domingo 1 nov", "No puedo ninguno", "Todavía no sé: ver el plan"; dice que es privado y que responder no es confirmar | ojo | A |
+| R202 | Tras tocar una opción: "Respuesta guardada", "¿Avisar al grupo que te interesa?" (opcional), "Ver el plan", "Cambiar mi respuesta", "Contar mis gustos y presupuesto" | ojo | A (320 y 375 bien) |
+| R203 | Calendario simulado "Tomar de mi calendario (Simulación)" en Responder (solo demo) | — | pendiente (`f12`) |
+| R230 | Chip "Datos ficticios" en el encabezado | ojo | A como producto (O-16 decidido: se queda); O-01 sigue a 320 px |
+
+### Por llegar: enmienda 13, modalidad de la invitación y "¿Qué guarda CRUXE de mí?" (filas reservadas; se recorren cuando estén en `main`)
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| R240 | Mi respuesta: "Así no puedo, pero sigo" junto a confirmar (opinar sin bajarse, E13-a); después puede volver a cargar disponibilidad y confirmar | — | pendiente |
+| R241 | Plan del organizador: "Rearmar con lo nuevo" desde esperando compromisos ("Algunos no pueden así…"), versión N+1 sin aceptaciones; tope de 3 versiones | — | pendiente |
+| R242 | Baja sin nombre en historial, eventos y "siguiente acción" de otros ("Una persona se retiró"); a quien se retira: "Gracias por avisar. No hace falta contar por qué." | — | pendiente |
+| R243 | Agente: "Parrilla del parque (Simulación)" como candidata de asado en lugar neutro | — | pendiente |
+| R244 | Invitación con modalidad (quién viene: solo el grupo / con pareja / abierta) en el texto de WhatsApp: `compartir.ts` ya trae `FRASE_QUIEN_VIENE`; falta la pantalla que lo elige | — | pendiente |
+| R245 | Plegable "¿Qué guarda CRUXE de mí?" en "¿Quién eres?" y "¿Cuándo puedes?" (`wip/friccion` 366b7af, todavía no en `main`) | — | pendiente |
+| R246 | Calendario `.ics` con dos recordatorios (víspera y 2 h antes) y líneas plegadas a 75 octetos (`compartir.ts`): abrirlo en un calendario real | — | pendiente (solo se puede mirar el archivo) |
+
+### Piezas de ux-flujo, galería sin red ni base (`galeria-ux.mjs` sobre `wip/ux` 3013850, 21:27; build propio en 4199)
+26 casos de `AvisoParaMi`, `RecordarFaltan` (4 motivos), `RearmarConLoNuevo` (con tope y errores), `AyudaRetiro` (4 momentos) y `BuscarLugar`, en 320 y 375 px, con auditoría visual y de accesibilidad. Texto completo de cada caso y de cada enlace en `galeria-texto.md` de la carpeta de capturas.
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| G01 | `AvisoParaMi` (9 casos): tono sin nombres ("Una persona se retiró"), "Esta versión no te incluye", "Si no llegan 4, nadie queda comprometido", "Así no puedes, pero sigues", "Gracias por avisar. No hace falta contar por qué." | ojo (320 y 375) | A |
+| G02 | `RecordarFaltan` (4 motivos): mensaje al grupo sin nombres ni cantidades; enlaces `wa.me` con `rel="noopener noreferrer"`; "Copiar mensaje" | ojo | A |
+| G03 | `RearmarConLoNuevo`: 2 y 3 "así no puedo", tope ("Ya van tres versiones"), 1 persona no dibuja nada (no delata), sin otra fecha, cambiaron las respuestas | ojo | A |
+| G04 | `AyudaRetiro` (4 momentos): textos distintos antes de la opción, con y sin enmienda 13, ya confirmó ("sin decir quién") | ojo | A |
+| G05 | `BuscarLugar`: abre Google Maps con el nombre del plan, "CRUXE no sabe desde dónde sales"; en el demo no dibuja nada | ojo | A |
+Observaciones (ninguna rompe nada): (1) el caso "Organizador a menos de 36 h del cierre, con pendientes" sale vacío hoy porque el cierre fijo de la galería está a 7 días; para verlo hay que acercar la fecha (es un límite de la galería, no del componente); (2) `RearmarConLoNuevo` usa el id fijo `rearmar-titulo`: si dos aparecieran a la vez se repetiría (en la app hay uno solo; con `useId` quedaría a salvo); (3) los botones de estas piezas miden 52 px de alto en teléfono: bien para el pulgar. Accesibilidad: sin otras fallas (la galería no tiene `<main>` ni cabecera porque es una página de prueba).
 
 ## Pendiente de recorrer
 "Entrar como otra persona" confirmado, reclamar un lugar simulado libre del demo, "Hoy paso" ya marcado, plazo vencido (expirado), cierre elegido a mano con fecha pasada, y los cuatro anchos de cada rincón mirados a ojo (hoy `auto` en varios). Se repite lo afectado tras cada publicación en `main`.

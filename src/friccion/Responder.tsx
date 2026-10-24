@@ -11,9 +11,12 @@ import { useAccion } from '../lib/hooks'
 import { dejarAviso, rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { diaDe, hora } from '../lib/format'
 import { vibrar } from '../lib/tacto'
-import { Aviso, Boton, Cargando, DiaTile, ErrorCaja } from '../components/ui'
+import { Boton, Cargando, DiaTile, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
 import { TomarDeCalendario } from './Calendario'
+import { QueGuarda } from './QueGuarda'
+import { miOpinion } from './opinar'
+import { sinQuienViene } from '../lib/compartir'
 import './friccion.css'
 
 interface Opcion {
@@ -62,7 +65,7 @@ export function opcionesRapidas(franjas: Franja[]): Opcion[] | null {
 type Carga =
   | { fase: 'cargando' }
   | { fase: 'error'; error: ApiError }
-  | { fase: 'lista'; p: EstadoPropuesta; espacio: string; demo: boolean; yo: string | null; organizador: boolean }
+  | { fase: 'lista'; p: EstadoPropuesta; espacio: string; demo: boolean; yo: string | null; organizador: boolean; reabierta: boolean }
 
 /** Busca la única propuesta que esta persona puede responder ahora; si no hay una sola, sale (ver `salir`). */
 function usePropuestaPorResponder(espacioId: string, propuestaId?: string) {
@@ -96,17 +99,24 @@ function usePropuestaPorResponder(espacioId: string, propuestaId?: string) {
       (x) => !x.plazo_vencido && !x.mi_situacion.retirado && x.estado !== 'cancelado' && x.estado !== 'expirado',
     )
     // Con una propuesta pedida (botón "Responder en un toque" dentro de un plan), solo esa.
-    const abiertas = vivas.filter((x) => x.estado === 'reuniendo_interes' && (!propuestaId || x.id === propuestaId))
-    if (abiertas.length !== 1) return salir(propuestaId ? (vivas.find((x) => x.id === propuestaId) ?? null) : vivas.length === 1 ? vivas[0] : null)
-    const e = await api.getProposalState(abiertas[0].id)
+    const mias = vivas.filter((x) => !propuestaId || x.id === propuestaId)
+    const abiertas = mias.filter((x) => x.estado === 'reuniendo_interes')
+    // Enmienda 13: con "así no puedo" marcado en la versión vigente, también se vuelve a responder en un toque.
+    const esperando = mias.filter((x) => x.estado === 'esperando_compromisos')
+    const candidata = abiertas.length === 1 ? abiertas[0] : abiertas.length === 0 && esperando.length === 1 ? esperando[0] : null
+    const sinNada = propuestaId ? (vivas.find((x) => x.id === propuestaId) ?? null) : vivas.length === 1 ? vivas[0] : null
+    if (!candidata) return salir(sinNada)
+    const e = await api.getProposalState(candidata.id)
     if (!e.ok) return setCarga({ fase: 'error', error: e.error })
-    if (e.data.sin_cambios === true) return salir(abiertas[0])
+    if (e.data.sin_cambios === true) return salir(candidata)
     const p = e.data.propuesta
     const s = p.mi_situacion
-    if (!s.puede.guardar_condiciones || s.condiciones === 'completas' || !opcionesRapidas(p.franjas)) return salir(abiertas[0])
+    const reabierta = p.estado === 'esperando_compromisos' && miOpinion(s) === 'asi_no_puedo'
+    const corresponde = p.estado === 'reuniendo_interes' ? s.condiciones !== 'completas' : reabierta
+    if (!s.puede.guardar_condiciones || !corresponde || !opcionesRapidas(p.franjas)) return salir(candidata)
     const espacio = esp.data.espacio
     const yo = espacio.miembros.find((m) => m.es_yo)?.nombre ?? s.nombre
-    setCarga({ fase: 'lista', p, espacio: espacio.nombre, demo: espacio.demo, yo, organizador: espacio.mi_rol === 'organizador' })
+    setCarga({ fase: 'lista', p, espacio: sinQuienViene(espacio.nombre), demo: espacio.demo, yo, organizador: espacio.mi_rol === 'organizador', reabierta })
   }, [espacioId, propuestaId, salir])
 
   useEffect(() => {
@@ -198,7 +208,9 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
         </h1>
         <p className="escena-sub">
           {!elegida
-            ? 'Toca una opción y listo. Solo el servidor ve lo que respondes; el grupo no sabe qué elegiste.'
+            ? lista.reabierta
+              ? 'Marcaste que así no puedes. ¿Cuándo sí? Toca una opción: si se rearma, cuenta esto. Es privado: nadie del grupo lo ve.'
+              : 'Toca una opción y listo. Es privado: nadie del grupo ve qué elegiste.'
             : Object.values(elegida.disponibilidad).includes('si')
               ? s.es_organizador
                 ? 'Cuando el grupo haya respondido, busca una opción compatible desde el plan.'
@@ -247,7 +259,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
                 franjas={p.franjas}
                 semilla={s.miembro_id}
                 deshabilitado={soloLectura || guardar.ocupado}
-                textoUsar="Marcar lo que dice mi agenda"
+                textoUsar="Ver qué sugiere mi agenda"
                 onTomar={(d) => {
                   const o = opciones.find((x) => p.franjas.every((f) => x.disponibilidad[f.clave] === d[f.clave]))
                   if (!o) return
@@ -272,21 +284,6 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
             <p className="suave">
               Guardado. Solo tú ves estas condiciones. Puedes cambiarlas en el plan mientras se reúnen respuestas.
             </p>
-            {algunSi && s.puede.marcar_interes && !s.interesado ? (
-              <Aviso
-                tono="info"
-                titulo="¿Avisar al grupo que te interesa?"
-                accion={
-                  <Boton variante="secundario" onClick={() => void marcarInteres()} ocupado={interes.ocupado} disabled={soloLectura}>
-                    Me interesa
-                  </Boton>
-                }
-              >
-                Es opcional: el grupo verá tu nombre entre los interesados. Interés no es confirmación.
-              </Aviso>
-            ) : null}
-            {interesNota ? <p role="status">{interesNota}</p> : null}
-            {interes.error ? <ErrorCaja error={interes.error} enfocar /> : null}
             <div className="entrada-botones">
               <a className="btn btn-primario" href={verPlan}>
                 Ver el plan
@@ -295,6 +292,20 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
                 Cambiar mi respuesta
               </Boton>
             </div>
+            {algunSi && s.puede.marcar_interes && !s.interesado ? (
+              // sinteticos: después de las acciones y más bajo, porque la escena acaba de decir que la respuesta es privada.
+              <div className="rapida-interes">
+                <p className="suave">
+                  ¿Quieres avisar al grupo que te interesa? Es opcional, y esto sí lo ve el grupo: tu nombre entre los interesados. Interés
+                  no es confirmación.
+                </p>
+                <Boton variante="secundario" onClick={() => void marcarInteres()} ocupado={interes.ocupado} disabled={soloLectura}>
+                  Me interesa
+                </Boton>
+              </div>
+            ) : null}
+            {interesNota ? <p role="status">{interesNota}</p> : null}
+            {interes.error ? <ErrorCaja error={interes.error} enfocar /> : null}
             <a
               className="rapida-preferencias"
               href={rutas.espacio(espacioId)}
@@ -321,6 +332,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
             <p>Nadie del grupo ve qué días puedes. Responder no es confirmar: eso viene después, con una sola opción.</p>
           </div>
         </div>
+        <QueGuarda />
       </div>
     </div>
   )

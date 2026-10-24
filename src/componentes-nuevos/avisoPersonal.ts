@@ -1,6 +1,5 @@
 // Aviso personal arriba de la propuesta (ux-flujo, recorrido real #98). Lógica pura, sin React.
 // Cubre dudas vistas en pantalla y los textos de psico (docs/psicologia-grupo.md §8.1, §8.6):
-// - El organizador que no puede faltar busca opción antes de responder y recibe "Sin opción compatible".
 // - Quien no es elegible en la versión ve "Grupo confirmado" y "4 se juntan" sin enterarse de que es sin él/ella.
 // - Quien se baja: "Gracias por avisar. No hace falta contar por qué." (lo que daña es mentir sobre el motivo, F1).
 // - Plan en revisión: sin nombre ni motivo de quien se bajó; al organizador, dos salidas y ninguna culpa.
@@ -8,10 +7,15 @@
 // - Quien puede confirmar: "Tu confirmación solo vale si llegan N; si no, nadie queda comprometido" (psico §8.9,
 //   causa 5: nadie quiere ir primero; el mínimo ya funciona como contrato de aseguramiento, hay que decirlo).
 // - Organizador, cerca del cierre: "Hoy conviene recordar…" (psico §8.9). No envía nada: lo envía una persona.
+// - Enmienda 13: quien marcó "Así no puedo, pero sigo" ve que sigue en el plan; la baja se dice "Una persona se
+//   retiró", sin nombre ni motivo (13 (c)). Ningún aviso nombra a nadie: ni a quien consulta ni a los demás.
 // Solo mira datos de quien consulta (mi_situacion), el imprescindible y los cupos públicos: nunca de otra persona.
 import type { EstadoPropuesta } from '../lib/types'
 
-export type DatosAvisoParaMi = Pick<EstadoPropuesta, 'estado' | 'imprescindible' | 'mi_situacion'> &
+/** `mi_opinion` llega con la enmienda 13 (a); opcional para que funcione con o sin ella. */
+export type MiSituacionE13 = EstadoPropuesta['mi_situacion'] & { mi_opinion?: 'asi_no_puedo' | null }
+
+export type DatosAvisoParaMi = Pick<EstadoPropuesta, 'estado' | 'imprescindible'> & { mi_situacion: MiSituacionE13 } &
   Partial<Pick<EstadoPropuesta, 'opcion' | 'minimo'>>
 
 /** Lo que la pantalla ya sabe y formatea: el cierre en texto y cuántas horas faltan según la hora del servidor. */
@@ -24,13 +28,13 @@ export interface ContextoAviso {
 
 export interface AvisoParaMi {
   clave:
-    | 'primero_tu_disponibilidad'
     | 'version_sin_ti'
     | 'te_retiraste'
     | 'cambio_el_plan'
     | 'gracias_por_moverlo'
     | 'solo_vale_si_llegan'
     | 'hoy_conviene_recordar'
+    | 'marcaste_asi_no_puedo'
   tono: 'info' | 'aviso' | 'ok'
   titulo: string
   texto: string
@@ -39,7 +43,7 @@ export interface AvisoParaMi {
 }
 
 export function avisoParaMi(
-  { estado, imprescindible, mi_situacion: yo, opcion, minimo }: DatosAvisoParaMi,
+  { estado, mi_situacion: yo, opcion, minimo }: DatosAvisoParaMi,
   { plazoTexto, horasAlCierre }: ContextoAviso = {},
 ): AvisoParaMi | null {
   if (yo.retirado) {
@@ -59,26 +63,19 @@ export function avisoParaMi(
           clave: 'cambio_el_plan',
           tono: 'aviso',
           titulo: 'Cambió el plan',
-          texto: `${cuantos} Puedes buscar otra fecha o ver otra forma de juntarse.`.trim(),
+          texto: `Una persona se retiró. ${cuantos} Puedes buscar otra fecha o ver otra forma de juntarse.`.replace(/\s+/g, ' ').trim(),
           irARespuesta: false,
         }
       : {
           clave: 'cambio_el_plan',
           tono: 'info',
           titulo: 'Cambió el plan',
-          texto: `${cuantos} Si sale una versión nueva, las confirmaciones anteriores no cuentan: confírmala de nuevo si te sirve.`.trim(),
+          texto: `Una persona se retiró. ${cuantos} Si sale una versión nueva, las confirmaciones anteriores no cuentan: si esa te sirve, la confirmas.`.replace(/\s+/g, ' ').trim(),
           irARespuesta: false,
         }
   }
-  if (estado === 'reuniendo_interes' && imprescindible.miembro_id === yo.miembro_id && yo.condiciones !== 'completas') {
-    return {
-      clave: 'primero_tu_disponibilidad',
-      tono: 'aviso',
-      titulo: 'Primero marca tu disponibilidad',
-      texto: 'Eres quien no puede faltar: sin tu respuesta no hay opción posible.',
-      irARespuesta: true,
-    }
-  }
+  // "Primero marca tu disponibilidad" (imprescindible sin condiciones en `reuniendo_interes`) ya no va acá: lo dicen la
+  // próxima acción del servidor (enmienda 12 (a)) y `FaltaTuRespuesta` de friccion, con el acceso a responder en un toque.
   if ((estado === 'esperando_compromisos' || estado === 'grupo_confirmado') && yo.elegible_en_version === false) {
     // Los elegibles se fijan al publicar la versión (0002_utilidades.sql:262; accept_version los revisa en
     // 0005_api_motor.sql:135): completar ahora no te suma a ESTA versión, solo cuenta si el plan se rearma.
@@ -86,9 +83,9 @@ export function avisoParaMi(
     return {
       clave: 'version_sin_ti',
       tono: 'info',
-      titulo: 'Esta versión es sin ti',
+      titulo: 'Esta versión no te incluye',
       texto: incompleta
-        ? 'Tu disponibilidad quedó incompleta, así que no entraste en esta versión. Si la completas, cuenta si el plan se rearma.'
+        ? 'Se armó sin tu disponibilidad completa. Si la completas, cuenta si el plan se rearma.'
         : 'Con lo que marcaste, esta fecha no te queda. No tienes que hacer nada.',
       irARespuesta: incompleta && yo.puede.guardar_condiciones === true,
     }
@@ -101,9 +98,21 @@ export function avisoParaMi(
         clave: 'hoy_conviene_recordar',
         tono: 'info',
         titulo: 'Hoy conviene recordar',
-        texto: `Faltan ${pendientes} por confirmar${plazoTexto ? ` y se cierra ${plazoTexto}` : ''}. CRUXE no manda avisos solo: el recordatorio lo mandas tú.`,
+        // Psico §16: con 1 no se da el número (en un grupo chico se adivina quién falta).
+        texto: `${pendientes >= 2 ? `Faltan ${pendientes} por confirmar` : 'Aún faltan confirmaciones'}${plazoTexto ? ` y se cierra ${plazoTexto}` : ''}. CRUXE no manda avisos por su cuenta: el recordatorio lo mandas tú.`,
         irARespuesta: false,
       }
+    }
+  }
+  if (estado === 'esperando_compromisos' && yo.mi_opinion === 'asi_no_puedo' && !yo.acepte_version) {
+    return {
+      clave: 'marcaste_asi_no_puedo',
+      tono: 'info',
+      // El mismo texto que la tarjeta de friccion (`TEXTO_ASI_NO_PUEDO`, src/friccion/AsiNoPuedo.tsx), para que la
+      // persona lea lo mismo arriba del plan y en su respuesta.
+      titulo: 'Así no puedes, pero sigues',
+      texto: 'Marcaste que así no puedes. Sigues en el plan: si se rearma, cuenta lo que marques ahora.',
+      irARespuesta: yo.puede.guardar_condiciones === true,
     }
   }
   if (estado === 'esperando_compromisos' && yo.elegible_en_version === true && !yo.acepte_version && typeof minimo === 'number') {
