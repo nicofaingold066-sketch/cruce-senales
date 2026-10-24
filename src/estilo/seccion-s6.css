@@ -476,3 +476,22 @@
     animation: none;
   }
 }
+
+/* Ajustes tras las capturas de 03:07: la flecha no queda sola, "Editar ›" no se corta y los chips van debajo del rótulo. */
+.agente-plegable-boton {
+  position: relative;
+  padding-right: 28px;
+}
+.agente-plegable-flecha {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.agente-linea-fila .agente-enlace {
+  flex: none;
+  white-space: nowrap;
+}
+.agente-chips-rotulo {
+  flex-basis: 100%;
+}

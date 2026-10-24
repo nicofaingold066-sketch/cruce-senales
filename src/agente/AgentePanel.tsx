@@ -423,7 +423,7 @@ function Plegable({
     <div className="agente-plegable-seccion">
       <button type="button" className="agente-plegable-boton" aria-expanded={abierto} aria-controls={id} onClick={() => onCambio(!abierto)}>
         <span className="agente-plegable-titulo">{titulo}</span>
-        {!abierto ? <span className="agente-plegable-resumen">{resumen}</span> : null}
+        {!abierto && resumen ? <span className="agente-plegable-resumen">{resumen}</span> : null}
         <span aria-hidden="true" className="agente-plegable-flecha">{abierto ? '▴' : '▾'}</span>
       </button>
       {abierto || mantener ? (
