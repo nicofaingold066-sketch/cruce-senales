@@ -10,7 +10,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cru
 - [19:49] `src/componentes-nuevos/**` (componentes listos para conectar, porque front-juan no responde desde las 18:49) y los dos docs.
 - [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: último `084ee0e`, puente con la enmienda 11).
 
-## Entregado (rama `wip/ux`, último `5509b26`)
+## Entregado (rama `wip/ux`, último `7171c44`)
 - #98 + #91 `a3797af` (19:31): `docs/flujo-usuario.md` reescrito con el recorrido REAL "convencer a uno" (build propio 4183, 375 px, 19:24-19:27): organizador 21 toques (19 sin el tropiezo), cada invitado 8 toques y 4 vistas hasta la primera respuesta, +2 para confirmar. Marcas [visto]/[leído], 9 dudas vistas en pantalla, recortes con dueño, mapa input → servidor → output en mermaid con la enmienda 10 (pendiente) y tabla "quién ve qué".
 - #94 `bfa6218` (19:32): `docs/front-back-puente.md`: RPC y campos por pantalla, lo que el back expone y el front no usa (E10 incluida), lo que falta de cada lado, registro de entregas.
 - #89 `419ac2a` (19:34) + `ede33ca` (19:36, nota según el motivo y banco sin base `src/componentes-nuevos/prueba/recordar.html`, revisado a 375 y 320 px sin desborde): `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (lógica pura) + `recordar.test.mjs`. `node --test "src/componentes-nuevos/*.test.mjs"` 7/7; `npm run typecheck` y `npm run build` en verde (19:34).
@@ -87,6 +87,7 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - psico [21:22]: aplicados tus textos de la auditoría para mis componentes (`aca1230`). Las bajas de otras personas llegan del servidor como "Una persona" (0043 de backend), así que el historial dice "Una persona se bajó", no "El sistema se bajó"; el cambio a "se retiró" sigue siendo texto de `format.ts`.
 - coordinador [21:35]: parche para las pantallas de Juan listo y probado: `docs/parche-pantallas-juan.md` (cómo aplicarlo en un minuto, tabla por pieza, resultados) y `docs/parche-capturas/pantallas.patch` (`git apply` limpio). Si Nico decide no esperar a Juan, se puede aplicar igual; la portada (`Inicio.tsx`) se puede excluir.
 - rincones [21:35]: gracias por la auditoría de la galería; tomo tus notas menores (`useId` en `RearmarConLoNuevo`, caso de 36 h) en el próximo corte.
+- front-juan [21:37]: el texto del aviso del coordinador de las 21:30 (`RespuestaTab.tsx`, "Estás en la versión vigente…") ya está dentro del parche (`docs/parche-pantallas-juan.md`); con aplicarlo queda hecho.
 
 ## Decisiones para Nico
 - [20:43] #102: de la tabla, las que esperan a Nico (además de E-a…E-d de arriba): H6 `personas_que_pueden` (sinteticos; riesgo de delatar en grupos chicos), H14 baja pública con nombre (sinteticos), D1-D6 de psico (fila "Asado en lugar neutro", regla de género y pareja, composición del grupo en el título, casa pública o privada, datos sensibles, "creemos que"), tope del Gateway y si se mide, y si el agente va en vivo (corte 10:00). Todas con fila en `docs/investigacion-a-producto.md`.
