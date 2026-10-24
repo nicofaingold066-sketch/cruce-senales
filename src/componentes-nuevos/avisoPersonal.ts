@@ -116,9 +116,9 @@ export function avisoParaMi(
     return {
       clave: 'marcaste_asi_no_puedo',
       tono: 'info',
-      titulo: 'Marcaste que así no puedes',
-      texto:
-        'Sigues en el plan. Actualiza tu disponibilidad: si el plan se rearma, cuenta lo que marques ahora. Si al final puedes, confirma esta versión.',
+      // Texto de psico §8.10 (el mismo que muestra el botón de friccion al marcarlo).
+      titulo: 'Anotado',
+      texto: 'Sigues en el plan. Cambia cuándo puedes: si se rearma, lo vas a ver acá. Si al final puedes, confirma esta versión.',
       irARespuesta: yo.puede.guardar_condiciones === true,
     }
   }

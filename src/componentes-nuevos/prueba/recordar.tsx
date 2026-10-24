@@ -43,7 +43,7 @@ function Banco() {
           irARespuesta={() => {}}
         />
         <RearmarConLoNuevo p={propuestaFalsa(1, 2)} viva={vivaFalsa} codigo="ABCD1234" />
-        <RearmarConLoNuevo p={propuestaFalsa(3, null)} viva={vivaFalsa} codigo="ABCD1234" />
+        <RearmarConLoNuevo p={propuestaFalsa(3, 2)} viva={vivaFalsa} codigo="ABCD1234" />
         <AvisoParaMi p={{ estado: 'grupo_confirmado', imprescindible: vale, mi_situacion: yo({ condiciones: 'completas', elegible_en_version: true }) }} />
         <section className="tarjeta">
           <h2>Reuniendo interés (organizador)</h2>

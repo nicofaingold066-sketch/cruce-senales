@@ -7,10 +7,11 @@ const org = (puede = true, extra = {}) => ({
   miembro_id: 'm-vale', nombre: 'Vale', es_organizador: true, es_organizador_espacio: true,
   puede: { proponer_reparacion: puede }, ...extra,
 })
-const base = (extra = {}) => ({ estado: 'esperando_compromisos', mi_situacion: org(), opcion: { version: 1 }, ...extra })
+const base = (extra = {}) => ({ estado: 'esperando_compromisos', mi_situacion: org(), opcion: { version: 1 }, opiniones_totales: { asi_no_puedo: 2 }, ...extra })
 
 test('el servidor decide: sin puede.proponer_reparacion no se muestra nada', () => {
   assert.equal(vistaRearmar(base({ mi_situacion: org(false) })), null)
+  assert.equal(vistaRearmar(base({ mi_situacion: org(false), opiniones_totales: { asi_no_puedo: 4 } })), null)
 })
 
 test('solo para el organizador y solo en esperando_compromisos', () => {
@@ -20,15 +21,15 @@ test('solo para el organizador y solo en esperando_compromisos', () => {
   }
 })
 
-test('con 2 o más "así no puedo" dice cuántos; con null no da número', () => {
+test('con 2 o más "así no puedo" dice cuántos; con 0 o 1 no se muestra nada (delataría)', () => {
   const con = vistaRearmar(base({ opiniones_totales: { asi_no_puedo: 2 } }))
   assert.equal(con?.clave, 'rearmar')
+  assert.equal(con.titulo, 'Algunos no pueden así')
   assert.equal(con.boton, 'Rearmar con lo nuevo')
-  assert.equal(con.texto, '2 personas no pueden con esta versión. La versión 2 usa la disponibilidad actualizada y empieza sin confirmaciones: quien ya confirmó tiene que volver a confirmar.')
-  const sin = vistaRearmar(base({ opiniones_totales: { asi_no_puedo: null } }))
-  assert.match(sin.texto, /^La versión 2 usa la disponibilidad actualizada/)
-  assert.doesNotMatch(sin.texto, /\d+ persona/)
-  assert.equal(vistaRearmar(base()).texto, sin.texto)
+  assert.equal(con.texto, '2 personas marcaron que así no pueden. Puedes rearmar con lo nuevo: la versión 2 usa la disponibilidad actualizada y empieza sin confirmaciones; quien ya confirmó vuelve a confirmar si le sirve.')
+  assert.equal(vistaRearmar(base({ opiniones_totales: { asi_no_puedo: null } })), null)
+  assert.equal(vistaRearmar(base({ opiniones_totales: { asi_no_puedo: 1 } })), null)
+  assert.equal(vistaRearmar(base({ opiniones_totales: undefined })), null)
 })
 
 test('tope de versiones: aviso sin botón; la última posible se avisa antes', () => {
@@ -38,6 +39,8 @@ test('tope de versiones: aviso sin botón; la última posible se avisa antes', (
   assert.equal(vistaRearmar(base()).nota, 'Se puede rearmar hasta la versión 3.')
   const v3 = vistaRearmar(base({ opcion: { version: 3 } }))
   assert.equal(v3.clave, 'tope_versiones')
+  assert.equal(v3.titulo, 'Ya van tres versiones')
+  assert.equal(v3.texto, 'Pueden quedarse con esta o probar otro día con un plan nuevo.')
   assert.equal(v3.boton, null)
   const porError = vistaRearmar(base(), { codigo: 'sin_alternativa', detalle: 'tope_versiones' })
   assert.equal(porError.clave, 'tope_versiones')
