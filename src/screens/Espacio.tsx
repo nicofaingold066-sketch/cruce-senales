@@ -184,7 +184,7 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
           <a className="escena-volver" href={rutas.espacio(espacioId)}>
             <Icono n="atras" tam={20} /> {espacio.nombre}
           </a>
-          <h1 id="agente-pantalla-titulo">Agente del círculo</h1>
+          <h1 id="agente-pantalla-titulo">GRU</h1>
         </section>
         <div className="hoja">
           {/* Siempre abierto: el summary oculto queda para los guiones que lo tocan (no lo pliega). */}
@@ -300,7 +300,7 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
               }}
             >
               <span className="summary-texto">
-                <span id="agente-titulo">Agente del círculo</span>
+                <span id="agente-titulo">GRU · Agente del círculo</span>
               </span>
               <span className="s2-abrir">Abrir ›</span>
             </summary>
