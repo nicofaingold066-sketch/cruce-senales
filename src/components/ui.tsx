@@ -247,4 +247,3 @@ export function DiaTile({ local }: { local: string }) {
     </span>
   )
 }
-
