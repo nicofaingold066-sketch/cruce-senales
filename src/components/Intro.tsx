@@ -1,6 +1,7 @@
 // Dos personas se cruzan, se enciende la X y aparece CRUXE. SVG y CSS propios, sin video ni red.
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import './Intro.css'
+import { parseRuta } from '../lib/shell'
 
 const CLAVE = 'cruxe:entrada-vista'
 const DURACION_MS = 2600
@@ -37,7 +38,11 @@ function movimientoReducido(): boolean {
 
 /** Primera visita a la app, también al llegar desde una invitación. No depende de Auth ni cambia la ruta. */
 export function useEntrada() {
-  const [visible, setVisible] = useState(() => !yaVista() && !movimientoReducido())
+  // La intro es de la portada: quien llega por una invitación (#/unirse, #/e/…, #/responder) va directo a lo suyo.
+  const [visible, setVisible] = useState(() => {
+    const ruta = parseRuta(window.location.hash).nombre
+    return !yaVista() && !movimientoReducido() && (ruta === 'inicio' || ruta === 'entrar' || ruta === 'crear')
+  })
   useEffect(() => {
     // Se recuerda también si se omitió por movimiento reducido; nunca escribir en el inicializador de React.
     marcarVista()

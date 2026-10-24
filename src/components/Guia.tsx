@@ -47,9 +47,9 @@ const HORARIOS = [
   { dia: 'Domingo', hora: '14:00 a 17:00' },
 ]
 const PASOS = [
-  { nombre: 'La idea', titulo: 'Ese “hay que juntarnos” merece un plan.', descripcion: 'Elegí algo que les cope para compartir con el grupo.' },
-  { nombre: 'Cuándo', titulo: 'Vos decís cuándo. En privado.', descripcion: 'CRUXE busca una opción compatible sin mostrar tus horarios al grupo.' },
-  { nombre: 'Confirmar', titulo: 'El último toque es tuyo.', descripcion: 'Cada persona confirma la misma versión del plan. Probá con la tuya.' },
+  { nombre: 'La idea', titulo: 'Ese “hay que juntarnos” merece un plan.', descripcion: 'Elige algo que les guste para compartir con el grupo.' },
+  { nombre: 'Cuándo', titulo: 'Tú dices cuándo. En privado.', descripcion: 'CRUXE busca una opción compatible sin mostrar tus horarios al grupo.' },
+  { nombre: 'Confirmar', titulo: 'El último toque es tuyo.', descripcion: 'Cada persona confirma la misma versión del plan. Prueba con la tuya.' },
 ]
 
 /** Ejemplo local: sus botones solo cambian esta escena; nunca llaman a la API ni confirman un plan real. */
@@ -91,9 +91,9 @@ export function Guia({ alCerrar }: { alCerrar: () => void }) {
   }
 
   const respuesta = paso === 0
-    ? plan === null ? 'Tocá una idea. Acá empieza el encuentro.' : `${elegido.detalle}. ¡Ya tenemos una idea!`
+    ? plan === null ? 'Toca una idea. Acá empieza el encuentro.' : `${elegido.detalle}. ¡Ya tenemos una idea!`
     : paso === 1
-      ? horario === null ? 'Tocá el día que te sirve.' : 'Respuesta de ejemplo guardada. Tu horario queda privado.'
+      ? horario === null ? 'Toca el día que te sirve.' : 'Respuesta de ejemplo guardada. Tu horario queda privado.'
       : confirmado ? '¡4 de 4! Así se ve un grupo confirmado.' : 'En este ejemplo, otras 3 personas ya confirmaron.'
 
   return (
@@ -153,14 +153,14 @@ export function Guia({ alCerrar }: { alCerrar: () => void }) {
 
               <div className="cruxe-guia__grupo">
                 <div className={`cruxe-guia__avatares${paso === 2 && confirmado ? ' cruxe-guia__avatares--juntos' : ''}`} aria-hidden="true">
-                  {['T', 'L', 'M', 'VOS'].map((nombre) => <span key={nombre} className="cruxe-guia__avatar">{nombre}</span>)}
+                  {['T', 'L', 'M', 'TÚ'].map((nombre) => <span key={nombre} className="cruxe-guia__avatar">{nombre}</span>)}
                 </div>
                 <p className="cruxe-guia__grupo-nombre">Los del finde</p>
               </div>
 
               {paso === 0 ? (
                 <div className="cruxe-guia__objetivo">
-                  <div className="cruxe-guia__planes" role="group" aria-label="Elegí un plan de ejemplo">
+                  <div className="cruxe-guia__planes" role="group" aria-label="Elige un plan de ejemplo">
                     {PLANES.map((p, i) => (
                       <button key={p.nombre} type="button" className="cruxe-guia__opcion" aria-pressed={plan === i} onClick={() => { if (plan !== i) setConfirmado(false); setPlan(i) }}>
                         <IconoPlan indice={i} /><span>{p.nombre}</span>
@@ -171,7 +171,7 @@ export function Guia({ alCerrar }: { alCerrar: () => void }) {
                 </div>
               ) : paso === 1 ? (
                 <div className="cruxe-guia__objetivo">
-                  <div className="cruxe-guia__horarios" role="group" aria-label="Elegí tu disponibilidad de ejemplo">
+                  <div className="cruxe-guia__horarios" role="group" aria-label="Elige tu disponibilidad de ejemplo">
                     {HORARIOS.map((h, i) => (
                       <button key={h.dia} type="button" className="cruxe-guia__horario" aria-pressed={horario === i} onClick={() => { if (horario !== i) setConfirmado(false); setHorario(i) }}>
                         <Icono n={horario === i ? 'confirmado' : 'calendario'} tam={24} />
@@ -236,7 +236,7 @@ function Cursor() {
       <svg width="30" height="38" viewBox="0 0 30 38" fill="none" focusable="false">
         <path d="M3 2L26 21L16 23L11 34L3 2Z" fill="#ff9764" stroke="#20110b" strokeWidth="2.5" strokeLinejoin="round" />
       </svg>
-      <span>Probá acá</span>
+      <span>Prueba acá</span>
     </span>
   )
 }

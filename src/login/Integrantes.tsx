@@ -32,7 +32,7 @@ export function CampoIntegrantes({
       if (n.length > 30) avisos.push(`${n.slice(0, 30)}… es muy largo (hasta 30 letras).`)
       else if (igual(tuNombre, n) || lista.some((a) => igual(a, n))) avisos.push(`${n} ya está en la lista.`)
       else if (lista.length >= MAX_INTEGRANTES) {
-        avisos.push(`Hasta ${MAX_INTEGRANTES} personas por ahora.`)
+        avisos.push(`Hasta ${MAX_INTEGRANTES} personas en la lista; el resto entra con el enlace.`)
         break
       } else {
         lista.push(n)
