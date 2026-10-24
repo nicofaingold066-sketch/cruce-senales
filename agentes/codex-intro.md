@@ -5,10 +5,16 @@ Pedido directo del usuario en Codex: «Sí, te autorizo a modificar la entrada. 
 Rama propia: `codex/intro-primera-visita`. Copia: `/Users/macair/cruse/cruce-intro`, desde `origin/main`.
 
 ## Tocando ahora
-- Pedido directo nuevo: «Dale, que desde Ayuda también se pueda volver a ver todo el recorrido, incluida la animación del inicio.» Continúa el alcance ya autorizado de implementación/publicación.
-- `src/App.tsx`: Ayuda abre animación y, al terminar/saltarla, guía desde paso1; nombre accesible actualizado.
-- `src/components/Intro.tsx`: reapertura manual sin borrar marcas de primera visita; conservar preferencia de movimiento reducido y restaurar foco al disparador de Ayuda.
-- Rama `codex/intro-primera-visita`; typecheck/build + navegador con Auth/RPC interceptadas; integrar/publicar solo este ajuste aprobado si pasa. Sin cambios de estilos, sesiones, rutas ni backend.
+Vacío. Recorrido completo desde Ayuda implementado, integrado y publicado.
+
+## Ayuda: repetir intro y guía (publicado)
+Pedido directo: «Dale, que desde Ayuda también se pueda volver a ver todo el recorrido, incluida la animación del inicio.» Continuó el alcance ya autorizado de implementación/publicación.
+
+Objetivo cumplido: sí. **`9a15539723264b542a0344c0ef8bde659edb9196`**, `codex/intro-primera-visita`, integrado por fast-forward atómico a `origin/wip/fundamentos` y `origin/main` desde `4e90813`. Archivos: **`src/App.tsx`, `src/components/Intro.tsx`** (10 líneas agregadas, 4 retiradas). Ayuda vuelve a abrir intro y luego guía desde paso1; Saltar/Escape de intro llevan a la guía. Al terminar, devuelve el foco al disparador y conserva ruta/formularios y marcas de primera visita. Movimiento reducido lleva directo a guía; cambiar la preferencia durante intro también funciona. Sin cambios de estilos, dependencias, sesiones ni backend.
+
+Typecheck/build/diff-check verdes; revisión independiente de arquitectura/foco. **13/13 casos locales y 13/13 sobre assets publicados**, incluidas secuencia automática/Saltar/Escape, repetición desde cero, cierre/foco, recarga sin repetición automática, formulario de crear grupo conservado, preferencia de movimiento y vistas375/1280. Cero pageerrors y ninguna acción sobre datos reales; Auth/RPC/WS totalmente interceptados. Sin suites contra base.
+
+Vercel **success**: https://vercel.com/nicofaingold066-sketchs-projects/cruce-senales/FReFzL2uyMAXB5ZZjiwexYkuFLsw. Producción https://cruce-senales.vercel.app/ HTTP200 (también GET estándar sin query) sirve **`/assets/index-Dj3EWALd.js`**, CSS `index-T88rqN0I.css`; SHA256 en manifiesto. Evidencia durable `/Users/macair/.codex/visualizations/2026/10/24/01a16d9b-0e5a-7f83-ad7a-d94e81c53cb8/guia-cruxe/ayuda-completa/{local,produccion}/`; arnés `/tmp/cruxe-ayuda-completa/verificar.mjs`. No quedan bloqueos.
 
 ## Publicación de la guía aprobada
 Pedido directo de Nico: «Dale, me gusta cómo quedó. Integralo y publicalo así ya aparece en la app.» Autorizó integrar/publicar esta guía como excepción al circuito previo del coordinador.
