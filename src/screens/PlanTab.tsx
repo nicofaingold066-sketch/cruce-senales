@@ -262,7 +262,7 @@ function OpcionVigente({
         {/* Enmienda 7 (E7.2): solo el organizador recibe este conteo; con null no se muestra. */}
         {o.cupos.pendientes != null ? (
           <div className="cifra">
-            <dt>Faltan por responder</dt>
+            <dt>Faltan por confirmar</dt>
             <dd>
               <strong>{o.cupos.pendientes}</strong>
               <span className="visualmente-oculto"> {o.cupos.pendientes === 1 ? 'persona' : 'personas'}</span>
