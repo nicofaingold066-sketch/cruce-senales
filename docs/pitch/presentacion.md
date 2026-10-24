@@ -2,14 +2,14 @@
 
 Sesión **presentacion**, sábado 24 oct 2026. Fuente editable: Figma Slides «CRUXE — Pitch Makana» (https://www.figma.com/slides/OLK75B9kmObV6t1P3cG2gN, privado de la cuenta de Nico). Copia exportada: [`presentacion.pdf`](presentacion.pdf) (8 diapositivas, 1920×1080). Las notas del orador están en Figma (vista de presentador).
 
-Sigue la guía de bolsillo de Nico y el guion de la sesión **pitch** (`docs/pitch/guion-pitch.md`, rama `pitch`). El caso de ejemplo es «El plan que no deja a nadie afuera» (siete compañeros de trabajo), texto dado por Nico. Los pasos de la demo en la diapositiva 5 no nombran personas, para que sirvan con cualquier demo (la de hoy es Makana). El chat de la diapositiva 1 es del grupo ficticio «Los amigos Makana». No se usa el asado como ejemplo en pantalla. Todo ficticio.
+Sigue la guía de bolsillo de Nico y el guion de la sesión **pitch** (`docs/pitch/guion-pitch.md`, rama `pitch`). El caso de ejemplo es «El plan que no deja a nadie afuera» (siete amigos), texto dado por Nico. Los pasos de la demo en la diapositiva 5 no nombran personas, para que sirvan con cualquier demo (la de hoy es Makana). El chat de la diapositiva 1 es del grupo ficticio «Los amigos Makana». No se usa el asado como ejemplo en pantalla. Todo ficticio.
 
 Cada diapositiva tiene el mismo encabezado (logo CRUXE a la izquierda, número y bloque con el minuto a la derecha) y, abajo, tres pistas «Para decir» para no trabarse. Componentes en Figma: «Encabezado CRUXE», «Etiqueta de bloque», «Pista para decir».
 
 | # | Bloque · minuto | En pantalla | Para decir (pistas) |
 |---|---|---|---|
 | 1 | Gancho · 0:00 | «Che, ¿cuándo nos juntamos?» | Manos arriba · déjenla arriba si nunca pasó · pausa 2 s |
-| 2 | Problema · 0:30 | Siete compañeros: «Siempre la misma propuesta: pádel y comida» + lo que nadie dice (gratis, traslado simple, algo tranquilo) | El plan no le sirve a todos · nadie explica sus razones · 8 de octubre: 6 interesados, 0 encuentros |
+| 2 | Problema · 0:30 | Siete amigos: «Siempre la misma propuesta: pádel y comida» + lo que nadie dice (gratis, traslado simple, algo tranquilo) | El plan no le sirve a todos · nadie explica sus razones · 8 de octubre: 6 interesados, 0 encuentros |
 | 3 | Conflicto · 1:10 | «WhatsApp sirve para hablar del plan. No para cerrarlo.» Privado · Compromiso · Reparar | Con los dedos · «las que probamos» · el cierre |
 | 4 | Solución · 1:50 | «Que el encuentro ocurra.» 4 pasos | La frase lenta · un paso por dedo · «Juan, mostrémoslo» |
 | 5 | Demo en vivo · 2:10 | Pasos de la demo sin nombres (la demo en vivo es Makana) + 2 capturas de producción | Pausa antes de que alguien se baje; narrar con los nombres de la demo en pantalla (`docs/pitch/demo-en-vivo.md`, rama `pitch`) |
