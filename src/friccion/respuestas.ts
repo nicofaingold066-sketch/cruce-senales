@@ -3,7 +3,7 @@
 // (sinteticos H24: "Solo el sábado · Asado en el parque"). Los rótulos siguen empezando igual ("Puedo los dos días",
 // "Solo el …", "No puedo ninguno"): los guiones los buscan por ese comienzo.
 import type { Disponibilidad, Franja, Preferencia } from '../lib/types'
-import { diaDe, hora } from '../lib/format'
+import { diaDe, horarioTexto, sinHoraDeFin } from '../lib/format'
 
 export interface Opcion {
   id: string
@@ -17,8 +17,9 @@ export interface Opcion {
 }
 
 const mismoDia = (a: Franja, b: Franja) => a.inicio.local.slice(0, 10) === b.inicio.local.slice(0, 10)
-const horario = (f: Franja) => `${hora(f.inicio.local)} a ${hora(f.fin.local)}`
-const cuando = (f: Franja) => `${diaDe(f.inicio.local)}, ${horario(f)}`
+const horario = (f: Franja) => horarioTexto(f.inicio, f.fin)
+// Sin hora de fin: "Sábado 31 oct desde las 14:00 · sin hora de fin" (sin coma antes de "desde").
+const cuando = (f: Franja) => `${diaDe(f.inicio.local)}${sinHoraDeFin(f.inicio, f.fin) ? ' ' : ', '}${horario(f)}`
 const etiqueta = (f: Franja) => f.etiqueta?.trim() || null
 
 /** El nombre corto del plan de esa franja, o su día si no tiene nombre. */
