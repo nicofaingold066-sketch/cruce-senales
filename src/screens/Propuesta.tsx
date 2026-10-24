@@ -31,9 +31,8 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
   const [avisoPrevio, setAvisoPrevio] = useState<string | null>(() => tomarAviso())
   const versionPrevia = useRef<number | null>(null)
 
-  // El espacio (nombre, demo y el código de invitación de "Recordar a quien falta") llega con un get_space aparte. Si
-  // falla, se vuelve a pedir con cada refresco de la propuesta (sondeo de 3 s) mientras siga sin llegar; con el
-  // espacio cargado no se pide más. Un pedido en vuelo no se repite ni se descarta por el refresco siguiente.
+  // Los integrantes y la actividad del grupo se refrescan junto al plan: los ingresos y salidas deben verse
+  // también si la persona permanece en esta pantalla. Se conserva una sola petición de espacio en vuelo.
   const montado = useRef(true)
   const pidiendoEspacio = useRef(false)
   useEffect(() => {
@@ -44,7 +43,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
   }, [])
   const refrescoPropuesta = viva.recibidoEn
   useEffect(() => {
-    if (espacio || pidiendoEspacio.current) return
+    if (pidiendoEspacio.current) return
     pidiendoEspacio.current = true
     void api
       .getSpace(espacioId)
@@ -54,7 +53,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
       .finally(() => {
         pidiendoEspacio.current = false
       })
-  }, [espacioId, espacio, refrescoPropuesta])
+  }, [espacioId, refrescoPropuesta])
 
   const nombreYo = p?.mi_situacion.nombre ?? espacio?.miembros.find((m) => m.es_yo)?.nombre ?? null
   const rol = p ? (p.mi_situacion.es_organizador_espacio ? 'organizador' : 'miembro') : null

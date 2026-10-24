@@ -1,0 +1,160 @@
+/* Participación pública: solo nombres y actos explícitos. Usa los tokens de ambos temas. */
+.participacion-publica {
+  min-width: 0;
+  color: var(--tinta);
+}
+.participacion-cabecera,
+.participacion-cabecera h2,
+.participacion-subtitulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.participacion-cabecera {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.participacion-cabecera h2 {
+  margin: 0;
+  min-width: 0;
+  font-size: var(--t-subtitulo);
+}
+.participacion-cabecera h2 svg {
+  flex: none;
+}
+.participacion-version,
+.participacion-conteo {
+  border: 1px solid var(--linea);
+  border-radius: 999px;
+  background: var(--relleno);
+  color: var(--tinta-2);
+  font-size: var(--t-nota);
+  font-weight: 700;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+.participacion-categoria + .participacion-categoria {
+  margin-top: 16px;
+}
+.participacion-subtitulo {
+  justify-content: space-between;
+  margin: 0 0 8px;
+  font-size: var(--t-cuerpo);
+  line-height: 1.4;
+  color: var(--tinta);
+}
+.participacion-subtitulo > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.participacion-personas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+.participacion-persona {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--linea);
+  border-radius: var(--r-s);
+  background: var(--relleno);
+}
+.participacion-persona .avatar {
+  flex: none;
+}
+.participacion-persona-texto {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+.participacion-nombre {
+  color: var(--tinta);
+  font-size: var(--t-cuerpo);
+  line-height: 1.35;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.participacion-tu {
+  font-size: var(--t-nota);
+  font-weight: 500;
+}
+.participacion-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--tinta-2);
+  font-size: var(--t-nota);
+  line-height: 1.4;
+}
+.participacion-estado svg {
+  flex: none;
+}
+.participacion-persona-confirmo,
+.participacion-persona-entro {
+  border-color: var(--ok);
+  background: var(--ok-suave);
+}
+.participacion-persona-confirmo .participacion-estado,
+.participacion-persona-entro .participacion-estado {
+  color: var(--ok);
+  font-weight: 700;
+}
+.participacion-persona-por_entrar {
+  border-style: dashed;
+  border-color: var(--revision);
+  background: var(--revision-suave);
+}
+.participacion-persona-por_entrar .participacion-estado {
+  color: var(--revision);
+  font-weight: 700;
+}
+.participacion-persona-simulada {
+  border-style: dashed;
+  border-color: var(--sim);
+  background: var(--sim-suave);
+}
+.participacion-persona-simulada .participacion-estado,
+.participacion-simulacion {
+  color: var(--sim-texto);
+  font-size: var(--t-nota);
+}
+.participacion-nota,
+.participacion-vacio,
+.participacion-revision {
+  margin: 8px 0 0;
+  font-size: var(--t-nota);
+  line-height: 1.5;
+  color: var(--tinta-2);
+  overflow-wrap: anywhere;
+}
+.participacion-revision {
+  padding: 8px 10px;
+  border-left: 3px solid var(--revision);
+  background: var(--revision-suave);
+  color: var(--revision);
+}
+.resultado .resultado-nombres {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  line-height: 1.5;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 720px) {
+  .participacion-personas {
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  }
+}
+@media (max-width: 359px) {
+  .participacion-persona {
+    flex-direction: column;
+  }
+}

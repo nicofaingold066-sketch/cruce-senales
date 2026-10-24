@@ -1,6 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../lib/api'
+import { IntegrantesGrupo } from '../participacion-publica'
 import type { ApiError, Espacio as EspacioT, Momento, PropuestaResumen } from '../lib/types'
 import { useAccion, useSondeo } from '../lib/hooks'
 import { irA, parseRuta, rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
@@ -241,6 +242,7 @@ export default function Espacio({ espacioId, fondo = false }: { espacioId: strin
       </section>
 
       <div className="hoja">
+        <IntegrantesGrupo espacio={espacio} />
         <ActividadGrupo actividad={espacio.actividad} espacioId={espacio.id} ahora={servidorAhora} />
         {aviso ? (
           <Aviso tono="ok" accion={<button type="button" className="btn btn-secundario btn-chico" onClick={() => setAviso(null)}>Entendido</button>}>
