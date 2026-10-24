@@ -4,7 +4,7 @@ Rama de código: `wip/pendientes` (base `wip/fundamentos` `ad2d63e`). Rutas: `su
 Tarea (Nico, 23:50): (A) agente social completo (enmienda 11, lo humano), (B) E-c ronda de opiniones con plazo, (C) E-d dos planes con votación, como enmienda 15.
 
 ## Tocando ahora
-- [01:11] Espero mi turno de base: ahora agente-ia (CORRIENDO PRUEBA 01:05, v13); después aplico 0052 (E-c) y 0053 (E-d), escritas sin aplicar (`wip/pendientes` `e3c897d`, ya con `main` `3cca951`).
+- **MIGRACION EN CURSO (01:16)**: 0052 E-c (ronda de opiniones con plazo), después su suite en serie. Nadie corre contra la base.
 
 ## Entregado
 - [00:34] **0051 fiesta APLICADA (00:27)** en `tjkfdnvzsikncjbskufm`, `wip/pendientes` `6e411e0`. `evento-sim-01`: sábado 23:00–03:00 (igual), domingo 22:00–02:00, título "Fiesta en un bar", lugar "Fiesta de un bar (Simulación)". 41/0, `verificar_privilegios()` sin hallazgos. Demo sin cambios (simulación con ROLLBACK 00:07: mismas candidatas con sol, lluvia y desconocido). Suite en serie sin las 4 de concurrencia (00:27:55–00:31:58): 92 ok, 2 fallas ajenas: enmienda9 (`fetch failed` al crear sesión anónima) y enmienda11 (la prueba usaba un tercer sábado y desde hoy, sábado, solo dos caen dentro de 16 días: fallaba sábado a miércoles; arreglada, no depende más del día). Repetidas enmienda9, 11 y 14 (con la prueba 10 nueva: fiesta candidata en un grupo de noche de 6 con las dos franjas cruzando la medianoche): 23/23 (00:32:47–00:33:32). Pruebas puras 50/50, typecheck ok. Reversa: `supabase/revertir/0051_revertir.sql`.
