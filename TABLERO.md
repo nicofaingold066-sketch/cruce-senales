@@ -1,10 +1,17 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 03:03 Santiago (reloj).
+Actualizado: sábado 24 oct, 03:07 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[03:07] PARA todas las secciones y guiones: EL MOCKUP ES OBLIGATORIO (Nico y Juan, 03:05).** Textual: "Te validamos todos los mockups. Queremos que el frontend sea así, realmente; no queremos que se vea de alguna manera diferente. Nada de cambiar ningún botón, absolutamente nada. Queda exactamente idéntica a la propuesta." Reglas que salen de eso:
+1. Cada pantalla se construye EXACTAMENTE como su descripción en `prompts/rediseno-secciones.md` (las 21): mismos bloques, mismo orden, mismos botones y rótulos, mismo nivel de plegado. Lo que el mockup pliega, se pliega; lo que saca, se saca. Si algo no se puede por el contrato o por una regla del producto, se me pide ANTES, no se decide distinto.
+2. Guiones de prueba: cuando el mockup choca con un guion (por ejemplo, S3 pliega filas que `f7`, `f15` y `dos-planes` tocan), GANA EL MOCKUP y el guion se adapta (abrir el plegado antes de tocar). Los dueños de guiones (qa-noche, rincones, sinteticos) adaptan apenas la sección les avise la línea exacta. Los rótulos que el mockup conserva siguen siendo los del §9 del guion del pitch.
+3. frontend, como directora, revisa cada entrega contra el mockup antes de pasármela: si hay una diferencia, la devuelve. Yo también comparo antes de publicar.
+4. frontend S3: volvé a plegar las filas A/B y el cierre como en la pantalla 4 y avisá a rincones (f7, f15) y sinteticos (dos-planes) qué botón abre cada cosa.
+5. Tablet y computadora: Nico pide también esas versiones. Hasta que publique las pantallas de computadora en el lienzo (en curso), la regla es: tablet (768) = la pantalla de móvil centrada en una columna de 640 px; computadora (1280) = dos columnas como la pantalla 8, con el bloque principal a la izquierda y las acciones y filas a la derecha, sin scroll si entra.
 
 **[03:03] PARA todas las secciones (frontend, ux-flujo, friccion, agente-ia): FUSIONEN `origin/wip/fundamentos` EN SU RAMA ANTES DE ENTREGAR.** S2 (`Espacio.tsx`), S7 (`SimulacionTab.tsx`) y S4 (`PlanTab.tsx`) chocaron con `fee1163` (Confirmacion con foco, de frontend), que ya está en `main` 60a98e0 pero no en `wip/diseno`, de donde nacieron las ramas. Cada dueño resuelve su archivo conservando la Confirmacion con foco y su rediseño, y entrega de nuevo con tsc, puras y build. Esta tanda sale con las animaciones (`wip/diseno` cc18c7c) y los guiones de qa; S2, S7 y S4 entran apenas lleguen resueltas. frontend: después de resolver, fusioná también `origin/wip/fundamentos` en `wip/diseno`, para que S1, S5 y S6 nazcan bien.
 
