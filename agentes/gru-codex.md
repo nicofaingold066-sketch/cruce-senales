@@ -5,7 +5,7 @@ Pedido directo de Nico en Codex (24 oct): integrar el personaje aprobado, llamad
 Rama propia `codex/gru-vivo`, copia aislada `/Users/macair/cruse/cruce-gru`, base `origin/main` `7f47a88`.
 
 ## Tocando ahora
-Nico autorizó explícitamente integrar y publicar: «Sí, pasalo a main y publicalo así lo pruebo en la app». Esta instrucción nueva habilita la publicación de este cambio visual ya probado pese al congelamiento anterior. Integrar origin/main actual en `codex/gru-vivo` y publicar por el Git deployment existente. Sólo GRU: `src/agente/GruAsistente.tsx`, `src/agente/gru-asistente.css`; conservar intacto el main reciente con demo Makana/participación. Build/typecheck y QA ficticia antes y después del deploy. Sin base/modelos/migraciones.
+Vacío. Arrastre integrado a main y publicado por autorización directa de Nico. Checkout limpio, sin procesos de QA ni turno de base.
 
 ## Verificación
 Typecheck, build y navegador local con fixtures ficticios y red externa interceptada. Comprobar navegación, estados de éxito/error/sin opción, teclado, movimiento reducido, móvil 320/375 y escritorio 1280. Cero consultas pagas o escrituras en la base.
@@ -49,3 +49,13 @@ Arrastrar con mouse o dedo, umbral de 6 px para conservar tap/clic, captura de p
 Validación final: TypeScript y build Vite pasan, diff --check limpio. QA Playwright/Chrome sobre main08aa6e2+drag: **10/10** casos principales y **2/2** zoom2x/horizontal812x240. Mouse real, touch nativo CDP, microgesto, link, panel centro/4 esquinas y botón cerrar real, cancel, rutas/scroll/resize, Alt+flechas, Enter/Space/Escape y movimiento reducido. Cero errores JS, cero escrituras ni llamadas reales a DB/modelos; todo transporte ficticio interceptado. Revisión independiente de código sin hallazgos pendientes tras corregir z-order/ancho/alto del panel.
 
 Evidencia fuera del repo: `/Users/macair/.codex/visualizations/2026/10/24/01a16df4-5928-7463-bcde-e790d4ad173a/gru-drag-qa/` (`drag-report.json`, `viewport-report.json`, scripts y capturas). La ubicación se reinicia al recargar la app. Listo para integración del coordinador o publicación si Nico lo pide.
+
+
+## Publicación de arrastre completada (24 oct)
+Autorización directa de Nico: «Sí, pasalo a main y publicalo así lo pruebo en la app». Se integró main vigente `018215d` (demo Makana y participación conservados) en `codex/gru-vivo` con GRU `9c046d1`. Resultado **`e7a3fc190fac13a6c8b536fe5c971e2e910053c4`**, subido mediante avance normal/atómico a `codex/gru-vivo` y `main`, sin force push. Diff contra main anterior: exclusivamente `src/agente/GruAsistente.tsx` y `src/agente/gru-asistente.css`. No se cambió backend, función ni configuración.
+
+Pruebas sobre el merge: TypeScript, build Vite y diff --check verdes; Vitest puro src **50/50** con configuración ficticia; drag principal **10/10** y viewport **2/2**, repetidos sobre el merge exacto. Ninguna prueba contra base ni modelo.
+
+GitHub/Vercel marca **success** para el commit exacto. Target final https://vercel.com/nicofaingold066-sketchs-projects/cruce-senales/8p1zhZszWyYuywfGsikrCogHTXvQ . Alias https://cruce-senales.vercel.app HTTP200 y sirve `index-BzA-qLh2.js`, `Icono-DDD5ohuG.js` (contiene data-manual/data-arrastrando y ayuda de teclado), CSS `index-CyQw66Mj.css`. El primer HTML durante la propagación devolvió otro hash; las 4 pruebas finales cargaron consistentemente index-BzA-qLh2.
+
+Humo sobre frontend público **4/4** (375 y1280, mouse/touch): drag real, posición conservada al navegar, clic/tap abre pestaña GRU y sin mini duplicada. Cero errores JS/consola, solicitudes reales de DB/modelos o escrituras: Auth/RPC totalmente interceptados con fixtures ficticios, activos públicos reales de producción. Capturas inspeccionadas. Evidencia en `gru-drag-qa/{deployment.json,produccion-drag-report.json,production-drag-qa.mjs,produccion-*.png}` fuera del repo. Main remoto confirmado en e7a3fc1; checkout limpio.
