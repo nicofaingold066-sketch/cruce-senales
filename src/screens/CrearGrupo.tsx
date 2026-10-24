@@ -13,6 +13,7 @@ import { CampoQuienViene } from '../friccion/QuienViene'
 import { CampoProposito } from '../friccion/Proposito'
 import type { Proposito } from '../friccion/propositos'
 import { conQuienViene } from '../lib/compartir'
+import '../estilo/seccion-s2.css'
 import type { QuienViene } from '../lib/compartir'
 
 // Crear un grupo propio (un "espacio" del contrato). Solo lo social: el tipo queda fijo en "amigos"
@@ -82,7 +83,7 @@ export default function CrearGrupo() {
   }
 
   return (
-    <div className="vista">
+    <div className="vista vista-s2">
       <section className="escena" aria-labelledby="crear-titulo">
         <a className="escena-volver" href={rutas.inicio()}>
           <Icono n="atras" tam={20} /> Inicio
@@ -90,8 +91,7 @@ export default function CrearGrupo() {
         <span className="escena-eyebrow">Nuevo grupo</span>
         <h1 id="crear-titulo">Crear un grupo</h1>
         <p className="escena-sub">
-          Un grupo es la gente con la que siempre dicen «nos juntamos». Anota a todos, comparte el enlace y cada
-          uno entra desde su teléfono tocando su nombre.
+          Anota a tus amigos y comparte el enlace: cada uno entra tocando su nombre.
         </p>
       </section>
       <div className="hoja">
@@ -123,13 +123,12 @@ export default function CrearGrupo() {
           <p className="suave lista-resumen">
             {integrantes.length > 0
               ? `Al abrir el enlace, cada uno toca su nombre: ${[visible.trim() ? `${visible.trim()} (tú)` : 'tú', ...integrantes].join(', ')}.`
-              : 'Anota a los del grupo: al abrir el enlace, cada uno toca su nombre y listo. Puedes escribir varios separados por comas.'}
+              : 'Al abrir el enlace, cada uno toca su nombre.'}
           </p>
           <CampoQuienViene valor={quienViene} cambiar={setQuienViene} nombre={nombre} />
           <CampoProposito valor={proposito} cambiar={setProposito} deshabilitado={soloLectura} />
           <Aviso tono="info">
-            Vas a ser quien organiza: creas las propuestas y buscas la opción compatible. Las condiciones de cada persona son
-            privadas, también para ti.
+            Vas a organizar. Lo que marca cada uno es privado, también para ti.
           </Aviso>
           {error ? <ErrorCaja error={error} enfocar /> : null}
           {pregunta ? (

@@ -10,6 +10,7 @@ import { Icono } from '../components/Icono'
 import { PlanVivo } from '../components/PlanVivo'
 import { Tablero } from '../components/Tablero'
 import { enlaceInvitacion, textoInvitacion, urlWhatsApp } from '../lib/compartir'
+import '../estilo/seccion-s2.css'
 // El panel del agente va en su propia parte del paquete (mejora #14): se descarga solo al abrir el bloque.
 const AgentePanel = lazy(() => import('../agente/AgentePanel').then((m) => ({ default: m.AgentePanel })))
 
@@ -146,7 +147,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
   const organizador = espacio.miembros.find((m) => m.rol === 'organizador')
 
   return (
-    <div className="vista">
+    <div className="vista vista-s2">
       <section className="escena" aria-labelledby="espacio-titulo">
         <a className="escena-volver" href={rutas.inicio()}>
           <Icono n="atras" tam={20} /> Tus espacios
@@ -188,8 +189,8 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
               <p className="suave">
                 {dentro <= 1 ? 'Por ahora estás solo' : `Por ahora entraron ${dentro}`} en «{espacio.nombre}».
                 {porEntrar.length > 0
-                  ? ` Faltan por entrar: ${porEntrar.map((m) => m.nombre).join(', ')}. Manda el enlace: cada uno toca su nombre y entra desde su teléfono, sin crear cuenta.`
-                  : ' Manda el enlace: cada persona entra desde su teléfono con su nombre, sin crear cuenta.'}
+                  ? ` Faltan: ${porEntrar.map((m) => m.nombre).join(', ')}. Cada uno toca su nombre en el enlace, sin cuenta.`
+                  : ' Cada uno entra con el enlace y su nombre, sin cuenta.'}
               </p>
               {/* Grupo creado sin la lista: al abrir el enlace no hay nombre para tocar y cada uno escribe el suyo. Agregar
                   integrantes después necesita una operación nueva del servidor (pedido a backend). */}
@@ -199,7 +200,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
                 </p>
               ) : null}
               <a
-                className="btn btn-primario btn-chico"
+                className="btn btn-secundario btn-chico"
                 href={urlWhatsApp(textoInvitacion(espacio.nombre, espacio.codigo_invitacion))}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -224,7 +225,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
             esOrganizador ? (
               <Vacio
                 titulo="Todavía no hay propuestas"
-                texto="Crea la primera: eliges las franjas, los cupos y la persona imprescindible."
+                texto="Elige dos fechas y quién no puede faltar."
                 accion={
                   <a className="btn btn-primario" href={rutas.nueva(espacioId)} aria-disabled={soloLectura}>
                     <Icono n="mas" tam={20} /> Crear propuesta
@@ -262,28 +263,7 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
           ) : null}
         </section>
 
-        <section className="tarjeta" aria-labelledby="personas-titulo">
-          <div className="tarjeta-cabeza">
-            <h2 id="personas-titulo">Personas del espacio</h2>
-            <span className="etiqueta num">{espacio.miembros.length}</span>
-          </div>
-          <ul className="chips-personas">
-            {espacio.miembros.map((m) => (
-              <li key={m.miembro_id} className={m.pendiente ? 'persona-por-entrar' : undefined}>
-                <Avatar nombre={m.nombre} simulado={m.simulado} yo={m.es_yo} tam={26} />
-                <span className="chip-texto">
-                  <Nombre m={m} yo={m.es_yo} />
-                  {m.rol === 'organizador' ? <span className="chip-nota">organizador</span> : null}
-                  {/* #73: lo anotó el organizador y todavía no entró con el enlace (enmienda 9, `pendiente` de get_space). */}
-                  {m.pendiente ? <span className="chip-nota">por entrar</span> : null}
-                </span>
-              </li>
-            ))}
-          </ul>
-          {espacio.demo ? <p className="suave">Espacio de demostración con datos ficticios.</p> : null}
-        </section>
-
-        {/* Agente del círculo (enmienda 4): plegado para no estorbar el recorrido de la demo. */}
+        {/* Agente del círculo (enmienda 4): arriba de las personas para que se vea (E1); plegado, no llama al servidor. */}
         <details
           ref={agenteRef}
           id="mis-preferencias"
@@ -307,6 +287,28 @@ export default function Espacio({ espacioId }: { espacioId: string }) {
             </Suspense>
           ) : null}
         </details>
+
+        <section className="tarjeta" aria-labelledby="personas-titulo">
+          <div className="tarjeta-cabeza">
+            <h2 id="personas-titulo">Personas del espacio</h2>
+            <span className="etiqueta num">{espacio.miembros.length}</span>
+          </div>
+          <ul className="chips-personas">
+            {espacio.miembros.map((m) => (
+              <li key={m.miembro_id} className={m.pendiente ? 'persona-por-entrar' : undefined}>
+                <Avatar nombre={m.nombre} simulado={m.simulado} yo={m.es_yo} tam={26} />
+                <span className="chip-texto">
+                  <Nombre m={m} yo={m.es_yo} />
+                  {m.rol === 'organizador' ? <span className="chip-nota">organizador</span> : null}
+                  {/* #73: lo anotó el organizador y todavía no entró con el enlace (enmienda 9, `pendiente` de get_space). */}
+                  {m.pendiente ? <span className="chip-nota">por entrar</span> : null}
+                </span>
+              </li>
+            ))}
+          </ul>
+          {espacio.demo ? <p className="suave">Espacio de demostración con datos ficticios.</p> : null}
+        </section>
+
 
         {/* Enmienda 7 (E7.3): agregar simulados y reiniciar solo existen en espacios demo. */}
         {esOrganizador && espacio.demo ? (

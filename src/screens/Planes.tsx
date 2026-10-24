@@ -5,6 +5,7 @@ import { useSondeo } from '../lib/hooks'
 import { rutas, useIdentidad } from '../lib/shell'
 import { Cargando, ErrorCaja } from '../components/ui'
 import { Icono } from '../components/Icono'
+import '../estilo/seccion-s2.css'
 import { PlanVivo, esTurno } from '../components/PlanVivo'
 
 // Mis planes: todas las propuestas de tus grupos en un solo lugar, como la "Actividad" de una app de viajes.
@@ -57,7 +58,7 @@ export default function Planes() {
   const cerrados = resto.filter((f) => f.p.estado === 'cancelado' || f.p.estado === 'expirado')
 
   return (
-    <div className="vista">
+    <div className="vista vista-s2">
       <section className="escena" aria-labelledby="planes-titulo">
         <span className="escena-eyebrow">Actividad</span>
         <h1 id="planes-titulo">Mis planes</h1>
