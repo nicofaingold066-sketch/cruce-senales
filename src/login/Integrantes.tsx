@@ -4,7 +4,7 @@ import { useRef, useState } from 'react'
 import { Boton } from '../components/ui'
 import './login.css'
 
-export const MAX_INTEGRANTES = 20
+export const MAX_INTEGRANTES = 12
 
 export function CampoIntegrantes({
   integrantes,
