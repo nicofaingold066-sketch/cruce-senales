@@ -75,13 +75,14 @@ describe.skipIf(!aplicada)('enmienda 11: agente social', { timeout: 180_000 }, (
     expect((await ok(U, 'get_my_preferences', { p_espacio_id: demo.espacioId })).recibir_invitaciones_agente).toBe(false)
     expect((await ok(U, 'get_my_preferences', { p_espacio_id: demo.espacioId })).usar_en_agente).toBe(true)
     let ctx = await ok(O, 'agente_social_contexto', { p_espacio_id: demo.espacioId })
-    expect(ctx).toMatchObject({ localidad: 'santiago', zona_horaria: 'America/Santiago', politica: { modo: 'aprobacion', version: 0 }, destinatarios: 0 })
+    // 0055: en la demo, los 5 simulados ya reciben invitaciones; Uno (real) suma o resta según su permiso.
+    expect(ctx).toMatchObject({ localidad: 'santiago', zona_horaria: 'America/Santiago', politica: { modo: 'aprobacion', version: 0 }, destinatarios: 5 })
     expect((await recibir(U, true)).recibir_invitaciones_agente).toBe(true)
     expect((await ok(U, 'get_my_preferences', { p_espacio_id: demo.espacioId })).recibir_invitaciones_agente).toBe(true)
     ctx = await ok(O, 'agente_social_contexto', { p_espacio_id: demo.espacioId })
-    expect(ctx.destinatarios).toBe(1)
+    expect(ctx.destinatarios).toBe(6)
     await recibir(U, false)
-    expect((await ok(O, 'agente_social_contexto', { p_espacio_id: demo.espacioId })).destinatarios).toBe(0)
+    expect((await ok(O, 'agente_social_contexto', { p_espacio_id: demo.espacioId })).destinatarios).toBe(5)
     // Ningún nombre ni id de persona en el contexto.
     const txt = JSON.stringify(ctx)
     for (const n of ['Uno t', 'Dos t', 'Luna', 'Mati', U.userId, V.userId]) expect(txt).not.toContain(n)
@@ -133,7 +134,7 @@ describe.skipIf(!aplicada)('enmienda 11: agente social', { timeout: 180_000 }, (
     expect(g.borrador.hash).toMatch(/^[0-9a-f]{64}$/)
     // Lo que fija el servidor se muestra antes de aprobar (nada en silencio).
     expect(Object.keys(g.borrador.plan).sort()).toEqual(['actividad', 'franjas', 'imprescindible', 'invitados', 'lugar', 'maximo', 'minimo', 'plazo', 'titulo']) // E14: actividad
-    expect(g.borrador.plan).toMatchObject({ imprescindible: { nombre: 'Tomi' }, invitados: 1, minimo: 3 }) // E14 (0050): en libre el mínimo sigue siendo least(3, máximo), sin el quórum del asado
+    expect(g.borrador.plan).toMatchObject({ imprescindible: { nombre: 'Tomi' }, invitados: 6, minimo: 3 }) // 0055: 5 simulados + Uno // E14 (0050): en libre el mínimo sigue siendo least(3, máximo), sin el quórum del asado
     expect(g.borrador.plan.lugar.nombre).toMatch(/ \(Simulación\)$/)
     expect(JSON.stringify(g.borrador.plan)).not.toMatch(/Uno t|Dos t/)
     expect((await guardar(id, op.opcion_ref)).repetido).toBe(true)
@@ -163,7 +164,7 @@ describe.skipIf(!aplicada)('enmienda 11: agente social', { timeout: 180_000 }, (
     expect(p1.propuesta.id).toBe(p2.propuesta.id)
     expect([p1.repetido, p2.repetido].sort()).toEqual([false, true])
     const prop = p1.propuesta.id
-    expect(p1.invitados).toBe(1)
+    expect(p1.invitados).toBe(6) // 0055: 5 simulados + Uno
     // Respuesta perdida: otro intento recupera la misma propuesta; mismo intento con otro hash, rechazo.
     expect(await publicar(id, hash)).toMatchObject({ ok: true, repetido: true, propuesta: { id: prop } })
     expect(err(await publicar(id, 'a'.repeat(64), ip))).toBe('entrada_incompleta/intento_reutilizado')
@@ -185,7 +186,7 @@ describe.skipIf(!aplicada)('enmienda 11: agente social', { timeout: 180_000 }, (
     await ok(O, 'cancel_proposal', { p_propuesta_id: prop })
   })
 
-  it('política autónoma publica sin aprobación; si cambia durante la ejecución, vuelve a pedirla; sin destinatarios no publica', async () => {
+  it('política autónoma publica sin aprobación; si cambia durante la ejecución, vuelve a pedirla; un cambio del espacio invalida la aprobación', async () => {
     await recibir(U, true)
     // Cambio de política durante la ejecución: empezó en "aprobación" y pasa a "autónoma" → pide aprobación.
     await ok(O, 'set_politica_agente_social', { p_espacio_id: demo.espacioId, p_modo: 'aprobacion', p_intento_id: intento() })
@@ -194,18 +195,13 @@ describe.skipIf(!aplicada)('enmienda 11: agente social', { timeout: 180_000 }, (
     expect(pol.politica.modo).toBe('autonoma')
     expect(err(await publicar(b.id, b.hash))).toBe('no_autorizado/sin_aprobacion')
 
-    // Sin nadie que acepte invitaciones, no se publica (después de aprobar).
-    await recibir(U, false)
-    await ok(O, 'cerrar_ejecucion_agente', { p_ejecucion_id: b.id, p_estado: 'fallida', p_motivo: 'reemplazada' })
-    const c = await hastaBorrador(sabados[1])
-    await ok(O, 'set_politica_agente_social', { p_espacio_id: demo.espacioId, p_modo: 'aprobacion', p_intento_id: intento() })
-    expect(err(await aprobar(c.id, c.hash))).toBe('ok')
-    expect(err(await publicar(c.id, c.hash))).toBe('sin_alternativa/sin_destinatarios')
+    // "Sin destinatarios" ya no puede pasar en una demo (0055: los simulados reciben invitaciones); se prueba en un
+    // espacio que no es demo en agente-social-demo.test.ts.
 
     // Un valor fijado por el servidor cambia entre la aprobación y la publicación (entra alguien al espacio y
     // sube el máximo): la aprobación ya no vale.
-    await recibir(U, true)
-    await ok(O, 'cerrar_ejecucion_agente', { p_ejecucion_id: c.id, p_estado: 'fallida', p_motivo: 'reemplazada' })
+    await ok(O, 'cerrar_ejecucion_agente', { p_ejecucion_id: b.id, p_estado: 'fallida', p_motivo: 'reemplazada' })
+    await ok(O, 'set_politica_agente_social', { p_espacio_id: demo.espacioId, p_modo: 'aprobacion', p_intento_id: intento() })
     const d = await hastaBorrador(sabados[1])
     expect(err(await aprobar(d.id, d.hash))).toBe('ok')
     await ok(O, 'add_simulated_member', { p_espacio_id: demo.espacioId, p_nombre_visible: 'Nuevo t' })
