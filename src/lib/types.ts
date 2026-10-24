@@ -308,10 +308,15 @@ export interface EspacioResumen {
   generacion: number
 }
 
+/** Enmienda 15 (E-d, 0053): cuál de los dos planes prefiere la persona si puede en los dos. Privada. */
+export type Preferencia = 'A' | 'B'
+
 export interface Condiciones {
   disponibilidad: Disponibilidad
   estado: EstadoCondiciones
   actualizadas_en: Momento | null
+  /** Enmienda 15 (E-d, 0053): solo la propia (save_my_conditions y get_my_conditions); la disponibilidad sigue {A, B}. */
+  prefiero?: Preferencia | null
 }
 
 export interface MiembroPanel {
