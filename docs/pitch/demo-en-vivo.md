@@ -60,6 +60,8 @@ Duración: el recorrido completo dura unos **4 minutos**. En el pitch de 5 minut
 
 **Personas (ficticias):** Ana organiza; Bruno, Camila, Diego, Elena, Felipe y Gabriela. **Nadie trae respuestas precargadas** y no hay botón de «aceptar por todos»: cada respuesta se da a mano y la simulación queda rotulada.
 
+**Nombres (pedido de Nico, 11:2x):** en el relato y el deck los amigos son Bastián, Carlos, Kai, Charlie, Nacho, Joaco y Pía; la app muestra Ana, Bruno, Camila, Diego, Elena, Felipe y Gabriela (interfaz congelada). **Nico narra la demo sin nombres**; los nombres de la app solo aparecen en lo que toca Juan.
+
 **Antes de subir (un solo aparato alcanza: Juan es Ana y simula al resto):**
 1. Portada → «Probar la demo «El plan que no deja a nadie afuera»» (después dirá «Abrir…»). Si el ensayo dejó un plan, «Herramientas del organizador» → «Reiniciar demo».
 2. «+ Nuevo plan»: viene precargado con **«Parque del Encuentro (ficticio) · acceso norte · encuentro gratuito»**, sáb 31 oct y dom 1 nov a las 16:00, 2 horas, mínimo 2, máximo 7, actividad parque (`src/lib/casoDemo.ts`) → «Crear y abrir al grupo». ✂
@@ -70,15 +72,15 @@ En Makana **no hay** «Cargar condiciones del caso» ni «aceptar por todos»: c
 
 | Min | Juan toca (como Ana) | Se ve | Nico dice |
 |---|---|---|---|
-| 0:00 | Mostrar el grupo | Siete personas (Nico las presenta como «siete amigos»; la app dice «compañeros» en la portada, no se lee), «Actividad del grupo», el plan del parque «Reuniendo respuestas» | «Ana propone un plan que le sirve a todos: un parque, gratis, sábado o domingo a la tarde.» |
-| 0:15 | «Simulación (demo)» → «Editar interés y condiciones de Felipe» → sábado sí, domingo no → «Guardar condiciones de Felipe» | Fila de Felipe con su respuesta (solo la ve quien simula) | «Felipe dice en privado que solo puede el sábado.» |
-| 0:30 ✂ | Igual con Camila: sábado no, domingo sí → «Guardar condiciones de Camila» | — | «Camila, solo el domingo. Nadie del grupo ve esto.» |
-| 0:45 | Plan → «Buscar opción compatible» | Versión 1: sábado 31, 16:00 | «El servidor propone una sola opción: el sábado. Gabriela no respondió: no cuenta.» |
-| 1:00 | «Confirmar versión 1» → «Simulación (demo)» → «Aceptar versión 1 por Felipe» | «Participación del plan»: «Confirmaron la versión 1» (Ana, Felipe), «Sin confirmar esta versión», «¡Se juntan!» (mínimo 2) | «Ana y Felipe confirman esta versión. El grupo ve quién confirmó, no qué dijo cada uno. Estar en el grupo no confirma el encuentro.» |
-| 1:20 | *(pausa)* | — | «Ahora Felipe se baja.» |
+| 0:00 | Mostrar el grupo | Siete personas (Nico las presenta como «siete amigos»; la app dice «compañeros» en la portada, no se lee), «Actividad del grupo», el plan del parque «Reuniendo respuestas» | «Quien organiza propone un plan que le sirve a todos: un parque, gratis, sábado o domingo a la tarde.» |
+| 0:15 | «Simulación (demo)» → «Editar interés y condiciones de Felipe» → sábado sí, domingo no → «Guardar condiciones de Felipe» | Fila de Felipe con su respuesta (solo la ve quien simula) | «Uno dice en privado que solo puede el sábado.» |
+| 0:30 ✂ | Igual con Camila: sábado no, domingo sí → «Guardar condiciones de Camila» | — | «Otra, solo el domingo. Nadie del grupo ve esto.» |
+| 0:45 | Plan → «Buscar opción compatible» | Versión 1: sábado 31, 16:00 | «El servidor propone una sola opción: el sábado. Quien no respondió no cuenta.» |
+| 1:00 | «Confirmar versión 1» → «Simulación (demo)» → «Aceptar versión 1 por Felipe» | «Participación del plan»: «Confirmaron la versión 1» (Ana, Felipe), «Sin confirmar esta versión», «¡Se juntan!» (mínimo 2) | «Los que van confirman esta versión. El grupo ve quién confirmó, no qué dijo cada uno. Estar en el grupo no confirma el encuentro.» |
+| 1:20 | *(pausa)* | — | «Ahora alguien se baja.» |
 | 1:25 | «Simulación (demo)» → «Se baja: Felipe» → «Sí, Felipe se baja» → Plan | **«En revisión»**, «Una persona se retiró» | «Queda una sola persona: no llega al mínimo. El plan no finge que sigue armado. Y no dice quién se bajó; lo digo yo porque es una simulación.» |
-| 1:45 | «Buscar alternativa» (o «Rearmar con lo nuevo») | Versión 2: domingo 1; «Nadie confirmó todavía: las confirmaciones anteriores no pasan a esta versión» | «Se rearma el domingo, con Camila. Versión 2, desde cero.» |
-| 2:00 | «Confirmar versión 2» → «Simulación (demo)» → «Aceptar versión 2 por Camila» | **«¡Se juntan!»** | «Cada una vuelve a decidir. Un plan que no dejó a nadie afuera por no animarse a decir que no podía.» |
+| 1:45 | «Buscar alternativa» (o «Rearmar con lo nuevo») | Versión 2: domingo 1; «Nadie confirmó todavía: las confirmaciones anteriores no pasan a esta versión» | «Se rearma el domingo. Versión 2, desde cero.» |
+| 2:00 | «Confirmar versión 2» → «Simulación (demo)» → «Aceptar versión 2 por Camila» | **«¡Se juntan!»** | «Cada uno vuelve a decidir. Un plan que no dejó a nadie afuera por no animarse a decir que no podía.» |
 
 Rótulos de la tabla: los de `SimulacionTab.tsx` y del plan en `main` `018215d`; los de franja dentro de «Editar interés y condiciones de …» se leen en el ensayo.
 
