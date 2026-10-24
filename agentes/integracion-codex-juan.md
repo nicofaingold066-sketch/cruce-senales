@@ -1,9 +1,12 @@
-# Integración Codex — Juan Morales · corte 24 oct 00:10 Santiago
+# Integración Codex — Juan Morales · publicación 24 oct 00:24 Santiago
 
 ## Tocando ahora
-(vacío; corte detenido por bloqueo técnico, sin procesos de prueba nuestros en ejecución. CORRIENDO PRUEBA retirado y turno liberado.)
+(vacío; código publicado por autorización nueva de Juan. Sin procesos de prueba ni turno DB nuestros. Gestión/activación Supabase pendientes.)
 
 ## Entregado
+- ESTADO ACTUAL: MAIN REMOTO `40ffb66af8bb2794ab53b722bef0cf949afc5d46`, igual a rama codex/e11-circuito; fastforward autorizado por Juan, sin squash/force. VercelSUCCESS https://vercel.com/nicofaingold066-sketchs-projects/cruce-senales/BNv6n4Bg4G9uL4bzkzVNVrEaefbg. WebpúblicaHTTP200,12JSestáticosy7/7marcasnuevas,0erroreslectura. NoejecutarJS/Auth/RPC/modeloparaverificarweb.
+- UX confirmó mainindependiente: ancestry8bPASS,diffTODOsrc+2testsVACÍO y96archivosbyteporbyteidénticosalcorteQA11/11. Última repetición propia161node+58cliente+buildPASS en40ff. Figma real leído porUX; no restaurarcopyviejo.
+- ESTE PUSH NO ACTIVA SUPABASE POR NUESTRA ACCIÓN. No deploy/MCP posterior a la denegación ni nuevaCI. Sin workflows/configpipeline/comandosdeploySupabase en el árbolrevisado; integraciónexternaSupabasenoinspeccionable, noafirmamosestadoactualdelfunción. LaUI exigeprobe===1; conbackendviejo/noconfirmadobloqueaaccionesyavisa honestamente. Bodyfechaanidada evitaSDKlegacy; prepararautonoma0publicar.
 - MAIN REMOTO verificado: `d978cc1fed6cb5c91d1c44cf468d03c034f56db1`. Incluye las tandas previas: UX a5381ad, consentimiento original e9b7497, orquestador puro d2a2b20 y puerto RPC inactivo f7a7e85. Vercel success de nuestras unidades anteriores; main actual del coordinador conserva sus pantallas/proveedor.
 - CANDIDATO REMOTO `codex/e11-circuito` = `40ffb66af8bb2794ab53b722bef0cf949afc5d46`, limpio, NO incorporado a main. Preserva commits individuales de Juan, sin squash/force, fusiona main d978cc1 y entregas especializadas revisadas.
 - Cambios del candidato: corrección de operación/foco E11, cuatro archivos de flujo humano/cliente/invitación, dos montajes mínimos; handler social aditivo con fecha SOLO anidada, seis puertos existentes, proveedor real ya configurado, fuentes honestas y cancelación/timeout; preparar jamás publica aunque la política sea autónoma. Aprobar/publicar solo clicks humanos separados; ninguna aceptación automática. Reparación humana existente intacta.
@@ -33,3 +36,8 @@
 - Candidato40ff remoto/loco limpio coincide con161node+58cliente y build repetidosPASS. Guardas: probeestricto===1; sincapacidadnoacciones; fechaSOLOanidada; sourceviejo probado0RPC0SDK antecuerpo nuevo; prepararautonoma0publicar; clicksaprobar/publicarseparados; fuenteshonestas. UI11casosaplicados8bconsrcidénticoa40ff; Figmarealleído.
 - Main vigente d978cc1 ya es ancestro de40ff; diff14archivos propios, sin cambios ajenos ni workflows nuevos. Se revisó árbolCI actual: sin.github/workflows/configpipeline/commandsdeploySupabase en las fuentes revisadas. Vercel consta como integraciónGit que ya dio success en commitsJuan previos. No podemos inspeccionar integraciónexternaSupabase por acceso denegado; no afirmamos despliegue automático de función ni hacemos uno.
 - Publicaré rama existente y fastforwardmain SINsquash/force, luego SHAremoto/estatusVercel/assetsestáticos. Sin nuevas pruebasdeescritura, SQL, Auth niinferencias. Laactivaciónfuncióncontinúapendiente/accesonoresuelto.
+
+## Cierre actualizado de publicación
+- Nueva autorización humana del padre: publicar código localmente verde sin esperar el humoE2E real, conguardasverificadasyfalloscerrados. Esto reemplaza la pausa de integración de código del corte anterior; NO cambia el humoAPI fallido ni la denegaciónSupabase. No considerar las líneas históricas de candidatoNOmain como estadoactual.
+- Proyectoexacto: tjkfdnvzsikncjbskufm; https://supabase.com/dashboard/project/tjkfdnvzsikncjbskufm; función existenteagente. CuentaSupabase conectada NOidentificada por la respuesta; no inferirla desde Git/Figma. Referencia histórica v10 a22:42, versiónactualNOverificada. Nico puedecomprobar proyecto/EdgeFunctions/agente desde sucuentaDashboard; código y todaslasdependenciaslocales están enmain40ff, carpeta supabase/functions/agente completa. No pedirsecretos.
+- Reconciliación sinmutaciones documentadaen /tmp/cruxe-e11-reconciliacion-create-space-20261024.json. Mismoclienteimposiblederecuperar: memoryLocalStorageAdapter porpersistSession:false, procesoacabado, UID/espacio/idempotencia/nombreexactonoconservados. Estadoinciertocontinúa; nootraidentidadnirepeticiónniSQL. GestiónEdge: list_edge_functions -32600nopermiso; no se intentódeploy. Código/publicaciónweb/circuitoactivado son tresestadosdistintos.
