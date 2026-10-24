@@ -1,0 +1,237 @@
+/* S7 · Simulación e historial (rediseño de la noche, mockup validado: pantallas 18 y 19). Solo los cuatro tamaños del
+   sistema (docs/rediseno/sistema.md), nada bajo 13 px, toques de 44 px. Se importa desde SimulacionTab.tsx e
+   HistorialTab.tsx; .panel-sim y .historial ya envuelven cada pestaña. */
+
+/* ---- Simulación (pantalla 18): sello, título y una línea; el primario; una fila por persona, sin tarjetas apiladas. */
+.panel-sim .sim-hoja {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--e-2);
+}
+.panel-sim .sim-hoja > .rotulo-sim {
+  align-self: flex-start;
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  font-weight: var(--p-rotulo);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+}
+.panel-sim .sim-hoja > h2 {
+  margin: 0;
+}
+.panel-sim .sim-linea {
+  margin: 0;
+  color: var(--tinta-2);
+}
+.panel-sim .sim-atajos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-2);
+  margin-top: var(--e-2);
+}
+.panel-sim .sim-atajos > .btn {
+  width: 100%;
+  min-height: var(--toque);
+  font-size: var(--t-cuerpo);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.panel-sim .sim-atajos > .sim-atajo-chico {
+  align-self: flex-start;
+  width: auto;
+  font-size: var(--t-nota);
+  padding: var(--e-2) var(--e-3);
+}
+.panel-sim .sim-atajos [role='status'] {
+  margin: 0;
+  color: var(--tinta-2);
+}
+
+/* Filas: una por persona, separadas por una línea. */
+.panel-sim .sim-filas {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--e-3);
+  border-top: 1px solid var(--linea);
+}
+.panel-sim .sim-fila {
+  position: relative;
+  padding: var(--e-3) 0;
+  border-bottom: 1px solid var(--linea);
+}
+.panel-sim .sim-fila:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.panel-sim .sim-fila-cabeza {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2) var(--e-3);
+  min-height: var(--toque);
+}
+.panel-sim .sim-fila-texto {
+  flex: 1;
+  min-width: 0;
+}
+.panel-sim .sim-fila-nombre {
+  margin: 0;
+  font-weight: var(--p-titulo);
+  overflow-wrap: anywhere;
+}
+.panel-sim .sim-fila-estado {
+  margin: 0;
+  color: var(--tinta-2);
+  overflow-wrap: anywhere;
+}
+.panel-sim .sim-fila-baja .sim-fila-texto,
+.panel-sim .sim-fila-baja .avatar {
+  opacity: 0.6;
+}
+/* El botón de la fila: uno solo, a la derecha. */
+.panel-sim .sim-fila-accion {
+  flex: none;
+  min-width: 96px;
+  min-height: var(--toque);
+  padding: 0 var(--e-3);
+  font-size: var(--t-cuerpo);
+  white-space: nowrap;
+}
+.panel-sim .sim-fila-aviso {
+  margin: var(--e-2) 0 0;
+  color: var(--tinta-2);
+}
+.panel-sim .sim-fila .aviso {
+  margin-top: var(--e-2);
+}
+
+/* «Editar» es el <summary> del editor de siempre: se ubica donde va el botón de la fila y el editor abre debajo. */
+.panel-sim .sim-fila-editable .sim-fila-cabeza {
+  padding-right: calc(96px + var(--e-3));
+}
+.panel-sim .sim-editar {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.panel-sim .sim-editar > summary.sim-fila-accion {
+  position: absolute;
+  top: var(--e-3);
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+  cursor: pointer;
+  color: inherit;
+  font-weight: var(--p-boton);
+}
+.panel-sim .sim-editar > summary::-webkit-details-marker {
+  display: none;
+}
+.panel-sim .sim-editar > summary::marker {
+  content: '';
+}
+.panel-sim .sim-editar[open] > summary {
+  background: var(--relleno);
+}
+.panel-sim .sim-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-3);
+  margin-top: var(--e-3);
+}
+.panel-sim .sim-editor .fila-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+}
+.panel-sim .sim-editor .btn {
+  min-height: var(--toque);
+  font-size: var(--t-cuerpo);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Historial (pantalla 19): agrupado por versión; hora a la izquierda, punto, texto corto. */
+.historial {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-5);
+}
+.historial .historial-grupo {
+  margin: 0;
+}
+.historial .hg-titulo {
+  margin: 0 0 var(--e-2);
+  font-weight: var(--p-boton);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-3);
+}
+.historial .hg-vigente {
+  color: var(--tinta);
+}
+.historial .hl-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.historial .hl-fila {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px 12px minmax(0, 1fr);
+  column-gap: var(--e-3);
+  padding-bottom: var(--e-3);
+}
+.historial .hl-fila:last-child {
+  padding-bottom: 0;
+}
+/* La línea que une los puntos de un mismo grupo. */
+.historial .hl-fila:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: calc(56px + var(--e-3) + 5px);
+  top: 18px;
+  bottom: 0;
+  width: 2px;
+  background: var(--linea);
+}
+.historial .hl-cuando {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-top: 2px;
+  font-weight: var(--p-boton);
+  font-variant-numeric: tabular-nums;
+  color: var(--tinta-2);
+  white-space: nowrap;
+}
+.historial .hl-cuando-dia {
+  font-weight: 400;
+  color: var(--tinta-3);
+}
+.historial .hl-punto {
+  width: 12px;
+  height: 12px;
+  margin-top: 5px;
+  border-radius: 50%;
+  border: 2px solid var(--tinta-3);
+  background: var(--hoja);
+  position: relative;
+  z-index: 1;
+}
+.historial .hl-lleno .hl-punto {
+  border-color: var(--ok);
+  background: var(--ok);
+}
+.historial .hl-que {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.historial .hl-simulado {
+  color: var(--sim-texto);
+  font-weight: var(--p-rotulo);
+}
