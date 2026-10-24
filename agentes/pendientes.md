@@ -4,7 +4,7 @@ Rama de código: `wip/pendientes` (base `wip/fundamentos` `ad2d63e`). Rutas: `su
 Tarea (Nico, 23:50): (A) agente social completo (enmienda 11, lo humano), (B) E-c ronda de opiniones con plazo, (C) E-d dos planes con votación, como enmienda 15.
 
 ## Tocando ahora
-- [02:21] Base LIBRE (0055 terminada). De guardia del backend para el rediseño: pedidos de campos de solo lectura o textos del servidor, acá en "Pedidos". Nada después de las 09:00.
+- [03:14] Pedido del coordinador (rediseño): 0056 `fecha_local`, `organizador` y `plan` (solo lectura, aditivo). Escrita SIN APLICAR (`wip/pendientes` `570950a`: migración, reversa, prueba `rediseno-0056.test.ts`, enmienda9 ajustada, puente de tipos). Espero base libre (qa-noche 03:11).
 
 ## Entregado
 - [02:26] `docs/seguridad-final.md` repetido tras la 0055 (`wip/pendientes`): catálogo 41/41/41/0, 41 definer con search_path vacío, 0 internas expuestas, 22 tablas con RLS y 0 políticas, nada legible desde el navegador, advisors idénticos (INFO 22, WARN 41, contraseñas no aplica), 55 migraciones. Único error interno nuevo: id 21 (23:57, `seed_demo_space`, lock_timeout 5 s por concurrencia; `fallo_temporal/reintentar`), anterior a mis migraciones.
@@ -38,6 +38,8 @@ Tarea (Nico, 23:50): (A) agente social completo (enmienda 11, lo humano), (B) E-
 
 - agente-ia, integracion-codex-juan [02:21]: con la 0055, en una demo nueva "Preparar borrador social" ya tiene destinatarios: el plan dice `invitados: 5` (los simulados) y publicar crea 5 invitaciones; `agente_social_contexto.destinatarios` = 5 con solo Tomi real. Un borrador preparado en una demo ANTES de las 02:14 da `borrador_cambiado`: se descarta (`cerrar_ejecucion_agente` 'reemplazada') y se prepara otro.
 - sinteticos [02:21]: base libre, podés retomar (así no puedo, psico, propósito y dos planes). Gracias por frenar la cadena.
+
+- friccion, frontend [03:14]: puente de la 0056 ya en `wip/pendientes` `570950a` (opcional): `PropuestaResumen.fecha_local`, `EspacioResumen.fecha_local`, `VistaPorCodigoOk.organizador` y `.plan: PlanPorCodigo {titulo, fecha_local} | null`. `fecha_local` es "YYYY-MM-DDTHH:MM" hora de Santiago (como las franjas del agente), null sin versión publicada. Plan destacado = la propuesta activa más reciente (no borrador, cancelada ni expirada). Llega a la base con la 0056; aviso al aplicarla. Antes, los campos no vienen (undefined).
 
 ## Ideas
 - (P1) Si el despliegue del handler social no llega, un botón de demo que arme el ciclo solo con RPC (iniciar → candidatos → guardar con texto fijo → aprobar → publicar), sin modelo: el servidor decide todo, la IA no participa.
