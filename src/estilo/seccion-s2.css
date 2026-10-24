@@ -324,3 +324,144 @@
   white-space: nowrap;
   padding-inline: var(--e-2);
 }
+
+/* ---- pantalla 11 exacta: Crear un grupo como hoja a pantalla completa */
+.vista-crear {
+  display: block;
+}
+.vista-crear .s2-hoja-completa {
+  max-width: 640px;
+  margin: 0 auto;
+  border-radius: 0;
+  min-height: calc(100dvh - var(--barra-alto));
+}
+.s2-crear-cabeza {
+  display: grid;
+  grid-template-columns: var(--toque) 1fr var(--toque);
+  align-items: center;
+  margin-bottom: var(--entre-bloques);
+}
+.s2-crear-cabeza h1 {
+  margin: 0;
+  text-align: center;
+  font-size: var(--t-subtitulo);
+}
+.s2-crear-cabeza .s2-cerrar {
+  color: var(--tinta);
+}
+.vista-crear .s2-nombre-grupo {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+}
+.vista-crear .s2-nombre-grupo input {
+  flex: 1;
+  min-width: 0;
+}
+.vista-crear .s2-quienes-lista {
+  list-style: none;
+  margin: 0 0 var(--e-3);
+  padding: 0;
+  display: grid;
+}
+.vista-crear .s2-quienes-lista li {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  min-height: 52px;
+  border-bottom: 1px solid var(--linea);
+  font-size: var(--t-cuerpo);
+}
+.vista-crear .s2-quienes-nombre {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.vista-crear .s2-quienes-lista .suave {
+  font-size: var(--t-nota);
+}
+.vista-crear .s2-quitar {
+  width: var(--toque);
+  height: var(--toque);
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  color: var(--tinta-2);
+  cursor: pointer;
+}
+.vista-crear .s2-quienes-entrada {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+}
+.vista-crear .s2-quienes-entrada input {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+  min-height: var(--toque);
+}
+.vista-crear .s2-quienes-nota,
+.vista-crear .s2-nota-final {
+  margin: var(--e-2) 0 0;
+  font-size: var(--t-nota);
+}
+.vista-crear .s2-nota-final {
+  text-align: center;
+}
+.vista-crear .s2-fila-opciones {
+  margin-top: var(--entre-bloques);
+  border-top: 1px solid var(--linea);
+  border-bottom: 1px solid var(--linea);
+}
+.vista-crear .s2-fila-opciones > summary {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  cursor: pointer;
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-rotulo);
+}
+.vista-crear .s2-fila-opciones > summary .suave {
+  font-weight: normal;
+  font-size: var(--t-nota);
+}
+.vista-crear .barra-accion {
+  display: grid;
+}
+/* La leyenda oculta del fieldset no puede tomar el ancho de la fila (el mismo arreglo que en S3). */
+.vista-crear .form-seccion > legend.visualmente-oculto {
+  float: none;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+}
+/* Formulario corto: el primario va al pie del contenido, no fijo sobre las opciones abiertas. */
+.vista-crear .barra-accion {
+  position: static;
+  margin-top: var(--entre-bloques);
+  box-shadow: none;
+  background: none;
+}
+.vista-crear .s2-fila-opciones[open] > summary {
+  margin-bottom: var(--e-3);
+}
+/* El campo de nombres con el aspecto de .campo input (la clase .entrada ya es la de la intro). */
+.vista-crear .s2-campo-nombres {
+  min-height: 52px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1.5px solid transparent;
+  background: var(--relleno);
+  font: inherit;
+  font-size: var(--t-cuerpo);
+  color: var(--tinta);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.vista-crear .s2-campo-nombres:focus {
+  outline: none;
+  border-color: var(--tinta);
+  background: var(--hoja);
+}

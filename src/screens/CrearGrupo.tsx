@@ -6,9 +6,9 @@ import { useAccion } from '../lib/hooks'
 import { dejarAviso, irA, rutas, useIdentidad, useShell } from '../lib/shell'
 import { recordarNombreSiFalta, usePerfil } from '../lib/perfil'
 import { ejemploPorSemilla, placeholderGrupo } from '../lib/ejemplos'
-import { Aviso, Boton, ErrorCaja } from '../components/ui'
+import { Avatar, Aviso, Boton, ErrorCaja, IconoGrupo } from '../components/ui'
 import { Icono } from '../components/Icono'
-import { CampoIntegrantes } from '../login/Integrantes'
+import { MAX_INTEGRANTES } from '../login/Integrantes'
 import { CampoQuienViene } from '../friccion/QuienViene'
 import { CampoProposito } from '../friccion/Proposito'
 import type { Proposito } from '../friccion/propositos'
@@ -78,38 +78,40 @@ export default function CrearGrupo() {
     if (r?.ok) {
       recordarNombreSiFalta(visible)
       dejarAviso(`Creaste «${nombre.trim()}». Ahora invita a tu grupo: comparte el enlace o el código.`)
-      irA(rutas.espacio(r.data.resultado.espacio_id))
+      // Mockup (pantalla 11): "Después, directo a armar el primer plan." La X de Nuevo plan vuelve al grupo.
+      irA(rutas.nueva(r.data.resultado.espacio_id))
     }
   }
 
   return (
-    <div className="vista vista-s2">
-      <section className="escena" aria-labelledby="crear-titulo">
-        <a className="escena-volver" href={rutas.inicio()}>
-          <Icono n="atras" tam={20} /> Inicio
-        </a>
-        <span className="escena-eyebrow">Nuevo grupo</span>
-        <h1 id="crear-titulo">Crear un grupo</h1>
-        <p className="escena-sub">
-          Anota a tus amigos y comparte el enlace: cada uno entra tocando su nombre.
-        </p>
-      </section>
-      <div className="hoja">
-        <form onSubmit={hacer} noValidate>
+    <div className="vista vista-s2 vista-crear">
+      {/* Mockup validado, pantalla 11 (exacto): hoja a pantalla completa con X y título. */}
+      <div className="hoja s2-hoja-completa">
+        <header className="s2-crear-cabeza">
+          <a className="s2-cerrar" href={rutas.inicio()} aria-label="Cerrar y volver a tus grupos">
+            <Icono n="cerrar" tam={22} />
+          </a>
+          <h1 id="crear-titulo">Crear un grupo</h1>
+          <span aria-hidden="true" />
+        </header>
+        <form onSubmit={hacer} noValidate aria-labelledby="crear-titulo">
           <fieldset className="form-seccion">
-            <legend>El grupo</legend>
+            <legend className="visualmente-oculto">El grupo</legend>
             <label className="campo">
               <span>Nombre del grupo</span>
-              <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} placeholder={placeholderGrupo(ej)} />
+              <span className="s2-nombre-grupo">
+                {/* El ícono del grupo sale de sus iniciales (no hay ícono elegible en el contrato). */}
+                <IconoGrupo nombre={nombre.trim() || '?'} />
+                <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} placeholder={placeholderGrupo(ej)} />
+              </span>
             </label>
             <label className="campo">
               <span>Tu nombre en el grupo</span>
               <input value={visible} onChange={(e) => setVisible(e.target.value)} maxLength={30} autoComplete="nickname" />
-              <small>Así te van a ver los demás en este grupo.</small>
             </label>
           </fieldset>
           <div ref={zonaIntegrantes}>
-            <CampoIntegrantes
+            <QuienesSon
               integrantes={integrantes}
               cambiar={(lista) => {
                 setIntegrantes(lista)
@@ -119,17 +121,14 @@ export default function CrearGrupo() {
               tuNombre={visible}
             />
           </div>
-          {/* Lo que va a ver cada uno al abrir el enlace: su nombre para tocar (enmienda 9, "¿Quién eres?"). */}
-          <p className="suave lista-resumen">
-            {integrantes.length > 0
-              ? `Al abrir el enlace, cada uno toca su nombre: ${[visible.trim() ? `${visible.trim()} (tú)` : 'tú', ...integrantes].join(', ')}.`
-              : 'Al abrir el enlace, cada uno toca su nombre.'}
-          </p>
-          <CampoQuienViene valor={quienViene} cambiar={setQuienViene} nombre={nombre} />
-          <CampoProposito valor={proposito} cambiar={setProposito} deshabilitado={soloLectura} />
-          <Aviso tono="info">
-            Vas a organizar. Lo que marca cada uno es privado, también para ti.
-          </Aviso>
+          <details className="s2-fila-opciones">
+            <summary>
+              <span>Opciones</span>
+              <span className="suave"> · ¿para qué es el grupo? · ¿quién viene?</span>
+            </summary>
+            <CampoProposito valor={proposito} cambiar={setProposito} deshabilitado={soloLectura} />
+            <CampoQuienViene valor={quienViene} cambiar={setQuienViene} nombre={nombre} />
+          </details>
           {error ? <ErrorCaja error={error} enfocar /> : null}
           {pregunta ? (
             <Aviso tono="aviso" titulo={pregunta.sinLista ? '¿Crear sin la lista del grupo?' : '¿Crear sin el nombre que escribiste?'}>
@@ -154,9 +153,113 @@ export default function CrearGrupo() {
             <Boton type="submit" variante={pregunta ? 'secundario' : 'primario'} ocupado={ocupado} ocupadoTexto="Creando…" disabled={faltan || soloLectura}>
               Crear grupo
             </Boton>
+            <p className="suave s2-nota-final">Después, directo a armar el primer plan.</p>
           </div>
         </form>
       </div>
     </div>
+  )
+}
+
+/** "Quiénes son" (pantalla 11): tú arriba, cada nombre con avatar y ×, y una fila para agregar uno o varios. */
+function QuienesSon({ integrantes, cambiar, tuNombre }: { integrantes: string[]; cambiar: (lista: string[]) => void; tuNombre: string }) {
+  const [nuevo, setNuevo] = useState('')
+  const [aviso, setAviso] = useState<string | null>(null)
+  const campo = useRef<HTMLInputElement>(null)
+
+  /** Agrega uno o varios nombres (una lista pegada o escrita con comas, punto y coma o saltos de línea). */
+  function agregarVarios(texto: string, reenfocar = true) {
+    const nombres = texto.split(/[,;\n\r]+/).map((x) => x.replace(/\s+/g, ' ').trim()).filter(Boolean)
+    if (nombres.length === 0) return
+    const igual = (a: string, b: string) => a.trim().toLocaleLowerCase('es') === b.toLocaleLowerCase('es')
+    const lista = [...integrantes]
+    const agregados: string[] = []
+    const avisos: string[] = []
+    for (const n of nombres) {
+      if (n.length > 30) avisos.push(`${n.slice(0, 30)}… es muy largo (hasta 30 letras).`)
+      else if (igual(tuNombre, n) || lista.some((a) => igual(a, n))) avisos.push(`${n} ya está en la lista.`)
+      else if (lista.length >= MAX_INTEGRANTES) {
+        avisos.push(`Hasta ${MAX_INTEGRANTES} personas por ahora.`)
+        break
+      } else {
+        lista.push(n)
+        agregados.push(n)
+      }
+    }
+    if (agregados.length) {
+      cambiar(lista)
+      setNuevo('')
+    }
+    setAviso([agregados.length ? `Agregaste a ${agregados.join(', ')}.` : null, ...avisos].filter(Boolean).join(' '))
+    if (reenfocar) campo.current?.focus()
+  }
+
+  return (
+    <fieldset className="form-seccion s2-quienes">
+      <legend>Quiénes son</legend>
+      <ul className="s2-quienes-lista quien-integrantes" aria-label="Integrantes que agregaste">
+        <li>
+          <Avatar nombre={tuNombre.trim() || '?'} yo tam={32} />
+          <span className="s2-quienes-nombre">{tuNombre.trim() || 'Tú'}</span>
+          <span className="suave">tú · organizas</span>
+        </li>
+        {integrantes.map((n) => (
+          <li key={n}>
+            <Avatar nombre={n} tam={32} />
+            <span className="s2-quienes-nombre">{n}</span>
+            <button
+              type="button"
+              className="s2-quitar"
+              aria-label={`Quitar a ${n}`}
+              onClick={() => {
+                cambiar(integrantes.filter((x) => x !== n))
+                setAviso(`Quitaste a ${n}.`)
+                campo.current?.focus()
+              }}
+            >
+              <Icono n="cerrar" tam={18} />
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="s2-quienes-entrada">
+        <label className="visualmente-oculto" htmlFor="quienes-nuevo">
+          Agregar a alguien del grupo
+        </label>
+        <input
+          id="quienes-nuevo"
+          className="s2-campo-nombres"
+          ref={campo}
+          value={nuevo}
+          placeholder="Nombre, o varios separados por comas"
+          onChange={(e) => setNuevo(e.target.value)}
+          onBlur={() => {
+            if (nuevo.trim() !== '') agregarVarios(nuevo, false)
+          }}
+          onPaste={(e) => {
+            const t = e.clipboardData.getData('text')
+            if (/[,;\n\r]/.test(t)) {
+              e.preventDefault()
+              agregarVarios(`${nuevo}${nuevo ? ',' : ''}${t}`)
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              agregarVarios(nuevo)
+            }
+          }}
+          maxLength={200}
+          autoComplete="off"
+        />
+        <Boton variante="secundario" onClick={() => agregarVarios(nuevo)} disabled={nuevo.trim() === ''}>
+          Agregar
+        </Boton>
+      </div>
+      <p className="suave s2-quienes-nota">Al abrir el enlace, cada uno toca su nombre y listo.</p>
+      <p className="visualmente-oculto" aria-live="polite">
+        {aviso}
+      </p>
+    </fieldset>
   )
 }
