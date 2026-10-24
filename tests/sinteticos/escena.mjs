@@ -232,8 +232,8 @@ export function armarEscena({ base, salida, grupo, titulo, fugas = [] }) {
 
   // De «Respuesta guardada» (o del espacio) a la pestaña Plan de la propuesta.
   async function irAlPlan(p) {
-    if (p.rapida && (await p.page.getByRole('link', { name: 'Ver el plan' }).count())) {
-      await p.tocar(p.page.getByRole('link', { name: 'Ver el plan' }), 'enlace «Ver el plan»')
+    if (p.rapida && (await p.page.getByRole('link', { name: /^(Ver el plan|Listo)$/ }).count())) {
+      await p.tocar(p.page.getByRole('link', { name: /^(Ver el plan|Listo)$/ }), 'enlace «Ver el plan» / «Listo»')
     } else {
       await p.page.goto(datos.propuestaUrl)
     }
