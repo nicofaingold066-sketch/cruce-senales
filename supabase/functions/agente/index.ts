@@ -37,7 +37,7 @@ import {
   tipoDeIdGeneracion,
   unirFrases,
   usuarioDe,
-  validarSalidaModelo,
+  revisarSalidaModelo,
   viajeDe,
   type Candidata,
   type Clima,
@@ -64,8 +64,9 @@ const PLAZO_CLIMA_MS = 3000
 // Con herramientas: el bucle tiene hasta 25 s; si no llega, el camino de siempre usa solo Haiku hasta los 31 s
 // (la pantalla espera 35 s y su reloj arranca antes que el de la función).
 const PLAZO_TOTAL_HERRAMIENTAS_MS = 31000
-// Canchas reales por actividad: los mismos sitios que arma el panel en src/agente/canchas.ts.
-const SITIOS_CANCHAS = ['Google Maps', 'EasyCancha', 'ATC']
+// Dónde buscar canchas por actividad: los mismos sitios que arma el panel en src/agente/canchas.ts. Son enlaces de
+// búsqueda, no canchas encontradas (auditoría M5; ATC se sacó porque apuntaba a Mendoza).
+const SITIOS_CANCHAS = ['Google Maps', 'EasyCancha']
 // Una llamada al modelo por persona cada 10 s y un tope por minuto, en la memoria de esta instancia (mejor esfuerzo).
 const limiteModelo = crearLimiteModelo()
 // Centro de Santiago: el clima es del lugar del encuentro, nunca de la ubicación de una persona.
@@ -85,7 +86,7 @@ const SISTEMA = [
   'agregado del grupo. Elige la opción que mejor equilibra los gustos del grupo, su ritmo y el clima; ante la duda, la primera.',
   'Escribe en español de Chile, cercano y concreto, sin exagerar.',
   'Reglas que no se rompen: no nombres a ninguna persona; no hables de la situación de nadie en particular (dinero, salud, ánimo,',
-  'disponibilidad); no uses las palabras "alguien", "plata", "dinero", "confirmado", "reservado" ni "agendado"; no inventes datos',
+  'disponibilidad); no uses las palabras "plata", "dinero", "confirmado", "reservado" ni "agendado"; no inventes datos',
   'que no te dieron; no digas que algo está confirmado, reservado o agendado: el grupo todavía tiene que aceptarlo, y los lugares',
   'son de simulación. Si el clima empieza con "Simulación", es un clima de prueba: no lo presentes como pronóstico real.',
   'explicacion: una o dos frases, máximo 240 caracteres, sobre por qué esa opción le sirve al grupo.',
@@ -95,6 +96,9 @@ const SISTEMA = [
   'nunca digas dónde vive nadie, cómo se mueve ni si alguien necesita que lo lleven.',
   'Si llega aviso_quorum, puedes decir con tacto que esa actividad necesita un grupo más grande y que estas opciones se pueden',
   'armar con el grupo actual; habla del tamaño del grupo, nunca de quién falta ni de cuántos van o se sumaron.',
+  'Respeta el tamaño del grupo: grupo.tamano dice cuántos son y cada opción puede traer personas (mínimo y máximo del plan).',
+  'Si hay una opción en la que entra el grupo entero, no elijas una con máximo menor que grupo.tamano ni con mínimo mayor;',
+  'si ninguna calza, elige la que más se acerque y no prometas que van todos.',
 ].join(' ')
 
 function responder(cuerpo: unknown, estado = 200): Response {
@@ -226,12 +230,13 @@ async function coordinarConModelo(
         continue
       }
       // La elección tiene que ser una de las opciones que el servidor ya validó, y los textos, válidos.
-      const valida = validarSalidaModelo(texto, candidatas, nombres)
-      if (valida) {
+      const revisada = revisarSalidaModelo(texto, candidatas, nombres)
+      if (!('motivo' in revisada)) {
         registrarGeneracion(proveedor, clave, (respuesta as { id?: unknown }).id)
-        return { ...valida, modelo: familia }
+        return { ...revisada, modelo: familia }
       }
-      console.error('agente: salida del modelo rechazada por la validación', proveedor.tipo, familia)
+      // Auditoría A2: qué regla falló (un código fijo como 'mensaje:palabra:plata' o 'explicacion:nombre'), nunca el texto.
+      console.error('agente: salida del modelo rechazada por la validación', proveedor.tipo, familia, revisada.motivo)
     } catch (e) {
       // Solo el proveedor, el modelo, el tipo de error y el código HTTP: nunca el contenido, la clave ni datos del grupo.
       const estado = e instanceof Error && typeof (e as { status?: unknown }).status === 'number' ? (e as { status: number }).status : 0

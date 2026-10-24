@@ -10,6 +10,8 @@ import {
   datosGeneracion,
   tipoDeIdGeneracion,
   candidataSegura,
+  motivoRechazo,
+  revisarSalidaModelo,
   candidatasDe,
   familiaSegura,
   personasSeguras,
@@ -95,6 +97,13 @@ test('textoValido acepta invitaciones normales', () => {
     '¡No pueden faltar! Queda cerca y no es caro llegar.',
     '¡Salud por el asado del sábado con todo el grupo!',
     'Marquen si les interesa y confirmen en CRUXE cuando se publique.',
+    // Auditoría A2: frases normales que antes caían al texto fijo.
+    '¿Hay ánimo para un asado el sábado? Marquen si les interesa.',
+    'Agéndense el sábado y reserven la tarde para el picnic.',
+    'Es gratis y queda en el parque: marquen si les interesa.',
+    'Si alguien quiere traer algo para la parrilla, bienvenido.',
+    'Es barato y le sirve a todos.',
+    'Una opción gratis para el finde.',
   ]) {
     assert.equal(textoValido(t, 320, NOMBRES), true, t)
   }
@@ -110,9 +119,9 @@ test('textoValido rechaza nombres, situaciones personales y promesas que no pasa
     'Es ideal para quien anda cansado esta semana.',
     'Lo reservamos en el club para el domingo.',
     'Ya agendé el quincho para el sábado.',
-    'Es barato y le sirve a todos.',
-    'Una opción gratis para el finde.',
     'Pensado para un presupuesto ajustado.',
+    'Todos aceptaron el plan del sábado en el parque.',
+    'Lo armó Claude con las preferencias del grupo.',
   ]) {
     assert.equal(textoValido(t, 320, NOMBRES), false, t)
   }
@@ -158,7 +167,8 @@ test('entradaModelo solo manda gustos que eligieron al menos 2 personas', () => 
 
 test('entradaModelo con 3 personas o menos manda solo la cantidad', () => {
   const e = entradaModelo([ASADO], { ...PERFIL_5, personas: 3 }, 'Sin pronóstico disponible.', NOMBRES)
-  assert.deepEqual(e.grupo, { personas: 3, gustos: [], ritmo: null, ambiente: null })
+  // `tamano` es la cantidad de miembros (pública en el espacio, auditoría M1), no un dato de preferencias.
+  assert.deepEqual(e.grupo, { personas: 3, tamano: NOMBRES.length, gustos: [], ritmo: null, ambiente: null })
 })
 
 test('perfilParaRespuesta filtra gustos de una persona y reduce los grupos chicos', () => {
@@ -597,4 +607,33 @@ test('fiesta de noche (pedido de Nico, 00:01): una franja que cruza la medianoch
   assert.equal(franjaCorta({ inicio: '2026-10-31T23:00', fin: '2026-11-01T03:00' }), 'sábado 31 de 23:00 a 03:00')
   const m = mensajeFijo({ ...ASADO, titulo: 'Fiesta en el bar', franjas: [{ inicio: '2026-10-31T23:00', fin: '2026-11-01T03:00' }, { inicio: '2026-11-01T22:00', fin: '2026-11-02T02:00' }] })
   assert.match(m, /el sábado 31 de 23:00 a 03:00 o el domingo 1 de 22:00 a 02:00/)
+})
+
+test('M2: candidataSegura saca del catálogo el nombre de alguien que puede no estar en el grupo', () => {
+  const c = candidataSegura({ id: 'lugar-sim-01', actividad_etiqueta: 'Asado', titulo: 'Asado en casa de Tomi', lugar: { id: 'lugar-sim-01', nombre: 'Quincho de Tomi (Simulación)', simulado: true }, franjas: [], frases_grupo: [] } as never)
+  assert.equal(c.titulo, 'Asado en casa')
+  assert.equal(c.lugar.nombre, 'Quincho (Simulación)')
+  const otra = candidataSegura({ id: 'x', actividad_etiqueta: 'Picnic', titulo: 'Picnic en el parque', lugar: { id: 'x', nombre: 'Parque Bustamante (Simulación)', simulado: true }, franjas: [], frases_grupo: [] } as never)
+  assert.equal(otra.titulo, 'Picnic en el parque')
+  assert.equal(otra.lugar.nombre, 'Parque Bustamante (Simulación)')
+})
+
+test('M1: el modelo recibe el tamaño del grupo y las personas mínimas y máximas de cada opción', () => {
+  const padel = { ...ASADO, id: 'padel', actividad_etiqueta: 'Pádel', personas: { min: 2, max: 4 } }
+  const e = entradaModelo([padel], PERFIL_5, 'Sábado seco', NOMBRES) as Record<string, any>
+  assert.equal(e.grupo.tamano, NOMBRES.length)
+  assert.deepEqual(e.opciones[0].personas, { min: 2, max: 4 })
+  const sinNombres = entradaModelo([ASADO], PERFIL_5, 'Sábado seco', []) as Record<string, any>
+  assert.equal(sinNombres.grupo.tamano, null)
+})
+
+test('A2: el rechazo dice qué regla falló, con un código fijo y sin el texto', () => {
+  assert.equal(motivoRechazo('Como no tiene plata, elegimos el parque del sábado.', 320, NOMBRES), 'palabra:plata')
+  assert.equal(motivoRechazo('Caro, este plan es para ti el sábado.', 320, NOMBRES), 'nombre')
+  assert.equal(motivoRechazo('Corto.', 320, NOMBRES), 'corto')
+  assert.equal(motivoRechazo('¡Hola! Les propongo un asado el sábado 31.', 320, NOMBRES), null)
+  const r = revisarSalidaModelo(JSON.stringify({ eleccion_id: ASADO.id, explicacion: 'El asado le sirve al grupo entero.', mensaje_al_grupo: 'Ya está confirmado el asado del sábado.' }), [ASADO], NOMBRES)
+  assert.deepEqual(r, { motivo: 'mensaje:palabra:confirmad*' })
+  assert.deepEqual(revisarSalidaModelo('no es json', [ASADO], NOMBRES), { motivo: 'json' })
+  assert.deepEqual(revisarSalidaModelo(JSON.stringify({ eleccion_id: 'otra' }), [ASADO], NOMBRES), { motivo: 'eleccion' })
 })
