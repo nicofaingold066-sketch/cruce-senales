@@ -6,6 +6,7 @@ import { useAccion, useSondeo } from '../lib/hooks'
 import { rutas, tomarAviso, useIdentidad, useShell } from '../lib/shell'
 import { momentoCorto } from '../lib/format'
 import { Avatar, AvatarPila, Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
+import { Confirmacion, useVolverFoco } from '../components/Confirmacion'
 import { Icono } from '../components/Icono'
 import { PlanVivo } from '../components/PlanVivo'
 import { Tablero } from '../components/Tablero'
@@ -463,6 +464,7 @@ function ReiniciarDemo({
 }) {
   const [confirmar, setConfirmar] = useState(false)
   const { ocupado, error, ejecutar } = useAccion()
+  const { zona, volver } = useVolverFoco<HTMLDivElement>()
   const [hecho, setHecho] = useState<string | null>(null)
   async function hacer() {
     // El intento se genera por acción y se reutiliza en los reintentos del mismo clic (useAccion); un reintento
@@ -478,28 +480,28 @@ function ReiniciarDemo({
     }
   }
   return (
-    <div className="bloque">
+    <div ref={zona} className="bloque">
       <h3>Reiniciar demo</h3>
       <p className="suave">
         Elimina todas las propuestas de este espacio y sus aceptaciones. Conserva las personas.
         {espacio.ultimo_reinicio ? ` Último reinicio: ${momentoCorto(espacio.ultimo_reinicio)}.` : ''}
       </p>
       {!confirmar ? (
-        <Boton variante="secundario" onClick={() => setConfirmar(true)} disabled={deshabilitado}>
+        <Boton variante="secundario" onClick={() => setConfirmar(true)} disabled={deshabilitado} data-abre-confirmacion>
           Reiniciar demo
         </Boton>
       ) : (
-        <Aviso tono="aviso" titulo="¿Reiniciar la demo?">
+        <Confirmacion titulo="¿Reiniciar la demo?">
           Se borran las propuestas de este espacio. No se puede deshacer.
           <div className="fila-botones">
             <Boton variante="peligro" onClick={hacer} ocupado={ocupado} ocupadoTexto="Reiniciando…">
               Sí, reiniciar
             </Boton>
-            <Boton variante="secundario" onClick={() => setConfirmar(false)} disabled={ocupado}>
+            <Boton variante="secundario" onClick={() => volver(() => setConfirmar(false))} disabled={ocupado}>
               Cancelar
             </Boton>
           </div>
-        </Aviso>
+        </Confirmacion>
       )}
       {hecho ? <p role="status">{hecho}</p> : null}
       {error ? <ErrorCaja error={error} enfocar /> : null}
