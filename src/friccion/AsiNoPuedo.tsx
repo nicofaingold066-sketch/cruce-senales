@@ -18,7 +18,10 @@ import './friccion.css'
 
 export const TEXTO_ASI_NO_PUEDO = {
   boton: 'Así no puedo, pero sigo',
-  diferencia: 'Si solo esta fecha no te sirve, marca «así no puedo». Retirarte es para no participar más en este plan.',
+  // psico §8.10 + la diferencia con "Retirarme" (coordinador). "Nadie ve que fuiste tú": el organizador recibe solo un
+  // total, y recién desde 2 (enmienda 13 (a)); nunca nombres.
+  diferencia:
+    'Si esta fecha no te sirve pero quieres ir, márcalo: sigues en el plan y puedes cambiar cuándo puedes. Nadie ve que fuiste tú. Retirarte es para no participar más en este plan.',
   titulo: 'Así no puedes, pero sigues',
   marcado: 'Marcaste que así no puedes. Sigues en el plan: si se rearma, cuenta lo que marques ahora.',
   actualizar: 'Actualizar cuándo puedo',
@@ -54,7 +57,8 @@ export function AsiNoPuedo({
     const r = await correr(`opinar:${p.id}:${v}:${opinion}`, (intento) => opinar(p.id, v, opinion, intento))
     if (r?.ok) {
       vibrar(10)
-      setNota(opinion === 'asi_no_puedo' ? TEXTO_ASI_NO_PUEDO.marcado : TEXTO_ASI_NO_PUEDO.deshecho)
+      // Al marcar, la tarjeta de abajo ya lo explica; la nota solo confirma que se guardó.
+      setNota(opinion === 'asi_no_puedo' ? 'Guardado.' : TEXTO_ASI_NO_PUEDO.deshecho)
     }
   }
 

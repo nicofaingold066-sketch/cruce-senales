@@ -17,6 +17,7 @@ import { Icono } from '../components/Icono'
 import { marcarConEspacios } from './estado'
 import { QueGuarda } from '../friccion/QueGuarda'
 import { FRASE_QUIEN_VIENE, quienVieneDe, sinQuienViene } from '../lib/compartir'
+import { destinoDesdeVista, destinoPorCodigo } from '../friccion/porCodigo'
 import './login.css'
 
 export interface MiembroPorReclamar {
@@ -89,8 +90,8 @@ interface YaMiembro {
   nombreActual: string
 }
 
-/** Unirse (por la lista o por el formulario), con el cuidado de navegador compartido de la portada (#47). */
-function useUnirse(fuente: FuenteEntrada) {
+/** Unirse (por la lista o por el formulario), con el cuidado de navegador compartido de la portada (#47). Exportado para la portada. */
+export function useUnirse(fuente: FuenteEntrada) {
   const { ocupado, error, ejecutar } = useAccion()
   const [origen, setOrigen] = useState<Origen | null>(null)
   const [yaMiembro, setYaMiembro] = useState<YaMiembro | null>(null)
@@ -106,7 +107,8 @@ function useUnirse(fuente: FuenteEntrada) {
       setYaMiembro({ intento: i, espacioId: r.data.resultado.espacio_id, espacio: r.data.espacio.nombre, nombreActual: yo?.nombre ?? 'otra persona' })
       return
     }
-    entrarAlEspacio(r.data.resultado, r.data.espacio.nombre, i.nombre, i.miembroId != null, sesionGuardada)
+    // Por la lista se va directo a responder; por el formulario, al espacio (aunque reclame un lugar anotado por el nombre).
+    entrarAlEspacio(r.data.resultado, r.data.espacio.nombre, i.nombre, i.origen === 'lista', sesionGuardada)
   }
   return { ocupado, error, origen, yaMiembro, setYaMiembro, unirse }
 }
@@ -347,7 +349,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
           </section>
         ) : null}
 
-        <UnirseConNombre codigoInicial={codigo} u={u} campoNombre={campoNombre} deshabilitado={soloLectura} demo={vista?.espacio.demo === true} />
+        <UnirseConNombre codigoInicial={codigo} u={u} campoNombre={campoNombre} deshabilitado={soloLectura} vista={vista} />
         <div className="privado" role="note">
           <span className="privado-icono" aria-hidden="true">
             <Icono n="candado" tam={20} />
@@ -363,21 +365,27 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
   )
 }
 
-/** "No estoy en la lista": el formulario de siempre (mismos nombres accesibles que la portada). */
-function UnirseConNombre({
+/**
+ * "No estoy en la lista": el formulario de siempre (mismos nombres accesibles que la portada). Coherente con el enlace:
+ * si el nombre escrito es el de un integrante anotado y libre de este grupo, reclama ese lugar (antes daba "nombre en
+ * uso"); con otro código, mira ese grupo y, si tiene nombres libres que no coinciden, lleva a su "¿Quién eres?".
+ * Exportado para que la portada (front-juan) use este mismo formulario con `vista={null}`.
+ */
+export function UnirseConNombre({
   codigoInicial,
   u,
   campoNombre,
   deshabilitado,
-  demo,
+  vista,
 }: {
   codigoInicial: string
   u: ReturnType<typeof useUnirse>
   campoNombre: React.RefObject<HTMLInputElement | null>
   deshabilitado: boolean
-  /** La ayuda de "reclamar a una persona simulada" solo tiene sentido en la demo (en un grupo real confunde). */
-  demo: boolean
+  /** La lista ya cargada de este grupo (null en la portada o mientras carga). */
+  vista: VistaPorCodigo | null
 }) {
+  const demo = vista?.espacio.demo === true
   const [codigo, setCodigo] = useState(codigoInicial)
   const [nombre, setNombre] = useState(() => leerPerfil()?.nombre ?? '')
   const perfil = usePerfil()
@@ -394,10 +402,33 @@ function UnirseConNombre({
     if (nombreMal) campoNombre.current?.focus()
   }, [error, nombreMal, campoNombre])
 
-  function hacer(e: FormEvent) {
+  const [mirando, setMirando] = useState(false)
+  async function hacer(e: FormEvent) {
     e.preventDefault()
-    if (faltan) return
-    void u.unirse({ codigo: codigo.trim(), nombre: nombre.trim(), miembroId: null, origen: 'formulario' })
+    if (faltan || mirando) return
+    const cod = codigo.trim()
+    const nom = nombre.trim()
+    let miembroId: string | null = null
+    let nombreFinal = nom
+    if (vista && cod.toUpperCase() === codigoInicial.toUpperCase()) {
+      // Mismo grupo. En la demo el servidor ya resuelve el nombre de una persona simulada; no se cambia esa llamada.
+      if (!demo) {
+        const d = destinoDesdeVista(vista, nom)
+        miembroId = d.miembroId
+        nombreFinal = d.nombre
+      }
+    } else {
+      setMirando(true)
+      const d = await destinoPorCodigo(cod, nom)
+      setMirando(false)
+      if (d.elegir) {
+        irA(rutas.unirse(cod))
+        return
+      }
+      miembroId = d.miembroId
+      nombreFinal = d.nombre
+    }
+    void u.unirse({ codigo: cod, nombre: nombreFinal, miembroId, origen: 'formulario' })
   }
 
   return (
@@ -428,7 +459,7 @@ function UnirseConNombre({
         />
         {demo ? <small>Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.</small> : null}
       </label>
-      <Boton type="submit" variante="secundario" ocupado={u.ocupado && u.origen === 'formulario'} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado}>
+      <Boton type="submit" variante="secundario" ocupado={(u.ocupado && u.origen === 'formulario') || mirando} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado}>
         Unirme
       </Boton>
       {error ? <ErrorCaja error={error} enfocar={!nombreMal} /> : null}
