@@ -162,3 +162,165 @@
   background: var(--ok-suave);
   color: var(--ok);
 }
+
+/* ---- pantalla 3 exacta (Nico y Juan, 03:05): subtítulo, "Personas ›", invitación con código mono y dos botones */
+.vista-s2 .grupo-cabeza-texto {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.vista-s2 .grupo-sub {
+  font-size: var(--t-nota);
+  color: var(--escena-tinta-2, rgba(255, 255, 255, 0.72));
+}
+.vista-s2 .espacio-cabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-3);
+}
+.vista-s2 .grupo-personas {
+  min-height: var(--toque);
+  padding: 0 var(--e-2);
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-rotulo);
+  cursor: pointer;
+}
+.vista-s2 .invitar-cabeza {
+  display: grid;
+  gap: var(--e-2);
+  margin-bottom: var(--e-3);
+}
+.vista-s2 .invitar-cabeza h2 {
+  margin: 0;
+  font-size: var(--t-subtitulo);
+}
+.vista-s2 .invitar-codigo-mono {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: var(--t-titulo);
+  font-weight: var(--p-titulo, 700);
+  letter-spacing: 0.08em;
+  color: var(--tinta);
+  overflow-wrap: anywhere;
+}
+.vista-s2 .s2-invitar-botones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--e-2);
+}
+.vista-s2 .s2-invitar-botones .btn {
+  width: 100%;
+  min-height: var(--toque);
+}
+.vista-s2 .s2-nuevo-plan {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque);
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-rotulo);
+}
+.vista-s2 .s2-nuevo-plan[aria-disabled='true'] {
+  pointer-events: none;
+  opacity: 0.5;
+}
+.vista-s2 .s2-agente {
+  margin-top: var(--entre-bloques);
+}
+.vista-s2 .s2-agente > .agente-plegable {
+  margin: 0;
+  border: 0;
+  background: none;
+  padding: 0;
+}
+.vista-s2 .s2-agente summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--toque);
+  font-size: var(--t-subtitulo);
+  font-weight: var(--p-rotulo);
+}
+.vista-s2 .s2-abrir {
+  font-size: var(--t-cuerpo);
+  color: var(--tinta-2);
+}
+.vista-s2 .s2-gustos {
+  margin: 0 0 var(--e-3);
+  font-size: var(--t-cuerpo);
+}
+.vista-s2 .s2-agente-boton {
+  width: 100%;
+}
+.vista-s2 .s2-fila,
+.vista-s2 .tarjeta-sim {
+  margin-top: var(--entre-tarjetas);
+}
+.vista-s2 .s2-historial {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--e-1);
+}
+.vista-s2 .s2-historial a {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--e-3);
+  min-height: var(--toque);
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+.s2-hoja-cabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--e-3);
+}
+.s2-hoja-cabeza h2 {
+  margin: 0;
+  font-size: var(--t-subtitulo);
+}
+.s2-cerrar {
+  width: var(--toque);
+  height: var(--toque);
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+.sd-hoja-modal .chips-personas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--e-2);
+}
+.sd-hoja-modal .chips-personas li {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-height: var(--toque);
+}
+.sd-hoja-modal .chip-nota {
+  margin-left: var(--e-2);
+  font-size: var(--t-nota);
+  color: var(--tinta-2);
+}
+/* El mockup muestra "Abrir ›" a la derecha, sin la flecha del plegable. */
+.vista-s2 .s2-agente > .agente-plegable > summary::after {
+  display: none;
+}
+.vista-s2 .s2-agente summary .summary-texto {
+  flex: 1;
+}
+.vista-s2 .s2-invitar-botones .btn {
+  white-space: nowrap;
+  padding-inline: var(--e-2);
+}
