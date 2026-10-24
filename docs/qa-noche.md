@@ -79,6 +79,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 22:00 | backend 21:45: `te_toca_aceptar` antes de «puedes rearmar» es lo buscado; con 0047 `opiniones_totales` cuenta solo las opiniones de los demás. La prueba E13 acepta las dos formas (2 o null) y lo informa | — | adaptado |
 | 22:31 | `proposito.mjs` completo con 0048 + 0049: **25/25**, sin pendientes (el mismo intento con otra actividad es `entrada_incompleta/intento_reutilizado`; un primer uso fallido no queda guardado) | base | verde |
 | 22:40–22:47 | `tests/verificacion-altas` adaptados a la baja sin nombre (cedidos por el coordinador): a2 15/15 (la baja es una sola, sin `miembro_id` ni nombre en `get_proposal_state` ni `list_proposals`); a4 «aceptar y retirarse el MISMO miembro» y «retiro de OTRO miembro» 2/2. `a4CadenaEventos` ahora ignora para la cadena de estados las bajas anónimas (`estado_previo` y `estado_nuevo` null) y no compara el estado actual si el último evento es una de ellas | base | verde; el resto de a4 son ráfagas y no se corrió por la regla 21:16 |
+| 22:55 | humo de producción (main bd9dc36): dos sesiones **26/26** y jurado **4/4** (26 comprobaciones; E13 «baja sin nombre, totales solo al organizador» detectada y comprobada; 178 RPC sin hallazgos de privacidad) | producción | verde |
 
 ## Regresiones abiertas
 (ninguna)
