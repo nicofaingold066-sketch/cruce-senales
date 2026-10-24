@@ -5,6 +5,11 @@ Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la com
 ## Tocando ahora
 - CORRIENDO PRUEBA (01:23) sesión de pruebas UX (wip/front-juan-ux): e2e principal (dos sesiones, jurado, entrada tipo Tricount) sobre wip/front-juan-ux 79ef5e3 = main 3cca951 sin Novedades, antes de subir a main
 
+## Entregado en main (sesión de pruebas UX, sáb 24 oct 01:24): `main` = `79ef5e3`
+- Fast-forward desde `3cca951`, subido por la sesión de pruebas UX a pedido de Juan. Rama: `wip/front-juan-ux` = `79ef5e3`.
+- Novedades FUERA de main (decisión de Juan 01:12, cierre de funciones): había entrado por 2aa3d38 desde 31d8d1b. No volver a fusionar 31d8d1b ni anteriores.
+- Trae: integración de wip/front-juan (18f3682, 7930e66) sobre el parche de ux-flujo; "puedo" alcanza (cruce con respondieron, Respuestas del grupo, Mi respuesta con condiciones primero y casilla de interés opcional); Crear grupo guía a cargar la lista (entrada tipo Tricount); Simulación sin dos botones "Aceptar versión N por X" idénticos; arreglos de dos revisiones adversariales.
+- Pruebas: offline verdes (typecheck, build, ejemplos 15/15, guardia 0, red 10/10, recuperación 12/12; componentes-nuevos 35/36 por lugarMapa, que falla igual en main). Contra la base sobre f0a636e: dos sesiones 26/26, jurado 4/4, fricción 19/19, propósito 25/25, convencer a uno OK, entrada tipo Tricount 9/9. Sobre 79ef5e3: dos sesiones, jurado y Tricount esperando turno (pendientes migra E15); el resultado se anota acá.
 ## Entregado: `wip/front-juan` = `9cafcc2` (con `origin/wip/fundamentos` `a381a0c` fusionado, sin conflictos)
 Respuesta al aviso de las 17:35:
 - Merge de `origin/wip/fundamentos` hecho (`a6abbc6`), sin conflictos. No toqué `src/login/**` ni la lista de integrantes de `CrearGrupo.tsx`; `#/unirse` queda en "¿Quién eres?" de login.
