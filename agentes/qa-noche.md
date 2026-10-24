@@ -3,7 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cruce-qa`). Rutas: `tests/e2e/**`, `docs/qa-noche.md`. Puerto de preview: 4185.
 
 ## Tocando ahora
-- [02:10] EN COLA de la base (sin marca). Leído el rediseño (`prompts/rediseno-noche.md`): atiendo los avisos de rótulos de cada sección (S1–S7) y adapto los guiones para que acepten los dos textos; `wip/qa` ya trae «Los del (asado|finde)» (merge de fundamentos 22ae202). Mi turno ≤10 min: `enmienda15-privacidad.test.ts`, `proposito*.mjs`, humo de producción sobre «Los del finde». Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
+- [03:04] EN COLA de la base (sin marca): set completo sobre `wip/ux` 9ef976e (S4) y, después, lo que entreguen S2/S3/S7/S1/S5/S6. Leído `prompts/rediseno-secciones.md` (21 pantallas): el mockup gana, adapto guiones cuando la sección avise la línea exacta; ya preparé `tests/e2e/nav.mjs` (`irA`: pestaña o fila) y rótulos tolerantes (`Nuevo plan`, «Revisar antes de crear» opcional). Falta: Mínimo/Máximo con −/+ (jurado) cuando entregue S3. Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
 
 ## Entregado
 - [02:24] Turno 02:20–02:23 sobre producción «Los del finde» (main 22ae202): propósito 25/25, pantalla 10/10, dos sesiones 27/27, jurado 4/4 (E13 y E15 detectadas y comprobadas). `enmienda15-privacidad.test.ts` nuevo: 2/3, el fallo era un supuesto mío de forma (`opcion.franja` es objeto); corregido, lo repito en el próximo hueco.
