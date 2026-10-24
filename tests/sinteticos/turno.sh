@@ -24,7 +24,7 @@ otros_corriendo() {
   for f in $(git -C "$COORD" ls-tree --name-only origin/coordinacion agentes/ | grep '\.md$' | grep -v "$FICHA"); do
     # Solo cuenta la marca en sí: una línea que EMPIEZA con «- CORRIENDO PRUEBA (hh:mm)» (formato de la regla del 21:16).
     # Menciones dentro de otra frase ("el coordinador está en CORRIENDO PRUEBA…") no son una marca.
-    if git -C "$COORD" show "origin/coordinacion:$f" | grep -E '^[-*] \**CORRIENDO PRUEBA \(?[0-9]' | grep -v -i -E 'terminad' | grep -q .; then
+    if git -C "$COORD" show "origin/coordinacion:$f" | grep -E '^[-*][[:space:]]+(\*\*)?(\[[0-9:]+\][[:space:]]*)?(\*\*)?[[:space:]]*CORRIENDO PRUEBA \(?[0-9]' | grep -v -i -E 'terminad' | grep -q .; then
       echo "$f"
       return 0
     fi
