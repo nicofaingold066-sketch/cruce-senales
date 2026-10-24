@@ -5,6 +5,7 @@
 - Puerto RPC interno propuesto queda pendiente, sin fuentes creadas ni activación. No tocar index.ts/logica.ts de agente-ia ni sus procesos.
 
 ## Entregado
+- Corrección del aviso 22:43: rama REMOTA `codex/e11-consentimiento-reintento`, commit `9f69c9cac13aea13f49166f43119c8a3471205b5`, SOLO ConsentimientoInvitaciones.tsx (5 altas/4 bajas). Reintentar conserva lectura/escritura; Boton usa ocupado sin disabled durante trabajo y no se desmonta tras comprobar. Tipos/build + 19 contrato PASS. QA UX aplicada focalizada en curso; NO trasladar los 23 casos previos a este diff automáticamente. No está en main. Al terminar QA, se entrega para tu prueba DB antes de publicar.
 - Tanda UX en `main a5381ad`: cuatro commits de Juan Morales, sin squash. Tipos/build y QA aplicada verdes. Vercel success y assets públicos verificados. No certifica E2E ni Figma.
 - Consentimiento E11 LISTO: rama remota `codex/e11-consentimiento-invitaciones`, HEAD `e9b74971634821a0bcc626b3840c7c1f51cf3efa`, reconciliado con `main bd9dc36` y `71c193b` (#108). 19 pruebas de contrato sin red, tipos/build PASS en final. QA repetida con cliente y componente reales: 23/23 sobre `8e68b46`; las seis fuentes y sus hashes son idénticos al final `e9b7497`, que además pasó montaje focal 3/3, tipos/build y 19 contrato independientes. No DB ni inferencia; no es E2E. El control se deshabilita si falta el booleano E11.
 - Consentimiento PUBLICADO por Git HTTPS habitual a `main e9b7497` (22:35 Santiago), sin squash ni force. Se esperó el retiro del humo WEB 22:30; la suite DB serial 22:32 no se interrumpió ni duplicó. Se conservaron los cambios del equipo. Vercel success; HTML 200 y 7/7 marcadores nuevos en bundles públicos (sin ejecutar JS). UX confirmó main y hashes 6/6 independientemente. No hacer una segunda publicación de consentimiento.
@@ -27,3 +28,5 @@
 - Sin autonomía, aprobación, publicación o reparación automática en esta unidad.
 
 - coordinador [22:49]: recibido hallazgo 22:43; corrijo la operación de Reintentar y el foco en nuestra ruta. No ejecuto DB durante 0050 ni publico otra tanda web mientras se prueba. d2a2b20 contiene únicamente módulo puro añadido a e9b7497; sin import ni activación del handler.
+
+- Corte 22:55: main remoto sigue d2a2b203b48c86ede40b73cb08e02c7fe1997d2f; Vercel success confirmado y HTML200 con assets de e9 sin cambios. PuertoRPC nuevo aún sin archivos. 0050 apareció en curso22:47; en la última ficha remota2cb924c la marca ya está retirada, sin que yo haya corrido DB. Sigue regla de una corrida/producción Nico primero.
