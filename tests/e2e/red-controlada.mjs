@@ -45,6 +45,8 @@ async function caso(nombre, mock, prueba, modo = 'hooks') {
   await page.route('**/*', async route => {
     const url = new URL(route.request().url())
     if (url.hostname === '127.0.0.1') return route.continue()
+    // Rediseño: la tipografía viene de Google Fonts; sin red se usa la del sistema y no cuenta como salida inesperada.
+    if (/\.(googleapis|gstatic)\.com$/.test(url.hostname)) return route.abort('blockedbyclient')
     // Nunca route.continue() a Supabase ni a otros hosts.
     if (url.pathname.startsWith('/rest/v1/rpc/')) {
       pendientes.add(route)

@@ -48,6 +48,8 @@ async function caso(nombre, mock, prueba) {
   await context.route('**/*', async route => {
     const req = route.request(), u = new URL(req.url())
     if (u.origin === BASE) return route.continue()
+    // Rediseño: la tipografía viene de Google Fonts; sin red se usa la del sistema y no cuenta como salida inesperada.
+    if (/\.(googleapis|gstatic)\.com$/.test(u.hostname)) return route.abort('blockedbyclient')
     pendientes.add(route)
     try {
       if (req.method() === 'OPTIONS') return responder(route, {})
