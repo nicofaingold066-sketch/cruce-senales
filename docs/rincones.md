@@ -1,16 +1,19 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: sábado 24 oct, 03:20 (build = `main` 60a98e0; producción 22ae202) (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: sábado 24 oct, 03:30. **Sesión archivada por decisión de Nico (03:14): el barrido de 07:00 a 09:00 lo hace el coordinador con estos guiones.** Último build revisado contra la base: producción `main` 22ae202 (bundle `index-C2ZpTUnt.js`, corrida de las 02:15–03:10); el build local llegó hasta `main` 60a98e0 (S3 y panel compacto del agente).
 
-## Resumen (se rehace a las 08:00)
-Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 16**, de los cuales **2 ya APROBADOS** en `main` 3ace04e (O-06 y O-08, corrida 4 `f0` 20:55) y 3 por confirmar en la misma corrida (O-02, O-12b, O-13) (ninguno impide completar el recorrido canónico), el resto APROBADO.
-Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no de función):
-1. **O-01** Cabecera a 320 px: el avatar de la sesión tapa el chip "Datos ficticios" en TODAS las pantallas con nombre.
-2. **O-02** Entrada por enlace en un navegador que ya es miembro: "¿Quién eres?" lo muestra "no disponible" y dice "Ya no queda ningún nombre libre", sin "Seguir como X".
-3. **O-03** Con teclado, el foco puede quedar bajo la barra inferior (portada con plan, tarjetas al pie).
-4. **O-04** Portada con nombre: "Tengo un código de invitación" y el formulario "Unirme con un código" están los dos a la vista (duplicado).
-5. **O-05** "confirmación(es)" en la tarjeta de versión en revisión ("Conserva 1 confirmación(es) de 2").
+## Resumen final
+**ROTO 0.** Inventario: **152 rincones APROBADOS, 9 OBSERVADOS, 24 pendientes** (filas reservadas de lo que todavía no llegó a `main` o no alcanzó turno de base). De mis 19 observaciones, **10 ya están APROBADAS en producción** (O-01, O-02, O-03, O-04, O-05, O-06, O-08, O-10, O-14, O-15) y **9 siguen abiertas**: O-07 (avatares chicos, leve), O-09 (frase repetida en plan cancelado), O-11 (voseo y «Quincho de Tomi» fuera del demo, por revisar), O-12 (avisos repetidos), O-13 (texto técnico si falla la sesión; friccion dice que ya está), O-18 (título pegado en «¿Quién eres?» a 320 y 768), O-19 (contraste de texto chico), O-20 («Respuest…» cortado a 320) y O-16 (chip «Datos ficticios»: decidido que se queda).
+
+Los 5 que más importan para la demo, con su estado:
+1. **Recorrido canónico completo** (grupo → propuesta → respuestas → v1 → confirmar → baja → alternativa → v2 → confirmado): APROBADO de punta a punta en producción, también la enmienda 13 («Así no puedo, pero sigo», «Rearmar con lo nuevo», baja sin nombre; una sola opinión no delata, dos muestran el aviso sin nombres).
+2. **Demo «Los del finde»** (portada → «Probar la demo» → espacio → Simulación → v1 → confirmado → baja → revisión): APROBADO a 320, 375, 768 y 1280; la pestaña Simulación ya cabe a 320 (O-14).
+3. **Entrada del invitado** (enlace → «¿Quién eres?» → «Respuesta en un paso»): APROBADA; falta mirar cuando S1 y S5 de friccion lleguen a `main`. Por verificar en la próxima tanda: el botón de la agenda se llama ahora «Ver qué sugiere mi agenda» (mi `f12` ya lo acepta; A13 y A15 no alcanzaron a correr).
+4. **Privacidad en pantalla:** APROBADA en enmienda 13 (sin nombres en bajas, avisos ni enlaces) y en el agente; **SIN VERIFICAR** la enmienda 15 en pantalla («Cómo viene cada plan» solo para quien organiza, «¿cuál prefieres?»): mi `f15` falló por un selector y no se re-corrió (ya corregido).
+5. **Contraste y 320 px:** la cabecera, el foco y las pestañas están bien; queda O-19 (texto chico de 13 px bajo 4,5:1: «(por entrar)» y «Propósito»).
+
+Lo que no alcancé a recorrer con la base (por orden de importancia): `f15` (enmienda 15), `f8` (agente v13, una llamada), `f12` A13/A15 (calendario simulado en «Respuesta en un paso»), `f9` (sin red a mitad de una acción), `f10` (fallas inyectadas), `f11` (Responder), y las secciones del rediseño que se publiquen después de las 03:00 (S1, S2, S4, S5, S6, S7; S3 solo en parte).
 
 ## Cómo se revisa
 - Guiones Playwright en `tests/rincones/` (`f0` a `f6`, biblioteca `lib.mjs`). Cada guion crea su propio grupo ("Rincones hh:mm") con 4 a 5 sesiones anónimas distintas (una por persona) y su propio demo. No toca el demo de otros ni lo reinicia.
