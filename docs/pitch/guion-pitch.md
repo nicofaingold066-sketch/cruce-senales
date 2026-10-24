@@ -1,0 +1,107 @@
+# Guion del pitch de CRUXE (para decir en voz alta)
+
+Sesión **pitch**, sábado 24 oct 2026 (hora de `TZ=America/Santiago date`). Base: la guía de bolsillo de Nico (`/Users/macair/cruse/demo-makana-20261024/pitch-guia-nico.md`, 10:52) y los documentos del repo. Todo ficticio.
+
+**Formato oficial:** 5 minutos con demo en vivo + 3 de preguntas; Problema, Solución y Convicción pesan lo mismo (bases v1.5 §9 y §10, copia en `/Users/macair/cruse/demo-makana-20261024/evidencia/bases-oficiales.txt`). Entrega: 13:00; sorteo del orden 13:45; pitches desde las 14:00.
+**Reparto (guía de Nico):** Nico habla mirando a la sala; Juan opera la demo. En preguntas, los dos.
+**Lo único de memoria:** la primera frase y la última.
+
+Reglas que no se rompen en escena (`docs/guion-demo.md`, «Reglas que no se rompen»): solo se dice lo que funciona en vivo; las causas del problema van como «creemos que»; nunca «reservado», «lo confirmó la IA», «la app avisa sola» ni «probado con gente real».
+
+---
+
+## A. Versión de 5 minutos (la del escenario)
+
+Sigue el mapa de la guía de Nico: gancho, problema, conflicto, solución + demo, Makana, cierre. Suma el bloque «cómo lo construimos» en 20 segundos dentro de la transición a Makana.
+
+### 0:00–0:30 · Gancho
+- «Levanten la mano los que tienen un grupo de WhatsApp de amigos.» *(levantás la tuya)*
+- «Déjenla arriba si alguna vez alguien escribió: *che, ¿cuándo nos juntamos?*…»
+- «…y la juntada nunca pasó.»
+- *(Pausa de 2 segundos. Mirás las manos.)*
+- «A nosotros nos pasó hace dos semanas. Les cuento.»
+
+### 0:30–1:10 · Problema
+- «8 de octubre. Un asado. Seis interesados.»
+- «Todos: *dale, me sumo*.»
+- «Después, uno no puede el sábado. Otra no quiere gastar. Otro no dice nada.»
+- «Uno solo persiguiendo respuestas. Los demás dejan de contestar.»
+- «Resultado: cero asados.» *(pausa)*
+- (Opcional, un solo dato) «Amigos hay: el 43 % de los chilenos tiene entre 3 y 5. Lo que falla es que el encuentro ocurra.»
+
+> Fuente del dato: Encuesta Bicentenario UC, vía prensa, fuente secundaria (`docs/problema.md` línea 13). Si preguntan, decir «fuente secundaria». No hablar de soledad como eje.
+
+### 1:10–1:50 · El insight (las tres trabas, con los dedos)
+- «WhatsApp sirve para hablar del plan. No para cerrarlo.»
+- «Uno: nadie dice delante del grupo *no me alcanza* o *ese día no puedo*. **Lo privado tiene que quedar privado.**»
+- «Dos: *me interesa* no es *voy*. **El silencio no es asistencia.**»
+- «Tres: cuando uno se baja, se cae todo. **Una confirmación vale para una versión del plan, no para siempre.**»
+- «Creemos que ahí se muere la juntada: no en las ganas, en el cierre.»
+
+### 1:50–2:10 · Qué hace CRUXE (tres pasos)
+- *(lento)* «CRUXE convierte *nos tenemos que juntar* en un encuentro que ocurre.»
+- «Uno: cada uno dice en privado cuándo puede. Nadie ve lo de los demás.»
+- «Dos: el servidor busca la opción que le sirve al grupo, y cada uno confirma **esa** versión.»
+- «Tres: si alguien se baja, el plan se repara con una versión nueva, y nadie arrastra una confirmación vieja.»
+- «Juan, mostrémoslo.»
+
+### 2:10–3:50 · Demo en vivo (1:40)
+Juan opera; Nico narra. Paso a paso con rótulos: `docs/pitch/demo-en-vivo.md` (versión a «Los del finde» o versión b «Makana»). El momento clave es la baja: **pausa** antes de que alguien se baje.
+
+Frases de narración (sirven para las dos versiones):
+- «Entra con el enlace, toca su nombre. Sin cuenta, sin contraseña.»
+- «Responde en un toque. Esto lo ve solo el servidor; el grupo no sabe qué eligió.»
+- «Con lo que hay, el servidor propone una sola opción. Quien no respondió no cuenta.»
+- «Cada uno confirma esta versión. Ahora sí hay plan: *¡Se juntan!*»
+- *(pausa)* «Ahora alguien se baja.»
+- «El plan no finge que sigue armado: queda *En revisión*. Y no dice quién se bajó.»
+- «Se rearma con otra fecha: versión 2. Empieza de cero; cada uno vuelve a decidir.»
+
+### 3:50–4:10 · Qué lo hace distinto (y cómo lo construimos)
+- «Lo importante no está en la pantalla, está en el servidor: él decide los cupos, los plazos y el estado. No el teléfono de nadie.»
+- «Hay un agente, GRU, que propone planes con los gustos privados del grupo. Propone; no confirma nada. Eso siempre lo hace una persona.»
+- «Lo hicimos en 36 horas, dos personas dirigiendo un equipo de sesiones de IA coordinadas: cerca de mil commits, pruebas contra la base real antes de cada publicación, 30 personas confirmando a la vez sin pasarse del cupo, y una auditoría del agente.»
+
+> Respaldo: ~1 088 commits en `origin/main` a las 10:55 (`git rev-list --count`); pruebas contra la base en cada publicación (TABLERO del coordinador: recorrido 27/27, jurado 4/4, red 10/10…); QA de 30 a la vez: `docs/qa/gente-y-rendimiento.md` (152 verificaciones, c1–c6); auditoría: `docs/auditoria-agente.md` (rama `auditoria-agente`). No decir «sin errores»: la QA dejó 7 hallazgos medios/bajos.
+
+### 4:10–4:40 · Para Makana
+- «Makana ya tiene grupos y desafíos. CRUXE cierra el último metro: que el encuentro ocurra.»
+- «Pasar de *tener* el beneficio a *usarlo*.»
+- «Proponemos un piloto voluntario midiendo tres cosas: encuentros que se concretan, si el grupo se repite a las 4 y a las 12 semanas, y cuántas bajas se reparan.»
+- «Y una regla: nadie de la empresa ve lo que dijo cada persona. Solo totales.»
+
+> Ojo: hoy no existe una vista para empresas; «solo totales» es el diseño propuesto para el piloto, no una pantalla. No decir «baja el ausentismo» ni «resuelve la soledad».
+
+### 4:40–5:00 · Cierre (de memoria)
+- «¿Se acuerdan del asado del 8 de octubre? Seis interesados, cero asados.»
+- «Con CRUXE, cada uno dijo lo suyo en privado, confirmó, y cuando uno se bajó… el plan siguió en pie.»
+- *(lento)* «**Que juntarse deje de depender de que uno persiga a todos.** Gracias.»
+- *(Quieto 2 segundos.)*
+
+**Si vas largo** (guía de Nico): primero se cae el dato del 43 %, después la línea «cómo lo construimos» (queda para preguntas). La demo y el cierre no se tocan.
+
+---
+
+## B. Versión de 3 minutos (si el tiempo se acorta o para un ensayo rápido)
+
+| Tiempo | Bloque | Qué se dice |
+|---|---|---|
+| 0:00–0:20 | Gancho | «¿Cuántos tienen un grupo de amigos donde alguien escribió *che, ¿cuándo nos juntamos?*… y nunca pasó? A nosotros nos pasó el 8 de octubre: seis interesados, cero asados.» |
+| 0:20–0:45 | Insight | «Creemos que no faltan ganas: falla el cierre. Nadie dice en el grupo que no le alcanza. *Me interesa* no es *voy*. Y cuando uno se baja, se cae todo. El silencio no es asistencia, y una confirmación vale para una sola versión del plan.» |
+| 0:45–1:00 | Qué hace | «CRUXE: cada uno dice en privado cuándo puede, el servidor propone una opción, cada uno confirma esa versión, y si alguien se baja, se repara con una versión nueva.» |
+| 1:00–2:20 | Demo | Versión corta de `demo-en-vivo.md` §a: Luna entra y responde en un toque → «Buscar opción compatible» → confirmaciones → «¡Se juntan!» → Caro se baja → «En revisión» → versión 2 desde cero. |
+| 2:20–2:40 | Distinto + cómo | «El servidor decide cupos, plazos y estado. El agente propone, no confirma. 36 horas, pruebas contra la base real, 30 personas a la vez sin sobrecupo.» |
+| 2:40–3:00 | Makana + cierre | «Para Makana, es el último metro: que el encuentro ocurra. Piloto voluntario, midiendo encuentros concretados y bajas reparadas. Que juntarse deje de depender de que uno persiga a todos. Gracias.» |
+
+---
+
+## C. Ajustes a la guía de bolsillo (lo que no cuadra con el repo)
+
+Revisé la guía de Nico contra los documentos; esto conviene cambiarlo antes de subir:
+
+1. **Demo «parque, sábado, mediodía»**: en el caso Makana el plan es «Parque del Encuentro (ficticio)», sábado 31 oct o domingo 1 nov **de 16:00 a 18:00** (`docs/demo-makana.md` paso 5, rama `codex/demo-makana`). Decir «sábado a la tarde».
+2. **«Camila marca que prefiere algo gratis… desde el teléfono de Ana no aparece»**: requiere la demo Makana publicada y que Camila haya guardado esa preferencia en su propia sesión. A las 10:57 producción todavía abre «Los del finde» (el botón dice «Abrir la demo «Los del finde»»). Si Makana no está publicada, esa frase no se dice; usar la versión a.
+3. **«Las apps que existen votan fechas. Ninguna repara cuando alguien se baja»**: no está relevado en el repo. Decir «las que probamos votan fechas; no reparan cuando alguien se baja».
+4. **«La empresa ve solo datos agregados»**: no hay vista de empresa construida. Decir «proponemos que la empresa vea solo totales».
+5. **«¿Quién paga? La empresa o aseguradora»**: es hipótesis de negocio, sin validar. Decirlo como hipótesis («creemos que…»).
+6. **Juan opera la demo**: la otra guía (`Guia-de-presentacion.md`) proponía al revés («Juan presenta / Nicolás opera», pendiente). Vale la guía de bolsillo, que es la más nueva (10:52).
