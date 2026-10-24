@@ -6,6 +6,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md
 - [21:07] Nada editándose. #103 y #101 entregados; a las 10:30 (Estado verificado) dejo una sola versión en `docs/preguntas-jurado.md` y marco los [a verificar] de `docs/guion-demo.md`.
 
 ## Entregado
+- [21:18] `docs/guion-demo.md` §4: fila de plan B para «Falla temporal / tiempo agotado» por base lenta (lo que vio Nico a las 21:13), commit `7a45f74`.
 - [21:14] #103 ampliado (commit `78d1b2a`): Parte B con dos caminos en la misma estructura (§3 con T2, §3b con un solo aparato; decisión del coordinador 21:10), regla de sesiones (el reclamo de Luna sobrevive a «Reiniciar demo»: T2 reusa su sesión; si no, demo fresco con «Entrar como otra persona»), §7 lámina de 30 s de psico, §8 tabla de seis puntos con la columna «Estado 10:30» vacía para el coordinador. #101: frases exactas de psico en S12 (D2) y S13 (D8), F1 tal cual, enlace a la lámina en C9. Solo docs.
 - [21:07] #103 entregado: `docs/guion-demo.md` (commit `6bdce63`): reparto de tiempo (problema 0:45, Parte A 1:00, Parte B 2:10), lista de control antes de subir, cada paso con rótulo exacto, frase y prueba ([visto]/[leído]/[a verificar]), plan B por falla (red, sesión, agente lento o caído, sin «viaje», Luna no reclamable, sin red). Rótulos tomados de los guiones e2e que pasaron en producción (`recorrido-dos-sesiones` 23/23 sobre `3ace04e`, `toques-invitacion` = 4) y del código. Solo docs.
 - [21:07] #101 actualizado (commit `9d6505f`): S3 con las dos versiones de debate de ux-flujo (`a4d78ed`), S5b/S6/S10 con la enmienda 13 (baja sin nombre, asado en lugar neutro), S4 con la enmienda 11 (base sí, interfaz no), S12 nueva (D2/D3: género y pareja no se piden), enlace al guion. 30 preguntas.
@@ -35,6 +36,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md
 - qa-noche [21:14] (del coordinador; mandado también por mensaje a las 21:12): puntos 4 y 5 de `docs/guion-demo.md` §8: (4) Luna reclamable después de «Reiniciar demo» (sesión nueva → «no disponible»; la misma sesión → «Sigue para responder» en un toque) y (5) el plan B de un aparato en un demo fresco (el caso carga a Luna; v1 sábado con Tomi, Luna, Mati y Caro; baja de Caro → En revisión; v2 domingo). Sin llamar al agente.
 - coordinador [21:14]: hecho: `docs/guion-demo.md` §8 tiene la tabla de los seis puntos con «Estado 10:30» vacía; la Parte B quedó con T2 y §3b como plan B, misma estructura. Lámina de psico en §7.
 - psico [21:14]: lámina §14 incorporada en `docs/guion-demo.md` §7 con tus cuidados; tus frases de D2 y D8 van tal cual en S12 y S13 de `docs/preguntas-jurado.md`, y F1 con `docs/psicologia-fuentes.md`. Gracias.
+- qa-noche [21:18]: por la regla de las 21:16, mis puntos 4 y 5 no son urgentes: de a uno, con la base libre; si no llegan esta noche, van al ensayo de las 10:00. Yo no corro nada contra la base.
 
 ## Hallazgo → cambio → dueño (regla de Nico, 20:34)
 | Hallazgo | Cambio | Dueño | Cuándo | Estado |
