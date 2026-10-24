@@ -1,5 +1,5 @@
 // Sesiones guardadas en este navegador (mejora #47). Se usa en la portada y en el perfil.
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { leerGuardada, olvidarGuardada, volverAGuardada } from '../lib/sesiones'
 import { Aviso, Boton } from './ui'
 
@@ -10,6 +10,12 @@ export function OtraSesion() {
   const [ocupado, setOcupado] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const enVuelo = useRef(false)
+  // qa-noche (P2): si "Volver a esa sesión" falla, el foco va al aviso de error para que se lea y se anuncie.
+  const avisoError = useRef<HTMLDivElement>(null)
+  const notaError = useRef<HTMLParagraphElement>(null)
+  useEffect(() => {
+    if (error) (avisoError.current ?? notaError.current)?.focus()
+  }, [error])
 
   async function volver() {
     if (enVuelo.current || !guardada) return
@@ -28,7 +34,12 @@ export function OtraSesion() {
     setGuardada(leerGuardada())
   }
 
-  if (!guardada) return error ? <Aviso tono="error" titulo="No se pudo volver a la otra sesión">{error}</Aviso> : null
+  if (!guardada)
+    return error ? (
+      <Aviso ref={avisoError} tabIndex={-1} tono="error" titulo="No se pudo volver a la otra sesión">
+        {error}
+      </Aviso>
+    ) : null
   return (
     <Aviso
       tono="info"
@@ -64,7 +75,11 @@ export function OtraSesion() {
       {confirmarOlvido
         ? `Si la olvidas, este navegador ya no podrá volver a ser ${guardada.etiqueta}.`
         : 'Alguien entró como otra persona en este navegador. Al volver, la sesión abierta ahora deja de estar en este navegador. Cualquiera que use este navegador puede volver a esa sesión: para separarlas de verdad, usa una ventana privada.'}
-      {error ? <p className="suave">{error}</p> : null}
+      {error ? (
+        <p className="suave" ref={notaError} tabIndex={-1}>
+          {error}
+        </p>
+      ) : null}
     </Aviso>
   )
 }
