@@ -223,6 +223,24 @@ describe('enmienda 14 (0049): agente con familia y quórum', { timeout: 180_000 
     await ok(O, 'cancel_proposal', { p_propuesta_id: pub.propuesta.id })
   })
 
+  it('9. (0050) propósito "cultura" es la familia: ni +3 ni proposito_del_grupo ni quórum; con "cine", sí la frase', async () => {
+    if (!aplicada) return
+    const cul = await espacioCon('cultura', [U])
+    for (const s of [O, U]) await ok(s, 'save_my_preferences', { p_espacio_id: cul, p_preferencias: PREF(['cultura', 'cine']) })
+    const r = await plan(cul)
+    expect(r.tipo).toBe('borrador')
+    for (const c of r.candidatas) {
+      expect(c.familia).toBe('cultura')
+      expect(c.frases_grupo).not.toContain('proposito_del_grupo')
+    }
+    expect(r.quorum).toBeNull()
+    const cine = await espacioCon('cine', [U])
+    for (const s of [O, U]) await ok(s, 'save_my_preferences', { p_espacio_id: cine, p_preferencias: PREF(['cultura', 'cine']) })
+    const r2 = await plan(cine)
+    expect(r2.candidatas.find((c: Json) => c.actividad === 'cine').frases_grupo).toContain('proposito_del_grupo')
+    for (const c of r2.candidatas.filter((c: Json) => c.actividad !== 'cine')) expect(c.frases_grupo).not.toContain('proposito_del_grupo')
+  })
+
   it('6. el demo (libre) no cambia: el agente sigue eligiendo la parrilla del parque primero', async () => {
     if (!aplicada) return
     const d = await ok(O, 'seed_demo_space')
@@ -230,5 +248,46 @@ describe('enmienda 14 (0049): agente con familia y quórum', { timeout: 180_000 
     const r = await plan(d.espacio.id)
     expect(r.lugar.id).toBe('lugar-sim-14')
     expect(r.quorum).toBeNull()
+  })
+})
+
+// 0050: cuando se retira la persona imprescindible y el mínimo sigue cumplido, quien no organiza no puede
+// deducir quién se fue por el texto de siguiente_accion (revisión de la E14, privacidad).
+describe('enmienda 14 (0050): baja del imprescindible sin delatarlo', { timeout: 180_000 }, () => {
+  it('quien no organiza lee "ya no reúne lo necesario"; el organizador sigue viendo la causa', async () => {
+    const [O, U] = await Promise.all([nuevaSesion(), nuevaSesion()])
+    const d = await ok(O, 'seed_demo_space')
+    await ok(O, 'reset_demo', { p_espacio_id: d.espacio.id, p_intento_id: intento() })
+    await ok(U, 'join_space', { p_codigo: d.espacio.codigo_invitacion, p_nombre_visible: 'Invitada e14c t' })
+    const ids = Object.fromEntries(d.espacio.miembros.map((m: Json) => [m.nombre, m.miembro_id]))
+    const r = await ok(O, 'create_proposal', {
+      p_espacio_id: d.espacio.id, p_titulo: 't-e14c anfitrión', p_franjas: FRANJAS, p_minimo: 3, p_maximo: 6,
+      p_imprescindible_id: ids.Mati, p_plazo: PLAZO, p_zona_horaria: 'America/Santiago', p_intento_id: intento(),
+    })
+    const prop = r.resultado.propuesta_id
+    await ok(O, 'open_proposal', { p_propuesta_id: prop })
+    await ok(O, 'simulate_load_case', { p_propuesta_id: prop, p_intento_id: intento() })
+    await ok(O, 'save_my_conditions', { p_propuesta_id: prop, p_disponibilidad: { A: 'si', B: 'si' } })
+    await ok(U, 'save_my_conditions', { p_propuesta_id: prop, p_disponibilidad: { A: 'si', B: 'no' } })
+    await ok(O, 'evaluate_and_publish', { p_propuesta_id: prop, p_intento_id: intento() })
+    await ok(U, 'accept_version', { p_propuesta_id: prop, p_version: 1, p_intento_id: intento() })
+    await ok(O, 'accept_version', { p_propuesta_id: prop, p_version: 1, p_intento_id: intento() })
+    for (const n of ['Luna', 'Mati']) {
+      await ok(O, 'simulate_accept', { p_propuesta_id: prop, p_miembro_id: ids[n], p_version: 1, p_intento_id: intento() })
+    }
+    const est = (s: Sesion) => ok(s, 'get_proposal_state', { p_propuesta_id: prop }).then((x: Json) => x.propuesta)
+    expect((await est(U)).estado).toBe('grupo_confirmado')
+    // Se baja Mati (la imprescindible): quedan 3 confirmados con mínimo 3, así que la causa sería deducible.
+    await ok(O, 'simulate_withdraw', { p_propuesta_id: prop, p_miembro_id: ids.Mati })
+    const u = await est(U)
+    expect(u.estado).toBe('en_revision')
+    expect(u.siguiente_accion).toEqual({ codigo: 'buscar_alternativa', texto: 'La versión 1 ya no reúne lo necesario para juntarse.' })
+    expect(JSON.stringify(u.siguiente_accion)).not.toMatch(/anfitri|mínimo/)
+    const lista = (await ok(U, 'list_proposals', { p_espacio_id: d.espacio.id })).propuestas.find((p: Json) => p.id === prop)
+    expect(lista.siguiente_accion).toEqual(u.siguiente_accion)
+    const o = await est(O)
+    expect(o.siguiente_accion.codigo).toBe('buscar_alternativa')
+    expect(o.siguiente_accion.texto).toContain('anfitrión')
+    await ok(O, 'cancel_proposal', { p_propuesta_id: prop })
   })
 })
