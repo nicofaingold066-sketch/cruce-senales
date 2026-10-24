@@ -167,7 +167,9 @@ try {
       await fila.click()
       const si = boton(L, 'Sí, soy Luna'); if (await si.isVisible({ timeout: 1500 }).catch(() => false)) await si.click()
     } else { await L.getByRole('textbox').nth(1).fill('Luna'); await L.getByRole('button', { name: /^(Unirme|Entrar)$/ }).first().click() } }
-  await L.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
+  // S5 (mockup): si hay un plan abierto, Luna cae directo en ¿Cuándo puedes? (con el nombre del plan arriba); si no, al grupo.
+  await L.locator('h1').filter({ hasText: /¿Cuándo puedes\?|Los del (asado|finde)/ }).first().waitFor({ timeout: 20000 })
+  const lunaEnResponder = (await L.getByRole('heading', { name: '¿Cuándo puedes?' }).count()) > 0
   const t0 = Date.now()
   const listaSola = await L.getByText('Asado en casa de Tomi', { exact: false }).first().waitFor({ timeout: 4000 }).then(() => true, () => false)
   verificar('F1: la lista de propuestas aparece sola al entrar', listaSola, listaSola ? `${Date.now() - t0} ms después del título, sin recargar` : 'no apareció en 4 s')
@@ -176,7 +178,8 @@ try {
 
   // 4. Condiciones privadas: Tomi y Luna (franjas A y B); los simulados, con el atajo de la demo.
   await pestana(T, 'Mi respuesta'); await conInteres(T); await conCondiciones(T)
-  await L.getByText('Asado en casa de Tomi', { exact: false }).first().click()
+  if (lunaEnResponder) await L.getByRole('link', { name: /Ver el plan/ }).first().click()
+  else await L.getByText('Asado en casa de Tomi', { exact: false }).first().click()
   await L.locator('a.fila[href*="/responder/"]').first().waitFor({ timeout: 15000 })
   // La fila depende del espacio (get_space aparte): se espera a que llegue y se mira un rato, no un instante.
   await L.getByRole('link', { name: /Los del (asado|finde)/ }).first().waitFor({ timeout: 15000 }) // rediseño: el volver lleva ícono, no '←'

@@ -285,7 +285,7 @@ try {
       comprobar(r.propuesta.confirmados === i + 1 && r.propuesta.estado === 'esperando_compromisos', `Espera después de ${n}`)
     }
     await tab(T, 'Plan'); await estado(T, 'Esperando compromisos')
-    comprobar(/4 de 5/.test(await T.locator('.opcion').innerText()), 'UI: cuatro confirmaciones aún insuficientes')
+    comprobar(/4 de 5/.test(await T.locator('main').innerText()), 'UI: cuatro confirmaciones aún insuficientes') // S4: sin .opcion; el conteo va en el hero
     const fin = await aceptar('Tomi')
     comprobar(fin.propuesta.confirmados === 5 && fin.propuesta.estado === 'grupo_confirmado', 'Quinto con anfitrión confirma')
     await estado(T, 'Grupo confirmado'); await estado(L, 'Grupo confirmado')
