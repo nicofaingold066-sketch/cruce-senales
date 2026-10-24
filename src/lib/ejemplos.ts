@@ -120,7 +120,7 @@ export const PLANES_POR_FAMILIA: Readonly<Record<Exclude<Familia, 'libre'>, read
 
 export interface Atajo {
   titulo: string
-  icono: 'asado' | 'futbol' | 'cena' | 'juntada' | 'cine' | 'cumple' | 'paseo'
+  icono: 'asado' | 'futbol' | 'cena' | 'juntada' | 'cine' | 'cumple' | 'paseo' | 'fiesta'
   min: number
   /** Clave de la actividad del catálogo (`create_proposal.p_actividad`); `null` = solo para grupos en modo libre. */
   actividad: string | null
@@ -137,6 +137,7 @@ export const ATAJOS: readonly Atajo[] = [
   { titulo: 'Asado', icono: 'asado', min: 180, actividad: 'asado', palabras: ['asado', 'parrilla', 'quincho'] },
   { titulo: 'Básquet', icono: 'futbol', min: 90, actividad: 'basquet', palabras: ['basquet', 'basket'] },
   { titulo: 'Bar', icono: 'juntada', min: 150, actividad: 'bar', palabras: ['bar', 'tragos', 'cerveza'] },
+  { titulo: 'Fiesta', icono: 'fiesta', min: 240, actividad: 'fiesta', palabras: ['fiesta', 'carrete'] },
   { titulo: 'Bowling o escape room', icono: 'juntada', min: 120, actividad: 'juegos_salida', palabras: ['bowling', 'escape'] },
   { titulo: 'Juegos de mesa', icono: 'juntada', min: 180, actividad: 'juegos_casa', palabras: ['juegos', 'mesa'] },
   { titulo: 'Película en casa', icono: 'cine', min: 150, actividad: 'peli_casa', palabras: ['peli', 'maraton'] },
