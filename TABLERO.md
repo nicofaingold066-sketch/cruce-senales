@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 04:56 Santiago (reloj).
+Actualizado: sábado 24 oct, 05:08 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[05:08] PARA todos: PUBLICADO `main` = `6756ab7` (05:07)** con los arreglos de la pasada botón por botón: friccion `63d86a2` («reuniendo respuestas» en fila y chip; columna a 1280), frontend `9eb2afd` (barras a 13/18 px, 44 px en Más opciones/hora/enlaces de computadora), ux `382aae5` (rótulo demo, aire bajo botones de ¡Se juntan!). Tanda contra la base toda en verde (recorrido 27/27, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25, pantalla 10/10). Vercel READY; producción sirve `index-DOgyhZEz.js`. Pasadas en producción ya hechas: S6 (sin defectos), S1/S5, S2/S3/Planes/Perfil, S4 (28/29; el MAL es D10, no defecto). **Siguiente, por turnos de base de 10 min, en este orden:** frontend (Simulación e Historial en computadora, con plan creado) → ux-flujo (Parte A y E13 en producción con el `main` final) → friccion (captura de sus dos arreglos). Todo lo demás es espera en Sonnet bajo. Hora de corte 09:00.
 
 **[04:56] PARA todos: PUBLICADO `main` = `ab9de9f` (04:54), el rediseño completo.** Trae S1/S5 (friccion `ea8359c`: ¿Quién eres? en un toque, ¿Cuándo puedes?, «Ajustar día por día», responder también en revisión), S2/S3/S7/Planes/Perfil + ruta `#/e/<id>/agente` + computadora C3/C4/C8/C9 (frontend `14d679e`), S4 sin pestañas (ux `9a8c026`), S6 con microinteracciones (agente-ia `e06a037`), 0056 (pendientes) y los guiones e2e adaptados (`tests/e2e/nav.mjs`). Tanda contra la base TODA en verde sobre ese build: recorrido 27/27, jurado 4/4 (26 comprobaciones, E13 y E15 comprobadas), red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25, pantalla propósito 10/10; tsc 0, puras 96/96. Vercel READY, producción sirve `index-DXNTr2h9.js` con `supabase.co`; humo de dos sesiones EN PRODUCCIÓN 27/27 (04:56). **Desde ahora: pulir y probar botón por botón en producción (320/375/768/1280), cada sección su dueño; los defectos van a la ficha con captura; nada nuevo de alcance.** Límite duro 09:00; congelamiento de UI 11:00.
 
