@@ -15,6 +15,11 @@ const PADEL = { id: 'lugar-sim-3', actividad: 'padel', actividad_etiqueta: 'Pád
 const ASADO = { id: 'lugar-sim-14', actividad: 'asado', actividad_etiqueta: 'Asado', lugar: { id: 'lugar-sim-14', nombre: 'Parrilla del parque (Simulación)', simulado: true }, titulo: 'Asado en una parrilla del parque', franjas, frases_grupo: ['bajo_techo'], viaje: { max_minutos: 20, estimado: true } }
 const PICNIC = { id: 'lugar-sim-7', actividad: 'parque', actividad_etiqueta: 'Picnic', lugar: { id: 'lugar-sim-7', nombre: 'Parque Bustamante (Simulación)', simulado: true }, titulo: 'Picnic en el parque', franjas, frases_grupo: [], viaje: { max_minutos: 25, estimado: true } }
 
+// Títulos naturales (Nico, 11:40): parque y cerro, como en la demo Makana.
+const PARQUE = { id: 'lugar-sim-21', actividad: 'parque', actividad_etiqueta: 'Parque', lugar: { id: 'lugar-sim-21', nombre: 'Parque de la comuna (Simulación)', simulado: true }, titulo: 'Parque en Parque de la comuna', franjas, frases_grupo: [], viaje: { max_minutos: 35, estimado: true } }
+const CERRO = { id: 'lugar-sim-22', actividad: 'cerro', actividad_etiqueta: 'Cerro', lugar: { id: 'lugar-sim-22', nombre: 'Sendero del cerro (Simulación)', simulado: true }, titulo: 'Cerro en Sendero del cerro', franjas, frases_grupo: [], viaje: { max_minutos: 35, estimado: true } }
+const CULTURA = { id: 'lugar-sim-23', actividad: 'cultura', actividad_etiqueta: 'Cultura', lugar: { id: 'lugar-sim-23', nombre: 'Museo y feria del centro (Simulación)', simulado: true }, titulo: 'Cultura en Museo y feria del centro', franjas, frases_grupo: [], viaje: { max_minutos: 35, estimado: true } }
+
 function borrador(extra: Partial<BorradorAgente>): BorradorAgente {
   return {
     tipo: 'borrador', ...PADEL, personas_consideradas: 4, candidatas: [PADEL, ASADO, PICNIC], elegida_id: PADEL.id,
@@ -31,6 +36,7 @@ function borrador(extra: Partial<BorradorAgente>): BorradorAgente {
 }
 
 const CASOS: { id: string; titulo: string; b: BorradorAgente }[] = [
+  { id: 'parque', titulo: 'Títulos naturales: parque elegido; cerro y museo como otras opciones', b: borrador({ ...PARQUE, candidatas: [PARQUE, CERRO, CULTURA], elegida_id: PARQUE.id, mensaje_al_grupo: '¡Hola! Les propongo un día de parque el sábado 31 o el domingo 1 a las 16:00. Marquen si les interesa y carguen su disponibilidad en CRUXE.' } as Partial<BorradorAgente>) },
   { id: 'modelo', titulo: 'Con herramientas: la IA eligió y redactó (3 opciones, 4 pasos)', b: borrador({}) },
   {
     id: 'fijo',

@@ -483,6 +483,25 @@ function Plegable({
 const RITMO: Record<string, string> = { con_todo: 'con todo', algo_tranquilo: 'algo tranquilo' }
 const AMBIENTE_GRUPO: Record<string, string> = { fiesta: 'de fiesta', tranquilo: 'tranquilo' }
 
+/** Título natural por actividad (Nico, 11:40): «Día de parque en Parque de la comuna», no «Parque en Parque de la comuna». */
+const TITULO_NATURAL: Record<string, string> = {
+  parque: 'Día de parque',
+  cerro: 'Día de montaña',
+  cultura: 'Tarde de museo',
+  cafe: 'Café y brunch',
+  bar: 'Salida',
+  juegos_casa: 'Noche de juegos',
+  peli_casa: 'Noche de película',
+  juegos_salida: 'Bowling y escape room',
+}
+
+/** «Día de parque en {lugar}»; las demás actividades, «{Actividad} en {lugar}». «Salida a», no «Salida en». */
+export function tituloNatural(c: CandidataAgente): string {
+  const lugar = c.lugar.nombre.replace(' (Simulación)', '')
+  const base = (c.actividad && TITULO_NATURAL[c.actividad]) || c.actividad_etiqueta
+  return `${base} ${c.actividad === 'bar' ? 'a' : 'en'} ${lugar}`
+}
+
 /**
  * Lo que eligió el grupo, solo en totales (mejora #26). Con 3 personas o menos no se muestra nada, y una
  * actividad que eligió una sola persona tampoco: en ambos casos se podría adivinar quién fue.
@@ -582,7 +601,6 @@ function BorradorTarjeta({
   const mensaje = esLaDestacada ? b.mensaje_al_grupo : mensajeFijo(elegida)
   const deModelo = esLaDestacada && b.explicacion_fuente === 'modelo'
   const canchas = enlacesCanchas(elegida.actividad, elegida.franjas[0])
-  const lugar = (c: CandidataAgente) => c.lugar.nombre.replace(' (Simulación)', '')
   const otras = b.candidatas.filter((c) => c.id !== elegida.id)
   const nPasos = pasos?.length ?? 0
   // E5: a quiénes cuenta "N opciones para N personas".
@@ -613,7 +631,7 @@ function BorradorTarjeta({
       {b.quorum ? <p className="suave agente-quorum">{textoQuorum(b.quorum)}</p> : null}
       <div className="gru-card-titulo-fila">
         <h3 id="gru-card-titulo" className="t-titulo agente-recomendada-nombre">
-          {elegida.actividad_etiqueta} en {lugar(elegida)}
+          {tituloNatural(elegida)}
         </h3>
         {elegida.lugar.simulado ? <RotuloSimulacion /> : null}
       </div>
@@ -641,9 +659,9 @@ function BorradorTarjeta({
           >
             <div className="gru-otras">
               {otras.map((c) => (
-                <button key={c.id} type="button" className="gru-mini" onClick={() => setSeleccion(c.id)} aria-label={`Elegir ${c.actividad_etiqueta} en ${lugar(c)}`}>
+                <button key={c.id} type="button" className="gru-mini" onClick={() => setSeleccion(c.id)} aria-label={`Elegir ${tituloNatural(c)}`}>
                   <span className="gru-mini-titulo">
-                    {c.actividad_etiqueta} en {lugar(c)}
+                    {tituloNatural(c)}
                   </span>
                   <span className="gru-mini-fecha">{c.franjas[0] ? franjaChip(c.franjas[0].inicio, c.franjas[0].fin) : ''}</span>
                   <span className="gru-mini-chips">
