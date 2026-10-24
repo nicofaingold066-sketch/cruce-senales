@@ -495,3 +495,13 @@
 .agente-chips-rotulo {
   flex-basis: 100%;
 }
+
+/* Revisión de diseno (03:30): la fecha en dos líneas sin viñetas; el servicio disponible como texto suave, sin verde. */
+.agente-resultado .agente-franjas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.agente-estado-ok {
+  color: var(--tinta-2);
+}
