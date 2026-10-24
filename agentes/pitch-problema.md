@@ -1,9 +1,10 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 22:02.
+Quien edita este archivo: solo esta sesión. Última actualización: 22:03.
 
 ## Tocando ahora
-- [22:02] Nada en edición. Esperando que backend saque MIGRACION EN CURSO (0048) para la llamada real de BYOK (#99). Después, enmienda 14 parte del agente (#3 del coordinador) cuando la 0049 esté en verde.
+- [22:03] Enmienda 14, parte del agente (preparación en `wip/agente-ia`, SIN desplegar ni probar contra la base hasta la 0049 en verde): `supabase/functions/agente/index.ts`, `supabase/functions/agente/logica.ts`, `supabase/functions/agente/logica.test.ts`, `src/agente/api.ts`, `src/agente/AgentePanel.tsx`.
+- [22:03] En espera: llamada real única de BYOK (#99) cuando backend saque MIGRACION EN CURSO (0048).
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
