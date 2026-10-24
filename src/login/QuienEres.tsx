@@ -21,6 +21,7 @@ import { fraseProposito } from '../friccion/propositos'
 import type { Proposito } from '../friccion/propositos'
 import { destinoDesdeVista, destinoPorCodigo } from '../friccion/porCodigo'
 import './login.css'
+import '../estilo/seccion-s1.css'
 
 export interface MiembroPorReclamar {
   miembro_id: string
@@ -247,7 +248,7 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
   const errorLista = u.origen === 'lista' ? u.error : null
   const yaLista = u.origen === 'lista' ? u.yaMiembro : null
   return (
-    <div className="vista">
+    <div className="vista s1 s1-quien">
       <section className="escena escena-invitacion" aria-labelledby="quien-titulo">
         <span className="escena-eyebrow">Invitación a CRUXE</span>
         <h1 id="quien-titulo" ref={titulo} tabIndex={-1}>
@@ -284,64 +285,71 @@ export function QuienEres({ codigo, fuente }: { codigo: string; fuente: FuenteEn
           </section>
         ) : null}
 
-        {vista && elegido ? (
-          <section className="tarjeta entrada-opcion entrada-principal" aria-labelledby="quien-confirmar">
-            <h2 id="quien-confirmar">¿Eres {elegido.nombre}?</h2>
-            <p className="suave">
-              Este teléfono queda como {elegido.nombre} en «{nombreEspacio}». Cuándo puedes y tus condiciones no las ve nadie del grupo.
-            </p>
-            <div className="entrada-botones">
-              <Boton
-                autoFocus
-                onClick={() => void u.unirse({ codigo, nombre: elegido.nombre, miembroId: elegido.miembro_id, origen: 'lista' })}
-                ocupado={u.ocupado && u.origen === 'lista'}
-                ocupadoTexto="Entrando…"
-                disabled={soloLectura}
-              >
-                Sí, soy {elegido.nombre}
-              </Boton>
-              <Boton
-                variante="secundario"
-                onClick={() => {
-                  setElegido(null)
-                  requestAnimationFrame(() => titulo.current?.focus())
-                }}
-                disabled={u.ocupado}
-              >
-                Elegir otro nombre
-              </Boton>
-            </div>
-            {errorLista ? <ErrorCaja error={errorLista} enfocar /> : null}
-            {yaLista ? <AvisoYaMiembro ya={yaLista} unirse={u.unirse} cerrar={() => u.setYaMiembro(null)} /> : null}
-          </section>
-        ) : null}
-
-        {vista && !elegido && !sinLibres ? (
-          <section aria-labelledby="quien-lista">
+        {vista && !sinLibres ? (
+          <section aria-labelledby="quien-lista" className="s1-lista">
             <h2 id="quien-lista" className="entrada-subtitulo">
               Integrantes
             </h2>
             {errorLista?.detalle === 'miembro_ya_reclamado' ? <ErrorCaja error={errorLista} /> : null}
             <ul className="quien-lista">
-              {vista.miembros.map((m) => (
-                <li key={m.miembro_id}>
-                  <button
-                    type="button"
-                    className="btn btn-secundario quien-nombre"
-                    disabled={!m.libre || soloLectura}
-                    onClick={() => setElegido(m)}
-                    aria-describedby={m.libre ? undefined : `ya-${m.miembro_id}`}
-                  >
-                    {m.nombre}
-                  </button>
-                  {m.libre ? null : (
-                    <span id={`ya-${m.miembro_id}`} className="suave quien-tomado">
-                      {/* En la demo las personas simuladas no "entraron": ahí sigue "no disponible" (psico, tono). */}
-                      {vista.espacio.demo ? 'no disponible' : 'ya entró'}
-                    </span>
-                  )}
-                </li>
-              ))}
+              {vista.miembros.map((m) => {
+                const esta = elegido?.miembro_id === m.miembro_id
+                return (
+                  <li key={m.miembro_id} className={esta ? 's1-elegido' : elegido ? 's1-otro' : ''}>
+                    {esta ? (
+                      // Rediseño S1: la confirmación en la misma pantalla (la fila del nombre se abre). Reclamar un lugar
+                      // no se deshace, por eso sigue habiendo un "Sí, soy X" (4 toques, el piso del brief).
+                      <div className="s1-confirmar-nombre" role="group" aria-labelledby="quien-confirmar">
+                        <h3 id="quien-confirmar">¿Eres {m.nombre}?</h3>
+                        <p>
+                          Este teléfono queda como {m.nombre} en «{nombreEspacio}». Cuándo puedes y tus condiciones no las ve nadie del
+                          grupo.
+                        </p>
+                        <div className="entrada-botones">
+                          <Boton
+                            autoFocus
+                            onClick={() => void u.unirse({ codigo, nombre: m.nombre, miembroId: m.miembro_id, origen: 'lista' })}
+                            ocupado={u.ocupado && u.origen === 'lista'}
+                            ocupadoTexto="Entrando…"
+                            disabled={soloLectura}
+                          >
+                            Sí, soy {m.nombre}
+                          </Boton>
+                          <Boton
+                            variante="secundario"
+                            onClick={() => {
+                              setElegido(null)
+                              requestAnimationFrame(() => titulo.current?.focus())
+                            }}
+                            disabled={u.ocupado}
+                          >
+                            Elegir otro nombre
+                          </Boton>
+                        </div>
+                        {errorLista ? <ErrorCaja error={errorLista} enfocar /> : null}
+                        {yaLista ? <AvisoYaMiembro ya={yaLista} unirse={u.unirse} cerrar={() => u.setYaMiembro(null)} /> : null}
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className="btn btn-secundario quien-nombre"
+                          disabled={!m.libre || soloLectura}
+                          onClick={() => setElegido(m)}
+                          aria-describedby={m.libre ? undefined : `ya-${m.miembro_id}`}
+                        >
+                          {m.nombre}
+                        </button>
+                        {m.libre ? null : (
+                          <span id={`ya-${m.miembro_id}`} className="suave quien-tomado">
+                            {vista.espacio.demo ? 'no disponible' : 'ya entró'}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
             <button
               type="button"
@@ -385,6 +393,7 @@ export function UnirseConNombre({
   campoNombre,
   deshabilitado,
   vista,
+  compacto,
 }: {
   codigoInicial: string
   u: ReturnType<typeof useUnirse>
@@ -392,6 +401,8 @@ export function UnirseConNombre({
   deshabilitado: boolean
   /** La lista ya cargada de este grupo (null en la portada o mientras carga). */
   vista: VistaPorCodigo | null
+  /** En la portada, dentro de la tarjeta "Tengo un código": el título queda solo para lectores y sin la frase de la lista. */
+  compacto?: boolean
 }) {
   const demo = vista?.espacio.demo === true
   const [codigo, setCodigo] = useState(codigoInicial)
@@ -441,8 +452,10 @@ export function UnirseConNombre({
 
   return (
     <form id="unirse" className="tarjeta unirse" onSubmit={hacer} noValidate aria-labelledby="unirse-titulo">
-      <h2 id="unirse-titulo">Unirme con un código</h2>
-      <p className="suave">¿No estás en la lista? Escribe tu nombre y entras como una persona nueva.</p>
+      <h2 id="unirse-titulo" className={compacto ? 'visualmente-oculto' : undefined}>
+        Unirme con un código
+      </h2>
+      {compacto ? null : <p className="suave">¿No estás en la lista? Escribe tu nombre y entras como una persona nueva.</p>}
       <label className={`campo ${codigoMal ? 'campo-error' : ''}`}>
         <span>Código de invitación</span>
         <input
