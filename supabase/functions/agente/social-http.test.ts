@@ -21,18 +21,19 @@ const plan = { titulo: 'Asado ficticio', lugar: { nombre: 'Parque (Simulación)'
   minimo: 3, maximo: 6, plazo: '2026-10-29T20:00', imprescindible: { nombre: 'Organizador ficticio' }, invitados: 3 }
 const ok = (data: Record<string, unknown>) => ({ ok: true, contrato: 2, servidor_ahora: {}, ...data })
 
-function banco(modo = 'aprobacion') {
+function banco(modo = 'aprobacion', espacioDisponible = true) {
   const llamadas: { nombre: string; args: Record<string, unknown> }[] = []
+  let signalEspacio: AbortSignal | undefined
   let recibo = { id: RUN, estado: 'en_curso', oportunidad: 'sabado:2026-10-31', propuesta_id: null,
     borrador: null as unknown, aprobacion: null, motivo: null }
   const cliente: ClienteRpcSocial = {
     rpc(nombre, args) {
       if (nombre === 'get_space' || nombre === 'proponer_plan_borrador') {
         llamadas.push({ nombre, args: structuredClone(args) })
-        const r = { data: ok(nombre === 'get_space'
+        const r = { data: nombre === 'get_space' && !espacioDisponible ? null : ok(nombre === 'get_space'
           ? { espacio: { demo: true, miembros: [{ nombre: 'PersonaFicticia' }] } }
           : { resultado: { tipo: 'sin_plan_compatible' } }), error: null }
-        return Object.assign(Promise.resolve(r), { abortSignal: () => Promise.resolve(r) })
+        return Object.assign(Promise.resolve(r), { abortSignal: (signal: AbortSignal) => { signalEspacio = signal; return Promise.resolve(r) } })
       }
       return {
         then() { throw new Error('Debe aplicar señal') },
@@ -53,7 +54,7 @@ function banco(modo = 'aprobacion') {
       }
     },
   }
-  return { cliente, llamadas }
+  return { cliente, llamadas, get signalEspacio() { return signalEspacio } }
 }
 
 test('probe nuevo exige contrato y no llama RPC ni modelo', async () => {
@@ -115,8 +116,8 @@ function montar(source: string, cliente: ClienteRpcSocial, conClave = false) {
   const runtime = { env: { get: (nombre: string) => entorno[nombre] }, serve: (fn: typeof handler) => { handler = fn } }
   new Function('createClient', 'Anthropic', 'Deno', 'depsSocial', 'depsModelo', ...Object.keys(logica), stripTypeScriptTypes(sinImports))(
     () => cliente, SdkFicticio, runtime, { atenderSocial }, { crearModeloSocial }, ...Object.values(logica))
-  return { pedir: (body: unknown, auth = true) => handler(new Request('https://prueba.invalid/agente', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', ...(auth ? { Authorization: 'Bearer sesion-ficticia' } : {}) }, body: JSON.stringify(body),
+  return { pedir: (body: unknown, auth = true, signal?: AbortSignal) => handler(new Request('https://prueba.invalid/agente', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', ...(auth ? { Authorization: 'Bearer sesion-ficticia' } : {}) }, body: JSON.stringify(body), signal,
   })), get sdk() { return sdk } }
 }
 
@@ -147,6 +148,23 @@ test('handler nuevo sin sesión o JSON nulo no toca DB ni SDK', async () => {
   assert.equal((await (await h.pedir(probe, false)).json()).error.codigo, 'sesion_invalida')
   assert.equal((await (await h.pedir(null)).json()).error.detalle, 'formato_invalido')
   assert.equal(t.llamadas.length, 0); assert.equal(h.sdk, 0)
+})
+
+test('lectura social del espacio tiene señal, propaga cancelación y no continúa sin respuesta válida', async () => {
+  const t = banco('aprobacion', false); const c = new AbortController()
+  const h = montar(readFileSync(new URL('./index.ts', import.meta.url), 'utf8'), t.cliente, true)
+  const r = await (await h.pedir(entrada(), true, c.signal)).json()
+  assert.equal(r.ok, false); assert.equal(r.error.codigo, 'fallo_temporal'); assert.equal(h.sdk, 0)
+  assert.deepEqual(t.llamadas.map((l) => l.nombre), ['get_space'])
+  assert.ok(t.signalEspacio); assert.equal(t.signalEspacio.aborted, false)
+  c.abort(); assert.equal(t.signalEspacio.aborted, true)
+})
+
+test('petición social cancelada antes de leer espacio no envía RPC ni SDK', async () => {
+  const t = banco(); const c = new AbortController(); c.abort()
+  const h = montar(readFileSync(new URL('./index.ts', import.meta.url), 'utf8'), t.cliente, true)
+  const r = await (await h.pedir(entrada(), true, c.signal)).json()
+  assert.equal(r.ok, false); assert.equal(t.llamadas.length, 0); assert.equal(h.sdk, 0)
 })
 
 test('modo previo conserva RPC y respuesta sin plan, sin entrar en social ni usar modelo', async () => {
