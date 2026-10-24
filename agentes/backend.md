@@ -3,7 +3,7 @@
 Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:29 Santiago (reloj).
 
 ## Tocando ahora
-- [21:29] MIGRACION TERMINADA (0046 aplicada 21:29, solo texto). Base libre. Espero mi turno (ninguna ficha con CORRIENDO PRUEBA) para la suite serial E13.
+- **CORRIENDO PRUEBA (21:36) suite serial E13** (en serie, sin las 4 de concurrencia). No migro nada mientras tanto.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
