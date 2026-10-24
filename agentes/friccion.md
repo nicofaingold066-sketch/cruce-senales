@@ -3,6 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/friccion`. Rutas: `src/login/**`, `src/App.tsx`, `src/lib/shell.tsx`, archivos NUEVOS en `src/friccion/**`.
 
 ## Tocando ahora
+- [hora real] `wip/friccion` = `a223aa0`: defecto de Nico (iPhone 390): en ¿Quién eres? el error al tocar un nombre va debajo de la lista, a todo el ancho, fila intacta, foco en el error, reintento con el segundo toque. Banco error 320/390 10/10, banco 27/27, vitest puro 109/109, build OK; sin base.
 - [08:25] CIERRE de la noche: `wip/friccion` = `30e19f3`, subida, sin nada en edición ni sin commitear. Entregado y publicado: S1/S5 exactos al mockup (ver Entregado). Mi «Listo» (S5) es `a.btn-primario` fuera de `.escena`, así que no tiene el blanco-sobre-blanco que arregló ux-flujo en 7f47a88 (visto en captura de producción). Vigía y ciclo detenidos a las 08:30.
 - [07:25] `wip/friccion` subida: `30e19f3` (merge de wip/fundamentos 07:00; sin código nuevo mío desde `63d86a2`).
 - [07:15] Observaciones de rincones (pedido 07:05): **O-18 resuelta por el rediseño** (¿Quién eres? ahora: eyebrow, nombre del grupo grande, h1 con 16 px de aire y subtítulo; capturas `docs/rediseno/capturas/s1/despues/quien-lista-320|768.png`, sin pegarse). **O-19 no es de S1**: «(por entrar)» está en `NuevaPropuesta.tsx:533` y `Espacio.tsx:384` y «Propósito» en `NuevaPropuesta.tsx:432` (S2/S3, frontend); en S1/S5 no hay texto chico bajo 4,5:1 que yo haya medido (la pasada de producción no lo midió: pendiente de contraste automático). Sin cambios de código.
