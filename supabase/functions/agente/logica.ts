@@ -37,6 +37,67 @@ export interface Candidata {
   franjas: Franja[]
   frases_grupo: string[]
   viaje?: Viaje | null
+  // Enmienda 14: familia de la actividad y personas mínimas y máximas del catálogo (públicas).
+  familia?: string | null
+  personas?: Personas | null
+}
+
+/** Enmienda 14: personas mínimas y máximas de la actividad (catálogo, no son de nadie). */
+export interface Personas {
+  min: number
+  max: number
+}
+
+/**
+ * Enmienda 14: la actividad del propósito que quedó afuera por tamaño del grupo. Los dos números ya son públicos
+ * en el espacio (lista de miembros y catálogo).
+ */
+export interface Quorum {
+  actividad: string
+  etiqueta: string
+  personas_min: number
+  personas_posibles: number
+}
+
+const CLAVE_CORTA = /^[a-z_]{1,30}$/
+const entero = (v: unknown, min: number, max: number) =>
+  typeof v === 'number' && Number.isInteger(v) && v >= min && v <= max ? v : null
+
+export function familiaSegura(v: unknown): string | null {
+  return typeof v === 'string' && CLAVE_CORTA.test(v) ? v : null
+}
+
+export function personasSeguras(v: unknown): Personas | null {
+  if (!v || typeof v !== 'object') return null
+  const min = entero((v as { min?: unknown }).min, 1, 50)
+  const max = entero((v as { max?: unknown }).max, 1, 50)
+  return min !== null && max !== null && min <= max ? { min, max } : null
+}
+
+/** Solo las cuatro claves del contrato; cualquier otra (o una forma rara) se descarta. */
+export function quorumSeguro(v: unknown): Quorum | null {
+  if (!v || typeof v !== 'object') return null
+  const q = v as Record<string, unknown>
+  const etiqueta = typeof q.etiqueta === 'string' ? q.etiqueta.trim() : ''
+  const min = entero(q.personas_min, 1, 50)
+  const posibles = entero(q.personas_posibles, 0, 200)
+  if (typeof q.actividad !== 'string' || !CLAVE_CORTA.test(q.actividad) || !etiqueta || etiqueta.length > 40) return null
+  if (min === null || posibles === null) return null
+  return { actividad: q.actividad, etiqueta, personas_min: min, personas_posibles: posibles }
+}
+
+/** Texto fijo del tamaño del grupo (ajuste 7 de la enmienda 14): habla del grupo, nunca de asistencia. */
+export function textoQuorum(q: Quorum): string {
+  return `Para ${q.etiqueta} hacen falta al menos ${q.personas_min} personas; este grupo tiene ${q.personas_posibles} por ahora.`
+}
+
+/** Candidata saneada: el viaje solo con minutos; familia y personas solo con la forma del contrato. */
+export function candidataSegura(c: Candidata): Candidata {
+  const n: Candidata = { ...c }
+  if (c.viaje !== undefined) n.viaje = viajeSeguro(c.viaje)
+  if (c.familia !== undefined) n.familia = familiaSegura(c.familia)
+  if (c.personas !== undefined) n.personas = personasSeguras(c.personas)
+  return n
 }
 
 /** Totales del grupo (enmienda 4.1). Con 3 personas o menos solo llega `personas`. */
@@ -53,6 +114,8 @@ export interface ResultadoPlan extends Candidata {
   personas_consideradas: number
   candidatas?: Candidata[]
   perfil_grupo?: PerfilGrupo
+  // Enmienda 14: sin sanear todavía (ver quorumSeguro).
+  quorum?: unknown
 }
 
 /**
@@ -102,6 +165,8 @@ const PROHIBIDAS = [
   // Enmienda 10: ni dónde vive nadie ni cómo se mueve (el servidor ya lo tuvo en cuenta).
   'vive', 'viven', 'sin auto', 'no tiene auto', 'no tienen auto', 'que lo lleven', 'que la lleven', 'que los lleven', 'lo pasen a buscar',
   'la pasen a buscar', 'sin movilidad', 'comuna de',
+  // Enmienda 14 (ajuste 7): tamaño del grupo, nunca asistencia ("van 4", "se sumaron 4").
+  'se sumaron', 'se sumó', 'ya van',
 ]
 const LETRA = '\\p{L}'
 
@@ -278,10 +343,19 @@ export function perfilParaRespuesta(perfil: PerfilGrupo | null | undefined): Per
 }
 
 /** Lo único que ve el modelo: opciones ya validadas, clima y totales del grupo. Sin nombres ni ids de miembros. */
-export function entradaModelo(candidatas: Candidata[], perfil: PerfilGrupo | null, clima: string, nombres: string[], simulado = false) {
+export function entradaModelo(
+  candidatas: Candidata[],
+  perfil: PerfilGrupo | null,
+  clima: string,
+  nombres: string[],
+  simulado = false,
+  quorum: Quorum | null = null,
+) {
   const p = perfil && perfil.personas > 3 ? perfil : null
   return {
     clima,
+    // Enmienda 14: una razón más, con totales del grupo (nunca quién falta).
+    aviso_quorum: quorum ? textoQuorum(quorum) : null,
     grupo: {
       personas: perfil?.personas ?? null,
       // Una actividad que eligió una sola persona no se menciona: se podría adivinar quién fue.

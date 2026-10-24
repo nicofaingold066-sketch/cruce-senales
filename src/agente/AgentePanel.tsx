@@ -13,9 +13,11 @@ import { Aviso, Boton, Cargando, ErrorCaja, RotuloSimulacion } from '../componen
 import './agente.css'
 import {
   AVISO_REINTENTO,
+  TEXTO_FALTAN_PERSONAS,
   agenteApi,
   guardarBorradorAgente,
   mensajeFijo,
+  textoQuorum,
   textoFijo,
   type ActividadOpcion,
   type Ambiente,
@@ -372,7 +374,13 @@ function BorradorTarjeta({
   const viaje = viajeDeOpcion(elegida, b)
 
   function usar() {
-    guardarBorradorAgente(espacioId, { titulo: titulo.trim(), franjas: elegida.franjas })
+    // Enmienda 14: la actividad y sus personas, para precargar actividad, mínimo y máximo en Nueva propuesta.
+    guardarBorradorAgente(espacioId, {
+      titulo: titulo.trim(),
+      franjas: elegida.franjas,
+      actividad: elegida.actividad ?? null,
+      personas: elegida.personas ?? null,
+    })
     irA(rutas.nueva(espacioId))
   }
 
@@ -381,6 +389,7 @@ function BorradorTarjeta({
       <Aviso tono="info" titulo="Opciones del agente">
         Son ideas según las preferencias habilitadas. La disponibilidad y la confirmación se resuelven después, para una versión del plan.
       </Aviso>
+      {b.quorum ? <p className="suave agente-quorum">{textoQuorum(b.quorum)}</p> : null}
       <fieldset className="grupo agente-candidatas">
         <legend>
           {b.candidatas.length > 1 ? `${b.candidatas.length} opciones` : 'Opción'} para {b.personas_consideradas} personas
@@ -654,7 +663,9 @@ function ProponerPlan({
         <Aviso tono="aviso" titulo="Sin plan compatible" accion={<PropuestaAMano espacioId={espacioId} />}>
           {resultado.motivo === 'sin_lugar_cerca_para_todos'
             ? 'Ningún plan del catálogo queda dentro del tiempo de viaje de todos. Por privacidad no se dice para quién.'
-            : 'Con las preferencias cargadas no hay un plan del catálogo que le sirva a todos. Por privacidad no se muestran los motivos.'}
+            : resultado.motivo === 'faltan_personas'
+              ? TEXTO_FALTAN_PERSONAS
+              : 'Con las preferencias cargadas no hay un plan del catálogo que le sirva a todos. Por privacidad no se muestran los motivos.'}
         </Aviso>
       ) : null}
       {resultado?.tipo === 'borrador' ? <BorradorTarjeta espacioId={espacioId} b={resultado} soloLectura={soloLectura} invitacion={invitacion} /> : null}
