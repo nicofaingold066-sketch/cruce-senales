@@ -63,7 +63,36 @@ export interface CandidataAgente {
   franjas: FranjaBorrador[]
   frases_grupo: string[]
   viaje?: Viaje | null
+  /** Enmienda 14: familia de la actividad y personas mínimas y máximas del catálogo (públicas). */
+  familia?: string | null
+  personas?: PersonasActividad | null
 }
+
+/** Enmienda 14: personas mínimas y máximas que pide la actividad (catálogo). */
+export interface PersonasActividad {
+  min: number
+  max: number
+}
+
+/** Enmienda 14: la actividad del propósito que quedó afuera por el tamaño del grupo (números públicos del espacio). */
+export interface Quorum {
+  actividad: string
+  etiqueta: string
+  personas_min: number
+  personas_posibles: number
+}
+
+/**
+ * Texto fijo del tamaño del grupo (enmienda 14, ajuste 7): habla del grupo, nunca de asistencia. Igual a `textoQuorum`
+ * de `src/lib/types.ts` (puente de backend 3efc838, con el cierre de psico); cuando el puente esté integrado, se usa ese.
+ */
+export function textoQuorum(q: Quorum): string {
+  return `Para ${q.etiqueta} hacen falta al menos ${q.personas_min} personas; este grupo tiene ${q.personas_posibles} por ahora. Estas opciones se pueden armar con el grupo actual. Cuando se sumen más, vuelve a pedir una propuesta.`
+}
+
+/** Enmienda 14: motivo `faltan_personas` (ninguna actividad del propósito alcanza con el grupo actual). */
+export const TEXTO_FALTAN_PERSONAS =
+  'Todavía no hay suficientes personas para las actividades de este grupo. Cuando se sumen más, vuelve a pedir una propuesta.'
 
 /** Totales del grupo (enmienda 4.1). Con 3 personas o menos solo trae `personas`. */
 export interface PerfilGrupo {
@@ -90,9 +119,14 @@ export interface BorradorAgente extends CandidataAgente {
   perfil_grupo?: PerfilGrupo | null
   /** Enmienda 10: el de la opción destacada. */
   viaje?: Viaje | null
+  /** Enmienda 14: no nulo solo si la actividad del propósito quedó afuera por quórum y hubo otras que sí entraron. */
+  quorum?: Quorum | null
 }
 
-/** `motivo: "sin_lugar_cerca_para_todos"` cuando el tiempo de viaje descartó todas las opciones (enmienda 10). */
+/**
+ * `motivo: "sin_lugar_cerca_para_todos"` cuando el tiempo de viaje descartó todas las opciones (enmienda 10);
+ * `"faltan_personas"` cuando ninguna actividad del propósito alcanza con el grupo actual (enmienda 14).
+ */
 export type ResultadoAgente = BorradorAgente | { tipo: 'sin_plan_compatible'; motivo?: string }
 
 /** Clima de simulación para la demo (mejora #23). */
@@ -105,6 +139,8 @@ const FRASES: Record<string, string> = {
   al_aire_libre_con_buen_tiempo: 'es al aire libre con buen pronóstico',
   el_mas_elegido: 'es lo que más eligieron',
   ritmo_del_grupo: 'va con el ritmo que prefiere el grupo',
+  // Enmienda 14 (0049): la actividad del propósito del grupo.
+  proposito_del_grupo: 'es lo que este grupo vino a hacer',
 }
 
 const ENERGIA_PLAN: Record<string, string> = { con_todo: 'un plan con todo', algo_tranquilo: 'un plan algo tranquilo' }
@@ -386,22 +422,43 @@ export const agenteApi = {
 
 const CLAVE = (espacioId: string) => `cruxe:borrador-agente:${espacioId}`
 
-export function guardarBorradorAgente(espacioId: string, b: { titulo: string; franjas: FranjaBorrador[] }): void {
+/** Lo que "Usar esta opción" deja para Nueva propuesta. Enmienda 14: también la actividad y sus personas. */
+export interface BorradorParaPropuesta {
+  titulo: string
+  franjas: FranjaBorrador[]
+  actividad?: string | null
+  personas?: PersonasActividad | null
+}
+
+export function guardarBorradorAgente(espacioId: string, b: BorradorParaPropuesta): void {
   try {
-    sessionStorage.setItem(CLAVE(espacioId), JSON.stringify({ titulo: b.titulo, franjas: b.franjas }))
+    sessionStorage.setItem(
+      CLAVE(espacioId),
+      JSON.stringify({ titulo: b.titulo, franjas: b.franjas, actividad: b.actividad ?? null, personas: b.personas ?? null }),
+    )
   } catch {
     // Sin almacenamiento: el organizador completa a mano.
   }
 }
 
-export function tomarBorradorAgente(espacioId: string): { titulo: string; franjas: FranjaBorrador[] } | null {
+export function tomarBorradorAgente(espacioId: string): BorradorParaPropuesta | null {
   try {
     const crudo = sessionStorage.getItem(CLAVE(espacioId))
     if (!crudo) return null
     sessionStorage.removeItem(CLAVE(espacioId))
-    const b = JSON.parse(crudo) as { titulo?: unknown; franjas?: unknown }
+    const b = JSON.parse(crudo) as { titulo?: unknown; franjas?: unknown; actividad?: unknown; personas?: unknown }
     if (typeof b.titulo !== 'string' || !Array.isArray(b.franjas) || b.franjas.length !== 2) return null
-    return { titulo: b.titulo, franjas: b.franjas as FranjaBorrador[] }
+    const p = b.personas as { min?: unknown; max?: unknown } | null
+    const personas =
+      p && Number.isInteger(p.min) && Number.isInteger(p.max) && (p.min as number) <= (p.max as number)
+        ? { min: p.min as number, max: p.max as number }
+        : null
+    return {
+      titulo: b.titulo,
+      franjas: b.franjas as FranjaBorrador[],
+      actividad: typeof b.actividad === 'string' && /^[a-z_]{1,30}$/.test(b.actividad) ? b.actividad : null,
+      personas,
+    }
   } catch {
     return null
   }
