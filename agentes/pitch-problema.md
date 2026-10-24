@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 00:42.
+Quien edita este archivo: solo esta sesión. Última actualización: 01:05.
 
 ## Tocando ahora
-- [00:42] v13 (OK de Nico 00:24, tope de 3 llamadas 00:42): espero mi turno de base, que viene después de la tanda del coordinador. Rama `wip/agente-v13` `ae012dd`.
+- [01:05] **CORRIENDO PRUEBA (01:05)** agente-ia: verificación de la v13 (despliegue de `wip/agente-v13` `ae012dd`, sondeos sin modelo, circuito social y hasta 3 llamadas al modelo autorizadas por Nico). Demos y usuarios anónimos ficticios propios, una prueba a la vez, sin ráfagas. Unos 15 minutos.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
