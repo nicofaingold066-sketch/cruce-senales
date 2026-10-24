@@ -249,7 +249,7 @@ function EntradaCodigo({ deshabilitado }: { deshabilitado: boolean }) {
     }
     marcarConEspacios()
     if (r.data.resultado.reclamo_asiento_simulado) {
-      dejarAviso(`Reclamaste el lugar de ${n}. Desde ahora actúas con tu propia sesión y tus condiciones dejan de ser visibles para la simulación.`)
+      dejarAviso(`Reclamaste el lugar de ${n}. Desde ahora respondes tú desde este teléfono; cuándo puedes y tus condiciones no las ve nadie del grupo.`)
     }
     irA(rutas.espacio(r.data.resultado.espacio_id))
   }
@@ -280,7 +280,7 @@ function EntradaCodigo({ deshabilitado }: { deshabilitado: boolean }) {
           maxLength={30}
           aria-invalid={nombreMal || undefined}
         />
-        <small>Si usas el nombre de una persona simulada de la demo (por ejemplo "Luna"), reclamas su lugar.</small>
+        <small>Solo en la demo «Los del asado»: si escribes el nombre de una persona simulada (por ejemplo "Luna"), tomas su lugar.</small>
       </label>
       <Boton type="submit" variante="secundario" ocupado={ocupado} ocupadoTexto="Uniéndome…" disabled={faltan || deshabilitado}>
         Unirme

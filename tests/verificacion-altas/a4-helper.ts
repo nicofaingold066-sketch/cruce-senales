@@ -220,7 +220,7 @@ export const A4_MENSAJES: Record<string, string> = {
   'no_autorizado/no_es_organizador': 'Solo el organizador de la propuesta puede hacer esto.',
   'no_autorizado/no_es_organizador_espacio': 'Solo el organizador del espacio puede hacer esto.',
   'no_autorizado/retirado': 'Te retiraste de esta propuesta y ya no puedes participar en ella.',
-  'no_autorizado/condiciones_congeladas': 'Formas parte de la versión vigente; tu disponibilidad no puede cambiar mientras esté vigente.',
+  'no_autorizado/condiciones_congeladas': 'Estás en la versión vigente. Si esta fecha no te sirve, marca «Así no puedo, pero sigo» y podrás cambiar cuándo puedes.',
   'no_autorizado/miembro_no_simulado': 'Solo se puede simular a miembros marcados como Simulación.',
   'fallo_temporal/reintentar': 'Falla temporal. Intenta de nuevo.',
 }

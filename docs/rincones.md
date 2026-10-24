@@ -1,7 +1,7 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: viernes 23 oct, 21:10 (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: viernes 23 oct, 21:28 (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
 Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 16**, de los cuales **2 ya APROBADOS** en `main` 3ace04e (O-06 y O-08, corrida 4 `f0` 20:55) y 3 por confirmar en la misma corrida (O-02, O-12b, O-13) (ninguno impide completar el recorrido canónico), el resto APROBADO.
@@ -208,6 +208,17 @@ Autoprueba del módulo: `node tests/rincones/prueba-a11y/correr.mjs` (página lo
 | R244 | Invitación con modalidad (quién viene: solo el grupo / con pareja / abierta) en el texto de WhatsApp: `compartir.ts` ya trae `FRASE_QUIEN_VIENE`; falta la pantalla que lo elige | — | pendiente |
 | R245 | Plegable "¿Qué guarda CRUXE de mí?" en "¿Quién eres?" y "¿Cuándo puedes?" (`wip/friccion` 366b7af, todavía no en `main`) | — | pendiente |
 | R246 | Calendario `.ics` con dos recordatorios (víspera y 2 h antes) y líneas plegadas a 75 octetos (`compartir.ts`): abrirlo en un calendario real | — | pendiente (solo se puede mirar el archivo) |
+
+### Piezas de ux-flujo, galería sin red ni base (`galeria-ux.mjs` sobre `wip/ux` 3013850, 21:27; build propio en 4199)
+26 casos de `AvisoParaMi`, `RecordarFaltan` (4 motivos), `RearmarConLoNuevo` (con tope y errores), `AyudaRetiro` (4 momentos) y `BuscarLugar`, en 320 y 375 px, con auditoría visual y de accesibilidad. Texto completo de cada caso y de cada enlace en `galeria-texto.md` de la carpeta de capturas.
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| G01 | `AvisoParaMi` (9 casos): tono sin nombres ("Una persona se retiró"), "Esta versión no te incluye", "Si no llegan 4, nadie queda comprometido", "Así no puedes, pero sigues", "Gracias por avisar. No hace falta contar por qué." | ojo (320 y 375) | A |
+| G02 | `RecordarFaltan` (4 motivos): mensaje al grupo sin nombres ni cantidades; enlaces `wa.me` con `rel="noopener noreferrer"`; "Copiar mensaje" | ojo | A |
+| G03 | `RearmarConLoNuevo`: 2 y 3 "así no puedo", tope ("Ya van tres versiones"), 1 persona no dibuja nada (no delata), sin otra fecha, cambiaron las respuestas | ojo | A |
+| G04 | `AyudaRetiro` (4 momentos): textos distintos antes de la opción, con y sin enmienda 13, ya confirmó ("sin decir quién") | ojo | A |
+| G05 | `BuscarLugar`: abre Google Maps con el nombre del plan, "CRUXE no sabe desde dónde sales"; en el demo no dibuja nada | ojo | A |
+Observaciones (ninguna rompe nada): (1) el caso "Organizador a menos de 36 h del cierre, con pendientes" sale vacío hoy porque el cierre fijo de la galería está a 7 días; para verlo hay que acercar la fecha (es un límite de la galería, no del componente); (2) `RearmarConLoNuevo` usa el id fijo `rearmar-titulo`: si dos aparecieran a la vez se repetiría (en la app hay uno solo; con `useId` quedaría a salvo); (3) los botones de estas piezas miden 52 px de alto en teléfono: bien para el pulgar. Accesibilidad: sin otras fallas (la galería no tiene `<main>` ni cabecera porque es una página de prueba).
 
 ## Pendiente de recorrer
 "Entrar como otra persona" confirmado, reclamar un lugar simulado libre del demo, "Hoy paso" ya marcado, plazo vencido (expirado), cierre elegido a mano con fecha pasada, y los cuatro anchos de cada rincón mirados a ojo (hoy `auto` en varios). Se repite lo afectado tras cada publicación en `main`.

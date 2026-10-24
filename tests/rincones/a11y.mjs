@@ -252,7 +252,8 @@ async function contrastePixeles(page) {
 
 // ---------------------------------------------------------------- espaciado de texto (WCAG 1.4.12)
 async function espaciado(page) {
-  await page.addStyleTag({ content: '* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; } p { margin-bottom: 2em !important; }' })
+  // La hoja lleva una marca propia: NUNCA se busca por contenido (el CSS de la app también usa letter-spacing: 0.12em).
+  await page.evaluate(() => { const s = document.createElement('style'); s.dataset.a11yEspaciado = '1'; s.textContent = '* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; } p { margin-bottom: 2em !important; }'; document.head.append(s) })
   await page.waitForTimeout(300)
   const r = await page.evaluate(() => {
     const out = []
@@ -267,7 +268,7 @@ async function espaciado(page) {
     return out.slice(0, 8)
   })
   // Se quita el estilo para no contaminar lo que sigue.
-  await page.evaluate(() => { for (const s of document.querySelectorAll('style')) if (s.textContent.includes('letter-spacing: 0.12em')) s.remove() })
+  await page.evaluate(() => { for (const s of document.querySelectorAll('style[data-a11y-espaciado]')) s.remove() })
   await page.waitForTimeout(200)
   return r
 }
