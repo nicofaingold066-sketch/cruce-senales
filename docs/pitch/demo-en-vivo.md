@@ -60,7 +60,7 @@ Duración: el recorrido completo dura unos **4 minutos**. En el pitch de 5 minut
 
 **Personas (ficticias):** Ana organiza; Bruno, Camila, Diego, Elena, Felipe y Gabriela. **Nadie trae respuestas precargadas** y no hay botón de «aceptar por todos»: cada respuesta se da a mano y la simulación queda rotulada.
 
-**Nombres (pedido de Nico, 11:2x):** en el relato y el deck los amigos son Bastián, Carlos, Kai, Charlie, Nacho, Joaco y Pía; la app muestra Ana, Bruno, Camila, Diego, Elena, Felipe y Gabriela (interfaz congelada). **Nico narra la demo sin nombres**; los nombres de la app solo aparecen en lo que toca Juan.
+**Nombres (pedido de Nico, 11:2x):** en el relato y el deck los amigos son Bastián, Carlos, Kai, Charlie, Nacho, Joaco y Pía; la app muestra Ana, Bruno, Camila, Diego, Elena, Felipe y Gabriela (interfaz congelada). **Nico narra la demo sin nombres**; los nombres de la app solo aparecen en lo que toca Juan. **Nico pidió que la app también los cambie** (pedido al coordinador, 11:3x). Si se publica, en esta tabla leer: Ana→Bastián, Bruno→Nacho, Camila→Carlos, Diego→Kai, Elena→Charlie, Felipe→Joaco, Gabriela→Pía (p. ej. «Se baja: Joaco»), y Juan abre la demo desde una sesión nueva (el reinicio conserva los nombres viejos). Con los nombres nuevos en pantalla, Nico ya puede nombrarlos.
 
 **Antes de subir (un solo aparato alcanza: Juan es Ana y simula al resto):**
 1. Portada → «Probar la demo «El plan que no deja a nadie afuera»» (después dirá «Abrir…»). Si el ensayo dejó un plan, «Herramientas del organizador» → «Reiniciar demo».
