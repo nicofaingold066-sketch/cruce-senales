@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 00:10.
+Quien edita este archivo: solo esta sesión. Última actualización: 00:11.
 
 ## Tocando ahora
-- [00:00] Nada en edición. CORRIENDO PRUEBA terminado (00:00).
+- [00:11] Rama nueva `wip/agente-v13` (OK del coordinador para PREPARAR; el despliegue espera el OK de Nico): merge de `codex/e11-circuito` 8b970a9 sobre `wip/agente-ia` 1f85cbe. Toco `supabase/functions/agente/index.ts` (conflicto del tipo de `entrada`) y, autorizado por el coordinador, SOLO el `montar` de `supabase/functions/agente/social-http.test.ts` de integracion-codex-juan, para que conozca el import de `./herramientas.ts`. Sin base ni despliegue.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
