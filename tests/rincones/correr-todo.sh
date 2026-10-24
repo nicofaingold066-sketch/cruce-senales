@@ -33,7 +33,7 @@ ocupada() {
   return 1
 }
 if [ -n "${SOLO_CHEQUEO:-}" ]; then q=$(ocupada) && echo "ocupada: $q" || echo "libre"; exit 0; fi
-esperar_libre() { local q; while q=$(ocupada); do echo "   (espera $(hora): $q tiene CORRIENDO PRUEBA / MIGRACION EN CURSO)"; sleep 60; done; }
+esperar_libre() { local q; while q=$(ocupada); do echo "   (espera $(hora): $q tiene CORRIENDO PRUEBA / MIGRACION EN CURSO)"; sleep 15; done; }
 empujar_ficha() {
   local msg="$1" i
   for i in 1 2 3 4 5 6; do
