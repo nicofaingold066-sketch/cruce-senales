@@ -3,9 +3,10 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cruce-qa`). Rutas: `tests/e2e/**`, `docs/qa-noche.md`. Puerto de preview: 4185.
 
 ## Tocando ahora
-- [00:26] EN COLA de la base (puesto «el resto», por orden de llegada; sin marca puesta): turno de ≤10 min con humo de producción + E15 preparado (dos sesiones y jurado) y después `entrada-lista.mjs`. Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
+- [00:37] Libre de la base (hice un turno corto 00:34–00:37). Siguiente pedido de turno: `proposito.mjs` y `proposito-pantalla.mjs` tras la 0051 y el set completo sobre las ramas nuevas, al final de la cola. Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
 
 ## Entregado
+- [00:37] `wip/qa`: turno corto en producción 00:34: dos sesiones 26/26, jurado 4/4, `entrada-lista.mjs` 7/7. Comprobaciones E15 preparadas (activas cuando el servidor traiga `ronda`/`regla`/`planes_totales`); foco al error en L2/L3; `fileURLToPath` en tres guiones; `proposito-pantalla` confirma «Crear sin lista».
 - [21:26] `wip/qa` 2a82254: E13 cubre también la aceptación vieja de quien se retiró (red y pantalla) y el código `estado_no_admite`; friccion-flujo acepta el rótulo nuevo de la agenda. Set sin base verde en friccion 8793df5, ux 3013850 y apertura 5e44ef5 (typecheck, build, red 10/10, guardia 0/0).
 - [21:12] `wip/qa` ce990ca: guardia-palabras acepta otra raíz (`node tests/e2e/guardia-palabras.mjs /ruta`), para revisar ramas ajenas sin copiar archivos. friccion fc66c0b y ux 603678e en verde en lo que no toca la base.
 - [21:08] `wip/qa` 27c2e26: comprobaciones E13 en recorrido canónico (vitest), jurado y dos sesiones (baja sin nombre ni habia_aceptado en toda respuesta compartida; opiniones_totales null <2 y solo organizador, sin nombres; v2 desde esperando_compromisos con cero aceptaciones y opiniones; version_no_vigente; ya_acepto; tope_versiones) + regla D2 en guardia-palabras (0 hallazgos hoy). Se activan solas cuando el servidor trae mi_opinion/opiniones_totales. Humo 20:55 frenado por la migración E13.
