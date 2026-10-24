@@ -5,7 +5,10 @@ Pedido directo del usuario en Codex: «Sí, te autorizo a modificar la entrada. 
 Rama propia: `codex/intro-primera-visita`. Copia: `/Users/macair/cruse/cruce-intro`, desde `origin/main`.
 
 ## Tocando ahora
-Vacío. Cambio entregado en rama propia; sin pruebas contra la base ni despliegue.
+- Pedido directo nuevo de Nico: «Dale, hacela así, bien dinámica y divertida, con los 3 pasos. Que aparezca solo la primera vez, se pueda saltar y volver a ver desde Ayuda», con cursor que señale las acciones. Autoriza esta ampliación puntual de la entrada.
+- `src/App.tsx`: enganchar guía después de la intro y botón Ayuda para repetirla; conserva rutas y sesión.
+- Nuevos `src/components/Guia.tsx` y `src/components/Guia.css`: ejemplo ficticio de tres pasos, cursor decorativo, accesibilidad, primera visita independiente de la intro.
+- Copia aislada `/Users/macair/cruse/cruce-intro`, rama propia `codex/intro-primera-visita`. No se editan Perfil, hojas compartidas, backend ni configuración. Solo QA local con salida externa interceptada.
 
 ## Verificación
 Solo typecheck/build y navegador local con red externa interceptada; sin base, modelos, migraciones ni despliegue. Revisión independiente de accesibilidad/timers en subagente de esta misma conversación, solo lectura.
