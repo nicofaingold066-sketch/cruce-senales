@@ -42,6 +42,18 @@ try {
   ver('#88: sin desborde a 375 px', !(await desborde(A.p)))
   await A.p.getByRole('button', { name: /^Puedo los dos días/ }).click()
   ver('#88: un toque guarda', await A.p.getByText('Guardado. Solo tú ves estas condiciones.').waitFor({ timeout: 15000 }).then(() => true, () => false))
+  // Enmienda 15 (friccion d471641): con «puedo en los dos» aparecen dos botones «Prefiero «…»» (privado; solo desempata con
+  // «la que más Sí»). Guardado por presencia: en un build sin E15 en pantalla se anota y se sigue.
+  const prefiero = A.p.getByRole('button', { name: /^Prefiero «/ })
+  if (await prefiero.first().waitFor({ timeout: 3000 }).then(() => true, () => false)) {
+    ver('E15: ofrece «Prefiero «…»» para los dos planes, sin elegir ninguno por defecto', (await prefiero.count()) === 2 && (await A.p.getByText(/^Prefieres «/).count()) === 0)
+    const espera = A.p.waitForResponse((r) => new URL(r.url()).pathname === '/rest/v1/rpc/save_my_conditions', { timeout: 15000 })
+    await prefiero.first().click()
+    const r = await (await espera).json()
+    const pref = r?.condiciones?.disponibilidad?.prefiero ?? null
+    const nota = await A.p.getByText(/^Prefieres «/).first().waitFor({ timeout: 10000 }).then(() => true, () => false)
+    ver('E15: elegir un plan guarda «prefiero» (A o B) en lo propio y lo dice como privado', r?.ok === true && ['A', 'B'].includes(pref) && nota, `prefiero=${pref}`)
+  } else console.log(`[${hora()}] E15 pendiente en este build: sin «Prefiero «…»» tras responder`)
   ver('#88: "Me interesa" es opcional y aparte', (await boton(A.p, 'Me interesa').count()) === 1 && (await A.p.getByText('Interés no es confirmación', { exact: false }).count()) > 0)
   await A.p.getByRole('link', { name: 'Ver el plan' }).click()
   await A.p.getByRole('tab', { name: 'Mi respuesta' }).click()
