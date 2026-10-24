@@ -1,0 +1,36 @@
+[11:15:59 a. m.] turno tomado 11:15: qa-gente vuelta 2 bloque d
+[11:16:07 a. m.] PASS d1: el segundo navegador no puede tomar a Rosa sin una advertencia → Rosa ya no aparece libre en la lista
+[11:16:13 a. m.] PASS d1: escribir un nombre repetido es rechazado con claridad o queda distinguible → join_space 200 entrada_incompleta:nombre_en_uso; «Olga Qa te invitó a Mismo 1115 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraron. Escribe el tuyo para sumarte al grupo; no pedimos correo ni contraseña. No estoy en la »; grupo: 2 personas
+[11:16:13 a. m.] PASS d1 mismo nombre desde dos navegadores (13.2 s)
+[11:16:30 a. m.] PASS d2: volver tres veces no duplica a la persona (el grupo sigue en 2) ni la expulsa → personas=2; join_space nuevos=0; vistas: Ema Qa te invitó a Vuelve 1115 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraro || Ema Qa te invitó a Vuelve 1115 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraro || Ema Qa te invitó a Vuelve 1115 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraro
+[11:16:31 a. m.] PASS d2: su respuesta anterior sigue guardada → Tu respuesta: puedo los dos días Cambiar Ficha del plan
+[11:16:31 a. m.] PASS d2 una persona vuelve con el enlace tres veces (18.0 s)
+[11:16:37 a. m.] PASS d3: el navegador de Gabi avisa «Ya estás en este grupo como Gabi» → Hilda Qa te invitó a Compartido 1115 Cena de prueba Escribe tu nombre para entrar Los nombres de la lista ya entraron. Escribe el tuyo para sumarte al grupo; no
+[11:16:42 a. m.] PASS d3: el teléfono pasa a ser Tito; ve su propio estado y no la respuesta de Gabi → CRU E Datos ficticios Ficticio ? TQ Sesión activa: Tito Qa . Ver tu perfil
+[11:16:43 a. m.] PASS d3: el grupo cuenta 3 personas (Gabi no desaparece) → 3 personas
+[11:16:43 a. m.] PASS d3 navegador compartido: otra persona entra en el teléfono de Gabi (11.8 s)
+[11:16:54 a. m.] PASS d4: segundo plan creado y distinto del primero
+[11:16:55 a. m.] PASS d4: quien entró antes ve los dos planes en el grupo → Grupos D1 DosPlanes 1115 3 personas IQ JQ KQ Personas › Integrantes del grupo 3 personas · 3 ya entraron 3 Ya están en el grupo IQ Ines Qa Ya entró JQ Jaime Qa (tú) Ya entró KQ Kika Qa Ya entró Estar en el grupo no confirma el encuentro. Actividad del grupo Vi
+[11:17:01 a. m.] PASS d4: cada plan guarda su propia respuesta (sábado en uno, domingo en otro) → Tu respuesta: solo el sábado Cambiar Ficha del plan | Tu respuesta: solo el domingo Cambiar Ficha del plan
+[11:17:01 a. m.] PASS d4 dos planes en el mismo grupo (18.3 s)
+[11:17:20 a. m.] PASS d5: queda ¡Se juntan! → ¡Se juntan!
+[11:17:26 a. m.] PASS d5: tras la baja, el plan sigue confirmado (quedan ≥ mínimo) o pasa a «En revisión» con explicación y sin nombre → estado «¡Se juntan!»; «Baja 1115 v1 · cierra vie 30 oct, 20:00 ¡Se juntan! Próxima acción: Grupo confirmado en la versión 1. Cupos disponibles: 1. Opción vigente · Versión 1 Sábado 31 oct 20:00 Cena de prueba LQ MQ Van 2: tú y Mauro Qa Respuestas Opción Confirmar Encuentro Participación del plan Versión 1 · 2 confirmacion»
+[11:17:26 a. m.] PASS d5: la pantalla no muestra quién se retiró
+[11:17:26 a. m.] PASS d5 una baja después de ¡Se juntan! (24.9 s)
+[11:17:40 a. m.] PASS d6: después de recargar en medio, la confirmación quedó una sola vez y el plan está coherente → accept_version enviados=1 (ok); recarga ya contaba; estado «Esperando confirmaciones»
+[11:17:40 a. m.] PASS d6 recarga en medio de una confirmación (14.3 s)
+[11:17:53 a. m.] PASS d7: sin conexión, «Confirmar» avisa con claridad (sin error técnico) y no confirma → Sin conexión Las acciones que hagas ahora no se registrarán.
+[11:17:59 a. m.] d7 observación: al volver la conexión los botones son: 
+[11:17:59 a. m.] PASS d7: con red lenta (+4 s por llamada) el botón da señal de «trabajando» y al final confirma una vez → señal de ocupado=sí; tardó 4.6 s
+[11:17:59 a. m.] PASS d7 conexión lenta y sin conexión al confirmar (18.7 s)
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+route.continue: Route is already handled!
+    at /Users/macair/cruse/cruce-qa-gente/tests/qa-gente/d-situaciones.mjs:159:105 {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v24.18.1

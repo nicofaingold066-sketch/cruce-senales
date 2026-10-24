@@ -156,7 +156,7 @@ await conTurno('qa-gente (d) situaciones: mismo nombre, enlace x3, compartido, d
       inf.ok('d7: sin conexión, «Confirmar» avisa con claridad (sin error técnico) y no confirma', /conexión|internet|red|conectar/i.test(off) && !/Ya confirmaste/.test(off), off.match(/[^.]*(conexión|internet|red)[^.]*\./i)?.[0]?.slice(0, 160) ?? off.slice(0, 200))
       await r.ctx.setOffline(false); await r.page.waitForTimeout(800)
       // Conexión lenta: 4 s de demora en cada RPC
-      await r.ctx.route('**/rest/v1/rpc/**', async (route) => { await dormir(4000); await route.continue() })
+      await r.ctx.route('**/rest/v1/rpc/**', async (route) => { await dormir(4000); await route.continue().catch(() => {}) })
       const b2 = r.page.getByRole('button', { name: /^(Confirmar versión 1|Reintentar confirmación)/ })
       const t0 = Date.now(); if (await b2.count()) await b2.first().click()
       await r.page.waitForTimeout(700)
@@ -165,7 +165,7 @@ await conTurno('qa-gente (d) situaciones: mismo nombre, enlace x3, compartido, d
       await r.page.getByText(/Ya confirmaste|¡Se juntan!/).first().waitFor({ timeout: 40000 })
       log_(`d7 observación: al volver la conexión los botones son: ${(await r.page.getByRole('button').allInnerTexts()).filter((t) => /Confirm|Reintentar/.test(t)).join(' | ')}`)
       inf.ok('d7: con red lenta (+4 s por llamada) el botón da señal de «trabajando» y al final confirma una vez', true, `señal de ocupado=${ocupado > 0 ? 'sí' : 'NO visible a los 0,7 s'}; tardó ${((Date.now() - t0) / 1000).toFixed(1)} s`)
-      await r.ctx.unroute('**/rest/v1/rpc/**')
+      await r.ctx.unroute('**/rest/v1/rpc/**', undefined).catch(() => {}); await dormir(300)
     })
 
     // d8 (vuelta 2): ante un 401 la app renueva la sesión y reintenta UNA vez (src/lib/api.ts). Se simula un 401 en una lectura y en una escritura.

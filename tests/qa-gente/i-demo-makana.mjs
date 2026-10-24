@@ -16,7 +16,7 @@ const JUEGOS = {
   viejo: { ORG: 'Ana', CAM: 'Camila', PIA: 'Gabriela', TODOS: ['Ana', 'Bruno', 'Camila', 'Diego', 'Elena', 'Felipe', 'Gabriela'] },
   nuevo: { ORG: 'Bastián', CAM: 'Carlos', PIA: 'Pía', TODOS: ['Bastián', 'Nacho', 'Carlos', 'Kai', 'Charlie', 'Joaco', 'Pía'] },
 }
-let ORG = 'Ana', CAM = 'Camila', PIA = 'Gabriela', TODOS = JUEGOS.viejo.TODOS
+let ORG = 'Ana', CAM = 'Camila', PIA = 'Gabriela', TODOS = JUEGOS.viejo.TODOS, copyPortada = 'viejo'
 const esc = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const limpio = (t) => t.replace(/\s+/g, ' ').trim()
 async function paso(nombre, f) {
@@ -47,8 +47,8 @@ await conTurno('qa-gente vuelta 2 bloque i', async () => {
       inf.ok('i1: la portada ofrece «Probar la demo «El plan que no deja a nadie afuera»»', await demo.first().isVisible(), '')
       inf.ok('i1: la portada ya no ofrece «Los del finde»', !/Los del finde/.test(t), /Los del finde/.test(t) ? 'todavía aparece' : '')
       const quien = t.match(/Serás ([^\s,]+)/)?.[1]
-      const juego = quien === JUEGOS.nuevo.ORG ? 'nuevo' : 'viejo'; ;({ ORG, CAM, PIA, TODOS } = JUEGOS[juego])
-      inf.ok(`i1 (nombres): producción muestra los nombres ${juego === 'nuevo' ? 'NUEVOS (Bastián, Nacho, Carlos…)' : 'VIEJOS (Ana, Bruno, Camila…); el front con los nombres nuevos aún no está publicado'}`, true, t.match(/Serás [^.]*\./)?.[0] ?? '')
+      copyPortada = quien === JUEGOS.nuevo.ORG ? 'nuevo' : 'viejo'
+      inf.ok(`i1 (nombres): el texto de la portada usa los nombres ${copyPortada === 'nuevo' ? 'NUEVOS' : 'VIEJOS («Serás Ana…»): el front con los nombres nuevos aún no está publicado'}`, true, t.match(/Serás [^.]*\./)?.[0] ?? '')
       inf.ok('i1: el detalle dice quién organiza y que los otros seis son simulados', /Serás [^\s,]+, quien organiza/.test(t) && /simulados/.test(t), t.match(/Serás [^.]*\./)?.[0] ?? '')
       await anchos(ana, 'portada'); await ana.captura('i1-portada-375')
       await demo.first().click()
@@ -65,6 +65,8 @@ await conTurno('qa-gente vuelta 2 bloque i', async () => {
       const t = limpio(await textoMain(p))
       inf.ok(`i2: el grupo se llama «${NOMBRE}»`, t.includes(NOMBRE), '')
       inf.ok('i2: «Integrantes del grupo» dice 7 personas', /7 personas/.test(t), t.match(/Integrantes del grupo[^]{0,80}/)?.[0] ?? '')
+      const juegoServidor = t.includes(JUEGOS.nuevo.ORG) ? 'nuevo' : 'viejo'; ;({ ORG, CAM, PIA, TODOS } = JUEGOS[juegoServidor])
+      inf.ok(`i2 (nombres): el servidor entrega los nombres ${juegoServidor === 'nuevo' ? 'NUEVOS (Bastián, Nacho, Carlos…)' : 'VIEJOS (Ana, Bruno, Camila…)'}${juegoServidor !== copyPortada ? ' mientras la portada dice los ' + copyPortada.toUpperCase() + 'S (front y base desfasados hasta publicar)' : ''}`, true, '')
       const faltan = TODOS.filter((n) => !t.includes(n))
       inf.ok(`i2: se ven los siete nombres (${ORG} + 6 simulados)`, faltan.length === 0, faltan.length ? `faltan ${faltan}` : '')
       inf.ok('i2: «Actividad del grupo» y «Personas simuladas» están en el grupo', /Actividad del grupo/.test(t) && /Personas simuladas/.test(t), '')
@@ -133,13 +135,6 @@ await conTurno('qa-gente vuelta 2 bloque i', async () => {
       inf.ok('i5: la Simulación NO ofrece «Cargar condiciones del caso»', (await p.getByRole('button', { name: /Cargar condiciones del caso/ }).count()) === 0 && !/Cargar las respuestas de los/.test(t), '')
       inf.ok(`i5: dice que cada respuesta se carga por separado y ${PIA} sigue pendiente`, /por separado/.test(t) && t.includes(PIA), '')
       await anchos(ana, 'Simulación'); await ana.captura('i5-simulacion-375')
-      // simulate_load_case debe responder caso_no_disponible en la demo Makana (el servidor rechaza el atajo del caso viejo).
-      const propuestaId = urlPlan.match(/\/p\/([^/?#]+)/)?.[1]
-      if (cab) {
-        const r = await fetch(`${cab.base}/rest/v1/rpc/simulate_load_case`, { method: 'POST', headers: { apikey: cab.apikey, authorization: cab.auth, 'content-type': 'application/json' }, body: JSON.stringify({ p_propuesta_id: propuestaId, p_intento_id: randomUUID() }) })
-        const j = await r.json().catch(() => ({}))
-        inf.ok('i5: simulate_load_case responde caso_no_disponible en la demo Makana', j?.ok === false && (j?.error?.detalle === 'caso_no_disponible' || j?.error?.codigo === 'caso_no_disponible'), `HTTP ${r.status}; codigo=${j?.error?.codigo}; detalle=${j?.error?.detalle}`)
-      } else inf.ok('i5: simulate_load_case responde caso_no_disponible en la demo Makana', false, 'no se capturó la sesión de la página')
     })
 
     // i6 · Camila entra por el enlace desde otro contexto y reclama su asiento
@@ -236,6 +231,17 @@ await conTurno('qa-gente vuelta 2 bloque i', async () => {
       const prometeAnonimato = /sin tu nombre/.test(promesa); const nombra = new RegExp(`${CAM}.*se bajó de`).test(act)
       inf.ok('i8: lo que promete la confirmación de baja coincide con lo que publica «Actividad del grupo»', !(prometeAnonimato && nombra), `confirmación: «${promesa.slice(0, 200)}»; actividad nombra a ${CAM}: ${nombra}`)
       await anchos(ana, 'grupo tras la baja'); await ana.captura('i8-actividad-tras-baja-375')
+    })
+
+    // i9 · simulate_load_case directo (al final, para no alterar los conteos de i4–i8). Con 0059 respondía `caso_no_disponible`; con 0060 (la demo «nace cargada»)
+    // el atajo «Cargar respuestas» ya está permitido en el servidor. Se informa cuál de los dos es la base de producción.
+    await paso('i9 simulate_load_case', async () => {
+      const propuestaId = urlPlan.match(/\/p\/([^/?#]+)/)?.[1]
+      if (!cab) { inf.ok('i9: simulate_load_case (observación)', false, 'no se capturó la sesión de la página'); return }
+      const r = await fetch(`${cab.base}/rest/v1/rpc/simulate_load_case`, { method: 'POST', headers: { apikey: cab.apikey, authorization: cab.auth, 'content-type': 'application/json' }, body: JSON.stringify({ p_propuesta_id: propuestaId, p_intento_id: randomUUID() }) })
+      const j = await r.json().catch(() => ({}))
+      const rechazado = j?.ok === false && (j?.error?.detalle === 'caso_no_disponible' || j?.error?.codigo === 'caso_no_disponible')
+      inf.ok(`i9 (observación): simulate_load_case en la demo Makana → ${rechazado ? 'caso_no_disponible (base con 0059, sin atajo)' : j?.ok === true ? 'OK (base con 0060+: la demo nace cargada y «Cargar respuestas» está permitido; el front 018215d no muestra el botón)' : 'respuesta inesperada'}`, rechazado || j?.ok === true, `HTTP ${r.status}; ok=${j?.ok}; codigo=${j?.error?.codigo}; detalle=${j?.error?.detalle}`)
     })
 
     const consola = todas.flatMap((x) => x.errores.map((e) => `${x.nombre}: ${e}`)).slice(0, 5)

@@ -1,0 +1,34 @@
+[11:13:53 a. m.] esperando turno: coordinador
+[11:14:21 a. m.] turno tomado 11:14: qa-gente vuelta 2 bloque b
+[11:14:23 a. m.] PASS b0: la lista de «Crear grupo» tiene tope; con 19 nombres pegados anota solo los que caben y avisa → anotados=12; Hasta 12 personas en la lista; el resto entra con el enlace.
+[11:14:25 a. m.] PASS b1: grupo con plan mín 10 / máx 20 creado → 3.1 s
+[11:14:47 a. m.] PASS b2: 19 personas entran por el enlace y responden → entradas {"lista":12,"escrito":7}; entrar→¿Cuándo puedes?: n=19 p50=2123ms p95=8142ms max=8142ms
+[11:14:49 a. m.] PASS b3: «N de M respondieron» de la organizadora cuadra (20 de 20) → 20 de 20 respondieron
+[11:14:50 a. m.] PASS b4: «Buscar opción compatible» con 20 respuestas publica la versión 1 → 531 ms
+[11:14:58 a. m.] PASS b5: las 19 personas confirman la versión 1 → 5.6 s
+[11:14:59 a. m.] PASS b6: el plan queda «¡Se juntan!» con 20 confirmados → ¡Se juntan!; Veinte 1113 v1 · cierra vie 30 oct, 20:00 ¡Se juntan! Próxima acción: Grupo confirmado en la versión 1. Cupos disponible
+[11:15:05 a. m.] PASS b7: la persona 21 no puede sumarse al plan lleno (dice «Cupos disponibles: 0», sin botón de confirmar) → join_space: 200 ok; ENTRÓ AL GRUPO (no hay tope de integrantes); «Grupos V1 Veinte 1113 21 personas AB BB CB DB EB FB +15 Personas › Integrantes del grupo 21 personas · 21 ya entraron 21 Ya están en el grupo AB Abi B1113 Ya entró BB Beto B1113 Ya entró CB Cami B1113»
+[11:15:05 a. m.] FAIL b7 (observación): el grupo rechaza a la persona 21 con un mensaje claro → no hay rechazo: el tope de 20 es del plan, no del grupo
+[11:15:05 a. m.] PASS b7: la pantalla de la 21 sigue usable (sin desborde ni error de consola)
+[11:15:05 a. m.] PASS b8: el espacio con 20 personas muestra el plan → 7 ms; personas: ?
+RPC:
+  server_info                n=42 p50=110ms p95=241ms max=940ms
+  create_space               n=1 p50=167ms p95=167ms max=167ms
+  get_space                  n=141 p50=95ms p95=196ms max=1486ms
+  create_proposal            n=1 p50=132ms p95=132ms max=132ms
+  open_proposal              n=1 p50=111ms p95=111ms max=111ms
+  get_proposal_state         n=95 p50=119ms p95=343ms max=1514ms
+  get_my_preferences         n=2 p50=131ms p95=499ms max=499ms
+  list_proposals             n=25 p50=106ms p95=233ms max=391ms
+  save_my_conditions         n=20 p50=124ms p95=205ms max=224ms
+  get_my_conditions          n=71 p50=90ms p95=196ms max=1476ms
+  evaluate_and_publish       n=1 p50=227ms p95=227ms max=227ms
+  accept_version             n=20 p50=151ms p95=206ms max=217ms
+  list_my_spaces             n=20 p50=115ms p95=243ms max=653ms
+  preview_space_by_code      n=20 p50=111ms p95=243ms max=948ms
+  join_space                 n=20 p50=120ms p95=190ms max=207ms
+Errores RPC: {}
+[11:15:05 a. m.] PASS sin errores de consola (salvo los esperados del rechazo)
+[11:15:08 a. m.] turno liberado
+b-muchas: 11 PASS, 1 FAIL
+JSON {"guion":"b-muchas","filas":[{"nombre":"b0: la lista de «Crear grupo» tiene tope; con 19 nombres pegados anota solo los que caben y avisa","cond":true,"detalle":"anotados=12; Hasta 12 personas en la lista; el resto entra con el enlace."},{"nombre":"b1: grupo con plan mín 10 / máx 20 creado","cond":true,"detalle":"3.1 s"},{"nombre":"b2: 19 personas entran por el enlace y responden","cond":true,"detalle":"entradas {\"lista\":12,\"escrito\":7}; entrar→¿Cuándo puedes?: n=19 p50=2123ms p95=8142ms max=8142ms"},{"nombre":"b3: «N de M respondieron» de la organizadora cuadra (20 de 20)","cond":true,"detalle":"20 de 20 respondieron"},{"nombre":"b4: «Buscar opción compatible» con 20 respuestas publica la versión 1","cond":true,"detalle":"531 ms"},{"nombre":"b5: las 19 personas confirman la versión 1","cond":true,"detalle":"5.6 s"},{"nombre":"b6: el plan queda «¡Se juntan!» con 20 confirmados","cond":true,"detalle":"¡Se juntan!; Veinte 1113 v1 · cierra vie 30 oct, 20:00 ¡Se juntan! Próxima acción: Grupo confirmado en la versión 1. Cupos disponible"},{"nombre":"b7: la persona 21 no puede sumarse al plan lleno (dice «Cupos disponibles: 0», sin botón de confirmar)","cond":true,"detalle":"join_space: 200 ok; ENTRÓ AL GRUPO (no hay tope de integrantes); «Grupos V1 Veinte 1113 21 personas AB BB CB DB EB FB +15 Personas › Integrantes del grupo 21 personas · 21 ya entraron 21 Ya están en el grupo AB Abi B1113 Ya entró BB Beto B1113 Ya entró CB Cami B1113»"},{"nombre":"b7 (observación): el grupo rechaza a la persona 21 con un mensaje claro","cond":false,"detalle":"no hay rechazo: el tope de 20 es del plan, no del grupo"},{"nombre":"b7: la pantalla de la 21 sigue usable (sin desborde ni error de consola)","cond":true,"detalle":""},{"nombre":"b8: el espacio con 20 personas muestra el plan","cond":true,"detalle":"7 ms; personas: ?"},{"nombre":"sin errores de consola (salvo los esperados del rechazo)","cond":true,"detalle":""}],"defectos":[]}

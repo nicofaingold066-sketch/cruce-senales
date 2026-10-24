@@ -1,0 +1,25 @@
+[11:20:54 a. m.] turno tomado 11:20: qa-gente vuelta 2 bloque f
+[11:21:12 a. m.] FAIL f1: la primera visita por una invitación muestra la intro → 8435 ms hasta verla
+[11:21:13 a. m.] FAIL f1: la intro termina sola y dura ≲ 4,5 s (2,6 s + salida) → 9691 ms desde abrir el enlace
+[11:21:13 a. m.] PASS f1: al terminar, «¿Quién eres?» está usable (botón con el nombre) → desborde 0 px
+[11:21:19 a. m.] PASS f1: de abrir el enlace a ¿Cuándo puedes? con la intro completa → 15565 ms (primer toque posible a los 9698 ms)
+[11:21:29 a. m.] PASS sin errores de consola
+[11:21:32 a. m.] turno liberado
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Timeout 8000ms exceeded.
+Call log:
+  - waiting for getByRole('button', { name: /Saltar intro/ }) to be visible
+
+    at /Users/macair/cruse/cruce-qa-gente/tests/qa-gente/f-intro.mjs:39:106
+    at async conTurno (/Users/macair/cruse/cruce-qa-gente/tests/qa-gente/lib.mjs:76:16)
+    at async file:///Users/macair/cruse/cruce-qa-gente/tests/qa-gente/f-intro.mjs:6:1 {
+  log: [
+    "  - waiting for getByRole('button', { name: /Saltar intro/ }) to be visible"
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.18.1
