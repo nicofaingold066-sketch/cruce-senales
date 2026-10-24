@@ -4,7 +4,7 @@ Rama de código: `wip/pendientes` (base `wip/fundamentos` `ad2d63e`). Rutas: `su
 Tarea (Nico, 23:50): (A) agente social completo (enmienda 11, lo humano), (B) E-c ronda de opiniones con plazo, (C) E-d dos planes con votación, como enmienda 15.
 
 ## Tocando ahora
-- [01:42] Base LIBRE (0053 terminada). Nada en edición; tomo pedidos de base y la siguiente mejora.
+- [01:47] Tarea del coordinador (plazo 03:30): propuesta del AGENTE por todo el circuito humano (confirmación, baja, `propose_repair` con 0 heredadas, v1 vieja rechazada por versión, invitación que no suma). Prueba escrita: `tests/backend/agente-social-reparacion.test.ts` (`wip/pendientes` `09dba74`), sin correr: espero mi turno al final de la cola (front-juan, frontend, agente-ia).
 
 ## Entregado
 - [01:42] **0053 E-d APLICADA (01:35)**, `wip/pendientes` `fdf948e`: enmienda 15 completa. md5 de las 7 funciones = archivo; 41/0; `verificar_privilegios()` sin hallazgos. Suite completa en serie sin concurrencia (01:35:17–01:40:17): 100 ok, única falla `enmienda9` en `beforeAll` por Gateway Timeout del servicio de autenticación (repetida sola 6/6). `enmienda15` 7/7. Reversa: `supabase/revertir/0053_revertir.sql`.
