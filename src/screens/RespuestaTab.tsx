@@ -16,7 +16,7 @@ const ESTADO_COND: Record<string, string> = {
   completas: 'Completas',
 }
 
-export default function RespuestaTab({ p, viva, soloLectura, espacio }: PestanaProps) {
+export default function RespuestaTab({ p, viva, soloLectura, espacio, irAPestana }: PestanaProps) {
   const s = p.mi_situacion
   return (
     <div>
@@ -35,7 +35,7 @@ export default function RespuestaTab({ p, viva, soloLectura, espacio }: PestanaP
         </Aviso>
       ) : null}
       <Interes p={p} viva={viva} soloLectura={soloLectura} />
-      <MisCondiciones p={p} viva={viva} soloLectura={soloLectura} demo={espacio?.demo === true} />
+      <MisCondiciones p={p} viva={viva} soloLectura={soloLectura} demo={espacio?.demo === true} irAPestana={irAPestana} />
       <Retiro p={p} viva={viva} soloLectura={soloLectura} />
     </div>
   )
@@ -91,7 +91,13 @@ function Interes({ p, viva, soloLectura }: VivaProps) {
   )
 }
 
-function MisCondiciones({ p, viva, soloLectura, demo }: VivaProps & { demo: boolean }) {
+function MisCondiciones({
+  p,
+  viva,
+  soloLectura,
+  demo,
+  irAPestana,
+}: VivaProps & { demo: boolean; irAPestana: PestanaProps['irAPestana'] }) {
   const [cond, setCond] = useState<Condiciones | null>(null)
   const [errorCarga, setErrorCarga] = useState<ApiError | null>(null)
   const claves = p.franjas.map((f) => f.clave)
@@ -157,6 +163,12 @@ function MisCondiciones({ p, viva, soloLectura, demo }: VivaProps & { demo: bool
           />
           <p className="suave nota-seccion">"Pendiente" = aún no lo sabes (tus condiciones quedan incompletas).</p>
           {!s.puede.guardar_condiciones ? <p className="aviso-linea">{razonSinGuardar(p)}</p> : null}
+          {/* H16 (sinteticos): la frase manda a un botón que está en el Plan; se ofrece el camino en un toque. */}
+          {!s.puede.guardar_condiciones && !s.retirado && !p.plazo_vencido && s.elegible_en_version === true ? (
+            <button type="button" className="btn btn-secundario" onClick={() => irAPestana('plan')}>
+              Ir al plan
+            </button>
+          ) : null}
           <div className={`fila-botones ${b.sucio ? 'barra-accion' : ''}`}>
             <Boton
               onClick={guardar}

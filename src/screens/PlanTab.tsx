@@ -124,7 +124,7 @@ function Ficha({ p, viva }: { p: EstadoPropuesta; viva: PestanaProps['viva'] }) 
         <dd>
           <Nombre m={p.organizador} />
         </dd>
-        <dt>Imprescindible (anfitrión)</dt>
+        <dt>No puede faltar</dt>
         <dd>
           <Nombre m={p.imprescindible} />
         </dd>
@@ -174,7 +174,7 @@ function razonNoAceptar(p: EstadoPropuesta): string {
   if (p.plazo_vencido) return 'El plazo de aceptación ya cerró.'
   if (s.elegible_en_version === false) return 'No formas parte de las personas que pueden aceptar esta versión.'
   if (s.motivo_aceptar === 'cupo_reservado') {
-    return 'El último cupo está reservado para el anfitrión. Podrás confirmar si se libera un cupo para otros.'
+    return 'El último cupo está reservado para quien no puede faltar. Si se libera otro, podrás confirmar.'
   }
   if (p.opcion && p.opcion.cupos.disponibles <= 0) return 'Ya se completaron los cupos de esta versión.'
   return 'Ahora no puedes confirmar esta versión.'
@@ -249,7 +249,7 @@ function OpcionVigente({
           </dd>
         </div>
         <div className="cifra">
-          <dt>Anfitrión ({p.imprescindible.nombre})</dt>
+          <dt>No puede faltar ({p.imprescindible.nombre})</dt>
           <dd>
             <span className={`etiqueta ${o.cupos.imprescindible_acepto ? 'etiqueta-ok' : 'etiqueta-pendiente'}`}>
               {o.cupos.imprescindible_acepto ? 'Ya confirmó' : 'Pendiente'}
@@ -271,7 +271,7 @@ function OpcionVigente({
         <p className="nota-linea nota-reserva">
           <Icono n="anfitrion" tam={16} />
           <span>
-            <strong>Cupo del anfitrión</strong> reservado hasta que {p.imprescindible.nombre} confirme. Cupos libres para el resto:{' '}
+            <strong>Cupo reservado</strong> para {p.imprescindible.nombre} (no puede faltar) hasta que confirme. Libres para el resto:{' '}
             {o.cupos.libres_para_otros}.
           </span>
         </p>
@@ -374,18 +374,15 @@ function CambioDeVersion({ p }: { p: EstadoPropuesta }) {
               {confirmaronAnt.map((m) => (
                 <li key={m.miembro_id} className={seBajo.has(m.miembro_id) ? 'cv-bajo' : ''}>
                   <Nombre m={m} />
-                  {seBajo.has(m.miembro_id) ? <span className="cv-nota"> se bajó</span> : <span className="cv-nota"> había confirmado</span>}
+                  <span className="cv-nota"> había confirmado</span>
                 </li>
               ))}
             </ul>
           ) : null}
-          {bajasAnt
-            .filter((b) => !confirmaronAnt.some((m) => m.miembro_id === b.miembro.miembro_id))
-            .map((b) => (
-              <p key={b.miembro.miembro_id} className="cv-bajo">
-                <Nombre m={b.miembro} /> <span className="cv-nota">se bajó</span>
-              </p>
-            ))}
+          {/* Enmienda 13 (c): la baja va aparte y sin nombre, fuera de la lista de quienes confirmaron, para no dejar deducir quién fue. */}
+          {bajasAnt.length > 0 ? (
+            <p className="cv-nota">{bajasAnt.length === 1 ? 'Una persona se retiró.' : `${bajasAnt.length} personas se retiraron.`}</p>
+          ) : null}
           <p className="cv-pie">Estas confirmaciones no pasan a la versión {o.version}.</p>
         </div>
         <span className="cv-flecha" aria-hidden="true">
@@ -462,22 +459,18 @@ function AlternativaOrganizador({ p, viva, soloLectura, sinAlternativa }: VivaPr
 function Bajas({ p }: { p: EstadoPropuesta }) {
   return (
     <section className="tarjeta">
-      <h2>Bajas registradas</h2>
+      <h2>Cambios en el grupo</h2>
       <ul className="chips-personas chips-bajas">
         {p.bajas.map((b, i) => (
           <li key={`${b.miembro.miembro_id}-${i}`} title={momentoCorto(b.en)}>
-            <Avatar nombre={b.miembro.nombre} simulado={b.miembro.simulado} tam={26} />
+            {/* Enmienda 13 (c), psico §16: sin nombre y sin "había confirmado" (el servidor ya manda "Una persona"). */}
             <span className="chip-texto">
-              <Nombre m={b.miembro} />
-              <span className="chip-nota">
-                se bajó{b.version != null ? ` (versión ${b.version})` : ''}
-                {b.habia_aceptado ? ' · había confirmado' : ''}
-              </span>
+              <span className="chip-nota">Una persona se retiró{b.version != null ? ` (versión ${b.version})` : ''}.</span>
             </span>
           </li>
         ))}
       </ul>
-      <p className="suave">Quien se baja no vuelve a ser elegible en esta propuesta.</p>
+      <p className="suave">Quien se retira no vuelve a entrar en este plan.</p>
     </section>
   )
 }
