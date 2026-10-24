@@ -3,7 +3,6 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cruce-qa`). Rutas: `tests/e2e/**`, `docs/qa-noche.md`. Puerto de preview: 4185.
 
 ## Tocando ahora
-- CORRIENDO PRUEBA (03:11) set completo sobre wip/ux 9ef976e (S4, pantalla del plan) (qa-noche)
 - [03:04] EN COLA de la base (sin marca): set completo sobre `wip/ux` 9ef976e (S4) y, después, lo que entreguen S2/S3/S7/S1/S5/S6. Leído `prompts/rediseno-secciones.md` (21 pantallas): el mockup gana, adapto guiones cuando la sección avise la línea exacta; ya preparé `tests/e2e/nav.mjs` (`irA`: pestaña o fila) y rótulos tolerantes (`Nuevo plan`, «Revisar antes de crear» opcional). Falta: Mínimo/Máximo con −/+ (jurado) cuando entregue S3. Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
 
 ## Entregado
