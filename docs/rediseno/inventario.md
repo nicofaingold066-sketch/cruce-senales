@@ -10,6 +10,10 @@ Fase 1, sábado 24 oct 2026, 02:15–03:00, sesión frontend en el rol de diseno
 - **Palabras:** «grupo», no «espacio» (salvo en los rótulos que buscan los guiones, que esperan a que el guion acepte los dos); «plan» para la propuesta en lenguaje de pantalla; «te toca» para lo que marca el servidor; nunca «el servidor propone» en pantalla: «salió la opción».
 - **Un botón primario por pantalla.** El resto, secundarios. «Confirmar versión N» usa la variante `turno` (brasa) y cuenta como el primario de esa pantalla.
 
+## Corrección de las 02:55: manda el mockup validado
+
+Las filas de S1 y S2 de abajo se escribieron antes de las directivas de Nico (02:15–02:19) y del mockup (02:40). Donde choquen, manda el mockup: **home = solo «Tus grupos» (sin «Tu plan»; a lo sumo una línea si te toca algo), «+ Nuevo grupo» flotante con hoja «Crear un grupo» / «Unirme con un código», barra inferior Grupos · Planes · Perfil, tres niveles distintos (ver `user-flow.md`), computadora sin scroll.** Nivel de cada pantalla: Mi espacio = Inicio, Planes, Perfil, hoja «+», Crear grupo; Grupo = pantalla del grupo, Nueva propuesta; Plan = Propuesta y sus pestañas (Plan, Mi respuesta, Historial, Simulación). Lo que delata el nivel: fondo claro + barra inferior (Mi espacio); escena oscura + `IconoGrupo` (Grupo); «‹ <grupo>» + fecha grande (Plan).
+
 ## S1 Ingreso (dueña: friccion; `src/screens/Inicio.tsx` con excepción)
 
 Archivos: `src/login/Entrar.tsx`, `src/login/QuienEres.tsx`, `src/login/Integrantes.tsx` (la usa S2), `src/screens/Inicio.tsx`, `src/components/Intro.tsx`, `src/components/Sesiones.tsx`, `src/friccion/QueGuarda.tsx`, `src/friccion/porCodigo.ts`, `src/screens/Perfil.tsx`.
