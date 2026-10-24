@@ -8,6 +8,7 @@ import type { NombreIcono } from './components/Icono'
 import { usePerfil } from './lib/perfil'
 import { Marca } from './components/Marca'
 import { Entrada, useEntrada } from './components/Intro'
+import { Guia, useGuia } from './components/Guia'
 import { Component, lazy, Suspense, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import Inicio from './screens/Inicio'
@@ -42,12 +43,14 @@ function usePrecargaPantallas(activa: boolean) {
 
 export default function App() {
   const entrada = useEntrada()
+  const guia = useGuia()
   const { sesion, reintentar } = useSesion()
   const incompatible = useContratoIncompatible()
   return (
     <ShellProvider soloLectura={incompatible}>
-      <Marco sesion={sesion} reintentar={reintentar} incompatible={incompatible} />
+      <Marco sesion={sesion} reintentar={reintentar} incompatible={incompatible} alAbrirAyuda={guia.abrir} />
       {entrada.visible ? <Entrada alTerminar={entrada.cerrar} /> : null}
+      {!entrada.visible && guia.visible ? <Guia alCerrar={guia.cerrar} /> : null}
     </ShellProvider>
   )
 }
@@ -56,10 +59,12 @@ function Marco({
   sesion,
   reintentar,
   incompatible,
+  alAbrirAyuda,
 }: {
   sesion: FaseSesion
   reintentar: () => void
   incompatible: boolean
+  alAbrirAyuda: () => void
 }) {
   const { identidad } = useShell()
   const online = useOnline()
@@ -85,6 +90,9 @@ function Marco({
           <span className="chip-ficticio">Datos ficticios</span>
         </div>
         {conNav ? <PestanasBarra ruta={ruta} /> : null}
+        <button type="button" className="cruxe-ayuda" onClick={alAbrirAyuda} aria-label="Ayuda: ver guía de CRUXE" aria-haspopup="dialog">
+          <span aria-hidden="true">?</span><span className="cruxe-ayuda__texto">Ayuda</span>
+        </button>
         <a className="barra-identidad" href={rutas.perfil()} aria-live="polite">
           {quien ? (
             <>

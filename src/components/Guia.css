@@ -1,0 +1,393 @@
+/* Guía ficticia de primera visita. Todas las piezas quedan dentro de su propio espacio. */
+.cruxe-guia {
+  --guia-tinta: #f6f1eb;
+  --guia-suave: #c5b8ac;
+  --guia-brasa: #ff9764;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+  border: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  color: var(--guia-tinta);
+  background: radial-gradient(ellipse at 70% 20%, #291910 0%, #100e0c 65%);
+  font-family: var(--fuente);
+  font-size: var(--t-cuerpo, 16px);
+  line-height: 1.5;
+  color-scheme: dark;
+}
+.cruxe-guia[open] { display: grid; align-items: center; align-items: safe center; justify-items: center; }
+.cruxe-guia::backdrop { background: #100e0c; }
+.cruxe-guia *, .cruxe-guia *::before, .cruxe-guia *::after { box-sizing: border-box; }
+.cruxe-guia :where(button) { font: inherit; }
+.cruxe-guia button:focus-visible, .cruxe-ayuda:focus-visible {
+  outline: 3px solid #ffbc91;
+  outline-offset: 4px;
+}
+.cruxe-guia__tarjeta {
+  position: relative;
+  width: min(100%, 920px);
+  min-width: 0;
+  padding: 28px 32px 24px;
+  border: 1px solid #ffffff17;
+  border-radius: 28px;
+  background: linear-gradient(130deg, #191512, #211810 100%);
+  box-shadow: 0 28px 100px #00000055;
+  animation: cruxe-guia-entrada 420ms cubic-bezier(.2, .8, .2, 1) both;
+}
+.cruxe-guia__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cruxe-guia__cabecera .marca-bloque { color: var(--guia-tinta); }
+.cruxe-guia__cabecera > span { min-width: 0; font-size: var(--t-subtitulo, 18px); font-weight: 800; letter-spacing: .035em; }
+.cruxe-guia__marca-x { color: var(--guia-brasa); }
+.cruxe-guia__cabecera-nota { color: var(--guia-suave); font-size: var(--t-nota, 13px); font-weight: 400; letter-spacing: 0; }
+.cruxe-guia__saltar {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #ffffff24;
+  border-radius: 999px;
+  background: #ffffff04;
+  color: #dfd4c9;
+  font-size: var(--t-nota, 13px);
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.cruxe-guia__saltar:hover { border-color: #ffffff4d; background: #ffffff0b; }
+.cruxe-guia__progreso {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.cruxe-guia__progreso li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding-top: 12px;
+  border-top: 3px solid #ffffff20;
+  color: #b5a89c;
+  font-size: var(--t-nota, 13px);
+  font-weight: 500;
+  line-height: 1.4;
+  transition: border-color 220ms ease, color 220ms ease;
+}
+.cruxe-guia__progreso li[data-activo="true"] { color: var(--guia-tinta); border-color: var(--guia-brasa); }
+.cruxe-guia__progreso li[data-listo="true"] { color: #ddc3ad; border-color: #a26a48; }
+.cruxe-guia__progreso li > svg { flex: none; }
+.cruxe-guia__cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: 40px;
+  padding: 36px 0 28px;
+}
+.cruxe-guia__relato { min-width: 0; animation: cruxe-guia-relato 300ms ease-out both; }
+.cruxe-guia__eyebrow {
+  margin: 0 0 16px;
+  color: var(--guia-brasa);
+  font-size: var(--t-nota, 13px);
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.cruxe-guia__titulo {
+  max-width: 320px;
+  margin: 0;
+  color: var(--guia-tinta);
+  font-size: var(--t-titulo, 24px);
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -.025em;
+  overflow-wrap: anywhere;
+}
+.cruxe-guia__titulo:focus { outline: none; }
+.cruxe-guia__descripcion {
+  max-width: 330px;
+  margin: 16px 0 0;
+  color: var(--guia-suave);
+  font-size: var(--t-cuerpo, 16px);
+  line-height: 1.6;
+}
+.cruxe-guia__escena { position: relative; min-width: 0; isolation: isolate; }
+.cruxe-guia__muestra {
+  position: relative;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #ffffff1c;
+  border-radius: 22px;
+  background: linear-gradient(155deg, #ffffff07, #ffffff02);
+  box-shadow: 0 16px 36px #00000025;
+}
+.cruxe-guia__muestra-cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  color: #c5b8ac;
+  font-size: var(--t-nota, 13px);
+}
+.cruxe-guia__etiqueta { display: inline-flex; align-items: center; gap: 6px; color: #dfc3ac; font-weight: 600; }
+.cruxe-guia__grupo { padding: 14px 0 18px; text-align: center; }
+.cruxe-guia__avatares { position: relative; width: 100%; height: 80px; }
+.cruxe-guia__avatar {
+  --avatar-x: -66px;
+  --avatar-y: 4px;
+  position: absolute;
+  top: calc(50% + var(--avatar-y));
+  left: calc(50% + var(--avatar-x));
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 3px solid #2a211a;
+  border-radius: 50%;
+  background: #e5b086;
+  color: #291911;
+  box-shadow: 0 4px 10px #00000026;
+  font-size: var(--t-nota, 13px);
+  font-weight: 800;
+  transform: translate(-50%, -50%);
+  transition: left 650ms cubic-bezier(.2, .8, .2, 1), top 650ms cubic-bezier(.2, .8, .2, 1);
+  animation: cruxe-guia-flotar 2.2s ease-in-out 2;
+}
+.cruxe-guia__avatar:nth-child(2) { --avatar-x: -22px; --avatar-y: -8px; background: #bad3bc; animation-delay: 100ms; }
+.cruxe-guia__avatar:nth-child(3) { --avatar-x: 25px; --avatar-y: 5px; background: #c7b9dd; animation-delay: 220ms; }
+.cruxe-guia__avatar:nth-child(4) { --avatar-x: 68px; --avatar-y: -6px; background: #e9cf8c; animation-delay: 350ms; }
+.cruxe-guia__avatares--juntos .cruxe-guia__avatar { --avatar-x: -48px; --avatar-y: 0px; animation: cruxe-guia-reunion 600ms ease-out both; }
+.cruxe-guia__avatares--juntos .cruxe-guia__avatar:nth-child(2) { --avatar-x: -16px; animation-delay: 70ms; }
+.cruxe-guia__avatares--juntos .cruxe-guia__avatar:nth-child(3) { --avatar-x: 16px; animation-delay: 140ms; }
+.cruxe-guia__avatares--juntos .cruxe-guia__avatar:nth-child(4) { --avatar-x: 48px; animation-delay: 210ms; }
+.cruxe-guia__grupo-nombre { margin: 0; color: var(--guia-tinta); font-size: var(--t-subtitulo, 18px); font-weight: 700; }
+.cruxe-guia__objetivo { position: relative; padding-bottom: 48px; }
+.cruxe-guia__planes, .cruxe-guia__horarios { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.cruxe-guia__horarios { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cruxe-guia__opcion, .cruxe-guia__horario {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 88px;
+  padding: 14px 6px;
+  border: 1px solid #ffffff24;
+  border-radius: 14px;
+  background: #ffffff04;
+  color: #eee4da;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+.cruxe-guia__opcion > svg { width: 25px; height: 25px; color: #dfbc9f; }
+.cruxe-guia__opcion > span, .cruxe-guia__horario > span { font-weight: 600; }
+.cruxe-guia__horario { gap: 6px; min-height: 88px; }
+.cruxe-guia__horario small { color: #c5b8ac; font-size: var(--t-nota, 13px); }
+.cruxe-guia__opcion:hover, .cruxe-guia__horario:hover { border-color: #ff976477; background: #ff97640e; }
+.cruxe-guia__opcion:active, .cruxe-guia__horario:active, .cruxe-guia__confirmar:active, .cruxe-guia__siguiente:active { transform: scale(.97); }
+.cruxe-guia__opcion[aria-pressed="true"], .cruxe-guia__horario[aria-pressed="true"] { border-color: var(--guia-brasa); background: #ff97641a; color: #ffc39d; }
+.cruxe-guia__opcion[aria-pressed="true"] > svg { color: var(--guia-brasa); }
+.cruxe-guia__cursor {
+  position: absolute;
+  z-index: 2;
+  top: 66px;
+  left: 22%;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  width: max-content;
+  max-width: 78%;
+  color: #ffe1cc;
+  font-size: var(--t-nota, 13px);
+  font-weight: 600;
+  line-height: 1.4;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 3px #00000066);
+  animation: cruxe-guia-cursor-llegar 600ms cubic-bezier(.2, .8, .2, 1) both, cruxe-guia-cursor-senalar 850ms 650ms ease-in-out 2;
+}
+.cruxe-guia__cursor > svg { flex: none; width: 30px; height: 38px; overflow: visible; }
+.cruxe-guia__cursor > span { margin: 0 0 -4px; padding: 5px 8px; border: 1px solid #f5be8f55; border-radius: 8px; background: #3a291b; }
+.cruxe-guia__escena[data-paso="1"] .cruxe-guia__cursor { left: 25%; }
+.cruxe-guia__escena[data-paso="2"] .cruxe-guia__cursor { top: 28px; left: 50%; }
+.cruxe-guia__escena[data-hecho="true"] .cruxe-guia__cursor { visibility: hidden; }
+.cruxe-guia__plan-final {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  margin: 0 0 18px;
+  text-align: center;
+  color: var(--guia-suave);
+  font-size: var(--t-nota, 13px);
+}
+.cruxe-guia__plan-final strong { color: var(--guia-tinta); font-size: var(--t-subtitulo, 18px); font-weight: 700; }
+.cruxe-guia__plan-final .cruxe-guia__objetivo { width: 100%; margin-top: 8px; }
+.cruxe-guia__plan-icono { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: #ff976415; color: var(--guia-brasa); }
+.cruxe-guia__plan-icono > svg { width: 24px; height: 24px; }
+.cruxe-guia__confirmar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid var(--guia-brasa);
+  border-radius: 12px;
+  background: #ff97641a;
+  color: #ffc39d;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease;
+}
+.cruxe-guia__confirmar:hover { background: #ff97642b; }
+.cruxe-guia__confirmar[data-hecho="true"] { border-color: #9bccad; background: #9bccad16; color: #b7dfbf; }
+.cruxe-guia__respuesta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  margin: 0;
+  color: #c5b8ac;
+  text-align: center;
+  font-size: var(--t-nota, 13px);
+  line-height: 1.4;
+}
+.cruxe-guia__respuesta > svg { flex: none; }
+.cruxe-guia__respuesta[data-hecho="true"] { color: #b7dfbf; animation: cruxe-guia-relato 220ms ease-out both; }
+.cruxe-guia__nota { margin: 16px 0 0; color: #b5a89c; text-align: center; font-size: var(--t-nota, 13px); line-height: 1.4; }
+.cruxe-guia__pie { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 20px; border-top: 1px solid #ffffff16; }
+.cruxe-guia__atras, .cruxe-guia__siguiente {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px 18px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease;
+}
+.cruxe-guia__atras { background: transparent; color: #c5b8ac; }
+.cruxe-guia__atras:hover { background: #ffffff08; color: var(--guia-tinta); }
+.cruxe-guia__atras:disabled { visibility: hidden; }
+.cruxe-guia__siguiente { margin-left: auto; background: var(--guia-brasa); color: #24150e; }
+.cruxe-guia__siguiente:hover { background: #ffad82; }
+.cruxe-guia__siguiente:disabled { opacity: .45; cursor: default; }
+.cruxe-guia__confeti {
+  --confeti-x: calc((var(--i) - 5.5) * 19px);
+  position: absolute;
+  z-index: 4;
+  top: 42%;
+  left: 50%;
+  width: 7px;
+  height: 13px;
+  border-radius: 2px;
+  background: #ff9764;
+  opacity: 0;
+  pointer-events: none;
+  animation: cruxe-guia-confeti 1100ms calc(var(--i) * 18ms) cubic-bezier(.2, .65, .3, 1) both;
+}
+.cruxe-guia__confeti:nth-of-type(3n) { background: #bad3bc; }
+.cruxe-guia__confeti:nth-of-type(3n + 1) { background: #e9cf8c; }
+.cruxe-ayuda {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #ffffff30;
+  border-radius: 999px;
+  background: #ffffff06;
+  color: #e6d9cd;
+  font-family: var(--fuente);
+  font-size: var(--t-nota, 13px);
+  font-weight: 600;
+  cursor: pointer;
+}
+.cruxe-ayuda:hover { border-color: #ff976477; background: #ff97640c; }
+.cruxe-ayuda > svg { flex: none; }
+@keyframes cruxe-guia-entrada { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes cruxe-guia-relato { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes cruxe-guia-flotar { 0%, 100% { transform: translate(-50%, -50%); } 50% { transform: translate(-50%, calc(-50% - 5px)); } }
+@keyframes cruxe-guia-reunion { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 55% { transform: translate(-50%, -50%) scale(1.12); } }
+@keyframes cruxe-guia-cursor-llegar { from { opacity: 0; transform: translate(28px, 25px) rotate(12deg); } to { opacity: 1; transform: none; } }
+@keyframes cruxe-guia-cursor-senalar { 0%, 100% { transform: none; } 50% { transform: translate(-4px, -5px); } }
+@keyframes cruxe-guia-confeti {
+  0% { opacity: 0; transform: translate(0, 20px) rotate(0); }
+  15% { opacity: 1; }
+  55% { opacity: 1; transform: translate(var(--confeti-x), -120px) rotate(calc(var(--i) * 47deg)); }
+  100% { opacity: 0; transform: translate(calc(var(--confeti-x) * 1.3), 35px) rotate(calc(var(--i) * 80deg)); }
+}
+@media (max-width: 700px) {
+  .cruxe-guia { padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+  .cruxe-guia__tarjeta { max-width: 460px; padding: 16px; border-radius: 24px; }
+  .cruxe-guia__progreso { margin-top: 16px; gap: 8px; }
+  .cruxe-guia__progreso li { gap: 5px; padding-top: 9px; }
+  .cruxe-guia__cuerpo { grid-template-columns: minmax(0, 1fr); gap: 18px; padding: 20px 0 18px; }
+  .cruxe-guia__titulo, .cruxe-guia__descripcion { max-width: none; }
+  .cruxe-guia__eyebrow { margin-bottom: 10px; }
+  .cruxe-guia__descripcion { margin-top: 10px; line-height: 1.5; }
+  .cruxe-guia__muestra { padding: 14px; }
+  .cruxe-guia__grupo { padding: 4px 0 10px; }
+  .cruxe-guia__avatares { height: 56px; }
+  .cruxe-guia__objetivo { padding-bottom: 36px; }
+  .cruxe-guia__opcion { min-height: 72px; gap: 6px; padding: 8px 5px; }
+  .cruxe-guia__horario { display: grid; grid-template-columns: 20px minmax(0, 1fr); align-content: center; gap: 4px 6px; min-height: 72px; padding: 8px; }
+  .cruxe-guia__horario > svg { width: 20px; height: 20px; }
+  .cruxe-guia__horario > span { text-align: left; }
+  .cruxe-guia__horario small { grid-column: 1 / -1; white-space: nowrap; }
+  .cruxe-guia__cursor { top: 54px; }
+  .cruxe-guia__plan-final { gap: 6px; margin-bottom: 12px; }
+  .cruxe-guia__plan-icono { width: 32px; height: 32px; border-radius: 10px; }
+  .cruxe-guia__plan-icono > svg { width: 22px; height: 22px; }
+  .cruxe-guia__nota { margin-top: 8px; }
+  .cruxe-guia__pie { padding-top: 14px; }
+}
+@media (max-width: 600px) {
+  .cruxe-ayuda { width: 44px; padding: 8px; }
+  .cruxe-ayuda__texto, .cruxe-ayuda-texto { display: none; }
+  .cruxe-guia__cabecera-nota { display: none; }
+  .barra:has(> .cruxe-ayuda) { gap: 6px; padding-inline: 16px; }
+  .barra:has(> .cruxe-ayuda) .barra-identidad { max-width: 90px; }
+}
+@media (max-width: 360px) {
+  .cruxe-guia { padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); }
+  .cruxe-guia__tarjeta { padding: 16px; border-radius: 20px; }
+  .cruxe-guia__muestra { padding: 12px; }
+  .cruxe-guia__progreso li { flex-wrap: wrap; gap: 4px; }
+  .cruxe-guia__opcion { padding: 8px 3px; }
+  .cruxe-guia__planes { gap: 6px; }
+  .cruxe-guia__cursor { gap: 3px; }
+  .cruxe-guia__cursor > span { padding: 5px 6px; }
+  .cruxe-guia__atras, .cruxe-guia__siguiente { gap: 6px; padding: 12px; }
+}
+@media (max-width: 700px) and (max-height: 700px) {
+  .cruxe-guia__cabecera { position: sticky; top: 0; z-index: 5; background: #191512; }
+  .cruxe-guia__pie { position: sticky; bottom: 0; z-index: 5; margin-inline: -6px; padding: 12px 6px; background: #1e1712; box-shadow: 0 -10px 18px #191512d9; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cruxe-guia, .cruxe-guia *, .cruxe-guia *::before, .cruxe-guia *::after, .cruxe-ayuda { animation: none !important; transition: none !important; }
+}
