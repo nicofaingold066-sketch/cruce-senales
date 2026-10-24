@@ -5,7 +5,7 @@ Pedido directo de Nico en Codex (24 oct): integrar el personaje aprobado, llamad
 Rama propia `codex/gru-vivo`, copia aislada `/Users/macair/cruse/cruce-gru`, base `origin/main` `7f47a88`.
 
 ## Tocando ahora
-Nada. Implementación y publicación terminadas.
+Pedido directo nuevo de Nico (24 oct): además del movimiento actual, permitir arrastrar GRU libremente con mouse/dedo. Esta autorización reabre solo la interacción visual de GRU. Rutas exactas: `src/agente/GruAsistente.tsx`, `src/agente/gru-asistente.css`. Copia `cruce-gru`, rama `codex/gru-vivo`; actualizar primero con main actual. No tocar panel del agente, backend, modelos, rutas ni otras pantallas. QA local con transporte ficticio fuera del repo; sin turno de base. Evitar pisar el anclaje móvil reciente: conservarlo como posición automática inicial, con drag manual prioritario.
 
 ## Verificación
 Typecheck, build y navegador local con fixtures ficticios y red externa interceptada. Comprobar navegación, estados de éxito/error/sin opción, teclado, movimiento reducido, móvil 320/375 y escritorio 1280. Cero consultas pagas o escrituras en la base.
