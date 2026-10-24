@@ -5759,4 +5759,30 @@ li:has(> .plan-vivo) {
   padding: 0;
   margin-bottom: 8px;
   font-weight: 700;
+/* ------------------------------------------------------------------ 320 px (rincones O-01 y O-14b) */
+@media (max-width: 359px) {
+  /* O-01: marca + "Datos ficticios" + avatar + nombre no entran en 288 px y el nombre pisaba el chip. Queda el
+     avatar; el nombre y el rol siguen para el lector de pantalla (mismo recorte que .visualmente-oculto). */
+  .barra-identidad-texto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+  .barra-identidad {
+    padding: 4px;
+  }
+}
+/* O-14b: en Simulación, la insignia de estado no se come el nombre ni el rótulo "Simulación": baja de renglón. */
+.sim-cabeza {
+  flex-wrap: wrap;
+}
+.sim-cabeza h2 {
+  min-width: min-content;
+}
+.sim-cabeza .sim-chip {
+  margin-left: auto;
 }
