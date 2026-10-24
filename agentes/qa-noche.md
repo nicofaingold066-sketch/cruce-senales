@@ -3,6 +3,7 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cruce-qa`). Rutas: `tests/e2e/**`, `docs/qa-noche.md`. Puerto de preview: 4185.
 
 ## Tocando ahora
+- CORRIENDO PRUEBA (00:34) turno corto ≤6 min: humo producción dos sesiones+jurado (E15 preparado) y entrada-lista (qa-noche)
 - [00:26] EN COLA de la base (puesto «el resto», por orden de llegada; sin marca puesta): turno de ≤10 min con humo de producción + E15 preparado (dos sesiones y jurado) y después `entrada-lista.mjs`. Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
 
 ## Entregado
