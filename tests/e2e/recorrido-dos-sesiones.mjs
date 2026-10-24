@@ -15,7 +15,7 @@
 import { createRequire } from 'node:module'
 import { mkdirSync } from 'node:fs'
 import { baseLibre } from './base-libre.mjs'
-import { irA, responderRapido, respuestaGuardada, rotulo } from './nav.mjs'
+import { irA, responderRapido, respuestaGuardada, rotulo, sinIntro } from './nav.mjs'
 baseLibre()
 const require = createRequire(import.meta.url)
 let pw
@@ -44,6 +44,7 @@ const enmascarar = (codigo) => (codigo ? `${codigo.slice(0, 2)}…` : '(sin cód
 const browser = await pw.chromium.launch({ headless: true,
   executablePath: process.env.CRUXE_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' })
 const opts = { viewport: { width: 375, height: 812 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: 'es-CL' }
+sinIntro(browser) // la intro de primera visita no es lo que se prueba
 const ctxTomi = await browser.newContext(opts) // ventana normal
 const ctxLuna = await browser.newContext(opts) // ventana privada: almacenamiento separado
 const T = await ctxTomi.newPage(), L = await ctxLuna.newPage()

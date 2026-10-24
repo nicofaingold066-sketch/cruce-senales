@@ -6,6 +6,7 @@
 //   node tests/e2e/proposito-pantalla.mjs [url]      (URL: argumento, CRUXE_URL o producción)
 //
 // Datos ficticios: dos grupos nuevos y una propuesta por corrida (se cancela al final). Sin agente ni modelo.
+import { sinIntro } from './nav.mjs'
 import { createRequire } from 'node:module'
 import { baseLibre } from './base-libre.mjs'
 baseLibre()
@@ -26,6 +27,7 @@ const DEPORTE = ['futbol', 'padel', 'tenis', 'basquet']
 
 const browser = await pw.chromium.launch({ headless: true,
   executablePath: process.env.CRUXE_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' })
+sinIntro(browser) // la intro de primera visita no es lo que se prueba
 const ctx = await browser.newContext({ viewport: { width: 375, height: 812 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: 'es-CL' })
 const T = await ctx.newPage()
 const errores = []

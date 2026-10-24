@@ -1,0 +1,39 @@
+[08:34:13 a. m.] turno tomado 08:34: qa-gente (c) 30 a la vez + confirmaciones concurrentes
+[08:34:33 a. m.] PASS c1: 30 personas entran por el enlace y responden a la vez → 30/30 ok en 14.2 s; entrar: n=30 p50=10056ms p95=13884ms max=13904ms; entrar+responder: n=30 p50=10312ms p95=14138ms max=14157ms
+Latencia por RPC con 30 en paralelo (solo los 30 invitados):
+  preview_space_by_code      n=30 p50=137ms p95=526ms max=620ms
+  join_space                 n=30 p50=150ms p95=226ms max=231ms
+  get_space                  n=30 p50=138ms p95=251ms max=307ms
+  list_proposals             n=30 p50=131ms p95=212ms max=218ms
+  get_proposal_state         n=30 p50=126ms p95=219ms max=331ms
+  save_my_conditions         n=30 p50=130ms p95=210ms max=228ms
+[08:34:33 a. m.] PASS c2: ninguna RPC devolvió error (en particular 57014 / statement timeout) → {}
+[08:34:35 a. m.] PASS c3: el conteo «N de M respondieron» cuadra con lo que respondieron (31) → 31 de 31 respondieron
+[08:34:36 a. m.] PASS c4: con 31 respondidas y máximo 20, el plan publica una versión y dice quién entra / cupos → 0 de 5 confirmaron · faltan 5 Respuestas Opción Confirmar Encuentr
+[08:34:42 a. m.] 30 ven «Confirmar versión 1»; 0 no (versión no los incluye o cupo)
+accept_version concurrentes: ok=19 rechazados=11 {"200:cupo_completo:reservado_imprescindible":11}; n=30 p50=1781ms p95=1964ms max=1969ms; tiempo total 6267 ms
+[08:34:50 a. m.] PASS c5: nunca más de 20 confirmados con 30 intentando a la vez → aceptadas=19; plan dice 19; estado «Esperando confirmaciones»
+[08:34:50 a. m.] PASS c6: las confirmaciones de más se rechazan con un código limpio (no 500 ni 57014) → {"200:cupo_completo:reservado_imprescindible":11}
+[08:34:50 a. m.] PASS c6b: quien queda afuera ve un mensaje claro (sin error técnico) → Treinta 0834 v1 · cierra vie 30 oct, 20:00 Esperando confirmaciones Próxima acción: Versión 1: confirmaron 19 (mínimo 5). Falta la aceptación de Org C0834. Opción vigente · Versión 1 Sábado 31 oct 20:00 a 22:00 Treinta a la vez BC GC XC FC BC IC CC CC SC WC ZC
+[08:34:50 a. m.] PASS sin desborde horizontal a 375 px (organizadora) → 0
+RPC (todas):
+  server_info                n=63 p50=319ms p95=1282ms max=1295ms
+  create_space               n=1 p50=192ms p95=192ms max=192ms
+  get_space                  n=69 p50=210ms p95=4031ms max=4098ms
+  create_proposal            n=1 p50=250ms p95=250ms max=250ms
+  open_proposal              n=1 p50=191ms p95=191ms max=191ms
+  get_proposal_state         n=171 p50=170ms p95=3659ms max=4325ms
+  get_my_preferences         n=1 p50=136ms p95=136ms max=136ms
+  list_proposals             n=33 p50=131ms p95=218ms max=1980ms
+  save_my_conditions         n=31 p50=130ms p95=210ms max=228ms
+  get_my_conditions          n=96 p50=152ms p95=2850ms max=3133ms
+  evaluate_and_publish       n=1 p50=727ms p95=727ms max=727ms
+  preview_space_by_code      n=30 p50=137ms p95=526ms max=620ms
+  list_my_spaces             n=30 p50=135ms p95=525ms max=582ms
+  join_space                 n=30 p50=150ms p95=226ms max=231ms
+  accept_version             n=30 p50=1781ms p95=1964ms max=1969ms
+Errores RPC: {"accept_version:200:cupo_completo:reservado_imprescindible":11}
+[08:34:50 a. m.] PASS sin errores de consola
+[08:34:54 a. m.] turno liberado
+c-treinta: 9 PASS, 0 FAIL
+JSON {"guion":"c-treinta","filas":[{"nombre":"c1: 30 personas entran por el enlace y responden a la vez","cond":true,"detalle":"30/30 ok en 14.2 s; entrar: n=30 p50=10056ms p95=13884ms max=13904ms; entrar+responder: n=30 p50=10312ms p95=14138ms max=14157ms"},{"nombre":"c2: ninguna RPC devolvió error (en particular 57014 / statement timeout)","cond":true,"detalle":"{}"},{"nombre":"c3: el conteo «N de M respondieron» cuadra con lo que respondieron (31)","cond":true,"detalle":"31 de 31 respondieron"},{"nombre":"c4: con 31 respondidas y máximo 20, el plan publica una versión y dice quién entra / cupos","cond":true,"detalle":"0 de 5 confirmaron · faltan 5 Respuestas Opción Confirmar Encuentr"},{"nombre":"c5: nunca más de 20 confirmados con 30 intentando a la vez","cond":true,"detalle":"aceptadas=19; plan dice 19; estado «Esperando confirmaciones»"},{"nombre":"c6: las confirmaciones de más se rechazan con un código limpio (no 500 ni 57014)","cond":true,"detalle":"{\"200:cupo_completo:reservado_imprescindible\":11}"},{"nombre":"c6b: quien queda afuera ve un mensaje claro (sin error técnico)","cond":true,"detalle":"Treinta 0834 v1 · cierra vie 30 oct, 20:00 Esperando confirmaciones Próxima acción: Versión 1: confirmaron 19 (mínimo 5). Falta la aceptación de Org C0834. Opción vigente · Versión 1 Sábado 31 oct 20:00 a 22:00 Treinta a la vez BC GC XC FC BC IC CC CC SC WC ZC"},{"nombre":"sin desborde horizontal a 375 px (organizadora)","cond":true,"detalle":"0"},{"nombre":"sin errores de consola","cond":true,"detalle":""}],"defectos":[]}

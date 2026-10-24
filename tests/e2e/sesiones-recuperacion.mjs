@@ -1,6 +1,7 @@
 // #69. SDK y helpers reales; servidor Auth completamente ficticio. Cero red externa real.
 // node tests/e2e/sesiones-recuperacion.mjs
 // Playwright y Chrome existentes, configuración como red-controlada.mjs. No instala nada.
+import { sinIntro } from './nav.mjs'
 import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
 import { createServer } from 'vite'
@@ -39,6 +40,7 @@ let aprobadas = 0, fallidas = 0, authSimulada = 0
 async function caso(nombre, mock, prueba) {
   const filtro = process.env.CRUXE_SESIONES_CASO
   if (filtro && !nombre.startsWith(filtro + ' ')) return
+sinIntro(browser) // la intro de primera visita no es lo que se prueba
   const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 375, height: 812 } })
   const page = await context.newPage()
   const erroresJS = [], inesperadas = [], pendientes = new Set()

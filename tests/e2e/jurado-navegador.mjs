@@ -9,7 +9,7 @@ import { createRequire } from 'node:module'
 import { execFileSync } from 'node:child_process'
 import { mkdirSync } from 'node:fs'
 import { createServer } from 'vite'
-import { irA, responderRapido, respuestaGuardada, rotulo } from './nav.mjs'
+import { irA, responderRapido, respuestaGuardada, rotulo, sinIntro } from './nav.mjs'
 
 const require = createRequire(import.meta.url)
 let pw
@@ -37,6 +37,7 @@ if (carpeta) mkdirSync(carpeta, { recursive: true })
 const browser = await pw.chromium.launch({ headless: true,
   executablePath: process.env.CRUXE_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' })
 const opciones = { viewport: { width: 375, height: 812 }, locale: 'es-CL', timezoneId: 'America/Santiago' }
+sinIntro(browser) // la intro de primera visita no es lo que se prueba
 const ctxT = await browser.newContext(opciones), ctxL = await browser.newContext(opciones)
 const T = await ctxT.newPage(), L = await ctxL.newPage()
 const jsErrores = [], privados = [], erroresRPC = [], lecturasPendientes = new Set()

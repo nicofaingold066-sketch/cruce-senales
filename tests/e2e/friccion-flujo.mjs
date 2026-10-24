@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import { baseLibre } from './base-libre.mjs'
-import { respuestaGuardada } from './nav.mjs'
+import { respuestaGuardada, sinIntro } from './nav.mjs'
 baseLibre()
 const require = createRequire(import.meta.url)
 let pw
@@ -21,6 +21,7 @@ const hora = () => new Date().toLocaleTimeString('es-CL', { timeZone: 'America/S
 const ver = (n, c, d = '') => { c ? ok++ : mal++; console.log(`[${hora()}] ${c ? 'OK ' : 'MAL'} ${n}${d ? ' → ' + d : ''}`) }
 const errores = []
 const pagina = async () => {
+sinIntro(browser) // la intro de primera visita no es lo que se prueba
   const ctx = await browser.newContext(opts); const p = await ctx.newPage()
   p.on('pageerror', (e) => errores.push(e.message)); p.on('console', (m) => { if (m.type() === 'error') errores.push(m.text().slice(0, 160)) })
   return { ctx, p }
