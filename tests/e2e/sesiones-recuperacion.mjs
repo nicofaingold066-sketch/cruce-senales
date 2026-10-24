@@ -4,6 +4,7 @@
 import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
 import { createServer } from 'vite'
+import { readFileSync } from 'node:fs'
 const require = createRequire(import.meta.url)
 let pw
 try { pw = require('playwright') } catch {
@@ -109,6 +110,16 @@ const mostrarEntrada = async p => {
   await retorno(p).waitFor()
 }
 const retorno = p => p.getByRole('button', { name: 'Volver a esa sesión', exact: true })
+
+// Foco al error de «Volver a esa sesión» (frontend 00:15, `OtraSesion`): estricto cuando el código probado lo trae (`.focus()` en
+// src/components/Sesiones.tsx); si no, solo avisa, para no poner en rojo ramas que todavía no lo integran.
+const focoEnError = readFileSync('src/components/Sesiones.tsx', 'utf8').includes('.focus()')
+async function revisarFoco(p, textoError) {
+  await p.waitForTimeout(300)
+  const dentro = await p.evaluate((t) => { const a = document.activeElement; return !!a && a !== document.body && a !== document.documentElement && (a.textContent?.includes(t) ?? false) }, textoError)
+  if (focoEnError) assert.equal(dentro, true, 'El foco debe quedar en el aviso del error al fallar «Volver a esa sesión»')
+  else if (!dentro) console.log(`[${hora()}] AVISO foco: este código aún no lleva el foco al error de «Volver a esa sesión»`)
+}
 const noAuthEsperada = async () => { throw new Error('Operación Auth no esperada') }
 
 console.log(`[${hora()}] #69 SDK real, datos y Auth ficticios; red externa interceptada.`)
@@ -244,6 +255,7 @@ try {
     await retorno(p).click()
     const alerta = p.getByRole('alert').filter({ hasText: 'No se pudo volver a la otra sesión' })
     await alerta.waitFor()
+    await revisarFoco(p, 'No se pudo volver a la otra sesión')
     assert.deepEqual(await estado(p), { actual: 'Pepe', guardada: null })
     assert.equal(await retorno(p).count(), 0)
     // Entradas que quedan: demo, unirse con código y nombre (ingreso). «Crear un grupo» solo aparece con nombre guardado.
@@ -261,6 +273,7 @@ try {
     await p.getByText('sigue guardada; intenta de nuevo.', { exact: false }).waitFor({ timeout: 35000 })
     assert.deepEqual(await estado(p), { actual: 'Pepe', guardada: 'Tomi en «Los del asado»' })
     // La copia sigue ofrecida: se puede reintentar o descartar (el foco del error ya no se maneja en la portada).
+    await revisarFoco(p, 'sigue guardada; intenta de nuevo.')
     assert.equal(await retorno(p).isEnabled(), true)
     assert.equal(await p.getByRole('button', { name: 'Olvidarla', exact: true }).isEnabled(), true)
   })

@@ -59,6 +59,10 @@ async function crearGrupo(nombre, etiquetaProposito) {
   if (etiquetaProposito) await selector.selectOption({ label: etiquetaProposito })
   await T.getByRole('button', { name: 'Crear grupo', exact: true }).scrollIntoViewIfNeeded()
   await boton('Crear grupo').click()
+  // Con la lista de nombres vacía, el rediseño pregunta «¿Crear sin la lista del grupo?» (o «sin el nombre que escribiste»):
+  // se confirma con «Crear sin lista» / «Crear sin agregarlo». Si el aviso no aparece, se sigue (versiones anteriores).
+  const sinLista = T.getByRole('button', { name: /^Crear sin (?:lista|agregarlo)$/ })
+  if (await sinLista.waitFor({ timeout: 2500 }).then(() => true, () => false)) await sinLista.click()
   await T.getByRole('heading', { name: nombre }).waitFor({ timeout: 25000 })
   return { porDefecto, enviado: ultimo('create_space') }
 }
