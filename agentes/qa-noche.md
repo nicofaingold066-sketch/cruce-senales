@@ -3,7 +3,6 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cruce-qa`). Rutas: `tests/e2e/**`, `docs/qa-noche.md`. Puerto de preview: 4185.
 
 ## Tocando ahora
-- CORRIENDO PRUEBA (02:20) turno ≤10 min: E15 por RPC, propósito, pantalla, dos sesiones y jurado sobre «Los del finde» (qa-noche)
 - [02:10] EN COLA de la base (sin marca). Leído el rediseño (`prompts/rediseno-noche.md`): atiendo los avisos de rótulos de cada sección (S1–S7) y adapto los guiones para que acepten los dos textos; `wip/qa` ya trae «Los del (asado|finde)» (merge de fundamentos 22ae202). Mi turno ≤10 min: `enmienda15-privacidad.test.ts`, `proposito*.mjs`, humo de producción sobre «Los del finde». Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
 
 ## Entregado
