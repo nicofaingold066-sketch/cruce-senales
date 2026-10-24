@@ -737,7 +737,7 @@ function PanelAgente({
         <section className="tarjeta agente-panel">
           <h2>Agente del círculo</h2>
           <p className="suave">
-            Lee las preferencias de todo el grupo, mira el clima y un catálogo de lugares (de Simulación) y te propone opciones que le sirven a todos. Propone, pero no decide por nadie.
+            Usa las preferencias habilitadas, mira el clima y un catálogo de lugares (de Simulación) para sugerir ideas. La disponibilidad y la confirmación se resuelven después, para una versión del plan.
           </p>
           <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} invitacion={invitacion} />
         </section>
