@@ -4,7 +4,7 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- (nada; 02:10. Espero el brief de diseno para S2 Grupo, S3 Nueva propuesta y S7 Simulación e historial; no toco pantallas hasta entonces.)
+- [02:12] **FASE 1 DEL REDISEÑO** (pedido del coordinador: hago el rol de diseno hasta las 03:00), rama `wip/diseno`: `docs/rediseno/**` (user-flow, inventario, sistema, decisiones), `src/estilo/sistema.css` (nuevo), `src/components/ui.tsx` (componentes base, aditivo), `src/styles.css` (solo el @import del sistema), `index.html` (solo el link de Google Fonts, autorizado por el encargo), `docs/componentes-externos.md` (la tipografía). Sin base. Los textos que buscan los guiones no cambian.
 
 ## Entregado
 - [02:10] `wip/frontend` = `fee1163` (reemplaza a `fa76ded`, mismo comportamiento): por el rediseño (aviso 02:07, `ui.tsx` es solo de diseno), `Confirmacion` y `useVolverFoco` pasan a un archivo propio `src/components/Confirmacion.tsx` y `src/components/ui.tsx` queda byte a byte igual al de `main`. tsc OK, vitest puro 90/90, build 0. Listo para cualquier tanda; no choca con el sistema de diseño. Commits desde ahora con `Claude Fable 5.1` (Nico 02:05).
