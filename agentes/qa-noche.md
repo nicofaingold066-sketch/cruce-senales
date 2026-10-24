@@ -3,7 +3,6 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/qa` (copia `/Users/macair/cruse/cruce-qa`). Rutas: `tests/e2e/**`, `docs/qa-noche.md`. Puerto de preview: 4185.
 
 ## Tocando ahora
-- CORRIENDO PRUEBA (23:52) humo producción d978cc1+: dos sesiones, propósito y pantalla (qa-noche)
 - [22:00] Esperando 0048 (backend) para `proposito.mjs`; mientras, set de ramas nuevas por turno. Rutas: `tests/e2e/**`, `docs/qa-noche.md`.
 
 ## Entregado
