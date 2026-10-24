@@ -68,6 +68,8 @@ Cinco movimientos, y solo estos. Las secciones los usan con estas clases y no in
 | Confirmación | `className="sd-exito"` en la tarjeta de «¡Se juntan!», «Ya confirmaste» y «Respuesta guardada» (no en un contenedor con barra fija adentro: lleva `transform`) | 460 ms |
 | Trabajando | `<ul className="sd-pasos">` con `<li className="sd-paso-hecho">` / `sd-paso-activo`; `.sd-pulso` para una espera sin pasos | late a 1 s |
 
+Además (02:55): `.sd-respira` (el resultado del plan respira una vez al cambiar de estado; poner con `key={estado}`), `.sd-confirmado` (late una vez al confirmar), chips y opciones activos laten 180 ms, y la **hoja desde abajo** `.sd-hoja-modal` (240 ms) con `.sd-velo` detrás, para el «+» de Mi espacio. `IconoGrupo` (ui.tsx) marca el nivel Grupo. Aire: `--margen` 20 px en el teléfono y 40 en computadora, `--entre-tarjetas` 12 px, `--entre-bloques` 24 px.
+
 Las de la hoja y las tarjetas se mueven con `top`, no con `transform`: un transform en un contenedor vuelve relativa a la barra fija de abajo y la hace saltar.
 
 ## Reglas de composición (las revisa diseno en cada entrega)
