@@ -1,0 +1,346 @@
+/* S2b · Mi espacio: pestaña Planes (pantalla 12 del mockup) y Perfil (pantalla 13). Rediseño de la noche.
+   Nivel "Mi espacio": fondo claro, sin escena oscura, h1 en --t-titulo. Solo los cuatro tamaños del sistema
+   (docs/rediseno/sistema.md), toques de 44 px y los movimientos que ya existen. Se importa desde src/screens/Planes.tsx
+   y src/screens/Perfil.tsx. Nada de clamp ni vw. */
+
+/* ---- cabecera clara (las dos pantallas) */
+.vista-s2b {
+  background: var(--fondo);
+}
+/* Mi espacio no tiene escena: en computadora, una columna centrada (no la grilla escena + hoja de styles.css). */
+.vista.vista-s2b {
+  display: block;
+}
+.vista-s2b > .s2b-cabeza,
+.vista-s2b > .s2b-cuerpo {
+  max-width: 680px;
+  margin-inline: auto;
+}
+.vista-s2b .s2b-cabeza {
+  padding: var(--e-5) var(--margen) var(--e-3);
+}
+.vista-s2b .s2b-cabeza h1 {
+  margin: 0;
+  font-size: var(--t-titulo);
+  line-height: var(--lh-titulo);
+  font-weight: var(--p-pantalla);
+  color: var(--tinta);
+}
+.vista-s2b .s2b-bajada {
+  margin: var(--e-1) 0 0;
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--tinta-2);
+}
+.vista-s2b .s2b-cuerpo {
+  padding: 0 var(--margen) var(--e-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--entre-tarjetas);
+  min-width: 0;
+}
+.vista-s2b .s2b-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.vista-s2b .s2b-nota {
+  margin: 0;
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--tinta-2);
+}
+.vista-s2b .vacio strong {
+  font-size: var(--t-subtitulo);
+}
+.vista-s2b .vacio p {
+  font-size: var(--t-cuerpo);
+}
+
+/* ---- Planes: una card por plan */
+.vista-s2b .s2b-planes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--entre-tarjetas);
+}
+.vista-s2b .s2b-plan {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px var(--e-4);
+  min-height: var(--toque);
+  background: var(--hoja);
+  border: 1.5px solid var(--linea);
+  border-radius: var(--r-m);
+  color: var(--tinta);
+  text-decoration: none;
+  min-width: 0;
+  transition: transform var(--dur-1) var(--curva), box-shadow var(--dur-2) ease;
+}
+.vista-s2b .s2b-plan:hover {
+  border-color: var(--tinta-3);
+}
+.vista-s2b .s2b-plan:active {
+  transform: scale(0.98);
+  box-shadow: var(--sombra-flota);
+}
+.vista-s2b .s2b-plan:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+.vista-s2b .s2b-plan-turno {
+  border: 2px solid var(--brasa);
+}
+.vista-s2b .s2b-plan-pasado {
+  border-style: dashed;
+  border-color: var(--tinta-3);
+  background: transparent;
+}
+.vista-s2b .s2b-plan-arriba {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--e-1) var(--e-3);
+  min-width: 0;
+}
+.vista-s2b .s2b-plan-estado {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  font-weight: var(--p-pantalla);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-2);
+  overflow-wrap: anywhere;
+}
+.vista-s2b .s2b-plan-turno .s2b-plan-estado {
+  color: var(--brasa);
+}
+.vista-s2b .s2b-plan-ok .s2b-plan-estado {
+  color: var(--ok);
+}
+.vista-s2b .s2b-plan-grupo {
+  margin-left: auto;
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--tinta-2);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.vista-s2b .s2b-plan-titulo {
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+  font-weight: var(--p-pantalla);
+  overflow-wrap: anywhere;
+}
+.vista-s2b .s2b-plan-pasado .s2b-plan-titulo {
+  font-size: var(--t-cuerpo);
+  line-height: var(--lh-cuerpo);
+  font-weight: var(--p-titulo);
+  color: var(--tinta-2);
+}
+.vista-s2b .s2b-plan-avance {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--tinta-2);
+  overflow-wrap: anywhere;
+}
+
+/* ---- Perfil: cabecera con avatar grande */
+.vista-s2b .s2b-perfil-cabeza {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.vista-s2b .s2b-perfil-cabeza .avatar {
+  flex: none;
+  font-size: var(--t-subtitulo);
+}
+.vista-s2b .s2b-perfil-nombre {
+  flex: 1;
+  min-width: 0;
+}
+.vista-s2b .s2b-enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque);
+  padding: 0 var(--e-1);
+  margin: 0 calc(-1 * var(--e-1));
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: var(--p-boton);
+  color: var(--tinta);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.vista-s2b .s2b-bajada .s2b-enlace {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+.vista-s2b .s2b-bloque + .s2b-nota,
+.vista-s2b .s2b-panel + .s2b-nota {
+  margin-top: var(--e-2);
+}
+.vista-s2b .s2b-bloque + .s2b-panel {
+  margin-top: var(--e-3);
+}
+.vista-s2b .s2b-enlace:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.vista-s2b .s2b-nombre .btn {
+  margin-top: var(--e-1);
+}
+.vista-s2b .s2b-nombre .campo small {
+  font-size: var(--t-nota);
+  color: var(--tinta-2);
+}
+
+/* ---- Perfil: bloques de filas */
+.vista-s2b .s2b-bloque {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--hoja);
+  border: 1.5px solid var(--linea);
+  border-radius: var(--r-m);
+  overflow: hidden;
+}
+.vista-s2b .s2b-bloque > li + li {
+  border-top: 1.5px solid var(--linea);
+}
+.vista-s2b .s2b-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  width: 100%;
+  min-height: 64px;
+  padding: 12px var(--e-4);
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: var(--tinta);
+  text-decoration: none;
+  cursor: pointer;
+}
+.vista-s2b .s2b-fila:hover {
+  background: var(--relleno);
+}
+.vista-s2b .s2b-fila:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: -3px;
+}
+.vista-s2b .s2b-fila-texto {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vista-s2b .s2b-fila-titulo {
+  font-size: var(--t-cuerpo);
+  line-height: var(--lh-cuerpo);
+  font-weight: var(--p-titulo);
+  overflow-wrap: anywhere;
+}
+.vista-s2b .s2b-fila-meta {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--tinta-2);
+  overflow-wrap: anywhere;
+}
+.vista-s2b .s2b-fila-chevron {
+  flex: none;
+  display: inline-flex;
+  color: var(--tinta-3);
+  transition: transform var(--dur-2) var(--curva);
+}
+.vista-s2b .s2b-fila-chevron-abierta {
+  transform: rotate(90deg);
+}
+.vista-s2b .s2b-fila-detalle {
+  margin: 0;
+  padding: 0 var(--e-4) var(--e-4);
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--tinta-2);
+  display: grid;
+  gap: var(--e-3);
+}
+.vista-s2b .s2b-fila-detalle p {
+  margin: 0;
+}
+.vista-s2b .s2b-fila-detalle .aviso {
+  font-size: var(--t-cuerpo);
+}
+.vista-s2b .s2b-tres {
+  list-style: none;
+}
+.vista-s2b .s2b-tres strong {
+  color: var(--tinta);
+}
+
+/* ---- Perfil: elegir el grupo de una fila */
+.vista-s2b .s2b-panel {
+  display: grid;
+  gap: var(--e-3);
+  padding: var(--e-4);
+  background: var(--hoja);
+  border: 1.5px solid var(--linea);
+  border-radius: var(--r-m);
+}
+.vista-s2b .s2b-panel .filas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.vista-s2b .s2b-panel .fila-titulo {
+  font-size: var(--t-cuerpo);
+}
+
+/* ---- Perfil: salir, chico y al final */
+.vista-s2b .s2b-salir {
+  display: grid;
+  justify-items: center;
+  gap: var(--e-3);
+  margin-top: var(--e-3);
+}
+.vista-s2b .s2b-salir > .aviso {
+  justify-self: stretch;
+}
+.vista-s2b .s2b-salir-boton {
+  font-size: var(--t-nota);
+  font-weight: var(--p-rotulo);
+  color: var(--tinta-2);
+  padding: 0 var(--e-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vista-s2b .s2b-plan,
+  .vista-s2b .s2b-fila-chevron {
+    transition: none;
+  }
+  .vista-s2b .s2b-plan:active {
+    transform: none;
+  }
+}
+
+/* En computadora la barra de pestañas flota abajo: el final de la pantalla (la confirmación de salir) no queda debajo. */
+@media (min-width: 960px) {
+  .vista-s2b .s2b-cuerpo {
+    padding-bottom: 120px;
+  }
+}
