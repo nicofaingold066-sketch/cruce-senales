@@ -4,7 +4,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/psico` (copia `/Users/macair/cruse/
 Pedido de Nico (20:26): bromas internas (casa, vegetariano o carne), quién pone la casa, si todos quieren ponerla (sorteo, rotación, lugar neutro), comida, parejas ("+1"), composición del grupo, y NO ser absolutista (dos planes parecidos con distinto concepto).
 
 ## Tocando ahora
-- [21:17] Nada editándose. Próximo: cuando Juan conecte las piezas, verificar mis textos en pantalla; atender pedidos que me nombren. Rutas: solo `docs/psicologia-grupo.md` y `docs/psicologia-fuentes.md`.
+- [21:25] Ciclo de las 21:25: sin avisos ni pedidos nuevos. Estado de integración: `main` (3ace04e, 20:52) no tiene conectada ninguna pieza mía ni los altos de la auditoría (PlanTab y Cruce siguen con «se bajó», «había confirmado», «perdió al anfitrión», «Bajas registradas»); `wip/fundamentos` tiene lo de friccion y ux-flujo sin publicar; `wip/front-juan` no se mueve desde las 18:49. La verificación en pantalla espera a que Juan conecte y el coordinador publique. Mientras, sigo la auditoría con los `detalle` del servidor (lote 7). Rutas: solo `docs/psicologia-grupo.md` y `docs/psicologia-fuentes.md`.
 
 ## Entregado
 - [20:37] Rama `wip/psico`, commit `d7c7ec0`: `docs/psicologia-fuentes.md` (30 fuentes con enlace y fuerza A/B/C; lista de lo que NO encontré) y `docs/psicologia-grupo.md` (línea de tiempo de una juntada, 12 temas de dinámica social, 9 variables nuevas + lo que NO se pide, composición del grupo, rotación de casa, "dos formas de juntarse", 8 bancos de textos, priorización A/B/C, lámina de pitch, límites). Sin código, sin pruebas que correr. Aviso honesto: es investigación de escritorio; casi nada es de Chile y varias fuentes quedaron con fuerza C (marcadas).
