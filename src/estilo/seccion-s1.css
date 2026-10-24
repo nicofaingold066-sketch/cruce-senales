@@ -508,3 +508,65 @@ details.s1-opcion {
 .con-nav:has(.vista.s1-nueva) {
   padding-bottom: 0;
 }
+
+/* Frontend (03:25): el foco programático del título no se dibuja; el del teclado sí. */
+.s1 h1[tabindex='-1']:focus:not(:focus-visible),
+.s5 h1[tabindex='-1']:focus:not(:focus-visible),
+.s1 h3[tabindex='-1']:focus:not(:focus-visible) {
+  outline: none;
+}
+/* Pantalla 9: la órbita chica (120–160 px de alto) y la demo como una fila igual a "Tengo un código". */
+.s1-orbita-chica {
+  width: 150px;
+  max-width: 150px;
+  height: 150px;
+  overflow: hidden;
+}
+.s1-orbita-chica .orbita {
+  transform: scale(0.42);
+  transform-origin: top center;
+}
+button.s1-opcion-fila {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+.s5 .rapida-dos-fichas {
+  display: inline-flex;
+  gap: var(--e-1);
+  flex: none;
+}
+.s5 .rapida-dos-fichas .dia-tile {
+  transform: scale(0.72);
+  transform-origin: center;
+  margin: -6px -8px;
+}
+/* Computadora: las pestañas van en la barra superior y no hay barra inferior. */
+.barra-pestanas {
+  display: none;
+}
+@media (min-width: 960px) {
+  .barra-pestanas {
+    display: flex;
+    gap: var(--e-5);
+    margin-left: var(--e-6);
+  }
+  .barra-pestanas a {
+    color: var(--noche-suave);
+    text-decoration: none;
+    font-size: var(--t-cuerpo);
+    padding: var(--e-2) 0;
+    border-bottom: 2px solid transparent;
+  }
+  .barra-pestanas a.barra-pestana-activa {
+    color: var(--noche-texto);
+    border-bottom-color: var(--brasa);
+  }
+  .contenido.con-nav + .nav-inferior {
+    display: none;
+  }
+}
+.s5 .rapida-dos-fichas .dia-tile {
+  color: var(--tinta);
+}

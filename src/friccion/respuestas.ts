@@ -12,6 +12,8 @@ export interface Opcion {
   disponibilidad: Disponibilidad
   /** Para el día del calendario decorativo. */
   dia?: string
+  /** "Puedo los dos días": las dos fichas chicas de día. */
+  dias?: [string, string]
 }
 
 const mismoDia = (a: Franja, b: Franja) => a.inicio.local.slice(0, 10) === b.inicio.local.slice(0, 10)
@@ -63,6 +65,7 @@ export function opcionesRapidas(franjas: Franja[]): Opcion[] | null {
           ? `${diaDe(a.inicio.local)} y ${diaDe(b.inicio.local)}${igualHorario ? `, ${horario(a)}` : ''}`
           : `${diaDe(a.inicio.local)}: ${horario(a)} y ${horario(b)}`,
       disponibilidad: { [a.clave]: 'si', [b.clave]: 'si' },
+      dias: dias ? [a.inicio.local, b.inicio.local] : undefined,
     },
     { id: a.clave, texto: solo(a), detalle: `${dias ? horario(a) : diaDe(a.inicio.local)} · ${otra(b)} queda como No`, disponibilidad: { [a.clave]: 'si', [b.clave]: 'no' }, dia: a.inicio.local },
     { id: b.clave, texto: solo(b), detalle: `${dias ? horario(b) : diaDe(b.inicio.local)} · ${otra(a)} queda como No`, disponibilidad: { [a.clave]: 'no', [b.clave]: 'si' }, dia: b.inicio.local },
