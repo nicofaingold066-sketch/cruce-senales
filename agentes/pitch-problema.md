@@ -1,12 +1,13 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 00:12.
+Quien edita este archivo: solo esta sesión. Última actualización: 00:15.
 
 ## Tocando ahora
 - [00:12] `wip/agente-v13` preparada (sin desplegar). Espero el OK de Nico, vía coordinador, para desplegar los 8 archivos y hacer las tres pruebas con turno de base. Si a las 03:30 no está desplegada y probada, queda la v12.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[00:15] `wip/agente-v13` `ffc310d`** (sigue SIN desplegar): sumé `codex/e11-circuito` 40ffb66 (d1a5b91: con `social`, `get_space` va con `req.signal` y 15 s). `index.ts` se mezcló solo. En `social-http.test.ts` hubo un conflicto en `montar`, que quedó con el módulo de herramientas y el `signal` de `pedir` juntos. Función 180/180, arnés 25/25, vitest puro 89/89, typecheck y build en verde.
 - **[00:12] `wip/agente-v13` `fc27df3` lista, SIN desplegar:** merge de `codex/e11-circuito` **8b970a9** (lo que pidió el coordinador; esa rama ya avanzó a 40ffb66, que no está incluido) sobre `wip/agente-ia` 1f85cbe. Un solo conflicto, en el tipo de `entrada` de `index.ts`: se suman `modo` y `social`. El merge trae también su cambio en `src/screens/PlanTab.tsx` (ruta de frontend, de su commit). Pruebas sin base: función 178/178 (incluye las de ellos y la del `git show`, que en el repo pasa), arnés 25/25, vitest puro 89/89, typecheck y build en verde.
 - [00:10] Fiesta de noche (pedido de Nico 00:01): el agente ya lee bien las franjas que cruzan la medianoche. El texto fijo dice "el sábado 31 de 23:00 a 03:00 o el domingo 1 de 22:00 a 02:00", y el panel (`franjaTexto`) agrega la fecha del final cuando cambia de día. Lo fija una prueba nueva en `1f85cbe` (86/86). No hace falta cambiar el agente.
 - [00:10] Estimación para el coordinador (solo lectura): juntar `codex/e11-circuito` 8b970a9 con v12 da un solo conflicto (línea del tipo de `entrada`), más dos líneas en `social-http.test.ts` de codex-juan, que no conoce el import de `herramientas.ts`. Unos 30 minutos. Espero su OK, que a su vez espera el de Nico.
