@@ -17,7 +17,7 @@ const localAutorizado = (() => {
   } catch { return false }
 })()
 
-const NOMBRES = ['Ana', 'Bruno', 'Camila', 'Diego', 'Elena', 'Felipe', 'Gabriela']
+const NOMBRES = ['Bastián', 'Nacho', 'Carlos', 'Kai', 'Charlie', 'Joaco', 'Pía']
 const PREF = { presupuesto: 'da_igual', energia: 'algo_tranquilo', ambiente: 'tranquilo', lugar: 'da_igual', me_gustaria: ['parque'] }
 const PREF_CAMILA = { ...PREF, presupuesto: 'ojala_gratis' }
 const SI = { A: 'si', B: 'si' }
@@ -28,7 +28,7 @@ async function tresPerfiles() {
   const espacio = (await ok(ana, 'seed_demo_makana')).espacio
   const ids = Object.fromEntries(espacio.miembros.map((m: Json) => [m.nombre, m.miembro_id])) as Record<string, string>
   // Se reclaman antes de cargar gustos o condiciones; el backend no permite heredar actividad simulada.
-  for (const [s, nombre] of [[camila, 'Camila'], [felipe, 'Felipe']] as const) {
+  for (const [s, nombre] of [[camila, 'Carlos'], [felipe, 'Joaco']] as const) {
     const j = await ok(s, 'join_space', { p_codigo: espacio.codigo_invitacion, p_nombre_visible: '', p_miembro_id: ids[nombre] })
     expect(j.resultado).toMatchObject({ miembro_id: ids[nombre], reclamo_asiento_simulado: true })
   }
@@ -89,7 +89,7 @@ describe.skipIf(!localAutorizado)('20261024124500: demo Makana aislada (solo Sup
     expect(libres.filter((m: Json) => m.libre).map((m: Json) => m.nombre)).toEqual(NOMBRES.slice(1))
   })
 
-  it('dos opt-ins separados y dato propio privado después de reclamar Camila y Felipe', async () => {
+  it('dos opt-ins separados y dato propio privado después de reclamar Carlos y Joaco', async () => {
     const { ana, camila, felipe, espacio, ids } = await tresPerfiles()
     for (const s of [ana, camila, felipe]) {
       expect(await gustos(s, espacio.id)).toMatchObject({ preferencias: null, usar_en_agente: false, recibir_invitaciones_agente: false })
@@ -100,21 +100,21 @@ describe.skipIf(!localAutorizado)('20261024124500: demo Makana aislada (solo Sup
     expect(await contexto(ana, espacio.id)).toMatchObject({ personas_autorizadas: 0, destinatarios: 1 })
     await ok(camila, 'save_my_preferences', { p_espacio_id: espacio.id, p_preferencias: { ...PREF_CAMILA, usar_en_agente: true } })
     expect(await contexto(ana, espacio.id)).toMatchObject({ personas_autorizadas: 1, destinatarios: 1 })
-    // Ana accede a sus propios gustos y al espacio compartido, sin payload individual de Camila.
+    // Bastián accede a sus propios gustos y al espacio compartido, sin payload individual de Carlos.
     expect((await gustos(ana, espacio.id)).preferencias).toBeNull()
     const compartido = await ok(ana, 'get_space', { p_espacio_id: espacio.id })
     expect(JSON.stringify(compartido)).not.toMatch(/ojala_gratis|presupuesto|usar_en_agente|recibir_invitaciones_agente/)
-    const p = await crearParque(ana, espacio.id, ids.Ana)
+    const p = await crearParque(ana, espacio.id, ids.Bastián)
     expect((await estado(ana, p)).demo_caso).toBe('makana')
     const panel = await ok(ana, 'get_simulation_panel', { p_propuesta_id: p })
-    expect(panel.simulacion.miembros.map((m: Json) => m.miembro.nombre)).toEqual(['Bruno', 'Diego', 'Elena', 'Gabriela'])
+    expect(panel.simulacion.miembros.map((m: Json) => m.miembro.nombre)).toEqual(['Nacho', 'Kai', 'Charlie', 'Pía'])
     expect(JSON.stringify(await estado(ana, p))).not.toMatch(/ojala_gratis|presupuesto/)
-    expect(err(await rpc(ana, 'simulate_save_preferences', { p_espacio_id: espacio.id, p_miembro_id: ids.Camila, p_preferencias: PREF })))
+    expect(err(await rpc(ana, 'simulate_save_preferences', { p_espacio_id: espacio.id, p_miembro_id: ids.Carlos, p_preferencias: PREF })))
       .toBe('no_autorizado/miembro_no_simulado')
     expect(err(await rpc(ana, 'simulate_load_case', { p_propuesta_id: p, p_intento_id: intento() })))
       .toBe('no_autorizado/caso_no_disponible')
     // Una edición explícita simulada tampoco activa el uso por el agente.
-    await ok(ana, 'simulate_save_preferences', { p_espacio_id: espacio.id, p_miembro_id: ids.Bruno, p_preferencias: PREF })
+    await ok(ana, 'simulate_save_preferences', { p_espacio_id: espacio.id, p_miembro_id: ids.Nacho, p_preferencias: PREF })
     expect((await contexto(ana, espacio.id)).personas_autorizadas).toBe(1)
     await ok(ana, 'add_simulated_member', { p_espacio_id: espacio.id, p_nombre_visible: 'Extra ficticio' })
     expect((await contexto(ana, espacio.id)).destinatarios).toBe(1)
@@ -122,9 +122,9 @@ describe.skipIf(!localAutorizado)('20261024124500: demo Makana aislada (solo Sup
     expect(await contexto(ana, espacio.id)).toMatchObject({ personas_autorizadas: 1, destinatarios: 0 })
   })
 
-  it('parque mínimo 2: baja de Felipe, rearmado humano en B y v2 sin aceptaciones heredadas', async () => {
+  it('parque mínimo 2: baja de Joaco, rearmado humano en B y v2 sin aceptaciones heredadas', async () => {
     const { ana, camila, felipe, espacio, ids } = await tresPerfiles()
-    const p = await crearParque(ana, espacio.id, ids.Ana)
+    const p = await crearParque(ana, espacio.id, ids.Bastián)
     // Son respuestas explícitas a ESTA propuesta de prueba, no disponibilidad inferida del perfil.
     for (const [s, disponibilidad] of [
       [ana, { A: 'si', B: 'si' }], [felipe, { A: 'si', B: 'no' }], [camila, { A: 'no', B: 'si' }],
@@ -143,19 +143,19 @@ describe.skipIf(!localAutorizado)('20261024124500: demo Makana aislada (solo Sup
     for (const s of [ana, camila]) await ok(s, 'accept_version', { p_propuesta_id: p, p_version: 2, p_intento_id: intento() })
     expect(await estado(ana, p)).toMatchObject({ estado: 'grupo_confirmado', confirmados: 2, opcion: { version: 2 } })
     const panel = await ok(ana, 'get_simulation_panel', { p_propuesta_id: p })
-    expect(panel.simulacion.miembros.find((m: Json) => m.miembro.nombre === 'Gabriela')).toMatchObject({ acepte_version: false, elegible_en_version: false })
+    expect(panel.simulacion.miembros.find((m: Json) => m.miembro.nombre === 'Pía')).toMatchObject({ acepte_version: false, elegible_en_version: false })
   })
 
-  it('parque mínimo 2: tres aceptaciones, Gabriela pendiente y baja conserva 2', async () => {
+  it('parque mínimo 2: tres aceptaciones, Pía pendiente y baja conserva 2', async () => {
     const { ana, camila, felipe, espacio, ids } = await tresPerfiles()
-    const p = await crearParque(ana, espacio.id, ids.Ana)
+    const p = await crearParque(ana, espacio.id, ids.Bastián)
     for (const s of [ana, camila, felipe]) await ok(s, 'save_my_conditions', { p_propuesta_id: p, p_disponibilidad: SI })
     const ev = await ok(ana, 'evaluate_and_publish', { p_propuesta_id: p, p_intento_id: intento() })
     expect(ev.propuesta).toMatchObject({ confirmados: 0, actividad: { clave: 'parque' }, opcion: { version: 1 } })
     for (const s of [ana, camila, felipe]) await ok(s, 'accept_version', { p_propuesta_id: p, p_version: 1, p_intento_id: intento() })
     expect(await estado(ana, p)).toMatchObject({ estado: 'grupo_confirmado', confirmados: 3 })
     const panel = await ok(ana, 'get_simulation_panel', { p_propuesta_id: p })
-    expect(panel.simulacion.miembros.find((m: Json) => m.miembro.nombre === 'Gabriela')).toMatchObject({ acepte_version: false, elegible_en_version: false })
+    expect(panel.simulacion.miembros.find((m: Json) => m.miembro.nombre === 'Pía')).toMatchObject({ acepte_version: false, elegible_en_version: false })
     await ok(felipe, 'withdraw_commitment', { p_propuesta_id: p })
     expect(await estado(ana, p)).toMatchObject({ estado: 'grupo_confirmado', confirmados: 2 })
 
@@ -172,7 +172,7 @@ describe.skipIf(!localAutorizado)('20261024124500: demo Makana aislada (solo Sup
       await ok(s, 'save_my_preferences', { p_espacio_id: espacio.id, p_preferencias: { ...PREF, usar_en_agente: true } })
     }
     await ok(camila, 'set_recibir_invitaciones_agente', { p_espacio_id: espacio.id, p_recibir: true })
-    await ok(ana, 'simulate_save_preferences', { p_espacio_id: espacio.id, p_miembro_id: ids.Bruno, p_preferencias: PREF })
+    await ok(ana, 'simulate_save_preferences', { p_espacio_id: espacio.id, p_miembro_id: ids.Nacho, p_preferencias: PREF })
     const sabado = await proximoSabado(ana)
     const ej = intento()
     const iniciar = (id: string) => ok(ana, 'iniciar_ejecucion_agente', {
@@ -210,32 +210,32 @@ describe.skipIf(!localAutorizado)('20261024124500: demo Makana aislada (solo Sup
     await ok(camila, 'set_recibir_invitaciones_agente', { p_espacio_id: espacio.id, p_recibir: true })
     const antes = (await ok(ana, 'get_space', { p_espacio_id: espacio.id })).espacio
     expect(antes.actividad).toEqual(expect.arrayContaining([
-      expect.objectContaining({ tipo: 'miembro_unido', miembro: expect.objectContaining({ nombre: 'Camila' }) }),
-      expect.objectContaining({ tipo: 'miembro_unido', miembro: expect.objectContaining({ nombre: 'Felipe' }) }),
+      expect.objectContaining({ tipo: 'miembro_unido', miembro: expect.objectContaining({ nombre: 'Carlos' }) }),
+      expect.objectContaining({ tipo: 'miembro_unido', miembro: expect.objectContaining({ nombre: 'Joaco' }) }),
     ]))
     await ok(camila, 'leave_space', { p_espacio_id: espacio.id, p_intento_id: intento() })
     expect(err(await rpc(camila, 'get_space', { p_espacio_id: espacio.id }))).toBe('fuera_de_audiencia/no_miembro')
     expect(err(await rpc(camila, 'get_my_preferences', { p_espacio_id: espacio.id }))).toBe('fuera_de_audiencia/no_miembro')
     expect((await ok(camila, 'list_my_spaces')).espacios).toEqual([])
     let deAna = (await ok(ana, 'get_space', { p_espacio_id: espacio.id })).espacio
-    expect(deAna.miembros.map((m: Json) => m.nombre)).not.toContain('Camila')
+    expect(deAna.miembros.map((m: Json) => m.nombre)).not.toContain('Carlos')
     expect(deAna.actividad).toEqual(expect.arrayContaining([
-      expect.objectContaining({ tipo: 'miembro_salio', miembro: expect.objectContaining({ nombre: 'Camila' }) }),
+      expect.objectContaining({ tipo: 'miembro_salio', miembro: expect.objectContaining({ nombre: 'Carlos' }) }),
     ]))
     expect(JSON.stringify(deAna)).not.toMatch(/ojala_gratis|presupuesto|usuario_original_id|salio_en/)
     await ok(ana, 'reset_demo', { p_espacio_id: espacio.id, p_intento_id: intento() })
     deAna = (await ok(ana, 'get_space', { p_espacio_id: espacio.id })).espacio
-    expect(deAna.miembros.map((m: Json) => m.nombre)).not.toContain('Camila')
+    expect(deAna.miembros.map((m: Json) => m.nombre)).not.toContain('Carlos')
     expect(deAna.actividad).toEqual(expect.arrayContaining([
-      expect.objectContaining({ tipo: 'miembro_salio', miembro: expect.objectContaining({ nombre: 'Camila' }) }),
+      expect.objectContaining({ tipo: 'miembro_salio', miembro: expect.objectContaining({ nombre: 'Carlos' }) }),
     ]))
     const preview = await ok(felipe, 'preview_space_by_code', { p_codigo: espacio.codigo_invitacion })
-    expect(preview.miembros.map((m: Json) => m.nombre)).not.toContain('Camila')
+    expect(preview.miembros.map((m: Json) => m.nombre)).not.toContain('Carlos')
     const ajeno = await nuevaSesion()
-    expect(err(await rpc(ajeno, 'join_space', { p_codigo: espacio.codigo_invitacion, p_nombre_visible: '', p_miembro_id: ids.Camila })))
+    expect(err(await rpc(ajeno, 'join_space', { p_codigo: espacio.codigo_invitacion, p_nombre_visible: '', p_miembro_id: ids.Carlos })))
       .toBe('no_autorizado/miembro_ya_reclamado')
-    const reingreso = await ok(camila, 'join_space', { p_codigo: espacio.codigo_invitacion, p_nombre_visible: '', p_miembro_id: ids.Camila })
-    expect(reingreso.resultado).toMatchObject({ miembro_id: ids.Camila, reingreso: true })
+    const reingreso = await ok(camila, 'join_space', { p_codigo: espacio.codigo_invitacion, p_nombre_visible: '', p_miembro_id: ids.Carlos })
+    expect(reingreso.resultado).toMatchObject({ miembro_id: ids.Carlos, reingreso: true })
     expect(await gustos(camila, espacio.id)).toMatchObject({ preferencias: PREF_CAMILA, usar_en_agente: false, recibir_invitaciones_agente: false })
     const lista = (await ok(ana, 'list_my_spaces')).espacios
     expect(lista.find((e: Json) => e.id === espacio.id)).toMatchObject({ cantidad_miembros: 7, demo_caso: 'makana' })

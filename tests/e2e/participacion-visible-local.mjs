@@ -25,10 +25,10 @@ if (requestedBase) {
 const E = '10000000-0000-4000-8000-000000000001'
 const P = '20000000-0000-4000-8000-000000000001'
 const LONG_NAME = 'María de los Ángeles Fernández'
-const names = ['Ana', 'Bruno', 'Camila', 'Diego', 'Elena', 'Felipe', 'Gabriela']
+const names = ['Bastián', 'Nacho', 'Carlos', 'Kai', 'Charlie', 'Joaco', 'Pía']
 const id = i => `30000000-0000-4000-8000-${String(i + 1).padStart(12, '0')}`
 const members = () => names.map((nombre, i) => ({ miembro_id: id(i), nombre, rol: i ? 'miembro' : 'organizador',
-  simulado: nombre === 'Bruno', pendiente: ['Diego', 'Elena'].includes(nombre), es_yo: nombre === 'Gabriela' }))
+  simulado: nombre === 'Nacho', pendiente: ['Kai', 'Charlie'].includes(nombre), es_yo: nombre === 'Pía' }))
 const ref = m => ({ miembro_id: m.miembro_id, nombre: m.nombre, simulado: m.simulado })
 const mom = local => ({ local, utc: new Date(`${local}-03:00`).toISOString(), zona: 'America/Santiago' })
 const NOW = mom('2026-10-24T12:00:00')
@@ -37,7 +37,7 @@ const slots = [
   { clave: 'B', inicio: mom('2026-11-01T16:00:00'), fin: mom('2026-11-01T18:00:00'), etiqueta: null },
 ]
 const envelope = data => ({ ok: true, contrato: 2, servidor_ahora: NOW, ...data })
-function proposal(version = 1, accepted = ['Ana', 'Felipe'], rev = 10) {
+function proposal(version = 1, accepted = ['Bastián', 'Joaco'], rev = 10) {
   const ms = members()
   return { id: P, espacio_id: E, titulo: 'Una tarde juntos', organizador: ref(ms[0]), imprescindible: ref(ms[0]),
     minimo: 3, maximo: 7, zona_horaria: 'America/Santiago', franjas: slots, plazo: mom('2026-10-29T20:00:00'),
@@ -46,20 +46,20 @@ function proposal(version = 1, accepted = ['Ana', 'Felipe'], rev = 10) {
     opcion: { version, franja: slots[version === 1 ? 0 : 1], publicada_en: NOW,
       aceptaron: accepted.map(n => ({ miembro: ref(ms.find(m => m.nombre === n)), aceptado_en: NOW })),
       cupos: { minimo: 3, maximo: 7, confirmados: accepted.length, disponibles: 7 - accepted.length,
-        faltan_para_minimo: Math.max(0, 3 - accepted.length), imprescindible_acepto: accepted.includes('Ana'),
-        pendientes: null, reservado_imprescindible: !accepted.includes('Ana'), libres_para_otros: 6 - accepted.length } },
+        faltan_para_minimo: Math.max(0, 3 - accepted.length), imprescindible_acepto: accepted.includes('Bastián'),
+        pendientes: null, reservado_imprescindible: !accepted.includes('Bastián'), libres_para_otros: 6 - accepted.length } },
     opcion_anterior: version === 1 ? null : { version: 1, franja_clave: 'A', inicio: slots[0].inicio, fin: slots[0].fin },
     ultima_evaluacion: null, interesados: { cantidad: 0, miembros: [] }, personas_con_condiciones: null,
     opiniones_totales: null, actividad: null, ronda: null, regla: 'temprana', planes_totales: null, bajas: [], historial: [],
     siguiente_accion: { codigo: 'reunir_condiciones', texto: 'Cada persona decide si confirma esta versión.' },
-    mi_situacion: { miembro_id: id(6), nombre: 'Gabriela', es_organizador: false, es_organizador_espacio: false,
+    mi_situacion: { miembro_id: id(6), nombre: 'Pía', es_organizador: false, es_organizador_espacio: false,
       interesado: false, condiciones: 'sin_cargar', retirado: false, elegible_en_version: false,
       acepte_version: false, mi_opinion: null, invitacion_agente: null,
       puede: { abrir: false, marcar_interes: false, guardar_condiciones: false, evaluar: false, aceptar: false,
         retirarme: false, proponer_reparacion: false, cancelar: false, simular: false, opinar: false } } }
 }
 const user = { id: '40000000-0000-4000-8000-000000000001', aud: 'authenticated', role: 'authenticated', is_anonymous: true,
-  created_at: NOW.utc, app_metadata: { provider: 'anonymous', providers: ['anonymous'] }, user_metadata: { ficticio: 'Gabriela MOCK LOCAL' }, identities: [] }
+  created_at: NOW.utc, app_metadata: { provider: 'anonymous', providers: ['anonymous'] }, user_metadata: { ficticio: 'Pía MOCK LOCAL' }, identities: [] }
 const b64 = x => Buffer.from(JSON.stringify(x)).toString('base64url')
 function session() { const exp = Math.floor(Date.now() / 1000) + 3600; return {
   access_token: `${b64({ alg: 'HS256', typ: 'JWT' })}.${b64({ sub: user.id, exp, aud: 'authenticated', role: 'authenticated' })}.TU9DSw`,
@@ -200,53 +200,53 @@ try {
       await visible(participation)
       const accepted1 = participation.getByRole('list', { name: 'Confirmaron la versión 1', exact: true })
       const waiting = () => participation.getByRole('list', { name: 'Sin confirmar esta versión', exact: true })
-      for (const name of ['Ana', 'Felipe']) await visible(hasName(accepted1, name))
-      for (const name of ['Camila', 'Gabriela']) await visible(hasName(waiting(), name))
+      for (const name of ['Bastián', 'Joaco']) await visible(hasName(accepted1, name))
+      for (const name of ['Carlos', 'Pía']) await visible(hasName(waiting(), name))
       assert.doesNotMatch(await participation.innerText(), /ojala_gratis|presupuesto|disponibilidad|no viene|no puede|no respondió/i)
       await shot('plan-v1-confirmados-y-pendientes')
-      result.checks.push('v1 muestra Ana y Felipe confirmados; Camila y Gabriela sin confirmar; sin atribuir disponibilidad ni motivos')
+      result.checks.push('v1 muestra Bastián y Joaco confirmados; Carlos y Pía sin confirmar; sin atribuir disponibilidad ni motivos')
       if (config.full) {
         const beforeReads = reads
-        roster = roster.map(m => m.nombre === 'Diego' ? { ...m, pendiente: false } : m.nombre === 'Bruno' ? { ...m, nombre: 'Bruno Demo' } : m)
-        await visible(hasName(waiting(), 'Diego'))
-        await visible(hasName(waiting(), 'Bruno Demo'))
-        assert.equal(await participation.getByText('Bruno', { exact: true }).count(), 0)
+        roster = roster.map(m => m.nombre === 'Kai' ? { ...m, pendiente: false } : m.nombre === 'Nacho' ? { ...m, nombre: 'Nacho Demo' } : m)
+        await visible(hasName(waiting(), 'Kai'))
+        await visible(hasName(waiting(), 'Nacho Demo'))
+        assert.equal(await participation.getByText('Nacho', { exact: true }).count(), 0)
         assert.ok(reads > beforeReads, 'get_space debe repetirse mientras la propuesta responde sin_cambios')
-        result.checks.push('Sondeo get_space refresca ingreso de Diego y nombre de Bruno incluso con sin_cambios en el plan')
+        result.checks.push('Sondeo get_space refresca ingreso de Kai y nombre de Nacho incluso con sin_cambios en el plan')
         p = proposal(2, [], 20)
         await visible(participation.getByText(/Nadie confirmó|Todavía no hay confirmaciones/).first())
-        await visible(hasName(waiting(), 'Ana'))
-        await visible(hasName(waiting(), 'Felipe'))
+        await visible(hasName(waiting(), 'Bastián'))
+        await visible(hasName(waiting(), 'Joaco'))
         assert.equal(await participation.getByRole('list', { name: 'Confirmaron la versión 1', exact: true }).count(), 0)
         await shot('plan-v2-cero-confirmaciones')
-        result.checks.push('v2 con aceptaron=[] borra confirmaciones anteriores y devuelve Ana/Felipe a sin confirmar')
-        p = proposal(2, ['Camila'], 21)
+        result.checks.push('v2 con aceptaron=[] borra confirmaciones anteriores y devuelve Bastián/Joaco a sin confirmar')
+        p = proposal(2, ['Carlos'], 21)
         const accepted2 = participation.getByRole('list', { name: 'Confirmaron la versión 2', exact: true })
-        await visible(hasName(accepted2, 'Camila'))
-        assert.equal(await waiting().getByText('Camila', { exact: true }).count(), 0)
+        await visible(hasName(accepted2, 'Carlos'))
+        assert.equal(await waiting().getByText('Carlos', { exact: true }).count(), 0)
         await shot('plan-v2-camila-confirmada')
-        result.checks.push('Aceptación pública de Camila aparece en v2 y deja sin confirmar')
-        roster = roster.filter(m => m.nombre !== 'Camila')
+        result.checks.push('Aceptación pública de Carlos aparece en v2 y deja sin confirmar')
+        roster = roster.filter(m => m.nombre !== 'Carlos')
         p = proposal(2, [], 22)
         await visible(participation.getByText(/Nadie confirmó|Todavía no hay confirmaciones/).first())
-        await page.waitForFunction(() => !Array.from(document.querySelectorAll('.participacion-publica li')).some(li => li.textContent.includes('Camila')), undefined, { timeout: 10000 })
-        assert.equal(await participation.getByText('Camila', { exact: true }).count(), 0)
+        await page.waitForFunction(() => !Array.from(document.querySelectorAll('.participacion-publica li')).some(li => li.textContent.includes('Carlos')), undefined, { timeout: 10000 })
+        assert.equal(await participation.getByText('Carlos', { exact: true }).count(), 0)
         await shot('plan-membresia-actualizada')
-        result.checks.push('Salida de Camila y aceptación retirada desaparecen del plan tras refresco del espacio')
+        result.checks.push('Salida de Carlos y aceptación retirada desaparecen del plan tras refresco del espacio')
         await page.goto(`${BASE}/#/e/${E}`)
         const updatedGroup = page.getByRole('region', { name: 'Integrantes del grupo', exact: true })
-        await visible(hasName(updatedGroup, 'Bruno Demo'))
-        assert.equal(await updatedGroup.getByText('Camila', { exact: true }).count(), 0)
+        await visible(hasName(updatedGroup, 'Nacho Demo'))
+        assert.equal(await updatedGroup.getByText('Carlos', { exact: true }).count(), 0)
         const groupReads = reads
-        roster = roster.filter(m => m.nombre !== 'Diego').map(m => m.nombre === 'Bruno Demo' ? { ...m, nombre: 'Bruno Renombrado' } : m)
-        await visible(hasName(updatedGroup, 'Bruno Renombrado'))
-        assert.equal(await updatedGroup.getByText('Diego', { exact: true }).count(), 0)
+        roster = roster.filter(m => m.nombre !== 'Kai').map(m => m.nombre === 'Nacho Demo' ? { ...m, nombre: 'Nacho Renombrado' } : m)
+        await visible(hasName(updatedGroup, 'Nacho Renombrado'))
+        assert.equal(await updatedGroup.getByText('Kai', { exact: true }).count(), 0)
         assert.ok(reads > groupReads, 'La pantalla de grupo debe sondear get_space sin recargar ni navegar')
         await shot('grupo-refrescado-sin-navegar')
         result.checks.push('La pantalla Grupo sondea get_space y actualiza nombres/salidas sin abrir ficha ni volver a navegar')
       }
       // Prueba separada: las capturas principales mantienen los siete nombres normales.
-      roster = members().map(m => m.nombre === 'Elena' ? { ...m, nombre: LONG_NAME } : m)
+      roster = members().map(m => m.nombre === 'Charlie' ? { ...m, nombre: LONG_NAME } : m)
       p = proposal()
       await page.goto(`${BASE}/#/e/${E}/p/${P}`)
       const longPanel = page.getByRole('region', { name: 'Participación del plan', exact: true })

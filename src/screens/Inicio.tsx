@@ -340,7 +340,7 @@ async function planesActivos(espacios: EspacioResumen[]): Promise<PlanActivo[]> 
   return listas.flat().sort((a, b) => Number(turno(b)) - Number(turno(a)))
 }
 
-/** La demo social de siete compañeros. No modifica los grupos de demostración anteriores. */
+/** La demo social de siete amigos. No modifica los grupos de demostración anteriores. */
 function CargarDemo({ deshabilitado, yaCargada, chico, fila }: { deshabilitado: boolean; yaCargada: boolean; chico?: boolean; fila?: boolean }) {
   const { ocupado, error, ejecutar } = useAccion()
   async function hacer() {
