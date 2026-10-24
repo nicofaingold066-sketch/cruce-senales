@@ -43,7 +43,7 @@ await corto('R500', o, async () => {
   await rincon(o, 'R500', 'Nueva propuesta: nombres de plan y "Más opciones" abierto (ronda y regla)', { foco: true })
   await rinconA11y(o, 'R500', 'Nueva propuesta con "Más opciones" (accesibilidad)', { anchos: [320, 375] })
   nota('R500', 'opciones de ronda: ' + (await o.locator('[aria-label="Ronda de opiniones"] label').allInnerTexts()).join(' | '))
-  await o.locator('[aria-label="Ronda de opiniones"] label', { hasText: '2 h' }).click()
+  await o.locator('[aria-label="Ronda de opiniones"] label', { hasText: /^\s*2 h\s*$/ }).click()
   await o.locator('[aria-label="Si sirven las dos, gana"] label', { hasText: 'La que pueden más' }).click(); await T(o, 300)
   nota('R500', 'nota de la sección "Cuándo": ' + (await o.locator('.nota-seccion').first().innerText()))
   await o.getByRole('button', { name: 'Sumar uno al mínimo' }).click()
