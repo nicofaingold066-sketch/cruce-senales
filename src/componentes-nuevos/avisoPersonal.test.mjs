@@ -130,3 +130,13 @@ test('ningún aviso nombra a nadie (baja sin nombre, enmienda 13 (c))', () => {
   }
   assert.ok(vistos >= 8, `se revisaron ${vistos} avisos`)
 })
+
+test('no elegible con la disponibilidad completa: no afirma que la fecha no le queda (los elegibles se fijan al publicar)', () => {
+  const dani = yo({ miembro_id: 'm-dani', es_organizador: false, condiciones: 'completas', elegible_en_version: false })
+  for (const estado of ['esperando_compromisos', 'grupo_confirmado']) {
+    const a = avisoParaMi({ estado, imprescindible: vale, mi_situacion: dani })
+    assert.equal(a?.clave, 'version_sin_ti')
+    assert.equal(a.texto, 'Esta versión se armó con las respuestas de cuando se publicó. Si cambiaste lo tuyo después, cuenta si el plan se rearma.')
+    assert.doesNotMatch(a.texto, /no te queda|no puedes ir/)
+  }
+})
