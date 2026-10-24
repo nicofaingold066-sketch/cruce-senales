@@ -1,10 +1,10 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 22:12.
+Quien edita este archivo: solo esta sesión. Última actualización: 22:40.
 
 ## Tocando ahora
 - [22:03] Enmienda 14, parte del agente (preparación en `wip/agente-ia`, SIN desplegar ni probar contra la base hasta la 0049 en verde): `supabase/functions/agente/index.ts`, `supabase/functions/agente/logica.ts`, `supabase/functions/agente/logica.test.ts`, `src/agente/api.ts`, `src/agente/AgentePanel.tsx`.
-- [22:12] En espera del turno de base (regla 21:16; ahora lo tiene el coordinador): llamada real única de BYOK (#99) y prueba del panel con la función simulada (unas 15 RPC, cero modelo). La 0048 ya está aplicada (22:03).
+- [22:40] **CORRIENDO PRUEBA (22:40)** agente-ia: despliegue de la función (E14) + UNA llamada BYOK en producción (demo propio) + UNA llamada en un grupo fútbol propio (2 personas ficticias) + panel con la función simulada (cero modelo). Unos 5 minutos, sin ráfagas.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
