@@ -16,6 +16,7 @@ export function ConsentimientoInvitaciones({ espacioId, inicial, soloLectura }: 
   const [operacion, setOperacion] = useState<'guardar' | 'leer'>('guardar')
   const { ocupado, error, ejecutar, limpiarError } = useAccion()
   const refError = useRef<HTMLDivElement>(null)
+  const refSeccion = useRef<HTMLElement>(null)
   useEffect(() => { if (error) refError.current?.focus() }, [error])
   const pendiente = confirmado !== null && recibir !== confirmado
 
@@ -54,8 +55,16 @@ export function ConsentimientoInvitaciones({ espacioId, inicial, soloLectura }: 
     }
   }
 
+  function reintentar() {
+    if (soloLectura || ocupado) return
+    // La caja de error desaparece al iniciar. Llevar el foco a la acción estable
+    // antes evita perderlo al desmontarse su botón Reintentar.
+    refSeccion.current?.querySelector<HTMLButtonElement>(`button[data-operacion="${operacion}"]`)?.focus()
+    void (operacion === 'leer' ? comprobar() : guardar())
+  }
+
   return (
-    <section className="bloque" aria-labelledby="invitaciones-titulo">
+    <section ref={refSeccion} className="bloque" aria-labelledby="invitaciones-titulo">
       <h3 id="invitaciones-titulo" className="agente-subtitulo">Invitaciones del agente</h3>
       <label htmlFor="pref-invitaciones" className="agente-casilla">
         <input
@@ -85,15 +94,15 @@ export function ConsentimientoInvitaciones({ espacioId, inicial, soloLectura }: 
       {confirmado === null ? <Aviso tono="info">Las invitaciones aún no están disponibles en esta conexión. Puedes seguir guardando tus preferencias.</Aviso> : null}
       <div ref={refError} tabIndex={-1}>
         {/* Repetir la última operación: un fallo de lectura nunca autoriza guardar. */}
-        {error ? <ErrorCaja error={error} onReintentar={() => void (operacion === 'leer' ? comprobar() : guardar())} /> : null}
+        {error ? <ErrorCaja error={error} onReintentar={reintentar} /> : null}
       </div>
       {aviso ? <Aviso tono={pendiente ? 'info' : 'ok'}>{aviso}</Aviso> : null}
       <p className="agente-sr" aria-live="polite">{ocupado ? operacion === 'guardar' ? 'Guardando el permiso de invitaciones…' : 'Consultando el permiso de invitaciones…' : ''}</p>
-      <Boton onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto={operacion === 'guardar' ? 'Guardando…' : 'Consultando…'} disabled={soloLectura || confirmado === null}>
+      <Boton data-operacion="guardar" onClick={() => void guardar()} ocupado={ocupado} ocupadoTexto={operacion === 'guardar' ? 'Guardando…' : 'Consultando…'} disabled={soloLectura || confirmado === null}>
         Guardar permiso de invitaciones
       </Boton>
       {error || sinConfirmar || confirmado === null || operacion === 'leer' ? (
-        <Boton onClick={() => void comprobar()} ocupado={ocupado} ocupadoTexto={operacion === 'leer' ? 'Comprobando…' : 'Guardando…'} disabled={soloLectura}>Comprobar permiso de invitaciones</Boton>
+        <Boton data-operacion="leer" onClick={() => void comprobar()} ocupado={ocupado} ocupadoTexto={operacion === 'leer' ? 'Comprobando…' : 'Guardando…'} disabled={soloLectura}>Comprobar permiso de invitaciones</Boton>
       ) : null}
     </section>
   )
