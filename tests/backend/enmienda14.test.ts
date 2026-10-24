@@ -213,7 +213,8 @@ describe('enmienda 14 (0049): agente con familia y quórum', { timeout: 180_000 
     const id = intento()
     await ok(O, 'iniciar_ejecucion_agente', { p_espacio_id: esp, p_ejecucion_id: id, p_oportunidad: `sabado:${sabado}`, p_parametros_hash: 'e14' })
     const g = await ok(O, 'guardar_borrador_agente', { p_ejecucion_id: id, p_opcion_ref: ops[0].opcion_ref, p_texto: 'Tenis el sábado.' })
-    expect(g.borrador.plan).toMatchObject({ actividad: 'tenis', minimo: 2, maximo: 3 })
+    // Ajuste 9: minimo = greatest(least(3, maximo), personas_min) acotado por maximo = greatest(3, 2) = 3.
+    expect(g.borrador.plan).toMatchObject({ actividad: 'tenis', minimo: 3, maximo: 3 })
     await ok(O, 'aprobar_borrador_agente', { p_ejecucion_id: id, p_borrador_hash: g.borrador.hash, p_intento_id: intento() })
     const pub = await rpc(O, 'publicar_borrador_agente', { p_ejecucion_id: id, p_borrador_hash: g.borrador.hash, p_intento_id: intento() })
     expect(err(pub)).toBe('ok')
