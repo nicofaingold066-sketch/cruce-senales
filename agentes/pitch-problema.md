@@ -1,9 +1,9 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 01:24.
+Quien edita este archivo: solo esta sesión. Última actualización: 01:57.
 
 ## Tocando ahora
-- [01:24] En espera, al final de la cola (después de la 0052, la tanda del coordinador y la 0053): reproducir en producción "Comprobar servicio" sin cambio visible y los dos 401 que vio el coordinador a las 01:14. Unos 2 minutos, demo propio, cero modelo.
+- [01:57] Panel del agente con menos scroll (pedido de Nico 01:50): `src/agente/AgentePanel.tsx` y `src/agente/agente.css`. Código en `wip/agente-ia` `975ee98` (sobre `main` `af79fcb`): tsc, build, vitest puro 90/90 y guardia 0. Falta la prueba visual a 320 y 375 px con la función simulada (toca la base: un demo propio y un guardado de preferencias). Espero mi turno, puesto 4 de la cola. Ahí mismo, los 401 de "Comprobar servicio" en producción, sin modelo (unos 2 min).
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
