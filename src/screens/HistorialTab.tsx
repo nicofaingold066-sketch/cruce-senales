@@ -1,6 +1,7 @@
 import { describirEvento, etiquetaEstado, fechaCorta, hora } from '../lib/format'
 import type { Evento } from '../lib/types'
 import { Nombre, Vacio } from '../components/ui'
+import '../estilo/seccion-s7.css'
 import type { PestanaProps } from './tabs'
 
 // Mejora #9: historial legible para el jurado. Se cuenta en orden (de lo más viejo a lo más nuevo), agrupado

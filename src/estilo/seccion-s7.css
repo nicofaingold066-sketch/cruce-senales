@@ -1,0 +1,80 @@
+/* S7 · Simulación e historial (rediseño de la noche). Migra los tamaños de las dos pestañas a los cuatro del sistema
+   (docs/rediseno/sistema.md). Se importa desde SimulacionTab.tsx e HistorialTab.tsx; .panel-sim y .historial ya
+   envuelven cada pestaña. Nada bajo 13 px. */
+
+/* ---- Simulación */
+.panel-sim .banda-sim {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+.panel-sim .rotulo-sim-grande,
+.panel-sim .rotulo-sim {
+  font-size: var(--t-nota);
+  font-weight: var(--p-rotulo);
+  letter-spacing: 0.02em;
+}
+.panel-sim .sim-atajos h2 {
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+  font-weight: var(--p-titulo);
+}
+.panel-sim .sim-atajos [role='status'] {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+.panel-sim .sim-cabeza h2 {
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-titulo);
+}
+.panel-sim .sim-chip {
+  font-size: var(--t-nota);
+  font-weight: var(--p-boton);
+}
+.panel-sim .sim-datos {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+.panel-sim .sim-editar > summary {
+  font-size: var(--t-nota);
+  font-weight: var(--p-boton);
+  min-height: var(--toque);
+}
+.panel-sim .sim-lista {
+  gap: var(--e-3);
+}
+
+/* ---- Historial */
+.historial > h2 {
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+}
+.historial > .suave,
+.historial .historial-resumen {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+.historial .historial-grupo > h3 {
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-titulo);
+}
+.historial .hl-texto,
+.historial .hl-texto > span:first-child {
+  font-size: var(--t-cuerpo);
+  line-height: var(--lh-cuerpo);
+}
+.historial .hl-hora,
+.historial .hl-dia,
+.historial .hl-sim,
+.historial .hl-estado,
+.historial .rotulo-sim {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+/* A 320 px la etiqueta de estado ("Esperando compromisos") se salía de la tarjeta: puede partirse en dos líneas. */
+.historial .hl-estado {
+  white-space: normal;
+  max-width: 100%;
+}
+.historial .hl-texto {
+  min-width: 0;
+}

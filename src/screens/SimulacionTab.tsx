@@ -5,6 +5,7 @@ import type { ApiError, Disponibilidad, EstadoPropuesta, MiembroPanel } from '..
 import { useBorradorCondiciones, useMutacion, useSondeo } from '../lib/hooks'
 import { Avatar, Aviso, Boton, Cargando, ErrorCaja, Nombre, Vacio } from '../components/ui'
 import { EditorCondiciones, ETIQUETA_VALOR } from '../components/Condiciones'
+import '../estilo/seccion-s7.css'
 import type { PestanaProps } from './tabs'
 
 // Valores del caso canónico (contrato, sección 5). Datos ficticios; atajo opcional, nada se guarda hasta pulsar Guardar.
@@ -59,7 +60,7 @@ export default function SimulacionTab({ p, viva, soloLectura }: PestanaProps) {
     <div className="panel-sim">
       <div className="banda-sim" role="note">
         <span className="rotulo-sim rotulo-sim-grande">Simulación</span>
-        <span>Actúas por personas ficticias. Todo queda en el historial como Simulación, ejecutado por ti.</span>
+        <span>Actúas por personas ficticias. Queda en el historial como Simulación.</span>
       </div>
 
       {error && miembros === null ? <ErrorCaja error={error} onReintentar={cargar} /> : null}
@@ -261,6 +262,9 @@ function TarjetaSimulado({
     if (r?.ok) setConfirmarBaja(false)
   }
 
+  // E7 (recorrido de Nico): "Se baja" solo con una versión publicada; antes no hay nada de qué bajarse a la vista.
+  // Si se puede, lo sigue diciendo el servidor (`puede.retirarme`).
+  const puedeBaja = m.puede.retirarme && version != null
   const caso = CASO[m.miembro.nombre.trim().toLowerCase()]
   const est = estadoSim(m, version)
   const condTexto =
@@ -283,14 +287,14 @@ function TarjetaSimulado({
         <span>{condTexto}</span>
       </p>
 
-      {m.puede.aceptar || (m.puede.retirarme && !confirmarBaja) ? (
+      {m.puede.aceptar || (puedeBaja && !confirmarBaja) ? (
         <div className="sim-acciones">
           {m.puede.aceptar && version != null ? (
-            <Boton onClick={() => void aceptar()} ocupado={ocupado} ocupadoTexto="Enviando…" disabled={soloLectura} aria-label={`Aceptar versión ${version} por ${m.miembro.nombre}`}>
+            <Boton variante="secundario" onClick={() => void aceptar()} ocupado={ocupado} ocupadoTexto="Enviando…" disabled={soloLectura} aria-label={`Aceptar versión ${version} por ${m.miembro.nombre}`}>
               {`Aceptar versión ${version} por ${m.miembro.nombre}`}
             </Boton>
           ) : null}
-          {m.puede.retirarme && !confirmarBaja ? (
+          {puedeBaja && !confirmarBaja ? (
             <Boton variante="secundario" onClick={() => setConfirmarBaja(true)} disabled={soloLectura} aria-label={`Se baja: ${m.miembro.nombre}`}>
               {`Se baja: ${m.miembro.nombre}`}
             </Boton>
