@@ -5,7 +5,10 @@ Pedido directo del usuario en Codex: «Sí, te autorizo a modificar la entrada. 
 Rama propia: `codex/intro-primera-visita`. Copia: `/Users/macair/cruse/cruce-intro`, desde `origin/main`.
 
 ## Tocando ahora
-Vacío. Integración y publicación de la guía completadas.
+- Pedido directo nuevo: «Dale, que desde Ayuda también se pueda volver a ver todo el recorrido, incluida la animación del inicio.» Continúa el alcance ya autorizado de implementación/publicación.
+- `src/App.tsx`: Ayuda abre animación y, al terminar/saltarla, guía desde paso1; nombre accesible actualizado.
+- `src/components/Intro.tsx`: reapertura manual sin borrar marcas de primera visita; conservar preferencia de movimiento reducido y restaurar foco al disparador de Ayuda.
+- Rama `codex/intro-primera-visita`; typecheck/build + navegador con Auth/RPC interceptadas; integrar/publicar solo este ajuste aprobado si pasa. Sin cambios de estilos, sesiones, rutas ni backend.
 
 ## Publicación de la guía aprobada
 Pedido directo de Nico: «Dale, me gusta cómo quedó. Integralo y publicalo así ya aparece en la app.» Autorizó integrar/publicar esta guía como excepción al circuito previo del coordinador.
