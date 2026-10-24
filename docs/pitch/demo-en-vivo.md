@@ -4,7 +4,7 @@ Sesión **pitch**, sábado 24 oct 2026. Reparto (guía de Nico, 10:52): **Juan o
 
 > **Cambio 11:07:** el coordinador publicó `main` `018215d` (11:03) con la demo Makana en la portada y **«Los del finde» salió de la portada** (TABLERO, aviso 11:04). El deck usa el caso Makana. Por eso:
 
-- **Versión principal: Makana «El plan que no deja a nadie afuera»** (sección «Versión b» abajo). Portada verificada en producción a las 11:07: «Probar la demo «El plan que no deja a nadie afuera»» con «Serás Ana, quien organiza; los otros seis compañeros son ficticios y simulados. Participar es voluntario.»
+- **Versión principal: Makana (nombres nuevos desde 11:28) «El plan que no deja a nadie afuera»** (sección «Versión b» abajo). Portada verificada en producción a las 11:07 («Probar la demo «El plan que no deja a nadie afuera»»); desde las 11:28 dice «Serás Bastián, quien organiza; los otros seis amigos son ficticios y simulados» (`src/lib/casoDemo.ts` en `main` `233bb2e`, leído en el código).
 - **Versión de respaldo: «Los del finde»** (sección «Versión a»): ya no se abre desde la portada; solo sirve en un navegador que ya la tenga en «Tus grupos». Su recorrido sí está probado 27/27; el de Makana lo recorrió el coordinador a mano hasta la respuesta (demo → grupo → nuevo plan → respuesta). **El resto (buscar, confirmar, baja, v2) lo valida Juan en el ensayo.**
 
 Duración: el recorrido completo dura unos **4 minutos**. En el pitch de 5 minutos la demo tiene **1:40** (`guion-pitch.md`, 2:10–3:50): lo marcado **✂** se hace **antes de subir** o se salta.
@@ -58,33 +58,34 @@ Duración: el recorrido completo dura unos **4 minutos**. En el pitch de 5 minut
 
 **Estado:** publicada (`018215d`, migración 0058 aplicada 10:33). Juan la recorre una vez entera en el ensayo antes de subir. Fuente del caso: `docs/demo-makana.md` (rama `codex/demo-makana`); «Participación del plan» viene de `codex/participacion-visible`.
 
-**Personas (ficticias):** Ana organiza; Bruno, Camila, Diego, Elena, Felipe y Gabriela. **Nadie trae respuestas precargadas** y no hay botón de «aceptar por todos»: cada respuesta se da a mano y la simulación queda rotulada.
+**Personas (ficticias, en producción desde `main` `233bb2e`, 11:28):** Bastián organiza (Juan); Nacho, Carlos, Kai, Charlie, Joaco y Pía son simulados y rotulados. Portada: «Serás Bastián, quien organiza; los otros seis amigos son ficticios y simulados.» Con los nombres ya en pantalla, **Nico puede nombrarlos**.
 
-**Nombres (pedido de Nico, 11:2x):** en el relato y el deck los amigos son Bastián, Carlos, Kai, Charlie, Nacho, Joaco y Pía; la app muestra Ana, Bruno, Camila, Diego, Elena, Felipe y Gabriela (interfaz congelada). **Nico narra la demo sin nombres**; los nombres de la app solo aparecen en lo que toca Juan. **Nico pidió que la app también los cambie** (pedido al coordinador, 11:3x). Si se publica, en esta tabla leer: Ana→Bastián, Bruno→Nacho, Camila→Carlos, Diego→Kai, Elena→Charlie, Felipe→Joaco, Gabriela→Pía (p. ej. «Se baja: Joaco»), y Juan abre la demo desde una sesión nueva (el reinicio conserva los nombres viejos). Con los nombres nuevos en pantalla, Nico ya puede nombrarlos.
+**El caso cambió con la 0060 (11:24)** (`supabase/migrations/0060_demo_makana_cargada.sql`): Nacho, Kai y Joaco pueden **los dos días**; Charlie **solo el sábado**; Carlos **solo el domingo**; Pía no responde. Los seis traen gustos cargados (pádel y comida). El deck y el video dicen «Joaco solo sábado»: en pantalla Joaco puede los dos días; Nico no dice «solo sábado» de Joaco.
 
-**Antes de subir (un solo aparato alcanza: Juan es Ana y simula al resto):**
-1. Portada → «Probar la demo «El plan que no deja a nadie afuera»» (después dirá «Abrir…»). Si el ensayo dejó un plan, «Herramientas del organizador» → «Reiniciar demo».
-2. «+ Nuevo plan»: viene precargado con **«Parque del Encuentro (ficticio) · acceso norte · encuentro gratuito»**, sáb 31 oct y dom 1 nov a las 16:00, 2 horas, mínimo 2, máximo 7, actividad parque (`src/lib/casoDemo.ts`) → «Crear y abrir al grupo». ✂
-3. Ana responde lo suyo: «Puedo los dos días». ✂
-4. (Opcional, más real) un segundo teléfono reclama a **Felipe** con el enlace de «Invitar al grupo» y responde él mismo. Si no, Juan lo simula.
+**Antes de subir (un solo aparato: Juan es Bastián y simula al resto):**
+1. Abrir la demo **desde una sesión nueva o con «Reiniciar demo»** para tomar los nombres y gustos nuevos (la 0060 dice que las demos ya sembradas los toman al reiniciar). Portada → «Probar la demo «El plan que no deja a nadie afuera»».
+2. «+ Nuevo plan»: precargado con **«Parque del Encuentro (ficticio) · acceso norte · encuentro gratuito»**, sáb 31 oct y dom 1 nov a las 16:00, 2 horas, mínimo 2, máximo 7 (`src/lib/casoDemo.ts`) → «Crear y abrir al grupo». ✂
+3. Bastián responde «Puedo los dos días». ✂
 
-En Makana **no hay** «Cargar condiciones del caso» ni «aceptar por todos»: cada respuesta se carga por persona en «Simulación (demo)» y queda rotulada como simulación (`src/screens/SimulacionTab.tsx`: «Cada respuesta se carga por separado… Gabriela sigue pendiente hasta que responda; nunca cuenta como confirmada.»).
+**Clave para que se vea la reparación:** con mínimo 2, la baja solo pone el plan «En revisión» si las confirmaciones vigentes quedan por debajo de 2. Por eso en la versión 1 confirman **solo Bastián y Joaco**: no usar «aceptar por todos». Si confirman más, la baja de Joaco no rompe el plan (queda registrada y el plan sigue: `docs/caso-canonico.md`, «Regla del motor»).
 
-| Min | Juan toca (como Ana) | Se ve | Nico dice |
+**Respuestas de los simulados:** en «Simulación (demo)», por persona: «Usar valores del caso para Joaco» (y para Carlos y Charlie si hay tiempo) o «Editar interés y condiciones de …» → «Guardar condiciones de …». El atajo de una vez «Cargar las respuestas de los N de una vez» sigue oculto para Makana en el cliente (`SimulacionTab.tsx:90`, condición `!makana`), aunque la 0060 lo habilita en el servidor: **verlo en el ensayo**.
+
+| Min | Juan toca (como Bastián) | Se ve | Nico dice |
 |---|---|---|---|
-| 0:00 | Mostrar el grupo | Siete personas (Nico las presenta como «siete amigos»; la app dice «compañeros» en la portada, no se lee), «Actividad del grupo», el plan del parque «Reuniendo respuestas» | «Quien organiza propone un plan que le sirve a todos: un parque, gratis, sábado o domingo a la tarde.» |
-| 0:15 | «Simulación (demo)» → «Editar interés y condiciones de Felipe» → sábado sí, domingo no → «Guardar condiciones de Felipe» | Fila de Felipe con su respuesta (solo la ve quien simula) | «Uno dice en privado que solo puede el sábado.» |
-| 0:30 ✂ | Igual con Camila: sábado no, domingo sí → «Guardar condiciones de Camila» | — | «Otra, solo el domingo. Nadie del grupo ve esto.» |
-| 0:45 | Plan → «Buscar opción compatible» | Versión 1: sábado 31, 16:00 | «El servidor propone una sola opción: el sábado. Quien no respondió no cuenta.» |
-| 1:00 | «Confirmar versión 1» → «Simulación (demo)» → «Aceptar versión 1 por Felipe» | «Participación del plan»: «Confirmaron la versión 1» (Ana, Felipe), «Sin confirmar esta versión», «¡Se juntan!» (mínimo 2) | «Los que van confirman esta versión. El grupo ve quién confirmó, no qué dijo cada uno. Estar en el grupo no confirma el encuentro.» |
-| 1:20 | *(pausa)* | — | «Ahora alguien se baja.» |
-| 1:25 | «Simulación (demo)» → «Se baja: Felipe» → «Sí, Felipe se baja» → Plan | **«En revisión»**, «Una persona se retiró» | «Queda una sola persona: no llega al mínimo. El plan no finge que sigue armado. Y no dice quién se bajó; lo digo yo porque es una simulación.» |
-| 1:45 | «Buscar alternativa» (o «Rearmar con lo nuevo») | Versión 2: domingo 1; «Nadie confirmó todavía: las confirmaciones anteriores no pasan a esta versión» | «Se rearma el domingo. Versión 2, desde cero.» |
-| 2:00 | «Confirmar versión 2» → «Simulación (demo)» → «Aceptar versión 2 por Camila» | **«¡Se juntan!»** | «Cada uno vuelve a decidir. Un plan que no dejó a nadie afuera por no animarse a decir que no podía.» |
+| 0:00 | Mostrar el grupo | Siete amigos, «Actividad del grupo», el plan del parque «Reuniendo respuestas» | «Bastián propone un plan que le sirve a todos: un parque, gratis, sábado o domingo a la tarde.» |
+| 0:15 | «Simulación (demo)» → «Usar valores del caso para Joaco» | Fila de Joaco con su respuesta (solo la ve quien simula) | «Cada uno dice en privado cuándo puede. Nadie del grupo ve lo de los demás.» |
+| 0:30 ✂ | Igual con Carlos (solo domingo) y Charlie (solo sábado) | — | «Carlos, solo el domingo. Charlie, solo el sábado. Pía no respondió.» |
+| 0:45 | Plan → «Buscar opción compatible» | Versión 1: sábado 31, 16:00 | «El servidor propone una sola opción: el sábado. Pía no respondió: no cuenta. El silencio no es asistencia.» |
+| 1:00 | «Confirmar versión 1» → «Simulación (demo)» → **solo** «Aceptar v1» en la fila de Joaco | «Participación del plan»: «Confirmaron la versión 1» (Bastián, Joaco), «Sin confirmar esta versión»; «¡Se juntan!» (mínimo 2) | «Bastián y Joaco confirman esta versión. El grupo ve quién confirmó, no qué dijo cada uno.» |
+| 1:20 | *(pausa)* | — | «Ahora Joaco se baja.» |
+| 1:25 | «Simulación (demo)» → «Se baja: Joaco» → «Sí, Joaco se baja» → Plan | **«En revisión»**, «Una persona se retiró» | «Queda una sola confirmación: no llega al mínimo. El plan no finge que sigue armado. Y no dice quién se bajó; lo digo yo porque es una simulación.» |
+| 1:45 | «Buscar alternativa» (o «Rearmar con lo nuevo») | Versión 2 (**leer el día en pantalla**: por la regla del motor, la franja más temprana viable sin Joaco; con Nacho, Kai y Charlie el sábado sigue viable); «Nadie confirmó todavía: las confirmaciones anteriores no pasan a esta versión» | «Se rearma sin Joaco: versión 2, desde cero.» (no decir «el domingo» si la pantalla dice sábado) |
+| 2:00 | «Confirmar versión 2» → «Simulación (demo)» → «Aceptar v2» en una fila (p. ej. Kai) | **«¡Se juntan!»** | «Cada uno vuelve a decidir. Y el plan sigue en pie.» |
 
-Rótulos de la tabla: los de `SimulacionTab.tsx` y del plan en `main` `018215d`; los de franja dentro de «Editar interés y condiciones de …» se leen en el ensayo.
+La secuencia exacta (sobre todo el día de la v2) no la vi en pantalla: **Juan la recorre una vez en el ensayo** y, si el día cambia, Nico dice el que se ve.
 
-**No decir en la versión Makana** (`docs/demo-makana.md`, «Relato breve y límites»): que el agente usó la preferencia «gratis» de Camila, salvo que se haya llamado al agente y se haya visto; «integración con Makana»; resultados comerciales. Mínimo 2 es del caso, no se sube para fabricar la revisión.
+**No decir en la versión Makana** (`docs/demo-makana.md`, «Relato breve y límites»): que el agente usó la preferencia «gratis» de Carlos, salvo que se haya llamado al agente y se haya visto; «integración con Makana»; resultados comerciales. Mínimo 2 es del caso, no se sube para fabricar la revisión.
 
 ---
 
