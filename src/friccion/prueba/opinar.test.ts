@@ -40,6 +40,18 @@ test('puedeOpinar: solo elegible, sin aceptar, sin retirarse, esperando compromi
   expect(puedeOpinar(propuesta('esperando_compromisos', {}, null))).toBe(false)
 })
 
+test('puedeOpinar: si el servidor manda puede.opinar, manda eso (true o false), no la regla local', () => {
+  const con = (opinar: boolean, x: Partial<MiSituacion> = {}) => {
+    const p = propuesta('reuniendo_interes', x)
+    ;(p.mi_situacion.puede as unknown as { opinar: boolean }).opinar = opinar
+    return p
+  }
+  expect(puedeOpinar(con(true))).toBe(true) // la regla local diría false (reuniendo_interes)
+  const p = propuesta('esperando_compromisos')
+  ;(p.mi_situacion.puede as unknown as { opinar: boolean }).opinar = false
+  expect(puedeOpinar(p)).toBe(false) // la regla local diría true
+})
+
 test('opinarReal sin api.opinarVersion: error claro, no reintentable, sin llamar a nada', async () => {
   const r = await opinarReal('p1', 1, 'asi_no_puedo', 'i1')
   expect(r.ok).toBe(false)
