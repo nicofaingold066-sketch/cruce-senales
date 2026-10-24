@@ -381,7 +381,7 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
 
             <fieldset className={`form-seccion ${marcado === 'franjas' ? 'grupo-error' : ''}`}>
               <legend>Cuándo · dos opciones</legend>
-              <p className="suave nota-seccion">El grupo dice en privado cuál le sirve. Si sirven las dos, gana la A.</p>
+              <p className="suave nota-seccion">El grupo dice en privado cuál le sirve. Si sirven las dos, gana la que es antes.</p>
               {(['A', 'B'] as const).map((clave) => {
                 const dia = clave === 'A' ? form.aDia : form.bDia
                 const horaSel = clave === 'A' ? form.aHora : form.bHora
@@ -440,10 +440,17 @@ export default function NuevaPropuesta({ espacioId }: { espacioId: string }) {
                       <span>
                         {m.nombre}
                         {m.simulado ? <span className="visualmente-oculto"> (Simulación)</span> : null}
+                        {m.pendiente ? <span className="chip-nota"> (por entrar)</span> : null}
                       </span>
                     </label>
                   ))}
                 </div>
+                {/* Enmienda 9: `pendiente` = lo anotó el organizador y todavía no entró con el enlace. */}
+                {imprescindible?.pendiente ? (
+                  <p className="suave nota-seccion" role="note">
+                    {imprescindible.nombre} todavía no entró con el enlace. Si no entra y marca cuándo puede, no va a haber opción.
+                  </p>
+                ) : null}
               </div>
             </fieldset>
 
