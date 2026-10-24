@@ -36,10 +36,10 @@ describe('E7.1: el orden de las candidatas no delata gustos en grupos chicos', {
     await ok(B, 'save_my_preferences', { p_espacio_id: esp.espacioId, p_preferencias: pref(['parque']) })
     const r1 = await plan()
     expect(r1.personas_consideradas).toBe(2)
-    // Sin marcas (energía con_todo, ambiente sin mayoría, seco): Cerro 2 (gratis, E10 Parte B) y Fútbol 2 (barato);
-    // Parque 1 (gratis) antes que Pádel 1 (medio).
+    // Sin marcas (energía con_todo, ambiente sin mayoría, seco): Cerro 2 (gratis, E10 Parte B), Fútbol 2 (barato)
+    // y Básquet 2 (barato, E14 0048), detrás del fútbol.
     // Con el orden anterior, la marca de B ponía al Parque primero y con "el más elegido".
-    expect(r1.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-12', 'lugar-sim-03', 'lugar-sim-04'])
+    expect(r1.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-12', 'lugar-sim-03', 'lugar-sim-16'])
     for (const c of r1.candidatas) expect(c.frases_grupo).not.toContain('el_mas_elegido')
 
     // Otras marcas (las dos eligen asado, que antes sumaba 6): mismas candidatas, mismo orden, mismas frases.

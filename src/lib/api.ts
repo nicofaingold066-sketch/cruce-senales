@@ -11,7 +11,10 @@ import type {
   EstadoPropuesta,
   MiembroRef,
   Momento,
+  ActividadClave,
+  Familia,
   OpinionVersion,
+  Proposito,
   PanelSimulacion,
   PreferenciasPropias,
   PropuestaResumen,
@@ -43,7 +46,8 @@ export type UnirseOk = EspacioOk<{
 export type ListaEspaciosOk = OkBase & { espacios: EspacioResumen[] }
 /** Enmienda 9: lo único que se ve con el código antes de unirse. */
 export type VistaPorCodigoOk = OkBase & {
-  espacio: { nombre: string; demo: boolean }
+  /** Enmienda 14: `proposito` y `familia` llegan desde la 0048 (opcionales hasta entonces). */
+  espacio: { nombre: string; demo: boolean; proposito?: Proposito; familia?: Familia }
   miembros: { miembro_id: string; nombre: string; libre: boolean }[]
 }
 export type VerEspacioOk = OkBase & { espacio: Espacio }
@@ -298,6 +302,8 @@ export interface CrearPropuestaParams {
   imprescindibleId: string
   plazo: string
   intentoId: string
+  /** Enmienda 14: actividad del catálogo (se manda solo si viene). En un grupo con propósito, de su familia. */
+  actividad?: ActividadClave | null
 }
 
 // ---- Operaciones ----
@@ -307,12 +313,17 @@ export const api = {
   serverInfo: () => llamar<ServerInfoOk>('server_info', {}, false),
 
   // 1.1 - 1.7 Espacios
-  createSpace: (nombre: string, tipo: TipoEspacio, nombreVisible: string, integrantes?: string[]) =>
+  // Enmienda 14: `proposito` opcional; se manda solo si no es 'libre' (sin él, el grupo queda en modo libre, como hoy).
+  createSpace: (nombre: string, tipo: TipoEspacio, nombreVisible: string, integrantes?: string[], proposito?: Proposito) =>
     llamar<CrearEspacioOk>(
       'create_space',
-      integrantes && integrantes.length > 0
-        ? { p_nombre: nombre, p_tipo: tipo, p_nombre_visible: nombreVisible, p_integrantes: integrantes }
-        : { p_nombre: nombre, p_tipo: tipo, p_nombre_visible: nombreVisible },
+      {
+        p_nombre: nombre,
+        p_tipo: tipo,
+        p_nombre_visible: nombreVisible,
+        ...(integrantes && integrantes.length > 0 ? { p_integrantes: integrantes } : {}),
+        ...(proposito && proposito !== 'libre' ? { p_proposito: proposito } : {}),
+      },
       true,
     ),
   joinSpace: (codigo: string, nombreVisible: string, miembroId?: string | null) =>
@@ -350,6 +361,7 @@ export const api = {
         p_plazo: p.plazo,
         p_zona_horaria: 'America/Santiago',
         p_intento_id: p.intentoId,
+        ...(p.actividad ? { p_actividad: p.actividad } : {}),
       },
       true,
     ),
