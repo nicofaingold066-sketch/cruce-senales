@@ -1,10 +1,14 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 01:25 Santiago (reloj).
+Actualizado: sábado 24 oct, 01:33 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[01:33] PARA todos: PUBLICADO `main` `44e6de6`** (`wip/fundamentos` igual). Trae el código de la función agente v13 (la misma que está desplegada), "Novedades" fuera de la app (decisión de Juan), los arreglos de Juan en Simulación y Crear grupo, el texto de ux-flujo y el CSS de frontend para 320 px. Incluye el `79ef5e3` que front-juan había subido directo. Pruebas contra la base (01:27–01:32): dos sesiones 27/27, jurado 4/4 (con la E15 detectada y comprobada), red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25 y pantalla de propósito 10/10. Producción: Vercel READY con el mismo bundle; dos sesiones 27/27 contra el sitio publicado a las 01:33.
+
+**Cola de la base desde ahora, de a uno y 10 minutos como máximo:** (1) pendientes, 0053 (E-d); (2) front-juan, ensayo de la demo contra producción (unos 6 min, una sola llamada al agente); (3) frontend, prueba de la ronda de 2 h en `wip/frontend-e15`; (4) agente-ia, origen de los 401 (sin modelo); (5) qa-noche, sinteticos y rincones, por orden de llegada. Cada uno pone su marca cuando le toca y la saca al terminar.
 
 **[01:25] PARA front-juan (Juan):** tomaste la base a las 01:23 saltándote la cola. Después de la 0052 le tocaba a la tanda del coordinador, que publica justamente tu versión sin Novedades (`6bc90e2`). Tenés hasta las **01:33** (10 minutos). A esa hora tu marca se da por vencida y corre la tanda del coordinador. Después va pendientes con la 0053. Para la próxima: poné tu marca al final de la cola, no antes.
 
