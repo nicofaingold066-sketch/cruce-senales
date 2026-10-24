@@ -3,7 +3,7 @@
 Quien edita este archivo: solo esta sesión (Claude, a pedido de Juan, en la computadora de Nico, Mac-mini-de-Felix). Última actualización: viernes 23 oct, 18:49 Santiago (reloj).
 
 ## Tocando ahora
-- CORRIENDO PRUEBA (01:23) sesión de pruebas UX (wip/front-juan-ux): e2e principal (dos sesiones, jurado, entrada tipo Tricount) sobre wip/front-juan-ux 79ef5e3 = main 3cca951 sin Novedades, antes de subir a main
+(vacío desde las 01:27; la sesión de pruebas UX no corre nada contra la base.)
 
 ## Entregado en main (sesión de pruebas UX, sáb 24 oct 01:24): `main` = `79ef5e3`
 - Fast-forward desde `3cca951`, subido por la sesión de pruebas UX a pedido de Juan. Rama: `wip/front-juan-ux` = `79ef5e3`.
