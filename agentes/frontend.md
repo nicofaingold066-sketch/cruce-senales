@@ -4,9 +4,10 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- [02:48] Rol diseno: espero y reviso las entregas de S1/S5 (friccion), S4 (ux-flujo) y S6 (agente-ia). Mis tres secciones están entregadas. Servidor local de desarrollo en 4310 (solo lecturas y mi demo).
+- [03:00] Mockup OBLIGATORIO y exacto (Nico y Juan 03:05): rehago S2 (pantalla 3), S3 (4), Planes (12), Perfil (13), Simulación (18) e Historial (19) contra `prompts/rediseno-secciones.md`, en `wip/rediseno-s2|s3|s7`. Reviso entregas de friccion, ux-flujo y agente-ia contra el mockup.
 
 ## Entregado
+- [03:00] **Fusión pedida por el coordinador hecha**: `wip/diseno` = `0fa4ce5` (cc18c7c + `origin/wip/fundamentos` 60a98e0); y ese diseno fusionado en **S2 `4ff9b7b`**, **S3 `3c3528b`** y **S7 `1137929`**. Choques resueltos: Espacio.tsx (IconoGrupo + Confirmacion/useVolverFoco) y SimulacionTab.tsx ("Se baja" solo con versión publicada + `data-abre-confirmacion`). Las tres: tsc OK, vitest puro 90/90, build 0. Faltan los cambios del mockup exacto (en curso).
 - [02:59] **S3 paso 3** `wip/rediseno-s3` = `8b0b151`: en computadora, cabecera arriba y formulario en dos columnas (qué y cuándo | quiénes, cierre, más opciones, botón); revisión en 720 px. Capturas sin desborde a 320, 375 y 1280.
 - [02:54] **S3 paso 2** `wip/rediseno-s3` = `0532635` (sobre `wip/diseno` `cc18c7c`; incluye `9e17231`): cabecera de hoja con ✕ y el nombre del grupo (pantalla 4 del mockup). Lo que el mockup pliega (filas A/B que se abren, cierre en una fila) NO lo pliego: rincones f7 toca «Elegir» y f15/sinteticos dos-planes llenan «Nombre de este plan»; plegarlos rompería tres guiones. Capturas renovadas.
 - [02:53] **S2 paso 2** `wip/rediseno-s2` = `24edd8f` (sobre `wip/diseno` `cc18c7c`), reemplaza a `3cb97d0`: calza con la pantalla 3 del mockup validado (ícono del grupo en la cabecera, invitación en tarjeta con Compartir/Copiar/WhatsApp, "Planes" con "Nueva propuesta" arriba). Capturas renovadas en `docs/rediseno/capturas/s2/`.
@@ -40,7 +41,7 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- [02:48] Rol diseno: espero y reviso las entregas de S1/S5 (friccion), S4 (ux-flujo) y S6 (agente-ia). Mis tres secciones están entregadas. Servidor local de desarrollo en 4310 (solo lecturas y mi demo).
+- [03:00] Mockup OBLIGATORIO y exacto (Nico y Juan 03:05): rehago S2 (pantalla 3), S3 (4), Planes (12), Perfil (13), Simulación (18) e Historial (19) contra `prompts/rediseno-secciones.md`, en `wip/rediseno-s2|s3|s7`. Reviso entregas de friccion, ux-flujo y agente-ia contra el mockup.
 
 ## Entregado
 - [02:38] **S3 Nueva propuesta ENTREGADA**: rama `wip/rediseno-s3` = `9e17231` (sobre `wip/diseno` `5fe65d1`, que ya trae `main` `22ae202`). `src/estilo/seccion-s3.css` (cuatro tamaños, chips y días con los tokens, nada bajo 13 px), paso 2 con resumen de cuatro líneas en vez del ticket (sin "Zona horaria"), un solo primario ("Crear y abrir al grupo"; "Volver a editar" secundario; "Crear solo el borrador" como enlace, rincones f1 lo sigue tocando por nombre), textos al hueso, nombre del plan (E15) debajo de las horas. Ningún rótulo de los guiones cambia (lista de sinteticos S3 y rincones f1 revisadas). Capturas en `docs/rediseno/capturas/s3/` (paso 1 y 2 a 320, 375 y 1280; sin desborde). tsc OK, vitest puro 90/90, build 0. Revisada por mí con las reglas de `sistema.md` (rol diseno). Lista para la tanda del coordinador.
