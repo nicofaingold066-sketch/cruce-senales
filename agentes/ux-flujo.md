@@ -3,14 +3,14 @@
 Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cruce-ux`). Rutas: `docs/flujo-usuario.md`, `docs/front-back-puente.md`, archivos NUEVOS en `src/componentes-nuevos/**`. Puerto de preview: 4183.
 
 ## Tocando ahora
-- [21:06] Verificación LOCAL de la enmienda 13 con mis componentes conectados en una rama temporal `tmp/e13-local` (NO se sube; build 4183). "Así no puedo" por RPC hasta que friccion tenga el botón. Espero que backend saque MIGRACION EN CURSO para correrla (6 sesiones).
+- [21:22] Parche para las pantallas de Juan (`docs/parche-pantallas-juan.md`, `docs/parche-capturas/**`) probado en una copia LOCAL descartable (sin subir código): falta correr dos sesiones, jurado y capturas contra la base cuando backend saque MIGRACION EN CURSO (una corrida a la vez, con CORRIENDO PRUEBA acá). Después, verificación local de la enmienda 13.
 - [20:54] Enmienda 13 (aprobada por Nico 20:51): `src/componentes-nuevos/` ("Rearmar con lo nuevo" para el organizador, textos de baja sin nombre y aviso de "así no puedo" en `AvisoParaMi`), `docs/output-debate.md` y `docs/investigacion-a-producto.md` con las decisiones de Nico. friccion: botón "Así no puedo, pero sigo" (reparto propuesto por mensaje).
 - [20:43] #102 primer barrido entregado; próximos a las 23:00 y 07:00. Mantengo `docs/investigacion-a-producto.md`.
 - [20:33] #100 entregado en primera versión; sigo con `docs/output-debate.md` cuando psico suba lo suyo.
 - [19:49] `src/componentes-nuevos/**` (componentes listos para conectar, porque front-juan no responde desde las 18:49) y los dos docs.
 - [19:36] `docs/flujo-usuario.md` y `docs/front-back-puente.md` (siguen vivos: último `084ee0e`, puente con la enmienda 11).
 
-## Entregado (rama `wip/ux`, último `2207353`)
+## Entregado (rama `wip/ux`, último `3013850`)
 - #98 + #91 `a3797af` (19:31): `docs/flujo-usuario.md` reescrito con el recorrido REAL "convencer a uno" (build propio 4183, 375 px, 19:24-19:27): organizador 21 toques (19 sin el tropiezo), cada invitado 8 toques y 4 vistas hasta la primera respuesta, +2 para confirmar. Marcas [visto]/[leído], 9 dudas vistas en pantalla, recortes con dueño, mapa input → servidor → output en mermaid con la enmienda 10 (pendiente) y tabla "quién ve qué".
 - #94 `bfa6218` (19:32): `docs/front-back-puente.md`: RPC y campos por pantalla, lo que el back expone y el front no usa (E10 incluida), lo que falta de cada lado, registro de entregas.
 - #89 `419ac2a` (19:34) + `ede33ca` (19:36, nota según el motivo y banco sin base `src/componentes-nuevos/prueba/recordar.html`, revisado a 375 y 320 px sin desborde): `src/componentes-nuevos/RecordarFaltan.tsx` + `recordar.ts` (lógica pura) + `recordar.test.mjs`. `node --test "src/componentes-nuevos/*.test.mjs"` 7/7; `npm run typecheck` y `npm run build` en verde (19:34).
@@ -28,6 +28,9 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/ux` (copia `/Users/macair/cruse/cru
 - `66ad5af` (21:03): `AyudaRetiro` (texto junto a "Retirarme", psico §8.10 y OD §3.1): antes de la opción, "márcala como No puedo"; con la versión publicada, "usa Así no puedo, pero sigo" (o "no confirmes" sin la enmienda 13); a quien ya confirmó, "sin decir quién. No hace falta contar por qué". 32/32.
 - `85bd0bb` (21:06): `RearmarConLoNuevo` con la forma de backend (21:05): el aviso "Ya van tres versiones" sale aunque `proponer_reparacion` venga apagado en la versión 3; `estado_no_admite` → "Ya no hace falta rearmar". 33/33.
 - `2207353` (21:10): `BuscarLugar` + `lugarMapa.ts` (psico D10, aprobada por Nico): "Buscar el lugar en el mapa" con el título del plan (Google Maps, sin clave, sin ubicación, sin personas), oculto en el demo; `duracionTexto` ("(3 h)", "(90 min)") para la línea de día y hora. 36/36; banco a 375 px.
+- Parche para las pantallas de Juan, primera versión (`ce87c2d`, `3013850`, 21:22): `docs/parche-pantallas-juan.md` + `docs/parche-capturas/pantallas.patch` (8 archivos de `src/screens/**`, 11 piezas de ux-flujo, friccion y apertura). `git apply --check` limpio sobre fundamentos + friccion + apertura + ux; typecheck y build verdes; red controlada 10/10. Falta e2e con base y capturas.
+- Galería (`aca1230`): `src/componentes-nuevos/prueba/galeria.html`, 26 casos de mis piezas sin red; 375 y 320 px sin desborde. Reemplaza el banco viejo (`prueba/recordar.html`, borrado).
+- Auditoría de tono de psico (`aca1230`): "Recordatorio para «X»…", "Esta versión no te incluye", "Se armó sin tu disponibilidad completa…", "si esa te sirve, la confirmas", y sin número con 1 pendiente. `683c02b`: `AvisoParaMi` sin "Primero marca tu disponibilidad" (lo cubren el servidor y `FaltaTuRespuesta`; evitaba el aviso triple). 34/34.
 
 ## Pedidos a otros
 Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo ficticio "Los del pádel": Vale organiza, Ana, Beto, Coni, Diego y Ema entran por el enlace). Detalle en `docs/flujo-usuario.md` §3 (rama `wip/ux`).
@@ -79,6 +82,8 @@ Evidencia de todos: recorrido real 19:24-19:27 (build propio 4183, 375 px, grupo
 - psico [21:10]: D10 hecho como pediste (`BuscarLugar`, `2207353`); la lógica quedó en `lugarMapa.ts` en vez de `buscarLugar.ts` (para no tener dos archivos que solo se distinguen por la mayúscula). También `duracionTexto`.
 - rincones [21:10]: O-15 y O-16 en la tabla #102 (`603678e`); O-16 quedó unido a H3 (chip decidido por el coordinador: se queda).
 - qa-noche [21:10]: anotado; te aviso cuando front-juan conecte `AvisoParaMi` (y ahora también `RearmarConLoNuevo`, `AyudaRetiro` y `BuscarLugar`).
+- rincones [21:22]: para auditar mis piezas de un vistazo: `src/componentes-nuevos/prueba/galeria.html` (rama `wip/ux`, `aca1230`; abrir con el servidor de desarrollo: `npx vite` y `/src/componentes-nuevos/prueba/galeria.html`). 26 casos: `AvisoParaMi`, `RecordarFaltan` (4 motivos), `RearmarConLoNuevo` (incluye tope y errores), `AyudaRetiro` (4 momentos), `BuscarLugar`. Sin red ni base.
+- psico [21:22]: aplicados tus textos de la auditoría para mis componentes (`aca1230`). Las bajas de otras personas llegan del servidor como "Una persona" (0043 de backend), así que el historial dice "Una persona se bajó", no "El sistema se bajó"; el cambio a "se retiró" sigue siendo texto de `format.ts`.
 
 ## Decisiones para Nico
 - [20:43] #102: de la tabla, las que esperan a Nico (además de E-a…E-d de arriba): H6 `personas_que_pueden` (sinteticos; riesgo de delatar en grupos chicos), H14 baja pública con nombre (sinteticos), D1-D6 de psico (fila "Asado en lugar neutro", regla de género y pareja, composición del grupo en el título, casa pública o privada, datos sensibles, "creemos que"), tope del Gateway y si se mide, y si el agente va en vivo (corte 10:00). Todas con fila en `docs/investigacion-a-producto.md`.
