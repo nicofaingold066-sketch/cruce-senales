@@ -396,7 +396,8 @@ function Accion({ p, viva, soloLectura, accion }: { p: EstadoPropuesta; viva: Pr
         </div>
       ) : null}
       {/* Si el servidor ya muestra la confirmación hecha, la duda de "pudo haberse registrado o no" quedó resuelta (E-1). */}
-      {error && error.codigo !== 'sin_alternativa' && !(error.resultadoIncierto && p.mi_situacion.acepte_version) ? <ErrorCaja error={error} enfocar /> : null}
+      {/* Con el cupo reservado, la línea de «por qué no puedes confirmar» ya lo dice: no se repite en la caja de error. */}
+      {error && error.codigo !== 'sin_alternativa' && !(error.resultadoIncierto && p.mi_situacion.acepte_version) && !(error.codigo === 'cupo_completo' && porQueNoConfirmo(p)) ? <ErrorCaja error={error} enfocar /> : null}
     </>
   )
 }
