@@ -531,120 +531,147 @@
   margin: 0;
 }
 
-/* ---- Tarjeta de la propuesta de GRU (Nico, 11:40: «mucho texto, una ensalada»). Cabecera chica, título natural,
-   chips con fecha/viaje/clima, el mensaje como cita, UN primario; lo técnico plegado. Máximo 720 px en computadora. */
-.agente-tarjeta {
-  max-width: 720px;
-  margin-inline: auto;
-  border-width: 1px;
-  border-color: var(--linea);
-  border-radius: var(--r-l, 20px);
-  box-shadow: var(--sombra-flota, 0 8px 24px rgb(0 0 0 / 8%));
+/* ------------------------------------------------------------------ tarjeta de resultado de GRU (pedido de Nico, 24 oct)
+   Jerarquía: cabecera chica → título grande → chips de datos → cita → un primario → secundarios discretos. */
+.gru-card {
+  padding: var(--e-5) var(--e-4);
+  border: 2px solid var(--tinta);
+  border-radius: var(--r-l);
+  background: var(--hoja);
 }
-.agente-tarjeta-cabeza {
+.gru-card > * {
+  margin: 0;
+}
+.gru-card > * + * {
+  margin-top: var(--e-4);
+}
+.gru-card-cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-2);
+}
+.gru-card-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--e-1);
+}
+.gru-card-titulo-fila {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--e-2);
 }
-.agente-borrador {
-  margin-left: auto;
-  font-size: var(--t-nota);
-  color: var(--tinta-2);
+.gru-card-titulo-fila h3 {
+  margin: 0;
+  font-size: var(--t-titulo);
+  line-height: var(--lh-titulo);
+  font-weight: var(--p-pantalla);
+  overflow-wrap: anywhere;
 }
-.agente-tarjeta-titulo {
+.gru-datos {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: var(--e-2);
-}
-.agente-tarjeta-titulo .rotulo-sim {
-  font-size: var(--t-nota);
-}
-.agente-chips-datos {
   list-style: none;
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--e-2);
 }
-.agente-chips-datos li {
+.gru-dato {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   min-height: 32px;
-  padding: 4px 12px;
+  padding: var(--e-1) var(--e-3);
   border-radius: 999px;
   background: var(--relleno);
   color: var(--tinta);
   font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  font-weight: var(--p-rotulo);
 }
-.agente-cita-caja {
-  margin: 0;
-  padding: var(--e-3) var(--e-4);
+.gru-dato svg {
+  flex: none;
+  color: var(--tinta-2);
+}
+.gru-cita {
+  padding: var(--e-4);
   border-radius: var(--r-m);
   background: var(--relleno);
 }
-.agente-tarjeta .agente-cita {
-  padding: 0;
-  border: 0;
-  font-style: normal;
+.gru-cita blockquote {
+  margin: 0;
   font-size: var(--t-cuerpo);
-  line-height: 1.5;
+  line-height: var(--lh-cuerpo);
+  overflow-wrap: anywhere;
 }
-.agente-cita-caja figcaption {
+.gru-cita figcaption {
   margin-top: var(--e-2);
+  color: var(--tinta-2);
 }
-.agente-tarjeta-acciones {
+.gru-card > .btn-primario {
+  width: 100%;
+}
+.gru-secundarios {
+  display: grid;
+  gap: var(--e-1);
+}
+.gru-secundarios > .agente-enlace {
+  justify-self: start;
+}
+.gru-secundarios .agente-plegable-seccion {
+  margin: 0;
+}
+.gru-otras {
   display: grid;
   gap: var(--e-2);
 }
-.agente-tarjeta-acciones .btn {
-  width: 100%;
-}
-.agente-tarjeta-acciones .agente-enlace {
-  justify-self: center;
-  min-height: var(--toque);
-}
-.agente-otras {
-  list-style: none;
-  padding: 0;
+.gru-mini {
   display: grid;
-  gap: var(--e-2);
-}
-.agente-otra {
+  gap: var(--e-1);
   width: 100%;
-  display: grid;
-  justify-items: start;
-  gap: 4px;
   min-height: var(--toque);
   padding: var(--e-3);
   border: 1px solid var(--linea);
   border-radius: var(--r-m);
   background: var(--hoja);
   color: var(--tinta);
-  font: inherit;
   text-align: left;
+  font: inherit;
   cursor: pointer;
 }
-.agente-otra-titulo {
+.gru-mini:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+.gru-mini-titulo {
   font-size: var(--t-cuerpo);
-  font-weight: var(--p-rotulo, 650);
+  font-weight: var(--p-boton);
+  overflow-wrap: anywhere;
 }
-.agente-tarjeta .agente-borrador {
-  min-height: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  box-shadow: none;
+.gru-mini-fecha {
+  font-size: var(--t-nota);
+  color: var(--tinta-2);
 }
-.agente-tarjeta .agente-chips-datos,
-.agente-tarjeta .agente-otras {
+.gru-mini-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--e-1);
+}
+@media (min-width: 960px) {
+  .gru-otras {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.gru-card .gru-datos {
+  margin-right: 0;
+  margin-bottom: 0;
   margin-left: 0;
-  padding-left: 0;
+  padding: 0;
 }
-.agente-tarjeta .agente-otras,
-.agente-tarjeta .agente-otras > li,
-.agente-tarjeta .agente-chips-datos > li {
-  list-style: none;
+.gru-card .gru-datos > li {
+  margin: 0;
+}
+.gru-card .gru-datos > li::before {
+  content: none;
 }

@@ -6,7 +6,7 @@
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { api } from '../lib/api'
 import { useAccion } from '../lib/hooks'
-import { fechaCorta, hora, sinHoraDeFin } from '../lib/format'
+import { franjaTexto } from '../lib/format'
 import { irA, rutas } from '../lib/shell'
 import type { ApiError, ApiResult } from '../lib/types'
 import { Aviso, Boton, Card, Cargando, Chip, ErrorCaja, RotuloSimulacion } from '../components/ui'
@@ -483,6 +483,25 @@ function Plegable({
 const RITMO: Record<string, string> = { con_todo: 'con todo', algo_tranquilo: 'algo tranquilo' }
 const AMBIENTE_GRUPO: Record<string, string> = { fiesta: 'de fiesta', tranquilo: 'tranquilo' }
 
+/** Título natural por actividad (Nico, 11:40): «Día de parque en Parque de la comuna», no «Parque en Parque de la comuna». */
+const TITULO_NATURAL: Record<string, string> = {
+  parque: 'Día de parque',
+  cerro: 'Día de montaña',
+  cultura: 'Tarde de museo',
+  cafe: 'Café y brunch',
+  bar: 'Salida',
+  juegos_casa: 'Noche de juegos',
+  peli_casa: 'Noche de película',
+  juegos_salida: 'Bowling y escape room',
+}
+
+/** «Día de parque en {lugar}»; las demás actividades, «{Actividad} en {lugar}». «Salida a», no «Salida en». */
+export function tituloNatural(c: CandidataAgente): string {
+  const lugar = c.lugar.nombre.replace(' (Simulación)', '')
+  const base = (c.actividad && TITULO_NATURAL[c.actividad]) || c.actividad_etiqueta
+  return `${base} ${c.actividad === 'bar' ? 'a' : 'en'} ${lugar}`
+}
+
 /**
  * Lo que eligió el grupo, solo en totales (mejora #26). Con 3 personas o menos no se muestra nada, y una
  * actividad que eligió una sola persona tampoco: en ambos casos se podría adivinar quién fue.
@@ -506,54 +525,55 @@ function PerfilDelGrupo({ perfil }: { perfil: PerfilGrupo | null | undefined }) 
   )
 }
 
-/** Título natural por actividad (Nico, 11:40): «Día de parque en Parque de la comuna», no «Parque en Parque de la comuna». */
-const TITULO_NATURAL: Record<string, (lugar: string) => string> = {
-  parque: (l) => `Día de parque en ${l}`,
-  cerro: (l) => `Día de montaña en ${l}`,
-  padel: (l) => `Pádel en ${l}`,
-  asado: (l) => `Asado en ${l}`,
-  cultura: (l) => `Tarde de museo en ${l}`,
-  cafe: (l) => `Café y brunch en ${l}`,
-  cena: (l) => `Cena en ${l}`,
-  bar: (l) => `Salida a ${l}`,
-  futbol: (l) => `Fútbol en ${l}`,
-  cine: (l) => `Cine en ${l}`,
-  tenis: (l) => `Tenis en ${l}`,
-  basquet: (l) => `Básquet en ${l}`,
-  fiesta: (l) => `Fiesta en ${l}`,
-  juegos_casa: (l) => `Noche de juegos en ${l}`,
-  peli_casa: (l) => `Noche de película en ${l}`,
-  juegos_salida: (l) => `Bowling y escape room en ${l}`,
+const DIA_CORTO = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+const MES_CORTO = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+
+/** "Sáb 31 oct · 14:00–17:00" desde la hora local de Santiago que manda el servidor (sin convertir zonas). */
+function franjaChip(inicio: string, fin: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}:\d{2})/.exec(inicio)
+  const n = /T(\d{2}:\d{2})/.exec(fin)
+  if (!m || !n) return franjaTexto(inicio, fin)
+  const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])))
+  return `${DIA_CORTO[d.getUTCDay()]} ${Number(m[3])} ${MES_CORTO[d.getUTCMonth()]} · ${m[4]}–${n[1]}`
 }
 
-export function tituloNatural(c: CandidataAgente): string {
-  const lugar = c.lugar.nombre.replace(' (Simulación)', '')
-  const f = c.actividad ? TITULO_NATURAL[c.actividad] : undefined
-  return f ? f(lugar) : `${c.actividad_etiqueta} en ${lugar}`
-}
+const CLIMA_CHIP: Record<string, string> = { seco: 'Sol', lluvia: 'Lluvia', desconocido: 'Sin pronóstico' }
 
-/** «Sáb 31 oct · 11:00–14:00», o «Sáb 31 oct · desde las 11:00» sin hora de fin. */
-function fechaChip(f: { inicio: string; fin: string }): string {
-  const d = fechaCorta(f.inicio)
-  const dia = d.charAt(0).toUpperCase() + d.slice(1)
-  return sinHoraDeFin(f.inicio, f.fin) ? `${dia} · desde las ${hora(f.inicio)}` : `${dia} · ${hora(f.inicio)}–${hora(f.fin)}`
-}
-
-/** El clima en una palabra para el chip; el detalle va en «Cómo lo armó». */
-function climaCorto(c: BorradorAgente['clima']): string | null {
-  const t = `${c.sabado} ${c.domingo} ${c.resumen}`.toLocaleLowerCase('es')
-  if (/sin lluvia|sol|despejad/.test(t)) return 'Sol'
-  if (/lluvia|chubasc|tormenta/.test(t)) return 'Lluvia'
-  if (/nublad/.test(t)) return 'Nublado'
-  return null
+/** Lo esencial de una opción en una fila de chips: cuándo, cuánto viaje, clima. */
+function DatosOpcion({ c, b }: { c: CandidataAgente; b: BorradorAgente }) {
+  const viaje = viajeDeOpcion(c, b)
+  const clima = CLIMA_CHIP[b.clima.sabado] ?? null
+  return (
+    <ul className="gru-datos" aria-label="Datos del plan">
+      {c.franjas.map((f, i) => (
+        <li key={i} className="gru-dato">
+          <Icono n="calendario" tam={16} />
+          {franjaChip(f.inicio, f.fin)}
+        </li>
+      ))}
+      {viaje ? (
+        <li className="gru-dato">
+          <Icono n="paseo" tam={16} />
+          {`≤ ${viaje.max_minutos} min para todos${viaje.estimado ? ' (estimado)' : ''}`}
+        </li>
+      ) : null}
+      {clima ? (
+        <li className="gru-dato">
+          <Icono n="reloj" tam={16} />
+          {b.clima.fuente === 'simulacion' ? `${clima} (simulación)` : clima}
+        </li>
+      ) : null}
+    </ul>
+  )
 }
 
 /**
- * El resultado del agente, como la pantalla 7 del mockup: tarjeta con borde grueso, "RECOMENDADO · N OPCIONES", el
- * título grande, fecha y viaje, el mensaje de la IA entre comillas con "Lo redactó la IA", un desplegable con lo que
- * hizo el agente y las otras opciones, el primario "Usar esta opción" y, chico, que el agente invite al grupo.
+ * El resultado del agente (pedido de Nico, 24 oct ~11:40: "que se vea mucho mejor cuál es la respuesta"). Una tarjeta
+ * con jerarquía: cabecera chica (PROPUESTA DE GRU + Recomendada), título grande, chips de datos duros, el mensaje como
+ * cita destacada, UN primario "Usar esta opción" y, debajo, secundarios discretos: invitar, las otras opciones y
+ * "Cómo lo armó". Lo técnico (por qué, pasos, a quiénes cuenta, clima, canchas, servicio) va plegado.
  */
-export function BorradorTarjeta({
+function BorradorTarjeta({
   espacioId,
   b,
   soloLectura,
@@ -570,7 +590,8 @@ export function BorradorTarjeta({
   invitar: { disponible: boolean | null; abrir: () => void } | null
 }) {
   const [seleccion, setSeleccion] = useState(b.elegida_id)
-  const [verMas, setVerMas] = useState(false)
+  const [verOtras, setVerOtras] = useState(false)
+  const [verComo, setVerComo] = useState(false)
   const elegida = b.candidatas.find((c) => c.id === seleccion) ?? b.candidatas[0]
   const esLaDestacada = elegida.id === b.elegida_id
   // La explicación y el mensaje del modelo son de la opción que destacó; para otra, el texto fijo.
@@ -580,13 +601,10 @@ export function BorradorTarjeta({
   const mensaje = esLaDestacada ? b.mensaje_al_grupo : mensajeFijo(elegida)
   const deModelo = esLaDestacada && b.explicacion_fuente === 'modelo'
   const canchas = enlacesCanchas(elegida.actividad, elegida.franjas[0])
-  // Enmienda 10: el viaje de la opción que está mirando el organizador (null con menos de 4 personas con zona).
-  const viaje = viajeDeOpcion(elegida, b)
-  const total = b.candidatas.length
-  const otras = total - 1
+  const otras = b.candidatas.filter((c) => c.id !== elegida.id)
   const nPasos = pasos?.length ?? 0
-  // E5: "N opciones para N personas" dice a quiénes cuenta.
-  const quienes = `${total > 1 ? `${total} opciones` : 'Opción'} para ${b.personas_consideradas} personas: cuenta a quienes cargaron preferencias y las habilitaron${
+  // E5: a quiénes cuenta "N opciones para N personas".
+  const quienes = `${b.candidatas.length > 1 ? `${b.candidatas.length} opciones` : 'Una opción'} para ${b.personas_consideradas} personas: cuenta a quienes cargaron preferencias y las habilitaron${
     personasGrupo && personasGrupo > b.personas_consideradas ? ` (${b.personas_consideradas} de ${personasGrupo} en el grupo)` : ''
   }.`
 
@@ -601,143 +619,120 @@ export function BorradorTarjeta({
     irA(rutas.nueva(espacioId))
   }
 
-  const [verOtras, setVerOtras] = useState(false)
-  const clima = climaCorto(b.clima)
-  const cargaron = personasGrupo && personasGrupo >= b.personas_consideradas ? `${b.personas_consideradas} de ${personasGrupo} cargaron sus gustos` : null
-
   return (
-    <div className="agente-resultado agente-tarjeta sd-aparecer sd-respira">
-      {/* Rediseño (Nico, 11:40: «mucho texto, una ensalada»): a la vista solo qué, cuándo, cuánto viaje, el mensaje y
-          una acción. Todo lo técnico va en «Cómo lo armó». */}
-      <div className="agente-tarjeta-cabeza">
+    <article className="agente-resultado gru-card sd-aparecer sd-respira" aria-labelledby="gru-card-titulo">
+      <div className="gru-card-cabeza">
         <span className="agente-sobretitulo">Propuesta de GRU</span>
-        <Chip tono={esLaDestacada ? 'ok' : 'neutro'}>{esLaDestacada ? 'Recomendada' : 'Elegida por ti'}</Chip>
-        <span className="agente-borrador">Borrador</span>
+        <span className="gru-card-chips">
+          {esLaDestacada ? <Chip tono="ok">{b.eleccion_fuente === 'modelo' ? 'Recomendada' : 'Recomendada'}</Chip> : <Chip tono="info">Elegida por ti</Chip>}
+          <Chip>Borrador</Chip>
+        </span>
       </div>
-      <div className="agente-tarjeta-titulo">
-        <p className="t-titulo agente-recomendada-nombre">{tituloNatural(elegida)}</p>
+      {b.quorum ? <p className="suave agente-quorum">{textoQuorum(b.quorum)}</p> : null}
+      <div className="gru-card-titulo-fila">
+        <h3 id="gru-card-titulo" className="t-titulo agente-recomendada-nombre">
+          {tituloNatural(elegida)}
+        </h3>
         {elegida.lugar.simulado ? <RotuloSimulacion /> : null}
       </div>
-      <ul className="agente-chips-datos" aria-label="Cuándo y cómo">
-        {elegida.franjas.map((f, i) => (
-          <li key={i}>
-            <Icono n="calendario" tam={16} />
-            <span>{fechaChip(f)}</span>
-          </li>
-        ))}
-        {viaje ? (
-          <li>
-            <Icono n="lugar" tam={16} />
-            <span>≤ {viaje.max_minutos} min para todos</span>
-          </li>
-        ) : null}
-        {clima ? (
-          <li>
-            <Icono n="clima" tam={16} />
-            <span>{clima}</span>
-          </li>
-        ) : null}
-      </ul>
-      <figure className="agente-cita-caja">
-        <blockquote className="agente-cita">“{mensaje}”</blockquote>
-        {deModelo ? <figcaption className="t-nota suave">Lo redactó la IA</figcaption> : null}
+      <DatosOpcion c={elegida} b={b} />
+      <figure className="gru-cita">
+        <blockquote>“{mensaje}”</blockquote>
+        <figcaption className="t-nota">{deModelo ? 'Lo redactó la IA' : 'Texto fijo, armado con reglas'}</figcaption>
       </figure>
-      {cargaron ? <p className="t-nota suave agente-cargaron">{cargaron}</p> : null}
-      <div className="agente-tarjeta-acciones">
-        <Boton onClick={usar} disabled={soloLectura}>
-          Usar esta opción
-        </Boton>
-        {invitar && !soloLectura ? (
-          invitar.disponible === false ? (
-            <p className="t-nota suave">Que GRU invite al grupo no está disponible ahora.</p>
-          ) : (
-            <button type="button" className="agente-enlace agente-enlace-chico" onClick={invitar.abrir} disabled={invitar.disponible === null}>
-              Que GRU invite al grupo (revisás antes)
-            </button>
-          )
+      <Boton onClick={usar} disabled={soloLectura}>
+        Usar esta opción
+      </Boton>
+      <div className="gru-secundarios">
+        {invitar && !soloLectura && invitar.disponible !== false ? (
+          <button type="button" className="agente-enlace" onClick={invitar.abrir} disabled={invitar.disponible === null}>
+            Que GRU invite al grupo (revisás antes)
+          </button>
         ) : null}
-      </div>
-      {otras > 0 ? (
-        <Plegable
-          id="agente-otras"
-          titulo={otras === 1 ? 'Ver la otra opción' : `Ver las otras ${otras} opciones`}
-          resumen=""
-          abierto={verOtras}
-          onCambio={setVerOtras}
-        >
-          <ul className="agente-otras">
-            {b.candidatas
-              .filter((c) => c.id !== elegida.id)
-              .map((c) => (
-                <li key={c.id}>
-                  <button type="button" className="agente-otra" onClick={() => setSeleccion(c.id)}>
-                    <span className="agente-otra-titulo">{tituloNatural(c)}</span>
-                    <span className="t-nota suave">{c.franjas.map(fechaChip).join(' · ')}</span>
-                    {c.id === b.elegida_id ? (
-                      <Chip tono="ok">{b.eleccion_fuente === 'modelo' ? 'Recomendada por el agente' : 'Recomendada'}</Chip>
-                    ) : null}
-                  </button>
-                </li>
-              ))}
-          </ul>
-        </Plegable>
-      ) : null}
-      <Plegable id="agente-mas" titulo={nPasos > 0 ? `Cómo lo armó (${nPasos} pasos)` : 'Cómo lo armó'} resumen="" abierto={verMas} onCambio={setVerMas}>
-        <p className="suave">{deModelo ? 'Lo redactó la IA, que solo vio opciones válidas, el clima y totales del grupo.' : 'Texto fijo, armado con reglas.'}</p>
-        {b.quorum ? <p className="suave agente-quorum">{textoQuorum(b.quorum)}</p> : null}
-        <p>
-          <strong>Por qué: </strong>
-          {explicacion}
-        </p>
-        {b.clima.fuente === 'simulacion' ? (
-          <p className="suave">
-            Clima de prueba <RotuloSimulacion />: {b.clima.resumen.replace('Simulación: ', '')} No es un pronóstico real.
-          </p>
-        ) : (
-          <p className="suave">
-            Clima: {b.clima.resumen}
-            {b.clima.fuente === 'open-meteo' ? (
-              <>
-                {' '}
-                (pronóstico de{' '}
-                <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">
-                  Open-Meteo
-                </a>
-                )
-              </>
-            ) : null}
-          </p>
-        )}
-        {nPasos > 0 ? (
-          <>
-            <h3 className="agente-subtitulo">Lo que hizo el agente</h3>
-            <PasosAgente pasos={pasos!} />
-          </>
-        ) : null}
-        <p className="suave">{quienes}</p>
-        <PerfilDelGrupo perfil={b.perfil_grupo} />
-        {canchas.length > 0 ? (
-          <div className="bloque agente-canchas">
-            <p>
-              <strong>Dónde buscar canchas: </strong>
-              {elegida.lugar.simulado ? 'el club de esta opción es de simulación; ' : ''}
-              la disponibilidad se ve en cada sitio. CRUXE no reserva ni confirma.
-            </p>
-            <div className="fila-botones agente-compartir">
-              {canchas.map((e) => (
-                <a key={e.clave} className="btn btn-secundario btn-chico" href={e.url} target="_blank" rel="noopener noreferrer">
-                  {e.texto}
-                </a>
+        {otras.length > 0 ? (
+          <Plegable
+            id="gru-otras"
+            titulo={otras.length === 1 ? 'Ver la otra opción' : `Ver las otras ${otras.length} opciones`}
+            resumen=""
+            abierto={verOtras}
+            onCambio={setVerOtras}
+          >
+            <div className="gru-otras">
+              {otras.map((c) => (
+                <button key={c.id} type="button" className="gru-mini" onClick={() => setSeleccion(c.id)} aria-label={`Elegir ${tituloNatural(c)}`}>
+                  <span className="gru-mini-titulo">
+                    {tituloNatural(c)}
+                  </span>
+                  <span className="gru-mini-fecha">{c.franjas[0] ? franjaChip(c.franjas[0].inicio, c.franjas[0].fin) : ''}</span>
+                  <span className="gru-mini-chips">
+                    {c.id === b.elegida_id ? <Chip tono="ok">Recomendada</Chip> : null}
+                    {c.lugar.simulado ? <RotuloSimulacion /> : null}
+                  </span>
+                </button>
               ))}
             </div>
-            <small>Google Maps muestra lo que está cerca de quien toca el enlace: CRUXE no conoce la ubicación de nadie.</small>
-          </div>
+          </Plegable>
         ) : null}
-        {invitar?.disponible ? <p className="suave agente-estado-ok">Servicio disponible: puedes preparar el borrador social.</p> : null}
-      </Plegable>
-    </div>
+        <Plegable id="gru-como" titulo={nPasos > 0 ? `Cómo lo armó (${nPasos} pasos)` : 'Cómo lo armó'} resumen="" abierto={verComo} onCambio={setVerComo}>
+          <p>
+            <strong>Por qué: </strong>
+            {explicacion}
+          </p>
+          {nPasos > 0 ? <PasosAgente pasos={pasos!} /> : null}
+          <p className="suave">{quienes}</p>
+          <PerfilDelGrupo perfil={b.perfil_grupo} />
+          {b.clima.fuente === 'simulacion' ? (
+            <p className="suave">
+              Clima de prueba <RotuloSimulacion />: {b.clima.resumen.replace('Simulación: ', '')} No es un pronóstico real.
+            </p>
+          ) : (
+            <p className="suave">
+              Clima: {b.clima.resumen}
+              {b.clima.fuente === 'open-meteo' ? (
+                <>
+                  {' '}
+                  (pronóstico de{' '}
+                  <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">
+                    Open-Meteo
+                  </a>
+                  )
+                </>
+              ) : null}
+            </p>
+          )}
+          {deModelo ? <p className="suave">La IA solo vio opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.</p> : null}
+          {canchas.length > 0 ? (
+            <div className="bloque agente-canchas">
+              <p>
+                <strong>Dónde buscar canchas: </strong>
+                {elegida.lugar.simulado ? 'el club de esta opción es de simulación; ' : ''}
+                la disponibilidad se ve en cada sitio. CRUXE no reserva ni confirma.
+              </p>
+              <div className="fila-botones agente-compartir">
+                {canchas.map((e) => (
+                  <a key={e.clave} className="btn btn-secundario btn-chico" href={e.url} target="_blank" rel="noopener noreferrer">
+                    {e.texto}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : null}
+          {invitar && !soloLectura ? (
+            <p className="suave">
+              {invitar.disponible === false
+                ? 'Que GRU invite al grupo no está disponible ahora.'
+                : invitar.disponible
+                  ? 'Servicio disponible: puedes preparar el borrador social.'
+                  : 'Comprobando el servicio de invitaciones…'}
+            </p>
+          ) : null}
+        </Plegable>
+      </div>
+    </article>
   )
 }
+
+export { BorradorTarjeta }
 
 /**
  * Cuando aparece un error, lleva el foco al primer botón o enlace útil del aviso (mejora #35),
