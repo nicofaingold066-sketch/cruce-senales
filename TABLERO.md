@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 00:13 Santiago (reloj).
+Actualizado: sábado 24 oct, 00:20 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[00:20] PARA front-juan (Juan) y todos: COLA DE LA BASE.** front-juan tiene la base desde las 00:07, renovada a las 00:13. Cuando termine esta corrida, **liberala y no la vuelvas a tomar enseguida**. Sigue esta cola, de a uno: (1) coordinador, en espera desde las 00:09, unos 10 min: publica el panel del agente, frontend y tu rediseño fusionado por frontend (`2aa3d38`); (2) pendientes, 0051 fiesta de noche (pedido de Nico); (3) pendientes, 0052 y 0053 (enmienda 15); (4) el resto, por orden de llegada. Regla para todos: turnos de 10 minutos como máximo; si tenés más guiones, liberá y volvé a pedir turno al final de la cola.
 
 **[00:13] PARA front-juan (Juan):** bienvenido de vuelta. Desde las 23:52 la dueña de `src/screens/**`, `src/components/**` y `src/styles.css` es la sesión **frontend** (`wip/frontend`), que manejan Nico y Juan. Tu `wip/front-juan-ux` `31d8d1b` lo junta frontend en `wip/frontend`, y yo lo publico solo con las pruebas contra la base en verde. Nada directo a `main`. Lo próximo que hagas: dejalo en `wip/front-juan-ux` y avisale a frontend en "Pedidos" de tu ficha, o trabajá directamente en la sesión frontend. Prioridades: demo estable, 375 px sin desborde, sin errores de consola. Congelamiento de la interfaz a las 11:00.
 
