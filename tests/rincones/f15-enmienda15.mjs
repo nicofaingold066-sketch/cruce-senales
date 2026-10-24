@@ -1,7 +1,7 @@
 // Fase 15: la enmienda 15 en pantalla (la última función): dos planes con nombre, "Si sirven las dos, gana: la que pueden más",
 // "Si te sirven los dos, ¿cuál prefieres?" (privado), "Cómo viene cada plan" (solo el organizador, sin nombres) y la ronda de
 // opiniones con plazo ("Opiniones hasta…"). Grupo propio "Rincones G" con cuatro personas; sin ráfagas.
-import { abrir, actor, BASE, rincon, nota, guardar, boton, esperarTexto, errores, CARPETA, hora, log } from './lib.mjs'
+import { abrir, actor, BASE, rincon, nota, guardar, boton, esperarTexto, errores, CARPETA, hora, log, revisar } from './lib.mjs'
 import { rinconA11y, anunciado, guardarA11y } from './a11y.mjs'
 import { escribir, guardarSesion } from './estado.mjs'
 
@@ -35,8 +35,11 @@ await corto('R500', o, async () => {
   const nombres = o.getByLabel('Nombre de este plan (opcional)')
   nota('R500', 'campos "Nombre de este plan": ' + await nombres.count())
   await nombres.nth(0).fill('Asado en lo de Tomi'); await nombres.nth(1).fill('Picnic en el parque')
-  const mas = o.locator('details.mas-opciones'); nota('R500', '"Más opciones" presente: ' + await mas.count())
-  await mas.locator('summary').click(); await T(o, 400)
+  // Antes era un <details class="mas-opciones">; en el mockup (S3) es un botón «Más opciones» dentro de «Cuándo» que abre un div.mas-opciones.
+  const masBtn = o.getByRole('button', { name: 'Más opciones' }), masDet = o.locator('details.mas-opciones')
+  nota('R500', '"Más opciones": ' + ((await masBtn.count()) ? 'botón' : (await masDet.count()) ? 'details' : 'no aparece'))
+  if (await masBtn.count()) await masBtn.click(); else if (await masDet.count()) await masDet.locator('summary').click()
+  await T(o, 400)
   await rincon(o, 'R500', 'Nueva propuesta: nombres de plan y "Más opciones" abierto (ronda y regla)', { foco: true })
   await rinconA11y(o, 'R500', 'Nueva propuesta con "Más opciones" (accesibilidad)', { anchos: [320, 375] })
   nota('R500', 'opciones de ronda: ' + (await o.locator('[aria-label="Ronda de opiniones"] label').allInnerTexts()).join(' | '))
@@ -44,7 +47,7 @@ await corto('R500', o, async () => {
   await o.locator('[aria-label="Si sirven las dos, gana"] label', { hasText: 'La que pueden más' }).click(); await T(o, 300)
   nota('R500', 'nota de la sección "Cuándo": ' + (await o.locator('.nota-seccion').first().innerText()))
   await o.getByRole('button', { name: 'Sumar uno al mínimo' }).click()
-  await o.getByRole('button', { name: /Revisar antes de crear/ }).click(); await T(o, 900)
+  await revisar(o); await T(o, 900)
   nota('R501', 'paso 2: ' + (await txt(o)).slice(0, 560))
   await rincon(o, 'R501', 'Paso 2: planes con nombre, "Gana la que pueden más personas", "Ronda de opiniones: 2 h…"', { foco: false })
   await boton(o, 'Crear y abrir al grupo').click(); await o.waitForURL(/\/p\//, { timeout: 40000 }); await T(o, 3500)

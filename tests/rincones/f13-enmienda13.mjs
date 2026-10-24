@@ -3,7 +3,7 @@
 // "Algunos no pueden así" / "Rearmar con lo nuevo" (organizador) → v2 sin confirmaciones heredadas → grupo confirmado →
 // "Avisar al grupo" (version_nueva, reparacion, confirmado) y "Buscar el lugar en el mapa" → baja SIN NOMBRE.
 // Todo ficticio; un grupo propio ("Rincones D hh:mm"); sin ráfagas.
-import { abrir, actor, BASE, rincon, nota, guardar, boton, esperarTexto, errores, CARPETA, hora, log } from './lib.mjs'
+import { abrir, actor, BASE, rincon, nota, guardar, boton, esperarTexto, errores, CARPETA, hora, log, revisar } from './lib.mjs'
 import { rinconA11y, anunciado, focoTrasNavegar, guardarA11y } from './a11y.mjs'
 import { escribir, guardarSesion } from './estado.mjs'
 
@@ -51,7 +51,7 @@ await corto('R303', o, async () => {
   await o.getByLabel('Propósito de la propuesta').fill('Pádel y algo después')
   await o.getByRole('button', { name: 'Sumar uno al mínimo' }).click()
   nota('R303', 'mínimo ahora: ' + await o.locator('input[inputmode=numeric], .paso-num, [aria-live]').first().innerText().catch(() => '?'))
-  await o.getByRole('button', { name: /Revisar antes de crear/ }).click(); await T(o, 800)
+  await revisar(o); await T(o, 800)
   nota('R303', 'paso 2: ' + (await txt(o)).slice(0, 360))
   await boton(o, 'Crear y abrir al grupo').click(); await o.waitForURL(/\/p\//, { timeout: 40000 }); await T(o, 3500)
 })

@@ -1,5 +1,5 @@
 // Fase 4: Inicio/Planes/Perfil con grupos y planes en distintos estados; segunda propuesta: sin opción y cancelada.
-import { abrir, actor, BASE, rincon, nota, guardar, log, boton, esperarTexto, errores, CARPETA } from './lib.mjs'
+import { abrir, actor, BASE, rincon, nota, guardar, log, boton, esperarTexto, errores, CARPETA, revisar } from './lib.mjs'
 import { leer, escribir, guardarSesion, rutaSesion } from './estado.mjs'
 const g = leer()
 const b = await abrir()
@@ -16,7 +16,7 @@ await corto('R83', o, async () => {
   await o.goto(`${BASE}/#/e/${g.espacioId}`); await T(o, 3500)
   await rincon(o, 'R83', 'Espacio con una propuesta confirmada (lista de planes)', { foco: true }); nota('R83', await txt(o))
   await o.getByRole('link', { name: /Nueva propuesta/ }).click(); await T(o, 2500)
-  await o.getByLabel('Propósito de la propuesta').fill('Cine el viernes'); await o.getByRole('button', { name: /Revisar antes de crear/ }).click(); await T(o, 800)
+  await o.getByLabel('Propósito de la propuesta').fill('Cine el viernes'); await revisar(o); await T(o, 800)
   await boton(o, 'Crear y abrir al grupo').click(); await o.waitForURL(/\/p\//, { timeout: 30000 }); await T(o, 3500)
   escribir({ propuesta2: o.url().split('/p/')[1] })
   await rincon(o, 'R84', 'Segunda propuesta abierta, nadie respondió (Buscar opción aún no sale)'); nota('R84', await txt(o))
