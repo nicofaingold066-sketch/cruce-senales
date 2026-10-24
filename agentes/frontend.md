@@ -4,7 +4,7 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- (nada; 01:07)
+- [01:22] Fusión de `wip/front-juan-ux` `79ef5e3` (decisión de Juan 01:12: sacar Novedades) en `wip/frontend`: `src/components/{Novedades,Icono}.tsx`, `src/screens/{CrearGrupo,Espacio,Inicio,PlanTab,Planes,Propuesta,RespuestaTab,SimulacionTab}.tsx`, `src/styles.css`.
 
 ## Entregado
 - [01:07] `wip/frontend` = `0bbef24` (sobre `29d24d4`), para la tanda siguiente: `styles.css`. **O-01** (rincones): debajo de 360 px la cabecera muestra solo el avatar; nombre y rol quedan para el lector de pantalla ("Sesión activa: …"), así ya no pisa "Datos ficticios". **O-14b**: en Simulación, la insignia de estado ("Sin versión publicada") baja de renglón y ya no tapa "SIMULACIÓN". Verificado sin base, con el CSS del build y el mismo marcado, a 320 y 375 px: sin desborde horizontal, sin superposición. tsc OK, vitest puro 90/90, build 0. `wip/frontend-e15` = `ebf2cd5` (lo anterior + E15 apagada). Nota: el commit intermedio `497f3f2` de e15 tenía una llave perdida al fusionar y el build fallaba; lo arreglé en `ebf2cd5` (esa rama no estaba en ninguna tanda).
