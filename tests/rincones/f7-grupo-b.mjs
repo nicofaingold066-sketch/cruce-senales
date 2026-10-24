@@ -1,6 +1,6 @@
 // Fase 7: grupo B con integrantes PENDIENTES (Zoe, Lalo): Nueva propuesta con imprescindible pendiente, cierre elegido a mano,
 // cupos, "Crear solo el borrador"; reclamo de un lugar pendiente por enlace; compartir con integrantes por entrar.
-import { abrir, actor, BASE, rincon, nota, guardar, boton, esperarTexto, errores, CARPETA, hora } from './lib.mjs'
+import { abrir, actor, BASE, rincon, nota, guardar, boton, esperarTexto, errores, CARPETA, hora, revisar } from './lib.mjs'
 import { escribir, guardarSesion, rutaSesion, leer } from './estado.mjs'
 const b = await abrir()
 const o = await actor(b, 'org2')
@@ -28,7 +28,7 @@ await corto('R142', o, async () => {
   await rincon(o, 'R142', 'Nueva propuesta: cierre con "Elegir" (selector de fecha)'); nota('R142', await txt(o))
 })
 await corto('R143', o, async () => {
-  await o.getByRole('button', { name: /Revisar antes de crear/ }).click(); await T(o, 800)
+  await revisar(o); await T(o, 800)
   await rincon(o, 'R143', 'Paso 2 con imprescindible pendiente', { foco: false }); nota('R143', await txt(o))
   await boton(o, 'Crear y abrir al grupo').click(); await o.waitForURL(/\/p\//, { timeout: 30000 }); await T(o, 3500)
   await rincon(o, 'R144', 'Propuesta con imprescindible que todavía no entró (Zoe)', { foco: true }); nota('R144', await txt(o))

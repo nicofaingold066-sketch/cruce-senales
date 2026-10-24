@@ -1,7 +1,7 @@
 // Fase 11: "Respuesta en un paso" (#88) y avisos nuevos. Grupo C propio: organizador crea y abre la propuesta; Ana y Beto entran
 // por el enlace (lista) y llegan a #/e/<id>/responder; se prueban las opciones de un toque, el estado "hecho", "Me interesa",
 // la tarjeta "Falta tu respuesta" y el calendario simulado (solo demo).
-import { abrir, actor, BASE, rincon, nota, guardar, boton, esperarTexto, errores, CARPETA, hora } from './lib.mjs'
+import { abrir, actor, BASE, rincon, nota, guardar, boton, esperarTexto, errores, CARPETA, hora, revisar } from './lib.mjs'
 import { escribir, guardarSesion } from './estado.mjs'
 const b = await abrir()
 const txt = async (p) => (await p.locator('main').innerText()).replace(/\s+/g, ' ').slice(0, 700)
@@ -17,7 +17,7 @@ await boton(o, 'Crear grupo').click(); await o.waitForURL(/#\/e\//, { timeout: 3
 const espacioC = o.url().split('/e/')[1].split('/')[0]; const codigoC = ((await o.locator('.codigo').first().textContent()) || '').trim()
 escribir({ espacioC, codigoC }); await guardarSesion(o)
 await o.getByRole('link', { name: /Crear propuesta/ }).click(); await T(o, 2500)
-await o.getByLabel('Propósito de la propuesta').fill('Cena el sábado'); await o.getByRole('button', { name: /Revisar antes de crear/ }).click(); await T(o, 800)
+await o.getByLabel('Propósito de la propuesta').fill('Cena el sábado'); await revisar(o); await T(o, 800)
 await boton(o, 'Crear y abrir al grupo').click(); await o.waitForURL(/\/p\//, { timeout: 30000 }); await T(o, 3000)
 const ana = await actor(b, 'anac')
 await corto('R200', ana, async () => {

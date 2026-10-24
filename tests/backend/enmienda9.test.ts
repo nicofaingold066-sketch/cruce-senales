@@ -26,7 +26,7 @@ describe('enmienda 9, fase 1: ¿quién eres? (preview y reclamo por integrante)'
   it('1. preview sin ser miembro: nombre del espacio y lista con libre, y nada más; código inexistente o vacío → error', async () => {
     const r = await preview(A, demo.codigo.toLowerCase()) // el código se normaliza como en join_space
     expect(r.ok).toBe(true)
-    expect(Object.keys(r).sort()).toEqual(['contrato', 'espacio', 'miembros', 'ok', 'servidor_ahora'])
+    expect(Object.keys(r).sort()).toEqual(['contrato', 'espacio', 'miembros', 'ok', 'organizador', 'plan', 'servidor_ahora']) // 0056: organizador y plan
     expect(r.espacio).toEqual({ nombre: expect.stringMatching(/^Los del (asado|finde)$/), demo: true, proposito: 'libre', familia: 'libre' }) // E14 (0048); 0054: "Los del finde"
     for (const m of r.miembros) expect(Object.keys(m).sort()).toEqual(['libre', 'miembro_id', 'nombre'])
     const porNombre = Object.fromEntries(r.miembros.map((m: Json) => [m.nombre, m.libre]))

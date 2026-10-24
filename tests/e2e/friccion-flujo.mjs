@@ -42,11 +42,26 @@ try {
   ver('#88: sin desborde a 375 px', !(await desborde(A.p)))
   await A.p.getByRole('button', { name: /^Puedo los dos días/ }).click()
   ver('#88: un toque guarda', await A.p.getByText('Guardado. Solo tú ves estas condiciones.').waitFor({ timeout: 15000 }).then(() => true, () => false))
-  ver('#88: "Me interesa" es opcional y aparte', (await boton(A.p, 'Me interesa').count()) === 1 && (await A.p.getByText('Interés no es confirmación', { exact: false }).count()) > 0)
+  // Enmienda 15 (friccion d471641): con «puedo en los dos» aparecen dos botones «Prefiero «…»» (privado; solo desempata con
+  // «la que más Sí»). Guardado por presencia: en un build sin E15 en pantalla se anota y se sigue.
+  const prefiero = A.p.getByRole('button', { name: /^Prefiero «/ })
+  if (await prefiero.first().waitFor({ timeout: 3000 }).then(() => true, () => false)) {
+    ver('E15: ofrece «Prefiero «…»» para los dos planes, sin elegir ninguno por defecto', (await prefiero.count()) === 2 && (await A.p.getByText(/^Prefieres «/).count()) === 0)
+    const espera = A.p.waitForResponse((r) => new URL(r.url()).pathname === '/rest/v1/rpc/save_my_conditions', { timeout: 15000 })
+    await prefiero.first().click()
+    const r = await (await espera).json()
+    const pref = r?.condiciones?.disponibilidad?.prefiero ?? null
+    const nota = await A.p.getByText(/^Prefieres «/).first().waitFor({ timeout: 10000 }).then(() => true, () => false)
+    ver('E15: elegir un plan guarda «prefiero» (A o B) en lo propio y lo dice como privado', r?.ok === true && ['A', 'B'].includes(pref) && nota, `prefiero=${pref}`)
+  } else console.log(`[${hora()}] E15 pendiente en este build: sin «Prefiero «…»» tras responder`)
+  // S5 exacto al mockup: la fila dice «Avisar que me interesa (opcional · lo ve el grupo)» y aclara que no es confirmar.
+  ver('#88: "Me interesa" es opcional y aparte', (await A.p.getByRole('button', { name: /^(Me interesa|Avisar que me interesa)/ }).count()) === 1 && (await A.p.getByText(/Interés no es confirmación|no es confirmar|no es una confirmación|opcional/).count()) > 0)
   await A.p.getByRole('link', { name: 'Ver el plan' }).click()
-  await A.p.getByRole('tab', { name: 'Mi respuesta' }).click()
-  const completas = await A.p.locator('.etiqueta', { hasText: 'Completas' }).first().waitFor({ timeout: 15000 }).then(() => true, () => false)
-  ver('#88: en "Mi respuesta" las condiciones quedan Completas', completas)
+  // Rediseño S4: sin pestaña «Mi respuesta»; el plan muestra la fila «Tu respuesta: … · Cambiar ›» con lo respondido.
+  const filaRespuesta = A.p.locator('a.fila[href*="/responder/"]').first()
+  const completas = await filaRespuesta.waitFor({ timeout: 15000 }).then(() => true, () => false)
+  const textoFila = completas ? (await filaRespuesta.innerText()).replace(/\s+/g, ' ').trim() : ''
+  ver('#88: en el plan la fila «Tu respuesta» muestra lo respondido', completas && /Tu respuesta: \S/.test(textoFila), textoFila)
   // 2. Ana vuelve a abrir el mismo enlace.
   await A.p.goto(`${BASE}/#/unirse/${g.codigo}`)
   const seguir = boton(A.p, 'Seguir como Ana')
@@ -61,7 +76,7 @@ try {
   ver('#90: en un grupo real no se ofrece la agenda ficticia', (await B.p.getByRole('button', { name: /Tomar de mi calendario/ }).count()) === 0)
   await B.p.getByRole('button', { name: /^No puedo ninguno/ }).click()
   await B.p.getByText('Guardado. Solo tú ves estas condiciones.').waitFor({ timeout: 15000 })
-  ver('"No puedo ninguno": no habla de confirmar ni ofrece "Me interesa"', (await B.p.getByText('la confirmas en el plan', { exact: false }).count()) === 0 && (await boton(B.p, 'Me interesa').count()) === 0)
+  ver('"No puedo ninguno": no habla de confirmar ni ofrece "Me interesa"', (await B.p.getByText('la confirmas en el plan', { exact: false }).count()) === 0 && (await B.p.getByRole('button', { name: /^(Me interesa|Avisar que me interesa)/ }).count()) === 0)
   // 3b. Demo: Luna desde la lista, con la agenda ficticia que solo SUGIERE.
   const gd = preparar({ DEMO: '1' })
   const L = await pagina()

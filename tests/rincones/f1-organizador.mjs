@@ -1,6 +1,6 @@
 // Fase 1: organizador nuevo → portada con nombre, Planes, Perfil, Crear grupo (validaciones), espacio vacío,
 // Nueva propuesta (2 pasos), borrador, abrir propuesta. Crea un GRUPO NUEVO propio ("Rincones <hora>").
-import { abrir, actor, BASE, rincon, nota, guardar, log, boton, esperarTexto, errores, hora } from './lib.mjs'
+import { abrir, actor, BASE, rincon, nota, guardar, log, boton, esperarTexto, errores, hora, revisar } from './lib.mjs'
 import { escribir, guardarSesion } from './estado.mjs'
 const b = await abrir()
 const o = await actor(b, 'org')
@@ -74,7 +74,7 @@ await rincon(o, 'R30', 'Nueva propuesta, paso 1 (valores iniciales)', { foco: tr
 nota('R30', await txt())
 await corto('R31', async () => {
   // título vacío → intentar revisar
-  const rev = o.getByRole('button', { name: /Revisar antes de crear/ })
+  const rev = o.getByRole('button', { name: /Revisar antes de crear|Crear y abrir al grupo/ }).first() // S3 del mockup: el primario está en el formulario
   nota('R31', `Revisar con título vacío: deshabilitado=${await rev.isDisabled().catch(() => 'n/a')}`)
   await rev.click({ timeout: 3000 }).catch(() => {}); await T(600)
   nota('R31', 'texto tras intentar revisar sin título: ' + (await txt()).slice(0, 200))
@@ -82,16 +82,19 @@ await corto('R31', async () => {
 })
 await o.getByLabel('Propósito de la propuesta').fill('Partido de pádel el sábado'); await T(300)
 await corto('R32', async () => {
-  await o.getByRole('button', { name: /Revisar antes de crear/ }).click(); await T(800)
+  await revisar(o); await T(800)
   await rincon(o, 'R32', 'Nueva propuesta, paso 2 (revisar y crear)', { foco: true }); nota('R32', await txt())
 })
+// S3 del mockup (frontend 03:05): «Crear solo el borrador» ya no existe; el estado Borrador (R33–R35) no se alcanza desde la pantalla.
+const hayBorrador = (await o.getByRole('button', { name: 'Crear solo el borrador' }).count()) > 0
 await corto('R33', async () => {
-  await boton(o, 'Crear solo el borrador').click()
+  if (hayBorrador) await boton(o, 'Crear solo el borrador').click()
+  else { await boton(o, 'Crear y abrir al grupo').click(); nota('R33', 'no aplica (mockup S3): no hay forma de crear solo el borrador; se creó y abrió directo') }
   await o.waitForURL(/\/p\//, { timeout: 30000 }); await T(3500)
   const pid = o.url().split('/p/')[1]; escribir({ propuestaId: pid })
-  await rincon(o, 'R33', 'Propuesta en BORRADOR, pestaña Plan (organizador)', { foco: true }); nota('R33', await txt())
+  if (hayBorrador) { await rincon(o, 'R33', 'Propuesta en BORRADOR, pestaña Plan (organizador)', { foco: true }); nota('R33', await txt()) }
 })
-await corto('R34', async () => {
+if (hayBorrador) await corto('R34', async () => {
   await o.getByRole('tab', { name: 'Mi respuesta' }).click(); await T(1800)
   await rincon(o, 'R34', 'Borrador, pestaña Mi respuesta (no se puede responder aún)'); nota('R34', await txt())
   await o.getByRole('tab', { name: 'Historial' }).click(); await T(1800)
@@ -99,7 +102,7 @@ await corto('R34', async () => {
   await o.getByRole('tab', { name: 'Plan' }).click(); await T(800)
 })
 await corto('R36', async () => {
-  await boton(o, 'Abrir propuesta').click(); await T(3500)
+  if (hayBorrador) await boton(o, 'Abrir propuesta').click(); await T(3500)
   await rincon(o, 'R36', 'Propuesta ABIERTA (reuniendo interés), Plan, organizador, 1 sola persona', { foco: true }); nota('R36', await txt())
 })
 await guardarSesion(o)

@@ -100,8 +100,8 @@ log(`código detectado: ${codigo ? codigo.slice(0, 2) + '…' : 'NO'}`)
 writeFileSync(DIR + 'espacio.txt', textoEspacio)
 
 // Crear propuesta
-const crearProp = O.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Proponer/ }).first()
-const crearPropBtn = O.getByRole('button', { name: /Crear propuesta|Nueva propuesta|Proponer/ }).first()
+const crearProp = O.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Nuevo plan|Proponer/ }).first()
+const crearPropBtn = O.getByRole('button', { name: /Crear propuesta|Nueva propuesta|Nuevo plan|Proponer/ }).first()
 if (await crearProp.isVisible().catch(() => false)) await toque(O, ORG, crearProp, 'Crear propuesta')
 else await toque(O, ORG, crearPropBtn, 'Crear propuesta (botón)')
 await O.waitForURL(/nueva/, { timeout: 15000 })
@@ -119,7 +119,7 @@ else if (nAtajos) await toque(O, ORG, atajos.first(), 'primer atajo')
 const titulo = O.getByLabel('Propósito de la propuesta')
 if (!(await titulo.inputValue())) await escribir(O, ORG, titulo, 'Pádel y algo después', 'título')
 await foto(O, ORG, 'nueva-propuesta-llena')
-await toque(O, ORG, btn(O, 'Revisar antes de crear'), 'Revisar antes de crear')
+if (await btn(O, 'Revisar antes de crear').isVisible().catch(() => false)) await toque(O, ORG, btn(O, 'Revisar antes de crear'), 'Revisar antes de crear') // el mockup (S3) la deja opcional
 await pantalla(O, ORG)
 await foto(O, ORG, 'nueva-propuesta-revisar')
 writeFileSync(DIR + 'revisar.txt', await O.locator('body').innerText())
@@ -199,7 +199,11 @@ await toque(O, ORG, btn(O, 'Buscar opción compatible'), 'Buscar opción compati
 await O.waitForTimeout(2000)
 await foto(O, ORG, 'buscar-sin-imprescindible')
 writeFileSync(DIR + 'buscar-sin-imprescindible.txt', await O.locator('body').innerText())
-await toque(O, ORG, O.getByRole('button', { name: /Ir a Mi respuesta/ }), 'Ir a Mi respuesta')
+// «Ir a Mi respuesta» se fue de S4 (ux-flujo 02:49: ahora «Responder en un toque», que lleva a otra pantalla): para llegar al
+// formulario completo de condiciones se usa la pestaña «Mi respuesta», que siempre existe.
+const irRespO = O.getByRole('button', { name: /Ir a Mi respuesta/ })
+if (await irRespO.isVisible().catch(() => false)) await toque(O, ORG, irRespO, 'Ir a Mi respuesta')
+else await toque(O, ORG, O.getByRole('tab', { name: /Mi respuesta/ }), 'pestaña Mi respuesta')
 await O.waitForTimeout(1000)
 for (const [i, letra] of [[0, 'A'], [1, 'B']]) {
   const g = O.locator('fieldset, [role=radiogroup]').filter({ hasText: /Sí puedo|No puedo/ }).nth(i)

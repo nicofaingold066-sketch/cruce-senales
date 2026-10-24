@@ -48,8 +48,8 @@ async function accion(p, fn, clic) {
 }
 async function crearYAbrir(urlEspacio) {
   await T.goto(urlEspacio)
-  await T.getByRole('link', { name: 'Crear propuesta' }).click()
-  await tocar(T, 'Revisar antes de crear')
+  await T.getByRole('link', { name: /^(Crear propuesta|\+? ?Nuevo plan)$/ }).first().click()
+  { const r = T.getByRole('button', { name: 'Revisar antes de crear', exact: true }); if (await r.isVisible().catch(() => false)) await r.click() } // el mockup (S3) la deja opcional
   const r = await accion(T, 'create_proposal', () => tocar(T, 'Crear y abrir al grupo'))
   await T.waitForURL(/\/p\//, { timeout: 20000 })
   await esperarTexto(T, 'Reuniendo interés').catch(() => {})

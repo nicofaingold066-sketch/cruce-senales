@@ -104,7 +104,7 @@ try {
   // ── Beto: pareja, «solo el grupo» (320 px) ─────────────────────────────────────────────────────────
   log('— Beto (va con pareja; la juntada es «solo el grupo»)')
   const betoEntrada = await reintento(() => E.entrarPorEnlace(beto))
-  C.betoVeSoloElGrupoAlResponder = tiene(betoEntrada.texto, /Esta vez es solo el grupo/i)
+  C.betoVeSoloElGrupoEnQuienEres = tiene(beto.quienEresTexto ?? '', /Esta vez es solo el grupo/i)
   await E.responder(beto, 'Sí puedo', 'Sí puedo')
   beto.fin('del enlace a la respuesta guardada')
   await E.irAlPlan(beto)
@@ -112,7 +112,7 @@ try {
   C.betoVeSoloElGrupoEnElPlan = tiene(betoPlan.texto, /solo el grupo/i)
   C.betoPuedeDecirVengoConAlguien = tiene(betoPlan.texto, /acompañante|traer a alguien|\+1/i)
   // El organizador anotó «solo el grupo» a mano: ¿el plan lo explica como regla de la ocasión o queda como parte del título?
-  C.soloElGrupoEsFraseDeRegla = tiene(betoEntrada.texto, /Esta vez es solo el grupo\./)
+  C.soloElGrupoEsFraseDeRegla = C.betoVeSoloElGrupoEnQuienEres
 
   // ── Flor: mal momento ──────────────────────────────────────────────────────────────────────────────
   log('— Flor (después se baja)')

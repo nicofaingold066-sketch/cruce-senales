@@ -1,0 +1,467 @@
+/* S2 · Grupo: crear grupo, pantalla del grupo y Mis planes (rediseño de la noche). Migra los tamaños de estas
+   pantallas a los cuatro del sistema (docs/rediseno/sistema.md). Se importa desde las tres pantallas; .vista-s2
+   iguala la especificidad para ganarle a styles.css. Nada de clamp ni vw. */
+
+/* ---- escena */
+.vista-s2 .escena h1 {
+  font-size: var(--t-titulo);
+  line-height: var(--lh-titulo);
+  font-weight: var(--p-pantalla);
+}
+.vista-s2 .escena-eyebrow,
+.vista-s2 .espacio-cabeza .suave {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+.vista-s2 .escena-sub {
+  font-size: var(--t-cuerpo);
+  line-height: var(--lh-cuerpo);
+}
+.vista-s2 .escena-volver {
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-boton);
+}
+
+/* ---- invitación: el código es el dato grande de quien organiza */
+.vista-s2 .invitar-codigo > span {
+  font-size: var(--t-nota);
+}
+.vista-s2 .invitar .tablero {
+  font-size: var(--t-titulo);
+  font-weight: var(--p-pantalla);
+}
+.vista-s2 .invitar-fila3 .btn {
+  font-size: var(--t-nota);
+  font-weight: var(--p-boton);
+  min-height: var(--toque);
+}
+.vista-s2 .invitar [role='status'] {
+  font-size: var(--t-nota);
+}
+
+/* ---- títulos de bloque y tarjetas */
+.vista-s2 .seccion-titulo h2,
+.vista-s2 .tarjeta-cabeza h2,
+.vista-s2 .invitar-grupo h2 {
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+  font-weight: var(--p-titulo);
+}
+.vista-s2 .etiqueta {
+  font-size: var(--t-nota);
+}
+.vista-s2 .vacio strong {
+  font-size: var(--t-subtitulo);
+}
+.vista-s2 .vacio p {
+  font-size: var(--t-cuerpo);
+}
+
+/* ---- personas: chips legibles, nada bajo 13 px */
+.vista-s2 .chips-personas > li {
+  font-size: var(--t-cuerpo);
+}
+.vista-s2 .chips-personas .chip-nota,
+.vista-s2 .chips-personas .rotulo-sim,
+.vista-s2 .chips-personas .yo,
+.vista-s2 .chips-personas .avatar {
+  font-size: var(--t-nota);
+}
+
+/* ---- agente y herramientas (plegables) */
+.vista-s2 .summary-texto > span:first-child {
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-titulo);
+}
+.vista-s2 .summary-texto small {
+  font-size: var(--t-nota);
+}
+.vista-s2 .bloque h3 {
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-titulo);
+}
+
+/* ---- crear grupo */
+.vista-s2 .form-seccion > legend {
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+  font-weight: var(--p-titulo);
+}
+.vista-s2 .campo > span {
+  font-size: var(--t-nota);
+  font-weight: var(--p-boton);
+  color: var(--tinta-2);
+}
+.vista-s2 .campo input,
+.vista-s2 .campo select {
+  font-size: var(--t-cuerpo);
+  min-height: var(--toque);
+}
+.vista-s2 .campo small,
+.vista-s2 .lista-resumen {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+
+/* ---- Mis planes: resumen de arriba */
+.vista-s2 .resumen-planes > span {
+  font-size: var(--t-nota);
+}
+.vista-s2 .resumen-planes strong {
+  font-size: var(--t-subtitulo);
+  font-weight: var(--p-pantalla);
+}
+/* El sello de Simulación en los chips, a 13 px pero liviano: no compite con el nombre. */
+.vista-s2 .chips-personas .rotulo-sim {
+  font-weight: var(--p-rotulo);
+  letter-spacing: 0.02em;
+}
+
+/* ---- nivel Grupo (mockup validado, pantalla 3): ícono del grupo junto al nombre */
+.vista-s2 .grupo-cabeza {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  min-width: 0;
+}
+.vista-s2 .grupo-cabeza h1 {
+  margin: 0;
+  min-width: 0;
+}
+
+/* ---- tarjeta de invitación en la hoja (antes en la escena) */
+.vista-s2 .invitar-tarjeta .invitar {
+  margin-top: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+.vista-s2 .invitar-tarjeta .invitar-codigo > span {
+  color: var(--tinta-2);
+}
+.vista-s2 .invitar-tarjeta .tablero {
+  color: var(--tinta);
+}
+.vista-s2 .invitar-nota {
+  margin: var(--e-3) 0 0;
+}
+.vista-s2 .seccion-titulo {
+  justify-content: space-between;
+  margin-top: var(--entre-bloques);
+}
+/* En la tarjeta clara, los tres botones del código usan el secundario del sistema (eran claros para la escena oscura). */
+.vista-s2 .invitar-tarjeta .invitar-botones .btn,
+.vista-s2 .invitar-tarjeta .invitar-botones .btn-blanco,
+.vista-s2 .invitar-tarjeta .invitar-botones .btn-claro {
+  background: var(--btn-2);
+  color: var(--btn-2-texto);
+  border: 0;
+  box-shadow: none;
+}
+.vista-s2 .invitar-tarjeta .invitar-botones .btn-hecho {
+  background: var(--ok-suave);
+  color: var(--ok);
+}
+
+/* ---- pantalla 3 exacta (Nico y Juan, 03:05): subtítulo, "Personas ›", invitación con código mono y dos botones */
+.vista-s2 .grupo-cabeza-texto {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.vista-s2 .grupo-sub {
+  font-size: var(--t-nota);
+  color: var(--escena-tinta-2, rgba(255, 255, 255, 0.72));
+}
+.vista-s2 .espacio-cabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-3);
+}
+.vista-s2 .grupo-personas {
+  min-height: var(--toque);
+  padding: 0 var(--e-2);
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-rotulo);
+  cursor: pointer;
+}
+.vista-s2 .invitar-cabeza {
+  display: grid;
+  gap: var(--e-2);
+  margin-bottom: var(--e-3);
+}
+.vista-s2 .invitar-cabeza h2 {
+  margin: 0;
+  font-size: var(--t-subtitulo);
+}
+.vista-s2 .invitar-codigo-mono {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: var(--t-titulo);
+  font-weight: var(--p-titulo, 700);
+  letter-spacing: 0.08em;
+  color: var(--tinta);
+  overflow-wrap: anywhere;
+}
+.vista-s2 .s2-invitar-botones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--e-2);
+}
+.vista-s2 .s2-invitar-botones .btn {
+  width: 100%;
+  min-height: var(--toque);
+}
+.vista-s2 .s2-nuevo-plan {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque);
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-rotulo);
+}
+.vista-s2 .s2-nuevo-plan[aria-disabled='true'] {
+  pointer-events: none;
+  opacity: 0.5;
+}
+.vista-s2 .s2-agente {
+  margin-top: var(--entre-bloques);
+}
+.vista-s2 .s2-agente > .agente-plegable {
+  margin: 0;
+  border: 0;
+  background: none;
+  padding: 0;
+}
+.vista-s2 .s2-agente summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--toque);
+  font-size: var(--t-subtitulo);
+  font-weight: var(--p-rotulo);
+}
+.vista-s2 .s2-abrir {
+  font-size: var(--t-cuerpo);
+  color: var(--tinta-2);
+}
+.vista-s2 .s2-gustos {
+  margin: 0 0 var(--e-3);
+  font-size: var(--t-cuerpo);
+}
+.vista-s2 .s2-agente-boton {
+  width: 100%;
+}
+.vista-s2 .s2-fila,
+.vista-s2 .tarjeta-sim {
+  margin-top: var(--entre-tarjetas);
+}
+.vista-s2 .s2-historial {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--e-1);
+}
+.vista-s2 .s2-historial a {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--e-3);
+  min-height: var(--toque);
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+.s2-hoja-cabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--e-3);
+}
+.s2-hoja-cabeza h2 {
+  margin: 0;
+  font-size: var(--t-subtitulo);
+}
+.s2-cerrar {
+  width: var(--toque);
+  height: var(--toque);
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+.sd-hoja-modal .chips-personas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--e-2);
+}
+.sd-hoja-modal .chips-personas li {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-height: var(--toque);
+}
+.sd-hoja-modal .chip-nota {
+  margin-left: var(--e-2);
+  font-size: var(--t-nota);
+  color: var(--tinta-2);
+}
+/* El mockup muestra "Abrir ›" a la derecha, sin la flecha del plegable. */
+.vista-s2 .s2-agente > .agente-plegable > summary::after {
+  display: none;
+}
+.vista-s2 .s2-agente summary .summary-texto {
+  flex: 1;
+}
+.vista-s2 .s2-invitar-botones .btn {
+  white-space: nowrap;
+  padding-inline: var(--e-2);
+}
+
+/* ---- pantalla 11 exacta: Crear un grupo como hoja a pantalla completa */
+.vista-crear {
+  display: block;
+}
+.vista-crear .s2-hoja-completa {
+  max-width: 640px;
+  margin: 0 auto;
+  border-radius: 0;
+  min-height: calc(100dvh - var(--barra-alto));
+}
+.s2-crear-cabeza {
+  display: grid;
+  grid-template-columns: var(--toque) 1fr var(--toque);
+  align-items: center;
+  margin-bottom: var(--entre-bloques);
+}
+.s2-crear-cabeza h1 {
+  margin: 0;
+  text-align: center;
+  font-size: var(--t-subtitulo);
+}
+.s2-crear-cabeza .s2-cerrar {
+  color: var(--tinta);
+}
+.vista-crear .s2-nombre-grupo {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+}
+.vista-crear .s2-nombre-grupo input {
+  flex: 1;
+  min-width: 0;
+}
+.vista-crear .s2-quienes-lista {
+  list-style: none;
+  margin: 0 0 var(--e-3);
+  padding: 0;
+  display: grid;
+}
+.vista-crear .s2-quienes-lista li {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  min-height: 52px;
+  border-bottom: 1px solid var(--linea);
+  font-size: var(--t-cuerpo);
+}
+.vista-crear .s2-quienes-nombre {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.vista-crear .s2-quienes-lista .suave {
+  font-size: var(--t-nota);
+}
+.vista-crear .s2-quitar {
+  width: var(--toque);
+  height: var(--toque);
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  color: var(--tinta-2);
+  cursor: pointer;
+}
+.vista-crear .s2-quienes-entrada {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+}
+.vista-crear .s2-quienes-entrada input {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+  min-height: var(--toque);
+}
+.vista-crear .s2-quienes-nota,
+.vista-crear .s2-nota-final {
+  margin: var(--e-2) 0 0;
+  font-size: var(--t-nota);
+}
+.vista-crear .s2-nota-final {
+  text-align: center;
+}
+.vista-crear .s2-fila-opciones {
+  margin-top: var(--entre-bloques);
+  border-top: 1px solid var(--linea);
+  border-bottom: 1px solid var(--linea);
+}
+.vista-crear .s2-fila-opciones > summary {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  cursor: pointer;
+  font-size: var(--t-cuerpo);
+  font-weight: var(--p-rotulo);
+}
+.vista-crear .s2-fila-opciones > summary .suave {
+  font-weight: normal;
+  font-size: var(--t-nota);
+}
+.vista-crear .barra-accion {
+  display: grid;
+}
+/* La leyenda oculta del fieldset no puede tomar el ancho de la fila (el mismo arreglo que en S3). */
+.vista-crear .form-seccion > legend.visualmente-oculto {
+  float: none;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+}
+/* Formulario corto: el primario va al pie del contenido, no fijo sobre las opciones abiertas. */
+.vista-crear .barra-accion {
+  position: static;
+  margin-top: var(--entre-bloques);
+  box-shadow: none;
+  background: none;
+}
+.vista-crear .s2-fila-opciones[open] > summary {
+  margin-bottom: var(--e-3);
+}
+/* El campo de nombres con el aspecto de .campo input (la clase .entrada ya es la de la intro). */
+.vista-crear .s2-campo-nombres {
+  min-height: 52px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1.5px solid transparent;
+  background: var(--relleno);
+  font: inherit;
+  font-size: var(--t-cuerpo);
+  color: var(--tinta);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.vista-crear .s2-campo-nombres:focus {
+  outline: none;
+  border-color: var(--tinta);
+  background: var(--hoja);
+}

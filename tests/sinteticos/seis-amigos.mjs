@@ -179,14 +179,12 @@ try {
   log('— Vale: crea y abre la propuesta')
   const tProp = vale.toques
   await vale.tocarEnlace('Crear propuesta', false)
-  await vale.page.getByRole('heading', { name: 'Nueva propuesta' }).waitFor({ timeout: 15000 })
+  await vale.esperarNuevoPlan()
   await ver(vale, 'nueva-propuesta-vacia')
-  await vale.tocarBoton('Cena')
+  await vale.atajo('Cena')
   await vale.page.getByLabel('Propósito de la propuesta').fill('Cena de egresados')
   await vale.tocar(vale.page.getByLabel('Sumar uno al mínimo'), 'mínimo +1')
-  await vale.tocarBoton('Revisar antes de crear')
-  await ver(vale, 'nueva-propuesta-revisar')
-  await vale.tocarBoton('Crear y abrir al grupo')
+  await vale.revisarYCrear(() => ver(vale, 'nueva-propuesta-revisar'))
   await vale.page.getByRole('tab', { name: 'Plan' }).waitFor({ timeout: 30000 })
   await vale.page.waitForTimeout(1200)
   await ver(vale, 'propuesta-abierta')
@@ -220,7 +218,7 @@ try {
   renata.fin('del enlace a «No puedo» en las dos franjas')
   await ver(renata, 'renata-guardado')
   resumen.pasos.renata = lecturas.at(-1)
-  if (renata.rapida) await renata.tocar(renata.page.getByRole('link', { name: 'Ver el plan' }), 'enlace «Ver el plan»')
+  if (renata.rapida) await renata.tocar(renata.page.getByRole('link', { name: /^(Ver el plan|Listo)$/ }), 'enlace «Ver el plan» / «Listo»')
   else await renata.tocarPestana('Plan')
   await renata.page.getByRole('tab', { name: 'Plan' }).waitFor({ timeout: 20000 })
   await ver(renata, 'renata-plan-sin-franja')
@@ -249,7 +247,10 @@ try {
     await bruno.tocar(bruno.page.getByText('Ojalá gratis', { exact: true }), 'Presupuesto: Ojalá gratis')
     await bruno.tocar(bruno.page.getByText('Prefiero bajo techo', { exact: true }), 'Lugar: bajo techo')
     await bruno.tocar(bruno.page.locator('input[id^=pref-gusta-]').first().locator('xpath=..'), 'Me gustaría: la primera actividad')
-    // Enmienda 10, si ya está en el build: transporte, 30 minutos.
+    // Enmienda 10, si ya está en el build: transporte, 30 minutos. Con el panel compacto (agente-ia, 02:12) esas
+    // preguntas viven plegadas en «Cómo llegas (opcional)»: se abre si existe (en el panel largo no está).
+    const plegado = bruno.page.getByRole('button', { name: /Cómo llegas \(opcional\)/ })
+    if (await plegado.count()) await bruno.tocar(plegado.first(), 'abrir «Cómo llegas (opcional)»')
     for (const [txt, que] of [['Transporte público', 'Cómo te movés'], ['Hasta 30 min', 'Hasta cuánto viajás']]) {
       const o = bruno.page.getByText(txt, { exact: true })
       if (await o.count()) await bruno.tocar(o.first(), que)
@@ -314,7 +315,8 @@ try {
   await joaco.page.getByRole('heading', { level: 1 }).first().waitFor({ timeout: 20000 })
   await joaco.page.waitForTimeout(1500)
   await ver(joaco, 'joaco-portada-vuelve')
-  await joaco.tocar(joaco.page.locator('a.plan-vivo').first(), 'tarjeta «Tu plan»')
+  // Rediseño S1 (57b89f1): la portada ya no tiene la tarjeta «Tu plan»; el camino es la línea «Te toca confirmar» (enlace al plan).
+  await joaco.tocar(joaco.page.locator('a.plan-vivo, a[href*="/p/"]').first(), 'el plan desde la portada («Tu plan» o «Te toca confirmar»)')
   await joaco.tocarBoton('Confirmar versión 1')
   await joaco.esperar('Ya confirmaste la versión 1', 25000)
   joaco.fin('de la portada a «Confirmar versión 1»')
