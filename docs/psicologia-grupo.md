@@ -29,6 +29,8 @@ Marcas, como en `docs/problema.md` y `docs/apertura.md`:
 > - **D3:** la modalidad («solo el grupo / con parejas / abierta») va en el título.
 > - **D4:** la oferta de casa es privada, y queda para después de la demo.
 >
+> - **D7:** sí (21:00, en esta sesión). El estilo de la ocasión (simple · normal · especial) entra sin migración (§13).
+>
 > La enmienda 13 (`docs/contrato-enmienda-13.md`, corte a la 01:00) suma además «Así no puedo, pero sigo» (opinar sin bajarse), «Rearmar con lo nuevo» y la baja sin nombre («Una persona se retiró»), con el texto de psico para quien se retira. Textos de esas pantallas: §8.10. Siguen pendientes D5 a D10 (ficha `agentes/psico.md`).
 
 ## 0b. El cierre: por qué los planes de grupo no se cierran (eje del documento)
@@ -439,7 +441,7 @@ Todo lo de abajo depende de que backend tenga tiempo; después de las 12:00 no h
 | E2 | «Hoy conviene recordar: faltan N y se cierra mañana» visible solo para quien organiza, sin enviar nada; y «Te lo recuerda CRUXE» en el texto del recordatorio | ux-flujo | **Antes** | Bajo |
 | E3 | `.ics` con `VALARM` (-1 día y -2 h); margen de 15 minutos en el recordatorio (§12 U3, U4) | friccion (`compartir.ts`) | **Antes** | Bajo |
 | E4 | Botón «Buscar el lugar en el mapa» (solo el lugar; oculto o «(ejemplo)» si es simulación) y línea fija de día, hora y duración (§12 U1, U2) | front-juan | **Antes** | Bajo |
-| E5 | **Estilo** simple · normal · especial: selector para quien organiza, parámetro en la función `agente`, tabla fija actividad → nivel, frase fija; dos formas por estilo (§13) | agente-ia | **Antes** | Medio |
+| E5 | **Estilo** simple · normal · especial: selector para quien organiza, parámetro en la función `agente`, tabla fija actividad → nivel, frase fija; dos formas por estilo (§13) | agente-ia | **Antes** (D7 aprobada) | Medio |
 | E6 | Tiempo estimado propio por persona (§12 U6) | backend | **Después** (enmienda) | Medio |
 | E7 | Presupuesto con `algo_especial` (V11) | backend | **Después** (enmienda) | Medio |
 
@@ -502,6 +504,8 @@ Pedido de Nico (20:28): *«que la gente esté ubicada en tiempo y espacio»*. Re
 - **ux-flujo**: línea U5 en la ficha del borrador cuando hay `viaje`.
 
 ## 13. Nivel de gasto y estilo, sin clase social
+> **Estado:** D7 aprobada por Nico (viernes 23, 21:00, en la sesión psico): el estilo de la ocasión entra **sin migración**, con las reglas de abajo (el tope del que menos quiere gastar manda; la clase social no se pide ni se infiere). Lo construye agente-ia en sus rutas; pedido en `agentes/psico.md`.
+
 Pedido de Nico (20:28): que un plan no quede mal, por ejemplo proponer algo muy barato a un grupo que prefiere otra cosa. **Con una condición que él mismo fijó: no preguntar ni inferir la clase social.** Este apartado explica por qué y cómo se cubre la intención sin ese dato.
 
 ### 13.1 Por qué NO se usa la clase social
