@@ -54,6 +54,8 @@ async function crearGrupo(nombre, etiquetaProposito) {
   await T.getByRole('heading', { name: 'Crear un grupo' }).waitFor({ timeout: 25000 })
   await T.getByLabel('Nombre del grupo').fill(nombre)
   await T.getByLabel('Tu nombre en el grupo').fill('Orga')
+  // S2 (mockup): el propósito vive plegado en «Opciones · ¿para qué es el grupo? · ¿quién viene?».
+  { const opciones = T.locator('details.s2-fila-opciones'); if (await opciones.count() && !(await opciones.evaluate((d) => d.open))) await opciones.locator('summary').click() }
   const selector = T.getByLabel('¿Para qué es este grupo?')
   const porDefecto = await selector.evaluate((s) => s.options[s.selectedIndex].text)
   if (etiquetaProposito) await selector.selectOption({ label: etiquetaProposito })

@@ -259,7 +259,7 @@ try {
   await L.goto(`${BASE}/#/unirse/${codigo}`)
   const unirse = L.locator('form', { has: L.getByRole('heading', { name: 'Unirme con un código', exact: true }) })
   // El label incluye también la ayuda <small>; se acota al formulario de unirse.
-  await unirse.getByLabel('Tu nombre en el espacio').fill('Luna')
+  await unirse.getByLabel(/Tu nombre en el (espacio|grupo)/).fill('Luna')
   const unir = await accion(L, 'join_space', () => tocar(L, 'Unirme'))
   assert.equal(unir.resultado.reclamo_asiento_simulado, true)
   await L.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor()

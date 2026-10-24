@@ -27,7 +27,10 @@ const pagina = async () => {
 const boton = (p, n) => p.getByRole('button', { name: n, exact: true })
 const elegir = async (p, codigo, nombre) => {
   await p.goto(`${BASE}/#/unirse/${codigo}`)
-  await boton(p, nombre).click(); await boton(p, `Sí, soy ${nombre}`).click()
+  // S1 exacto al mockup: pantalla 10 entra en UN toque; «¿Eres X?» / «Sí, soy X» solo si otro teléfono ya tomó el nombre.
+  await boton(p, nombre).click()
+  const confirmar = boton(p, `Sí, soy ${nombre}`)
+  if (await confirmar.isVisible({ timeout: 1500 }).catch(() => false)) await confirmar.click()
 }
 const desborde = (p) => p.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)
 try {
