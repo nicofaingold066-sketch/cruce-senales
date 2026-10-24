@@ -20,7 +20,7 @@ export const EJEMPLOS: readonly Ejemplo[] = [
   { clave: 'cena', grupo: 'Cena de ex compañeros', plan: 'Cena el viernes en un restaurante', tipo: 'ex compañeros del colegio' },
   { clave: 'cine', grupo: 'Los del cine', plan: 'Ir al cine el domingo en la tarde', tipo: 'amigos del cine' },
   { clave: 'cerro', grupo: 'Los del cerro', plan: 'Caminata por el cerro el sábado en la mañana', tipo: 'amigos de la caminata' },
-  { clave: 'juegos', grupo: 'Noche de juegos', plan: 'Juegos de mesa en casa de Dani', tipo: 'amigos de los juegos de mesa' },
+  { clave: 'juegos', grupo: 'Noche de juegos', plan: 'Juegos de mesa el sábado', tipo: 'amigos de los juegos de mesa' },
   { clave: 'lectura', grupo: 'Club de lectura', plan: 'Reunión del club de lectura', tipo: 'un club de lectura' },
   { clave: 'brunch', grupo: 'La familia de Emi', plan: 'Brunch del domingo en un café', tipo: 'la familia' },
 ]
