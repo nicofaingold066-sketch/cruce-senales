@@ -1,0 +1,11 @@
+.salir-grupo {
+  margin-top: var(--e-5);
+  padding-top: var(--e-4);
+  border-top: 1px solid var(--linea);
+}
+.salir-grupo .fila-botones {
+  flex-wrap: wrap;
+}
+.salir-grupo .aviso-texto > p {
+  margin: 0 0 var(--e-3);
+}
