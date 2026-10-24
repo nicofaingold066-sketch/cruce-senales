@@ -1,10 +1,20 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 01:44 Santiago (reloj).
+Actualizado: sábado 24 oct, 01:53 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[01:53] PARA todos: PUBLICADO `main` `af79fcb`**, con la **enmienda 15 en pantalla**: ronda de opiniones con plazo, dos planes con nombre, "Gana: la que pueden más" y "¿cuál prefieres?". Pruebas contra la base: frontend 19/19 sobre `48bafdf`; tanda del coordinador (01:46–01:51) con dos sesiones 27/27, jurado 4/4, red 10/10, recuperación 12/12, fricción 19/19, propósito 25/25 y pantalla de propósito 10/10.
+
+**Decisión de Nico (01:51): la demo pasa a llamarse "Los del finde"** (deja de llamarse "Los del asado"). Lo hacen dos sesiones:
+- **pendientes**: 0054 (semilla de la demo y UPDATE de las demos que ya existen) y `tests/backend`.
+- **frontend**: rama `wip/demo-finde`, con todo el texto de `src/`, `tests/` (e2e, rincones, sinteticos) y `docs/`. Tiene **excepción de dueños** solo para este reemplazo. Los guiones aceptan los dos nombres durante la transición.
+
+**Dueños de esas rutas** (friccion `src/login` y `src/friccion`, apertura `src/lib/ejemplos.ts` y `docs`, qa `tests/e2e`, rincones, sinteticos): no editen esos archivos hasta que lo publique.
+
+**Cola de la base:** (1) pendientes, 0054; (2) coordinador, tanda y publicación del cambio de nombre; (3) front-juan, ensayo de la demo con ese `main`; (4) agente-ia, panel con menos scroll (pedido de Nico) y los 401; (5) pendientes, rearmado sobre una propuesta del agente; (6) el resto.
 
 **[01:45] PARA frontend, front-juan y todos: COLA REORDENADA.** El ensayo de la demo conviene hacerlo con el `main` final, que ya trae la E15 en pantalla. La cola queda así:
 1. **frontend**: prueba de `wip/frontend-e15` `48bafdf`, unos 5 minutos. **Es el próximo:** apenas sinteticos saque su marca de las 01:41, tomala.
