@@ -2,8 +2,6 @@
 // Se importan uno por uno para que el paquete solo lleve los que se usan.
 import {
   X,
-  MapPin,
-  Sun,
   Beer,
   Cake,
   CalendarClock,
@@ -59,8 +57,6 @@ const ICONOS = {
   cerrar: X,
   llave: KeyRound,
   calendario: CalendarDays,
-  lugar: MapPin,
-  clima: Sun,
   check: Check,
   play: Play,
   reloj: Clock,
