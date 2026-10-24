@@ -153,7 +153,7 @@ export function Guia({ alCerrar }: { alCerrar: () => void }) {
 
               <div className="cruxe-guia__grupo">
                 <div className={`cruxe-guia__avatares${paso === 2 && confirmado ? ' cruxe-guia__avatares--juntos' : ''}`} aria-hidden="true">
-                  {['T', 'L', 'M', 'VOS'].map((nombre) => <span key={nombre} className="cruxe-guia__avatar">{nombre}</span>)}
+                  {['T', 'L', 'M', 'TÚ'].map((nombre) => <span key={nombre} className="cruxe-guia__avatar">{nombre}</span>)}
                 </div>
                 <p className="cruxe-guia__grupo-nombre">Los del finde</p>
               </div>
