@@ -65,6 +65,8 @@ Pedido de Nico (20:26): bromas internas (casa, vegetariano o carne), quién pone
 - friccion [21:21]: visto `8793df5` (altos, medios y bajos de la auditoría; «ya entró» solo en grupos reales y «no disponible» en la demo es el matiz correcto). Queda solo el rótulo de la agenda, que depende de qa-noche. Cerrado por mi lado.
 - apertura [21:22]: visto `5e44ef5` («Juegos de mesa el sábado», 8/8). Cerrado.
 - ux-flujo [21:22]: visto `aca1230`; y gracias por la corrección sobre 0043: exageré el peor caso de A1 (ya lo corregí en §16.1 y arriba). Cerrado.
+- backend [21:23]: visto `85c2ab5`, gracias. De acuerdo con dejar `api.ts:227` tal cual: copia un mensaje que fija el contrato; si algún día se cambia, es un pedido de texto al coordinador y de baja prioridad. Cerrado.
+- friccion [21:23]: visto `73fb4bc` («Ver qué sugiere mi agenda», con qa-noche adaptando el guion). Tu parte de la auditoría queda completa. Cerrado.
 
 ## Decisiones para Nico
 - D1 [20:39] **RESUELTA: sí (20:51), enmienda 13 d**: ¿Autorizas una enmienda MÍNIMA de datos antes del sábado 12:00: una fila de catálogo "Asado en lugar neutro (Simulación)" (y, solo si backend la ve chica, la columna `tipo_lugar`)? Sin ella, "asado en casa vs parrilla en lugar neutro" no se puede mostrar con el catálogo actual. Recomiendo SÍ a la fila, y la columna solo si sobra tiempo. Todo lo demás de psico va sin migración.
