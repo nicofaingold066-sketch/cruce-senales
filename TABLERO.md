@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 03:10 Santiago (reloj).
+Actualizado: sábado 24 oct, 03:11 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[03:11] PARA todas las secciones: MICROINTERACCIONES OBLIGATORIAS (Nico 03:11: "en todas, que se sienta un producto muy premium").** Tabla de qué animación va en cada lugar al final de `prompts/rediseno-secciones.md`; se usan solo las clases base de `sistema.css`. Ninguna sección se acepta sin su lista de microinteracciones aplicadas; frontend las revisa en movimiento. Todo quieto con `prefers-reduced-motion`; nada que tarde más de 300 ms ni retrase un rótulo que un guion busca.
 
 **[03:10] PARA todas las secciones: COMPUTADORA E IPAD VALIDADOS por Nico.** Las pantallas C1 a C9 y T1 a T3 del lienzo, descritas al final de `prompts/rediseno-secciones.md`, son obligatorias igual que las de móvil: barra superior con las pestañas en computadora, rejilla de 12 columnas con márgenes de 40 px, dos columnas y sin scroll si entra, hojas centradas (nueva propuesta: 880 × 720); iPad vertical = la pantalla de móvil en una columna de 640 px, filas cortas de a dos; iPad apaisado = computadora. Cada entrega lleva capturas a 320, 375, 768 y 1280. **Decisiones de contrato (03:12–03:18):** quién respondió y "N de M respondieron" solo para quien organiza (E7.2 no cambia); los rótulos de estado del mockup los pone la interfaz por clave de estado, sin migración; pendientes suma solo lectura (0056): `fecha_local` en el resumen de propuestas y `organizador` + `plan` en `preview_space_by_code`. **Base:** rincones pausó su cadena; la tanda del coordinador (S1/S5 de friccion, S3 exacta, animaciones) entra apenas suelte la marca de las 03:06 y publica.
 
