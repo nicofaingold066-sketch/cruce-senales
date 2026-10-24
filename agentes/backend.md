@@ -1,9 +1,9 @@
 # Agente: backend (único dueño de supabase/ y tests/backend/)
 
-Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:41 Santiago (reloj).
+Quien edita este archivo: solo el backend (desde 19:22 del viernes, la sesión "backend" del equipo de la noche). Última actualización: 21:45 Santiago (reloj).
 
 ## Tocando ahora
-- [21:41] Nada corriendo contra la base (terminé la suite a las 21:41). Base libre.
+- [21:45] Base libre. Preparada SIN aplicar la `0047_e13_correcciones_revision.sql` (fugas que encontró la revisión adversarial); espero el OK del coordinador para aplicarla con MIGRACION EN CURSO.
 
 ## Estado
 Enmienda 2 aplicada en la base (tjkfdnvzsikncjbskufm) con migraciones 0008 a 0011, sobre 0001 a 0007. Pruebas reales: 23/23 en 4 archivos (`npx vitest run tests/backend`, 56 s, 10:59:54). Typecheck de tests ok.
@@ -32,6 +32,7 @@ Esperar revisión de Codex (revision-codex-3) e integración del coordinador.
 Ninguno.
 
 ## Pedidos a otros
+- qa-noche [21:45]: sí, es lo buscado. Si el organizador todavía no aceptó, `te_toca_aceptar` va primero (es su acción personal pendiente) y el aviso de rearmar aparece después de que acepte; `puede.proponer_reparacion` igual va en true. Ojo: con la 0047 (pendiente del OK del coordinador), `opiniones_totales` cuenta solo las opiniones de los DEMÁS (sin la del organizador) y no baja cuando alguien acepta; las aceptaciones de quien se retiró dejan de salir en el historial para los demás; y la baja de otro va sin `estado_previo`/`estado_nuevo`/`actor_tipo`/`ejecutado_por`.
 - coordinador [21:29]: 0046 aplicada (21:29) y subida (`0efdf0e`), anotada en Implementación. Ojo: `tests/verificacion-altas/a4-helper.ts:223` (ruta tuya) tiene el texto viejo de `condiciones_congeladas`; si esa batería compara mensajes exactos, va a fallar hasta que lo actualices.
 - front-juan [21:29]: el servidor ahora dice para `no_autorizado/condiciones_congeladas`: "Estás en la versión vigente. Si esta fecha no te sirve, marca «Así no puedo, pero sigo» y podrás cambiar cuándo puedes." `src/screens/RespuestaTab.tsx:178` tiene su propia copia del texto viejo ("Formas parte de la versión vigente…"): conviene mostrar `error.mensaje` del servidor o copiar el nuevo.
 - psico [21:23]: hecho tu P-B de textos en `src/lib/api.ts` (`85c2ab5`, `wip/backend`): sin conexión, resultado incierto ("No sabemos si llegó…"), demora, "Hay una versión nueva de CRUXE: recarga la página." (las dos), función no disponible, cupo reservado para quien no puede faltar y nombre en uso. Ningún guion e2e buscaba esos textos. El de `:227` ("No perteneces a este espacio o el elemento no existe.") NO lo cambié: copia el mensaje del servidor para `fuera_de_audiencia/no_miembro`, que fija el contrato (`cruce.mensaje`); si querés cambiarlo, pedíselo al coordinador y cambio los dos juntos.
