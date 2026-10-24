@@ -230,41 +230,249 @@
   border-top: 1px dashed var(--linea);
 }
 
-/* Mockup de Nico (pantalla 7): preferencias en una línea, la recomendada grande, "trabajando" con pasos. */
+/* ------------------------------------------------------------------ pantalla 7 (mockup validado, 02:40) */
+
+/* Arriba: chips de Finde y Clima, y un solo botón primario con la propuesta rápida, chica, debajo. */
+.agente-idea > * + * {
+  margin-top: var(--e-4);
+}
+.agente-chips {
+  display: grid;
+  gap: var(--e-2);
+}
+.agente-chips-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e-2);
+}
+.agente-chips-rotulo {
+  min-width: 4.5em;
+  font-size: var(--t-nota);
+  font-weight: var(--p-boton);
+  color: var(--tinta-2);
+}
+.agente-chips .chip {
+  font-size: var(--t-cuerpo);
+}
+
+/* Enlaces que son botones: "Editar ›", "Propuesta rápida (sin herramientas)", "o que el agente invite al grupo…". */
+.agente-enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque);
+  padding: 0 var(--e-1);
+  border: 0;
+  background: none;
+  color: var(--info);
+  font: inherit;
+  font-weight: var(--p-boton);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.agente-enlace:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.agente-enlace-chico {
+  font-size: var(--t-nota);
+  text-align: left;
+}
+
+/* "Mis preferencias": una línea y "Editar ›" a la derecha. */
+.agente-linea-fila {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--e-3);
+}
 .agente-linea {
   margin: 0;
+  padding-top: 10px;
+  min-width: 0;
   overflow-wrap: anywhere;
 }
 .agente-prefs-linea > * + * {
   margin-top: var(--e-2);
 }
-.agente-recomendada {
-  margin: var(--e-3) 0;
+
+/* Tarjeta de resultado con borde grueso. */
+.agente-resultado {
   padding: var(--e-4);
+  border: 2px solid var(--tinta);
   border-radius: var(--r-m);
-  background: var(--relleno);
+  background: var(--hoja);
 }
-.agente-recomendada > * {
+.agente-resultado > * {
   margin: 0;
 }
-.agente-recomendada > * + * {
-  margin-top: var(--e-2);
+.agente-resultado > * + * {
+  margin-top: var(--e-3);
+}
+.agente-sobretitulo {
+  margin: 0;
+  font-size: var(--t-nota);
+  font-weight: var(--p-titulo);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-2);
 }
 .agente-recomendada-nombre {
+  margin: 0;
   overflow-wrap: anywhere;
 }
+.agente-recomendada-nombre .rotulo-sim {
+  vertical-align: middle;
+}
+.agente-cita {
+  margin: 0;
+  padding-left: var(--e-3);
+  border-left: 3px solid var(--linea);
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+.agente-resultado .agente-plegable-seccion {
+  margin: 0;
+}
+.agente-resultado .agente-plegable-cuerpo > * + * {
+  margin-top: var(--e-3);
+}
+
+/* "El agente está trabajando": los pasos del sistema (sd-pasos) con aire. */
 .agente-trabajando-titulo {
   margin: 0 0 var(--e-2);
   font-weight: var(--p-boton);
 }
-/* "Que el agente invite al grupo por mí": un enlace secundario, no una sección más. */
-#agente-avanzado,
-.agente-plegable-seccion:has(> [aria-controls='agente-avanzado']) {
-  border-top: 0;
+
+/* ------------------------------------------------------------------ pantalla 20: hoja "Revisar antes de invitar" */
+
+.agente-hoja {
+  width: 100%;
+  max-width: 640px;
+  max-height: 92vh;
+  margin: auto auto 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-l) var(--r-l) 0 0;
+  background: var(--hoja);
+  color: var(--tinta);
+  box-shadow: var(--sombra-hoja);
+  /* La hoja sube (movimiento del sistema, sd-subir). */
+  animation: sd-subir var(--dur-3) var(--curva) both;
 }
-.agente-plegable-boton[aria-controls='agente-avanzado'] .agente-plegable-titulo {
-  color: var(--info);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.agente-hoja::backdrop {
+  background: rgba(18, 16, 14, 0.45);
+}
+.agente-hoja-cuerpo {
+  padding: var(--e-5) var(--e-4) var(--e-6);
+}
+.agente-hoja-cuerpo > * + * {
+  margin-top: var(--e-4);
+}
+.agente-hoja-cabeza {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--e-3);
+}
+.agente-hoja-cabeza h2 {
+  margin: 0;
+  font-size: var(--t-subtitulo);
+  line-height: var(--lh-subtitulo);
+}
+.agente-hoja-cabeza .suave {
+  margin: var(--e-1) 0 0;
+}
+.agente-hoja-cerrar {
+  flex: none;
+  width: var(--toque);
+  height: var(--toque);
+  border: 0;
+  border-radius: 50%;
+  background: var(--relleno);
+  color: var(--tinta);
+  font-size: var(--t-subtitulo);
+  line-height: 1;
+  cursor: pointer;
+}
+.agente-hoja .suave,
+.agente-hoja small {
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+}
+.agente-hoja .aviso-texto,
+.agente-hoja .btn {
+  font-size: var(--t-cuerpo);
+}
+.agente-borrador {
+  padding: var(--e-4);
+  border-radius: var(--r-m);
+  background: var(--relleno);
+}
+.agente-borrador > * {
+  margin: 0;
+}
+.agente-borrador > * + * {
+  margin-top: var(--e-2);
+}
+.agente-filas {
+  display: grid;
+  gap: var(--e-2);
+  margin: var(--e-3) 0 0;
+}
+.agente-filas > div {
+  display: grid;
+  grid-template-columns: minmax(0, 8.5em) minmax(0, 1fr);
+  gap: var(--e-2);
+}
+.agente-filas dt {
+  font-size: var(--t-nota);
   font-weight: var(--p-boton);
+  color: var(--tinta-2);
+  padding-top: 2px;
+}
+.agente-filas dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.agente-fila-linea {
+  display: block;
+}
+@media (max-width: 360px) {
+  .agente-filas > div {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+.agente-hoja-acciones {
+  display: grid;
+  gap: var(--e-2);
+}
+.agente-hoja-acciones .btn {
+  width: 100%;
+}
+
+/* ------------------------------------------------------------------ pantalla 21: la invitación vista por un invitado */
+
+.agente-invitacion {
+  margin: 0 0 var(--e-3);
+  padding: var(--e-3) var(--e-4);
+  border: 1.5px dashed var(--linea);
+  border-radius: var(--r-m);
+  font-size: var(--t-nota);
+  line-height: var(--lh-nota);
+  color: var(--tinta-2);
+  overflow-wrap: anywhere;
+}
+
+/* Lo social: el estado ok con texto. */
+.agente-estado-ok {
+  color: var(--ok);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agente-hoja {
+    animation: none;
+  }
 }

@@ -9,10 +9,11 @@ import { useAccion } from '../lib/hooks'
 import { franjaTexto } from '../lib/format'
 import { irA, rutas } from '../lib/shell'
 import type { ApiError } from '../lib/types'
-import { Aviso, Boton, Card, Cargando, ErrorCaja, RotuloSimulacion } from '../components/ui'
+import { Aviso, Boton, Card, Cargando, Chip, ErrorCaja, RotuloSimulacion } from '../components/ui'
 import '../estilo/seccion-s6.css'
 import { ConsentimientoInvitaciones } from './ConsentimientoInvitaciones'
 import { AgenteSocial } from './AgenteSocial'
+import { socialApi } from './socialApi'
 import {
   AVISO_REINTENTO,
   TEXTO_FALTAN_PERSONAS,
@@ -99,6 +100,7 @@ const MOMENTO: { v: MomentoDia | SinRespuesta; texto: string }[] = [
   NO_RESPONDER,
 ]
 type Opcional = 'zona' | 'movilidad' | 'tiempo_max' | 'momento'
+const MOMENTO_CORTO: Record<string, string> = { manana: 'mañana', tarde: 'tarde', noche: 'noche' }
 
 const VACIAS: Preferencias = {
   presupuesto: 'da_igual',
@@ -268,25 +270,34 @@ function MisPreferencias({ espacioId, soloLectura, primario }: { espacioId: stri
   )
 
   if (!editando) {
+    // Pantalla 7 del mockup: una línea ("Asado, Pádel · algo barato · tranquilo · Providencia, transporte público ·
+    // tarde"), "Editar ›" y la nota de privacidad.
     const gustos = actividades.filter((a) => borrador.me_gustaria.includes(a.clave)).map((a) => a.etiqueta)
-    // Mockup de Nico (pantalla 7): las preferencias en una línea con "Editar". "Presupuesto este finde" queda en la
-    // línea porque lo buscan los guiones de sinteticos al abrir el panel.
+    const minuscula = (t: string | null) => (t ? t.toLocaleLowerCase('es') : null)
+    const ritmo = borrador.ambiente !== 'da_igual' ? textoDe(AMBIENTE, borrador.ambiente) : textoDe(ENERGIA, borrador.energia)
+    const llegar = [textoDe(ZONA, borrador.zona), minuscula(textoDe(MOVILIDAD, borrador.movilidad))].filter(Boolean).join(', ')
     const linea = [
       gustos.length > 0 ? gustos.join(', ') : 'Sin actividades marcadas',
-      `Presupuesto este finde: ${(textoDe(PRESUPUESTO, borrador.presupuesto) ?? '').toLocaleLowerCase('es')}`,
-      viaje.length > 0 ? viaje.join(', ') : null,
-    ].filter(Boolean).join(' · ')
+      borrador.presupuesto !== 'da_igual' ? minuscula(textoDe(PRESUPUESTO, borrador.presupuesto)) : null,
+      minuscula(ritmo),
+      llegar || null,
+      borrador.momento && borrador.momento !== 'da_igual' ? MOMENTO_CORTO[borrador.momento] : null,
+    ]
+      .filter(Boolean)
+      .join(' · ')
     return (
       <div className="bloque agente-prefs-linea">
-        <p className="agente-linea">{linea}</p>
-        <p className="suave">Solo las ves tú. Permisos: {resumenPermisos}.</p>
+        <div className="agente-linea-fila">
+          <p className="agente-linea">{linea}</p>
+          <button type="button" className="agente-enlace" onClick={() => { setAviso(null); setEditando(true) }} disabled={soloLectura}>
+            Editar ›
+          </button>
+        </div>
+        <p className="suave">Solo las ves tú: al grupo le llega la propuesta, nunca lo que pusiste.</p>
         {aviso ? <Aviso tono="ok">{aviso}</Aviso> : null}
         <p className="agente-sr" aria-live="polite">
           {aviso ?? ''}
         </p>
-        <Boton variante="secundario" onClick={() => { setAviso(null); setEditando(true) }} disabled={soloLectura}>
-          Editar mis preferencias
-        </Boton>
       </div>
     )
   }
@@ -424,40 +435,6 @@ function Plegable({
   )
 }
 
-function CopiarMensaje({ texto }: { texto: string }) {
-  const [estado, setEstado] = useState<'si' | 'no' | null>(null)
-  useEffect(() => {
-    if (estado !== 'si') return
-    const t = setTimeout(() => setEstado(null), 2000)
-    return () => clearTimeout(t)
-  }, [estado])
-  async function copiar() {
-    try {
-      await navigator.clipboard.writeText(texto)
-      setEstado('si')
-    } catch {
-      setEstado('no')
-    }
-  }
-  return (
-    <>
-      <button type="button" className="btn btn-secundario btn-chico" onClick={() => void copiar()}>
-        {estado === 'si' ? 'Copiado' : 'Copiar mensaje'}
-      </button>
-      {estado === 'no' ? <small> No se pudo copiar: seleccioná el texto.</small> : null}
-    </>
-  )
-}
-
-/**
- * Enlace wa.me con el mensaje del agente y el enlace de invitación (mejora #25). No es una integración:
- * abre WhatsApp con el texto escrito y la persona decide si lo manda. El texto solo trae el plan, nada privado.
- */
-function enlaceWhatsApp(mensaje: string, invitacion: string | null): string {
-  const texto = invitacion ? `${mensaje} ${invitacion}` : mensaje
-  return `https://wa.me/?text=${encodeURIComponent(texto)}`
-}
-
 const RITMO: Record<string, string> = { con_todo: 'con todo', algo_tranquilo: 'algo tranquilo' }
 const AMBIENTE_GRUPO: Record<string, string> = { fiesta: 'de fiesta', tranquilo: 'tranquilo' }
 
@@ -489,32 +466,30 @@ function etiquetaOpcion(c: CandidataAgente): string {
 }
 
 /**
- * El resultado del agente (rediseño S6): primero la opción elegida y sus datos, después cómo se llegó ("Por qué" y
- * "Lo que hizo el agente"), después el mensaje y una sola acción primaria, "Usar esta opción".
+ * El resultado del agente, como la pantalla 7 del mockup: tarjeta con borde grueso, "RECOMENDADO · N OPCIONES", el
+ * título grande, fecha y viaje, el mensaje de la IA entre comillas con "Lo redactó la IA", un desplegable con lo que
+ * hizo el agente y las otras opciones, el primario "Usar esta opción" y, chico, que el agente invite al grupo.
  */
 function BorradorTarjeta({
   espacioId,
   b,
   soloLectura,
-  invitacion,
   pasos,
   personasGrupo,
+  invitar,
 }: {
   espacioId: string
   b: BorradorAgente
   soloLectura?: boolean
-  invitacion: string | null
   pasos?: string[]
   personasGrupo: number | null
+  /** Abre "Revisar antes de invitar" (pantalla 20); null si el servicio no está o falta el clima. */
+  invitar: { disponible: boolean | null; abrir: () => void } | null
 }) {
   const [seleccion, setSeleccion] = useState(b.elegida_id)
-  const [verOtras, setVerOtras] = useState(false)
-  const [verPasos, setVerPasos] = useState(false)
+  const [verMas, setVerMas] = useState(false)
   const elegida = b.candidatas.find((c) => c.id === seleccion) ?? b.candidatas[0]
   const esLaDestacada = elegida.id === b.elegida_id
-  const [titulo, setTitulo] = useState(elegida.titulo)
-  useEffect(() => setTitulo(elegida.titulo), [elegida.titulo])
-  const tituloValido = titulo.trim().length >= 1 && titulo.trim().length <= 80
   // La explicación y el mensaje del modelo son de la opción que destacó; para otra, el texto fijo.
   const explicacion = esLaDestacada
     ? b.explicacion
@@ -525,15 +500,23 @@ function BorradorTarjeta({
   // Enmienda 10: el viaje de la opción que está mirando el organizador (null con menos de 4 personas con zona).
   const viaje = viajeDeOpcion(elegida, b)
   const lugar = elegida.lugar.nombre.replace(' (Simulación)', '')
-  // E5 (recorrido de Nico): "N opciones para N personas" dice a quiénes cuenta.
-  const quienes = `Cuenta a quienes cargaron preferencias y las habilitaron${
+  const total = b.candidatas.length
+  const otras = total - 1
+  const nPasos = pasos?.length ?? 0
+  const partes = [
+    nPasos > 0 ? `Lo que hizo el agente (${nPasos} pasos)` : null,
+    otras > 0 ? (otras === 1 ? 'la otra opción' : `las otras ${otras} opciones`) : null,
+  ].filter((t): t is string => Boolean(t))
+  const desplegable = partes.length > 0 ? partes.join(' y ').replace(/^l/, 'L') : 'Por qué esta opción'
+  // E5: "N opciones para N personas" dice a quiénes cuenta.
+  const quienes = `${total > 1 ? `${total} opciones` : 'Opción'} para ${b.personas_consideradas} personas: cuenta a quienes cargaron preferencias y las habilitaron${
     personasGrupo && personasGrupo > b.personas_consideradas ? ` (${b.personas_consideradas} de ${personasGrupo} en el grupo)` : ''
   }.`
 
   function usar() {
     // Enmienda 14: la actividad y sus personas, para precargar actividad, mínimo y máximo en Nueva propuesta.
     guardarBorradorAgente(espacioId, {
-      titulo: titulo.trim(),
+      titulo: elegida.titulo,
       franjas: elegida.franjas,
       actividad: elegida.actividad ?? null,
       personas: elegida.personas ?? null,
@@ -542,65 +525,61 @@ function BorradorTarjeta({
   }
 
   return (
-    <div className="bloque agente-resultado sd-aparecer">
-      <h3 className="agente-resultado-titulo">Opciones del agente</h3>
-      {b.quorum ? <p className="suave agente-quorum">{textoQuorum(b.quorum)}</p> : null}
-      {/* Mockup de Nico (pantalla 7): la recomendada, grande; las otras opciones y el proceso, plegados. */}
-      <div className="agente-recomendada">
-        <p className="agente-recomendada-sello">
-          <span className="etiqueta etiqueta-destacada">
-            {esLaDestacada ? (b.eleccion_fuente === 'modelo' ? 'Recomendada por el agente' : 'Recomendada') : 'Elegida por ti'}
-          </span>{' '}
-          {elegida.lugar.simulado ? <RotuloSimulacion /> : null}
-        </p>
-        <p className="t-titulo agente-recomendada-nombre">
-          {elegida.actividad_etiqueta} en {lugar}
-        </p>
-        <ul className="agente-franjas">
-          {elegida.franjas.map((f, i) => (
-            <li key={i}>{franjaTexto(f.inicio, f.fin)}</li>
-          ))}
-        </ul>
-        {viaje ? (
-          <p className="agente-viaje-linea">
-            <strong>Queda a menos de {viaje.max_minutos} minutos para todos{viaje.estimado ? ' (estimado)' : ''}.</strong>{' '}
-            Elegido para que nadie viaje demasiado.
-          </p>
-        ) : null}
-      </div>
-      {b.clima.fuente === 'simulacion' ? (
-        <p className="suave">
-          Clima de prueba <RotuloSimulacion />: {b.clima.resumen.replace('Simulación: ', '')} No es un pronóstico real.
-        </p>
-      ) : (
-        <p className="suave">
-          Clima: {b.clima.resumen}
-          {b.clima.fuente === 'open-meteo' ? (
-            <>
-              {' '}
-              (pronóstico de{' '}
-              <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">
-                Open-Meteo
-              </a>
-              )
-            </>
-          ) : null}
-        </p>
-      )}
-      <p>
-        <strong>Por qué: </strong>
-        {explicacion}
+    <div className="agente-resultado sd-aparecer">
+      <p className="agente-sobretitulo">
+        {esLaDestacada ? 'Recomendado' : 'Elegido por ti'} · {total === 1 ? '1 opción' : `${total} opciones`}
       </p>
-      <Plegable
-        id="agente-otras"
-        titulo={`${b.candidatas.length > 1 ? `${b.candidatas.length} opciones` : 'Opción'} para ${b.personas_consideradas} personas`}
-        resumen={b.candidatas.length > 1 ? 'Ver y elegir otra' : 'A quiénes cuenta'}
-        abierto={verOtras}
-        onCambio={setVerOtras}
-      >
-        <p className="suave agente-quienes">{quienes}</p>
+      {b.quorum ? <p className="suave agente-quorum">{textoQuorum(b.quorum)}</p> : null}
+      <p className="t-titulo agente-recomendada-nombre">
+        {elegida.actividad_etiqueta} en {lugar}
+        {elegida.lugar.simulado ? <> <RotuloSimulacion /></> : null}
+      </p>
+      <ul className="agente-franjas">
+        {elegida.franjas.map((f, i) => (
+          <li key={i}>{franjaTexto(f.inicio, f.fin)}</li>
+        ))}
+      </ul>
+      {viaje ? (
+        <p className="agente-viaje-linea">
+          <strong>Queda a menos de {viaje.max_minutos} minutos para todos{viaje.estimado ? ' (estimado)' : ''}.</strong>
+        </p>
+      ) : null}
+      <blockquote className="agente-cita">“{mensaje}”</blockquote>
+      <p className="suave">
+        {deModelo ? 'Lo redactó la IA, que solo vio opciones válidas, el clima y totales del grupo.' : 'Texto fijo, armado con reglas.'}
+      </p>
+      <Plegable id="agente-mas" titulo={desplegable} resumen="" abierto={verMas} onCambio={setVerMas}>
+        <p>
+          <strong>Por qué: </strong>
+          {explicacion}
+        </p>
+        {b.clima.fuente === 'simulacion' ? (
+          <p className="suave">
+            Clima de prueba <RotuloSimulacion />: {b.clima.resumen.replace('Simulación: ', '')} No es un pronóstico real.
+          </p>
+        ) : (
+          <p className="suave">
+            Clima: {b.clima.resumen}
+            {b.clima.fuente === 'open-meteo' ? (
+              <>
+                {' '}
+                (pronóstico de{' '}
+                <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">
+                  Open-Meteo
+                </a>
+                )
+              </>
+            ) : null}
+          </p>
+        )}
+        {nPasos > 0 ? (
+          <>
+            <h3 className="agente-subtitulo">Lo que hizo el agente</h3>
+            <PasosAgente pasos={pasos!} />
+          </>
+        ) : null}
         <fieldset className="grupo agente-candidatas">
-          <legend className="agente-sr">Elige una opción</legend>
+          <legend>{quienes}</legend>
           <div className="opciones">
             {b.candidatas.map((c) => {
               const id = `agente-opcion-${c.id}`
@@ -620,57 +599,39 @@ function BorradorTarjeta({
           </div>
         </fieldset>
         <PerfilDelGrupo perfil={b.perfil_grupo} />
-      </Plegable>
-      {pasos && pasos.length > 0 ? (
-        <Plegable id="agente-hizo" titulo="Lo que hizo el agente" resumen={`${pasos.length} pasos`} abierto={verPasos} onCambio={setVerPasos}>
-          <PasosAgente pasos={pasos} />
-        </Plegable>
-      ) : null}
-      {canchas.length > 0 ? (
-        <div className="bloque agente-canchas">
-          <p>
-            <strong>Canchas reales cerca: </strong>
-            {elegida.lugar.simulado ? 'el club de esta opción es de simulación; ' : ''}
-            la disponibilidad se ve en cada sitio. CRUXE no reserva ni confirma.
-          </p>
-          <div className="fila-botones agente-compartir">
-            {canchas.map((e) => (
-              <a key={e.clave} className="btn btn-secundario btn-chico" href={e.url} target="_blank" rel="noopener noreferrer">
-                {e.texto}
-              </a>
-            ))}
+        {canchas.length > 0 ? (
+          <div className="bloque agente-canchas">
+            <p>
+              <strong>Canchas reales cerca: </strong>
+              {elegida.lugar.simulado ? 'el club de esta opción es de simulación; ' : ''}
+              la disponibilidad se ve en cada sitio. CRUXE no reserva ni confirma.
+            </p>
+            <div className="fila-botones agente-compartir">
+              {canchas.map((e) => (
+                <a key={e.clave} className="btn btn-secundario btn-chico" href={e.url} target="_blank" rel="noopener noreferrer">
+                  {e.texto}
+                </a>
+              ))}
+            </div>
+            <small>Google Maps muestra lo que está cerca de quien toca el enlace: CRUXE no conoce la ubicación de nadie.</small>
           </div>
-          <small>Google Maps muestra lo que está cerca de quien toca el enlace: CRUXE no conoce la ubicación de nadie.</small>
-        </div>
-      ) : null}
-      <label className={`campo ${tituloValido ? '' : 'campo-error'}`}>
-        <span>Título</span>
-        <input value={titulo} maxLength={80} onChange={(e) => setTitulo(e.target.value)} disabled={soloLectura} />
-      </label>
-      <div className="bloque">
-        <p>
-          <strong>Mensaje para el grupo: </strong>
-          {mensaje}
-        </p>
-        <div className="fila-botones agente-compartir">
-          <CopiarMensaje key={mensaje} texto={mensaje} />
-          {soloLectura ? null : (
-            <a className="btn btn-secundario btn-chico" href={enlaceWhatsApp(mensaje, invitacion)} target="_blank" rel="noopener noreferrer">
-              Compartir por WhatsApp
-            </a>
-          )}
-        </div>
-        <small>WhatsApp sirve para avisar; las respuestas y la confirmación se hacen en CRUXE.</small>
-      </div>
-      <p className="suave">
-        {deModelo
-          ? 'Lo redactó la IA, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.'
-          : 'Texto fijo. Las opciones salieron de reglas fijas sobre las preferencias habilitadas.'}
-      </p>
-      <p className="suave">Cupos, persona imprescindible y cierre: los completas en el paso siguiente.</p>
-      <Boton onClick={usar} disabled={soloLectura || !tituloValido}>
+        ) : null}
+      </Plegable>
+      <Boton onClick={usar} disabled={soloLectura}>
         Usar esta opción
       </Boton>
+      {invitar && !soloLectura ? (
+        invitar.disponible === false ? (
+          <p className="suave">Que el agente invite al grupo no está disponible ahora.</p>
+        ) : (
+          <>
+            <button type="button" className="agente-enlace agente-enlace-chico" onClick={invitar.abrir} disabled={invitar.disponible === null}>
+              o que el agente invite al grupo por mí (revisás y aprobás antes)
+            </button>
+            {invitar.disponible ? <p className="suave agente-estado-ok">Servicio disponible: puedes preparar el borrador social.</p> : null}
+          </>
+        )
+      ) : null}
     </div>
   )
 }
@@ -732,33 +693,45 @@ function ErrorAgente({ error, espacioId, onReintentar }: { error: ApiError; espa
 
 type ClimaElegido = 'real' | ClimaSimulado
 
+// Pantalla 7: chips de Clima "Real / Sol / Lluvia" (solo en el demo; con sol o lluvia es una simulación).
 const CLIMA_DEMO: { v: ClimaElegido; texto: string }[] = [
-  { v: 'real', texto: 'Clima real' },
-  { v: 'seco', texto: 'Simular sol' },
-  { v: 'lluvia', texto: 'Simular lluvia' },
+  { v: 'real', texto: 'Real' },
+  { v: 'seco', texto: 'Sol' },
+  { v: 'lluvia', texto: 'Lluvia' },
 ]
+
+/** Sábados para elegir: el del caso (31 oct) y los dos siguientes. "Sáb 31 oct". */
+function sabadosParaElegir(): { v: string; texto: string }[] {
+  const base = new Date(`${SABADO_DEL_CASO}T12:00:00Z`)
+  return [0, 7, 14].map((d) => {
+    const f = new Date(base.getTime() + d * 86400000)
+    const v = f.toISOString().slice(0, 10)
+    const texto = `Sáb ${f.getUTCDate()} ${f.toLocaleDateString('es-CL', { month: 'short', timeZone: 'UTC' }).replace('.', '')}`
+    return { v, texto }
+  })
+}
 
 function ProponerPlan({
   espacioId,
   soloLectura,
   demo,
-  invitacion,
   personasGrupo,
 }: {
   espacioId: string
   soloLectura?: boolean
   demo?: boolean
-  invitacion: string | null
   personasGrupo: number | null
 }) {
   const [sabado, setSabado] = useState(SABADO_DEL_CASO)
-  // Rediseño S6 (E3): después de la respuesta hay un solo camino; lo social va aparte, plegado como "Avanzado".
-  const [verAvanzado, setVerAvanzado] = useState(false)
   const [clima, setClima] = useState<ClimaElegido>('real')
   const [resultado, setResultado] = useState<ResultadoAgente | null>(null)
-  // Qué botón se tocó: "Que el agente proponga" (directo) o "Que el agente arme un plan" (con herramientas).
-  const [conHerramientas, setConHerramientas] = useState(false)
+  // Qué se tocó: "Que el agente arme un plan" (con herramientas, el primario) o "Propuesta rápida (sin herramientas)".
+  const [conHerramientas, setConHerramientas] = useState(true)
+  // Pantalla 20: "Revisar antes de invitar", abierta desde el enlace chico del resultado.
+  const [hojaSocial, setHojaSocial] = useState(false)
+  const [servicioSocial, setServicioSocial] = useState<boolean | null>(null)
   const { ocupado, error, ejecutar, limpiarError } = useAccion()
+  const sabados = sabadosParaElegir()
 
   function cambiarSabado(v: string) {
     // Un resultado de otro fin de semana no se puede usar: se limpia.
@@ -780,8 +753,18 @@ function ProponerPlan({
     && estadoClimaValido(resultado.clima.sabado) && estadoClimaValido(resultado.clima.domingo)
     ? { sabado: resultado.clima.sabado, domingo: resultado.clima.domingo } : null
 
+  // "Comprobar servicio" ya no es un botón: con un borrador a la vista se consulta solo (sin modelo) y se dice en una línea.
+  const hayBorrador = resultado?.tipo === 'borrador'
+  useEffect(() => {
+    if (!hayBorrador || soloLectura) return
+    let vivo = true
+    setServicioSocial(null)
+    void socialApi.capacidad(espacioId).then((r) => { if (vivo) setServicioSocial(r.ok) })
+    return () => { vivo = false }
+  }, [hayBorrador, espacioId, soloLectura])
+
   const refError = useFocoEnError(error)
-  // Con Opus la respuesta puede tardar: pasados 8 s se avisa que sigue trabajando, para que no parezca trabado.
+  // La respuesta puede tardar: pasados 8 s se avisa que sigue trabajando, para que no parezca trabado.
   const [largo, setLargo] = useState(false)
   useEffect(() => {
     if (!ocupado) {
@@ -796,9 +779,7 @@ function ProponerPlan({
   const anuncio = ocupado
     ? largo
       ? 'El agente sigue pensando: puede tardar hasta medio minuto.'
-      : conHerramientas
-        ? 'El agente está mirando el clima y buscando planes para el grupo.'
-        : 'El agente está buscando opciones para el grupo.'
+      : 'El agente está trabajando.'
     : error?.codigo === 'entrada_incompleta' && error.detalle === 'pocas_preferencias'
       ? 'Faltan preferencias: el agente necesita las de al menos 2 personas.'
       : resultado?.tipo === 'borrador'
@@ -809,6 +790,7 @@ function ProponerPlan({
 
   async function proponer(herramientas = conHerramientas) {
     setResultado(null)
+    setHojaSocial(false)
     setConHerramientas(herramientas)
     const r = await ejecutar(`agente:${espacioId}:${sabado}:${climaPedido ?? 'real'}:${herramientas ? 'h' : 'd'}`, () =>
       agenteApi.proponer(espacioId, sabado, climaPedido, herramientas),
@@ -817,58 +799,52 @@ function ProponerPlan({
   }
 
   return (
-    <div className="bloque">
-      <label className="campo">
-        <span>Fin de semana (sábado)</span>
-        <input type="date" value={sabado} onChange={(e) => cambiarSabado(e.target.value)} disabled={soloLectura || ocupado} />
-        <small>El agente propone dos franjas: ese sábado y el domingo siguiente.</small>
-      </label>
-      {demo ? (
-        <fieldset className="grupo" disabled={soloLectura || ocupado}>
-          <legend>
-            Clima para la demo <RotuloSimulacion />
-          </legend>
-          <div className="opciones">
-            {CLIMA_DEMO.map((o) => {
-              const id = `agente-clima-${o.v}`
-              return (
-                <label key={o.v} htmlFor={id} className={`opcion-radio ${clima === o.v ? 'opcion-activa' : ''}`}>
-                  <input id={id} type="radio" name="agente-clima" checked={clima === o.v} onChange={() => cambiarClima(o.v)} />
-                  {o.texto}
-                </label>
-              )
-            })}
+    <div className="bloque agente-idea">
+      <p className="suave">Mira el clima, los lugares y los gustos del grupo, y te propone un plan. Lo redacta la IA; el grupo decide.</p>
+      <div className="agente-chips">
+        <div className="agente-chips-fila" role="group" aria-label="Finde">
+          <span className="agente-chips-rotulo">Finde</span>
+          {sabados.map((o) => (
+            <Chip key={o.v} activo={sabado === o.v} onClick={soloLectura || ocupado ? undefined : () => cambiarSabado(o.v)}>
+              {o.texto}
+            </Chip>
+          ))}
+        </div>
+        {demo ? (
+          <div className="agente-chips-fila" role="group" aria-label="Clima">
+            <span className="agente-chips-rotulo">
+              Clima <RotuloSimulacion />
+            </span>
+            {CLIMA_DEMO.map((o) => (
+              <Chip key={o.v} activo={clima === o.v} onClick={soloLectura || ocupado ? undefined : () => cambiarClima(o.v)}>
+                {o.texto}
+              </Chip>
+            ))}
           </div>
-          <small>Solo en el espacio de demostración. Con sol o lluvia simulados, el pronóstico no es real.</small>
-        </fieldset>
-      ) : null}
+        ) : null}
+      </div>
       <div className="agente-botones">
         {/* Un solo primario: con una opción a la vista, el primario pasa a "Usar esta opción". */}
         <Boton
           variante={resultado?.tipo === 'borrador' ? 'secundario' : 'primario'}
-          onClick={() => void proponer(false)}
-          ocupado={ocupado && !conHerramientas}
-          ocupadoTexto="El agente está pensando…"
-          disabled={soloLectura || !sabado || (ocupado && conHerramientas)}
-        >
-          Que el agente proponga
-        </Boton>
-        <Boton
-          variante="secundario"
           onClick={() => void proponer(true)}
-          ocupado={ocupado && conHerramientas}
-          ocupadoTexto="El agente está trabajando…"
-          disabled={soloLectura || !sabado || (ocupado && !conHerramientas)}
+          ocupado={ocupado}
+          ocupadoTexto="El agente está pensando…"
+          disabled={soloLectura || !sabado}
         >
           Que el agente arme un plan
         </Boton>
-        <small>«Arme un plan»: la IA elige qué mirar (clima, planes, canchas); cada paso pasa por las reglas de CRUXE.</small>
+        <small>
+          Tarda unos 15 segundos.{' '}
+          <button type="button" className="agente-enlace" onClick={() => void proponer(false)} disabled={soloLectura || !sabado || ocupado}>
+            Propuesta rápida (sin herramientas)
+          </button>
+        </small>
       </div>
       {ocupado ? <AgenteTrabajando largo={largo} /> : null}
       <div ref={refError}>
         {error ? <ErrorAgente error={error} espacioId={espacioId} onReintentar={() => void proponer(conHerramientas)} /> : null}
       </div>
-      {/* E6: en pantalla, una sola frase mientras piensa (la de Cargando); esta región es para lectores de pantalla. */}
       <p className="agente-sr" aria-live="polite">
         {anuncio}
       </p>
@@ -886,26 +862,13 @@ function ProponerPlan({
           espacioId={espacioId}
           b={resultado}
           soloLectura={soloLectura}
-          invitacion={invitacion}
           pasos={resultado.pasos}
           personasGrupo={personasGrupo}
+          invitar={climaSocial ? { disponible: servicioSocial, abrir: () => setHojaSocial(true) } : null}
         />
       ) : null}
-      {resultado?.tipo === 'borrador' ? (
-        <Plegable
-          id="agente-avanzado"
-          titulo="Que el agente invite al grupo por mí"
-          resumen="Con tu aprobación antes de publicar"
-          abierto={verAvanzado}
-          mantener
-          onCambio={setVerAvanzado}
-        >
-          {climaSocial ? (
-            <AgenteSocial espacioId={espacioId} sabado={sabado} soloLectura={soloLectura} clima={climaSocial} />
-          ) : (
-            <Aviso>No recibimos un dato de clima válido para preparar las invitaciones. Vuelve a pedir el borrador.</Aviso>
-          )}
-        </Plegable>
+      {resultado?.tipo === 'borrador' && climaSocial && hojaSocial ? (
+        <AgenteSocial espacioId={espacioId} sabado={sabado} soloLectura={soloLectura} clima={climaSocial} onCerrar={() => setHojaSocial(false)} />
       ) : null}
     </div>
   )
@@ -1022,18 +985,13 @@ function PanelAgente({
   /** Espacio de demostración: muestra el selector de clima de simulación (la función igual lo comprueba). */
   demo?: boolean
 }) {
-  // Enlace de invitación del espacio, para sumarlo al mensaje de WhatsApp. Si no se puede leer, va sin enlace.
-  const [invitacion, setInvitacion] = useState<string | null>(null)
   // Cuántas personas hay en el grupo, para decir a quiénes cuenta "N opciones para N personas" (E5).
   const [personasGrupo, setPersonasGrupo] = useState<number | null>(null)
   useEffect(() => {
     if (!esOrganizador) return
     let vivo = true
     void api.getSpace(espacioId).then((r) => {
-      if (vivo && r.ok) {
-        setInvitacion(`${window.location.origin}${window.location.pathname}${rutas.unirse(r.data.espacio.codigo_invitacion)}`)
-        setPersonasGrupo(r.data.espacio.miembros.length)
-      }
+      if (vivo && r.ok) setPersonasGrupo(r.data.espacio.miembros.length)
     })
     return () => {
       vivo = false
@@ -1042,11 +1000,10 @@ function PanelAgente({
 
   return (
     <>
-      {/* Pedido de Nico (01:50): primero lo que se usa en la demo; las preferencias, debajo y resumidas. */}
+      {/* Pantalla 7 del mockup: arriba el agente (finde, clima y el botón); debajo, "Mis preferencias" en una línea. */}
       {esOrganizador ? (
-        <Card id="agente-idea" titulo="Una idea de plan" className="agente-panel">
-          <p className="suave">Con las preferencias habilitadas y el clima, el agente sugiere un plan. Nadie queda confirmado.</p>
-          <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} invitacion={invitacion} personasGrupo={personasGrupo} />
+        <Card id="agente-idea" className="agente-panel">
+          <ProponerPlan espacioId={espacioId} soloLectura={soloLectura} demo={demo} personasGrupo={personasGrupo} />
         </Card>
       ) : null}
       <Card id="agente-preferencias" titulo="Mis preferencias" className="agente-panel">
