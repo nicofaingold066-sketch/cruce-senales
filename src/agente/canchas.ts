@@ -3,25 +3,24 @@
 // - Google Maps (Maps URLs, no piden clave): una búsqueda por categoría sin ubicación muestra lo que está cerca de quien
 //   toca el enlace. CRUXE no conoce ni envía la ubicación de nadie.
 // - EasyCancha (Santiago): su buscador para Chile; no acepta deporte ni comuna en el enlace.
-// - ATC Sports (Mendoza): resultados con deporte, día y hora. Los parámetros no están documentados (probados el 23 oct).
+// - ATC Sports se sacó (auditoría M5): el enlace apuntaba a Mendoza (Argentina) y la app es de Santiago.
 // Nunca dice "disponible": la disponibilidad se ve en cada sitio y CRUXE no reserva.
 import type { FranjaBorrador } from './api'
 
-const DEPORTES: Record<string, { busqueda: string; atc: number }> = {
-  padel: { busqueda: 'canchas de pádel', atc: 7 },
-  futbol: { busqueda: 'canchas de fútbol', atc: 2 },
-  tenis: { busqueda: 'canchas de tenis', atc: 8 },
+const DEPORTES: Record<string, { busqueda: string }> = {
+  padel: { busqueda: 'canchas de pádel' },
+  futbol: { busqueda: 'canchas de fútbol' },
+  tenis: { busqueda: 'canchas de tenis' },
 }
-// Identificador (geohash) que usa ATC para Mendoza.
-const ATC_MENDOZA = '66phckevp'
 
 export interface EnlaceCancha {
-  clave: 'maps' | 'easycancha' | 'atc'
+  clave: 'maps' | 'easycancha'
   texto: string
   url: string
 }
 
-export function enlacesCanchas(actividad: string | undefined, franja?: FranjaBorrador): EnlaceCancha[] {
+// `franja` queda en la firma por compatibilidad: ningún sitio de Santiago acepta día y hora en el enlace.
+export function enlacesCanchas(actividad: string | undefined, _franja?: FranjaBorrador): EnlaceCancha[] {
   const d = actividad ? DEPORTES[actividad] : undefined
   if (!d) return []
   const enlaces: EnlaceCancha[] = [
@@ -36,13 +35,5 @@ export function enlacesCanchas(actividad: string | undefined, franja?: FranjaBor
       url: 'https://www.easycancha.com/book/search?lang=es-CL&country=CL',
     },
   ]
-  // Mismo formato que se probó a mano (la hora va con ":" sin codificar).
-  const [dia, hora] = (franja?.inicio ?? '').split('T')
-  const cuando = /^\d{4}-\d{2}-\d{2}$/.test(dia ?? '') && /^\d{2}:\d{2}$/.test(hora ?? '') ? `&dia=${dia}&horario=${hora}` : ''
-  enlaces.push({
-    clave: 'atc',
-    texto: 'Ver turnos en ATC (Mendoza)',
-    url: `https://atcsports.io/results?tipoDeporte=${d.atc}${cuando}&placeId=${ATC_MENDOZA}&locationName=Mendoza`,
-  })
   return enlaces
 }

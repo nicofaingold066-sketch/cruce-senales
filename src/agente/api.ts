@@ -242,11 +242,28 @@ export function viajeDeOpcion(c: CandidataAgente, b: Pick<BorradorAgente, 'candi
   return b.candidatas[0]?.id === c.id ? viajeSeguro(b.viaje) : null
 }
 
+/**
+ * Auditoría M2: el catálogo de la demo trae "Asado en casa de Tomi" y "Quincho de Tomi"; en un grupo sin Tomi eso
+ * nombra a alguien que no está. La función ya los neutraliza; acá también, para el camino de la RPC directa.
+ */
+const NOMBRES_DEL_CATALOGO = ['Tomi']
+export function sinNombresDelCatalogo(texto: string): string {
+  let t = texto
+  for (const n of NOMBRES_DEL_CATALOGO) {
+    t = t.replace(new RegExp(`\\s+(de|del|con)\\s+${n}(?=$|[^\\p{L}])`, 'gu'), '')
+    t = t.replace(new RegExp(`(^|[^\\p{L}])${n}(?=$|[^\\p{L}])`, 'gu'), '$1')
+  }
+  return t.replace(/\s{2,}/g, ' ').trim()
+}
+function candidataNeutra(c: CandidataAgente): CandidataAgente {
+  return { ...c, titulo: sinNombresDelCatalogo(c.titulo), lugar: { ...c.lugar, nombre: sinNombresDelCatalogo(c.lugar.nombre) } }
+}
+
 /** Completa una respuesta que no trae los campos de la 4.1 (función vieja o RPC directa sin función). */
 function normalizar(r: Crudo, sinFuncion: boolean): BorradorAgente {
   // Sin la 4.1 la única opción es la del servidor; su id es el del catálogo.
   const crudas = Array.isArray(r.candidatas) && r.candidatas.length > 0 ? r.candidatas : [{ ...r, id: r.id ?? r.lugar.id }]
-  const candidatas = crudas.map((c) => (c.viaje === undefined ? c : { ...c, viaje: viajeSeguro(c.viaje) }))
+  const candidatas = crudas.map((c) => candidataNeutra(c.viaje === undefined ? c : { ...c, viaje: viajeSeguro(c.viaje) }))
   const elegidaId = r.elegida_id && candidatas.some((c) => c.id === r.elegida_id) ? r.elegida_id : candidatas[0].id
   const elegida = candidatas.find((c) => c.id === elegidaId) ?? candidatas[0]
   const fijo = sinFuncion || !r.explicacion

@@ -45,6 +45,7 @@ import {
   type Zona,
 } from './api'
 import { enlacesCanchas } from './canchas'
+import { sabadoInicial, sabadosParaElegir } from './fechas'
 
 // Fin de semana del caso canónico: franjas A y B del sábado 31 oct y domingo 1 nov 2026.
 const SABADO_DEL_CASO = '2026-10-31'
@@ -646,7 +647,7 @@ function BorradorTarjeta({
         {canchas.length > 0 ? (
           <div className="bloque agente-canchas">
             <p>
-              <strong>Canchas reales cerca: </strong>
+              <strong>Dónde buscar canchas: </strong>
               {elegida.lugar.simulado ? 'el club de esta opción es de simulación; ' : ''}
               la disponibilidad se ve en cada sitio. CRUXE no reserva ni confirma.
             </p>
@@ -787,17 +788,6 @@ const CLIMA_DEMO: { v: ClimaElegido; texto: string }[] = [
   { v: 'lluvia', texto: 'Lluvia' },
 ]
 
-/** Sábados para elegir: el del caso (31 oct) y los dos siguientes. "Sáb 31 oct". */
-function sabadosParaElegir(): { v: string; texto: string }[] {
-  const base = new Date(`${SABADO_DEL_CASO}T12:00:00Z`)
-  return [0, 7, 14].map((d) => {
-    const f = new Date(base.getTime() + d * 86400000)
-    const v = f.toISOString().slice(0, 10)
-    const texto = `Sáb ${f.getUTCDate()} ${f.toLocaleDateString('es-CL', { month: 'short', timeZone: 'UTC' }).replace('.', '')}`
-    return { v, texto }
-  })
-}
-
 function ProponerPlan({
   espacioId,
   soloLectura,
@@ -810,10 +800,13 @@ function ProponerPlan({
   personasGrupo: number | null
 }) {
   const recuerdo = recuerdosGru.get(espacioId)
-  const [sabado, setSabado] = useState(recuerdo?.sabado ?? SABADO_DEL_CASO)
+  const sabados = sabadosParaElegir()
+  const [sabado, setSabado] = useState(() => sabadoInicial(recuerdo?.sabado, sabados, SABADO_DEL_CASO))
+  // Un resultado recordado de un sábado que ya no vale no se puede usar.
+  const recuerdoVigente = recuerdo && sabadoInicial(recuerdo.sabado, sabados, SABADO_DEL_CASO) === recuerdo.sabado ? recuerdo : undefined
   const [clima, setClima] = useState<ClimaElegido>(recuerdo?.clima ?? 'real')
-  const [resultado, setResultado] = useState<ResultadoAgente | null>(recuerdo?.resultado ?? null)
-  const [errorRecuperado, setErrorRecuperado] = useState<ApiError | null>(recuerdo?.error ?? null)
+  const [resultado, setResultado] = useState<ResultadoAgente | null>(recuerdoVigente?.resultado ?? null)
+  const [errorRecuperado, setErrorRecuperado] = useState<ApiError | null>(recuerdoVigente?.error ?? null)
   // Qué se tocó: "Que el agente arme un plan" (con herramientas, el primario) o "Propuesta rápida (sin herramientas)".
   const [conHerramientas, setConHerramientas] = useState(recuerdo?.conHerramientas ?? true)
   // Pantalla 20: "Revisar antes de invitar", abierta desde el enlace chico del resultado.
@@ -824,7 +817,6 @@ function ProponerPlan({
   const ocupado = ocupadoAccion || estadoCompartido === 'buscando'
   const error = errorAccion ?? errorRecuperado
   const montado = useRef(true)
-  const sabados = sabadosParaElegir()
 
   useEffect(() => {
     montado.current = true
