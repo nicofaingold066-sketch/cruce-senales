@@ -130,7 +130,8 @@ function reciboDe(x: Record<string, unknown>, solicitud: SolicitudSocial): ApiRe
 }
 
 async function invocar(body: object): Promise<{ data: unknown; error: unknown }> {
-  try { return await supabase.functions.invoke('agente', { body, timeout: 30000 }) }
+  // Incluye el presupuesto del modelo y el tiempo de persistir el recibo; sin retry automático.
+  try { return await supabase.functions.invoke('agente', { body, timeout: 45_000 }) }
   catch { return { data: null, error: true } }
 }
 async function mutar<T>(nombre: 'aprobar_borrador_agente' | 'publicar_borrador_agente', ejecucionId: string, hash: string, intentoId: string, validar: (x: Record<string, unknown>) => T | null): Promise<ApiResult<T>> {

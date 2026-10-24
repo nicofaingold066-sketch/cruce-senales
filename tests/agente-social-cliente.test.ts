@@ -44,7 +44,7 @@ afterEach(() => vi.unstubAllGlobals())
 describe('flujo E11 humano: contrato con transporte simulado, sin red', () => {
   it('probe solo consulta capacidad y nunca incluye sabado en raíz ni en social', async () => {
     await socialApi.capacidad(espacio)
-    expect(mock.invoke).toHaveBeenCalledExactlyOnceWith('agente', { body: { espacio_id: espacio, social: { accion: 'capacidad' } }, timeout: 30000 })
+    expect(mock.invoke).toHaveBeenCalledExactlyOnceWith('agente', { body: { espacio_id: espacio, social: { accion: 'capacidad' } }, timeout: 45_000 })
     expect(mock.rpc).not.toHaveBeenCalled()
   })
   it.each([null, {}, { ok: true, contrato: 1, capacidades: { agente_social: 1 } }, ok({ capacidades: { agente_social: true } }), ok({ capacidades: { agente_social: '1' } })])('capacidad inválida %j bloquea preparar sin transporte adicional', async (data) => {
@@ -62,7 +62,7 @@ describe('flujo E11 humano: contrato con transporte simulado, sin red', () => {
   it('prepara con fecha SOLO anidada y sin RPC de aprobación/publicación', async () => {
     mock.invoke.mockResolvedValue(envuelto(recibo()))
     expect(await socialApi.preparar(solicitud())).toMatchObject({ ok: true, data: { estado: 'borrador', ejecucionId: ejecucion, propia: true, aprobacionHash: null, eleccionFuente: 'regla', explicacionFuente: 'texto_fijo' } })
-    expect(mock.invoke).toHaveBeenCalledExactlyOnceWith('agente', { timeout: 30000, body: { espacio_id: espacio, social: { accion: 'preparar', sabado, ejecucion_id: ejecucion, clima } } })
+    expect(mock.invoke).toHaveBeenCalledExactlyOnceWith('agente', { timeout: 45_000, body: { espacio_id: espacio, social: { accion: 'preparar', sabado, ejecucion_id: ejecucion, clima } } })
     expect(mock.rpc).not.toHaveBeenCalled()
   })
   it('pierde una respuesta sin anunciar éxito y recupera usando idéntico cuerpo', async () => {
