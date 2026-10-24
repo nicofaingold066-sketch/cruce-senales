@@ -87,7 +87,7 @@ describe('A2 reclamos tardios (Codex)', () => {
     }
   }, T)
 
-  it('tras aceptar y retirarse (simulate_withdraw): asiento_en_uso; baja conserva simulacion', async () => {
+  it('tras aceptar y retirarse (simulate_withdraw): asiento_en_uso; la baja existe y es anónima (E13 c)', async () => {
     const pid = await a2Propuesta(org, 'ver-A2 tardio retiro')
     const nom = a2Nombre('ret')
     const sim = await a2Simulado(org, nom)
@@ -100,9 +100,25 @@ describe('A2 reclamos tardios (Codex)', () => {
     console.log('[A2 tardio retiro] join ->', a2Cod(r))
     expect(a2Cod(r)).toBe('asiento_en_uso/asiento_en_uso')
     const st = a2Esperar(await a2Rpc(org.c, 'get_proposal_state', { p_propuesta_id: pid }), 'state')
-    const tipos = (st.propuesta.historial as any[]).filter((e) => e.actor?.miembro_id === sim).map((e) => `${e.tipo}:${e.actor_tipo}`)
+    // Enmienda 13 (c), 0043/0045/0047: la baja es SIN nombre para los demás (también para el organizador, que ve el total) y la
+    // aceptación de quien se retiró deja de salir en el historial. Se sigue probando lo que importaba aquí —que la baja
+    // existe, una sola, después de la aceptación, y que no se pierde— contando por tipo y sin depender del actor.
+    const hist = st.propuesta.historial as any[]
+    const tipos = hist.filter((e) => e.tipo === 'aceptacion' || e.tipo === 'baja').map((e) => e.tipo)
     console.log('[A2 historial retiro]', tipos.join(','))
-    expect(tipos).toEqual(['aceptacion:simulacion', 'baja:simulacion'])
+    expect(['baja', 'aceptacion,baja']).toContain(tipos.join(','))
+    expect(st.propuesta.bajas as any[]).toHaveLength(1)
+    // Ninguna respuesta compartida de la propuesta trae el miembro_id ni el nombre de quien se retiró.
+    const lista = a2Esperar(await a2Rpc(org.c, 'list_proposals', { p_espacio_id: org.espacioId }), 'list_proposals')
+    for (const [donde, r] of [['get_proposal_state', st], ['list_proposals', lista]] as const) {
+      const texto = JSON.stringify(r)
+      expect(texto.includes(sim), `${donde}: trae el miembro_id de quien se retiró`).toBe(false)
+      expect(texto.includes(nom), `${donde}: trae el nombre de quien se retiró`).toBe(false)
+    }
+    for (const b of st.propuesta.bajas as any[]) {
+      expect(b.miembro?.miembro_id ?? null, 'la baja no trae miembro_id').toBeNull()
+      expect(b.habia_aceptado ?? null, 'la baja no dice si había confirmado').toBeNull()
+    }
   }, T)
 
   it('entrar con otro nombre sobre asiento usado: miembro real nuevo sin heredar nada', async () => {

@@ -80,8 +80,8 @@ Revisión completa y límites declarados: `docs/agente-revision-privacidad.md` y
 
 ## 7. Lo que falta
 - **Clave del Vercel AI Gateway (#64, aprobado por Nico).** La creó Nico con un límite de gasto y la cargó como secreto `AI_GATEWAY_API_KEY` de la función en Supabase (16:45). Nadie más la pide, la escribe ni la imprime. Cómo elige la función:
-  - Con `AI_GATEWAY_API_KEY`: Gateway (`https://ai-gateway.vercel.sh`), modelo `anthropic/claude-haiku-5.5`.
-  - Sin ella y con `ANTHROPIC_API_KEY`: API de Anthropic directa, modelo `claude-haiku-5-5`, como antes.
+  - Con `AI_GATEWAY_API_KEY`: Gateway (`https://ai-gateway.vercel.sh`), modelo `anthropic/claude-opus-5.5` con hasta 20 s y, si falla o no llega, una sola llamada a `anthropic/claude-haiku-5.5` de respaldo (decisión de Nico, 19:44; función v9 desde las 21:52). La respuesta dice cuál escribió en `modelo_usado`.
+  - Sin ella y con `ANTHROPIC_API_KEY`: API de Anthropic directa, `claude-opus-5-5` con respaldo `claude-haiku-5-5`.
   - Sin ninguna: regla y texto fijo.
   - `AGENTE_MODELO` cambia el modelo, si tiene el formato del proveedor elegido (`creador/modelo` en el Gateway, sin barra en la directa). Si no lo tiene, se usa el modelo por defecto.
   - La salida pide JSON con esquema (`output_config.format`), que Vercel documenta para su API compatible con Messages. Si el Gateway lo rechaza, el registro de la función dice `agente: el modelo no respondió gateway … 400` y va el texto fijo; se arregla sin tocar código, con el secreto `AGENTE_SALIDA=herramienta`, que fuerza una herramienta. Eso solo sirve con Haiku 5.5: Sonnet 5.5, Opus 5.5 y Fable 5.1 rechazan un `tool_choice` forzado.
@@ -175,6 +175,28 @@ Después, la sesión de integración corrió dos llamadas desde una sola sesión
 - Con Puente Alto, bici o a pie y hasta 15 minutos: `{ tipo: "sin_plan_compatible", motivo: "sin_lugar_cerca_para_todos" }`, y la pantalla dice "Ningún plan del catálogo queda dentro del tiempo de viaje de todos. Por privacidad no se dice para quién."
 - Sin desborde ni errores. Resultado del guion: 13 de 14. La que falló fue del guion, no de la app: comparaba con el `viaje` de arriba de la respuesta, que la v8 de la función no manda (lo agrega la función nueva). La pantalla usó el de la candidata elegida, como se diseñó.
 - Falta: redesplegar la función con los cambios de la enmienda 10 (el modelo recibe `viaje_max_minutos` y la respuesta trae `viaje` arriba).
+
+### 8.5 Reintento en Mis preferencias (mejora #108, P1 de Nico)
+Nico vio "tardó demasiado" en producción (la base llegó a parones de unos 7 s, al borde de su límite de 8 s). Desde `wip/agente-ia` `588531e`: las RPC del panel esperan 15 s y reintentan UNA vez si se agotó el tiempo o la base cortó la consulta (57014). Son lecturas o, como `save_my_preferences`, idempotentes por contenido: repetirla no duplica nada. Mientras reintenta, la pantalla dice "La red o el servidor tardaron más de lo normal. Reintentando…" y el botón sigue en "Guardando…"; si el reintento también falla, aparece el error de siempre con "Reintentar".
+
+Además apareció un error viejo: `postgrest-js` no rechaza la promesa cuando se corta por `AbortSignal.timeout`, sino que devuelve `message: "TimeoutError: signal timed out"` sin `name`. El panel lo mostraba como "Falla temporal" en vez de "tardó demasiado". Ya se reconoce.
+
+**Prueba, viernes 23 oct, 21:59:12 a 22:00:07 y 22:00:59 a 22:01:49 (hora del reloj):** build propio, demo propio, la lentitud simulada en el navegador, cero llamadas al modelo. 9 de 9, las dos veces. Carga con 57014: el panel carga con el reintento. Guardado lento: el aviso aparece a los 15,4 s y guarda a los 17,3 s. 57014 al guardar: reintenta y guarda. Dos lentas seguidas: error con "Reintentar" a los 32 s, sin tercera llamada automática, y "Reintentar" guarda. Sin desborde a 375 px y sin errores de consola. La segunda corrida se solapó cerca de un minuto con el arranque de la migración 0048; fueron unas 10 RPC normales.
+
+### 8.6 Enmienda 14 (propósito del grupo): parte del agente
+Preparada en `wip/agente-ia` `456f0be` y `8a655e7` (texto del quórum igual al del puente de backend y frase `proposito_del_grupo`). Desplegada como función v10 a las 22:42, después de la 0049 (aplicada a las 22:22).
+- La función deja pasar `quorum` arriba, solo con sus cuatro claves (`actividad`, `etiqueta`, `personas_min`, `personas_posibles`), y `familia` y `personas {min, max}` en cada candidata y en la destacada, solo si vienen. Sin la 0049 la respuesta tiene la misma forma que hoy.
+- Al modelo le llega `aviso_quorum` como una razón más, con totales del grupo ("Para Fútbol hacen falta al menos 10 personas; este grupo tiene 4 por ahora."). Nada por persona. Si escribe "se sumaron", "se sumó" o "ya van", su texto se descarta (ajuste 7: tamaño del grupo, no asistencia).
+- `faltan_personas` pasa tal cual, sin llamar al modelo.
+- En el panel: el texto fijo del quórum bajo "Opciones del agente", el de `faltan_personas` en "Sin plan compatible", y "Usar esta opción" guarda también la actividad y sus personas, para que Nueva propuesta precargue actividad, mínimo y máximo (front-juan decide si los usa).
+- Pruebas sin base: lógica 49/49 y la función entera con base y modelo simulados 19/19, con tres casos nuevos (quórum saneado, forma igual sin la 0049, `faltan_personas` sin modelo).
+- **Contra la base, viernes 23 oct, 22:44:19 a 22:44:27 (hora del reloj):** grupo propio "Los del fútbol (prueba del agente)" con propósito fútbol y dos personas ficticias con sesión anónima. "Me gustaría" trae solo deporte (pádel, fútbol, tenis, básquet). Marcar asado da `fuera_de_proposito`. Una llamada a la función: Opus, 6,0 s, candidatas solo de tenis (de 2 a 4 personas) y `quorum = {futbol, Fútbol, 10, 2}`. Sin nombres y sin hablar de asistencia. La IA escribió: "Tenis en parejas se arma bien con un grupo chico, a diferencia del fútbol…".
+- **Panel, 22:44:36 a 22:44:38:** build propio, función simulada en el navegador, cero modelo: 16/16. El texto del quórum, el de `faltan_personas`, "Usar esta opción" con actividad y personas, y los arreglos de tuteo, "Me gustaría", U5 y Open-Meteo.
+
+### 8.7 Opus por la clave de Nico (BYOK), en producción (mejora #99)
+**Viernes 23 oct 2026, de 22:43:08 a 22:43:24 (hora del reloj).** Producción `main` `bd9dc36`, función v10, demo propio, "Simular sol", 375 × 812, una sola llamada. Respondió **Opus** (`modelo_usado: "opus"`, fuente `modelo`) en **10,0 s**, desde que se pide hasta que llega la respuesta. La pantalla dice "Lo redactó la IA (Claude Opus)". La IA escribió: "El asado es lo que más eligió el grupo (3 de 4), calza con un ritmo algo tranquilo y la parrilla del parque queda a menos de 20 minutos para todos, como estimado." Viaje por candidata: 20, 25 y 25 minutos. Sin errores de consola.
+
+**Lo que esta prueba no dice:** si la llamada salió por la clave de Nico (BYOK) o por los créditos del Gateway. La función no recibe metadatos de la ruta del Gateway y los encabezados de la respuesta son solo los de Supabase. Eso se ve en el panel de uso del AI Gateway de Vercel.
 
 ## Historia
 Idea de Nico. Diseño de privacidad del coordinador: el servidor elige y la IA solo ve totales. Enmienda 4 (preferencias, catálogo y elección por reglas), 4.1 (candidatas, perfil del grupo y la IA como coordinadora, pedido de Nico) y 5 (preferencias simuladas). Mejoras #11, #23, #25, #26, #28, #32 y #35. #64: el modelo pasa por el Vercel AI Gateway (pedido de Nico), con un tope de tokens y un límite de llamadas por persona (pedido del coordinador por costo).

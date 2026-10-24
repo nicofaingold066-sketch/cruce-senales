@@ -5,18 +5,22 @@
 // opciones mirando el perfil del grupo entero y redacta por qué y un mensaje para invitar. Con
 // AI_GATEWAY_API_KEY va por el Vercel AI Gateway; sin ella y con ANTHROPIC_API_KEY, por la API directa.
 // El modelo nunca recibe datos de una persona: solo opciones ya validadas, el clima y totales del grupo.
-// Modelo: Opus y, si falla o no llega a tiempo, Haiku. Sin clave, con error de los dos, con una elección fuera
+// Modelo: Fable 5.1 (prueba; antes Opus) y, si falla o no llega a tiempo, Haiku. Sin clave, con error de los dos, con una elección fuera
 // de la lista o pasados ~30 s: primera opción y texto fijo.
 // Nunca crea, invita ni confirma nada.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import Anthropic from 'npm:@anthropic-ai/sdk@1.2.0'
 import {
   armarPedido,
+  candidataSegura,
   candidatasDe,
   climaPedido,
   climaSimulado,
   crearLimiteModelo,
+  datosGeneracion,
   elegirProveedor,
+  ESPERAS_GENERACION_MS,
+  GATEWAY_URL,
   familiaModelo,
   entradaModelo,
   esSabado,
@@ -24,21 +28,24 @@ import {
   mensajeFijo,
   modoSalida,
   perfilParaRespuesta,
+  quorumSeguro,
   resumenClima,
   sumarDia,
   textoDeRespuesta,
+  tipoDeIdGeneracion,
   unirFrases,
   usuarioDe,
   validarSalidaModelo,
   viajeDe,
-  viajeSeguro,
   type Candidata,
   type Clima,
   type PerfilGrupo,
+  type Proveedor,
+  type Quorum,
   type ResultadoPlan,
 } from './logica.ts'
 
-// Opus tarda más que Haiku: hasta 20 s para el principal y lo que quede (unos 8 s) para el respaldo.
+// El principal tarda más que Haiku: hasta 20 s para el principal y lo que quede (unos 8 s) para el respaldo.
 const PLAZO_TOTAL_MS = 30000
 const PLAZO_PRINCIPAL_MS = 20000
 const PLAZO_RESPALDO_MS = 8000
@@ -70,6 +77,8 @@ const SISTEMA = [
   'e invite a cada uno a marcar si le interesa y cargar su disponibilidad.',
   'Si una opción trae viaje_max_minutos, puedes decir que queda a menos de esos minutos para todos y que es un estimado;',
   'nunca digas dónde vive nadie, cómo se mueve ni si alguien necesita que lo lleven.',
+  'Si llega aviso_quorum, puedes decir con tacto que esa actividad necesita un grupo más grande y que estas opciones se pueden',
+  'armar con el grupo actual; habla del tamaño del grupo, nunca de quién falta ni de cuántos van o se sumaron.',
 ].join(' ')
 
 function responder(cuerpo: unknown, estado = 200): Response {
@@ -113,6 +122,43 @@ async function traerClima(sabado: string): Promise<Clima> {
   }
 }
 
+/**
+ * Después de responder al usuario, pregunta al Gateway si la generación salió por la clave propia (BYOK). Al registro
+ * van solo el tipo de id, `is_byok`, el proveedor y el modelo. Si algo falla, solo queda un aviso: no afecta la respuesta.
+ */
+function registrarGeneracion(proveedor: Proveedor, clave: string, id: unknown): void {
+  if (proveedor.tipo !== 'gateway') return
+  const tipo = tipoDeIdGeneracion(id)
+  if (tipo === null) return
+  console.info('agente: id de la respuesta del Gateway', tipo)
+  const runtime = (globalThis as { EdgeRuntime?: { waitUntil?: (p: Promise<unknown>) => void } }).EdgeRuntime
+  if (tipo !== 'gen' || typeof runtime?.waitUntil !== 'function') return
+  runtime.waitUntil(
+    (async () => {
+      // Los datos de uso llegan con demora: un intento después de cada espera.
+      for (const [intento, espera] of ESPERAS_GENERACION_MS.entries()) {
+        await new Promise((r) => setTimeout(r, espera))
+        try {
+          const r = await fetch(`${GATEWAY_URL}/v1/generation?id=${encodeURIComponent(String(id))}`, {
+            headers: { Authorization: `Bearer ${clave}` },
+            signal: AbortSignal.timeout(5000),
+          })
+          if (r.status === 404 && intento < ESPERAS_GENERACION_MS.length - 1) continue
+          if (!r.ok) {
+            console.info('agente: no se pudo leer la generación del Gateway', r.status)
+            return
+          }
+          console.info('agente: generación del Gateway', JSON.stringify(datosGeneracion(await r.json())))
+          return
+        } catch (e) {
+          console.info('agente: no se pudo leer la generación del Gateway', e instanceof Error ? e.constructor.name : 'desconocido')
+          return
+        }
+      }
+    })(),
+  )
+}
+
 async function coordinarConModelo(
   candidatas: Candidata[],
   perfil: PerfilGrupo | null,
@@ -121,6 +167,7 @@ async function coordinarConModelo(
   hastaMs: number,
   simulado: boolean,
   usuario: string,
+  quorum: Quorum | null = null,
 ): Promise<{ eleccion: Candidata; explicacion: string; mensaje: string; modelo: string } | null> {
   const proveedor = elegirProveedor((n) => Deno.env.get(n))
   const restante = () => hastaMs - Date.now()
@@ -134,8 +181,8 @@ async function coordinarConModelo(
     return null
   }
   const modo = modoSalida(Deno.env.get('AGENTE_SALIDA'))
-  const entrada = entradaModelo(candidatas, perfil, clima, nombres, simulado)
-  // Principal (Opus) y, si falla o no llega a tiempo, una sola llamada al respaldo (Haiku). Después, la regla.
+  const entrada = entradaModelo(candidatas, perfil, clima, nombres, simulado, quorum)
+  // Principal (Fable u Opus) y, si falla o no llega a tiempo, una sola llamada al respaldo (Haiku). Después, la regla.
   const intentos = [
     { modelo: proveedor.modelo, plazo: PLAZO_PRINCIPAL_MS },
     { modelo: proveedor.respaldo, plazo: PLAZO_RESPALDO_MS },
@@ -161,7 +208,10 @@ async function coordinarConModelo(
       }
       // La elección tiene que ser una de las opciones que el servidor ya validó, y los textos, válidos.
       const valida = validarSalidaModelo(texto, candidatas, nombres)
-      if (valida) return { ...valida, modelo: familia }
+      if (valida) {
+        registrarGeneracion(proveedor, clave, (respuesta as { id?: unknown }).id)
+        return { ...valida, modelo: familia }
+      }
       console.error('agente: salida del modelo rechazada por la validación', proveedor.tipo, familia)
     } catch (e) {
       // Solo el proveedor, el modelo, el tipo de error y el código HTTP: nunca el contenido, la clave ni datos del grupo.
@@ -234,7 +284,9 @@ Deno.serve(async (req) => {
 
   const base = plan.resultado as ResultadoPlan
   // Enmienda 10: de cada viaje solo pasan los minutos y si es estimado (cualquier otra clave se descarta).
-  const candidatas = candidatasDe(base).map((c) => (c.viaje === undefined ? c : { ...c, viaje: viajeSeguro(c.viaje) }))
+  // Enmienda 14: familia y personas solo con la forma del contrato; el quórum, solo sus cuatro claves.
+  const candidatas = candidatasDe(base).map(candidataSegura)
+  const quorum = quorumSeguro(base.quorum)
   const perfil = base.perfil_grupo ?? null
   const resumen = resumenClima(clima)
 
@@ -247,6 +299,7 @@ Deno.serve(async (req) => {
     inicio + PLAZO_TOTAL_MS,
     simulado,
     usuarioDe(autorizacion),
+    quorum,
   )
   const elegida = delModelo?.eleccion ?? candidatas[0]
 
@@ -270,6 +323,10 @@ Deno.serve(async (req) => {
       clima: { fuente: clima.fuente, resumen, sabado: clima.sabado.estado, domingo: clima.domingo.estado },
       // Enmienda 10: el viaje máximo estimado de la opción destacada (null con menos de 4 personas con zona).
       viaje: viajeDe(elegida, candidatas, base.viaje),
+      // Enmienda 14: familia y personas de la destacada (si el servidor las manda) y el quórum (null si no aplica).
+      ...(elegida.familia !== undefined ? { familia: elegida.familia } : {}),
+      ...(elegida.personas !== undefined ? { personas: elegida.personas } : {}),
+      quorum,
       explicacion:
         delModelo?.explicacion ??
         unirFrases(elegida.frases_grupo, simulado, { perfil: perfilParaRespuesta(perfil), actividad: elegida.actividad_etiqueta }),

@@ -37,6 +37,67 @@ export interface Candidata {
   franjas: Franja[]
   frases_grupo: string[]
   viaje?: Viaje | null
+  // Enmienda 14: familia de la actividad y personas mínimas y máximas del catálogo (públicas).
+  familia?: string | null
+  personas?: Personas | null
+}
+
+/** Enmienda 14: personas mínimas y máximas de la actividad (catálogo, no son de nadie). */
+export interface Personas {
+  min: number
+  max: number
+}
+
+/**
+ * Enmienda 14: la actividad del propósito que quedó afuera por tamaño del grupo. Los dos números ya son públicos
+ * en el espacio (lista de miembros y catálogo).
+ */
+export interface Quorum {
+  actividad: string
+  etiqueta: string
+  personas_min: number
+  personas_posibles: number
+}
+
+const CLAVE_CORTA = /^[a-z_]{1,30}$/
+const entero = (v: unknown, min: number, max: number) =>
+  typeof v === 'number' && Number.isInteger(v) && v >= min && v <= max ? v : null
+
+export function familiaSegura(v: unknown): string | null {
+  return typeof v === 'string' && CLAVE_CORTA.test(v) ? v : null
+}
+
+export function personasSeguras(v: unknown): Personas | null {
+  if (!v || typeof v !== 'object') return null
+  const min = entero((v as { min?: unknown }).min, 1, 50)
+  const max = entero((v as { max?: unknown }).max, 1, 50)
+  return min !== null && max !== null && min <= max ? { min, max } : null
+}
+
+/** Solo las cuatro claves del contrato; cualquier otra (o una forma rara) se descarta. */
+export function quorumSeguro(v: unknown): Quorum | null {
+  if (!v || typeof v !== 'object') return null
+  const q = v as Record<string, unknown>
+  const etiqueta = typeof q.etiqueta === 'string' ? q.etiqueta.trim() : ''
+  const min = entero(q.personas_min, 1, 50)
+  const posibles = entero(q.personas_posibles, 0, 200)
+  if (typeof q.actividad !== 'string' || !CLAVE_CORTA.test(q.actividad) || !etiqueta || etiqueta.length > 40) return null
+  if (min === null || posibles === null) return null
+  return { actividad: q.actividad, etiqueta, personas_min: min, personas_posibles: posibles }
+}
+
+/** Texto fijo del tamaño del grupo (ajuste 7 de la enmienda 14): habla del grupo, nunca de asistencia. */
+export function textoQuorum(q: Quorum): string {
+  return `Para ${q.etiqueta} hacen falta al menos ${q.personas_min} personas; este grupo tiene ${q.personas_posibles} por ahora.`
+}
+
+/** Candidata saneada: el viaje solo con minutos; familia y personas solo con la forma del contrato. */
+export function candidataSegura(c: Candidata): Candidata {
+  const n: Candidata = { ...c }
+  if (c.viaje !== undefined) n.viaje = viajeSeguro(c.viaje)
+  if (c.familia !== undefined) n.familia = familiaSegura(c.familia)
+  if (c.personas !== undefined) n.personas = personasSeguras(c.personas)
+  return n
 }
 
 /** Totales del grupo (enmienda 4.1). Con 3 personas o menos solo llega `personas`. */
@@ -53,6 +114,8 @@ export interface ResultadoPlan extends Candidata {
   personas_consideradas: number
   candidatas?: Candidata[]
   perfil_grupo?: PerfilGrupo
+  // Enmienda 14: sin sanear todavía (ver quorumSeguro).
+  quorum?: unknown
 }
 
 /**
@@ -82,6 +145,8 @@ export const FRASES: Record<string, string> = {
   al_aire_libre_con_buen_tiempo: 'es al aire libre con buen pronóstico',
   el_mas_elegido: 'es lo que más eligieron',
   ritmo_del_grupo: 'va con el ritmo que prefiere el grupo',
+  // Enmienda 14 (0049): la actividad del propósito del grupo.
+  proposito_del_grupo: 'es lo que este grupo vino a hacer',
 }
 
 const ENERGIA_TEXTO: Record<string, string> = { con_todo: 'con todo', algo_tranquilo: 'algo tranquilo' }
@@ -102,6 +167,8 @@ const PROHIBIDAS = [
   // Enmienda 10: ni dónde vive nadie ni cómo se mueve (el servidor ya lo tuvo en cuenta).
   'vive', 'viven', 'sin auto', 'no tiene auto', 'no tienen auto', 'que lo lleven', 'que la lleven', 'que los lleven', 'lo pasen a buscar',
   'la pasen a buscar', 'sin movilidad', 'comuna de',
+  // Enmienda 14 (ajuste 7): tamaño del grupo, nunca asistencia ("van 4", "se sumaron 4").
+  'se sumaron', 'se sumó', 'ya van',
 ]
 const LETRA = '\\p{L}'
 
@@ -278,10 +345,19 @@ export function perfilParaRespuesta(perfil: PerfilGrupo | null | undefined): Per
 }
 
 /** Lo único que ve el modelo: opciones ya validadas, clima y totales del grupo. Sin nombres ni ids de miembros. */
-export function entradaModelo(candidatas: Candidata[], perfil: PerfilGrupo | null, clima: string, nombres: string[], simulado = false) {
+export function entradaModelo(
+  candidatas: Candidata[],
+  perfil: PerfilGrupo | null,
+  clima: string,
+  nombres: string[],
+  simulado = false,
+  quorum: Quorum | null = null,
+) {
   const p = perfil && perfil.personas > 3 ? perfil : null
   return {
     clima,
+    // Enmienda 14: una razón más, con totales del grupo (nunca quién falta).
+    aviso_quorum: quorum ? textoQuorum(quorum) : null,
     grupo: {
       personas: perfil?.personas ?? null,
       // Una actividad que eligió una sola persona no se menciona: se podría adivinar quién fue.
@@ -341,11 +417,14 @@ export function validarSalidaModelo(
 
 export const GATEWAY_URL = 'https://ai-gateway.vercel.sh'
 // Nombres en el Gateway: `creador/modelo`, con punto en la versión (página de modelos de Vercel).
-// Decisión de Nico (23 oct, 19:4x): Opus como principal y Haiku como respaldo si Opus falla o no llega a tiempo.
-export const MODELO_GATEWAY = 'anthropic/claude-opus-5.5'
+// Decisión de Nico (23 oct, 19:4x): Opus como principal y Haiku como respaldo si falla o no llega a tiempo.
+// Prueba de Fable 5.1 (23 oct, 23:1x, aprobada por Nico): principal Fable con el mismo respaldo, plazo y validaciones.
+// Fable piensa siempre (thinking adaptive explícito se acepta), admite effort y salida con esquema; rechaza un
+// tool_choice forzado, que acá no se usa. Si no conviene, se vuelve a 'anthropic/claude-opus-5.5'.
+export const MODELO_GATEWAY = 'anthropic/claude-fable-5.1'
 export const RESPALDO_GATEWAY = 'anthropic/claude-haiku-5.5'
 // Nombres en la API de Anthropic directa.
-export const MODELO_DIRECTO = 'claude-opus-5-5'
+export const MODELO_DIRECTO = 'claude-fable-5-1'
 export const RESPALDO_DIRECTO = 'claude-haiku-5-5'
 /**
  * Lo que se le deja escribir al modelo. El JSON (explicación de 240, mensaje de 320 y el id) ocupa unos
@@ -361,16 +440,39 @@ export interface Proveedor {
   variableClave: 'AI_GATEWAY_API_KEY' | 'ANTHROPIC_API_KEY'
   /** Solo el Gateway usa otra URL base; con la API directa queda la del SDK. */
   baseURL?: string
-  /** Principal (Opus). */
+  /** Principal (Fable 5.1 en la prueba; antes Opus). */
   modelo: string
   /** Una sola llamada a este si el principal falla o no llega a tiempo (Haiku). */
   respaldo: string
 }
 
-/** Lo que la pantalla dice que se usó: "opus", "haiku", "sonnet" u "otro". */
-export function familiaModelo(modelo: string): 'opus' | 'haiku' | 'sonnet' | 'otro' {
+/** Lo que la pantalla dice que se usó: "fable", "opus", "haiku", "sonnet" u "otro". */
+export function familiaModelo(modelo: string): 'fable' | 'opus' | 'haiku' | 'sonnet' | 'otro' {
   const m = modelo.toLowerCase()
+  if (m.includes('fable')) return 'fable'
   return m.includes('opus') ? 'opus' : m.includes('haiku') ? 'haiku' : m.includes('sonnet') ? 'sonnet' : 'otro'
+}
+
+// ---------------------------------------------------------------------------------------------
+// ¿Salió por la clave propia (BYOK)? El Gateway guarda cada generación y GET /v1/generation?id=gen_… devuelve
+// `is_byok` (documentación de Vercel, "Look up a generation"). La función lo consulta en segundo plano, con la
+// misma clave y del lado del servidor, y al registro van solo estos tres datos: nunca la clave ni el contenido.
+// ---------------------------------------------------------------------------------------------
+
+// Los datos de uso llegan con demora (con 4 y 8 s dio 404, prueba del 23 oct a las 23:15): tres intentos.
+export const ESPERAS_GENERACION_MS = [5000, 10000, 20000]
+
+/** De qué tipo es el id que devolvió el Gateway: "gen" sirve para consultar la generación; null si no vino. */
+export function tipoDeIdGeneracion(id: unknown): 'gen' | 'msg' | 'otro' | null {
+  if (typeof id !== 'string' || id.length === 0) return null
+  return id.startsWith('gen_') ? 'gen' : id.startsWith('msg_') ? 'msg' : 'otro'
+}
+
+/** Solo lo que dice por dónde salió la llamada; cualquier otro campo (costos, tokens, ids) se descarta. */
+export function datosGeneracion(j: unknown): { is_byok: boolean | null; proveedor: string | null; modelo: string | null } {
+  const d = (j as { data?: Record<string, unknown> } | null)?.data ?? {}
+  const corto = (v: unknown) => (typeof v === 'string' && v.length <= 80 ? v : null)
+  return { is_byok: typeof d.is_byok === 'boolean' ? d.is_byok : null, proveedor: corto(d.provider_name), modelo: corto(d.model) }
 }
 
 export type ModoSalida = 'json' | 'herramienta'
@@ -457,8 +559,8 @@ export function armarPedido(
   }
   return {
     ...base,
-    // Esfuerzo bajo para que Opus responda rápido. Vercel documenta `effort` junto con `thinking: adaptive`
-    // (Opus 5.5 piensa siempre; con la herramienta forzada no se manda, porque no se combinan).
+    // Esfuerzo bajo para que el principal responda rápido. Vercel documenta `effort` junto con `thinking: adaptive`
+    // (Opus 5.5 y Fable 5.1 piensan siempre; con la herramienta forzada no se manda, porque no se combinan).
     ...(proveedor.tipo === 'gateway' ? { thinking: { type: 'adaptive' as const } } : {}),
     output_config: {
       effort: 'low' as const,
