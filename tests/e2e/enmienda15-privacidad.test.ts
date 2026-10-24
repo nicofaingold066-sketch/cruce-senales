@@ -144,9 +144,11 @@ describe.skipIf(OCUPADA)('E15 desde afuera · dos sesiones reales', () => {
     // de Tomi es un VALOR ('A'/'B'), porque él no eligió ninguno y el único que existe es el de Luna.
     const propiaTomi = await llamar(tomi, 'get_my_conditions', { p_propuesta_id: id })
     expect(JSON.stringify(propiaTomi), 'Tomi lee el prefiero de Luna').not.toMatch(/"prefiero":"[AB]"/)
-    expect(propiaTomi.condiciones?.disponibilidad?.prefiero ?? null, 'Tomi no eligió plan').toBeNull()
+    expect(propiaTomi.condiciones?.prefiero ?? null, 'Tomi no eligió plan').toBeNull()
     const propiaLuna = await llamar(luna, 'get_my_conditions', { p_propuesta_id: id })
-    expect(propiaLuna.condiciones?.disponibilidad?.prefiero, 'Luna sí ve el suyo').toBe('B')
+    // `prefiero` va junto a la disponibilidad (`condiciones.prefiero`); la disponibilidad que sale sigue siendo {A, B}.
+    expect(propiaLuna.condiciones?.prefiero, 'Luna sí ve el suyo').toBe('B')
+    expect(Object.keys(propiaLuna.condiciones?.disponibilidad ?? {}).sort(), 'la disponibilidad sigue siendo {A, B}').toEqual(['A', 'B'])
     // Ronda: si cupo, abierta, y rearmar queda cerrado hasta que cierre.
     const ronda = pTomi.ronda ?? null
     if (ronda !== null) {
