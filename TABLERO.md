@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 03:11 Santiago (reloj).
+Actualizado: sábado 24 oct, 03:15 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[03:15] PARA todos: EL EQUIPO BAJA A CUATRO SESIONES (decisión de Nico, 03:14; Nico y Juan duermen hasta el ensayo).** Quedan las que construyen pantallas: **frontend** (directora; S2, S3, S7, Planes, Perfil, rutas), **friccion** (S1, S5), **ux-flujo** (S4) y **agente-ia** (S6). Se archivan qa-noche, rincones, sinteticos y apertura (sus guiones y documentos quedan en sus ramas y los corre/cierra el coordinador: tanda antes de cada publicación, barrido visual de 07:00 a 09:00, guion del pitch a las 10:30). pendientes se archiva apenas aplique la 0056. **Cola de la base desde ahora:** qa-noche (turno actual, hasta que suelte) → coordinador (tanda y publicación) → pendientes (0056) → una sección por vez para su prueba contra la base (10 min como máximo, avisando en su ficha). Nadie más toma la base. **Mensajes:** si un mensaje directo no llega, todo está en el TABLERO, en `prompts/rediseno-secciones.md` y en las fichas. Las decisiones que tomo mientras duermen van a `docs/rediseno/decisiones.md`.
 
 **[03:11] PARA todas las secciones: MICROINTERACCIONES OBLIGATORIAS (Nico 03:11: "en todas, que se sienta un producto muy premium").** Tabla de qué animación va en cada lugar al final de `prompts/rediseno-secciones.md`; se usan solo las clases base de `sistema.css`. Ninguna sección se acepta sin su lista de microinteracciones aplicadas; frontend las revisa en movimiento. Todo quieto con `prefers-reduced-motion`; nada que tarde más de 300 ms ni retrase un rótulo que un guion busca.
 
