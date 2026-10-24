@@ -1,8 +1,8 @@
 # Integración Codex — Juan Morales
 
 ## Tocando ahora
-- Corrección de los dos hallazgos del tablero 22:43, SOLO `src/agente/ConsentimientoInvitaciones.tsx`, rama `codex/e11-consentimiento-reintento` desde main d2a2b20. Reintentar repite la operación fallida y los botones conservan foco. QA local con UX; sin DB durante 0050 (marca backend 22:47). Entrega en rama para prueba DB del coordinador antes de otra publicación web.
-- Puerto RPC interno propuesto queda pendiente, sin fuentes creadas ni activación. No tocar index.ts/logica.ts de agente-ia ni sus procesos.
+- Sin fuentes en edición al cerrar este corte. Corrección `src/agente/ConsentimientoInvitaciones.tsx` entregada en `codex/e11-consentimiento-reintento`, SHA remoto `0fff3760c4e67b6083097d17e50967cc79edaf56`; QA UX aplicada focal en curso. No modificar esta rama ni publicar en paralelo hasta recibirla. La ruta sigue asignada a integración según PROPIEDAD.
+- PuertoRPC interno pendiente SIN fuentes creadas; no index.ts/logica.ts, DB, modelo ni activación social nueva en este corte.
 
 ## Entregado
 - Corrección del aviso 22:43: rama REMOTA `codex/e11-consentimiento-reintento`, commit `9f69c9cac13aea13f49166f43119c8a3471205b5`, SOLO ConsentimientoInvitaciones.tsx (5 altas/4 bajas). Reintentar conserva lectura/escritura; Boton usa ocupado sin disabled durante trabajo y no se desmonta tras comprobar. Tipos/build + 19 contrato PASS. QA UX aplicada focalizada en curso; NO trasladar los 23 casos previos a este diff automáticamente. No está en main. Al terminar QA, se entrega para tu prueba DB antes de publicar.
@@ -30,3 +30,11 @@
 - coordinador [22:49]: recibido hallazgo 22:43; corrijo la operación de Reintentar y el foco en nuestra ruta. No ejecuto DB durante 0050 ni publico otra tanda web mientras se prueba. d2a2b20 contiene únicamente módulo puro añadido a e9b7497; sin import ni activación del handler.
 
 - Corte 22:55: main remoto sigue d2a2b203b48c86ede40b73cb08e02c7fe1997d2f; Vercel success confirmado y HTML200 con assets de e9 sin cambios. PuertoRPC nuevo aún sin archivos. 0050 apareció en curso22:47; en la última ficha remota2cb924c la marca ya está retirada, sin que yo haya corrido DB. Sigue regla de una corrida/producción Nico primero.
+
+## Cierre del corte 22:59
+- Main remoto verificado: d2a2b203b48c86ede40b73cb08e02c7fe1997d2f (consentimiento e9b7497 + 3 archivos puros social; sin handler conectado). Vercel success, HTML200 y assets sin cambios del consentimiento.
+- Corrección FINAL remota: 0fff376 (incluye9f69c9c); ambos commits Juan Morales. 19contrato repetidos + tipos/build PASS. Registra solo la operación realmente ejecutada dentro del callback de useAccion y Reintentar la respeta. Botones mantienen foco/aria-busy. QA UX focal pendiente; la evidencia previa no cubre este diff. NO está en main.
+- coordinador: al recibir QA focal verde te entrego la rama para la prueba contra la base ofrecida en TABLERO22:43; no publico esta tanda web antes de esa evidencia. Yo no corrí DB. La marca0050 de22:47 ya no está en la ficha backend2cb924c; no afirmo resultado0050 por ausencia de marca.
+- Agente-ia informa funciónv10/E14 desplegada desde8a655e7 y pruebas reales propias22:45; no es certificación independiente nuestra ni enganche al nuevo orquestador social. Evitar duplicar ese desarrollo.
+- Siguiente unidad segura: puerto RPC tipado usando cliente autenticado existente y6operacionesE11, sin endpoint nuevo ni efectos automáticos; después acordar transporte/recuperación de clima y conectar handler con pruebas locales. No se activará sin QA y compatibilidad actual.
+- Publicación: check de tipos/build, mocks, QA aplicada del diff, pruebaDB por turno con datos ficticios, main fresco sin conflictos, commits individuales y Vercel/assets. Rollback mediante commit revisado que revierta solo la unidad fallida y preserve los cambios ajenos; sin reset ni force. Revertir la integración pura d2 no toca handler ni web; para consentimiento revisar sus4rutas propias, no revertir merges que arrastran entregas ajenas.
