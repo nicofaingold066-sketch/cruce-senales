@@ -40,7 +40,7 @@ empujar_ficha "rincones: prueba terminada ($(hora))"; }
 trap 'soltar >/dev/null 2>&1' EXIT
 # Turno con ventana de choque: espera libre, marca, sube, vuelve a leer a los 8 s; si apareció otra marca, retrocede un tiempo al azar.
 while :; do
-  while q=$(ocupada); do echo "   (espera $(hora): $q)"; sleep 45; done
+  while q=$(ocupada); do echo "   (espera $(hora): $q)"; sleep 15; done
   marcar "$*"; empujar_ficha "rincones: CORRIENDO PRUEBA ($(hora)) $*"
   sleep 8
   if q=$(ocupada); then echo "   (choque con $q: suelto y reintento)"; soltar >/dev/null 2>&1; sleep $((20 + RANDOM % 40)); continue; fi
