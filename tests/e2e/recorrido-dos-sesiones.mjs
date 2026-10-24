@@ -291,7 +291,8 @@ try {
     /Pepe/.test(cab) && (await T.getByText('Herramientas del organizador').count()) === 0, cab.replace(/\s+/g, ' ').slice(0, 80))
   await T.getByText('Asado en casa de Tomi', { exact: false }).first().waitFor({ timeout: 15000 })
   // La tarjeta une el texto del servidor (siguiente_accion) y el conteo que arma la interfaz.
-  const tarjeta = (await T.locator('.plan-vivo, .tarjeta-prop, a[href*="/p/"]').first().innerText()).replace(/\s+/g, ' ')
+  // La tarjeta del plan, no cualquier enlace a /p/ (la actividad del grupo también enlaza al plan con «Ver plan»).
+  const tarjeta = (await T.locator('.plan-vivo, .tarjeta-prop, a[href*="/p/"]').filter({ hasText: 'Asado en casa de Tomi' }).first().innerText()).replace(/\s+/g, ' ')
   const imposiblesTarjeta = conteosImposibles(tarjeta)
   verificar('#56: la tarjeta dice "N confirmaron (mínimo M)" y no "N de M" con N mayor',
     imposiblesTarjeta.length === 0 && /\d+ confirmaron \(mínimo \d+\)/.test(tarjeta), imposiblesTarjeta.length ? imposiblesTarjeta.join(', ') : tarjeta)
