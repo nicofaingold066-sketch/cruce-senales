@@ -3,7 +3,6 @@
 Quien edita este archivo: solo el coordinador. Última actualización: 10:57 (hora real).
 
 ## Tocando ahora
-- CORRIENDO PRUEBA (22:10) parche de pantallas: dos sesiones, jurado, red, recuperación, fricción, convencer a uno, corte de red (coordinador)
 - `docs/contrato*.md`, `AGENTS.md`, `CLAUDE.md`, `docs/tareas/**`, `docs/contexto-proyecto.md`
 - Rama `coordinacion` (tablero, mapa de dueños)
 
