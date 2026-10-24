@@ -1,3 +1,4 @@
+@import './estilo/sistema.css';
 /* CRUXE · sistema visual "escena y hoja" (rediseño mobile-first inspirado en apps de viaje en curso).
    Arriba, una escena oscura que muestra el estado en vivo (como el mapa de Uber); encima sube una hoja clara
    con el detalle, y la acción principal queda fija al alcance del pulgar. 90 % neutros, brasa solo para
@@ -12,7 +13,7 @@
   --linea: #e4e0db;
   --tinta: #141210;
   --tinta-2: #57524c;
-  --tinta-3: #8b857e;
+  --tinta-3: #6f6962; /* AA sobre blanco (5,2:1); antes #8b857e (3,6:1) */
 
   /* Marca */
   --brasa: #b4400f;
@@ -56,7 +57,7 @@
   --r-hoja: 28px;
   --barra-alto: 56px;
   --margen: 16px;
-  --fuente: system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --fuente: var(--fuente-ui); /* Plus Jakarta Sans con la del sistema de respaldo (src/estilo/sistema.css) */
   --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   color-scheme: light dark;
 }
