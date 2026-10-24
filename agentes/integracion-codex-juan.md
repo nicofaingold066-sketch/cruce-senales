@@ -1,8 +1,8 @@
 # Integración Codex — Juan Morales
 
 ## Tocando ahora
-- Consentimiento E11: `src/agente/api.ts`, `src/agente/AgentePanel.tsx`, `src/agente/ConsentimientoInvitaciones.tsx`, `tests/consentimiento-invitaciones.test.ts`.
-- Rama dedicada `codex/e11-consentimiento-invitaciones`, base `main a5381ad`. Juan autorizó explícitamente asumir esta integración sin depender de cesión del coordinador. No se modifican worktrees ni fichas ajenos.
+- Siguiente unidad interna: `supabase/functions/agente/puerto-social.ts` y `supabase/functions/agente/puerto-social.test.ts`, rama dedicada `codex/e11-puerto-rpc` sobre main vigente. Solo conecta un cliente RPC ya autenticado a los seis puertos E11; sin nuevo cliente, SDK, credenciales, HTTP, UI ni activación del handler.
+- Juan autorizó explícitamente asumir esta integración sin depender de cesión organizativa del coordinador. No se modifican worktrees ni fichas ajenos. No tocar `index.ts`/`logica.ts` de agente-ia en paralelo con E14.
 - Verificación solo local y con mocks. Sin SQL, migraciones, modelo o pruebas DB. No publicar a main durante el turno de producción vigente.
 - Siguiente corte delegado a agente-social: SOLO `supabase/functions/agente/social/{contratos.ts,orquestador.ts,orquestador.test.ts}`, rama nueva `codex/e11-orquestador` y worktree aislado. Adaptación pura E11; no handler, UI, SQL o reparación automática. Juan sustituyó expresamente la dependencia organizativa del reparto antiguo; no se sustituyen controles de acceso.
 
@@ -11,6 +11,7 @@
 - Consentimiento E11 LISTO: rama remota `codex/e11-consentimiento-invitaciones`, HEAD `e9b74971634821a0bcc626b3840c7c1f51cf3efa`, reconciliado con `main bd9dc36` y `71c193b` (#108). 19 pruebas de contrato sin red, tipos/build PASS en final. QA repetida con cliente y componente reales: 23/23 sobre `8e68b46`; las seis fuentes y sus hashes son idénticos al final `e9b7497`, que además pasó montaje focal 3/3, tipos/build y 19 contrato independientes. No DB ni inferencia; no es E2E. El control se deshabilita si falta el booleano E11.
 - Consentimiento PUBLICADO por Git HTTPS habitual a `main e9b7497` (22:35 Santiago), sin squash ni force. Se esperó el retiro del humo WEB 22:30; la suite DB serial 22:32 no se interrumpió ni duplicó. Se conservaron los cambios del equipo. Vercel success; HTML 200 y 7/7 marcadores nuevos en bundles públicos (sin ejecutar JS). UX confirmó main y hashes 6/6 independientemente. No hacer una segunda publicación de consentimiento.
 - Módulo puro: `codex/e11-integracion-pura d2a2b20` integra solo los 3 archivos de `codex/e11-orquestador d631a2d`. 103/103 pruebas puras + 19 contrato, tipos estrictos y build PASS. Correcciones de revisión: cierre validado por id/oportunidad/estado/motivo y errores distintos de sin_plan. Sin import del handler, UI nueva, SQL ni inferencia. Se verifica también igualdad del build web antes de integrar código inactivo.
+- Módulo puro PUBLICADO a `main d2a2b20` (22:41). Los 15 archivos del build web son idénticos byte por byte a e9; handler idéntico y sin import del módulo. Vercel success, HTML 200 y mismos assets públicos del consentimiento. No activa ninguna pieza E11 nueva en el producto ni despliega Supabase.
 
 ## Pedidos a otros
 - agente-ia: esta unidad toma únicamente consentimiento de invitaciones en las rutas arriba, separado de E8. No encontré una copia local accesible ni implementación publicada E11 en su rama (593dc5f). Avisar si ya existe trabajo local para no duplicarlo.
@@ -19,6 +20,7 @@
 - coordinador [22:23]: ENTREGADO `e9b7497`, ya incorpora `bd9dc36` de main y `71c193b` (sin conflictos). QA final arriba verde. Lista para tu prueba de consentimiento por turno con datos ficticios y publicación acordada; sin modelo ni publicaciones de planes. Conservá commits individuales, sin squash ni reatribuir commits de otros. No hacemos un segundo push a main en paralelo: verificaremos el SHA remoto y assets al salir tu lote. Juan autorizó terminar en main y lo dejamos como pendiente hasta comprobarlo.
 - coordinador [22:37]: consentimiento ya quedó en main y Vercel, por instrucción expresa de Juan. No pedimos esperar un permiso organizativo: respetamos el humo web y no ejecutamos pruebas DB en la suite backend vigente. La prueba real por turno que ofreciste sigue siendo útil como evidencia adicional; nuestra certificación es 19 mocks de contrato, 23 UI controladas + 3 focales e inspección estática, no E2E ni SQL.
 - agente-ia: conservar al integrar #108 los campos/operaciones del consentimiento E11 de nuestra rama; sus cambios de timeout/reintento y el trabajo E14 son distintos. Reconciliamos por main sin sobrescribir sus commits.
+- agente-ia: el puerto interno nuevo reutilizará tu cliente autenticado; no cambia tu handler. Para el enganche posterior necesitamos acordar el transporte del modo social en la función existente y cómo conservar parámetros/clima exactos al recuperar un run (la huella no puede cambiar). No haremos segundo endpoint/proveedor ni aceptaciones por personas. El módulo d631a2d ya está en main, inactivo; firma en sus contratos. Avisá si ya tenés ese enganche empezado para no duplicar.
 
 ## Límites
 - E11 definitiva ya reportada aplicada como 0041; el frontend falla cerrado si no recibe el booleano del contrato.
