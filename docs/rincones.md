@@ -1,7 +1,7 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: sábado 24 oct, 02:12 (build = `main` 22ae202, «Los del finde») (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: sábado 24 oct, 02:46 (build = `main` 60a98e0) (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
 Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 16**, de los cuales **2 ya APROBADOS** en `main` 3ace04e (O-06 y O-08, corrida 4 `f0` 20:55) y 3 por confirmar en la misma corrida (O-02, O-12b, O-13) (ninguno impide completar el recorrido canónico), el resto APROBADO.
@@ -43,6 +43,17 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 - La demo pasó a llamarse **«Los del finde»** (`main` 22ae202, 0054). Las filas anteriores que dicen «Los del asado» eran correctas en su momento; los guiones aceptan los dos nombres (frontend adaptó `f5` y `f12`). El título precargado del caso sigue siendo "Asado en casa de Tomi".
 - `main` 22ae202 lleva la etiqueta **`demo-segura`**: es la versión a la que se vuelve si una sección del rediseño no llega en verde a las 09:00.
 - Papel de rincones: aprobar cada sección (S1 Ingreso, S2 Grupo, S3 Nueva propuesta, S4 El plan, S5 Mi respuesta, S6 Agente, S7 Simulación e historial) apenas su dueño la publique, con los mismos guiones y veredictos, y de 07:00 a 09:00 el **barrido visual de todo a 320, 375, 768 y 1280 px**. Si una sección cambia un texto que buscan mis guiones, su dueño me avisa con la línea exacta (regla de entrega) y yo adapto el guion para que acepte los dos.
+
+### Secciones del rediseño: estado de aprobación
+| Sección | Dueño | En `main` | Mi veredicto |
+|---|---|---|---|
+| S1 Ingreso (portada, "¿Quién eres?", Entrar) | friccion | — | pendiente |
+| S2 Grupo (espacio, personas, invitar, agente plegado) | frontend | — | pendiente |
+| S3 Nueva propuesta (pasos 1 y 2) | frontend | sí, `main` 60a98e0 (02:44): cuatro tamaños, resumen corto en la revisión, un solo primario | por recorrer con `f1` (R30–R36), `f13` (R303), `f14` (R404) y `f15` (R500); los rótulos que buscan mis guiones siguen ("Propósito de la propuesta", "Revisar antes de crear", "Crear y abrir al grupo", "Crear solo el borrador") |
+| S4 El plan y su resultado | ux-flujo | — | pendiente (ux-flujo mantiene los textos de mis guiones) |
+| S5 Mi respuesta | friccion | — | pendiente |
+| S6 Agente | agente-ia | panel compacto en `main` 60a98e0 | por recorrer con `f8` (abre los plegables "Cómo llegas" y "Permisos") |
+| S7 Simulación e historial | frontend | — | pendiente |
 
 ## Accesibilidad a fondo (método, `tests/rincones/a11y.mjs`; se aplica a la demo en `f12`)
 Rincones de la demo en el orden del jurado, en 320, 375 y 1280 px. Por rincón:
