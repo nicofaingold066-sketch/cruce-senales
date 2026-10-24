@@ -632,6 +632,11 @@ Pedido del coordinador (21:02). Hecha a las 21:17 del viernes 23 sobre el códig
 - **Rebaja de A2 a A5 (de alta a media):** leí las migraciones 0043, 0045 y 0047: el **servidor ya anonimiza** las bajas de otras personas (actor «Una persona», `habia_aceptado` nulo, y las aceptaciones de quienes se retiraron ya no salen). Entonces la pantalla no puede mostrar un nombre; lo que queda es la **palabra** («se bajó» en vez de «se retiró») y el texto «perdió al anfitrión». Sigue valiendo cambiarlos, pero ya no es una exposición. **Pendiente de comprobar en pantalla:** que la columna «Versión N · ya no vale» de `PlanTab.tsx` no deje deducir quién se retiró por exclusión.
 - **Cerrado por backend:** el mensaje `condiciones_congeladas` del lote 7 (migración 0046).
 
+### Actualización a las 23:06 (producción con `main` `8f27c5b`, bundle `index-DzSnNgWg`)
+- **Llegaron desde la última lectura:** el voseo del panel del agente ya no está («podés», «movés», «Marcá»: 0), «perdió al anfitrión» (0), el texto de privacidad corregido (ya no dice «Nada sale a otros servicios» ni «y si te bajaste»; sí menciona la IA y Google Maps), «Gracias por avisar» y «Ya van tres versiones».
+- **Siguen:** «se bajó» (4), «había confirmado» (2), «Bajas registradas» (1), «Imprescindible (anfitrión)» (1) y «ve solo el servidor» (3): son palabras, no exposición (el servidor anonimiza las bajas). No hay «Habrá opción sin carne» (función cerrada).
+- **Límite declarado (coordinador, 22:27):** en «Versión N · ya no vale», con pocas personas se puede deducir por exclusión quién se retiró. No se cambia.
+
 ### 16.1 Lo que hay que arreglar primero (7 altos): todos son la misma falla
 Cinco de los siete **nombran a quien se retiró** o dicen que «había confirmado» en textos que ve todo el grupo; la enmienda 13 (c), aprobada a las 20:51, pide «Una persona se retiró» sin nombre ni motivo. El historial viaja en capturas al chat. Los otros dos **prometen que todo lo que marques es privado** justo antes de la pantalla donde «me interesa» y la confirmación los ve el grupo.
 

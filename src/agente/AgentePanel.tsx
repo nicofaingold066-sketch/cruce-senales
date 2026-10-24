@@ -388,8 +388,6 @@ function BorradorTarjeta({
     : textoFijo(elegida.frases_grupo, false, b.clima.fuente === 'simulacion', b.perfil_grupo, elegida.actividad_etiqueta)
   const mensaje = esLaDestacada ? b.mensaje_al_grupo : mensajeFijo(elegida)
   const deModelo = esLaDestacada && b.explicacion_fuente === 'modelo'
-  // Qué modelo escribió (Opus, o Haiku si Opus no respondió a tiempo).
-  const quien = b.modelo_usado === 'opus' ? 'Claude Opus' : b.modelo_usado === 'haiku' ? 'Claude Haiku, de respaldo' : b.modelo_usado === 'sonnet' ? 'Claude Sonnet' : null
   const canchas = enlacesCanchas(elegida.actividad, elegida.franjas[0])
   // Enmienda 10: el viaje de la opción que está mirando el organizador (null con menos de 4 personas con zona).
   const viaje = viajeDeOpcion(elegida, b)
@@ -512,7 +510,7 @@ function BorradorTarjeta({
       </div>
       <p className="suave">
         {deModelo
-          ? `Lo redactó la IA${quien ? ` (${quien})` : ''}, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.`
+          ? 'Lo redactó la IA, que solo vio las opciones válidas, el clima y totales del grupo: nunca lo que puso cada uno.'
           : 'Texto fijo. Las opciones las armó el servidor con reglas fijas a partir de las preferencias habilitadas.'}
       </p>
       <p className="suave">El mínimo, el máximo, la persona imprescindible y el cierre los completas tú en el paso siguiente.</p>

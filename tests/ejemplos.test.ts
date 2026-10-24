@@ -6,6 +6,7 @@ import {
   atajosParaFamilia,
   atajosParaGrupo,
   FAMILIA_DE_ACTIVIDAD,
+  PLANES_POR_FAMILIA,
   ordenarActividadesParaGrupo,
   ayudaGrupo,
   ejemploPorIndice,
@@ -147,5 +148,29 @@ describe('ejemplos que rotan (mejora #92)', () => {
     expect(atajosParaEspacio('Los del pádel', 'libre')).toEqual(atajosParaGrupo('Los del pádel'))
     expect(atajosParaEspacio('Los del asado', 'libre')[0].titulo).toBe('Asado')
     expect(new Set(atajosParaEspacio('x', 'comida').map((a) => a.titulo)).size).toBe(atajosParaEspacio('x', 'comida').length)
+  })
+
+  it('el placeholder del plan sigue a la familia del espacio y, sin familia o libre, es el de siempre', () => {
+    const ej = ejemploPorIndice(5) // «Juegos de mesa el sábado»: el ejemplo rotado no es de deporte
+    expect(placeholderPlan(ej)).toBe(`Ej.: ${ej.plan}`)
+    expect(placeholderPlan(ej, 'libre')).toBe(`Ej.: ${ej.plan}`)
+    expect(placeholderPlan(ej, null)).toBe(`Ej.: ${ej.plan}`)
+    expect(placeholderPlan(ej, undefined)).toBe(`Ej.: ${ej.plan}`)
+    const planesDeporte = PLANES_POR_FAMILIA.deporte.map((x) => `Ej.: ${x.plan}`)
+    for (let i = 0; i < EJEMPLOS.length; i++) expect(planesDeporte).toContain(placeholderPlan(ejemploPorIndice(i), 'deporte'))
+    // En un grupo de fútbol nunca sale el ejemplo del cerro.
+    for (let i = 0; i < EJEMPLOS.length; i++) expect(placeholderPlan(ejemploPorIndice(i), 'deporte')).not.toContain('cerro')
+  })
+
+  it('cada ejemplo de plan por familia es de una actividad de esa familia y cabe en el campo', () => {
+    for (const [familia, planes] of Object.entries(PLANES_POR_FAMILIA)) {
+      expect(planes.length).toBeGreaterThanOrEqual(2)
+      for (const p of planes) {
+        expect(FAMILIA_DE_ACTIVIDAD[p.actividad]).toBe(familia)
+        expect(p.plan.length).toBeGreaterThan(0)
+        expect(p.plan.length).toBeLessThanOrEqual(80)
+      }
+    }
+    expect(Object.keys(PLANES_POR_FAMILIA).sort()).toEqual(['aire_libre', 'comida', 'cultura', 'deporte', 'en_casa', 'salida_noche'])
   })
 })
