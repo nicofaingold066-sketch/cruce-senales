@@ -33,3 +33,7 @@ Transiciones: la 1 entra con fundido, de la 2 a la 7 entran moviéndose desde la
 ## Cambio de formato (24 oct, 12:30, pedido de Nico vía coordinador)
 
 Se presenta sin video ni demo en vivo: el deck tiene 19 diapositivas. 1–4 gancho, problema, conflicto y solución; 5–16 la demo paso a paso, una captura real de producción por diapositiva (390×844 a 2×, `cruce-video/capturas-demo-2x/` 02, 06, 08, 10, 13, 16, 17, 19, 21, 23, 25, 26) con título corto, una línea y barra de avance; 17–19 lo que no se ve, Makana y cierre con QR (verificado de nuevo en el PDF). La diapositiva de demo anterior quedó oculta en Figma, no borrada.
+
+## Versión final de 10 diapositivas (24 oct, 12:37, pedido de Nico)
+
+1 gancho · 2 problema · 3 las tres trabas + qué hace CRUXE · 4–9 demo con iPhone y bullets (06-minimo-4, 10-puedo-los-dos, 16-opcion-v1, 19-aceptar-todos, 26-gru y la tarjeta de GRU `docs/rediseno/capturas/s6/gru/gru-card-375-light.png`, «Pádel en Club Providencia»; no se usó la versión «abierta» porque muestra un asado) · 10 cierre con QR y «36 h · 30 personas a la vez, sin sobrecupo». Las demás quedan ocultas en Figma, no borradas.
