@@ -15,6 +15,7 @@ import { Icono } from '../components/Icono'
 import { TomarDeCalendario } from './Calendario'
 import { nombreDelPlan, opcionesRapidas } from './respuestas'
 import { RespuestasRapidas } from './RespuestasRapidas'
+import { AjustarPorDia } from './AjustarPorDia'
 import '../estilo/seccion-s5.css'
 import type { Opcion } from './respuestas'
 import { miOpinion } from './opinar'
@@ -71,8 +72,9 @@ function usePropuestaPorResponder(espacioId: string, propuestaId?: string) {
     const p = e.data.propuesta
     const s = p.mi_situacion
     const reabierta = p.estado === 'esperando_compromisos' && miOpinion(s) === 'asi_no_puedo'
-    const corresponde = p.estado === 'reuniendo_interes' ? s.condiciones !== 'completas' : reabierta
-    if (!s.puede.guardar_condiciones || !corresponde || !opcionesRapidas(p.franjas)) return salir(candidata)
+    // Sin propuesta pedida, solo se ofrece lo que falta; con una pedida ("Cambiar ›" en el plan) se puede volver a responder.
+    const corresponde = propuestaId ? p.estado === 'reuniendo_interes' || reabierta : p.estado === 'reuniendo_interes' ? s.condiciones !== 'completas' : reabierta
+    if (!s.puede.guardar_condiciones || !corresponde) return salir(candidata)
     const espacio = esp.data.espacio
     const yo = espacio.miembros.find((m) => m.es_yo)?.nombre ?? s.nombre
     setCarga({ fase: 'lista', p, espacio: sinQuienViene(espacio.nombre), demo: espacio.demo, yo, organizador: espacio.mi_rol === 'organizador', reabierta, personas: espacio.miembros.filter((m) => !m.pendiente).length })
@@ -131,7 +133,8 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
   }
 
   const { p } = lista
-  const opciones = opcionesRapidas(p.franjas) ?? []
+  const rapidas = opcionesRapidas(p.franjas)
+  const opciones = rapidas ?? []
   const s = p.mi_situacion
   const verPlan = rutas.propuesta(espacioId, p.id)
 
@@ -167,7 +170,9 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
 
   // Pantalla 14: lo que marcaste, en una línea ("Puedes los dos días.").
   const loQueMarcaste = elegida
-    ? elegida.id === 'ninguna'
+    ? elegida.id === 'dia'
+      ? 'Guardaste tus condiciones día por día.'
+      : elegida.id === 'ninguna'
       ? 'No puedes ninguno de los días.'
       : elegida.id === 'ambas' || elegida.id === 'si'
         ? elegida.texto.replace(/^Puedo/, 'Puedes') + '.'
@@ -206,7 +211,9 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
           {!elegida
             ? lista.reabierta
               ? 'Marcaste que así no puedes. ¿Cuándo sí? Toca una opción: si se rearma, cuenta esto. Es privado: nadie del grupo lo ve.'
-              : 'Toca una opción y listo. Es privado: nadie del grupo ve qué elegiste.'
+              : rapidas
+                ? 'Toca una opción y listo. Es privado: nadie del grupo ve qué elegiste.'
+                : 'Marca Sí o No en cada día. Es privado: nadie del grupo ve qué elegiste.'
             : loQueMarcaste}
         </p>
         {elegida ? <p className="escena-sub s5-solo-tu">Cuando haya un plan, lo ves acá. Solo tú ves lo que marcaste.</p> : null}
@@ -354,6 +361,18 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
               />
             ) : null}
           </section>
+          {/* Pantalla 6, abajo y chico: el editor fino (3+ franjas o ajustes que un toque no dice). */}
+          <div className="s5-ajustar-afuera">
+            <AjustarPorDia
+              p={p}
+              abierto={!rapidas}
+              deshabilitado={soloLectura}
+              onGuardado={(np, c) => {
+                setCarga({ ...lista!, p: np })
+                setElegida({ id: 'dia', texto: 'Condiciones guardadas', detalle: '', disponibilidad: c.disponibilidad })
+              }}
+            />
+          </div>
         </>
       ) : null}
     </div>

@@ -299,3 +299,20 @@
     flex: 1;
   }
 }
+
+/* "Ajustar día por día" al final de la pantalla 6: chico, cerrado, con el mismo margen que lo opcional. */
+.s5-ajustar-afuera {
+  position: relative;
+  z-index: 2;
+  padding: 0 var(--margen) var(--e-6);
+  background: var(--fondo);
+}
+.s5-ajustar-afuera .s5-detalle {
+  margin: 0;
+}
+@media (min-width: 960px) {
+  .s5-ajustar-afuera {
+    grid-column: 2;
+    padding: 0 40px 40px;
+  }
+}
