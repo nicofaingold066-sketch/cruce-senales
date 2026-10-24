@@ -21,7 +21,7 @@ Duración: el recorrido completo dura unos **4 minutos**. En el pitch de 5 minut
 
 1. **Dos aparatos.** T1 = Tomi (notebook al proyector o teléfono de Juan). T2 = Luna (otro teléfono). Datos móviles como respaldo del Wi-Fi.
 2. **T1:** portada → «Abrir la demo «Los del finde»» (la primera vez dice «Probar la demo…»). En el grupo: «Herramientas del organizador» → «Reiniciar demo» → confirmar. ✂
-3. **T1:** «+ Nuevo plan» (viene precargado con el caso: asado, sábado 31 y domingo 1, 14:00, mínimo 4, máximo 6, Tomi no puede faltar) → «Crear y abrir al grupo». Tomi responde lo suyo: «Puedo los dos días». ✂
+3. **T1:** «+ Nuevo plan» (viene precargado con el caso: asado, sábado 31 y domingo 1, 14:00, mínimo 4, máximo 6, Tomi no puede faltar) → **cambiar el título a «Pádel y algo después»** (el deck no usa el asado como ejemplo; el título es libre y no cambia el recorrido) → «Crear y abrir al grupo». Tomi responde lo suyo: «Puedo los dos días». ✂ Si el ensayo muestra que cambiar el título trae otro problema, dejar el asado y no nombrarlo: «un plan del grupo».
 4. **T2:** tener el enlace `…/#/unirse/<código>` listo **sin abrir** (el código está en «Invitar al grupo» → «Copiar enlace»). Si T2 ya fue Luna en el ensayo, usar **la misma sesión**: dirá «Ya estás en este grupo como Luna» → «Seguir como Luna». Una sesión nueva vería a Luna «no disponible» (el reclamo sobrevive al reinicio, `docs/guion-demo.md` §1 punto 8).
 5. **No tocar nada que llame al modelo**: «Que el agente proponga un plan», «Que el agente arme un plan» y la pestaña de GRU con generar. Solo si Nico lo decide en el momento, y **una sola vez**.
 6. Tener abiertas las capturas del plan B (abajo) en una carpeta del escritorio.

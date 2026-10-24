@@ -12,7 +12,7 @@ Reglas que no se rompen en escena (`docs/guion-demo.md`, «Reglas que no se romp
 
 ## A. Versión de 5 minutos (la del escenario)
 
-Sigue las **8 diapositivas del deck** (sesión «Presentación para el jurado», lista final de las 11:0x): cada bloque dice qué diapositiva está en pantalla. Cifras que se dicen igual que en el deck: 8 de octubre, 6 interesados / 0 asados, 36 h, 30 personas a la vez, 152 verificaciones, ~1 000 commits.
+Sigue las **8 diapositivas del deck** (sesión «Presentación para el jurado», lista final de las 11:0x): cada bloque dice qué diapositiva está en pantalla. **Sin asado como ejemplo (pedido de Nico):** el 8 de octubre se cuenta como «un plan del grupo» (el hecho real fue un asado: no decir que fue pádel); el ejemplo de plan del deck es «Pádel y algo después», sáb 31 oct. Cifras que se dicen igual que en el deck: 8 de octubre, 6 interesados / 0 encuentros, 36 h, 30 personas a la vez, 152 verificaciones, ~1 000 commits.
 
 ### 0:00–0:30 · Gancho · diapositiva 1 «¿Cuándo nos juntamos?»
 - «Levanten la mano los que tienen un grupo de WhatsApp de amigos.» *(levantás la tuya)*
@@ -21,12 +21,12 @@ Sigue las **8 diapositivas del deck** (sesión «Presentación para el jurado»,
 - *(Pausa de 2 segundos. Mirás las manos.)*
 - «A nosotros nos pasó hace dos semanas. Les cuento.»
 
-### 0:30–1:10 · Problema · diapositiva 2 «6 interesados · 0 asados»
-- «8 de octubre. Un asado. Seis interesados.»
+### 0:30–1:10 · Problema · diapositiva 2 «6 interesados · 0 encuentros»
+- «8 de octubre. Un plan del grupo. Seis interesados.»
 - «Todos: *dale, me sumo*.»
 - «Después, uno no puede el sábado. Otra no quiere gastar. Otro no dice nada.»
 - «Uno solo persiguiendo respuestas. Los demás dejan de contestar.»
-- «Resultado: cero asados.» *(pausa)*
+- «Resultado: cero encuentros.» *(pausa)*
 - (Opcional, un solo dato) «Amigos hay: el 43 % de los chilenos tiene entre 3 y 5. Lo que falla es que el encuentro ocurra.»
 
 > Fuente del dato: Encuesta Bicentenario UC, vía prensa, fuente secundaria (`docs/problema.md` línea 13). Si preguntan, decir «fuente secundaria». No hablar de soledad como eje.
@@ -74,7 +74,7 @@ Frases de narración (sirven para las dos versiones):
 > Ojo: hoy no existe una vista para empresas; «solo totales» es el diseño propuesto para el piloto, no una pantalla. No decir «baja el ausentismo» ni «resuelve la soledad».
 
 ### 4:40–5:00 · Cierre (de memoria) · diapositiva 8 «Que juntarse no dependa de uno solo» (logo + QR)
-- «¿Se acuerdan del asado del 8 de octubre? Seis interesados, cero asados.»
+- «¿Se acuerdan del 8 de octubre? Seis interesados, cero encuentros.»
 - «Con CRUXE, cada uno dijo lo suyo en privado, confirmó, y cuando uno se bajó… el plan siguió en pie.»
 - *(lento)* «**Que juntarse deje de depender de que uno persiga a todos.** Gracias.»
 - *(Quieto 2 segundos.)*
@@ -87,7 +87,7 @@ Frases de narración (sirven para las dos versiones):
 
 | Tiempo | Bloque | Qué se dice |
 |---|---|---|
-| 0:00–0:20 | Gancho | «¿Cuántos tienen un grupo de amigos donde alguien escribió *che, ¿cuándo nos juntamos?*… y nunca pasó? A nosotros nos pasó el 8 de octubre: seis interesados, cero asados.» |
+| 0:00–0:20 | Gancho | «¿Cuántos tienen un grupo de amigos donde alguien escribió *che, ¿cuándo nos juntamos?*… y nunca pasó? A nosotros nos pasó el 8 de octubre: seis interesados, cero encuentros.» |
 | 0:20–0:45 | Insight | «Creemos que no faltan ganas: falla el cierre. Nadie dice en el grupo que no le alcanza. *Me interesa* no es *voy*. Y cuando uno se baja, se cae todo. El silencio no es asistencia, y una confirmación vale para una sola versión del plan.» |
 | 0:45–1:00 | Qué hace | «CRUXE: cada uno dice en privado cuándo puede, el servidor propone una opción, cada uno confirma esa versión, y si alguien se baja, se repara con una versión nueva.» |
 | 1:00–2:20 | Demo | Versión corta de `demo-en-vivo.md` §a: Luna entra y responde en un toque → «Buscar opción compatible» → confirmaciones → «¡Se juntan!» → Caro se baja → «En revisión» → versión 2 desde cero. |
