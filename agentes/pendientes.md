@@ -4,7 +4,7 @@ Rama de código: `wip/pendientes` (base `wip/fundamentos` `ad2d63e`). Rutas: `su
 Tarea (Nico, 23:50): (A) agente social completo (enmienda 11, lo humano), (B) E-c ronda de opiniones con plazo, (C) E-d dos planes con votación, como enmienda 15.
 
 ## Tocando ahora
-- **MIGRACION EN CURSO (01:24)**: 0053 E-d (dos planes con "la que más Sí"), después su suite en serie. Nadie corre contra la base.
+- [01:25] Base LIBRE (0052 terminada). Según la cola (TABLERO 01:24) sigue la tanda del coordinador; después aplico la 0053 (E-d), escrita sin aplicar.
 
 ## Entregado
 - [01:24] **0052 E-c APLICADA (01:17)**, `wip/pendientes` (contrato con "Implementación"). md5 de las 11 funciones = archivo; 41/0; `verificar_privilegios()` sin hallazgos. Suite en serie sin concurrencia: 100 ok + 1 falla de mi prueba (corregida); repetidas enmienda11, 13, 15: 16/16. Cierre de ronda verificado con ROLLBACK (opinar → `plazo_vencido/ronda_cerrada`, rearmar habilitado, v2 con ronda nueva). Reversa: `supabase/revertir/0052_revertir.sql`.
