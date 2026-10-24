@@ -108,3 +108,97 @@ describe('enmienda 15 (E-c): ronda de opiniones con plazo', { timeout: 180_000 }
     expect((await estado(O, p)).mi_situacion.puede.proponer_reparacion).toBe(true)
   })
 })
+
+describe('enmienda 15 (E-d): dos planes con etiqueta y la que más Sí', { timeout: 180_000 }, () => {
+  let O: Sesion // Tomi
+  let U: Sesion
+  let V: Sesion
+  let demo: Json
+  let ids: Record<string, string>
+  const NO_A = { A: 'no', B: 'si' }
+
+  const crear = (extra: Record<string, unknown>, franjas: Json = FRANJAS) =>
+    rpc(O, 'create_proposal', {
+      p_espacio_id: demo.espacioId, p_titulo: 't-e15d', p_franjas: franjas, p_minimo: 3, p_maximo: 6,
+      p_imprescindible_id: demo.miembroId, p_plazo: PLAZO, p_zona_horaria: 'America/Santiago', p_intento_id: intento(), ...extra,
+    })
+  const cond = (s: Sesion, p: string, d: Json) => rpc(s, 'save_my_conditions', { p_propuesta_id: p, p_disponibilidad: d })
+  const sim = (p: string, nombre: string, d: Json) =>
+    ok(O, 'simulate_save_conditions', { p_propuesta_id: p, p_miembro_id: ids[nombre], p_disponibilidad: d })
+  /** Crea, abre, carga condiciones (O siempre en las dos) y publica; devuelve la franja ganadora y el estado. */
+  const caso = async (regla: string | null, reales: Json[], simulados: Record<string, Json>) => {
+    const r = await crear(regla ? { p_regla: regla } : {})
+    expect(r.ok, JSON.stringify(r.error)).toBe(true)
+    const p = r.resultado.propuesta_id as string
+    await ok(O, 'open_proposal', { p_propuesta_id: p })
+    await ok(O, 'save_my_conditions', { p_propuesta_id: p, p_disponibilidad: SI })
+    await ok(U, 'save_my_conditions', { p_propuesta_id: p, p_disponibilidad: reales[0] })
+    await ok(V, 'save_my_conditions', { p_propuesta_id: p, p_disponibilidad: reales[1] })
+    for (const [n, d] of Object.entries(simulados)) await sim(p, n, d)
+    const ev = await ok(O, 'evaluate_and_publish', { p_propuesta_id: p, p_intento_id: intento() })
+    return { p, clave: ev.propuesta.opcion.franja.clave as string, st: ev.propuesta }
+  }
+
+  beforeAll(async () => {
+    ;[O, U, V] = await Promise.all([nuevaSesion(), nuevaSesion(), nuevaSesion()])
+    demo = await demoPrueba(O)
+    await ok(U, 'join_space', { p_codigo: demo.codigo, p_nombre_visible: 'Uno e15d' })
+    await ok(V, 'join_space', { p_codigo: demo.codigo, p_nombre_visible: 'Dos e15d' })
+    ids = Object.fromEntries((await ok(O, 'get_space', { p_espacio_id: demo.espacioId })).espacio.miembros.map((m: Json) => [m.nombre, m.miembro_id]))
+  }, 60_000)
+
+  it('5. etiquetas y preferencia: forma, privacidad de la propia y disponibilidad que sigue siendo {A, B}', async () => {
+    const larga = 'x'.repeat(41)
+    expect(err(await crear({}, [{ ...FRANJAS[0], etiqueta: larga }, FRANJAS[1]]))).toBe('entrada_incompleta/formato_invalido')
+    expect(err(await crear({}, [{ ...FRANJAS[0], etiqueta: 7 }, FRANJAS[1]]))).toBe('entrada_incompleta/formato_invalido')
+    const r = await crear({ p_regla: 'mas_si' }, [{ ...FRANJAS[0], etiqueta: '  Asado en lo de Tomi  ' }, { ...FRANJAS[1], etiqueta: '   ' }])
+    expect(r.ok).toBe(true)
+    expect(r.propuesta.regla).toBe('mas_si')
+    expect(r.propuesta.franjas.map((f: Json) => f.etiqueta)).toEqual(['Asado en lo de Tomi', null])
+    const p = r.resultado.propuesta_id
+    await ok(O, 'open_proposal', { p_propuesta_id: p })
+    expect(err(await cond(U, p, { A: 'si', B: 'si', prefiero: 'C' }))).toBe('entrada_incompleta/disponibilidad_invalida')
+    expect(err(await cond(U, p, { A: 'si', B: 'si', otra: 'si' }))).toBe('entrada_incompleta/disponibilidad_invalida')
+    const g = await cond(U, p, { A: 'si', B: 'si', prefiero: 'B' })
+    expect(g.condiciones).toMatchObject({ disponibilidad: { A: 'si', B: 'si' }, prefiero: 'B', estado: 'completas' })
+    expect(Object.keys(g.condiciones.disponibilidad).sort()).toEqual(['A', 'B'])
+    const mias = await ok(U, 'get_my_conditions', { p_propuesta_id: p })
+    expect(mias.condiciones).toMatchObject({ disponibilidad: { A: 'si', B: 'si' }, prefiero: 'B' })
+    // Sin regla nueva ni etiquetas: igual que hoy.
+    const viejo = await crear({})
+    expect(viejo.propuesta).toMatchObject({ regla: 'temprana', planes_totales: null })
+    expect(viejo.propuesta.franjas.map((f: Json) => f.etiqueta)).toEqual([null, null])
+  })
+
+  it('6. mas_si: gana la de más Sí; empate por preferencia; empate total, la más temprana; temprana no cambia', async () => {
+    // A: Tomi, Uno, Dos, Luna (4). B: Tomi, Uno, Dos, Luna, Mati (5).
+    const masSi = await caso('mas_si', [SI, SI], { Luna: SI, Mati: NO_A })
+    expect(masSi.clave).toBe('B')
+    expect(masSi.st.opcion.franja).toHaveProperty('etiqueta', null)
+    expect((await caso(null, [SI, SI], { Luna: SI, Mati: NO_A })).clave).toBe('A')
+    // Empate 4/4; Uno y Dos prefieren B, Luna prefiere A.
+    const pref = await caso('mas_si', [{ ...SI, prefiero: 'B' }, { ...SI, prefiero: 'B' }], { Luna: { ...SI, prefiero: 'A' } })
+    expect(pref.clave).toBe('B')
+    // Empate total: la más temprana.
+    expect((await caso('mas_si', [SI, SI], { Luna: SI })).clave).toBe('A')
+    // La preferencia de quien no puede en las dos no cuenta: A = Tomi, Uno, Dos, Luna; B = Tomi, Uno, Dos, Mati (4/4);
+    // Mati (solo B) prefiere B: no desempata, gana la más temprana.
+    expect((await caso('mas_si', [SI, SI], { Luna: { A: 'si', B: 'no' }, Mati: { ...NO_A, prefiero: 'B' } })).clave).toBe('A')
+  })
+
+  it('7. totales por plan: solo el organizador, sin contarlo, null con menos de 2; nunca prefiero ajeno', async () => {
+    const { p } = await caso('mas_si', [{ ...SI, prefiero: 'B' }, { ...SI, prefiero: 'B' }], { Luna: { ...SI, prefiero: 'A' }, Mati: NO_A })
+    const deO = (await ok(O, 'get_proposal_state', { p_propuesta_id: p })).propuesta
+    // Los demás: A = Uno, Dos, Luna (3); B = Uno, Dos, Luna, Mati (4). Prefieren B: 2; A: 1 → null.
+    expect(deO.planes_totales).toEqual({ A: { si: 3, prefieren: null }, B: { si: 4, prefieren: 2 } })
+    for (const s of [U, V]) {
+      const st = await ok(s, 'get_proposal_state', { p_propuesta_id: p })
+      expect(st.propuesta.planes_totales).toBeNull()
+      expect(JSON.stringify(st)).not.toContain('prefiero')
+      const lista = await ok(s, 'list_proposals', { p_espacio_id: demo.espacioId })
+      expect(JSON.stringify(lista)).not.toContain('prefiero')
+      expect(JSON.stringify(lista)).not.toContain('planes_totales')
+    }
+    expect(JSON.stringify(await ok(O, 'get_proposal_state', { p_propuesta_id: p }))).not.toContain('prefiero')
+  })
+})
