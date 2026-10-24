@@ -13,7 +13,7 @@ const txt = async (p, sel = 'main') => (await p.locator(sel).innerText()).replac
 const corto = async (id, p, f) => {
   try { await f() } catch (e) {
     nota(id, `ERROR DEL GUION: ${String(e).split('\n')[0].slice(0, 240)}`)
-    await p.screenshot({ path: `${CARPETA}/${id}-error.png` }).catch(() => {})
+    await p?.screenshot({ path: `${CARPETA}/${id}-error.png` })?.catch?.(() => {})
   }
 }
 const pestana = async (p, n) => { await p.getByRole('tab', { name: n }).click(); await T(p, 1500) }
@@ -159,10 +159,10 @@ await corto('R342', o, async () => {
   await rinconA11y(o, 'R343', 'v2 tras rearmar (accesibilidad)', { anchos: [320, 375] })
   nota('R343', await txt(o))
 })
-for (const [n, id] of [['ana', 'R350'], ['beto', 'R351'], ['caro', 'R352'], ['orgd', 'R353']]) {
+for (const [n, id] of [['anad', 'R350'], ['betod', 'R351'], ['carod', 'R352'], ['orgd', 'R353']]) {
   await corto(id, P[n], async () => {
     await P[n].goto(urlP); await T(P[n], 3500)
-    if (n === 'ana') { await rincon(P[n], id, 'v2 vista de Ana (su "así no puedo" ya no vale: la versión es nueva)', { foco: false }); nota(id, await txt(P[n])) }
+    if (n === 'anad') { await rincon(P[n], id, 'v2 vista de Ana (su "así no puedo" ya no vale: la versión es nueva)', { foco: false }); nota(id, await txt(P[n])) }
     await boton(P[n], 'Confirmar versión 2').click(); await esperarTexto(P[n], 'Ya confirmaste la versión 2', 20000); await T(P[n], 800)
   })
 }
