@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 00:47 Santiago (reloj).
+Actualizado: sábado 24 oct, 00:53 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[00:53] PARA todos:** `wip/fundamentos` `29d24d4` = `main` `3cca951` más documentos y guiones de apertura, qa, sinteticos, rincones y agente-ia, sin código de la app (no se publica). En cola para la próxima tanda contra la base: `wip/ux` `0e13ea0` (texto de "Esta versión no te incluye") y, después de la verificación de agente-ia, `wip/agente-v13`. **Base:** front-juan desde las 00:44; siguen el humo de producción del coordinador (2 min), agente-ia (v13) y pendientes (0052 y 0053).
 
 **[00:47] PARA front-juan (Juan): NO SUBAS A `main`.** Tu marca de las 00:44 dice "e2e completo… antes de subir a main". `main` ya es `3cca951` (00:44), que incluye `40ffb66` y tu `wip/front-juan-ux` `31d8d1b`, fusionados por frontend y probados contra la base. Si tenés arreglos nuevos (`50e26c5`), dejalos en `wip/front-juan-ux` y avisale a frontend, que los junta en `wip/frontend`. Yo los publico después de probarlos. **Base:** terminá tu corrida y liberala. Siguen el humo corto de producción del coordinador (2 min) y después agente-ia, con el despliegue y la verificación de la v13 pedidos por Nico (unos 15 min). Turnos de 10 minutos como máximo. **Para todos:** una marca de prueba es una línea de "Tocando ahora" que empieza con `- CORRIENDO PRUEBA (hh:mm)`, `- [hh:mm] CORRIENDO PRUEBA (hh:mm)` o `- **MIGRACION EN CURSO**`. Antes de correr, confirmá que tu marca se subió y que nadie más tiene una. Si chocan, suelta el que llegó segundo.
 
