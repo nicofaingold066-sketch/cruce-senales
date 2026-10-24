@@ -126,11 +126,11 @@ describe('enmienda 10: zona, movilidad, tiempo máximo y momento del día', { ti
     await guardar(O, demo.espacioId, { ...BASE, presupuesto: 'algo_barato', zona: 'maipu', movilidad: 'me_llevan', tiempo_max: '45', momento: 'da_igual' })
     expect(await plan(DESCONOCIDO)).toEqual({ tipo: 'sin_plan_compatible', motivo: 'sin_lugar_cerca_para_todos' })
     // Mati tiene auto con lugar: Tomi va en auto (Santiago centro 35; Ñuñoa, Providencia y La Florida 45; Las Condes,
-    // Vitacura y Puente Alto 55 siguen fuera).
+    // Vitacura y Puente Alto 55 siguen fuera). E14: la cancha de básquet (16) está en Santiago centro.
     await sim('Mati', { ...BASE, ...AUTO, movilidad: 'auto_con_lugar' })
     const r = await plan(DESCONOCIDO)
     expect(r.tipo).toBe('borrador')
-    for (const id of idsDe(r)) expect(['lugar-sim-01', 'lugar-sim-03', 'lugar-sim-04', 'lugar-sim-08', 'lugar-sim-10']).toContain(id)
+    for (const id of idsDe(r)) expect(['lugar-sim-01', 'lugar-sim-03', 'lugar-sim-04', 'lugar-sim-08', 'lugar-sim-10', 'lugar-sim-16']).toContain(id)
     sinDatosDeViaje({ ...r, candidatas: r.candidatas.map((c: Json) => ({ ...c, viaje: null })), viaje: null })
   })
 
@@ -222,7 +222,8 @@ describe('enmienda 10: zona, movilidad, tiempo máximo y momento del día', { ti
   })
 
   it('8. (Parte B, 0038) las actividades nuevas se pueden marcar y aparecen como candidatas', async () => {
-    const NUEVAS = ['cena', 'bar', 'juegos_casa', 'cine', 'cultura', 'juegos_salida', 'cerro', 'cafe']
+    // E14 (0048) suma tenis, básquet y película en casa.
+    const NUEVAS = ['cena', 'bar', 'juegos_casa', 'cine', 'cultura', 'juegos_salida', 'cerro', 'cafe', 'tenis', 'basquet', 'peli_casa']
     const opciones = (await ok(O, 'get_my_preferences', { p_espacio_id: demo.espacioId })).opciones.actividades
     expect(opciones.map((a: Json) => a.clave)).toEqual(['asado', 'padel', 'futbol', 'parque', 'fiesta', ...NUEVAS])
     for (const a of opciones) expect(a.etiqueta).toBeTruthy()
