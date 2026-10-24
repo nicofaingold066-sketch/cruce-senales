@@ -5749,3 +5749,14 @@ li:has(> .plan-vivo) {
   color: var(--tinta-2);
   overflow-wrap: anywhere;
 }
+.prefiero {
+  border: 0;
+  padding: 0;
+  margin: 12px 0 4px;
+  min-width: 0;
+}
+.prefiero > legend {
+  padding: 0;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
