@@ -83,6 +83,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 22:55 | humo de producción (main bd9dc36): dos sesiones **26/26** y jurado **4/4** (26 comprobaciones; E13 «baja sin nombre, totales solo al organizador» detectada y comprobada; 178 RPC sin hallazgos de privacidad) | producción | verde |
 | 23:35–23:45 | set completo sobre `wip/agente-ia` 130ea9b (bucle con herramientas) y `wip/ux` 43e3327: guardia 0/0, red 10/10, dos sesiones 26/26, jurado 4/4, friccion-flujo 19/19, red-import 4/4, recuperación 12/12 | localhost, base | verde en las dos |
 | 23:52 | `proposito-pantalla.mjs` sobre `wip/fundamentos` ad2d63e: **10/10** (la rama de ux aún no tiene el selector; lo conectó el coordinador en fundamentos) | localhost, base | verde |
+| 23:54 | humo de producción (main d978cc1 + parche 2): dos sesiones **26/26**, `proposito.mjs` **25/25**, `proposito-pantalla.mjs` **10/10** | producción | verde |
 
 ## Regresiones abiertas
 (ninguna)
