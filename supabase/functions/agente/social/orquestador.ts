@@ -238,7 +238,15 @@ export async function orquestarAgenteSocial(
       if (!respuestaValida(c)) return error('contrato_invalido', true, ejecucion)
       if (!c.ok) return rechazado(c.error, ejecucion)
       const cerrada = ejecucionDe(c.ejecucion)
-      return cerrada ? { estado: 'sin_plan', ejecucion: cerrada, propia: true, repetido: c.repetido } : error('contrato_invalido', true, ejecucion)
+      if (!cerrada || cerrada.id !== ejecucion.id || cerrada.oportunidad !== e.oportunidad
+        || cerrada.estado !== 'fallida' || cerrada.motivo !== motivo || typeof c.repetido !== 'boolean') {
+        // No presentar un cierre ajeno/inconsistente como éxito. El recibo previo es
+        // conocido y proyectado; no devolver el payload que contradice la operación.
+        return error('contrato_invalido', true, ejecucion)
+      }
+      return motivo === 'sin_plan'
+        ? { estado: 'sin_plan', ejecucion: cerrada, propia: true, repetido: c.repetido }
+        : { ...error('reintentar', false, cerrada), propia: true, repetido: c.repetido }
     } catch { return recuperar() }
   }
   if (destinatariosAlIniciar === 0) {

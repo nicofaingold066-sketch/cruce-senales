@@ -307,9 +307,55 @@ test('invalid candidate reference/date/shape, unknown activity and duplicate ref
     [opcion, opcion],
   ]) {
     const t = banco(); t.backend.agente_social_candidatos = async () => ok({ opciones, sin_plan_compatible: false }) as Awaited<ReturnType<PuertoBackendSocial['agente_social_candidatos']>>
-    assert.equal((await t.correr()).estado, 'sin_plan'); assert.equal(t.modelos, 0)
+    const r = await t.correr()
+    assert.equal(r.estado, 'error'); assert.deepEqual(r.error, { codigo: 'fallo_temporal', detalle: 'reintentar' })
+    assert.equal(r.ejecucion?.estado, 'fallida'); assert.equal(r.resultado_incierto, false); assert.equal(t.modelos, 0)
     assert.equal(t.guardados.length, 0); assert.equal(t.run?.motivo, 'candidatos_rechazados')
   }
+})
+
+for (const [nombre, cambio] of [
+  ['en_curso', { estado: 'en_curso' }],
+  ['borrador', { estado: 'borrador', borrador }],
+  ['publicada', { estado: 'publicada', propuesta_id: PROP }],
+  ['otra ejecucion', { id: OTRO }],
+  ['otra oportunidad', { oportunidad: 'sabado:2026-11-07' }],
+  ['otro motivo', { motivo: 'modelo_fallo' }],
+] as const) test(`close receipt ${nombre}: uncertain error, no foreign/private receipt or later effects`, async () => {
+  const t = banco('autonoma')
+  t.backend.agente_social_candidatos = async () => { t.llamadas.push('candidatos'); return ok({ opciones: [], sin_plan_compatible: true }) }
+  t.backend.cerrar_ejecucion_agente = async () => {
+    t.llamadas.push('cerrar')
+    const recibo: EjecucionSocial & { datos_privados: string } = {
+      ...nuevo(), estado: 'fallida', motivo: 'sin_plan', ...cambio,
+      datos_privados: 'MARCADOR-PRIVADO-NO-DEVOLVER',
+    }
+    return ok({ ejecucion: recibo, repetido: false })
+  }
+  const r = await t.correr()
+  assert.equal(r.estado, 'error'); assert.equal(r.error?.detalle, 'contrato_invalido')
+  assert.equal(r.resultado_incierto, true); assert.equal(r.ejecucion?.id, RUN)
+  assert.equal(r.ejecucion?.oportunidad, entrada.oportunidad); assert.equal(r.ejecucion?.estado, 'en_curso')
+  assert.ok(!JSON.stringify(r).includes('MARCADOR-PRIVADO'))
+  assert.deepEqual(t.llamadas, ['contexto', 'iniciar', 'candidatos', 'cerrar'])
+  assert.equal(t.modelos, 0); assert.equal(t.guardados.length, 0); assert.equal(t.publicados.length, 0)
+})
+
+test('valid sin_plan close keeps its projected receipt but no extra private fields', async () => {
+  const t = banco()
+  t.backend.agente_social_candidatos = async () => { t.llamadas.push('candidatos'); return ok({ opciones: [], sin_plan_compatible: true }) }
+  t.backend.cerrar_ejecucion_agente = async (p) => {
+    t.llamadas.push('cerrar')
+    assert.equal(p.p_motivo, 'sin_plan')
+    return ok({ ejecucion: { ...nuevo(), estado: 'fallida', motivo: 'sin_plan',
+      datos_privados: 'MARCADOR-PRIVADO-NO-DEVOLVER' } as EjecucionSocial, repetido: true })
+  }
+  const r = await t.correr()
+  assert.equal(r.estado, 'sin_plan'); assert.equal(r.ejecucion?.estado, 'fallida')
+  assert.equal(r.ejecucion?.motivo, 'sin_plan'); assert.equal(r.repetido, true)
+  assert.ok(!JSON.stringify(r).includes('MARCADOR-PRIVADO'))
+  assert.deepEqual(t.llamadas, ['contexto', 'iniciar', 'candidatos', 'cerrar'])
+  assert.equal(t.modelos, 0); assert.equal(t.guardados.length, 0); assert.equal(t.publicados.length, 0)
 })
 
 test('backend quorum minimum is preserved, never replaced with module defaults', async () => {
