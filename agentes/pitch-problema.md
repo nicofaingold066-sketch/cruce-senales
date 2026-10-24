@@ -1,12 +1,45 @@
 # Agente: agente-ia (antes pitch-problema; sesión "Pitch y Agente IA del círculo", computadora A)
 
-Quien edita este archivo: solo esta sesión. Última actualización: 01:14.
+Quien edita este archivo: solo esta sesión. Última actualización: 01:15.
 
 ## Tocando ahora
 - [01:14] Nada contra la base. CORRIENDO PRUEBA terminado (01:14). Escribo el informe de la v13.
 Rama de código: `wip/agente-ia`. Copia de trabajo: `/Users/macair/cruse/cruce-agente`. Mi copia de `coordinacion`: `/Users/macair/cruse/cruce-coord-agente`.
 
 ## Estado
+- **[01:15] INFORME v13 (agente social contra el backend real). Turno 01:05–01:14:51.**
+  - **Versiones:** `main` = `3cca951`. Función `agente` **v13**, desplegada a las 01:11:50 desde `wip/agente-v13` **`ae012dd`**, con 8 archivos (`index.ts`, `logica.ts`, `herramientas.ts`, `social-http.ts`, `modelo-social.ts`, `puerto-social.ts`, `social/orquestador.ts`, `social/contratos.ts`), verify_jwt true y sin tocar secretos. Frente a `main`, la función solo difiere en el bucle v12 (que `main` no tiene) y en el registro de `is_byok` social.
+  - **Antes de desplegar:** las 18 RPC del circuito existen con las firmas que espera `puerto-social.ts` (lectura de `pg_proc`). Migraciones aplicadas hasta la 0051 (`schema_migrations`).
+  - **Sondeo (sin modelo):** en la v12 (servidor viejo), capacidad y preparar responden `fecha_invalida` en 0,3–0,4 s, sin RPC. En la v13, capacidad responde exactamente `{ok:true, contrato:2, capacidades:{agente_social:1}}`, sin propuestas ni modelo.
+  - **Pasaron, sin modelo:**
+    - Consentimiento apagado por defecto; se guarda y se recupera (true y false), independiente de `usar_en_agente` y sin tocar las preferencias.
+    - Preparar sin destinatarios: `sin_plan` con `sin_alternativa/sin_destinatarios`, sin modelo ni propuesta.
+    - Acceso ajeno rechazado en `set_recibir`, `aprobar`, `get_space` y `get_proposal_state` (`fuera_de_audiencia/no_miembro`), sin nombres.
+  - **Pasaron, con la llamada 1:**
+    - Preparar NO publica: `necesita_aprobacion`, sin propuesta.
+    - Plan exacto a aprobar: "Asado en una parrilla del parque", Parrilla del parque (Simulación), sábado 31 y domingo 1 de 14:00 a 17:00, mínimo 3, máximo 6, plazo 31 oct 11:00, imprescindible Tomi, 1 invitado, actividad asado.
+    - Recuperar el recibo: mismo hash y sin otra llamada al modelo.
+    - Aprobar con doble clic: las dos llamadas dan la misma aprobación. Un hash ajeno devuelve `borrador_cambiado` (el hash no da autoridad).
+    - Publicar con doble clic y reintento tras "respuesta perdida": la misma propuesta, `repetido: true`, 1 invitado y una sola propuesta nueva.
+    - Luna ve la invitación del agente en `mi_situacion.invitacion_agente`. Invitación no es asistencia: no aceptó ni cuenta como confirmada. Alguien ajeno no ve la propuesta.
+    - Luna acepta la v1 (acción humana) y se da de baja.
+  - **Pasó, con la llamada 2:** revocar antes de publicar. Aprobado, Luna revoca y publicar se rechaza (`borrador_cambiado`, porque cambian los destinatarios) sin crear propuesta.
+  - **NO quedó verificado:**
+    - El rearmado sin heredar aceptaciones y el rechazo de una versión vieja sobre la propuesta del agente. `propose_repair` respondió `estado_no_admite` porque la propuesta estaba en `esperando_compromisos`, no confirmada, y el rechazo de v1 salió por `retirado`, no por versión. Mi guion lo dio por bueno por error; lo corrijo acá. Para probarlo hace falta llegar a "grupo confirmado" y después bajarse, y eso no cabía sin otra preparación con modelo. En propuestas comunes lo cubre el recorrido de dos sesiones del coordinador (26/26, producción, 01:04).
+    - La pantalla real con la base: `AgenteSocial` e `InvitacionAgente`. Todo fue por API; codex-juan probó la interfaz con transporte simulado.
+    - El modo herramientas con modelo: no se repitió, como estaba aprobado. Su código es el de la v12, que se probó real a las 23:59 (12,5 s), con arnés 25/25.
+  - **Las 3 llamadas autorizadas:**
+    1. 01:12:25–01:12:54, ruta social preparar: **28,8 s, RESPALDO (texto fijo)**. No dejó registro: la ruta social solo registra cuando el modelo devuelve algo y `modelo-social.ts` traga los errores. Por el tiempo, Fable (20 s) y Haiku (8 s) no llegaron, pero no lo puedo confirmar; pudo ser entre 0 y 2 pedidos al modelo.
+    2. 01:12:57–01:13:07, social preparar (revocación): **10,4 s, MODELO (Fable)**, `is_byok: true`, proveedor anthropic.
+    3. 01:13:09–01:13:13, modo de siempre: **4,0 s, MODELO (Fable)**, `is_byok: true`. Texto: "El asado es lo que más eligió el grupo (4 de 5), calza con un ritmo tranquilo y la parrilla del parque queda a menos de 20 minutos para todos, estimado."
+    - Pedidos reales al modelo: entre 2 y 4 (fueron 3 llamadas de la verificación).
+    - Ningún registro tiene nombres ni datos privados, y la clave no aparece.
+  - **Hallazgos para codex-juan (chicos, no los toqué):**
+    - (a) Si alguien ajeno prepara, la v13 responde `fallo_temporal/reintentar` en vez de `fuera_de_audiencia`. Lo provoca `if (social && !espacio?.ok) return errorTemporal()` de d1a5b91. No filtra nada, pero invita a reintentar.
+    - (b) `modelo-social.ts` no registra el tipo de error ni el código HTTP cuando falla el modelo, así que la llamada 1 no se puede diagnosticar. El resto del agente registra solo proveedor, familia, clase y código; convendría lo mismo.
+  - **Reconciliación del `create_space` de codex-juan (solo lecturas):** su ventana fue de 00:00:30 a 00:07:41 (commits de su ficha). Todos los espacios creados en esa ventana son demos "Los del asado" o llevan nombres de las suites (`t-e14-…`, `t-e7-…`, `t-e8-…`, `ver-A…`), creados en ráfaga entre 00:02:24 y 00:04:50 por la corrida de vitest contra la base (el coordinador la cortó a las 00:08). **No hay ningún espacio sin explicar**: es muy probable que ese `create_space` no haya creado nada. Hay 9 usuarios anónimos sin membresía creados en la ventana (00:02:25–00:05:55); uno puede ser el de su humo, pero no se puede saber cuál. Incertidumbre residual baja y explícita. No borré ni repetí nada.
+  - **Volver atrás:** redesplegar la v12 con `index.ts`, `logica.ts` y `herramientas.ts` de `8fb2c16`/`4b1e368` (`deploy_edge_function`, verify_jwt true). La v12 no tiene ruta social, y la interfaz falla cerrada ("Flujo social no disponible"), comprobado con el sondeo.
+  - **Bloqueos:** ninguno para la v13. Lo que falta verificar (rearmado sobre la propuesta del agente y la pantalla real) necesita otra preparación con modelo o el recorrido de pantalla.
 - **[00:42] Antes de desplegar la v13.**
   - Referencia para volver atrás: función `agente` **v12**, publicada el 23 oct a las 23:59:35 (`list_edge_functions`, verify_jwt true), desde `4b1e368`; la función de `8fb2c16` es la misma.
   - `ffc310d`/`ae012dd` traen todo `40ffb66` (`main`) más la v12: frente a `main`, la carpeta de la función solo difiere en `herramientas.ts`, `index.ts` (bucle) y las pruebas. El `index.ts` de `main` NO tiene el bucle y no se despliega.
