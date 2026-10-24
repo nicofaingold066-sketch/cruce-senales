@@ -190,9 +190,10 @@ describe('actividad del grupo: ingresos, bajas de planes y salida real', { timeo
     expect(err(imprescindibleSalido)).toBe('entrada_incompleta/imprescindible_invalido')
   })
 
-  it('catálogo 42/0 y argumentos de salida; un intento no puede reutilizarse en otro grupo', async () => {
-    expect(TOTAL_PERMITIDAS).toBe(42)
-    expect(Object.keys(PERMITIDAS)).toHaveLength(42)
+  // 0058 (demo Makana) suma seed_demo_makana: el catálogo pasa de 42 a 43 (ver demo-makana.test.ts).
+  it('catálogo 43/0 y argumentos de salida; un intento no puede reutilizarse en otro grupo', async () => {
+    expect(TOTAL_PERMITIDAS).toBe(43)
+    expect(Object.keys(PERMITIDAS)).toHaveLength(43)
     expect((await rpcCrudo(clienteSinSesion(), 'leave_space', {
       p_espacio_id: '00000000-0000-4000-8000-000000000000', p_intento_id: intento(),
     })).error?.code).toBe('42501')
