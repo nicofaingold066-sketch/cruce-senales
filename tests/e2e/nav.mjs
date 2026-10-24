@@ -41,7 +41,7 @@ export async function irA(p, nombre, { espera = 500, timeout = 15000 } = {}) {
     while (Date.now() < fin) {
       const det = p.locator('details', { has: p.locator('summary', { hasText: /Historial/ }) }).first()
       if (await det.count() && await det.isVisible().catch(() => false)) {
-        if (!(await det.evaluate((d) => d.open))) await clic(p, det.locator('summary'), espera)
+        if (!(await det.evaluate((d) => d.open))) await clic(p, det.locator('summary').first(), espera) // el propio summary, no los anidados
         return
       }
       const tab = p.getByRole('tab', { name: exacto }).first()
@@ -49,6 +49,16 @@ export async function irA(p, nombre, { espera = 500, timeout = 15000 } = {}) {
       await p.waitForTimeout(250)
     }
     throw new Error(`irA: no encuentro «Historial» (ni plegado ni como pestaña) en ${p.url()}`)
+  }
+  if (nombre !== 'Simulación' && nombre !== 'Plan') {
+    // Desde la Simulación abierta, las filas del plan no se ven: primero se vuelve al plan.
+    const volver = await primeroVisible([p.getByRole('button', { name: /^‹? ?Volver al plan$/ })])
+    if (volver) await clic(p, volver, espera)
+  }
+  if (nombre === 'Simulación') {
+    // Ya abierta (la fila desaparece mientras se ve la Simulación): no hay nada que tocar.
+    const abierta = await primeroVisible([p.getByRole('button', { name: /^‹? ?Volver al plan$/ }), p.getByRole('heading', { name: /^Personas simuladas$/ })])
+    if (abierta) return
   }
   const candidatos = nombre === 'Mi respuesta'
     ? [p.locator('a.fila[href*="/responder/"]'), p.getByRole('link', { name: /^Tu respuesta/ }), p.getByRole('tab', { name: exacto })]

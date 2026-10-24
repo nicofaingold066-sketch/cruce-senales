@@ -54,6 +54,8 @@ async function crearGrupo(nombre, etiquetaProposito) {
   await T.getByRole('heading', { name: 'Crear un grupo' }).waitFor({ timeout: 25000 })
   await T.getByLabel('Nombre del grupo').fill(nombre)
   await T.getByLabel('Tu nombre en el grupo').fill('Orga')
+  // S2 (mockup): el propósito vive plegado en «Opciones · ¿para qué es el grupo? · ¿quién viene?».
+  { const opciones = T.locator('details.s2-fila-opciones'); if (await opciones.count() && !(await opciones.evaluate((d) => d.open))) await opciones.locator('summary').click() }
   const selector = T.getByLabel('¿Para qué es este grupo?')
   const porDefecto = await selector.evaluate((s) => s.options[s.selectedIndex].text)
   if (etiquetaProposito) await selector.selectOption({ label: etiquetaProposito })
@@ -63,7 +65,8 @@ async function crearGrupo(nombre, etiquetaProposito) {
   // se confirma con «Crear sin lista» / «Crear sin agregarlo». Si el aviso no aparece, se sigue (versiones anteriores).
   const sinLista = T.getByRole('button', { name: /^Crear sin (?:lista|agregarlo)$/ })
   if (await sinLista.waitFor({ timeout: 2500 }).then(() => true, () => false)) await sinLista.click()
-  await T.getByRole('heading', { name: nombre }).waitFor({ timeout: 25000 })
+  // S2 (mockup): tras crear el grupo la app va directo a «Nuevo plan» (la cabecera trae el nombre del grupo) o al grupo.
+  await T.getByRole('heading', { name: new RegExp(`^(${nombre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}|Nuevo plan)$`) }).first().waitFor({ timeout: 25000 })
   return { porDefecto, enviado: ultimo('create_space') }
 }
 
@@ -78,7 +81,8 @@ try {
   if (familia !== undefined) verificar('El grupo queda con familia deporte', familia === 'deporte', String(familia))
 
   // 2. Nueva propuesta: atajos de la familia.
-  await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Nuevo plan/ }).first().click()
+  // Si ya estamos en «Nuevo plan» (S2 lleva ahí al crear el grupo), no hay enlace que tocar.
+  if (!(await T.getByRole('group', { name: 'Atajos de actividad' }).isVisible().catch(() => false))) await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Nuevo plan/ }).first().click()
   await T.getByRole('group', { name: 'Atajos de actividad' }).waitFor({ timeout: 25000 })
   const a1 = await chips()
   verificar('Atajos del grupo de fútbol: hay al menos uno y NINGUNO es de comida (sin «Asado», «Cena», «Café»)', a1.length > 0 && !a1.some((t) => /asado|cena|caf[eé]|brunch/i.test(t)), a1.join(' · '))
@@ -97,13 +101,16 @@ try {
   // 3. Un grupo libre sigue ofreciendo de todo.
   const g2 = await crearGrupo('Los de siempre QA', null)
   verificar('Grupo sin elegir propósito: se manda libre (o no se manda) y el servidor responde ok', [undefined, 'libre'].includes(g2.enviado?.args?.p_proposito) && g2.enviado?.resp?.ok === true, `${g2.enviado?.args?.p_proposito ?? '(no se manda)'}`)
-  await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Nuevo plan/ }).first().click()
+  // Si ya estamos en «Nuevo plan» (S2 lleva ahí al crear el grupo), no hay enlace que tocar.
+  if (!(await T.getByRole('group', { name: 'Atajos de actividad' }).isVisible().catch(() => false))) await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Nuevo plan/ }).first().click()
   await T.getByRole('group', { name: 'Atajos de actividad' }).waitFor({ timeout: 25000 })
   const a2 = await chips()
   verificar('Grupo libre: ofrece más atajos que el de fútbol y de más de una familia', a2.length > a1.length, `${a2.length} vs ${a1.length}: ${a2.join(' · ')}`)
 } catch (e) {
   fallidas++
   paso(`ERROR: ${String(e?.message ?? e).split('\n')[0]}`)
+  try { paso(`grupos en pantalla: ${JSON.stringify(await T.locator('[role=group], fieldset').evaluateAll((els) => els.map((el) => `${el.tagName}:${el.getAttribute('aria-label') ?? el.querySelector('legend')?.textContent ?? ''}|${getComputedStyle(el).visibility}|${getComputedStyle(el).display}|${el.getBoundingClientRect().height}`)))}`) } catch { /* sin detalle */ }
+  try { if (process.env.CRUXE_CAPTURAS) await T.screenshot({ path: `${process.env.CRUXE_CAPTURAS}/proposito-pantalla-error.png`, fullPage: true }) } catch { /* sin captura */ }
 } finally {
   if (propuestaCreada) { try { await T.evaluate(() => 0); await T.goto(`${BASE}/#/`) } catch { /* sigue */ } }
   verificar('Sin errores de la app en consola', errores.length === 0, errores.slice(0, 3).join(' | '))

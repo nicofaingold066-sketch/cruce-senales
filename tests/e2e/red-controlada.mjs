@@ -187,17 +187,19 @@ try {
       await esperar(80)
       return fulfill(route, sobre({ propuestas: gen === 1 ? [propuesta(5, 'PROPUESTA_VIEJA')] : [] }))
     }
+    // Rediseño S2: el grupo pide las preferencias privadas (agente) al cargar; sin red, vacías.
+    if (fn === 'get_my_preferences') return fulfill(route, sobre({ preferencias: null, usar_en_agente: false }))
     throw new Error(`RPC inesperada ${fn}`)
   }, async page => {
     await page.getByRole('heading', { name: 'ESPACIO_GEN_1' }).waitFor()
     await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')))
-    await page.getByText('PROPUESTA_VIEJA', { exact: true }).waitFor()
+    await page.getByText('PROPUESTA_VIEJA', { exact: true }).first().waitFor()
     await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')))
     await hasta(() => !!listaVieja, 'No retuvo lista vieja')
     gen = 2
     await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')))
     await page.getByRole('heading', { name: 'ESPACIO_GEN_2' }).waitFor()
-    await page.getByText('Todavía no hay propuestas', { exact: true }).waitFor()
+    await page.getByText(/Todavía no hay (propuestas|planes)/).waitFor()
     await fulfill(listaVieja, sobre({ propuestas: [propuesta(5, 'PROPUESTA_VIEJA')] }))
     await esperar(200)
     assert.equal(await page.getByText('PROPUESTA_VIEJA', { exact: true }).count(), 0)
@@ -230,11 +232,13 @@ try {
       await esperar(180)
       return fulfill(route, sobre({ propuestas: [propuesta(5, 'LISTA_INICIAL_VALIDA')] }))
     }
+    // Rediseño S2: el grupo pide las preferencias privadas (agente) al cargar; sin red, vacías.
+    if (fn === 'get_my_preferences') return fulfill(route, sobre({ preferencias: null, usar_en_agente: false }))
     throw new Error(`RPC inesperada ${fn}`)
   }, async page => {
     await page.getByRole('heading', { name: 'ESPACIO_GEN_1' }).waitFor()
     // El sondeo es de 10 s: si la lista aparece antes de 2 s, no hizo falta refrescar.
-    await page.getByText('LISTA_INICIAL_VALIDA', { exact: true }).waitFor({ timeout: 2000 })
+    await page.getByText('LISTA_INICIAL_VALIDA', { exact: true }).first().waitFor({ timeout: 2000 })
     assert.equal(await page.getByText('Cargando propuestas…', { exact: true }).count(), 0)
     await esperar(300)
     assert.deepEqual({ espacios, listas }, { espacios: 1, listas: 1 }, 'Una lectura de cada una, sin refresco ni sondeo')
@@ -253,10 +257,12 @@ try {
       await fulfill(route, sobre({ propuestas: [propuesta(5, 'LISTA_INICIAL_VALIDA')] }))
       return
     }
+    // Rediseño S2: el grupo pide las preferencias privadas (agente) al cargar; sin red, vacías.
+    if (fn === 'get_my_preferences') return fulfill(route, sobre({ preferencias: null, usar_en_agente: false }))
     throw new Error(`RPC inesperada ${fn}`)
   }, async page => {
     await page.getByRole('heading', { name: 'ESPACIO_GEN_1' }).waitFor()
-    await page.getByText('LISTA_INICIAL_VALIDA', { exact: true }).waitFor({ timeout: 2000 })
+    await page.getByText('LISTA_INICIAL_VALIDA', { exact: true }).first().waitFor({ timeout: 2000 })
     assert.equal(await page.getByText('Cargando propuestas…', { exact: true }).count(), 0)
     await esperar(300)
     assert.deepEqual({ espaciosLentos, listasRapidas }, { espaciosLentos: 1, listasRapidas: 1 })

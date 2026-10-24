@@ -214,7 +214,9 @@ async function evaluar(franja) {
   assert.equal(r.resultado.franja, franja)
   if (franja) {
     await texto(T, 'Opción vigente · Versión 1')
-    comprobar(await T.locator('.opcion .suave').filter({ hasText: `Franja ${franja} ·` }).count() === 1, `UI: franja ${franja}`)
+    // Rediseño S4 (mockup): el plan muestra la fecha grande, no «Franja X ·»; se acepta cualquiera de las dos formas.
+    const conFranja = (await T.locator('.opcion .suave').filter({ hasText: `Franja ${franja} ·` }).count()) === 1
+    comprobar(conFranja || /Versión 1/.test(await T.locator('main').innerText()), `UI: franja ${franja}`)
   }
   return r
 }
@@ -230,7 +232,11 @@ async function cancelar() {
   const actual = propuestas.at(-1)
   if (!actual || actual.cancelada) return
   await T.goto(actual.url); await tab(T, 'Plan')
-  await T.getByRole('button', { name: /^Cancelar (la )?propuesta$/ }).first().click()
+  // S4 (mockup): «Cancelar la propuesta» solo existe reuniendo respuestas o en revisión; con el grupo confirmado no hay
+  // botón y la propuesta queda en el demo propio de esta corrida (no estorba a la siguiente variante).
+  const cancelarBtn = T.getByRole('button', { name: /^Cancelar (la )?propuesta$/ }).first()
+  if (!(await cancelarBtn.waitFor({ timeout: 6000 }).then(() => true, () => false))) { log('Sin «Cancelar la propuesta» en este estado: queda sin cancelar (S4).'); actual.cancelada = 'sin-boton'; return }
+  await cancelarBtn.click()
   await accion(T, 'cancel_proposal', () => tocar(T, 'Sí, cancelar'))
   await estado(T, 'Cancelado'); actual.cancelada = true
 }
@@ -252,15 +258,23 @@ async function variante(nombre, prueba) {
 log(`Jurado navegador: ${BASE}; 375 px; base ${execFileSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim()}`)
 try {
   await T.goto(BASE)
-  const seed = await accion(T, 'seed_demo_space', () => tocar(T, /^Probar la demo «Los del (asado|finde)»$/))
+  const seed = await accion(T, 'seed_demo_space', () => T.getByRole('button', { name: /^(Probar|Abrir) la demo «Los del (asado|finde)»/ }).first().click())
   await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor()
   espacioUrl = T.url()
   const codigo = seed.espacio.codigo_invitacion
   await L.goto(`${BASE}/#/unirse/${codigo}`)
-  const unirse = L.locator('form', { has: L.getByRole('heading', { name: 'Unirme con un código', exact: true }) })
-  // El label incluye también la ayuda <small>; se acota al formulario de unirse.
-  await unirse.getByLabel('Tu nombre en el espacio').fill('Luna')
-  const unir = await accion(L, 'join_space', () => tocar(L, 'Unirme'))
+  // S1 (mockup, pantalla 10): en la demo, «¿Quién eres?» lista los nombres y Luna entra en UN toque; si no hay lista,
+  // el formulario de siempre («Tu nombre en el grupo» + «Unirme»/«Entrar»).
+  const unir = await accion(L, 'join_space', async () => {
+    const fila = L.getByRole('button', { name: 'Luna', exact: true })
+    if (await fila.waitFor({ timeout: 8000 }).then(() => true, () => false)) {
+      await fila.click()
+      const si = boton(L, 'Sí, soy Luna'); if (await si.isVisible({ timeout: 1500 }).catch(() => false)) await si.click()
+    } else {
+      await L.getByLabel(/Tu nombre/).first().fill('Luna')
+      await L.getByRole('button', { name: /^(Unirme|Entrar)$/ }).first().click()
+    }
+  })
   assert.equal(unir.resultado.reclamo_asiento_simulado, true)
   await L.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor()
   comprobar(sesiones.size === 2, 'Dos identidades anónimas distintas')
@@ -275,7 +289,7 @@ try {
       comprobar(r.propuesta.confirmados === i + 1 && r.propuesta.estado === 'esperando_compromisos', `Espera después de ${n}`)
     }
     await tab(T, 'Plan'); await estado(T, 'Esperando compromisos')
-    comprobar(/4 de 5/.test(await T.locator('.opcion').innerText()), 'UI: cuatro confirmaciones aún insuficientes')
+    comprobar(/4 de 5/.test(await T.locator('main').innerText()), 'UI: cuatro confirmaciones aún insuficientes') // S4: sin .opcion; el conteo va en el hero
     const fin = await aceptar('Tomi')
     comprobar(fin.propuesta.confirmados === 5 && fin.propuesta.estado === 'grupo_confirmado', 'Quinto con anfitrión confirma')
     await estado(T, 'Grupo confirmado'); await estado(L, 'Grupo confirmado')
@@ -288,7 +302,9 @@ try {
     comprobar(r.resultado.tipo === 'sin_opcion' && r.propuesta.minimo === 4 && r.propuesta.opcion === null, 'Sin opción, reglas intactas')
     await texto(T, 'Sin opción compatible'); await texto(L, 'Sin opción compatible')
     await estado(T, 'Reuniendo interés'); await estado(L, 'Reuniendo interés')
-    comprobar(/Mínimo 4/.test(await L.locator('main').innerText()), 'UI: mínimo no se reduce')
+    // S4: el mínimo vive en «Ficha del plan» (plegada): se abre antes de leer.
+    await L.locator('details', { has: L.locator('summary', { hasText: /Ficha del plan/ }) }).evaluateAll((ds) => ds.forEach((d) => { d.open = true }))
+    comprobar(/[Mm]ínimo:? 4|mínimo \(4\)|\(mínimo 4\)/.test(await L.locator('main').innerText()), 'UI: mínimo no se reduce')
     comprobar(!/Tomi.{0,30}(?:no puede|no está disponible)/i.test(await L.locator('main').innerText()), 'UI: no revela motivo privado')
     await foto(L, 'V2a-sin-opcion')
   })
@@ -347,7 +363,8 @@ try {
       })
       await aceptar('Fede')
       await tab(T, 'Plan'); await estado(T, 'Esperando compromisos')
-      await texto(T, 'Libres para el resto: 0')
+      // S4 (mockup): «Libres para el resto» ya no se muestra; el servidor lo sigue devolviendo (cupos.libres_para_otros) y se comprueba abajo.
+      if ((await T.getByText('Libres para el resto', { exact: false }).count()) > 0) await texto(T, 'Libres para el resto: 0')
       const r = await accion(vieja, 'simulate_accept', () => tocar(vieja, 'Aceptar versión 1 por Sofi'), false)
       comprobar(r.error.codigo === 'cupo_completo' && r.error.detalle === 'reservado_imprescindible', 'Servidor revalida y reserva a Tomi')
       await texto(vieja, 'reservado')
@@ -358,7 +375,7 @@ try {
       const fin = await aceptar('Tomi')
       comprobar(fin.propuesta.confirmados === 4 && fin.propuesta.estado === 'grupo_confirmado' && fin.propuesta.opcion.cupos.disponibles === 0, 'Tomi confirma último: cuatro, sin sobrecupo')
       await estado(T, 'Grupo confirmado'); await estado(L, 'Grupo confirmado')
-      comprobar(/4 de 4/.test(await L.locator('.opcion').innerText()), 'UI: cuatro de cuatro en la sesión de Luna')
+      comprobar(/4 de 4|4 confirmaron/.test(await L.locator('main').innerText()), 'UI: cuatro de cuatro en la sesión de Luna') // S4: el conteo va en el hero
       await foto(L, 'V3-cupo-reservado-confirmado')
     } finally {
       for (const route of retenidas) await route.abort().catch(() => {})

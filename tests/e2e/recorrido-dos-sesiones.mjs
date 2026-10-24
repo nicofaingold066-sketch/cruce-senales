@@ -121,7 +121,8 @@ const conCondiciones = async (p) => {
 }
 const confirmar = async (p, version) => {
   await tocar(p, `Confirmar versión ${version}`)
-  await esperarTexto(p, `Ya confirmaste la versión ${version}`)
+  // S4: si con esta confirmación se llega al mínimo, el plan pasa directo a «¡Se juntan!» (sin «Ya confirmaste…»).
+  await p.getByText(new RegExp(`Ya confirmaste la versión ${version}|¡Se juntan!|Grupo confirmado`)).first().waitFor({ timeout: 20000 })
 }
 const aceptarSimulados = async (version) => {
   await pestana(T, 'Simulación')
@@ -138,7 +139,8 @@ paso(`Recorrido con dos sesiones contra ${new URL(BASE).origin}${new URL(BASE).p
 try {
   // 1. Tomi abre la demo.
   await T.goto(BASE)
-  await tocar(T, /^Probar la demo «Los del (asado|finde)»$/)
+  // S1 (mockup): la demo es un enlace-botón «Probar la demo «Los del finde»» (o «Abrir…» si ya está cargada).
+  { await T.getByRole('button', { name: /^(Probar|Abrir) la demo «Los del (asado|finde)»/ }).first().click() }
   await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
   const codigo = (await T.locator('.codigo').first().textContent())?.trim()
   const urlEspacio = T.url()
@@ -146,7 +148,7 @@ try {
   await captura(T, 'tomi-espacio')
 
   // 2. Propuesta del caso, creada y abierta.
-  await T.getByRole('link', { name: /^(Crear propuesta|\+? ?Nuevo plan)$/ }).first().click()
+  await T.getByRole('link', { name: /Crear propuesta|Nueva propuesta|Nuevo plan/ }).first().click()
   // El mockup (S3) deja un solo primario («Crear y abrir al grupo»): el paso «Revisar antes de crear» es opcional.
   { const revisar = T.getByRole('button', { name: 'Revisar antes de crear', exact: true }); if (await revisar.isVisible().catch(() => false)) await revisar.click() }
   await tocar(T, 'Crear y abrir al grupo')
@@ -159,9 +161,16 @@ try {
 
   // 3. Luna entra con el enlace en su ventana privada. La lista tiene que aparecer sola (F1, mejora #52).
   await L.goto(`${BASE}/#/unirse/${codigo}`)
-  await L.getByRole('textbox').nth(1).fill('Luna')
-  await tocar(L, 'Unirme')
-  await L.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
+  // S1 (mockup, pantalla 10): en la demo «¿Quién eres?» lista los nombres y Luna entra en UN toque; si no hay lista, el
+  // formulario de siempre (nombre + «Unirme»/«Entrar»).
+  { const fila = L.getByRole('button', { name: 'Luna', exact: true })
+    if (await fila.waitFor({ timeout: 8000 }).then(() => true, () => false)) {
+      await fila.click()
+      const si = boton(L, 'Sí, soy Luna'); if (await si.isVisible({ timeout: 1500 }).catch(() => false)) await si.click()
+    } else { await L.getByRole('textbox').nth(1).fill('Luna'); await L.getByRole('button', { name: /^(Unirme|Entrar)$/ }).first().click() } }
+  // S5 (mockup): si hay un plan abierto, Luna cae directo en ¿Cuándo puedes? (con el nombre del plan arriba); si no, al grupo.
+  await L.locator('h1').filter({ hasText: /¿Cuándo puedes\?|Los del (asado|finde)/ }).first().waitFor({ timeout: 20000 })
+  const lunaEnResponder = (await L.getByRole('heading', { name: '¿Cuándo puedes?' }).count()) > 0
   const t0 = Date.now()
   const listaSola = await L.getByText('Asado en casa de Tomi', { exact: false }).first().waitFor({ timeout: 4000 }).then(() => true, () => false)
   verificar('F1: la lista de propuestas aparece sola al entrar', listaSola, listaSola ? `${Date.now() - t0} ms después del título, sin recargar` : 'no apareció en 4 s')
@@ -170,7 +179,8 @@ try {
 
   // 4. Condiciones privadas: Tomi y Luna (franjas A y B); los simulados, con el atajo de la demo.
   await pestana(T, 'Mi respuesta'); await conInteres(T); await conCondiciones(T)
-  await L.getByText('Asado en casa de Tomi', { exact: false }).first().click()
+  if (lunaEnResponder) await L.getByRole('link', { name: /Ver el plan/ }).first().click()
+  else await L.getByText('Asado en casa de Tomi', { exact: false }).first().click()
   await L.locator('a.fila[href*="/responder/"]').first().waitFor({ timeout: 15000 })
   // La fila depende del espacio (get_space aparte): se espera a que llegue y se mira un rato, no un instante.
   await L.getByRole('link', { name: /Los del (asado|finde)/ }).first().waitFor({ timeout: 15000 }) // rediseño: el volver lleva ícono, no '←'
@@ -246,7 +256,7 @@ try {
   // #56: con más confirmaciones que el mínimo (el caso llega a 5 de mínimo 4) se dice "5 (mínimo 4)".
   const planLuna = await textoYEtiquetas(L)
   const imposiblesPlan = conteosImposibles(planLuna)
-  const nuevoPlan = planLuna.match(/Confirmaron \d+ \(mínimo \d+\)/)?.[0]
+  const nuevoPlan = planLuna.match(/Confirmaron \d+ \(mínimo \d+\)|\d+ confirmaron \(mínimo \d+\)/)?.[0] // S4: «N confirmaron (mínimo M)»
   verificar('#56: el plan dice "Confirmaron N (mínimo M)" y no "N de M" con N mayor (texto y aria-label)',
     imposiblesPlan.length === 0 && !!nuevoPlan, imposiblesPlan.length ? imposiblesPlan.join(', ') : nuevoPlan ?? 'sin el texto nuevo')
   await captura(L, 'luna-v2-confirmado')
@@ -254,7 +264,12 @@ try {
 
   // 7. Navegador compartido (mejora #47): en el navegador de Tomi alguien abre el enlace como "Pepe".
   await T.goto(`${BASE}/#/unirse/${codigo}`)
-  await T.getByRole('textbox').nth(1).fill('Pepe'); await tocar(T, 'Unirme')
+  // S1 (mockup, pantalla 10): «¿Quién eres?» lista los nombres; Pepe no está → «No estoy en la lista» → «Tu nombre» + «Entrar».
+  { const noLista = T.getByRole('button', { name: /No estoy en la lista/ })
+    if (await noLista.isVisible({ timeout: 8000 }).catch(() => false)) await noLista.click()
+    const caja = T.getByLabel(/Tu nombre/).first()
+    if (await caja.isVisible({ timeout: 3000 }).catch(() => false)) await caja.fill('Pepe'); else await T.getByRole('textbox').nth(1).fill('Pepe')
+    await T.getByRole('button', { name: /^(Unirme|Entrar)$/ }).first().click() }
   verificar('Navegador compartido: avisa en vez de entrar como Tomi',
     await esperarTexto(T, 'Este navegador ya está en este espacio como Tomi').then(() => true, () => false))
   await captura(T, 'compartido-aviso')
@@ -263,13 +278,16 @@ try {
   verificar('Confirmación: la sesión de Tomi queda guardada en este navegador',
     await esperarTexto(T, 'queda guardada en este navegador').then(() => true, () => false))
   await tocar(T, 'Sí, entrar como Pepe')
+  // S5: con un plan abierto, Pepe cae en ¿Cuándo puedes?; el grupo se mira con su URL (la sesión ya es la de Pepe).
+  await T.locator('h1').filter({ hasText: /¿Cuándo puedes\?|Los del (asado|finde)/ }).first().waitFor({ timeout: 20000 })
+  if ((await T.getByRole('heading', { name: '¿Cuándo puedes?' }).count()) > 0) await T.goto(urlEspacio)
   await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
   const cab = await T.locator('header').innerText()
   verificar('Entra como Pepe con sesión nueva, sin herramientas del organizador',
     /Pepe/.test(cab) && (await T.getByText('Herramientas del organizador').count()) === 0, cab.replace(/\s+/g, ' ').slice(0, 80))
   await T.getByText('Asado en casa de Tomi', { exact: false }).first().waitFor({ timeout: 15000 })
   // La tarjeta une el texto del servidor (siguiente_accion) y el conteo que arma la interfaz.
-  const tarjeta = (await T.locator('.plan-vivo, .tarjeta-prop').first().innerText()).replace(/\s+/g, ' ')
+  const tarjeta = (await T.locator('.plan-vivo, .tarjeta-prop, a[href*="/p/"]').first().innerText()).replace(/\s+/g, ' ')
   const imposiblesTarjeta = conteosImposibles(tarjeta)
   verificar('#56: la tarjeta dice "N confirmaron (mínimo M)" y no "N de M" con N mayor',
     imposiblesTarjeta.length === 0 && /\d+ confirmaron \(mínimo \d+\)/.test(tarjeta), imposiblesTarjeta.length ? imposiblesTarjeta.join(', ') : tarjeta)
