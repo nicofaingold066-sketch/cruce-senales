@@ -1,7 +1,7 @@
 # Del output al grupo: cómo se discute la opción (#100)
 
 Dueño: ux-flujo (rama `wip/ux`). Pedido de Nico (20:30, vía coordinador): "La gente manda un input, pero ¿cómo se hace después para discutir ese output en el grupo de WhatsApp? Que se pueda opinar sobre la propuesta y debatir, sin ser tan absolutista."
-Escrito: viernes 23 oct 2026, 20:33. Marcas: **[visto]** en pantalla (producción `fae49fa`, 20:26-20:28, grupo ficticio "Los del pádel"), **[leído]** en el código, **[propuesta]** no existe todavía.
+Escrito: viernes 23 oct 2026, 20:33. Actualizado 20:54 con las decisiones de Nico (§0.1). Marcas: **[visto]** en pantalla (producción `fae49fa`, 20:26-20:28, grupo ficticio "Los del pádel"), **[leído]** en el código, **[propuesta]** no existe todavía.
 
 ## 0. En cinco líneas
 
@@ -10,6 +10,23 @@ Escrito: viernes 23 oct 2026, 20:33. Marcas: **[visto]** en pantalla (producció
 3. Propuesta: no abrir un chat nuevo. Sumar **opiniones estructuradas sobre la versión** ("voy", "así no puedo, pero sigo", "prefiero el otro plan"), privadas como las condiciones, con una **ronda con plazo** que alimenta la versión siguiente por el circuito de versiones que ya existe.
 4. WhatsApp queda para la charla (bromas, quién lleva qué, el "+1"); la app guarda la decisión (fecha, quiénes van, qué versión).
 5. Antes de las 11:00 sin migraciones: mensajes de WhatsApp más útiles (hechos), avisos personales (hechos, falta conectarlos) y textos. Lo demás necesita una enmienda: ver §3.2 y "Decisiones para Nico" en `agentes/ux-flujo.md`.
+
+## 0.1 Decisiones de Nico (20:51, vía coordinador)
+
+| Pieza | Decisión | Dónde quedó |
+|---|---|---|
+| E-a "Así no puedo, pero sigo" | **Sí, esta noche** | enmienda 13 (a), `docs/contrato-enmienda-13.md` (`3ace04e`): `opinar_version(…, 'asi_no_puedo' / 'retirar_opinion', …)`; `mi_situacion.mi_opinion`; `opiniones_totales.asi_no_puedo` solo al organizador, `null` con menos de 2. `prefiero_otro` queda para cuando haya dos planes |
+| E-b "Rearmar con lo nuevo" | **Sí, esta noche** | enmienda 13 (b): `propose_repair` también desde `esperando_compromisos` si la versión no llegó al mínimo con el imprescindible y hay al menos un `asi_no_puedo`; la N+1 nace sin aceptaciones ni opiniones; tope de 3 versiones (`sin_alternativa/tope_versiones`) |
+| Baja sin nombre (H14 de sinteticos) | **Sí** | enmienda 13 (c): "Una persona se retiró", sin nombre, sin motivo y sin decir si había confirmado |
+| Asado en lugar neutro (D1 de psico) | **Sí** | enmienda 13 (d): `lugar-sim-14` "Parrilla del parque (Simulación)" |
+| E-c ronda con plazo, E-d dos planes con etiqueta | **Después de la demo** | §2.3 y §2.4 quedan como diseño |
+| `personas_que_pueden` (H6) | **No por ahora** | — |
+| Casa privada (D4 de psico) | **Después de la demo** | — |
+| Género y pareja no se piden ni se infieren (D2); modalidad en el título (D3) | **Sí, sin migración** | textos de front-juan y friccion |
+
+Límite declarado (psico §8.10): con UNA sola persona que marcó "así no puedo", el organizador no ve nada (ni total ni botón de rearmar), porque en un grupo chico mostrarlo la delataría. "Rearmar con lo nuevo" aparece con 2 o más. Si esa persona es decisiva para el mínimo, puede retirarse (la baja ya no lleva nombre) y el plan sigue por "Buscar alternativa".
+
+Corte de la enmienda 13: aplicada y en verde antes de la 01:00 del sábado. Interfaz: botón "Así no puedo, pero sigo" (friccion, componente nuevo) y "Rearmar con lo nuevo" + avisos sin nombre (ux-flujo, `src/componentes-nuevos/`); conecta front-juan.
 
 ## 1. El output de punta a punta, hoy
 
@@ -86,21 +103,23 @@ Regla para el texto de la app: cada mensaje que CRUXE manda al chat termina con 
 | Mensaje al publicar o rearmar: "Hay opción para «X»: sábado 31 oct, 20:00. Si vas, toca y confírmala; si no puedes, no confirmes: el plan sale solo con quienes confirman. <enlace>" | ux-flujo `RecordarFaltan motivo="version_nueva"` | hecho (`8e2432d`); falta conectarlo en `PlanTab.tsx` (decisión de Nico pendiente) |
 | Mensaje de cierre con enlace y cupos: "Se juntan: «X», sábado 31 oct, 20:00. Quedan 2 cupos. Si vas y no confirmaste, toca y confirma: <enlace>" (sin nombres) | ux-flujo `RecordarFaltan motivo="confirmado"` | hecho (`8e2432d`); reemplazaría o acompañaría el texto de `PlanTab.tsx:608` |
 | "Esta versión es sin ti" para quien no puede ir, y "Primero marca tu disponibilidad" para el imprescindible | ux-flujo `AvisoParaMi` | hecho (`e10a5b0`); falta conectarlo |
-| Junto a "Retirarme", aclarar la diferencia: "Si solo esta fecha no te sirve, no confirmes. Retirarte es para no participar más en este plan." | front-juan (`RespuestaTab.tsx`) | por pedir |
+| Junto a "Retirarme", aclarar la diferencia: "Si solo esta fecha no te sirve, no confirmes. Retirarte es para no participar más en este plan." Con la enmienda 13: "Si solo esta fecha no te sirve, marca 'Así no puedo, pero sigo'." | ux-flujo `AyudaRetiro` (cambia el texto solo según el momento y si está E-a) + front-juan (`RespuestaTab.tsx`) | HECHO `66ad5af`, sin conectar |
 | Recordar a quien falta, sin nombres | ux-flujo `RecordarFaltan motivo="faltan"` | hecho; falta conectarlo |
 | Mientras no exista §2.4: dos planes como dos franjas con el título que los nombre ("Asado el sábado o picnic el domingo"). El motor elige el más temprano viable, no el que más gusta, y hay que decirlo así | organizador (uso) | posible hoy |
 
-### 3.2 Necesita enmienda (después de la demo, o si Nico lo decide esta noche)
+### 3.2 Necesita enmienda (estado después de la decisión de Nico, §0.1)
 
-| Pieza | Forma concreta | Riesgo |
+| Pieza | Forma concreta (diseño original) | Riesgo |
 |---|---|---|
-| E-a: opinión sobre la versión | `opinar_version(p_propuesta_id, p_version, p_opinion text, p_intento_id)` con `p_opinion` en `asi_no_puedo` / `prefiero_otro` / `retirar_opinion`. Tabla `cruce.opiniones (propuesta, version, miembro, opinion, en)`. `get_proposal_state` suma `mi_situacion.mi_opinion` y, solo al organizador, `opiniones_totales {asi_no_puedo, prefiero_otro}` con `null` por debajo de 2. Con `asi_no_puedo`, `puede.guardar_condiciones` vuelve a ser verdadero para esa persona | conteos en grupos chicos (misma regla de 2 o más que E7) |
-| E-b: rearmar sin baja | `propose_repair` aceptado también en `esperando_compromisos` cuando hay al menos un `asi_no_puedo` en la versión vigente y la versión no llegó al mínimo, o al cerrar la ronda. Tope de 3 versiones | romper "una confirmación = una versión": no se rompe, la N+1 nace con cero |
-| E-c: ronda con plazo | `open_proposal`/`evaluate_and_publish` aceptan `p_ronda_horas` (2, 12, 24). `get_proposal_state` suma `ronda_cierra` (hora del servidor) | ninguno nuevo; el servidor decide el cierre |
-| E-d: dos planes | `franjas[].etiqueta` (texto de hasta 40 caracteres) y regla del motor (b) de §2.4 como opción de la propuesta (`p_regla = 'temprana' / 'mas_si'`) | cambia el motor: pruebas nuevas en el recorrido canónico |
+| E-a: opinión sobre la versión (**enmienda 13 (a), esta noche**; sin `prefiero_otro`) | `opinar_version(p_propuesta_id, p_version, p_opinion text, p_intento_id)` con `p_opinion` en `asi_no_puedo` / `prefiero_otro` / `retirar_opinion`. Tabla `cruce.opiniones (propuesta, version, miembro, opinion, en)`. `get_proposal_state` suma `mi_situacion.mi_opinion` y, solo al organizador, `opiniones_totales {asi_no_puedo, prefiero_otro}` con `null` por debajo de 2. Con `asi_no_puedo`, `puede.guardar_condiciones` vuelve a ser verdadero para esa persona | conteos en grupos chicos (misma regla de 2 o más que E7) |
+| E-b: rearmar sin baja (**enmienda 13 (b), esta noche**) | `propose_repair` aceptado también en `esperando_compromisos` cuando hay al menos un `asi_no_puedo` en la versión vigente y la versión no llegó al mínimo, o al cerrar la ronda. Tope de 3 versiones | romper "una confirmación = una versión": no se rompe, la N+1 nace con cero |
+| E-c: ronda con plazo (**después de la demo**) | `open_proposal`/`evaluate_and_publish` aceptan `p_ronda_horas` (2, 12, 24). `get_proposal_state` suma `ronda_cierra` (hora del servidor) | ninguno nuevo; el servidor decide el cierre |
+| E-d: dos planes (**después de la demo**; la fila "Asado en lugar neutro" sí entra esta noche) | `franjas[].etiqueta` (texto de hasta 40 caracteres) y regla del motor (b) de §2.4 como opción de la propuesta (`p_regla = 'temprana' / 'mas_si'`) | cambia el motor: pruebas nuevas en el recorrido canónico |
 
 ## 4. Para el jurado: "¿Y cómo se discute la propuesta?" (30 segundos)
 
-> "La charla sigue en WhatsApp: bromas, quién lleva qué. Lo que se decide no se pierde en el chat. CRUXE manda al grupo un mensaje con el enlace cuando sale la opción, cuando cambia y cuando se confirma, y cada mensaje dice qué hacer si no puedes. Cada uno responde en la app, en privado. Si una versión no junta el mínimo, el plan se rearma con lo que dijeron y nadie arrastra una confirmación vieja. Hoy cada persona confirma o se baja. El paso siguiente que tenemos diseñado es poder decir 'así no puedo, pero sigo' y elegir entre dos planes, siempre con totales y nunca con nombres."
+> "La charla sigue en WhatsApp: bromas, quién lleva qué. Lo que se decide no se pierde en el chat. Cuando sale la opción, cuando cambia y cuando se confirma, CRUXE le deja listo al organizador un mensaje con el enlace, y cada mensaje dice qué hacer si no puedes. Cada uno responde en la app, en privado: confirma esa versión o dice 'así no puedo, pero sigo', sin bajarse. Si la versión no junta el mínimo, el organizador la rearma con lo nuevo y nadie arrastra una confirmación vieja. El organizador ve cuántos no pueden, nunca quiénes. Lo que dejamos para después es elegir entre dos planes distintos."
 
-Lo que NO hay que decir: que hoy se puede votar entre planes o comentar en la app. No existe.
+Esta versión vale SOLO si la enmienda 13 está en producción y las piezas están conectadas en pantalla (verificarlo en el recorrido de 5 invitados antes del pitch). Si no, usar la anterior: "Hoy cada persona confirma o se baja; lo siguiente que tenemos diseñado es poder decir 'así no puedo, pero sigo'…".
+
+Lo que NO hay que decir: que se puede votar entre planes, comentar en la app o que CRUXE manda mensajes solo. No existe.
