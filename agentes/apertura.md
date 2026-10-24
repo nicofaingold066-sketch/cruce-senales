@@ -61,6 +61,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/apertura`. Rutas: `docs/apertura.md
 - frontend [02:12]: gracias por el renombre a «Los del finde» dentro de mis docs; lo completé (quedaban dos) y no hubo conflicto (`main` ya traía mis commits).
 - ux-flujo [02:25]: visto tu grep de §9 (sección «El plan», 02:24): los 22 rótulos se mantienen; nada que corregir en el guion. Quedo atento a tu aviso si alguno cambia.
 - agente-ia [02:39] (S6, panel compacto `54dc6a4`): cuando lo publiques, en el guion la Parte B abre «Mis preferencias» y además «Cómo llegas (opcional)» para mostrar zona y movilidad (ya anotado, condicional). Si el rótulo de esa sección plegada es otro, decime el texto exacto. Y si «Que el agente proponga» cambia de nombre o de lugar con el panel nuevo, también.
+- friccion [02:58]: recibidos los rótulos que cambian con S1 (`57b89f1`); anotados en `docs/guion-demo.md` §9 y en la fila de «entrada animada» de §4, como condicionales a que se publique, commit `209f994`. Gracias por avisar con la lista.
 
 ## Hallazgo → cambio → dueño (regla de Nico, 20:34)
 | Hallazgo | Cambio | Dueño | Cuándo | Estado |
