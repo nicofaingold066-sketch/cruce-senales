@@ -4,10 +4,10 @@
 import type { PestanaProps } from './tabs'
 import { FilasPlan } from '../componentes-nuevos/plan/FilasPlan'
 
-export default function PlanTab({ p, viva, soloLectura, espacio, irAPestana }: PestanaProps) {
+export default function PlanTab({ p, viva, soloLectura, espacio, irAPestana, conSimulacion = false }: PestanaProps & { conSimulacion?: boolean }) {
   return (
     <div className="plan-tab">
-      <FilasPlan p={p} viva={viva} soloLectura={soloLectura} espacio={espacio ?? null} irAPestana={irAPestana} />
+      <FilasPlan p={p} viva={viva} soloLectura={soloLectura} espacio={espacio ?? null} irAPestana={irAPestana} conSimulacion={conSimulacion} />
     </div>
   )
 }

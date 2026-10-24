@@ -223,7 +223,7 @@ h1.resultado-plan-grande {
   overflow-wrap: normal;
 }
 .resultado-pasos.pasos {
-  gap: 4px;
+  gap: 4px 8px;
 }
 /* A 320 px las cuatro etapas no entran en una fila sin cortar palabras: dos por fila. */
 @media (max-width: 359px) {
@@ -369,7 +369,7 @@ a.fila:hover {
   color: var(--tinta-2);
 }
 /* "Así no puedo, pero sigo ›" como una fila: la ayuda larga de la pieza se reemplaza por una línea. */
-.fila-asi .asi-no-puedo > .btn {
+.fila-asi-viejo .asi-no-puedo > .btn {
   width: 100%;
   min-height: 52px;
   justify-content: flex-start;
@@ -439,4 +439,49 @@ a.fila:hover {
   .resultado .barra-accion {
     position: static;
   }
+}
+
+/* Fila que es un botón (Simulación) y el regreso al plan desde la Simulación. */
+.fila.fila-boton {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.volver-plan {
+  margin-top: 0;
+}
+
+/* "Así no puedo, pero sigo ›" abierto: la pieza de friccion con su explicación, dentro de la fila. */
+.fila-abierta {
+  padding: var(--e-3) var(--e-4);
+}
+.fila-abierta .asi-no-puedo > .btn {
+  width: 100%;
+}
+.fila-abierta .asi-no-puedo-nota {
+  font-size: var(--t-nota);
+  margin-top: var(--e-2);
+}
+.fila-abierta .asi-no-puedo.tarjeta {
+  border: 0;
+  padding: 0;
+}
+.fila-abierta .asi-no-puedo h2 {
+  font-size: var(--t-cuerpo);
+}
+/* Las filas plegadas (Ficha, Historial) miden como las demás: 52 px. */
+.plan-tab .ficha,
+.plan-tab .historial-plegado {
+  padding: 0 var(--e-4);
+}
+.plan-tab .ficha > summary,
+.plan-tab .historial-plegado > summary {
+  min-height: 52px;
+}
+.plan-tab .ficha[open],
+.plan-tab .historial-plegado[open] {
+  padding-bottom: var(--e-4);
 }

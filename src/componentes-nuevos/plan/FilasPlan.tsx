@@ -31,9 +31,9 @@ function motivoAviso(p: EstadoPropuesta, codigo: string | null): MotivoAviso | n
   const o = p.opcion
   if (!codigo) return null
   if (p.estado === 'grupo_confirmado') return p.mi_situacion.acepte_version && o ? 'confirmado' : null
-  if (!p.mi_situacion.es_organizador) return null
-  if (p.estado === 'reuniendo_interes') return 'faltan'
+  if (p.estado === 'reuniendo_interes') return p.mi_situacion.es_organizador ? 'faltan' : null
   // Con el último cupo reservado a quien no puede faltar, "si vas, confírmala" invitaría a algo que el servidor rechaza.
+  // Mockup (pantalla 5): la fila es para todos; el mensaje es el mismo y no nombra a nadie.
   if (p.estado === 'esperando_compromisos' && o && o.cupos.libres_para_otros > 0) return p.opcion_anterior ? 'reparacion' : 'version_nueva'
   return null
 }
@@ -61,12 +61,15 @@ export function FilasPlan({
   soloLectura,
   espacio,
   irAPestana,
+  conSimulacion,
 }: {
   p: EstadoPropuesta
   viva: PropuestaViva
   soloLectura: boolean
   espacio: Espacio | null
   irAPestana: (t: Pestana) => void
+  /** Solo quien organiza una demo (E7.3): la fila que abre la Simulación (pantalla 18). */
+  conSimulacion: boolean
 }) {
   const s = p.mi_situacion
   const o = p.opcion
@@ -120,6 +123,33 @@ export function FilasPlan({
       </a>
     </li>
   ) : null
+  const [abrirAsi, setAbrirAsi] = useState(false)
+  const marcoAsi = s.mi_opinion === 'asi_no_puedo'
+  const filaAsi =
+    estado === 'esperando_compromisos' && o && (marcoAsi || s.puede.opinar) ? (
+      <li key="asi">
+        {marcoAsi || abrirAsi ? (
+          <div className="fila-abierta">
+            <AsiNoPuedo p={p} viva={viva} soloLectura={soloLectura} irAPestana={irAPestana} />
+          </div>
+        ) : (
+          <button type="button" className="fila fila-boton" onClick={() => setAbrirAsi(true)} aria-expanded={false}>
+            <span className="fila-texto">Así no puedo, pero sigo</span>
+            <Icono n="chevron" tam={14} />
+          </button>
+        )}
+      </li>
+    ) : null
+  const filaSimulacion = conSimulacion ? (
+    <li key="simulacion">
+      <button type="button" className="fila fila-boton" onClick={() => irAPestana('simulacion')}>
+        <span className="fila-texto">
+          Simulación <span className="rotulo-sim">demo</span>
+        </span>
+        <Icono n="chevron" tam={14} />
+      </button>
+    </li>
+  ) : null
   const historial = (
     <details className="tarjeta plegable historial-plegado">
       <summary>
@@ -155,14 +185,17 @@ export function FilasPlan({
             </p>
           ) : null}
         </div>
+        {filaSimulacion ? <ul className="filas">{filaSimulacion}</ul> : null}
         <FichaPlan p={p} viva={viva} titulo="Ficha del plan · Historial">
           {historial}
         </FichaPlan>
-        {s.acepte_version && s.puede.retirarme ? (
-          <button type="button" className="enlace fila-chica" onClick={() => irAPestana('respuesta')}>
-            Ya no puedo ir
-            {o && o.cupos.confirmados - 1 < o.cupos.minimo ? ' · si te bajas, el plan pasa a revisión y los demás vuelven a confirmar' : ''}
-          </button>
+        {s.acepte_version ? (
+          <Retirarme
+            p={p}
+            viva={viva}
+            soloLectura={soloLectura}
+            rotulo={`Ya no puedo ir${o && o.cupos.confirmados - 1 < o.cupos.minimo ? ' · si te bajas, el plan pasa a revisión y los demás vuelven a confirmar' : ''}`}
+          />
         ) : null}
       </div>
     )
@@ -170,23 +203,15 @@ export function FilasPlan({
 
   const filas =
     estado === 'reuniendo_interes' || estado === 'borrador'
-      ? [filaAvisar, filaRespuesta]
+      ? [filaAvisar, filaRespuesta, filaSimulacion]
       : estado === 'esperando_compromisos'
-        ? [filaRespuesta, filaAvisar]
-        : [filaRespuesta]
+        ? [filaRespuesta, filaAsi, filaAvisar, filaSimulacion]
+        : [filaRespuesta, filaSimulacion]
   const hayFilas = filas.some(Boolean)
 
   return (
     <div className="filas-plan">
       {hayFilas ? <ul className="filas">{filas}</ul> : null}
-
-      {/* Enmienda 13 (a): "Así no puedo, pero sigo" (friccion). Marcado, ofrece actualizar o volver a «puedo». */}
-      {estado === 'esperando_compromisos' && o ? (
-        <div className="fila-asi">
-          <AsiNoPuedo p={p} viva={viva} soloLectura={soloLectura} irAPestana={irAPestana} />
-          {s.mi_opinion !== 'asi_no_puedo' && s.puede.opinar ? <p className="fila-nota">Si esta fecha no te sirve pero sigues: márcalo. Nadie ve quién fue.</p> : null}
-        </div>
-      ) : null}
 
       {estado === 'esperando_compromisos' ? (
         <>
@@ -201,11 +226,7 @@ export function FilasPlan({
         </FichaPlan>
       )}
 
-      {estado === 'esperando_compromisos' && !s.retirado && s.puede.retirarme ? (
-        <button type="button" className="enlace fila-chica" onClick={() => irAPestana('respuesta')}>
-          Retirarme de este plan
-        </button>
-      ) : null}
+      {estado === 'esperando_compromisos' ? <Retirarme p={p} viva={viva} soloLectura={soloLectura} rotulo="Retirarme de este plan" /> : null}
       {s.puede.cancelar && estado !== 'esperando_compromisos' ? <Cancelar p={p} viva={viva} soloLectura={soloLectura} /> : null}
     </div>
   )
@@ -232,6 +253,41 @@ function Cancelar({ p, viva, soloLectura }: { p: EstadoPropuesta; viva: Propuest
           <div className="fila-botones">
             <Boton variante="peligro" onClick={() => void hacer()} ocupado={ocupado} ocupadoTexto="Cancelando…">
               Sí, cancelar
+            </Boton>
+            <Boton variante="secundario" onClick={() => volver(() => setConfirmar(false))} disabled={ocupado}>
+              Volver
+            </Boton>
+          </div>
+        </Confirmacion>
+      )}
+      {error ? <ErrorCaja error={error} enfocar /> : null}
+    </section>
+  )
+}
+
+/** "Retirarme de este plan" / "Ya no puedo ir": acción directa, con la pregunta que toma el foco (#67, fee1163). */
+function Retirarme({ p, viva, soloLectura, rotulo }: { p: EstadoPropuesta; viva: PropuestaViva; soloLectura: boolean; rotulo: string }) {
+  const s = p.mi_situacion
+  const [confirmar, setConfirmar] = useState(false)
+  const { ocupado, error, correr } = useMutacion(viva)
+  const { zona, volver } = useVolverFoco<HTMLElement>()
+  if (s.retirado || !s.puede.retirarme) return null
+  async function hacer() {
+    const r = await correr(`baja:${p.id}`, () => api.withdrawCommitment(p.id))
+    if (r?.ok) setConfirmar(false)
+  }
+  return (
+    <section ref={zona} className="cancelar-chico" aria-label="Retirarme de este plan">
+      {!confirmar ? (
+        <button type="button" className="enlace fila-chica" onClick={() => setConfirmar(true)} disabled={soloLectura} data-abre-confirmacion>
+          {rotulo}
+        </button>
+      ) : (
+        <Confirmacion titulo="¿Retirarte definitivamente?">
+          Perderás tu interés y tu confirmación, y la baja queda registrada sin tu nombre. Si el grupo queda por debajo del mínimo, el plan pasa a revisión.
+          <div className="fila-botones">
+            <Boton variante="peligro" onClick={() => void hacer()} ocupado={ocupado} ocupadoTexto="Registrando baja…">
+              Sí, no voy
             </Boton>
             <Boton variante="secundario" onClick={() => volver(() => setConfirmar(false))} disabled={ocupado}>
               Volver

@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import type { CSSProperties } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../lib/api'
 import type { Espacio } from '../lib/types'
 import { usePropuestaViva } from '../lib/hooks'
@@ -12,8 +11,6 @@ import { Resultado } from '../componentes-nuevos/plan/Resultado'
 import '../estilo/seccion-s4.css'
 import type { Pestana } from './tabs'
 import PlanTab from './PlanTab'
-import RespuestaTab from './RespuestaTab'
-import HistorialTab from './HistorialTab'
 import SimulacionTab from './SimulacionTab'
 
 export default function Propuesta({ espacioId, propuestaId }: { espacioId: string; propuestaId: string }) {
@@ -26,21 +23,9 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
   const viva = usePropuestaViva(propuestaId)
   const p = viva.propuesta
   const [espacio, setEspacio] = useState<Espacio | null>(null)
-  const [pestana, setPestana] = useState<Pestana>('plan')
-  // Indicador que se desliza bajo la pestaña activa (control segmentado). Se mide del DOM; no decide nada.
-  const carril = useRef<HTMLDivElement>(null)
-  const [indicador, setIndicador] = useState<CSSProperties>({ opacity: 0 })
-  const conDatos = viva.propuesta != null
-  useLayoutEffect(() => {
-    const medir = () => {
-      const el = carril.current?.querySelector<HTMLElement>('[aria-selected="true"]')
-      if (!el) return
-      setIndicador({ width: el.offsetWidth, transform: `translateX(${el.offsetLeft}px)`, opacity: 1 })
-    }
-    medir()
-    window.addEventListener('resize', medir)
-    return () => window.removeEventListener('resize', medir)
-  }, [pestana, conDatos, espacio?.demo])
+  // Sin barra de pestañas (mockup validado, obligatorio): el plan es una sola pantalla. La Simulación (solo quien
+  // organiza una demo) se abre desde su fila y vuelve con «‹ Volver al plan».
+  const [verSimulacion, setVerSimulacion] = useState(false)
   const [avisoVersion, setAvisoVersion] = useState<number | null>(null)
   // Aviso dejado por la pantalla anterior (por ejemplo, "se creó pero no se pudo abrir").
   const [avisoPrevio, setAvisoPrevio] = useState<string | null>(() => tomarAviso())
@@ -70,16 +55,6 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
         pidiendoEspacio.current = false
       })
   }, [espacioId, espacio, refrescoPropuesta])
-
-  // Un botón dentro del panel ("Ir a Mi respuesta", "Ver historial completo") cambia de pestaña y se va con el panel:
-  // el foco pasa a la pestaña nueva. Cuando cambia el propio tablist, la pestaña ya tiene el foco y no se toca.
-  const enfocarPestana = useRef<Pestana | null>(null)
-  useEffect(() => {
-    const t = enfocarPestana.current
-    if (t == null) return
-    enfocarPestana.current = null
-    document.getElementById(`tab-${t}`)?.focus()
-  }, [pestana])
 
   const nombreYo = p?.mi_situacion.nombre ?? espacio?.miembros.find((m) => m.es_yo)?.nombre ?? null
   const rol = p ? (p.mi_situacion.es_organizador_espacio ? 'organizador' : 'miembro') : null
@@ -124,24 +99,16 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
     )
   }
 
-  const esOrganizadorEspacio = p.mi_situacion.es_organizador_espacio
   // Enmienda 7 (E7.3): la Simulación solo existe en espacios demo; mientras no se sabe, no se muestra.
-  const conSimulacion = esOrganizadorEspacio && espacio?.demo === true
-  const pestanas: { id: Pestana; texto: string }[] = [
-    { id: 'plan', texto: 'Plan' },
-    { id: 'respuesta', texto: 'Mi respuesta' },
-    { id: 'historial', texto: 'Historial' },
-    ...(conSimulacion ? [{ id: 'simulacion' as Pestana, texto: 'Simulación' }] : []),
-  ]
-  const activa = pestanas.some((t) => t.id === pestana) ? pestana : 'plan'
-  // Misma condición con que «Cómo se armó» muestra la comparación "versión anterior → vigente".
-  const muestraComparacion =
-    (p.estado === 'esperando_compromisos' || p.estado === 'grupo_confirmado') &&
-    p.ultima_evaluacion?.resultado === 'reparacion_publicada' &&
-    p.ultima_evaluacion.version === p.opcion?.version
+  const conSimulacion = p.mi_situacion.es_organizador_espacio && espacio?.demo === true
+  const simulacion = conSimulacion && verSimulacion
+  // Lo que antes eran pestañas: "Mi respuesta" es ¿Cuándo puedes? (S5); "Simulación" se abre en esta pantalla;
+  // "Plan" e "Historial" son esta misma pantalla (el historial está plegado en las filas).
   function irAPestana(t: Pestana) {
-    if (t !== activa) enfocarPestana.current = t
-    setPestana(t)
+    if (t === 'respuesta') irA(rutas.responder(espacioId, p!.id))
+    else if (t === 'simulacion') setVerSimulacion(true)
+    else setVerSimulacion(false)
+    window.scrollTo({ top: 0 })
   }
   const props = { p, viva, soloLectura, irAPestana, espacio }
 
@@ -188,7 +155,7 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
           </Aviso>
         ) : null}
 
-        {avisoVersion != null && !(activa === 'plan' && muestraComparacion) ? (
+        {avisoVersion != null ? (
           <Aviso
             tono="aviso"
             titulo={`Hay una versión nueva (versión ${avisoVersion})`}
@@ -202,38 +169,20 @@ function PropuestaInterna({ espacioId, propuestaId }: { espacioId: string; propu
           </Aviso>
         ) : null}
 
-        <Resultado p={p} viva={viva} soloLectura={soloLectura} espacio={espacio} activa={activa} irAPestana={irAPestana} />
+        <Resultado p={p} viva={viva} soloLectura={soloLectura} espacio={espacio} activa={simulacion ? 'simulacion' : 'plan'} irAPestana={irAPestana} />
       </section>
 
       <div className="hoja">
-      <div className="pestanas">
-        <div className="pestanas-carril" role="tablist" aria-label="Secciones de la propuesta" ref={carril}>
-        <span className="pestana-indicador" aria-hidden="true" style={indicador} />
-        {pestanas.map((t) => (
-          <button
-            key={t.id}
-            id={`tab-${t.id}`}
-            data-tab={t.id}
-            role="tab"
-            type="button"
-            aria-selected={activa === t.id}
-            aria-controls={`panel-${t.id}`}
-            className={`pestana ${activa === t.id ? 'pestana-activa' : ''} ${t.id === 'simulacion' ? 'pestana-sim' : ''}`}
-            onClick={() => setPestana(t.id)}
-          >
-            {t.texto}
-          </button>
-        ))}
-        </div>
-      </div>
-
-      <div id={`panel-${activa}`} className="panel-pestana" role="tabpanel" aria-labelledby={`tab-${activa}`} key={activa}>
-        {/* PlanTab toma el código de invitación de `espacio` ("Recordar a quien falta" / "Avisar al grupo"). */}
-        {activa === 'plan' ? <PlanTab {...props} /> : null}
-        {activa === 'respuesta' ? <RespuestaTab {...props} /> : null}
-        {activa === 'historial' ? <HistorialTab {...props} /> : null}
-        {activa === 'simulacion' ? <SimulacionTab {...props} /> : null}
-      </div>
+        {simulacion ? (
+          <>
+            <button type="button" className="enlace fila-chica volver-plan" onClick={() => irAPestana('plan')}>
+              ‹ Volver al plan
+            </button>
+            <SimulacionTab {...props} />
+          </>
+        ) : (
+          <PlanTab {...props} conSimulacion={conSimulacion} />
+        )}
       </div>
     </div>
   )

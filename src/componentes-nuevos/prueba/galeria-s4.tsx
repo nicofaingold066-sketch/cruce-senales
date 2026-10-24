@@ -40,17 +40,8 @@ function Caso({ c, solo }: { c: CasoS4; solo: boolean }) {
           <Resultado p={c.p} viva={vivaDe(c.p)} soloLectura={false} espacio={espacio} activa="plan" irAPestana={() => {}} />
         </section>
         <div className="hoja">
-          <div className="pestanas">
-            <div className="pestanas-carril" role="tablist" aria-label="Secciones de la propuesta">
-              {['Plan', 'Mi respuesta', 'Historial', ...(c.p.mi_situacion.es_organizador_espacio && c.demo ? ['Simulación'] : [])].map((t, i) => (
-                <button key={t} type="button" role="tab" aria-selected={i === 0} className={`pestana ${i === 0 ? 'pestana-activa' : ''}`}>
-                  {t}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="panel-pestana" role="tabpanel">
-            <PlanTab p={c.p} viva={vivaDe(c.p)} soloLectura={false} irAPestana={() => {}} espacio={espacio} />
+          <div>
+            <PlanTab p={c.p} viva={vivaDe(c.p)} soloLectura={false} irAPestana={() => {}} espacio={espacio} conSimulacion={c.p.mi_situacion.es_organizador_espacio && !!c.demo} />
           </div>
         </div>
       </div>
