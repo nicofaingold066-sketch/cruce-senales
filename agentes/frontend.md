@@ -4,7 +4,7 @@ Rama de código: `wip/frontend` (base `wip/fundamentos` `ad2d63e`). Copia: `/Use
 Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo que pidan Nico y Juan; después, conectar las piezas de pendientes y pulir lo reportado en MEJORAS/TABLERO.
 
 ## Tocando ahora
-- (nada; 00:19)
+- [00:35] E15 en pantalla (pedido de `docs/contrato-enmienda-15.md`, Puente): `src/screens/NuevaPropuesta.tsx` (ronda de opiniones, etiqueta por plan, "Gana"), `src/screens/PlanTab.tsx` ("Opiniones hasta las HH:MM", etiqueta de la opción), `src/styles.css`. Todo detrás de una llave apagada hasta el aviso de 0052/0053. Depende del puente de pendientes (`types.ts`/`api.ts`) en `wip/fundamentos`: no lo entrego antes.
 
 ## Entregado
 - [00:19] `wip/frontend` = `1b321b2` (PARA LA TANDA SIGUIENTE; el coordinador pidió no sumar a la actual): `Inicio.tsx`: "Cuándo puedes es privado: nadie del grupo lo ve." (pedido de friccion 00:19, mismo texto que «¿Quién eres?»). Ningún guion busca el texto viejo. tsc OK, vitest puro 50/50, build 0.
@@ -16,6 +16,8 @@ Rutas: `src/screens/**`, `src/components/**`, `src/styles.css`. Prioridad: lo qu
 - **AVISO HONESTO [00:03]:** entre 23:57 y 00:03 corrió por error `npx vitest run` completo en mi copia, que incluye `tests/backend/**` contra la base (se cruzó con el CORRIENDO PRUEBA 00:00 de integracion-codex-juan). Lo corté a las 00:03 al darme cuenta. Desde ahora corro solo las puras: `npx vitest run src tests/andamiaje.test.ts tests/consentimiento-invitaciones.test.ts tests/ejemplos.test.ts`.
 
 ## Pedidos a otros
+- coordinador [00:35]: sumar a `wip/fundamentos` el puente E15 de pendientes (solo `src/lib/types.ts` y `src/lib/api.ts` de `wip/pendientes`, desde `92b411a`) para que mis pantallas de la E15 compilen.
+- pendientes [00:35]: para "¿cuál prefieres?" en Mi respuesta me falta en el puente `Disponibilidad.prefiero?: 'A' | 'B'` (para mandarlo) y `condiciones.prefiero` (para leerlo, campo hermano según tu decisión de la 0053). Avisá cuando estén.
 - agente-ia y coordinador [00:26]: `wip/agente-v13` y `wip/frontend` (`094b192`, ya en la tanda) chocan en `src/screens/PlanTab.tsx`: v13 agrega `<InvitacionAgente …/>` justo debajo de la línea de `<AvisoParaMi …/>`, que la fusión de Juan envolvió en `{sinTiSinAviso ? null : (…)}`. Resolución: quedarse con el PlanTab de `wip/frontend` y poner `<InvitacionAgente situacion={p.mi_situacion} onResponder={() => irAPestana('respuesta')} />` después del bloque `{avisoSinTi ? (…) : null}`, más el import. Si prefieren, sáquenlo de v13 y lo monto yo apenas `src/agente/InvitacionAgente.tsx` esté en `wip/fundamentos` (hoy mi rama no lo tiene y el import rompería el build).
 - friccion [00:19]: hecho en `1b321b2` (`wip/frontend`), entra en la tanda siguiente del coordinador.
 - qa-noche [00:15]: `OtraSesion` ahora lleva el foco al aviso de error cuando falla "Volver a esa sesión" (`094b192`, `wip/frontend`); podés recuperar esa comprobación en L2/L3.
