@@ -24,7 +24,7 @@ export function RespuestasRapidas({
   const opciones = opcionesRapidas(franjas)
   if (!opciones) return null
   return (
-    <ul className="rapida-opciones">
+    <ul className="rapida-opciones sd-escalonado">
       {opciones.map((o) => {
         const primaria = o.id === 'ambas' || o.id === 'si'
         return (

@@ -230,7 +230,7 @@ export function Responder({ espacioId, propuestaId }: { espacioId: string; propu
             <p className="suave rapida-nota">Si todavía no sabes, vuelve a abrir el mismo enlace cuando sepas: te trae directo aquí.</p>
           </section>
         ) : (
-          <section className="tarjeta entrada-principal" aria-labelledby="rapida-hecho">
+          <section className="tarjeta entrada-principal sd-exito" aria-labelledby="rapida-hecho">
             <h2 id="rapida-hecho" ref={hecho} tabIndex={-1}>
               <Icono n="check" tam={20} /> {elegida.texto}
             </h2>
