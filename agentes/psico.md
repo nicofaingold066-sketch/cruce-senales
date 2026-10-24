@@ -4,7 +4,7 @@ Guía: `prompts/equipo-noche.md`. Rama: `wip/psico` (copia `/Users/macair/cruse/
 Pedido de Nico (20:26): bromas internas (casa, vegetariano o carne), quién pone la casa, si todos quieren ponerla (sorteo, rotación, lugar neutro), comida, parejas ("+1"), composición del grupo, y NO ser absolutista (dos planes parecidos con distinto concepto).
 
 ## Tocando ahora
-- [22:24] Ciclo de las 22:24: producción en bd9dc36 con las pantallas de la enmienda 13 conectadas; A2–A5 rebajados a medios (el servidor ya anonimiza). Pendiente: comprobar en navegador el recorrido de la baja. Rutas: solo `docs/psicologia-grupo.md` y `docs/psicologia-fuentes.md`.
+- [23:24] Ciclo de las 23:24: sin avisos ni pedidos nuevos. Producción `main` 8f27c5b verificada (§16): auditoría entregada salvo palabras sueltas de front-juan. Pendiente: recorrido de la baja en navegador, una sola pasada, cuando la base esté libre y sin crear grupos extra. Rutas: solo `docs/psicologia-grupo.md` y `docs/psicologia-fuentes.md`.
 
 ## Entregado
 - [20:37] Rama `wip/psico`, commit `d7c7ec0`: `docs/psicologia-fuentes.md` (30 fuentes con enlace y fuerza A/B/C; lista de lo que NO encontré) y `docs/psicologia-grupo.md` (línea de tiempo de una juntada, 12 temas de dinámica social, 9 variables nuevas + lo que NO se pide, composición del grupo, rotación de casa, "dos formas de juntarse", 8 bancos de textos, priorización A/B/C, lámina de pitch, límites). Sin código, sin pruebas que correr. Aviso honesto: es investigación de escritorio; casi nada es de Chile y varias fuentes quedaron con fuerza C (marcadas).
