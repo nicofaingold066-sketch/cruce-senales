@@ -23,7 +23,7 @@ Principios: todo es **opcional y con valor por defecto igual a hoy**. Ningún cl
 - `opinar_version` → `plazo_vencido/ronda_cerrada` (detalle nuevo, mensaje fijo: "La ronda de opiniones ya cerró. Todavía puedes confirmar o retirarte."). `puede.opinar = false`. Las opiniones ya dadas siguen valiendo.
 - Rearmar vuelve a la regla de E13 (≥1 opinión que vale para el servidor; el booleano con ≥2). `siguiente_accion` del organizador: el texto existente "Algunos no pueden así: puedes rearmar con lo nuevo." (sin código nuevo).
 
-**Salida** (`get_proposal_state`, `list_proposals` vía `cruce.vista_propuesta`, aditivo): en la raíz `ronda = {horas: 2|12|24, cierra: <timestamptz>, abierta: boolean} | null`, de la versión vigente. Es pública (es la agenda del plan, no dice nada de nadie). `null` sin ronda pedida, sin versión publicada o cuando no cupo antes del cierre. La interfaz muestra "Opiniones hasta las 22:00" con `cierra` y nunca calcula `abierta`.
+**Salida** (`get_proposal_state`, `list_proposals` vía `cruce.vista_propuesta`, aditivo): en la raíz `ronda = {horas: 2|12|24, cierra: {utc, local}, abierta: boolean} | null`, de la versión vigente. Es pública (es la agenda del plan, no dice nada de nadie). `null` sin ronda pedida, sin versión publicada o cuando no cupo antes del cierre. La interfaz muestra "Opiniones hasta las 22:00" con `cierra` y nunca calcula `abierta`.
 
 ## (E-d) Dos planes con etiqueta y regla "la que más Sí"
 

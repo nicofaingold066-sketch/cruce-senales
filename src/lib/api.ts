@@ -18,6 +18,8 @@ import type {
   PanelSimulacion,
   PreferenciasPropias,
   PropuestaResumen,
+  ReglaMotor,
+  RondaHoras,
   TipoEspacio,
 } from './types'
 
@@ -291,6 +293,8 @@ export interface FranjaEntrada {
   /** HoraLocal "YYYY-MM-DDTHH:MM" en America/Santiago, sin desfase. */
   inicio: string
   fin: string
+  /** Enmienda 15 (E-d, 0052): nombre corto del plan (hasta 40 caracteres); se manda solo si viene. */
+  etiqueta?: string
 }
 
 export interface CrearPropuestaParams {
@@ -304,6 +308,10 @@ export interface CrearPropuestaParams {
   intentoId: string
   /** Enmienda 14: actividad del catálogo (se manda solo si viene). En un grupo con propósito, de su familia. */
   actividad?: ActividadClave | null
+  /** Enmienda 15: regla del motor ('mas_si' recién con la 0052); se manda solo si viene. */
+  regla?: ReglaMotor
+  /** Enmienda 15 (E-c): ronda de opiniones de 2, 12 o 24 h al publicar cada versión; se manda solo si viene. */
+  rondaHoras?: RondaHoras
 }
 
 // ---- Operaciones ----
@@ -362,6 +370,8 @@ export const api = {
         p_zona_horaria: 'America/Santiago',
         p_intento_id: p.intentoId,
         ...(p.actividad ? { p_actividad: p.actividad } : {}),
+        ...(p.regla ? { p_regla: p.regla } : {}),
+        ...(p.rondaHoras ? { p_ronda_horas: p.rondaHoras } : {}),
       },
       true,
     ),
