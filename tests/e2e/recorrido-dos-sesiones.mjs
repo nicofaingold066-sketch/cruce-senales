@@ -62,6 +62,10 @@ const revisarE13 = (quien, p) => {
   for (const n of NOMBRES_DEMO) if (baja.includes(`"${n}"`)) fugasE13.push(`${quien}: la baja nombra a ${n}`)
   // Backend deja `habia_aceptado` en null (no quita la clave): lo que no puede haber es true/false.
   for (const b of Array.isArray(p.bajas) ? p.bajas : []) if ((b?.habia_aceptado ?? null) !== null) fugasE13.push(`${quien}: la baja dice si había confirmado`)
+  // "Sin decir si había confirmado": la aceptación vieja de quien se retiró también sale sin actor. Aquí se retira Caro.
+  if (Array.isArray(p.bajas) && p.bajas.length > 0) {
+    for (const e of (p.historial ?? []).filter((e) => e.tipo === 'aceptacion')) if (e.actor?.nombre === 'Caro') fugasE13.push(`${quien}: la aceptación de quien se retiró conserva el nombre`)
+  }
   if (quien === 'Luna' && (p.opiniones_totales ?? null) !== null) fugasE13.push('Luna: ve opiniones_totales')
 }
 for (const [n, p] of [['Tomi', T], ['Luna', L]]) {
@@ -189,10 +193,14 @@ try {
   verificar('Baja de Caro: En revisión', await esperarTexto(T, 'En revisión').then(() => true, () => false))
   // E13 (c) en el teléfono de Luna: el historial no dice quién se retiró. El texto nuevo es de front-juan: se anota.
   if (e13) {
-    await L.reload(); await pestana(L, 'Historial')
+    // Ni "Caro se bajó" ni "Caro aceptó / había confirmado" en lo que ve Luna: plan e historial.
+    const fuga = /(?:Tomi|Luna|Mati|Caro|Fede|Sofi) se (?:bajó|retiró)|Caro (?:aceptó|había confirmado)/
+    await L.reload(); await esperarTexto(L, 'En revisión')
+    verificar('E13: el plan de Luna no nombra a quien se retiró ni dice que había confirmado', !fuga.test(await L.locator('main').innerText()))
+    await pestana(L, 'Historial')
     const historialLuna = await L.locator('main').innerText()
-    verificar('E13: el historial de Luna no nombra a quien se retiró', !/(?:Tomi|Luna|Mati|Caro|Fede|Sofi) se (?:bajó|retiró)/.test(historialLuna),
-      /Una persona se (?:bajó|retiró)/.test(historialLuna) ? 'dice "Una persona se bajó"' : /El sistema se bajó/.test(historialLuna) ? 'AVISO: dice "El sistema se bajó"' : 'sin el texto nuevo todavía')
+    verificar('E13: el historial de Luna no nombra a quien se retiró', !fuga.test(historialLuna),
+      /Una persona se (?:bajó|retiró)/.test(historialLuna) ? 'dice "Una persona se retiró"' : /El sistema se bajó/.test(historialLuna) ? 'AVISO: dice "El sistema se bajó"' : 'sin el texto nuevo todavía')
     await pestana(L, 'Plan')
   } else paso('E13 pendiente: el servidor no trae mi_opinion/opiniones_totales; la baja sin nombre se comprueba sola cuando llegue.')
   await tocar(T, 'Buscar alternativa')

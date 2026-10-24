@@ -62,6 +62,8 @@ describe.skipIf(BASE_OCUPADA)('recorrido canónico real · dos sesiones · contr
     for (const n of NOMBRES) expect(baja.includes(`"${n}"`), `${ruta}: la baja nombra a ${n}`).toBe(false)
     // Backend deja la clave con null (no la quita): lo que no puede haber es true/false.
     for (const b of Array.isArray(p.bajas) ? p.bajas : []) expect(b?.habia_aceptado ?? null, `${ruta}: la baja dice si había confirmado`).toBeNull()
+    // "Sin decir si había confirmado": la aceptación vieja de quien se retiró también sale sin actor.
+    for (const e of (p.historial ?? []).filter((e: Json) => e.tipo === 'aceptacion')) expect(e.actor?.nombre ?? null, `${ruta}: la aceptación de ${quien} (que se retiró) conserva el nombre`).not.toBe(quien)
     expect(JSON.stringify(p.siguiente_accion ?? null).includes(quien), `${ruta}: siguiente_accion nombra a ${quien}`).toBe(false)
   }
 
