@@ -11,6 +11,7 @@ import type {
   EstadoPropuesta,
   MiembroRef,
   Momento,
+  OpinionVersion,
   PanelSimulacion,
   PreferenciasPropias,
   PropuestaResumen,
@@ -97,6 +98,8 @@ export type ReparacionOk = PropuestaOk<{
   repetido: boolean
 }>
 export type PanelOk = OkBase & { state_rev: number; simulacion: PanelSimulacion }
+/** Enmienda 13 (a): "así no puedo, pero sigo". No es baja ni cambia la versión; idempotente por intento. */
+export type OpinarOk = PropuestaOk<{ opinion: 'asi_no_puedo' | null; repetido: boolean }>
 /**
  * Preferencias privadas propias (enmiendas 4, 8 y 10). `preferencias` solo trae zona, movilidad, tiempo_max y
  * momento si la persona los cargó. `usar_en_agente` es true si todavía no guardó nada.
@@ -412,6 +415,14 @@ export const api = {
     llamar<CargarCasoOk>('simulate_load_case', { p_propuesta_id: propuestaId, p_intento_id: intentoId }, true),
   getSimulationPanel: (propuestaId: string) =>
     llamar<PanelOk>('get_simulation_panel', { p_propuesta_id: propuestaId }, false),
+
+  // Enmienda 13 (a): opinar sobre la versión vigente sin bajarse ('asi_no_puedo' o 'retirar_opinion').
+  opinarVersion: (propuestaId: string, version: number, opinion: OpinionVersion, intentoId: string) =>
+    llamar<OpinarOk>(
+      'opinar_version',
+      { p_propuesta_id: propuestaId, p_version: version, p_opinion: opinion, p_intento_id: intentoId },
+      true,
+    ),
 
   // Preferencias privadas (enmiendas 4, 8 y 10). El agente tiene sus propias llamadas en src/agente/api.ts.
   getMyPreferences: (espacioId: string) =>

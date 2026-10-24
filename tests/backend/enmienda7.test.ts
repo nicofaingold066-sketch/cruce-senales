@@ -116,7 +116,8 @@ describe('E7.2: los conteos de la propuesta solo los ve el organizador', { timeo
     const [d1, d2] = [await estado(B, p1), await estado(B, p2)]
     expect(sinVariables(d2)).toEqual(sinVariables(d1))
     expect(d1.bajas).toHaveLength(1)
-    expect(d1.bajas[0]).toMatchObject({ version: 1, habia_aceptado: false })
+    // Enmienda 13 (c): la baja de otra persona sale sin nombre y sin decir si había confirmado.
+    expect(d1.bajas[0]).toMatchObject({ miembro: { miembro_id: null, nombre: 'Una persona' }, version: 1, habia_aceptado: null })
     expect(d1.personas_con_condiciones).toBeNull()
     expect(d1.opcion.cupos.pendientes).toBeNull()
     // El organizador sigue viendo los dos conteos; la baja no descuenta a W de personas_con_condiciones.

@@ -107,13 +107,14 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
     }
   })
 
-  it('2. semilla 7.1: con seco y con lluvia sale el asado del quincho, sábado y domingo 14:00 a 17:00', async () => {
+  it('2. semilla 7.1: con seco y con lluvia sale el asado, sábado y domingo 14:00 a 17:00 (E13: en la parrilla del parque)', async () => {
     const domingo = masDias(sabado, 1)
     for (const clima of [SECO, LLUVIA]) {
       const r = (await ok(O, 'proponer_plan_borrador', { p_espacio_id: demo.id, p_sabado: sabado, p_clima: clima })).resultado
       expect(r).toMatchObject({
-        tipo: 'borrador', actividad: 'asado', actividad_etiqueta: 'Asado', titulo: 'Asado en casa de Tomi',
-        lugar: { id: 'lugar-sim-01', nombre: 'Quincho de Tomi (Simulación)', simulado: true },
+        // E13 (d): a igual puntaje, la parrilla (Providencia, viaje máximo 20) le gana al quincho (Ñuñoa, 25).
+        tipo: 'borrador', actividad: 'asado', actividad_etiqueta: 'Asado', titulo: 'Asado en una parrilla del parque',
+        lugar: { id: 'lugar-sim-14', nombre: 'Parrilla del parque (Simulación)', simulado: true },
         clima, personas_consideradas: 6,
       })
       expect(r.franjas).toEqual([
@@ -129,13 +130,14 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
   it('4.1: candidatas sin puntajes ni descartadas, la primera es la elección; perfil_grupo agregado', async () => {
     const seco = (await ok(O, 'proponer_plan_borrador', { p_espacio_id: demo.id, p_sabado: sabado, p_clima: SECO })).resultado
     // Pádel y la fiesta (precio medio) quedan descartados por "algo barato"; la fiesta además no abre el domingo.
-    expect(seco.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-01', 'lugar-sim-04', 'lugar-sim-03'])
+    // E13 (d): los dos asados (parrilla primero por viaje) y el parque.
+    expect(seco.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-14', 'lugar-sim-01', 'lugar-sim-04'])
     const [primera] = seco.candidatas
     expect(primera).toEqual({
       id: seco.lugar.id, actividad: seco.actividad, actividad_etiqueta: seco.actividad_etiqueta, lugar: seco.lugar,
       titulo: seco.titulo, franjas: seco.franjas, frases_grupo: seco.frases_grupo, viaje: seco.viaje, // E10: viaje en cada candidata
     })
-    expect(seco.candidatas[1].frases_grupo).toEqual(['presupuesto_todos', 'al_aire_libre_con_buen_tiempo']) // #54: sin ritmo_del_grupo
+    expect(seco.candidatas.find((c: Json) => c.id === 'lugar-sim-04').frases_grupo).toEqual(['presupuesto_todos', 'al_aire_libre_con_buen_tiempo']) // #54: sin ritmo_del_grupo
     for (const c of seco.candidatas) expect(Object.keys(c).sort()).toEqual(['actividad', 'actividad_etiqueta', 'franjas', 'frases_grupo', 'id', 'lugar', 'titulo', 'viaje'])
     expect(JSON.stringify(seco)).not.toMatch(/lugar-sim-02|evento-sim-01|puntaje/)
     // Mejora #28: Fiesta (1 persona) no sale en gustos. Enmienda 7 (E7.4): el perfil no cuenta a quien lo pide
@@ -152,7 +154,8 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
     // Con lluvia, Caro pidió techo: la cancha y el parque quedan fuera.
     const lluvia = (await ok(O, 'proponer_plan_borrador', { p_espacio_id: demo.id, p_sabado: sabado, p_clima: LLUVIA })).resultado
     // E10 Parte B (0038): entran también el cine (barato) y la cultura (gratis), bajo techo.
-    expect(lluvia.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-01', 'lugar-sim-09', 'lugar-sim-10'])
+    // E13 (d): los dos asados bajo techo (parrilla primero por viaje) y el cine.
+    expect(lluvia.candidatas.map((c: Json) => c.id)).toEqual(['lugar-sim-14', 'lugar-sim-01', 'lugar-sim-09'])
   })
 
   it('mejora #28: con 4 personas (sin contar a quien pide), una actividad elegida por una sola no aparece en perfil_grupo.gustos', async () => {
@@ -240,7 +243,7 @@ describe('enmienda 4: el agente del círculo', { timeout: 90_000 }, () => {
   })
 
   it('7. lista permitida: 31 para authenticated (29 de la enmienda 4 + 1 de la 5 + 1 de la 9), 0 para anon, agente_insumos no existe', async () => {
-    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40
+    expect(Object.keys(PERMITIDAS)).toHaveLength(TOTAL_PERMITIDAS) // E11: 40; E13: 41
     for (const fn of ['save_my_preferences', 'get_my_preferences', 'proponer_plan_borrador']) {
       const a = await rpcCrudo(clienteSinSesion(), fn, PERMITIDAS[fn]())
       expect(a.error?.code, fn).toBe('42501')

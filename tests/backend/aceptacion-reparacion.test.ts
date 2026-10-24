@@ -119,15 +119,18 @@ describe('aceptación, baja y reparación', { timeout: 90_000 }, () => {
     const conf = await ok(O, 'accept_version', { p_propuesta_id: prop, p_version: 1, p_intento_id: intento() })
     expect(conf.propuesta.estado).toBe('grupo_confirmado')
 
-    // Caro se baja: en revisión, baja registrada, Caro no vuelve a ser elegible.
+    // Caro se baja: en revisión, baja registrada, Caro no vuelve a ser elegible. Enmienda 13 (c): ni el organizador
+    // ve quién se bajó ni si había confirmado (solo el total).
+    const ANON = { miembro_id: null, nombre: 'Una persona', simulado: false }
     const baja = await ok(O, 'simulate_withdraw', { p_propuesta_id: prop, p_miembro_id: caro })
     expect(baja.resultado).toMatchObject({ efecto: 'pasa_a_revision', simulado: true, repetido: false })
     expect(baja.propuesta.estado).toBe('en_revision')
     expect(baja.propuesta.confirmados).toBe(3)
     expect(baja.propuesta.bajas).toHaveLength(1)
-    expect(baja.propuesta.bajas[0]).toMatchObject({ miembro: { miembro_id: caro }, version: 1, habia_aceptado: true })
+    expect(baja.propuesta.bajas[0]).toMatchObject({ miembro: ANON, version: 1, habia_aceptado: null })
+    expect(JSON.stringify(baja.propuesta)).not.toContain(caro)
     const evBaja = baja.propuesta.historial.at(-1)
-    expect(evBaja).toMatchObject({ tipo: 'baja', actor_tipo: 'simulacion', actor: { miembro_id: caro }, ejecutado_por: { miembro_id: esp.miembroId } })
+    expect(evBaja).toMatchObject({ tipo: 'baja', actor_tipo: 'simulacion', actor: ANON, ejecutado_por: { miembro_id: esp.miembroId } })
     expect(evBaja.en.utc).toMatch(/Z$/)
     expect(err(await rpc(O, 'simulate_accept', { p_propuesta_id: prop, p_miembro_id: caro, p_version: 1, p_intento_id: intento() })))
       .toBe('no_autorizado/retirado')
@@ -167,7 +170,7 @@ describe('aceptación, baja y reparación', { timeout: 90_000 }, () => {
     expect(bs.resultado.efecto).toBe('acuerdo_conservado')
     expect(bs.propuesta.estado).toBe('grupo_confirmado')
     expect(bs.propuesta.confirmados).toBe(4)
-    expect(bs.propuesta.bajas.map((b: Json) => b.miembro.miembro_id)).toEqual([caro, sofi])
+    expect(bs.propuesta.bajas.map((b: Json) => b.miembro.miembro_id)).toEqual([null, null]) // E13 (c): sin nombre
   })
 
   it('rama sin alternativa: el anfitrión deja de estar disponible', async () => {

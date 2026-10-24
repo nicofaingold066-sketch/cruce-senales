@@ -111,10 +111,12 @@ export const PERMITIDAS: Record<string, () => Record<string, unknown>> = {
   aprobar_borrador_agente: () => ({ p_ejecucion_id: Z, p_borrador_hash: 'x', p_intento_id: randomUUID() }),
   publicar_borrador_agente: () => ({ p_ejecucion_id: Z, p_borrador_hash: 'x', p_intento_id: randomUUID() }),
   cerrar_ejecucion_agente: () => ({ p_ejecucion_id: Z, p_estado: 'fallida', p_motivo: 'sin_plan' }),
+  // enmienda 13 (opinar sin bajarse, 0042)
+  opinar_version: () => ({ p_propuesta_id: Z, p_version: 1, p_opinion: 'asi_no_puedo', p_intento_id: randomUUID() }),
 }
 
-/** Tamaño de la lista permitida (A5): 31 hasta la enmienda 9; 40 con la enmienda 11 (agente social). */
-export const TOTAL_PERMITIDAS = 40
+/** Tamaño de la lista permitida (A5): 31 hasta la enmienda 9; 40 con la 11 (agente social); 41 con la 13. */
+export const TOTAL_PERMITIDAS = 41
 
 /** Lista cerrada de siguiente_accion.codigo (enmienda 3). */
 export const CODIGOS_SIGUIENTE = [
