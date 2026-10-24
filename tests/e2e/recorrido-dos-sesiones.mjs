@@ -47,11 +47,32 @@ const ctxTomi = await browser.newContext(opts) // ventana normal
 const ctxLuna = await browser.newContext(opts) // ventana privada: almacenamiento separado
 const T = await ctxTomi.newPage(), L = await ctxLuna.newPage()
 const errores = [], respuestas = []
+// Enmienda 13 (c): ninguna respuesta compartida nombra a quien se retiró ni dice si había confirmado, y Luna nunca ve
+// `opiniones_totales`. Se activa sola cuando el servidor trae las claves nuevas (`mi_situacion.mi_opinion` /
+// `opiniones_totales`); hasta entonces queda como pendiente, sin contar. `ejecutado_por` es quien corrió la simulación.
+let e13 = null
+const fugasE13 = []
+const NOMBRES_DEMO = ['Tomi', 'Luna', 'Mati', 'Caro', 'Fede', 'Sofi']
+const revisarE13 = (quien, p) => {
+  if (!p?.mi_situacion) return
+  if (e13 === null) e13 = 'mi_opinion' in p.mi_situacion || 'opiniones_totales' in p
+  if (!e13) return
+  const baja = JSON.stringify({ bajas: p.bajas ?? null,
+    eventos: (p.historial ?? []).filter((e) => e.tipo === 'baja').map(({ ejecutado_por: _simula, ...e }) => e) })
+  for (const n of NOMBRES_DEMO) if (baja.includes(`"${n}"`)) fugasE13.push(`${quien}: la baja nombra a ${n}`)
+  // Backend deja `habia_aceptado` en null (no quita la clave): lo que no puede haber es true/false.
+  for (const b of Array.isArray(p.bajas) ? p.bajas : []) if ((b?.habia_aceptado ?? null) !== null) fugasE13.push(`${quien}: la baja dice si había confirmado`)
+  if (quien === 'Luna' && (p.opiniones_totales ?? null) !== null) fugasE13.push('Luna: ve opiniones_totales')
+}
 for (const [n, p] of [['Tomi', T], ['Luna', L]]) {
   p.on('pageerror', (e) => errores.push(`${n}: ${e.message}`))
   p.on('console', (m) => { if (m.type() === 'error') errores.push(`${n} consola: ${m.text().slice(0, 160)}`) })
   // Solo la ruta y el código (sin parámetros ni cabeceras), para saber qué pedido falló.
   p.on('response', (r) => { if (r.status() >= 400) respuestas.push(`${n} ${r.status()} ${r.request().method()} ${new URL(r.url()).pathname}`) })
+  p.on('response', (r) => {
+    if (!new URL(r.url()).pathname.startsWith('/rest/v1/rpc/')) return
+    r.json().then((j) => { if (j?.propuesta) revisarE13(n, j.propuesta); for (const q of j?.propuestas ?? []) revisarE13(n, q) }).catch(() => {})
+  })
 }
 let nCaptura = 0
 const captura = async (p, nombre) => {
@@ -166,6 +187,14 @@ try {
   await pestana(T, 'Simulación'); await tocar(T, 'Se baja: Caro'); await tocar(T, 'Sí, Caro se baja')
   await pestana(T, 'Plan')
   verificar('Baja de Caro: En revisión', await esperarTexto(T, 'En revisión').then(() => true, () => false))
+  // E13 (c) en el teléfono de Luna: el historial no dice quién se retiró. El texto nuevo es de front-juan: se anota.
+  if (e13) {
+    await L.reload(); await pestana(L, 'Historial')
+    const historialLuna = await L.locator('main').innerText()
+    verificar('E13: el historial de Luna no nombra a quien se retiró', !/(?:Tomi|Luna|Mati|Caro|Fede|Sofi) se (?:bajó|retiró)/.test(historialLuna),
+      /Una persona se (?:bajó|retiró)/.test(historialLuna) ? 'dice "Una persona se bajó"' : /El sistema se bajó/.test(historialLuna) ? 'AVISO: dice "El sistema se bajó"' : 'sin el texto nuevo todavía')
+    await pestana(L, 'Plan')
+  } else paso('E13 pendiente: el servidor no trae mi_opinion/opiniones_totales; la baja sin nombre se comprueba sola cuando llegue.')
   await tocar(T, 'Buscar alternativa')
   verificar('Alternativa: versión 2 publicada', await esperarTexto(T, 'Confirmar versión 2').then(() => true, () => false))
   // Cero heredadas: antes de que nadie confirme, la v2 empieza en cero y no está confirmada.
@@ -236,6 +265,7 @@ try {
   paso(`ERROR: ${String(e?.message ?? e).split('\n')[0]}`)
   await captura(T, 'error-tomi').catch(() => {}); await captura(L, 'error-luna').catch(() => {})
 } finally {
+  if (e13) verificar('E13: ninguna respuesta compartida nombra a quien se retiró ni muestra totales a Luna', fugasE13.length === 0, fugasE13.slice(0, 3).join(' | '))
   verificar('Sin errores de la app en consola', errores.length === 0, [...errores.slice(0, 3), ...respuestas.slice(0, 3)].join(' | '))
   await browser.close()
   console.log(`${fallidas === 0 ? 'RECORRIDO OK' : 'RECORRIDO CON FALLAS'}: ${aprobadas} aprobadas, ${fallidas} fallidas`)

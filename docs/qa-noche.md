@@ -10,12 +10,15 @@ Dueña: sesión `qa-noche` (rama `wip/qa`). Las horas son del reloj de Santiago.
 | `red-controlada.mjs` | N1–N8, F1, F1b con red interceptada (10) | no | `node tests/e2e/red-controlada.mjs <url>` |
 | `sesiones-recuperacion.mjs` | S1–S9 y L1–L3 (12): sesión guardada, volver, identidad conservada; Auth ficticio | no | `node tests/e2e/sesiones-recuperacion.mjs` (levanta su propio Vite) |
 
-Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/backend.md` dice `MIGRACION EN CURSO` o `PRUEBA DE CARGA EN CURSO`; la guardia común está en `tests/e2e/base-libre.mjs`. Una falla 57014 o de tiempo se reintenta antes de concluir.
+Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/backend.md` dice `MIGRACION EN CURSO` o `PRUEBA DE CARGA EN CURSO`; la guardia común está en `tests/e2e/base-libre.mjs`. Una falla 57014 o de tiempo se reintenta antes de concluir. Desde las 21:16 (aviso del coordinador: Nico probando producción; parones de ~7 s con pruebas en paralelo) toda corrida contra la base va de a UNA en todo el equipo, con la marca «CORRIENDO PRUEBA (hh:mm)» en la ficha: para eso está `turno-base.sh`.
 | `toques-invitacion.mjs` | Toques del enlace de invitación a la primera respuesta, 375 px (de friccion) | sí | `node tests/e2e/toques-invitacion.mjs <url> <etiqueta>` |
 | `red-import-cortada.mjs` | #82: corte de red al importar una pantalla (reintento `?r=1`, barrera «Recargar», precarga) | sí (caso C) | `node tests/e2e/red-import-cortada.mjs <url>` |
 | `friccion-flujo.mjs` | #88, #90 (demo) y volver con el mismo enlace, de friccion (85 líneas) | sí | `node tests/e2e/friccion-flujo.mjs <url>` |
 | `convencer-uno.mjs` | #98 de ux-flujo: organizador + 5 invitados por enlace, toques y pantallas por persona (6 sesiones por corrida) | sí | `node tests/e2e/convencer-uno.mjs <url>` |
-| `guardia-palabras.mjs` | P-A de psico (§8.7): ninguna palabra de la lista (vegetariano, celíaco, «pareja de», novio/a, hombres, mujeres, chicos, chicas, «otra vez en casa»…) en copia visible de `src/` ni `supabase/functions/agente/` (sin pruebas, comentarios, catálogo ni listas de prohibidas) | no | `node tests/e2e/guardia-palabras.mjs` (sale 1 si hay hallazgos) |
+| `guardia-palabras.mjs` | P-A de psico (§8.7) + regla D2 (género y pareja de una persona no se piden ni se muestran): ninguna palabra de la lista (vegetariano, celíaco, «pareja de», novio/a, hombres, mujeres, chicos, chicas, «otra vez en casa»…) en copia visible de `src/` ni `supabase/functions/agente/` (sin pruebas, comentarios, catálogo ni listas de prohibidas) | no | `node tests/e2e/guardia-palabras.mjs [raíz de otra copia]` (sale 1 si hay hallazgos) |
+| `plan-b-un-aparato.mjs` | Guion de la demo §8 (5), de apertura: una sola sesión (Tomi) recorre el caso con Simulación; informa si el caso carga a Luna, v1 sábado con 4, quiénes aceptan, baja de Caro, v2 domingo y segundos totales | sí | `node tests/e2e/plan-b-un-aparato.mjs <url>` |
+| `demo-reinicio-luna.mjs` | Guion de la demo §8 (4), de apertura: Luna reclamada sigue reclamada tras «Reiniciar demo» (sesión nueva no puede elegirla; la misma sesión sigue en un toque y responde) | sí | `node tests/e2e/demo-reinicio-luna.mjs <url>` |
+| `turno-base.sh` | Envoltorio de la regla 21:16: espera a que ninguna ficha diga MIGRACION / PRUEBA DE CARGA / CORRIENDO PRUEBA, marca «CORRIENDO PRUEBA (hh:mm)» en mi ficha, corre UNA prueba y quita la marca | — | `tests/e2e/turno-base.sh "<qué>" <comando…>` |
 | `preparar-grupo.mjs` | Ayudante: crea grupo ficticio (Orga, Ana, Beto) y propuesta abierta | sí | lo llaman los dos anteriores |
 
 ## Cambios en los guiones
@@ -26,6 +29,11 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
   - Se quitó la comprobación de **foco** tras el error (antes en `#/entrar`); la portada nueva no maneja foco al fallar el retorno. Idea para friccion/Juan: mover el foco al aviso de error. No se baja lo demás.
 - 19:28 `recorrido-dos-sesiones.mjs` ahora también respeta `MIGRACION EN CURSO` (antes corría igual).
 - 20:28 Enmienda 10: `jurado-navegador.mjs` revisa en toda respuesta compartida (todas menos get/save/simulate_save_preferences) que no aparezcan las claves `movilidad`, `tiempo_max`, `minutos_por_persona` ni los valores de movilidad (`me_llevan`, `auto_con_lugar`…) ni las 8 zonas. Pasa contra producción con la enmienda 10 publicada (main fae49fa).
+- 21:08 **Enmienda 13** (pedido del coordinador 20:51), listo antes de que backend la aplique. Todo se activa solo cuando el servidor trae `mi_situacion.mi_opinion` / `opiniones_totales`; hasta entonces los guiones dicen "E13 pendiente" y no cuentan.
+  - `recorrido-canonico.test.ts` (vitest, RPC): dos pruebas nuevas. (1) Luna opina `asi_no_puedo` sin bajarse (idempotente por intento, puede volver a guardar condiciones, no cuenta como baja ni aceptación); el organizador ve `opiniones_totales` null con 1 y `{asi_no_puedo: 2}` con 2 (Tomi es la segunda opinión), sin nombres; Luna nunca lo ve; versión no vigente → `opcion_desactualizada/version_no_vigente`; `propose_repair` desde `esperando_compromisos` → v2 con cero aceptaciones y cero opiniones, usando la disponibilidad nueva; opinar después de aceptar → `no_autorizado/ya_acepto`. (2) Rearmar sin opiniones se rechaza; v2 y v3 nacen limpias; la cuarta → `sin_alternativa/tope_versiones` (si con dos franjas no hay alternativa antes, se anota). Además, en toda baja (`bajarCaro`) ninguna respuesta compartida —ni la del organizador— trae nombre ni `habia_aceptado`. La suite se salta sola con `MIGRACION EN CURSO`.
+  - `jurado-navegador.mjs`: en cada sobre con `propuesta`, bajas y eventos de baja sin nombre ni `habia_aceptado`; `opiniones_totales` solo en respuestas de Tomi, ≥ 2 y sin nombres. En V2b, el Historial de Luna y de Tomi no nombra a quien se retiró (el texto "Una persona se bajó" es de la interfaz: se avisa, no se exige).
+  - `recorrido-dos-sesiones.mjs`: mismas comprobaciones de red más el Historial de Luna tras la baja de Caro.
+  - `guardia-palabras.mjs`: regla **D2** (género y pareja de una persona no se piden ni se muestran): género/sexo, hombre/mujer, masculino/femenino, casado, estado civil, "tu/su pareja", "¿vienes con pareja?", `autocomplete="sex"`… «Con parejas» / «solo el grupo» como regla de la juntada se permite. Control positivo: detecta las frases prohibidas y deja pasar las permitidas.
 
 ## Registro de corridas
 | Hora | Qué | Contra | Resultado |
@@ -53,6 +61,12 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si `agentes/b
 | 20:42 | `wip/friccion` 05e148d: jurado V2a cayó una vez por timeout de 15 s en `waitForResponse` (justo al salir la migración 0041); había pasado 4/4 a las 20:02 | localhost, base | falla aislada, no reproducida |
 | 20:45 | `wip/ux` e1794e1: recorrido 23/23, jurado 4/4, friccion-flujo 19/19, red 10/10 | localhost, base | verde |
 | 20:48 | `wip/friccion` 6bddd27 (merge de fundamentos): recorrido 23/23, jurado 4/4, friccion-flujo 19/19, red-import 4/4, red 10/10 | localhost, base | verde |
+| 20:55 | humo de producción (main 3ace04e) | producción | frenado: backend con MIGRACION EN CURSO (enmienda 13: 0042–0044) desde 20:59; corre solo al liberarse |
+| 21:08 | guardia-palabras con D2 sobre fundamentos 3ace04e | estático | 57 archivos, 0 hallazgos (§8.7: 0, D2: 0); control positivo detecta |
+| 21:08 | sintaxis y tipos de los guiones nuevos (`node --check`, `tsc -p tsconfig.node.json`) | — | ok; E13 sin correr contra la base hasta que backend aplique 0042–0044 |
+| 21:12 | `wip/friccion` fc66c0b (E13 (a) «Así no puedo, pero sigo» y D3 «¿Quién viene?»): typecheck, build, red 10/10, sesiones-recuperación 12/12, guardia-palabras 0/0 (61 archivos). El selector «¿Quién viene?» es regla del grupo (Sin definir / Solo el grupo / Con parejas / Abierta), sin datos de personas: cumple D2 | localhost, sin base | verde; recorrido, jurado y friccion-flujo esperan la base |
+| 21:12 | `wip/ux` 603678e: typecheck, build, red 10/10, guardia-palabras 0/0 | localhost, sin base | verde; recorrido y jurado esperan la base |
+| 21:19 | guiones nuevos para apertura (`plan-b-un-aparato`, `demo-reinicio-luna`) y `turno-base.sh` | — | solo sintaxis; corren de a uno contra producción cuando la base se libere (migración E13 desde 20:59) |
 
 ## Regresiones abiertas
 (ninguna)
