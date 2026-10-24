@@ -5,10 +5,18 @@ Pedido directo del usuario en Codex: «Sí, te autorizo a modificar la entrada. 
 Rama propia: `codex/intro-primera-visita`. Copia: `/Users/macair/cruse/cruce-intro`, desde `origin/main`.
 
 ## Tocando ahora
-- Pedido directo nuevo de Nico: «Dale, hacela así, bien dinámica y divertida, con los 3 pasos. Que aparezca solo la primera vez, se pueda saltar y volver a ver desde Ayuda», con cursor que señale las acciones. Autoriza esta ampliación puntual de la entrada.
-- `src/App.tsx`: enganchar guía después de la intro y botón Ayuda para repetirla; conserva rutas y sesión.
-- Nuevos `src/components/Guia.tsx` y `src/components/Guia.css`: ejemplo ficticio de tres pasos, cursor decorativo, accesibilidad, primera visita independiente de la intro.
-- Copia aislada `/Users/macair/cruse/cruce-intro`, rama propia `codex/intro-primera-visita`. No se editan Perfil, hojas compartidas, backend ni configuración. Solo QA local con salida externa interceptada.
+Vacío. Guía entregada en rama propia, sin base ni despliegue.
+
+## Entrega nueva: guía de tres pasos
+Pedido directo de Nico: «Dale, hacela así, bien dinámica y divertida, con los 3 pasos. Que aparezca solo la primera vez, se pueda saltar y volver a ver desde Ayuda». Después pidió ver el resultado y cursor naranja. Autoriza esta ampliación puntual de la entrada.
+
+Objetivo cumplido: `codex/intro-primera-visita` = **`4e90813`**, subida a origin sobre la intro `9364cd8`. Archivos de este corte: `src/App.tsx`, nuevos `src/components/Guia.tsx` y `Guia.css`. No se editaron Perfil, hojas compartidas, backend, configuración ni dependencias.
+
+Tres pasos interactivos ficticios: idea (asado/café/fútbol), horario privado y confirmación manual. Cursor naranja decorativo señala sin activar acciones; avatares y celebración CSS. La confirmación del ejemplo se invalida si cambia el horario o el plan. Clave independiente `cruxe:guia-vista:v1`, localStorage/sessionStorage/memoria; se muestra tras la intro una sola vez y Ayuda permite repetir. Los enlaces directos conservan destino sin guía automática ni consumir la primera visita. Un solo modal activo, foco restaurado, Escape/Saltar, teclado encerrado y movimiento reducido estático.
+
+Typecheck/build/diff-check verdes. QA Chrome local en StrictMode con todos los destinos externos mockeados/abortados: primera visita, recarga/pestaña/nueva sesión persistida, marca previa de intro, saltar/Escape/Ayuda, selección/retroceso/reconfirmación, almacenamiento bloqueado, movimiento reducido e invitación. Recheck foco y cinco tamaños (320×568, 375×812, 768×1024, 1280×800, 812×375) **9/9**, cero pageerrors/RPC de acciones. Barra con nombre largo a320/375/768: sin solapamientos; Ayuda y retorno de foco correctos. A375 los tres pasos caben completos, CTA visible; a320 las acciones son accesibles por scroll y pie fijo.
+
+Arnés y evidencia fuera del repo: `/tmp/cruxe-guia-qa/`; capturas `/Users/macair/.codex/visualizations/2026/10/24/01a16d9b-0e5a-7f83-ad7a-d94e81c53cb8/guia-cruxe/`. Vista previa aislada, sin backend: `http://127.0.0.1:4199/` (fuente temporal `/tmp/cruxe-guia-preview/`), abierta al usuario. Pendiente integración por coordinador; no se modificó main ni se publicó producción.
 
 ## Verificación
 Solo typecheck/build y navegador local con red externa interceptada; sin base, modelos, migraciones ni despliegue. Revisión independiente de accesibilidad/timers en subagente de esta misma conversación, solo lectura.
