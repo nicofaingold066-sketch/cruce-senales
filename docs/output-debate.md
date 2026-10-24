@@ -24,6 +24,8 @@ Escrito: viernes 23 oct 2026, 20:33. Actualizado 20:54 con las decisiones de Nic
 | Casa privada (D4 de psico) | **Después de la demo** | — |
 | Género y pareja no se piden ni se infieren (D2); modalidad en el título (D3) | **Sí, sin migración** | textos de front-juan y friccion |
 
+Límite declarado (psico §8.10): con UNA sola persona que marcó "así no puedo", el organizador no ve nada (ni total ni botón de rearmar), porque en un grupo chico mostrarlo la delataría. "Rearmar con lo nuevo" aparece con 2 o más. Si esa persona es decisiva para el mínimo, puede retirarse (la baja ya no lleva nombre) y el plan sigue por "Buscar alternativa".
+
 Corte de la enmienda 13: aplicada y en verde antes de la 01:00 del sábado. Interfaz: botón "Así no puedo, pero sigo" (friccion, componente nuevo) y "Rearmar con lo nuevo" + avisos sin nombre (ux-flujo, `src/componentes-nuevos/`); conecta front-juan.
 
 ## 1. El output de punta a punta, hoy
