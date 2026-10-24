@@ -60,10 +60,19 @@ describe('consentimiento E11 (puerto RPC simulado, sin red)', () => {
     expect(mock.rpc).toHaveBeenCalledTimes(1)
   })
 
-  it('un timeout no se convierte en una confirmación ni se reintenta solo', async () => {
+  it('tras dos timeouts no anuncia éxito; reintenta una vez con la misma elección (#108)', async () => {
     mock.rpc.mockReturnValue({ abortSignal: () => Promise.reject({ name: 'TimeoutError' }) })
     expect(await agenteApi.setRecibirInvitaciones(espacio, true)).toMatchObject({ ok: false, error: { detalle: 'tiempo_agotado' } })
-    expect(mock.rpc).toHaveBeenCalledTimes(1)
+    expect(mock.rpc).toHaveBeenCalledTimes(2)
+    for (const args of mock.rpc.mock.calls) expect(args).toEqual(['set_recibir_invitaciones_agente', { p_espacio_id: espacio, p_recibir: true }])
+  })
+
+  it('recupera un eco válido después de perder una respuesta, sin guardar preferencias', async () => {
+    mock.rpc.mockReturnValueOnce({ abortSignal: () => Promise.reject({ name: 'TimeoutError' }) })
+      .mockReturnValueOnce({ abortSignal: () => Promise.resolve({ data: respuesta({ recibir_invitaciones_agente: true }), error: null }) })
+    expect(await agenteApi.setRecibirInvitaciones(espacio, true)).toEqual({ ok: true, data: { recibir_invitaciones_agente: true } })
+    expect(mock.rpc).toHaveBeenCalledTimes(2)
+    expect(mock.rpc.mock.calls.every(([fn]) => fn === 'set_recibir_invitaciones_agente')).toBe(true)
   })
 
   it('sin conexión o con contrato incompatible no envía', async () => {
