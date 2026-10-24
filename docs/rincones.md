@@ -1,7 +1,7 @@
 # Rincones de CRUXE: inventario, veredictos y pedidos
 
 Sesión `rincones` (equipo de la noche). Qué se revisa: cada pantalla, estado, pestaña, mensaje y botón, en 320, 375, 768 y 1280 px, en el demo y en un grupo real nuevo.
-Última actualización: sábado 24 oct, 00:55 (build = `main` 3cca951) (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
+Última actualización: sábado 24 oct, 01:36 (build = `main` 44e6de6) (corrida 4 sobre `main` = `wip/fundamentos` = `3ace04e`: `f0`–`f2` corridas; en pausa automática desde 21:01 por la migración de la enmienda 13) (reloj de Santiago). Build revisado: `main` = `61e7da6` (sin cambios de `src/` desde entonces), contra la base real, con el build propio en `localhost:4187`.
 
 ## Resumen (se rehace a las 08:00)
 Todavía en curso: 130 de ~140 rincones recorridos. Hasta ahora: **ROTO 0**, **OBSERVADO 16**, de los cuales **2 ya APROBADOS** en `main` 3ace04e (O-06 y O-08, corrida 4 `f0` 20:55) y 3 por confirmar en la misma corrida (O-02, O-12b, O-13) (ninguno impide completar el recorrido canónico), el resto APROBADO.
@@ -22,7 +22,7 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 ## Observaciones (O-xx) y a quién se piden
 | Id | Veredicto | Dónde | Paso exacto | Captura | Dueño |
 |---|---|---|---|---|---|
-| O-01 | OBSERVADO | Cabecera, todas las pantallas con sesión nombrada, **320 px** | Entrar con un nombre y abrir cualquier pantalla a 320 px: el avatar ("RO") se superpone 26 px sobre "Datos ficticios" y lo corta | `202610231931/R25-320.png` | front-juan |
+| O-01 | **APROBADO 01:35** (era OBSERVADO; verificado en build local de `main` 44e6de6, cabecera medida sin tocar la base: a 320 px el nombre se oculta, queda solo el avatar y el chip "Datos ficticios" entero; a 375 px con un nombre muy largo se corta con "…" y queda pegado al chip, leve) | Cabecera, todas las pantallas con sesión nombrada, **320 px** | Entrar con un nombre y abrir cualquier pantalla a 320 px: el avatar ("RO") se superpone 26 px sobre "Datos ficticios" y lo corta | `202610231931/R25-320.png` | front-juan |
 | O-02 | OBSERVADO | `#/unirse/<código>` en un navegador que ya es miembro | Entrar como Dani por el enlace; volver a abrir el mismo enlace: lista con todos "no disponible", "Ya no queda ningún nombre libre en la lista"; no hay "Seguir como Dani" | `202610231950/R123-375.png` | friccion — **CORREGIDO en `wip/friccion` (20:03, verificado con un miembro que entró por formulario: "Seguir como Mica"); pendiente de integrar a `main`** |
 | O-03 | OBSERVADO | Foco con teclado, portada con plan y tarjetas al pie (375) | Tab hasta "Tengo un código de invitación" o la tarjeta del plan: el foco queda bajo `.nav-inferior` (falta `scroll-padding-bottom`) | `202610231944/R80-375.png` | front-juan |
 | O-04 | OBSERVADO | Portada con nombre | "Tengo un código de invitación" (tarjeta) y "Unirme con un código" (formulario) aparecen a la vez, repetidos | `202610231944/R80-375.png` | front-juan |
@@ -36,6 +36,7 @@ Los que más importan para la demo hasta ahora (todos OBSERVADOS, de forma, no d
 | O-12 | OBSERVADO (leve) | Avisos repetidos | (a) Sin red en un plan: banner global + banner "Sin conexión" del plan + error del botón (R161); (b) contrato incompatible: "Versión incompatible" arriba y "No se pudo completar · Versión incompatible" debajo (R170); (c) "Hoy paso" aparece deshabilitado sin explicación mientras no se marque "Me interesa" (R162) | `202610232002/R161-375.png`, `202610232004/R170-375.png` | front-juan (a, c) / friccion (b) |
 | O-13 | OBSERVADO (leve) | Falla al iniciar la sesión anónima | El texto dice "el inicio de sesión anónimo puede estar deshabilitado en el proyecto": lenguaje técnico para una persona que solo abrió el enlace (R173) | `202610232004/R173-375.png` | friccion |
 | O-14 | OBSERVADO | Demo, pestaña Simulación a **320 px** | (a) La pestaña "Simulación" se sale de la pantalla (262–360 de 320); (b) en cada persona simulada la etiqueta "SIMULACIÓN" queda tapada por la insignia "Sin versión publicada" ("SIMUL…") | `202610231946/R104-320.png` | front-juan |
+| O-15 | **APROBADO 01:21** (era OBSERVADO) | Panel del agente, "Mis preferencias" | El grupo "Me gustaría" aparecía en rojo con "Marcá al menos una." desde que se abría, antes de tocar nada. Verificado en producción (`main` 3cca951, `f14` R407): texto normal "Marca al menos una actividad para guardar." | `202610231958/R150-375.png` (antes) · `202610232250/R407-375.png` (ahora) | agente-ia |
 | O-16 | OBSERVADO (decisión) | Chip "Datos ficticios" del encabezado | Aparece en TODAS las pantallas, también en un grupo real con personas de verdad (`App.tsx:85`, fricción 19 de `docs/flujo-usuario.md`); un grupo real podría leerlo como "esto no vale". Y a 320 px lo pisa el avatar (O-01) | `202610231931/R25-320.png` | **Decidido (21:10, ux-flujo `603678e`, tabla #102 H3): el chip se queda.** Cerrado como aceptado; lo único que sigue abierto es O-01 (a 320 px lo pisa el avatar) |
 
 ## Accesibilidad a fondo (método, `tests/rincones/a11y.mjs`; se aplica a la demo en `f12`)
@@ -135,7 +136,7 @@ Autoprueba del módulo: `node tests/rincones/prueba-a11y/correr.mjs` (página lo
 | R90/R91 | Cancelada vista de invitada; Planes de invitada | auto | A |
 | R92 | Espacio con propuesta confirmada y propuesta cancelada | auto | A |
 
-### Demo "Los del asado" (`f5` 19:46, `f5b` 19:49; sesión propia, sin reset)
+### Demo "Los del finde" (`f5` 19:46, `f5b` 19:49; sesión propia, sin reset)
 | Id | Rincón | Rev. | Estado |
 |---|---|---|---|
 | R100 | Demo recién abierto (Tomi organiza, 5 simulados) | ojo | A |
@@ -225,7 +226,7 @@ Observaciones (ninguna rompe nada): (1) el caso "Organizador a menos de 36 h del
 |---|---|---|---|
 | R250 | Crear grupo: elegir el propósito (libre, una familia o una actividad); el valor por defecto es "libre" | — | pendiente |
 | R251 | Nueva propuesta en un grupo con propósito: solo actividades de esa familia; qué pasa al elegir otra ("Este grupo se armó para otro tipo de plan. Elige una actividad de ese tipo o crea un grupo en modo libre.") | — | pendiente |
-| R252 | Grupo en modo libre: igual que hoy (cualquier propuesta) y el demo "Los del asado" sigue libre | — | pendiente |
+| R252 | Grupo en modo libre: igual que hoy (cualquier propuesta) y el demo "Los del finde" sigue libre | — | pendiente |
 | R253 | "¿Quién eres?" e invitación muestran el propósito del grupo (`preview_space_by_code`) | — | pendiente |
 | R254 | Agente restringido a la familia del grupo y "propón parecidas" cuando no hay quórum | — | pendiente |
 | R255 | Regresión de mis guiones: `f1`, `f4`, `f7` y `f11` crean propuestas sin actividad; en un grupo con propósito fallarían ("campo_faltante"). Los grupos de rincones se crean en modo libre salvo `f13` | — | adaptar al llegar |
@@ -257,6 +258,30 @@ Observación del banco de friccion (O-17, leve, a friccion): tras marcar "Así n
 | R370/R371 | Retiro: ayuda "retirarte avisa al grupo sin decir quién. No hace falta contar por qué."; confirmación; a quien se retira: "Gracias por avisar. No hace falta contar por qué." (se anuncia) | ojo | A |
 | R372 | Baja sin nombre: ninguna frase "<nombre> se bajó/se retiró" en el plan del organizador | auto | A (privacidad) |
 Accesibilidad de estos rincones (320, 375): sin fallas reales; dos avisos de "foco sin cambio" en campos de texto son transiciones (falso positivo ya corregido en el módulo); "Confirmar" y "Encuentro" se cortan en el paso de 4 etapas con espaciado de texto ampliado a 320 px (leve); las pestañas son 3 paradas de Tab en vez de una con flechas (leve).
+
+### Propósito del grupo (enmienda 14) en PRODUCCIÓN (`f14`, 01:20–01:22, `main` 3cca951; grupo propio "Los del fútbol")
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| R400 | Crear grupo: "¿Para qué es este grupo?" con "Libre: cualquiera propone lo que quiera" por defecto y la ayuda "Opcional. Cualquiera del grupo puede proponer lo que quiera."; 22 opciones agrupadas (Deporte, Comida, Salida / noche, Cultura, Aire libre, En casa; sin Fiesta ni Cultura sueltas, ya "Fiesta" entró después con la 0051) | ojo | A |
+| R401 | Con Fútbol elegido, la ayuda dice "Las propuestas de este grupo serán de este tipo de plan (deporte)." | ojo | A |
+| R402 | Espacio del grupo con propósito: "Invita a tu grupo… Faltan por entrar: Ana", botón "Mandar invitación por WhatsApp" | ojo | A |
+| R403 | "¿Quién eres?": "Este grupo es para jugar fútbol." | ojo | A |
+| R404 | Nueva propuesta en un grupo de fútbol: atajos "Fútbol · Pádel · Tenis · Básquet" (solo la familia deporte) y ejemplo "Ej.: Fútbol 5 el sábado" | ojo | A |
+| R405 | Un título libre sin atajo ("Cena de fin de año") en un grupo de fútbol SE CREA: no hay forma de elegir una actividad de otra familia desde la pantalla, y el título es libre por contrato (la restricción es por actividad/familia, no por texto). El mensaje de "fuera de propósito" solo se alcanza por la API | auto | A (comportamiento por diseño; solo queda anotado) |
+| R406 | Atajo Pádel en un grupo de fútbol (misma familia): título "Pádel", franjas de 1 h 30, se crea | ojo | A |
+| R407 | Agente en un grupo con propósito: "Me gustaría" solo ofrece Pádel · Fútbol · Tenis · Básquet; "Marca al menos una actividad para guardar." en texto normal (ya no en rojo: **O-15 APROBADO**); preguntas de zona, movilidad, tiempo de viaje y momento del día con "Prefiero no responder"; casilla "Recibir invitaciones del agente"; dos botones: "Que el agente proponga" y "Que el agente arme un plan" | ojo (375) | A |
+
+### Enmienda 15 en pantalla (`main` af79fcb; `f15` corre en el turno de las 02:15)
+| Id | Rincón | Rev. | Estado |
+|---|---|---|---|
+| R500 | Nueva propuesta: "Nombre de este plan (opcional)" en cada franja y "Más opciones" (Ronda de opiniones: Sin ronda / N h; "Si sirven las dos, gana": La que empieza antes / La que pueden más) | — | pendiente |
+| R501 | Paso 2: planes con nombre, "Gana la que pueden más personas", "Ronda de opiniones: N h después de publicar cada versión (nunca después del cierre)" | — | pendiente |
+| R510 | "Respuesta en un paso" con dos planes con nombre | — | pendiente |
+| R511 | Mi respuesta: "Si te sirven los dos, ¿cuál prefieres?" (opcional y privado; solo con A y B en Sí) | — | pendiente |
+| R512 | Con una franja en No, "¿cuál prefieres?" no se ofrece | — | pendiente |
+| R520 | v1 con "la que pueden más": qué plan ganó; nota de la ronda "Opiniones hasta… Mientras tanto no se rearma; confirmar sigue abierto." | — | pendiente |
+| R521 | Ficha del plan: "Cómo viene cada plan: pueden N · la prefieren N", solo el organizador, sin nombres | — | pendiente (privacidad) |
+| R522 | Una invitada no ve esos totales | — | pendiente (privacidad) |
 
 ## Pendiente de recorrer
 "Entrar como otra persona" confirmado, reclamar un lugar simulado libre del demo, "Hoy paso" ya marcado, plazo vencido (expirado), cierre elegido a mano con fecha pasada, y los cuatro anchos de cada rincón mirados a ojo (hoy `auto` en varios). Se repite lo afectado tras cada publicación en `main`.

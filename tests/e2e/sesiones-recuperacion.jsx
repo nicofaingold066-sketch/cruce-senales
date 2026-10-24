@@ -22,10 +22,10 @@ window.sesionesQA = {
     return { actual: data.session?.user?.user_metadata?.ficticio ?? null,
       guardada: leerGuardada()?.etiqueta ?? null }
   },
-  guardarFicticia: (refresh_token, etiqueta = 'Tomi en «Los del asado»') =>
+  guardarFicticia: (refresh_token, etiqueta = 'Tomi en «Los del finde»') =>
     localStorage.setItem(CLAVE, JSON.stringify({ refresh_token, etiqueta })),
   tokenGuardadoEs: ficticio => leerGuardada()?.refresh_token === ficticio,
-  cambiar: () => entrarComoOtraPersona('Tomi en «Los del asado»'),
+  cambiar: () => entrarComoOtraPersona('Tomi en «Los del finde»'),
   volver: () => volverAGuardada(leerGuardada()),
   olvidar: olvidarGuardada,
   bloquearGuardado: () => {

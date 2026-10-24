@@ -1,4 +1,4 @@
-# Caso canónico de la demo: "Los del asado"
+# Caso canónico de la demo: "Los del finde"
 
 Todo ficticio. Los personajes son inventados y no corresponden a personas reales.
 
@@ -6,7 +6,7 @@ Todo ficticio. Los personajes son inventados y no corresponden a personas reales
 Recuperar el hábito de verse con amigos. Un asado previsto tuvo seis interesados que dejaron de responder y no se hizo. Hipótesis a validar: no falta ganas ni amigos; falta cerrar la coordinación (condiciones, compromiso explícito y reparación cuando alguien se baja). La causa real del episodio está por investigar y no se afirma.
 
 ## Escenario
-- Espacio: "Los del asado" (amigos). Mismo motor luego con un espacio "Empresa Demo" cambiando los datos.
+- Espacio: "Los del finde" (amigos). Mismo motor luego con un espacio "Empresa Demo" cambiando los datos.
 - Propuesta: asado en casa de Tomi. Tomi es el anfitrión y es imprescindible.
 - Invitados con interés: Luna, Mati, Caro, Fede, Sofi.
 - Zona horaria visible en pantalla: America/Santiago.

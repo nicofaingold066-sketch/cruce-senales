@@ -60,8 +60,8 @@ paso(`Luna reclamable después de reiniciar, contra ${BASE}`)
 try {
   // 1. Tomi: demo propio y primera propuesta abierta.
   await T.goto(BASE)
-  const seed = await accion(T, 'seed_demo_space', () => tocar(T, 'Probar la demo «Los del asado»'))
-  await T.getByRole('heading', { name: 'Los del asado' }).waitFor({ timeout: 20000 })
+  const seed = await accion(T, 'seed_demo_space', () => tocar(T, /^Probar la demo «Los del (asado|finde)»$/))
+  await T.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })
   const urlEspacio = T.url(), codigo = seed.espacio?.codigo_invitacion
   verificar('Tomi crea su demo', seed.ok === true && !!codigo, `código ${enmascarar(codigo)}`)
   verificar('Primera propuesta creada y abierta', await crearYAbrir(urlEspacio))
@@ -71,7 +71,7 @@ try {
   await tocar(L, 'Luna')
   const unir = await accion(L, 'join_space', () => tocar(L, 'Sí, soy Luna'))
   // Con una propuesta abierta, la entrada lleva directo a responder (#88); si no, al grupo.
-  await Promise.race([L.getByRole('heading', { name: '¿Cuándo puedes?' }).waitFor({ timeout: 20000 }), L.getByRole('heading', { name: 'Los del asado' }).waitFor({ timeout: 20000 })])
+  await Promise.race([L.getByRole('heading', { name: '¿Cuándo puedes?' }).waitFor({ timeout: 20000 }), L.getByRole('heading', { name: /^Los del (asado|finde)$/ }).waitFor({ timeout: 20000 })])
   verificar('Luna reclama su asiento desde su propio teléfono', unir.ok === true && unir.resultado?.reclamo_asiento_simulado === true)
 
   // 3. Tomi reinicia la demo y abre una propuesta nueva.

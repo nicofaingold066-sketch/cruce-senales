@@ -1,6 +1,6 @@
 # Usuarios sintéticos de CRUXE
 
-Seis amigos ficticios usan la app como lo haría gente real, para contar dónde se traban, qué no entienden y qué responden mal. Todo ficticio: los nombres no corresponden a personas reales. Cada corrida crea un grupo nuevo ("Los de la facu"); nunca se usa el demo «Los del asado».
+Seis amigos ficticios usan la app como lo haría gente real, para contar dónde se traban, qué no entienden y qué responden mal. Todo ficticio: los nombres no corresponden a personas reales. Cada corrida crea un grupo nuevo ("Los de la facu"); nunca se usa el demo «Los del finde».
 
 - Guion: `tests/sinteticos/seis-amigos.mjs` (más `lib.mjs`, `revisar.mjs`, `guardia.mjs`).
 - Correr contra un build propio: `npx vite build && npx vite preview --port 4186` y `node tests/sinteticos/seis-amigos.mjs http://localhost:4186`. Contra producción: sin argumento.
@@ -59,7 +59,7 @@ Ideas para quienes puedan hacerlas, también en la ficha:
 
 ## Ensayo de la demo con los perfiles (guion `docs/guion-demo.md` de apertura, `b52e0ad`; leído 21:15)
 
-Cómo lo hice: recorrí cada paso del guion contra las pantallas que mis perfiles vieron **en producción a las 20:54** (`main` `3ace04e`, salida `20261023205443`) y en los builds integrados de las 20:06–20:43, más el código de hoy para los rótulos. La Parte B la cotejé solo contra el código y el guion e2e (`recorrido-dos-sesiones.mjs`): mis perfiles nunca tocan el demo «Los del asado». Los segundos son de máquina (cota inferior; una persona que lee tarda el doble o el triple).
+Cómo lo hice: recorrí cada paso del guion contra las pantallas que mis perfiles vieron **en producción a las 20:54** (`main` `3ace04e`, salida `20261023205443`) y en los builds integrados de las 20:06–20:43, más el código de hoy para los rótulos. La Parte B la cotejé solo contra el código y el guion e2e (`recorrido-dos-sesiones.mjs`): mis perfiles nunca tocan el demo «Los del finde». Los segundos son de máquina (cota inferior; una persona que lee tarda el doble o el triple).
 
 ### Los perfiles en el jurado: qué preguntaría cada uno y qué respalda la pantalla hoy
 
@@ -258,7 +258,7 @@ Una persona real tarda más que la máquina (leer, buscar con el dedo): 7 toques
 ### BAJA
 
 - **H10.** «hora de Santiago (America/Santiago)» (`vale-08`): un grupo en otra ciudad lo toma por error. → front-juan.
-- **H11.** «Asado», «Fiesta», «Bar» entre las actividades de «Me gustaría» de Bruno, y «Los del asado» en el ejemplo del título del grupo: son del catálogo, ya ampliado con cena, cine, cultura, etc. Nada que hacer salvo el orden. → apertura.
+- **H11.** «Asado», «Fiesta», «Bar» entre las actividades de «Me gustaría» de Bruno, y «Los del finde» en el ejemplo del título del grupo: son del catálogo, ya ampliado con cena, cine, cultura, etc. Nada que hacer salvo el orden. → apertura.
 - **H12.** «1 confirmaron» (singular mal). → front-juan.
 - **H13.** Gonza: tras «No voy» la página sigue mostrando el editor de condiciones con «Completas» y un «Guardar condiciones» apagado: queda abierta una pantalla que ya no sirve. → front-juan.
 - **H14 (RESUELTO en producción, 22:18: «Una persona se retiró», sin nombre; enmienda 13 c).** La baja era pública con nombre y «había confirmado» («Gonza se bajó (versión 1) · había confirmado», visible para Joaco y Vale). Es por diseño; para quien se baja por un mal momento es lo más expuesto de toda la app. → decisión de Nico (¿mostrar solo «una persona se bajó»?).
@@ -340,7 +340,7 @@ Hallazgos de esta llamada (pedidos en la ficha):
 | **H5** voseo de las preguntas nuevas | **RESUELTO el voseo** («Marca al menos una»); sigue exigiendo marcar una actividad para guardar presupuesto/techo |
 | Baja en el historial | «Una persona se retiró.» también en la comparación v1 → v2 ✔ |
 | **H6** «Ya hay 4 personas con condiciones» (cuenta a quien dijo No/No) | sigue (decisión de Nico: después de la demo) |
-| **H8** «Sábado 31 oct 20:00 → Sábado 31 oct 20:00» | sigue |
+| **H8** «Sábado 31 oct 20:00 → Sábado 31 oct 20:00» | **RESUELTO en `44e6de6`**: «Misma fecha y hora; cambió quién puede ir.» |
 | **H10** «hora de Santiago (America/Santiago)», **H12** «1 confirmaron», **H13** editor visible tras «No voy» | siguen |
 
 ## Corridas
@@ -349,6 +349,7 @@ Hallazgos de esta llamada (pedidos en la ficha):
 |---|---|---|
 | 19:28 | build `95def89` (parcial: el guion se cortó al confirmar Gonza; corrió durante MIGRACION EN CURSO) | descartada |
 | 19:40 | build `95def89`, base libre | completa; hallazgos H1–H14 |
+| 01:42–01:43 | **PRODUCCIÓN** `44e6de6` (v13, «Novedades» fuera, CSS de 320 px, fricción y arreglos de Juan) | `seis-amigos` completo, sin errores del guion ni fugas: Joaco 3 toques (4,7 s, 320 px), Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2. **H8 resuelto**: la reparación dice «Misma fecha y hora; cambió quién puede ir.». Nuevos textos buenos: «Faltan por confirmar 3 personas», «6 personas (1 por entrar)» y la tarjeta «Invita a tu grupo · Por ahora entraron 5 · Faltan por entrar: Pili» (para quien nunca abre el enlace). Corrí antes de mi turno por un error de mi cola (empezó justo al liberarse la 0053): se terminó esa corrida de 1 minuto y no lancé más |
 | 00:26–00:27 | **PRODUCCIÓN** `d978cc1` | `proposito-grupo` otra vez, esta vez esperando al agente: el texto de quórum sale como pidió Nico (arriba); H21–H23 nuevos |
 | 23:45–23:50 | **PRODUCCIÓN** `main` `d978cc1` (parche 2 de pantallas + enmienda 14 visible) | cuatro guiones completos, sin errores del guion y sin fugas: `proposito-grupo` (nuevo), `seis-amigos` (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6), `asi-no-puedo` (22/22 verdaderas y las dos «falsas» son lo esperado: nadie ve nombres) y `psico-perfiles`. La llamada del agente en `proposito-grupo` se leyó antes de que terminara de pensar (mi guion): pendiente repetirla |
 | 23:06–23:11 | **PRODUCCIÓN** `main` `8f27c5b` (enmienda 14 completa, 0048–0050) | las tres corridas completas, sin errores del guion y sin fugas: **`asi-no-puedo` ahora con los BOTONES** («Así no puedo, pero sigo» y «Rearmar con lo nuevo», sin RPC de respaldo; las 23 comprobaciones en orden, v2 el domingo, nadie ve quién), `seis-amigos` (Joaco 3 toques, Renata 3, Gonza 4, Bruno 6, Joaco confirma en 2) y `psico-perfiles` (Vale 4 toques para crear el grupo, el resto 3). El plan en revisión dice «La versión 1 ya no reúne lo necesario para juntarse» (neutro) pero la «Próxima acción» del servidor todavía dice «…el plan ya no cumple el mínimo o la presencia del anfitrión». **H16 y H18 todavía no están en producción** (`73ab15e` de friccion y el enlace de front-juan no se publicaron); H17 ya está en `preguntas-jurado` |

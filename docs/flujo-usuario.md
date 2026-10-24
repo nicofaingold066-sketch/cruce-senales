@@ -178,7 +178,7 @@ Rutas: `shell.tsx:77-90`. Pantallas: `App.tsx:175-197`. RPC: `api.ts:269-383`.
 
 **Paso 0. Abrir la app** **[visto]** Entrada animada de 2,9 s, se salta con un toque; aparece en `#/` cada vez que se abre la portada en una pestaña nueva (también la vio Ana al volver), no en `#/unirse`. Por debajo: login anónimo y `server_info`.
 
-**Paso 1. Portada, primera vez** **[visto]** "Entrar a CRUXE": "¿Cómo te llaman tus amigos?" + "Entrar". El nombre queda solo en `localStorage` (`cruxe:perfil`). Recién después aparecen "Crear un grupo" y la barra inferior. Debajo: "Probar la demo «Los del asado»", "Tengo un código de invitación", "Unirme con un código" y "Cómo funciona".
+**Paso 1. Portada, primera vez** **[visto]** "Entrar a CRUXE": "¿Cómo te llaman tus amigos?" + "Entrar". El nombre queda solo en `localStorage` (`cruxe:perfil`). Recién después aparecen "Crear un grupo" y la barra inferior. Debajo: "Probar la demo «Los del finde»", "Tengo un código de invitación", "Unirme con un código" y "Cómo funciona".
 
 **Paso 2. Crear un grupo** (`#/crear`) **[visto]** Nombre del grupo, "Tu nombre en el grupo" (precargado con el de la portada) y "Quiénes son" (opcional, hasta 12, "Agregar" por nombre). `create_space(nombre, 'amigos', nombre_visible, integrantes)`. Redirige al espacio con "Creaste «X». Ahora invita a tu grupo".
 
@@ -200,7 +200,7 @@ Rutas: `shell.tsx:77-90`. Pantallas: `App.tsx:175-197`. RPC: `api.ts:269-383`.
 
 **Paso 10. Baja y reparación** **[leído]** Mi respuesta → "Retirarme de esta propuesta" (`withdraw_commitment`), definitivo en esa propuesta. Efectos: `sin_cambio_de_estado`, `acuerdo_conservado`, `pasa_a_revision`, `expirado`. En revisión el organizador ve "Buscar alternativa" (`propose_repair`): versión N+1 con cero aceptaciones heredadas o `sin_alternativa`. Comparación "versión anterior → vigente". Cancelar: `cancel_proposal`.
 
-**Variante demo (Tomi)** **[leído]** "Probar la demo «Los del asado»" → `seed_demo_space` → espacio con 5 simulados; nueva propuesta precargada con el caso (31 oct / 1 nov 14:00-17:00, mín. 4, máx. 6, cierre jue 29 oct 20:00); pestaña Simulación (`simulate_*`); herramientas del organizador (`add_simulated_member`, `reset_demo`).
+**Variante demo (Tomi)** **[leído]** "Probar la demo «Los del finde»" → `seed_demo_space` → espacio con 5 simulados; nueva propuesta precargada con el caso (31 oct / 1 nov 14:00-17:00, mín. 4, máx. 6, cierre jue 29 oct 20:00); pestaña Simulación (`simulate_*`); herramientas del organizador (`add_simulated_member`, `reset_demo`).
 
 ## 5. Datos
 

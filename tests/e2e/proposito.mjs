@@ -10,7 +10,7 @@
 //     el mensaje exacto y SIN crear nada (un intento cuyo primer uso falló no queda guardado); con pádel → aceptada, con propuesta.actividad = {padel, Pádel, deporte}.
 //     En un grupo libre: cualquier actividad vale; una clave inexistente → formato_invalido.
 //   · Privacidad (ajuste 2): quien NO es del grupo no se entera del propósito por el error.
-//   · El demo «Los del asado» sigue en modo libre.
+//   · El demo «Los del finde» sigue en modo libre.
 //   · «Me gustaría» solo de la familia del grupo (0049): se informa como pendiente mientras no esté.
 // Capa de pantalla: la invitación («¿Quién eres?») dice «para jugar fútbol» (friccion); pendiente mientras no esté.
 // Códigos de salida: 0 todo lo exigible en verde (los PENDIENTE se listan), 1 hay fallas, 3 base ocupada, 4 la 0048 no está.
@@ -134,7 +134,7 @@ try {
   // 4. El demo sigue libre.
   const demo = await rpc(T, 'seed_demo_space', {})
   const gD = demo.ok ? await ver(T, demo.resultado.espacio_id) : null
-  verificar('El demo «Los del asado» sigue en modo libre', demo.ok === true && gD?.proposito === 'libre' && gD?.familia === 'libre', `${gD?.proposito}/${gD?.familia}`)
+  verificar('El demo «Los del finde» sigue en modo libre', demo.ok === true && gD?.proposito === 'libre' && gD?.familia === 'libre', `${gD?.proposito}/${gD?.familia}`)
 
   // 5. «Me gustaría» solo de la familia del grupo (0049).
   const prefs = await rpc(T, 'get_my_preferences', { p_espacio_id: futbol.id })

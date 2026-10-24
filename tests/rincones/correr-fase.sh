@@ -12,7 +12,7 @@ ocupada() {
   local f
   for f in "$COORD"/agentes/*.md; do
     [ "$(basename "$f")" = "rincones.md" ] && continue
-    if sed -n '/^## Tocando ahora/,/^## /p' "$f" | grep -v 'TERMINAD' | grep -viE 'esper(a|an|ando)|saque|saquen|cuando backend|hasta que' | grep -qE 'CORRIENDO PRUEBA ?\(|\*\*MIGRACION EN CURSO\*\*|PRUEBA DE CARGA EN CURSO'; then echo "$(basename "$f" .md)"; return 0; fi
+    if sed -n '/^## Tocando ahora/,/^## /p' "$f" | grep -v 'TERMINAD' | grep -qE '^- (\[[0-9:]+\] )?(\*\*)?(CORRIENDO PRUEBA|MIGRACION EN CURSO|PRUEBA DE CARGA EN CURSO)'; then echo "$(basename "$f" .md)"; return 0; fi
   done
   return 1
 }

@@ -2,7 +2,7 @@
 
 Borrador de **pendientes** (viernes 23 oct, 23:58 a 00:20), por pedido de Nico a las 23:50 (excepción explícita al cierre de funciones). Base del diseño: `docs/output-debate.md` §2.2 a §2.4 y §3.2 (ux-flujo). **Sin aplicar: espera el OK del coordinador.** `contrato` sigue en 2.
 
-Principios: todo es **opcional y con valor por defecto igual a hoy**. Ningún cliente, guion e2e ni prueba vieja cambia de resultado; "Los del asado" no cambia (no manda ninguno de los parámetros nuevos). Ninguna RPC nueva: la lista permitida sigue en 41 para `authenticated` y 0 para `anon`. Una sola firma cambia (`create_proposal`, dos parámetros opcionales al final, patrón 0048). Interés no es confirmación; una confirmación vale para UNA versión; el servidor decide plazos, regla y ganador; la interfaz solo muestra.
+Principios: todo es **opcional y con valor por defecto igual a hoy**. Ningún cliente, guion e2e ni prueba vieja cambia de resultado; "Los del finde" no cambia (no manda ninguno de los parámetros nuevos). Ninguna RPC nueva: la lista permitida sigue en 41 para `authenticated` y 0 para `anon`. Una sola firma cambia (`create_proposal`, dos parámetros opcionales al final, patrón 0048). Interés no es confirmación; una confirmación vale para UNA versión; el servidor decide plazos, regla y ganador; la interfaz solo muestra.
 
 ## (E-c) Ronda de opiniones con plazo
 
@@ -50,7 +50,7 @@ Principios: todo es **opcional y con valor por defecto igual a hoy**. Ningún cl
 - **0052 `e15_dos_planes`**: `franjas.etiqueta`, `validar_disponibilidad` con `prefiero`, motor `mas_si`, `etiqueta` y `regla` en la vista, `planes_totales`. Si E-d se complica, la 0051 queda sola y `p_regla = 'mas_si'` se rechaza con `formato_invalido` hasta la 0052 (la interfaz no lo ofrece hasta el aviso).
 
 ## Pruebas mínimas (`tests/backend/enmienda15.test.ts`, base real, datos ficticios, en serie, sin ráfagas ni concurrencia)
-1. **Compatibilidad:** `create_proposal` sin los parámetros nuevos → `ronda: null`, `regla: 'temprana'`, `etiqueta: null` en las dos franjas, `planes_totales: null`; motor igual que hoy. Recorrido canónico de "Los del asado" sin cambios (`aceptacion-reparacion` y `enmienda13` en verde sin tocarlas).
+1. **Compatibilidad:** `create_proposal` sin los parámetros nuevos → `ronda: null`, `regla: 'temprana'`, `etiqueta: null` en las dos franjas, `planes_totales: null`; motor igual que hoy. Recorrido canónico de "Los del finde" sin cambios (`aceptacion-reparacion` y `enmienda13` en verde sin tocarlas).
 2. **Forma:** `p_ronda_horas = 5` → `formato_invalido`; `p_regla = 'x'` → `formato_invalido`; etiqueta de 41 → `formato_invalido`; etiqueta "  " → `null`; `prefiero: 'C'` → `disponibilidad_invalida`; mismo intento con otra ronda → `intento_reutilizado`.
 3. **Ronda abierta:** con 2 h y plazo a 3 días: `ronda.cierra = publicada + 2 h`, `abierta: true`; dos "así no puedo" → `opiniones_totales.asi_no_puedo = 2` pero `puede.proponer_reparacion = false` y `propose_repair` → `opcion_desactualizada/ronda_abierta`; aceptar sigue funcionando.
 4. **Ronda que no cabe:** 24 h con plazo a 2 h → `ronda: null`, rearmar como E13.

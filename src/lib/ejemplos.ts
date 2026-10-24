@@ -1,7 +1,7 @@
 // Mejora #92 (apertura): ejemplos que rotan para placeholders y textos de ayuda, para que la interfaz no asuma
 // siempre "asado". Son funciones puras: el mismo índice o la misma semilla dan siempre el mismo ejemplo, sin azar ni
 // reloj. Quien las use decide cada cuánto rota (por ejemplo, una semilla por visita o por día).
-// El caso de la demo sigue siendo «Los del asado» (docs/caso-canonico.md): este archivo no lo toca ni lo reemplaza.
+// El caso de la demo sigue siendo «Los del finde» (docs/caso-canonico.md): este archivo no lo toca ni lo reemplaza.
 // Todo es ficticio.
 
 export interface Ejemplo {
