@@ -5,7 +5,9 @@ Pedido directo del usuario en Codex: «Sí, te autorizo a modificar la entrada. 
 Rama propia: `codex/intro-primera-visita`. Copia: `/Users/macair/cruse/cruce-intro`, desde `origin/main`.
 
 ## Tocando ahora
-Vacío. Recorrido completo desde Ayuda implementado, integrado y publicado.
+- Pedido directo de Nico: «la x con los circulos de movimiento lo haria un poco mas grande, dependiendo el dispositivo». Continúa el pulido de la intro publicada.
+- Solo `src/components/Intro.css`: ampliar símbolo/círculos durante animación con escala por dispositivo, reservar espacio de escena y mantener marca final, controles y duración. Horizontal con altura baja usa aumento moderado.
+- Rama `codex/intro-primera-visita`, base `main` `9a15539`. Verificación visual local y de producción con Auth/RPC bloqueadas; sin backend ni otras hojas. Integración/publicación dentro del alcance ya autorizado si pasa.
 
 ## Ayuda: repetir intro y guía (publicado)
 Pedido directo: «Dale, que desde Ayuda también se pueda volver a ver todo el recorrido, incluida la animación del inicio.» Continuó el alcance ya autorizado de implementación/publicación.
