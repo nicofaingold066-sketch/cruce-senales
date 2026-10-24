@@ -2,6 +2,8 @@
 
 Dueño: apertura. Pedido #103 (Nico, vía coordinador, 20:52 del viernes 23 oct 2026). Todo ficticio.
 
+> **Versión única vigente (la sesión de apertura se archivó a las 03:14 del sábado 24).** Todo rótulo que dependa del rediseño de la noche está marcado «por publicar» o **[a verificar]**: se relee en el ensayo de las 10:00 con el listado de §9 y el coordinador cierra el guion a las 10:30 con el «Estado verificado». Si el rediseño no se publica, vale `demo-segura` (`main` `22ae202`).
+
 **Qué es.** Lo que se toca y lo que se dice, paso por paso, en los 5 minutos del pitch (demo en vivo obligatoria; después 3 minutos de preguntas: `prompts/contexto-dia-pitch-reglas.md`, bases §9 y §10). Dos partes:
 - **Parte A, grupo nuevo: «convencer a uno».** Vale crea el grupo con los nombres, manda el enlace, Ana responde en 4 toques y sale la opción.
 - **Parte B, espacio demo «Los del finde»: el agente.** Con «Simular sol», zona y movilidad, «queda a menos de N minutos para todos», alguien se baja y el plan se rearma.
