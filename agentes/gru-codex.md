@@ -9,6 +9,7 @@ Rama propia `codex/gru-vivo`, copia aislada `/Users/macair/cruse/cruce-gru`, bas
 - Nuevos `src/agente/GruAsistente.tsx`, `src/agente/gru-asistente.css`: miniatura persistente, panel accesible y enlace al agente del grupo.
 - `src/agente/AgentePanel.tsx`: integrar el personaje en la búsqueda existente y publicar sus estados reales; sin cambiar solicitudes, contratos, consentimiento ni reglas.
 - `src/lib/shell.tsx`: montaje mínimo dentro de ShellProvider; sin tocar App.tsx ni main.tsx, actualmente reclamados por intro y vida.
+- `src/screens/Espacio.tsx`: solo nombre visible de la pestaña y acceso a GRU, por pedido nuevo de Nico («cuando apretes gru que se vea la pestaña de gru»); sin lógica ni otros bloques.
 
 La ficha de agente-ia marca S6 entregada desde las 03:19, sin edición abierta. Este cambio se hace en rama propia por autorización directa de Nico; no se modifica su checkout. No se solicitan cambios a otras conversaciones.
 
