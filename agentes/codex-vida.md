@@ -5,13 +5,12 @@ Pedido directo de Nico en Codex (24 oct): revisar todo el front porque le falta 
 Rama propia: `codex/vida-front`. Copia aislada: `/Users/macair/cruse/cruce-vida`, base `origin/main` `7f47a88`.
 
 ## Tocando ahora
-- Integración de `codex/vida-front` con `origin/main`, TypeScript/build/pruebas y publicación de `main` por la integración Git de Vercel.
-- Reclamo puntual de integración/publicación autorizado directamente por Nico: «Dale, integrá los cambios y publicalos para poder probarlos en la app». No se reescribe código de otras sesiones ni se cambia backend.
+(Vacío: integrado y publicado en producción. Corte `27bcc6c`; main actual `8fba205` lo conserva.)
 
 No se toca `src/styles.css`, `App.tsx` ni `Intro.*` (reclamados por codex-intro), backend, modelos o configuración.
 
 ## Verificación
-Typecheck/build y navegador local con salida externa interceptada, fixtures ficticios, tamaños 320/375/768/1280, modo claro/oscuro y movimiento reducido. Sin suites contra base ni despliegue.
+Primer corte: typecheck/build y navegador local con salida externa interceptada, fixtures ficticios, tamaños 320/375/768/1280, modo claro/oscuro y movimiento reducido. Publicación posterior autorizada y verificada abajo; sin suites contra base.
 
 ## Entregado
 - Objetivo visual cumplido. `codex/vida-front` **`95b94dd`**, base main `7f47a88`. Tres archivos: `src/main.tsx`, nuevo `src/estilo/vida.css`, nuevo `src/components/FeedbackToque.tsx`.
@@ -29,3 +28,11 @@ Ninguno. El pedido directo del usuario autoriza el alcance visual. No se solicit
 ## Publicación autorizada
 
 Nico pidió integrar y publicar este corte. Se preservan Intro/Guia/Ayuda de main, se verifica el resultado antes de push a main y después se comprueba el dominio público con los assets del commit. Sin base/modelos ni migraciones. El conector Vercel carece de scope para el equipo; se usa Git→Vercel ya configurado.
+
+## Publicación completada
+
+- Integrado con main reciente conservando Intro/Guía/Ayuda/GRU: `27bcc6c883c02314954e711a7c8de4db4e3da865`, push normal a `main` y `codex/vida-front`. TypeScript/build/diff-check y 96/96 pruebas puras pasan; smoke integrado32 capturas/8rutas/375+1280/claro+oscuro sin errores ni desbordes, primera visita y Ayuda correctas.
+- Vercel Git success para27bcc6c y dominio https://cruce-senales.vercel.app/ sirvió exactamente `index-3AkH91eb.js` y `index-MOJVMNEk.css`.
+- Durante el smoke, otra publicación autorizada integró selector de tema (`8fba2059a5acc1e39f98dd5f80ffda00d0fc839f`), descendiente de27bcc6c, conserva el corte y adapta los tokens a `data-theme`. Se sincronizó la copia local a ese main sin volver a publicar ni sobrescribir nada. TypeScript/build correctos.
+- Verificación FINAL del dominio público sobre8fba205: Vercel Git success y alias coincide. `index-DHg1mK-A.js` + `index-amv0LR_h.css`; 23 assets públicos con SHA256 idéntico al dist integrado. Navegador producción27/27,16capturas,375/1280×claro/oscuro×normal/reduce: color/tema, puntero/Enter, foco/limpieza del eco, Inicio/Plan y reducido pasan;0errores JS/console y0desbordes. Solo GET/HEAD públicos, Auth/RPC totalmente simulados:0usuarios/escrituras/modelos reales.
+- Evidencia durable: `/Users/macair/.codex/visualizations/2026/10/24/01a16d92-0314-7fa3-92b3-971df48ff304/cruxe-vida/publicacion/resultado.json`, `release.json` y capturas. No quedan dependencias para probar el corte publicado.
