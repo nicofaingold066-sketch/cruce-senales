@@ -130,7 +130,7 @@ export function textoPaso(nombre: string, entrada: unknown, resultado: unknown):
     const act = tieneClave(ACTIVIDAD_TEXTO, e.actividad) ? ACTIVIDAD_TEXTO[e.actividad] : null
     const sitios = Array.isArray(resultado) ? (resultado as string[]) : []
     if (!act) return null
-    return sitios.length > 0 ? `Busqué canchas reales de ${act}: ${unirLista(sitios)}` : `No hay sitios de canchas para ${act}`
+    return sitios.length > 0 ? `Preparé dónde buscar canchas de ${act}: ${unirLista(sitios)}` : `No hay sitios de canchas para ${act}`
   }
   return null
 }

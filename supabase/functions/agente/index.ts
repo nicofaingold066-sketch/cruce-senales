@@ -64,8 +64,9 @@ const PLAZO_CLIMA_MS = 3000
 // Con herramientas: el bucle tiene hasta 25 s; si no llega, el camino de siempre usa solo Haiku hasta los 31 s
 // (la pantalla espera 35 s y su reloj arranca antes que el de la función).
 const PLAZO_TOTAL_HERRAMIENTAS_MS = 31000
-// Canchas reales por actividad: los mismos sitios que arma el panel en src/agente/canchas.ts.
-const SITIOS_CANCHAS = ['Google Maps', 'EasyCancha', 'ATC']
+// Dónde buscar canchas por actividad: los mismos sitios que arma el panel en src/agente/canchas.ts. Son enlaces de
+// búsqueda, no canchas encontradas (auditoría M5; ATC se sacó porque apuntaba a Mendoza).
+const SITIOS_CANCHAS = ['Google Maps', 'EasyCancha']
 // Una llamada al modelo por persona cada 10 s y un tope por minuto, en la memoria de esta instancia (mejor esfuerzo).
 const limiteModelo = crearLimiteModelo()
 // Centro de Santiago: el clima es del lugar del encuentro, nunca de la ubicación de una persona.

@@ -647,7 +647,7 @@ function BorradorTarjeta({
         {canchas.length > 0 ? (
           <div className="bloque agente-canchas">
             <p>
-              <strong>Canchas reales cerca: </strong>
+              <strong>Dónde buscar canchas: </strong>
               {elegida.lugar.simulado ? 'el club de esta opción es de simulación; ' : ''}
               la disponibilidad se ve en cada sitio. CRUXE no reserva ni confirma.
             </p>

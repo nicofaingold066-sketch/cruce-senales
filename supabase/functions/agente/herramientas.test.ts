@@ -20,7 +20,7 @@ function herramientas(registro: string[] = []): Herramientas {
   return {
     verClima: async (dia) => { registro.push(`clima:${dia}`); return { estado: dia === 'sabado' ? 'lluvia' : 'seco', maxima: 18, simulado: true } },
     buscarPlanes: async () => { registro.push('planes'); return { tipo: 'borrador', candidatas: [ASADO, PADEL], paraModelo: entradaModelo([ASADO, PADEL], { personas: 5 }, 'Simulación', NOMBRES) } },
-    buscarCanchas: (a) => { registro.push(`canchas:${a}`); return a === 'padel' ? ['Google Maps', 'EasyCancha', 'ATC'] : [] },
+    buscarCanchas: (a) => { registro.push(`canchas:${a}`); return a === 'padel' ? ['Google Maps', 'EasyCancha'] : [] },
   }
 }
 const uso = (id: string, name: string, input: unknown) => ({ type: 'tool_use', id, name, input })
@@ -62,7 +62,7 @@ test('bucle válido: clima de los dos días, planes, canchas y elección → pas
     'Miré el clima del sábado: lluvia (simulación)',
     'Miré el clima del domingo: sin lluvia (simulación)',
     'Busqué planes que le sirven a todo el grupo: 2',
-    'Busqué canchas reales de pádel: Google Maps, EasyCancha y ATC',
+    'Preparé dónde buscar canchas de pádel: Google Maps y EasyCancha',
     'Elegí: Asado en Parrilla del parque (Simulación)',
   ])
   assert.deepEqual(registro, ['clima:sabado', 'clima:domingo', 'planes', 'canchas:padel'])
