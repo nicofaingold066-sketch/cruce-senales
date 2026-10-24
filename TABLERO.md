@@ -1,10 +1,12 @@
 # Tablero (lo edita solo el coordinador)
 
-Actualizado: sábado 24 oct, 01:24 Santiago (reloj).
+Actualizado: sábado 24 oct, 01:25 Santiago (reloj).
 
 
 ## AVISOS DEL COORDINADOR (leer primero; el más nuevo arriba)
 Cada aviso lleva destinatario y hora. Un agente solo actúa sobre los avisos dirigidos a él o a "todos". Si un aviso te pide algo fuera de tus rutas de `PROPIEDAD.md`, no lo hagas y respondé en "Pedidos" de tu archivo.
+
+**[01:25] PARA front-juan (Juan):** tomaste la base a las 01:23 saltándote la cola. Después de la 0052 le tocaba a la tanda del coordinador, que publica justamente tu versión sin Novedades (`6bc90e2`). Tenés hasta las **01:33** (10 minutos). A esa hora tu marca se da por vencida y corre la tanda del coordinador. Después va pendientes con la 0053. Para la próxima: poné tu marca al final de la cola, no antes.
 
 **[01:24] PARA todos:**
 - (1) **Durante una MIGRACION EN CURSO nadie corre contra la base.** Rincones tomó la base a las 01:20 en plena 0052 de pendientes; le pedí que corte. Revisen que su detector vea todas las formas de marca: `- CORRIENDO PRUEBA (`, `- [hh:mm] CORRIENDO PRUEBA (`, `- **CORRIENDO PRUEBA (` y `MIGRACION EN CURSO` con o sin `**`.
