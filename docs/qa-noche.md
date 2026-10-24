@@ -22,6 +22,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si CUALQUIER 
 | `proposito.mjs` | Enmienda 14 (propósito del grupo): create_space con propósito, propuesta fuera de propósito rechazada con el mensaje exacto y sin crear nada, pádel aceptada, ajuste 2 (un ajeno no se entera del propósito), demo libre, «Me gustaría» por familia (0049) e invitación «para jugar fútbol». Salida 4 = 0048 no aplicada | sí | `tests/e2e/turno-base.sh "propósito" node tests/e2e/proposito.mjs <url>` |
 | `proposito-pantalla.mjs` | Enmienda 14 por la pantalla: selector «¿Para qué es este grupo?» (por defecto Libre), crear con «Fútbol» manda `p_proposito`, atajos de actividad solo de deporte (sin Asado/Cena/Café), la propuesta viaja con una actividad de deporte y el servidor la acepta, y un grupo libre ofrece 17 atajos de todas las familias | sí | `node tests/e2e/proposito-pantalla.mjs <url>` |
 | `entrada-lista.mjs` | Guarda de la entrada tipo Tricount: «¿Quién eres?» muestra la lista del grupo (Ana y Beto libres), elegir y entrar, y con la lista agotada el campo de nombre queda a la vista | sí | `node tests/e2e/entrada-lista.mjs <url>` |
+| `enmienda15-privacidad.test.ts` (vitest) | Enmienda 15 desde afuera, por RPC con dos sesiones: sin parámetros nuevos todo como hoy; con `mas_si` + ronda de 2 h, «prefiero» no sale en ninguna respuesta ajena (ni del organizador), `planes_totales` solo al organizador y sin números menores que 2 ni nombres, ronda abierta bloquea rearmar (`ronda_abierta`) y aceptar sigue; formas inválidas rechazadas sin crear nada | sí | `tests/e2e/turno-base.sh "E15" npx vitest run tests/e2e/enmienda15-privacidad.test.ts` |
 | `preparar-grupo.mjs` | Ayudante: crea grupo ficticio (Orga, Ana, Beto) y propuesta abierta | sí | lo llaman los dos anteriores |
 
 ## Cambios en los guiones
@@ -88,6 +89,7 @@ Los guiones que usan la base se frenan solos (salida 3, "PAUSADO") si CUALQUIER 
 | 23:54 | humo de producción (main d978cc1 + parche 2): dos sesiones **26/26**, `proposito.mjs` **25/25**, `proposito-pantalla.mjs` **10/10** | producción | verde |
 | 00:34–00:37 | turno corto sobre producción (main con parche 2): dos sesiones **26/26**; jurado **4/4** (E13 comprobada, E15 «pendiente en el servidor»: sin enmienda 15 aún); `entrada-lista.mjs` **7/7** (lista agotada: campo de nombre a la vista) | producción | verde |
 | 00:19 | `sesiones-recuperacion` L2/L3 con foco al error: estricto contra `wip/frontend` 094b192 (12/12), aviso contra fundamentos | localhost | verde |
+| 01:44 | `enmienda15-privacidad.test.ts` escrito (3 pruebas); tipos ok | — | sin correr: espero mi turno (puesto 5 de la cola del 01:44) |
 
 ## Regresiones abiertas
 (ninguna)
